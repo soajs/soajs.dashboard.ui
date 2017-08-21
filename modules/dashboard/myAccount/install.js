@@ -153,39 +153,39 @@ var myAccountNav = [
 		'label': translation.login[LANG],
 		'url': '#/login',
 		'guestMenu': true,
-		'tplPath': 'engine/modules/myAccount/directives/login.tmpl',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js']
+		'tplPath': 'modules/dashboard/myAccount/directives/login.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js']
 	},
 	{
 		'id': 'forgot_password',
 		//'label': 'Forgot Password',
 		'url': '#/forgotPw',
-		'tplPath': 'engine/modules/myAccount/directives/forgotPassword.tmpl',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js'],
+		'tplPath': 'modules/dashboard/myAccount/directives/forgotPassword.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js'],
 		'guestMenu': false
 	},
 	{
 		'id': 'reset_password',
 		//'label': 'Reset Password',
 		'url': '#/resetPassword',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js'],
-		'tplPath': 'engine/modules/myAccount/directives/resetPassword.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js'],
+		'tplPath': 'modules/dashboard/myAccount/directives/resetPassword.tmpl',
 		'guestMenu': false
 	},
 	{
 		'id': 'set_password',
 		//'label': 'Set Password',
 		'url': '#/setNewPassword',
-		'tplPath': 'engine/modules/myAccount/directives/setNewPassword.tmpl',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js'],
+		'tplPath': 'modules/dashboard/myAccount/directives/setNewPassword.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js'],
 		'guestMenu': false
 	},
 	{
 		'id': 'validate_email',
 		//'label': 'Validate Change Email',
 		'url': '#/changeEmail/validate',
-		'tplPath': 'engine/modules/myAccount/directives/validate.tmpl',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js'],
+		'tplPath': 'modules/dashboard/myAccount/directives/validate.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js'],
 		'guestMenu': false
 	},
 	{
@@ -198,8 +198,8 @@ var myAccountNav = [
 		'label': translation.myAccount[LANG],
 		'url': '#/myaccount',
 		'icon': 'smile',
-		'tplPath': 'engine/modules/myAccount/directives/myAccount.tmpl',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js'],
+		'tplPath': 'modules/dashboard/myAccount/directives/myAccount.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js'],
 		'userMenu': true,
 		'private': true
 	}

@@ -16,8 +16,8 @@ var navigation = [
 		'id': 'login',
 		'label': translation.home[LANG],
 		'url': '#/login',
-		'tplPath': 'engine/modules/myAccount/directives/login.tmpl',
-		'scripts': ['engine/modules/myAccount/config.js', 'engine/modules/myAccount/controller.js']
+		'tplPath': 'modules/dashboard/myAccount/directives/login.tmpl',
+		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js']
 	},
 	{
 		'id': 'noEnv',

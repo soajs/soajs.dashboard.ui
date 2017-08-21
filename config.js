@@ -72,7 +72,7 @@ var modules = {
 	},
 	"common": {
 		"dashboard": {
-			myAccount: 'engine/modules/dashboard/myAccount/install.js'
+			myAccount: 'modules/dashboard/myAccount/install.js'
 		}
 	}
 };

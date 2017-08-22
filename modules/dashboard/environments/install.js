@@ -279,8 +279,8 @@ var envTranslation ={
 		"FRA": "API Prefix"
 	},
 	"portalDomain": {
-		"ENG": "Portal Prefix",
-		"FRA": "Portal Prefix"
+		"ENG": "Portal Domain",
+		"FRA": "Portal Domain"
 	},
 	"sitePrefix": {
 		"ENG": "Site Prefix",

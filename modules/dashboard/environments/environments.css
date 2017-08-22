@@ -51,6 +51,10 @@ ul {
 }
 
 .customInput {
+    width:49% !important;
+}
+
+.customInput2 {
     width:32% !important;
 }
 

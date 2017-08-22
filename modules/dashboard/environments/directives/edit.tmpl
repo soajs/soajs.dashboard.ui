@@ -24,20 +24,32 @@
                         </tr>
                         <tr class="form-group">
                             <td class="">
-                                <span class="customInput f-left">
-                                    <label>API Prefix</label>
-                                    <input type="text" ng-required="false" tooltip="{{translation.enterAPIPrefix[LANG]}}" placeholder="api" ng-model="formEnvironment.apiPrefix" class="form-control"/>
-                                </span>
-
-                                <span class="customInput f-right">
-                                    <label>Site Prefix</label>
-                                    <input type="text" ng-required="false" tooltip="{{translation.enterSitePrefix[LANG]}}" placeholder="site" ng-model="formEnvironment.sitePrefix" class="form-control"/>
-                                </span>
-	
-	                            <span class="customInput f-right" ng-show="Object.hasOwnProperty.call(formEnvironment, 'portalPrefix')">
-                                    <label>Portal Prefix</label>
-                                    <input type="text" ng-required="false" tooltip="{{translation.enterPortalPrefix[LANG]}}" placeholder="portal" ng-model="formEnvironment.portalPrefix" class="form-control"/>
-                                </span>
+	                            <span ng-show="formEnvironment.portalPrefix">
+		                            <span class="customInput2 f-left">
+	                                    <label>API Prefix</label>
+	                                    <input type="text" ng-required="false" tooltip="{{translation.enterAPIPrefix[LANG]}}" placeholder="api" ng-model="formEnvironment.apiPrefix" class="form-control"/>
+	                                </span>
+		                            
+		                            <span class="customInput2 f-left">
+	                                    <label>Site Prefix</label>
+	                                    <input type="text" ng-required="false" tooltip="{{translation.enterSitePrefix[LANG]}}" placeholder="site" ng-model="formEnvironment.sitePrefix" class="form-control"/>
+	                                </span>
+		                            <span class="customInput2 f-right" >
+	                                    <label>Portal Prefix</label>
+	                                    <input type="text" ng-required="false" tooltip="{{translation.enterPortalPrefix[LANG]}}" placeholder="portal" ng-model="formEnvironment.portalPrefix" class="form-control"/>
+	                                </span>
+	                            </span>
+	                            <span ng-show="!formEnvironment.portalPrefix">
+		                            <span class="customInput f-left">
+	                                    <label>API Prefix</label>
+	                                    <input type="text" ng-required="false" tooltip="{{translation.enterAPIPrefix[LANG]}}" placeholder="api" ng-model="formEnvironment.apiPrefix" class="form-control"/>
+	                                </span>
+		                            
+		                            <span class="customInput f-right">
+	                                    <label>Site Prefix</label>
+	                                    <input type="text" ng-required="false" tooltip="{{translation.enterSitePrefix[LANG]}}" placeholder="site" ng-model="formEnvironment.sitePrefix" class="form-control"/>
+	                                </span>
+	                            </span>
 	                            
                                 <label class="fieldMsg">{{translation.inCaseAPIOrSitePrefixNotSpecified[LANG]}}</label>
                             </td>

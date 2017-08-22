@@ -33,6 +33,12 @@
                                     <label>Site Prefix</label>
                                     <input type="text" ng-required="false" tooltip="{{translation.enterSitePrefix[LANG]}}" placeholder="site" ng-model="formEnvironment.sitePrefix" class="form-control"/>
                                 </span>
+	
+	                            <span class="customInput f-right" ng-show="Object.hasOwnProperty.call(formEnvironment, 'portalPrefix')">
+                                    <label>Portal Prefix</label>
+                                    <input type="text" ng-required="false" tooltip="{{translation.enterPortalPrefix[LANG]}}" placeholder="portal" ng-model="formEnvironment.portalPrefix" class="form-control"/>
+                                </span>
+	                            
                                 <label class="fieldMsg">{{translation.inCaseAPIOrSitePrefixNotSpecified[LANG]}}</label>
                             </td>
                         </tr>

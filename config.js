@@ -14,8 +14,6 @@ if(location && location.host){
 	mydomain = customDomain;
 }
 
-var interfaceDomain = mydomain;
-
 //detect port
 var mydomainport = 80;
 if (location && location.port && parseInt(location.port) !== 80) {

@@ -216,3 +216,43 @@ soajsApp.directive('nglist', function () {
 		}
 	};
 });
+
+soajsApp.directive('nglistHeader', function () {
+	return {
+		restrict: 'E',
+		templateUrl: 'engine/lib/grid/header.tmpl',
+		controllerAs: 'myGrid',
+		controller: function ($scope) {
+		}
+	};
+});
+
+soajsApp.directive('nglistFooter', function () {
+	return {
+		restrict: 'E',
+		templateUrl: 'engine/lib/grid/footer.tmpl',
+		controllerAs: 'myGrid',
+		controller: function ($scope) {
+		}
+	};
+});
+
+soajsApp.directive('nglistPagination', function () {
+	return {
+		restrict: 'E',
+		templateUrl: 'engine/lib/grid/pagination.tmpl',
+		controllerAs: 'myGrid',
+		controller: function ($scope) {
+		}
+	};
+});
+
+soajsApp.directive('nglistBody', function () {
+	return {
+		restrict: 'E',
+		templateUrl: 'engine/lib/grid/body.tmpl',
+		controllerAs: 'myGrid',
+		controller: function ($scope) {
+		}
+	};
+});

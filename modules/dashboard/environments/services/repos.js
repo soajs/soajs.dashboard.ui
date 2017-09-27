@@ -1,7 +1,7 @@
 "use strict";
 var deployReposService = soajsApp.components;
 deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
-	var envDeployer = $cookies.getObject("myEnv").deployer;
+	var envDeployer = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer;
 	var envPlatform = envDeployer.selected.split('.')[1];
 	var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
 	function listGitAccounts(currentScope) {
@@ -396,7 +396,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						$scope.isKubernetes = isKubernetes;
 						$scope.deployNewService = true;
 						$scope.version = version.v || 'Default';
-						$scope.oneEnv = $cookies.getObject('myEnv').code.toUpperCase();
+						$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
 						$scope.cdEnvs = [$scope.oneEnv];
 						$scope.deployed = false;
 						$scope.oneSrv = (service && service.name) ? service.name : oneRepo.name;

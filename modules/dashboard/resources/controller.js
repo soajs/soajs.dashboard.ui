@@ -904,8 +904,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
     //start here
     if($scope.access.list) {
         injectFiles.injectCss("modules/dashboard/resources/resources.css");
-        $scope.envCode = $cookies.getObject("myEnv").code;
-        $scope.envDeployer = $cookies.getObject("myEnv").deployer;
+        $scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
+        $scope.envDeployer = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer;
     	$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
         $scope.load();
     }

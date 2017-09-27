@@ -2,7 +2,7 @@
 var platformsServices = soajsApp.components;
 platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $cookies, Upload) {
 
-	var access_token = $cookies.get('access_token');
+	var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 
 	function listPlatforms(currentScope, env, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -209,8 +209,8 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 						return cb();
 					}
 
-					var soajsauthCookie = $cookies.get('soajs_auth');
-					var dashKeyCookie = $cookies.get('soajs_dashboard_key');
+					var soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
+					var dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
 					var progress = {
 						value: 0
 					};

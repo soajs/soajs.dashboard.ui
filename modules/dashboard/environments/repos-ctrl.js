@@ -61,7 +61,7 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 	injectFiles.injectCss("modules/dashboard/environments/environments.css");
 	//default operation
 	if ($scope.access.git.listAccounts) {
-		$scope.envCode = $cookies.getObject("myEnv").code;
+		$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
 		$scope.listGitAccounts();
 		$scope.checkHeapster();
 	}

@@ -6,7 +6,7 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 	$scope.access = {};
 	$scope.schemaCode = '';
 	$scope.schemaCodeF = '';
-	$scope.hideToolTip = ($cookies.get("swagger_tooltip_hide")=== "true") || false;
+	$scope.hideToolTip = ($cookies.get("swagger_tooltip_hide", {'domain': interfaceDomain})=== "true") || false;
 	$scope.collapsed = false;
 	$scope.swaggerCode = false;
 

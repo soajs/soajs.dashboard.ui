@@ -9,7 +9,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 	$scope.$parent.rerenderMenuAfterEnvExclude(cdNav);
 
 	$scope.cdData = {};
-	$scope.myEnv = $cookies.getObject('myEnv').code;
+	$scope.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 	$scope.upgradeSpaceLink = cdAppConfig.upgradeSpaceLink;
 	$scope.updateCount;
 	$scope.upgradeCount;

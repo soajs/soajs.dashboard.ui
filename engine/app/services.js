@@ -3,14 +3,14 @@
 soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', function ($http, $cookies, $localStorage, Upload) {
 	
 	function logoutUser(scope) {
-		$cookies.remove('access_token');
-		$cookies.remove('refresh_token');
-		$cookies.remove('soajs_dashboard_key');
-		$cookies.remove('myEnv');
-		$cookies.remove('soajsID');
-		$cookies.remove('soajs_auth');
-		$cookies.remove('soajs_current_route');
-		$cookies.remove('selectedInterval');
+		$cookies.remove('access_token', {'domain': interfaceDomain});
+		$cookies.remove('refresh_token', {'domain': interfaceDomain});
+		$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
+		$cookies.remove('myEnv', {'domain': interfaceDomain});
+		$cookies.remove('soajsID', {'domain': interfaceDomain});
+		$cookies.remove('soajs_auth', {'domain': interfaceDomain});
+		$cookies.remove('soajs_current_route', {'domain': interfaceDomain});
+		$cookies.remove('selectedInterval', {'domain': interfaceDomain});
 		$localStorage.soajs_user = null;
 		$localStorage.acl_access = null;
 		$localStorage.environments = null;
@@ -42,7 +42,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			getNewAccessToken.headers.Authorization = authValue;
 			delete getNewAccessToken.params;
 			getNewAccessToken.data = {
-				'refresh_token': $cookies.get('refresh_token'),
+				'refresh_token': $cookies.get('refresh_token', {'domain': interfaceDomain}),
 				'grant_type': "refresh_token"
 			};
 			
@@ -52,7 +52,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 				
 				//repeat the main call
 				var MainAPIConfig = angular.copy(config);
-				MainAPIConfig.params.access_token = $cookies.get('access_token');
+				MainAPIConfig.params.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 				$http(MainAPIConfig).success(function (response, status, headers, config) {
 					returnAPIResponse(scope, response, config, cb)
 				}).error(function (errData, status, headers, config) {
@@ -122,7 +122,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			return cb(null, response);
 		}
 		else if (response && response.result === true) {
-			if (response.soajsauth && $cookies.get('soajs_auth')) {
+			if (response.soajsauth && $cookies.get('soajs_auth', {'domain': interfaceDomain})) {
 				$cookies.put("soajs_auth", response.soajsauth, {'domain': interfaceDomain});
 			}
 			var resp = {};
@@ -185,7 +185,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			json: true
 		};
 		
-		var soajsAuthCookie = $cookies.get('soajs_auth');
+		var soajsAuthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 		if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
 			config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 		}
@@ -193,14 +193,14 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		if (opts.headers.key && config.token) {
 			config.headers.key = opts.headers.key;
 		}
-		else if ($cookies.get("soajs_dashboard_key") && config.token) {
-			config.headers.key = $cookies.get("soajs_dashboard_key").replace(/\"/g, '');
+		else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}) && config.token) {
+			config.headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
 		}
 		else {
 			config.headers.key = apiConfiguration.key;
 		}
 		
-		var access_token = $cookies.get('access_token');
+		var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 		if (access_token && config.token) {
 			if (config.params) {
 				config.params.access_token = access_token;
@@ -210,8 +210,8 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		if (opts.proxy) {
 			if (!config.params.__env) {
 				var env;
-				if ($cookies.getObject('myEnv')) {
-					env = $cookies.getObject('myEnv').code;
+				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+					env = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 					config.params.__env = env.toUpperCase();
 				}
 				else {
@@ -291,12 +291,12 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 
 soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', function ($cookies, $localStorage) {
 	return function () {
-		if ($localStorage.soajs_user && $cookies.get('access_token')) {
+		if ($localStorage.soajs_user && $cookies.get('access_token', {'domain': interfaceDomain})) {
 			return true;
 		}
 		else {
-			$cookies.remove('access_token');
-			$cookies.remove('refresh_token');
+			$cookies.remove('access_token', {'domain': interfaceDomain});
+			$cookies.remove('refresh_token', {'domain': interfaceDomain});
 			$localStorage.soajs_user = null;
 			return false;
 		}
@@ -1041,8 +1041,8 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			/**
 			 * hook the headers
 			 */
-			if ($cookies.get("soajs_dashboard_key")) {
-				headers.key = $cookies.get("soajs_dashboard_key").replace(/\"/g, '');
+			if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
+				headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
 			}
 			else {
 				headers.key = apiConfiguration.key;
@@ -1053,9 +1053,9 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			// headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 			// }
 
-			var soajsAccessToken = $cookies.get('access_token');
+			var soajsAccessToken = $cookies.get('access_token', {'domain': interfaceDomain});
 			if(soajsAccessToken){
-				query.access_token = $cookies.get('access_token');
+				query.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 			}
 
 			// build request
@@ -1166,16 +1166,16 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			if(swagger.tenantKey){
 				headers.key = swagger.tenantKey;
 			}
-			else if ($cookies.get("soajs_dashboard_key")) {
-				headers.key = $cookies.get("soajs_dashboard_key").replace(/\"/g, '');
+			else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
+				headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
 			}
 			else {
 				headers.key = apiConfiguration.key;
 			}
 
-			var soajsAccessToken = $cookies.get('access_token');
+			var soajsAccessToken = $cookies.get('access_token', {'domain': interfaceDomain});
 			if(soajsAccessToken){
-				query.access_token = $cookies.get('access_token');
+				query.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 			}
 
 			// add headers

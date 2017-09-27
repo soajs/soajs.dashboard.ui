@@ -98,9 +98,9 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else {
-					if ($cookies.getObject('myEnv')) {
+					if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 						for (var i = response.length - 1; i >= 0; i--) {
-							if (response[i].code !== $cookies.getObject('myEnv').code) {
+							if (response[i].code !== $cookies.getObject('myEnv', {'domain': interfaceDomain}).code) {
 								response.splice(i, 1);
 							}
 						}
@@ -155,20 +155,20 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}, function (error, response) {
 			if (error) {
 				$localStorage.soajs_user = null;
-				$cookies.remove('soajs_auth');
-				$cookies.remove('soajs_dashboard_key');
+				$cookies.remove('soajs_auth', {'domain': interfaceDomain});
+				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				$localStorage.environments = response.environments;
 
 				if (newEnvRecord) {
-					$cookies.putObject("myEnv", newEnvRecord);
+					$cookies.putObject("myEnv", newEnvRecord, {'domain': interfaceDomain});
 				}
 				else {
 					response.environments.forEach(function (oneEnv) {
 						if (oneEnv.code.toLowerCase() === 'dashboard') {
-							$cookies.putObject("myEnv", oneEnv);
+							$cookies.putObject("myEnv", oneEnv, {'domain': interfaceDomain});
 						}
 					});
 				}
@@ -886,7 +886,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 	}
 	if ($scope.access.customRegistry.list) {
-		$scope.envCode = $cookies.getObject("myEnv").code;
+		$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
 		$scope.listCustomRegistry();
 	}
 }]);

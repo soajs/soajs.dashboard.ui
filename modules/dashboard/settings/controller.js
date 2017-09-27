@@ -10,7 +10,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 	$scope.oAuthUsers.list = [];
 	$scope.availableEnv = [];
 	$scope.packagesAcl = {};
-	$scope.currentEnv = $cookies.getObject('myEnv').code.toLowerCase();
+	$scope.currentEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 
 	$scope.getTenant = function (first) {
 		getSendDataFromServer($scope, ngDataApi, {

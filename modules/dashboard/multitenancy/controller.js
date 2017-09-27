@@ -25,7 +25,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}
 	];
 
-	$scope.currentEnv = $cookies.getObject('myEnv').code.toLowerCase();
+	$scope.currentEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 
 	$scope.mt = {};
 	$scope.mt.displayAlert = function (type, msg, id, isCode, service, orgMesg) {

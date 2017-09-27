@@ -30,7 +30,7 @@ environmentsApp.controller('databaseCtrl', ['$scope','$cookies', 'envDB', 'injec
 
 	//default operation
 	if ($scope.access.dbs.list) {
-		$scope.envCode = $cookies.getObject("myEnv").code;
+		$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
 		$scope.listDatabases($scope.envCode);
 	}
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');

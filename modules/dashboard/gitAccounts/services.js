@@ -3,7 +3,7 @@ var repoService = soajsApp.components;
 repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', '$compile', 'detectBrowser', function (ngDataApi, $timeout, $modal, $cookies, $window, $compile, detectBrowser) {
 
 	function configureRepo(currentScope, oneRepo, gitAccount, config) {
-		var envDeployer = $cookies.getObject("myEnv").deployer;
+		var envDeployer = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer;
 		var envPlatform = envDeployer.selected.split('.')[1];
 		
 		var configureRepo = $modal.open({

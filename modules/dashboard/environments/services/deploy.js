@@ -263,7 +263,10 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
         });
 
         function deployEnvironment(formData) {
-            var branchObj = JSON.parse(formData.branch);
+            var branchObj = formData.branch;
+            if(typeof branchObj === 'string'){
+            	branchObj = JSON.parse(formData.branch);
+            }
 
             var params = {
                 proxy: false,
@@ -405,8 +408,8 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
                     delete params.deployConfig.replication.replicas;
                 }
             }
-	
-	        //inject user input catalog entry and image override
+
+            //inject user input catalog entry and image override
 	        if(formData['_ci_serverImageName'] && formData['_ci_serverImagePrefix'] && formData['_ci_serverImageTag']){
 		        params.custom['image'] = {
 			        name: formData['_ci_serverImageName'],
@@ -414,7 +417,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 			        tag: formData['_ci_serverImageTag']
 		        };
 	        }
-	
+
 	        var excludes = ['_ci_serverImageName', '_ci_serverImagePrefix', '_ci_serverImageTag'];
 	        for( var input in formData){
 		        if(input.indexOf('_ci_server_') !== -1 && excludes.indexOf(input) === -1){

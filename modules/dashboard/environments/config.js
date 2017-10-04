@@ -301,7 +301,7 @@ var environmentsConfig = {
 							'label': 'Nginx Deployment Mode',
 							'type': 'text',
 							'value': 'global',
-							'readonly': true,
+							'disabled': true,
 							'required': true,
 							'fieldMsg': "Nginx will be deployed as Global/Daemonset mode on each node.<br />This allows nginx to capture the real IP value when requests arrive to the cloud."
 						},

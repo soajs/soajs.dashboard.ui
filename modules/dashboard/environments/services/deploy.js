@@ -190,10 +190,11 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 			                });
 		                }
 		                else if (oneRecipe.type === 'server' && oneRecipe.subtype === 'nginx') {
-			                formConfig.entries[0].entries[index].value.push({ l: oneRecipe.name, v: oneRecipe._id });
+
+			                formConfig.entries[0].entries[2].value.push({ l: oneRecipe.name, v: oneRecipe._id });
 			                injectCatalogInputs(formConfig, recipes, {
 				                mainLevel : 0,
-				                subLevel: index,
+				                subLevel: 2,
 				                initialCount: index + 1,
 				                type: 'server',
 				                subtype: 'nginx'

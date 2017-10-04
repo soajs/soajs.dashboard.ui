@@ -104,11 +104,6 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 
         currentScope.isKubernetes = (currentScope.envDeployer.selected.split('.')[1] === "kubernetes");
         if (currentScope.isKubernetes) {
-            formConfig.entries[0].entries[0].value = [
-                {l: 'Deployment', v: 'deployment', 'selected': true},
-                {l: 'Daemonset', v: 'daemonset'}
-            ];
-
             formConfig.entries[1].entries[0].value = [
                 {l: 'Deployment', v: 'deployment', 'selected': true},
                 {l: 'Daemonset', v: 'daemonset'}
@@ -394,19 +389,9 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 	        if(currentScope.isKubernetes && formData.nginxCpuLimit ){
 		        params.deployConfig.cpuLimit = formData.nginxCpuLimit;
 	        }
-
-            if (formData.nginxDeploymentMode === 'replicated' || formData.nginxDeploymentMode === 'deployment') {
-                params.deployConfig.replication.replicas = formData.nginxCount;
-            }
-
+	        
             if (params.deployConfig.isKubernetes) {
-                if (params.deployConfig.replication.mode === 'replicated') {
-                    params.deployConfig.replication.mode = "deployment";
-                }
-                if (params.deployConfig.replication.mode === 'global') {
-                    params.deployConfig.replication.mode = "daemonset";
-                    delete params.deployConfig.replication.replicas;
-                }
+                params.deployConfig.replication.mode = "daemonset";
             }
 
             //inject user input catalog entry and image override

@@ -299,22 +299,11 @@ var environmentsConfig = {
 						{
 							'name': 'nginxDeploymentMode',
 							'label': 'Nginx Deployment Mode',
-							'type': 'select',
-							'value': [
-								{l: 'Replicated', v: 'replicated', 'selected': true},
-								{l: 'Global', v: 'global'}
-							],
-							'tooltip': 'Specify the deployment mode',
+							'type': 'text',
+							'value': 'global',
+							'readonly': true,
 							'required': true,
-							'fieldMsg': "Global/Daemonset mode deploys one replica of the service on each node.<br />Replicated/Deployment mode deploys the specified number of replicas based on the availability of resources."
-						},
-						{
-							'name': 'nginxCount',
-							'label': translation.numberOfNginxInstances[LANG],
-							'type': 'number',
-							'value': '',
-							'fieldMsg': 'Specify the number of Nginx instances',
-							'required': true
+							'fieldMsg': "Nginx will be deployed as Global/Daemonset mode on each node.<br />This allows nginx to capture the real IP value when requests arrive to the cloud."
 						},
 						{
 							'name': 'nginxMemoryLimit',

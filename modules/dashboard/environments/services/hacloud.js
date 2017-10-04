@@ -700,8 +700,11 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					if(!params.custom){
 						params.custom = {};
 					}
-
-					var t = JSON.parse(angular.copy(formData.branch));
+					
+					var t = formData.branch;
+					if(typeof t === 'string'){
+						t = JSON.parse(angular.copy(formData.branch));
+					}
 					params.custom.branch = t.name;
 				}
 

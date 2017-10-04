@@ -133,6 +133,14 @@ contentBuilderApp.controller("contentBuilderCtrl", ['$scope', '$routeParams', '$
 						$scope.config.soajsService.db.config[env][serviceName] = $scope.config.clustertoUse[env];
 					}
 				}
+
+				if(Object.keys($scope.config.clustertoUse).length === $scope.envList.length) {
+					$scope.nextStep = true;
+				}
+				else {
+					$scope.displayAlert('danger', 'One or more environments do not have a cluster selection yet!');
+					return false;
+				}
 			}
 
 			$localStorage.cbSchema = $scope.config;
@@ -200,7 +208,7 @@ contentBuilderApp.controller("contentBuilderCtrl", ['$scope', '$routeParams', '$
 							formData[i] = formData[i][0].toString();
 						}
 					}
-					
+
 					if(typeof(formData['errors']) === 'string'){
 						formData['errors'] = JSON.parse(formData['errors']);
 						if(Object.keys(formData.errors).length === 0){
@@ -220,7 +228,7 @@ contentBuilderApp.controller("contentBuilderCtrl", ['$scope', '$routeParams', '$
                     if(formData['maxFileUpload']) {
                         $scope.config.genericService.config.maxFileUpload = formData['maxFileUpload'];
                     }
-					
+
 					if(formData['extKeyRequired']) {
 						$scope.config.genericService.config.extKeyRequired = (formData['extKeyRequired'] && formData['extKeyRequired'] === 'true');
 					}

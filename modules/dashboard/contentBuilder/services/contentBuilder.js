@@ -201,25 +201,62 @@ contentBuilderService.service('cbHelper', ['ngDataApi', '$timeout', '$modal', fu
                 currentScope.$parent.displayAlert('danger', error.message);
             }
             else {
-                currentScope.envList = [];
-                response.forEach(function (oneEnvironment) {
-                    if (oneEnvironment.code.toLowerCase() !== 'dashboard') {
-                        if (Object.keys(oneEnvironment.dbs.clusters).length > 0) {
-                            currentScope.nextStep = true;
-                        }
-                        currentScope.envList.push({
-                            'name': oneEnvironment.code,
-                            'databases': oneEnvironment.dbs.databases,
-                            'clusters': oneEnvironment.dbs.clusters
+                getClusters(response, 0, function(error, environments) {
+                    if(error) {
+                        currentScope.$parent.displayAlert('danger', error.message);
+                    }
+                    else {
+                        currentScope.envList = [];
+                        environments.forEach(function (oneEnvironment) {
+                            if (oneEnvironment.code.toLowerCase() !== 'dashboard') {
+                                if (Object.keys(oneEnvironment.clusters).length > 0) {
+                                    currentScope.nextStep = true;
+                                }
+                                currentScope.envList.push({
+                                    'name': oneEnvironment.code,
+                                    'databases': oneEnvironment.dbs.databases,
+                                    'clusters': oneEnvironment.clusters
+                                });
+                            }
                         });
+
+                        if (cb && typeof(cb) === 'function') {
+                            cb();
+                        }
                     }
                 });
-
-                if (cb && typeof(cb) === 'function') {
-                    cb();
-                }
             }
         });
+
+        function getClusters(environments, counter, cb) {
+            var oneEnv = environments[counter];
+            getSendDataFromServer(currentScope, ngDataApi, {
+                'method': 'get',
+                'routeName': '/dashboard/resources/list',
+                'params': {
+                    env: oneEnv.code
+                }
+            }, function(error, envResources) {
+                if(error) {
+                    return cb(error);
+                }
+                else {
+                    oneEnv.clusters = {};
+                    envResources.forEach(function(oneResource) {
+                        if(oneResource.type === 'cluster') {
+                            oneEnv.clusters[oneResource.name] = oneResource.config;
+                        }
+                    });
+
+                    if(counter === environments.length - 1) {
+                        return cb(null, environments);
+                    }
+                    else {
+                        return getClusters(environments, ++counter, cb);
+                    }
+                }
+            });
+        }
     }
 
     /*

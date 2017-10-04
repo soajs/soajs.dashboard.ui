@@ -68,18 +68,28 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							}
 						}
 
+						var repoComponents = [];
+						var repoComponentsNames =[];
 			            oneAccount.repos = response;
-						oneAccount.repos.forEach(function (oneRepo) {
-							var repoServices = [];
-							if (oneRepo.name !== 'soajs.gcs' && (oneRepo.type === 'service' || oneRepo.type === 'daemon')) {
-								repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
-							}
-							else if (oneRepo.type === 'multi') {
-								repoServices = oneRepo.multi;
-							}
-
-							oneRepo.servicesList = repoServices;
-						});
+				        for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
+				        	var oneRepo = oneAccount.repos[inverse];
+					        var repoServices = [];
+					        if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
+						        repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
+					        }
+					        else if (oneRepo.type === 'multi') {
+						        repoServices = oneRepo.multi;
+					        }
+					        else if (oneRepo.type === 'component'){
+						        if(repoComponentsNames.indexOf(oneRepo.name) === -1){
+							        repoComponentsNames.push(oneRepo.name);
+							        repoComponents.push(oneRepo);
+						        }
+						        oneAccount.repos.splice(inverse, 1);
+					        }
+					
+					        oneRepo.servicesList = repoServices;
+				        }
 
 			            oneAccount.nextPageNumber = 2;
 			            oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
@@ -87,20 +97,17 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						getServices(currentScope, function () {
 							getDaemons(currentScope, function () {
 
-								for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
-									var oneRepo = oneAccount.repos[inverse];
-									if (oneRepo.name === 'soajs.gcs') {
-										currentScope.originalServices.forEach(function (oneService) {
-											if (oneService.gcId && oneService.src && oneService.src.repo === 'soajs.gcs') {
-												oneService.type = 'service';
-												oneRepo.servicesList.push(oneService);
-											}
-										});
-										if (oneRepo.servicesList.length === 0) {
-											oneAccount.repos.splice(inverse, 1)
+								repoComponents.forEach(function(oneRepoComponent){
+									currentScope.originalServices.forEach(function (oneService) {
+										if (oneService.gcId && oneService.src && oneService.src.repo === oneRepoComponent.name) {
+											oneService.type = 'service';
+											oneRepoComponent.servicesList.push(oneService);
 										}
+									});
+									if (oneRepoComponent.servicesList.length > 0) {
+										oneAccount.repos.push(oneRepoComponent);
 									}
-								}
+								});
 
 								oneAccount.repos.forEach(function (oneRepo, index) {
 									oneRepo.servicesList.forEach(function (oneRepoService) {

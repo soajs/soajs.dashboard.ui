@@ -218,6 +218,10 @@ var envTranslation ={
 		"ENG": "API Prefix",
 		"FRA": "API Prefix"
 	},
+	"portalDomain": {
+		"ENG": "Portal Domain",
+		"FRA": "Portal Domain"
+	},
 	"sitePrefix": {
 		"ENG": "Site Prefix",
 		"FRA": "Site Prefix"
@@ -233,6 +237,10 @@ var envTranslation ={
 	"enterSitePrefix": {
 		"ENG": "Enter Site Prefix",
 		"FRA": "Enter Site Prefix"
+	},
+	"enterPortalPrefix": {
+		"ENG": "Enter Portal Prefix",
+		"FRA": "Enter Portal Prefix"
 	},
 	"enterAPIPrefix": {
 		"ENG": "Enter API Prefix",

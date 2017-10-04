@@ -104,6 +104,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 
         currentScope.isKubernetes = (currentScope.envDeployer.selected.split('.')[1] === "kubernetes");
         if (currentScope.isKubernetes) {
+        	formConfig.entries[0].entries[0].value = "daemonset";
             formConfig.entries[1].entries[0].value = [
                 {l: 'Deployment', v: 'deployment', 'selected': true},
                 {l: 'Daemonset', v: 'daemonset'}
@@ -185,7 +186,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 			                injectCatalogInputs(formConfig, recipes, {
 				                mainLevel : 0,
 				                subLevel: 2,
-				                initialCount: index + 1,
+				                initialCount: (currentScope.isKubernetes) ? 4 : 3,
 				                type: 'server',
 				                subtype: 'nginx'
 			                });

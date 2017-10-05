@@ -413,6 +413,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						else {
 							$localStorage.acl_access = response.acl;
 						}
+						$localStorage.sites = response.sites;
 						$localStorage.environments = response.environments;
 						response.environments.forEach(function (oneEnv) {
 							if (oneEnv.code.toLowerCase() === 'dashboard') {

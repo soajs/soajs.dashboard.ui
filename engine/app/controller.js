@@ -768,6 +768,26 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		$scope.setUser();
 	});
 	
+	$scope.openMy = function(interfaceName){
+		
+		let mydomain = "";
+		
+		//detect domain
+		if(location && location.host){
+			let customDomain = location.host;
+			customDomain = customDomain.split(":")[0];
+			customDomain = customDomain.split(".");
+			customDomain = customDomain[customDomain.length-2] + "." + customDomain[customDomain.length-1];
+			mydomain = $localStorage.sites[interfaceName] + "." + customDomain;
+		}
+
+		//detect port
+		let mydomainport = (location && location.port && parseInt(location.port) !== 80) ? location.port : 80;
+		
+		let link = window.location.protocol + "//" + mydomain + ":" + mydomainport;
+		window.open(link);
+	};
+	
 	$scope.setUser = function () {
 		var user = $localStorage.soajs_user;
 		if (user) {

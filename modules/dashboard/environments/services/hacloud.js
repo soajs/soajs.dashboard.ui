@@ -705,7 +705,11 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					if(typeof t === 'string'){
 						t = JSON.parse(angular.copy(formData.branch));
 					}
+					
 					params.custom.branch = t.name;
+					if(t.commit && t.commit.sha){
+						params.custom.commit = t.commit.sha;
+					}
 				}
 
 				for( var input in formData){

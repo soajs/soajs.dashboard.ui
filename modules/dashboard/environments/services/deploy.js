@@ -130,16 +130,16 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 		        }
 	        );
         }
-	
+
         let mySite = currentScope.myEnvironment.sitePrefix + "." + currentScope.myEnvironment.domain;
         let myApi = currentScope.myEnvironment.apiPrefix + "." + currentScope.myEnvironment.domain;
-        
+
 	    formConfig.entries[0].description.type = "info";
 	    formConfig.entries[0].description.content = `<h4>SOAJS Nginx</h4><hr/>`;
 		formConfig.entries[0].description.content += `<p>Allows you to add static content and empower with the ability to access this environment via domain(s):</p>`;
 		formConfig.entries[0].description.content += `<ul><li>&bullet;&nbsp;&nbsp;&nbsp;${mySite}&nbsp;( Static Content )</li><li>&bullet;&nbsp;&nbsp;&nbsp;${myApi}&nbsp;( API )</li></ul>`;
 	    formConfig.entries[0].description.content += `<p><a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes#CatalogRecipes-nginxRecipe" target="_blank">Click Here</a> to learn how to build a Catalog Recipe for an <b>Nginx Service</b>.</p>`;
-	    
+
         formConfig.entries[1].description.type = "info";
         formConfig.entries[1].description.content = "<h4>SOAJS Controller</h4><hr />";
         formConfig.entries[1].description.content += "<p>Turns on API management, lifecycle, security, multi tenancy, multi version, awareness, ...</p>";
@@ -193,7 +193,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 		                }
 	                }
                 });
-	            
+
                 if(currentScope.oldStyle) {
 	                openUpgradeModal(currentScope);
                 }
@@ -223,13 +223,13 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 						                jQuery('#overlay').html("<div class='bg'></div><div class='content'>" + text + "</div>");
 						                jQuery("#overlay .content").css("width", "40%").css("left", "30%");
 						                overlay.show();
-						
+
 						                formData.owner = branchInfo.owner;
 						                formData.repo = branchInfo.repo;
-						
+
 						                deployEnvironment(formData);
 					                }
-					
+
 				                }
 			                },
 			                {
@@ -245,7 +245,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 	                };
 	                buildFormWithModal(currentScope, $modal, options);
                 }
-                
+
             });
         });
 
@@ -369,8 +369,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
             currentScope.controller = { mode: params.deployConfig.replication.mode };
 
             params.custom = {
-            	"type": "nginx",
-	            "name": "nginx"
+            	"type": "nginx"
             };
 
             params.recipe = formData.nginxRecipe;
@@ -381,7 +380,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 	        if(currentScope.isKubernetes && formData.nginxCpuLimit ){
 		        params.deployConfig.cpuLimit = formData.nginxCpuLimit;
 	        }
-	        
+
             if (params.deployConfig.isKubernetes) {
                 params.deployConfig.replication.mode = "daemonset";
             }
@@ -477,7 +476,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
             }
         });
     }
-	
+
 	/**
 	 * Deploy Heapster to enable Auto Scaling.
 	 * Kubernetes only.
@@ -494,7 +493,7 @@ deployService.service('deploySrv', ['ngDataApi', '$timeout', '$modal', function 
 				    "plugin": "heapster"
 			    }
 		    };
-		
+
 		    overlayLoading.show();
 		    getSendDataFromServer(currentScope, ngDataApi, config, function (error) {
 			    overlayLoading.hide();

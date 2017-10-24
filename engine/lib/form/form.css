@@ -108,3 +108,66 @@ form .submittedForm .note {
     padding-bottom: 8px;
     padding-top: 8px;
 }
+
+/* The switch - the box around the slider */
+form .toggleSwitch {
+    position: relative;
+    display: inline-block;
+
+    width: 50px !important;
+    height: 20px !important;
+    top: 7px;
+    left: 6px;
+}
+
+/* Hide default HTML checkbox */
+form .toggleSwitch input {display:none;}
+
+/* The slider */
+form .buttonSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+form .buttonSlider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+
+    top: 1px;
+}
+
+form input:checked + .buttonSlider {
+    background-color: #5BC0DE;
+}
+
+form input:focus + .buttonSlider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+form input:checked + .buttonSlider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+form .buttonSlider.round {
+    border-radius: 34px;
+}
+
+form .buttonSlider.round:before {
+    border-radius: 50%;
+}

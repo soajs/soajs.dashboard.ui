@@ -54,7 +54,7 @@ function configureRouteNavigation(navigation, scope) {
 }
 
 /* App Module */
-var soajsApp = angular.module('soajsApp', ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.select', 'luegg.directives', 'angular-sortable-view', 'ngRoute', 'ngCookies', 'ngStorage', 'textAngular', "ngFileUpload", "swaggerUi", "ui.ace"]);
+var soajsApp = angular.module('soajsApp', soajsAppModules);
 
 soajsApp.config([
 	'$routeProvider',
@@ -541,6 +541,14 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 									}
 								}
 							}
+							
+							if($scope.navigation[i].preferredEnv){
+								$localStorage.environments.forEach(function(oneEnv){
+									if(oneEnv.code.toUpperCase() === $scope.navigation[i].preferredEnv.toUpperCase()){
+										$cookies.putObject("myEnv", oneEnv, {'domain': interfaceDomain});
+									}
+								});
+							}
 
 							if ($scope.navigation[i].tracker && $scope.navigation[i].ancestor && Array.isArray($scope.navigation[i].ancestor) && $scope.navigation[i].ancestor.length > 0) {
 								$scope.tracker = [];
@@ -780,7 +788,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 			customDomain = customDomain[customDomain.length-2] + "." + customDomain[customDomain.length-1];
 			mydomain = $localStorage.sites[interfaceName] + "." + customDomain;
 		}
-
+		
 		//detect port
 		let mydomainport = (location && location.port && parseInt(location.port) !== 80) ? location.port : 80;
 		

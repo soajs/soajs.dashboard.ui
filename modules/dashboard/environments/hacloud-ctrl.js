@@ -278,8 +278,8 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');
-	$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
-	$scope.envDeployer = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer;
+	$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
+	$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
 	$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
 
 	if ($scope.access.hacloud.nodes.list) {

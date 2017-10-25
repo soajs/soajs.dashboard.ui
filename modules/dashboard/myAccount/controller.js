@@ -417,7 +417,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						$localStorage.environments = response.environments;
 						response.environments.forEach(function (oneEnv) {
 							if (oneEnv.code.toLowerCase() === 'dashboard') {
-								$cookies.putObject("myEnv", oneEnv, {'domain': interfaceDomain});
+								$cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
 								$scope.$parent.currentDeployer.type = oneEnv.deployer.type;
 							}
 						});

@@ -80,7 +80,7 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 
 	if ($scope.access.listHosts) {
 		injectFiles.injectCss('modules/dashboard/environments/environments.css');
-		$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
+		$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		$scope.listHosts($scope.envCode);
 	}
 }]);

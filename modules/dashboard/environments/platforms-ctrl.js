@@ -69,7 +69,7 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
     }
 
     if ($scope.access.platforms.list) {
-        $scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
+        $scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
         injectFiles.injectCss("modules/dashboard/environments/environments.css");
         $scope.listPlatforms($scope.envCode);
     }

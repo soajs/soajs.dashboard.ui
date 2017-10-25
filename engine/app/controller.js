@@ -221,7 +221,7 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 		
 		$scope.rerenderMenuAfterEnvExclude = function(moduleMenu){
 			var pillarInfo;
-			var envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
+			var envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 			moduleMenu.forEach(function(oneEntry){
 				if(oneEntry.url && $location.url() === oneEntry.url.split("#")[1] && oneEntry.excludedEnvs && Array.isArray(oneEntry.excludedEnvs) && oneEntry.excludedEnvs.length > 0){
 					if(oneEntry.excludedEnvs.indexOf(envCode.toLowerCase()) !== -1){
@@ -246,11 +246,11 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 		};
 		
 		$scope.reRenderMenu = function (pillarName) {
-			
 			$scope.leftMenu.links = [];
 			$scope.leftMenu.environments = [];
 			$scope.currentSelectedEnvironment = null;
 
+			var user = $localStorage.soajs_user;
 			for (var j = 0; j < $scope.mainMenu.links.length; j++) {
 				if ($scope.mainMenu.links[j].pillar.name === pillarName) {
 					$scope.leftMenu.links = $scope.mainMenu.links[j].entries;
@@ -258,6 +258,14 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 					if (pillarsPerEnv.indexOf($scope.mainMenu.links[j].pillar.position) !== -1) {
 						$scope.leftMenu.environments = angular.copy($localStorage.environments);
 						
+						// if ($scope.mainMenu.links[j].pillar.position === 3) {
+						// 	for (var k = $scope.leftMenu.environments.length - 1; k >= 0; k--) {
+						// 		if ($scope.leftMenu.environments[k].code.toLowerCase() === "dashboard") {
+						// 			$scope.leftMenu.environments.splice(k, 1);
+						// 		}
+						// 	}
+						// }
+
 						if ($scope.mainMenu.links[j].pillar.position === 4) {
 							for (var k = $scope.leftMenu.environments.length - 1; k >= 0; k--) {
 								if ($scope.leftMenu.environments[k].code.toLowerCase() === "dashboard") {
@@ -545,7 +553,7 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 							if($scope.navigation[i].preferredEnv){
 								$localStorage.environments.forEach(function(oneEnv){
 									if(oneEnv.code.toUpperCase() === $scope.navigation[i].preferredEnv.toUpperCase()){
-										$cookies.putObject("myEnv", oneEnv, {'domain': interfaceDomain});
+										$cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
 									}
 								});
 							}
@@ -715,13 +723,13 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 		}
 		
 		if (!$scope.currentSelectedEnvironment) {
-			if ($cookies.getObject("myEnv", {'domain': interfaceDomain})) {
-				$scope.currentSelectedEnvironment = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code.toLowerCase();
+			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+				$scope.currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 				
 				if (!$scope.currentDeployer) {
 					$scope.currentDeployer = {type: ''};
 				}
-				$scope.currentDeployer.type = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer.type;
+				$scope.currentDeployer.type = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer.type;
 			}
 		}
 		

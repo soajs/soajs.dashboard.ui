@@ -97,7 +97,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.autoRefresh = function(){
 		var tValue = $scope.selectedInterval.v * 1000;
 		autoRefreshTimeoutInstance = $timeout(function(){
-			$scope.getSettings();
 			$scope.listServices(function(){
 				$scope.autoRefresh();
 			});
@@ -265,7 +264,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		$scope.checkCerts($scope.envCode);
 	}
 	if ($scope.access.listHosts) {
-		$scope.getSettings();
 		$scope.listServices(function(){
 			$scope.listNamespaces(function () {
 				$scope.checkHeapster(function(){

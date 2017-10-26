@@ -149,7 +149,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	function getEnvironments(newEnvRecord, cb) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/permissions/get"
+			"routeName": "/key/permission/get"
 		}, function (error, response) {
 			if (error) {
 				$localStorage.soajs_user = null;

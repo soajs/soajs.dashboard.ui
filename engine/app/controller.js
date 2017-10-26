@@ -299,15 +299,14 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 				if ($scope.pillar && $scope.pillar.toLowerCase() === 'operate') {
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "get",
-						"routeName": "/dashboard/permissions/get",
-						"params": {"envCode": envRecord.code.toLowerCase()}
+						"routeName": "/key/permission/get"
 					}, function (error, response) {
 						if (error) {
 							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
 						else {
 							if (response.acl) {
-								$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl;
+								$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl[envRecord.code.toLowerCase()];
 							}
 							doEnvPerNav();
 							$scope.isUserLoggedIn();

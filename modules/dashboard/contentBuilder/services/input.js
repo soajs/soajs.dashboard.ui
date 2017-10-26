@@ -426,7 +426,7 @@ cbInputService.service('cbInputHelper', ['ngDataApi', '$timeout', '$modal', func
 					data['type'] = formInfo.type || formInfo._type;
 					data['placeholder'] = formInfo.placeholder;
 					data['tooltip'] = formInfo.tooltip;
-					data['defaultValue'] = rebuildDefaultValue(formInfo.type, formInfo.value);
+					data['defaultValue'] = rebuildDefaultValue(data.type, formInfo.value);
 				}
 			}
             else if(inputType === 'fileUI'){

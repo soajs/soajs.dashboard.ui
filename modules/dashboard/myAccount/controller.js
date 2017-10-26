@@ -339,7 +339,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			}
 			
 			loginOauth();
-
+			var myUser;
 			function uracLogin() {
 				var options = {
 					"method": "get",
@@ -356,7 +356,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 					}
 					else {
-						$localStorage.soajs_user = response;
+						myUser = response;
 						//get dashboard keys
 						getKeys();
 					}
@@ -376,6 +376,10 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
+						if(response.locked){
+							myUser.locked = response.locked;
+						}
+						$localStorage.soajs_user = myUser;
 						$cookies.put("soajs_dashboard_key", response.extKey, {'domain': interfaceDomain});
 						getPermissions();
 					}

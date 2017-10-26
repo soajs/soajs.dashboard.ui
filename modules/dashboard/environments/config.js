@@ -575,11 +575,6 @@ var environmentsConfig = {
 				"autoScale": ['dashboard', '/cloud/services/autoscale', 'put'],
 			}
 		},
-		"analytics": {
-			"getSettings": ["dashboard", "/analytics/getSettings", "get"],
-			"activate": ["dashboard", "/analytics/activateAnalytics", "get"],
-			"deactivate": ["dashboard", "/analytics/deactivateAnalytics", "get"]
-		},
 		"git": {
 			"listAccounts": ["dashboard", "/gitAccounts/accounts/list", "get"],
 			"listAccountRepos": ["dashboard", "/gitAccounts/getRepos", "get"]
@@ -699,10 +694,6 @@ var environmentsConfig = {
 		system: {
 			'l': "System",
 			'categories': {
-				kibana: {'l': "Kibana"},
-				metricbeat: {'l': "Metricbeat"},
-				logstash: {'l': "Logstash"},
-				filebeat: {'l': "Filebeat"},
 				other: {"l": "Other"}
 			}
 		},

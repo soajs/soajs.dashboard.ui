@@ -5,7 +5,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.$parent.isUserLoggedIn();
 	$scope.newEntry = true;
 	$scope.envId = null;
-	$scope.formEnvironment = {services: {}};
+	$scope.formEnvironment = { services: {} };
 	$scope.formEnvironment.config_loggerObj = '';
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
@@ -18,7 +18,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			$scope.waitMessage.type = '';
 		}
 	};
-
+	
 	$scope.jsonEditor = {
 		custom: {
 			data: ""
@@ -27,7 +27,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			data: ""
 		}
 	};
-
+	
 	$scope.generateNewMsg = function (env, type, msg) {
 		$scope.grid.rows.forEach(function (oneEnvRecord) {
 			if (oneEnvRecord.code === env) {
@@ -37,7 +37,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						"message": msg
 					}
 				};
-
+				
 				$timeout(function () {
 					oneEnvRecord.hostInfo.waitMessage.message = '';
 					oneEnvRecord.hostInfo.waitMessage.type = '';
@@ -45,7 +45,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	};
-
+	
 	$scope.closeWaitMessage = function (context) {
 		if (!context) {
 			context = $scope;
@@ -53,13 +53,13 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		context.waitMessage.message = '';
 		context.waitMessage.type = '';
 	};
-
+	
 	$scope.listEnvironments = function (environmentId) {
-		if(environmentId){
+		if (environmentId) {
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
 				"routeName": "/dashboard/environment",
-				"params":{
+				"params": {
 					"id": environmentId
 				}
 			}, function (error, response) {
@@ -73,7 +73,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					if (!$scope.formEnvironment.services.config.session.hasOwnProperty('proxy')) {
 						$scope.formEnvironment.services.config.session.proxy = undefined;
 					}
-
+					
 					if ($scope.formEnvironment.services && $scope.formEnvironment.services.config) {
 						if ($scope.formEnvironment.services.config.logger) {
 							$scope.formEnvironment.config_loggerObj = JSON.stringify($scope.formEnvironment.services.config.logger, null, 2);
@@ -82,44 +82,42 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							fixEditorHeigh($scope.jsonEditor.logger.editor)
 						}
 					}
-
+					
 					$scope.waitMessage.message = '';
 					$scope.waitMessage.type = '';
 					$scope.formEnvironment.services.config.session.unset = ($scope.formEnvironment.services.config.session.unset === 'keep') ? false : true;
 				}
 			});
 		}
-		else{
-			getSendDataFromServer($scope, ngDataApi, {
+		else {
+			var options = {
 				"method": "get",
-				"routeName": "/dashboard/environment/list"
-			}, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				else {
-					if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
-						for (var i = response.length - 1; i >= 0; i--) {
-							if (response[i].code !== $cookies.getObject('myEnv', {'domain': interfaceDomain}).code) {
-								response.splice(i, 1);
-							}
-						}
+				"routeName": "/dashboard/environment",
+				"params": {}
+			};
+			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+				options.params.code = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+				getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+					if (error) {
+						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
-					$scope.grid = {rows: response};
-					$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
-				}
-			});
+					else {
+						var newData = [response];
+						$scope.grid = { rows: newData };
+						$scope.jsonEditor.custom.data = JSON.stringify(newData.custom, null, 2);
+					}
+				});
+			}
 		}
-
 	};
-
+	
 	$scope.customLoaded = function (_editor) {
 		$scope.jsonEditor.custom.editor = _editor;
 		// _editor.$blockScrolling = Infinity;
 		_editor.setValue($scope.jsonEditor.custom.data);
 		fixEditorHeigh(_editor);
 	};
-
+	
 	$scope.editorLoaded = function (_editor) {
 		//bug in jsoneditor: setting default mode to 'code' does not display data
 		//to fix this, use another mode, load data, wait, switch mode, wait, start listener to validate json object
@@ -128,47 +126,47 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		_editor.setValue("");
 		fixEditorHeigh(_editor);
 	};
-
-	function fixEditorHeigh(_editor){
+	
+	function fixEditorHeigh(_editor) {
 		_editor.$blockScrolling = Infinity;
 		_editor.scrollToLine(0, true, true);
 		_editor.scrollPageUp();
 		_editor.clearSelection();
 		_editor.setShowPrintMargin(false);
 	}
-
+	
 	$scope.getDeploymentMode = function (deployer, value) {
 		if (!deployer.ui) {
 			deployer.ui = {};
 		}
 		deployer.ui[value] = (deployer.type === value);
 	};
-
+	
 	$scope.getDeploymentDriver = function (deployer, value, technology, type) {
 		deployer.ui[value] = (deployer.selected === technology + '.' + value);
 	};
-
+	
 	function getEnvironments(newEnvRecord, cb) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/permissions/get"
+			"routeName": "/key/permission/get"
 		}, function (error, response) {
 			if (error) {
 				$localStorage.soajs_user = null;
-				$cookies.remove('soajs_auth', {'domain': interfaceDomain});
-				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
+				$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
+				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				$localStorage.environments = response.environments;
-
+				
 				if (newEnvRecord) {
-					$cookies.putObject("myEnv", newEnvRecord, {'domain': interfaceDomain});
+					$cookies.putObject('myEnv', newEnvRecord, { 'domain': interfaceDomain });
 				}
 				else {
 					response.environments.forEach(function (oneEnv) {
 						if (oneEnv.code.toLowerCase() === 'dashboard') {
-							$cookies.putObject("myEnv", oneEnv, {'domain': interfaceDomain});
+							$cookies.putObject('myEnv', oneEnv, { 'domain': interfaceDomain });
 						}
 					});
 				}
@@ -177,7 +175,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	}
-
+	
 	$scope.addEnvironment = function () {
 		var configuration = environmentsConfig.form.template;
 		$scope.grid.rows.forEach(function (oneEnv) {
@@ -202,19 +200,19 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						tmpl.code = formData.code;
 						tmpl.domain = formData.domain;
 						tmpl.description = formData.description;
-
+						
 						if (formData.apiPrefix) {
 							tmpl.apiPrefix = formData.apiPrefix;
 						}
-
+						
 						if (formData.sitePrefix) {
 							tmpl.sitePrefix = formData.sitePrefix;
 						}
-
+						
 						tmpl.services.config.key.password = formData.tKeyPass;
 						tmpl.services.config.cookie.secret = formData.sessionCookiePass;
 						tmpl.services.config.session.secret = formData.sessionCookiePass;
-
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
 							"routeName": "/dashboard/environment/add",
@@ -258,17 +256,17 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				}
 			]
 		};
-
+		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.updateEnvironment = function (data) {
 		$scope.$parent.go('/environments/environment/' + data._id);
 	};
-
+	
 	$scope.save = function () {
 		var postData = angular.copy($scope.formEnvironment);
-
+		
 		if (typeof($scope.formEnvironment.services.config.session.proxy) == 'undefined') {
 			postData.services.config.session.proxy = 'undefined';
 		}
@@ -280,27 +278,27 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 		delete postData.dbs;
 		postData.services.config.oauth.grants = ['password', 'refresh_token'];
-
+		
 		postData.services.config.agent = {
 			"topologyDir": "/opt/soajs/"
 		};
-
+		
 		if ($scope.formEnvironment.config_loggerObj) {
-			try{
+			try {
 				postData.services.config.logger = JSON.parse($scope.jsonEditor.logger.data);
 			}
-			catch(e){
+			catch (e) {
 				$scope.displayAlert('danger', 'Logger Config: Invalid JSON Object');
 				return;
 			}
 		}
-
+		
 		postData.services.config.session.unset = (postData.services.config.session.unset) ? "destroy" : "keep";
-
+		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": (($scope.newEntry) ? "post" : "put"),
 			"routeName": "/dashboard/environment/" + (($scope.newEntry) ? "add" : "update"),
-			"params": ($scope.newEntry) ? {} : {"id": $scope.envId},
+			"params": ($scope.newEntry) ? {} : { "id": $scope.envId },
 			"data": postData
 		}, function (error, response) {
 			if (error) {
@@ -308,17 +306,17 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 			else {
 				var successMessage = translation.environment[LANG] + ' ' + (($scope.newEntry) ? translation.created[LANG] : translation.updated[LANG]) + ' ' + translation.successfully[LANG];
-
+				
 				$scope.$parent.displayAlert('success', successMessage);
 			}
 		});
 	};
-
+	
 	$scope.UpdateTenantSecurity = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "put",
 			"routeName": "/dashboard/environment/key/update",
-			"params": {"id": $scope.envId},
+			"params": { "id": $scope.envId },
 			"data": {
 				'algorithm': $scope.formEnvironment.services.config.key.algorithm,
 				'password': $scope.formEnvironment.services.config.key.password
@@ -334,7 +332,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					for (var app in response.newKeys) {
 						response.newKeys[app].newKeys.forEach(function (oneKey) {
 							oneKey.extKeys.forEach(function (oneExtKey) {
-								if(!oneExtKey.deprecated){
+								if (!oneExtKey.deprecated) {
 									$scope.newKeys.push({
 										appPackage: response.newKeys[app].package,
 										key: oneKey.key,
@@ -344,7 +342,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							});
 						});
 					}
-
+					
 					var currentScope = $scope;
 					var keyUpdateSuccess = $modal.open({
 						templateUrl: 'keyUpdateSuccess.tmpl',
@@ -354,7 +352,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						controller: function ($scope) {
 							fixBackDrop();
 							$scope.currentScope = currentScope;
-
+							
 							$scope.reloadDashboard = function () {
 								location.reload(true);
 								keyUpdateSuccess.close();
@@ -368,12 +366,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	};
-
+	
 	$scope.removeEnvironment = function (row) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/environment/delete",
-			"params": {"id": row['_id']}
+			"params": { "id": row['_id'] }
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -391,14 +389,14 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	};
-
-
+	
+	
 	$scope.startLimit = 0;
 	$scope.totalCount = 0;
 	$scope.endLimit = environmentsConfig.customRegistryIncrement;
 	$scope.increment = environmentsConfig.customRegistryIncrement;
 	$scope.showNext = true;
-
+	
 	$scope.getPrev = function () {
 		$scope.startLimit = $scope.startLimit - $scope.increment;
 		if (0 <= $scope.startLimit) {
@@ -409,7 +407,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			$scope.startLimit = 0;
 		}
 	};
-
+	
 	$scope.getNext = function () {
 		var startLimit = $scope.startLimit + $scope.increment;
 		if (startLimit < $scope.totalCount) {
@@ -420,56 +418,65 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			$scope.showNext = false;
 		}
 	};
-
+	
 	$scope.getLast = function () {
 		$scope.startLimit = $scope.totalCount - ($scope.totalCount % $scope.increment);
 		$scope.listCustomRegistry();
 		$scope.showNext = false;
 	};
-
+	
 	$scope.getFirst = function () {
 		$scope.startLimit = 0;
 		$scope.listCustomRegistry();
-		if($scope.increment < $scope.totalCount){
+		if ($scope.increment < $scope.totalCount) {
 			$scope.showNext = true;
 		}
 	};
-
+	
 	$scope.listCustomRegistry = function (cb) {
 		$scope.oldStyle = false;
-		getEnvironment(function () {
-			overlayLoading.show();
-			getSendDataFromServer($scope, ngDataApi, {
-				method: 'get',
-				routeName: '/dashboard/customRegistry/list',
-				params: {
-					env: $scope.envCode.toUpperCase(),
-					start: $scope.startLimit,
-					end: $scope.endLimit
-				}
-			}, function (error, response) {
-				overlayLoading.hide();
-				if (error) {
-					$scope.displayAlert('danger', error.message);
-				}
-				else {
-					$scope.totalCount = response.count;
-					var nextLimit = $scope.startLimit + $scope.increment;
-					$scope.showNext = ($scope.totalCount > nextLimit);
-
-					$scope.customRegistries = {list: response.records};
-					$scope.customRegistries.original = angular.copy($scope.customRegistries.list); //keep a copy of the original customRegistry records
-
-					$scope.customRegistries.list.forEach(function (oneCustomRegistry) {
-						if (oneCustomRegistry.created === $scope.envCode.toUpperCase()) {
-							oneCustomRegistry.allowEdit = true;
+		if ($scope.envCode) {
+			getEnvironment(function () {
+				overlayLoading.show();
+				getSendDataFromServer($scope, ngDataApi, {
+					method: 'get',
+					routeName: '/dashboard/customRegistry/list',
+					params: {
+						env: $scope.envCode.toUpperCase(),
+						start: $scope.startLimit,
+						end: $scope.endLimit
+					}
+				}, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
+						$scope.displayAlert('danger', error.message);
+					}
+					else {
+						$scope.totalCount = response.count;
+						var nextLimit = $scope.startLimit + $scope.increment;
+						$scope.showNext = ($scope.totalCount > nextLimit);
+						
+						$scope.customRegistries = { list: response.records };
+						$scope.customRegistries.original = angular.copy($scope.customRegistries.list); //keep a copy of the original customRegistry records
+						
+						$scope.customRegistries.list.forEach(function (oneCustomRegistry) {
+							if (oneCustomRegistry.created === $scope.envCode.toUpperCase()) {
+								oneCustomRegistry.allowEdit = true;
+							}
+						});
+						if (cb) {
+							return cb();
 						}
-					});
-					if (cb) return cb();
-				}
+					}
+				});
 			});
-		});
-
+		}
+		else {
+			if (cb) {
+				return cb();
+			}
+		}
+		
 		function getEnvironment(cb) {
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
@@ -490,8 +497,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			});
 		}
 	};
-
-	$scope.manageCustomRegistry = function(customRegistry, action) {
+	
+	$scope.manageCustomRegistry = function (customRegistry, action) {
 		var currentScope = $scope;
 		$modal.open({
 			templateUrl: "addEditCustomRegistry.tmpl",
@@ -519,7 +526,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					aceEditorConfig: {
 						maxLines: Infinity,
 						minLines: 1,
-						useWrapMode : true,
+						useWrapMode: true,
 						showGutter: true,
 						mode: 'json',
 						firstLineNumber: 1,
@@ -536,35 +543,35 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 									_editor.getSession().getScreenLength()
 									* _editor.renderer.lineHeight
 									+ _editor.renderer.scrollBar.getWidth();
-
+								
 								if (aceCustomRegistry.fixedHeight) {
 									newHeight = parseInt(aceCustomRegistry.height);
 								}
-								else if(parseInt(aceCustomRegistry.height) && parseInt(aceCustomRegistry.height) > newHeight){
+								else if (parseInt(aceCustomRegistry.height) && parseInt(aceCustomRegistry.height) > newHeight) {
 									newHeight = parseInt(aceCustomRegistry.height);
 								}
-								try{
-									if($scope.formData && $scope.formData.value && aceCustomRegistry.firstTime){
+								try {
+									if ($scope.formData && $scope.formData.value && aceCustomRegistry.firstTime) {
 										aceCustomRegistry.firstTime = false;
 										let screenLength = 1;
-										if(typeof JSON.parse($scope.formData.value) === 'object'){
+										if (typeof JSON.parse($scope.formData.value) === 'object') {
 											_editor.session.setMode("ace/mode/json");
 											screenLength = Object.keys(JSON.parse($scope.formData.value)).length * 16;
-											if(screenLength > 1){
+											if (screenLength > 1) {
 												screenLength += 32;
 											}
-										}else{
+										} else {
 											$scope.textMode = true;
 											_editor.session.setMode("ace/mode/text");
 											screenLength = 16;
 										}
-										if(screenLength > newHeight){
+										if (screenLength > newHeight) {
 											newHeight = screenLength;
 										}
-									}else{
+									} else {
 										aceCustomRegistry.firstTime = false;
 									}
-								}catch(e){
+								} catch (e) {
 									$scope.textMode = true;
 									_editor.session.setMode("ace/mode/text");
 									aceCustomRegistry.firstTime = false;
@@ -581,7 +588,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								_editor.heightUpdate = heightUpdateFunction();
 								// Set initial size to match initial content
 								heightUpdateFunction();
-
+								
 								// Whenever a change happens inside the ACE editor, update
 								// the size again
 								_editor.getSession().on('change', heightUpdateFunction);
@@ -590,56 +597,56 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					},
 					allowEdit: allowEdit
 				};
-
+				
 				$scope.title = 'Add New Custom Registry';
-				if(action === 'update' && $scope.options.allowEdit) {
+				if (action === 'update' && $scope.options.allowEdit) {
 					$scope.title = 'Update ' + customRegistry.name;
 				}
-				else if(!allowEdit){
+				else if (!allowEdit) {
 					$scope.title = 'View ' + customRegistry.name;
 				}
-
-				$scope.displayAlert = function(type, message) {
+				
+				$scope.displayAlert = function (type, message) {
 					$scope.message[type] = message;
-					setTimeout(function() {
+					setTimeout(function () {
 						$scope.message = {};
 					}, 5000);
 				};
-
-				$scope.getEnvs = function() {
-					if($scope.envs && $scope.envs.list && $scope.envs.list.length > 0) {
+				
+				$scope.getEnvs = function () {
+					if ($scope.envs && $scope.envs.list && $scope.envs.list.length > 0) {
 						return;
 					}
-
+					
 					overlayLoading.show();
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
 						routeName: '/dashboard/environment/list'
 					}, function (error, envs) {
 						overlayLoading.hide();
-						if(error) {
+						if (error) {
 							$scope.displayAlert('danger', error.message);
 						}
 						else {
 							$scope.envs.list = [];
-							envs.forEach(function(oneEnv) {
+							envs.forEach(function (oneEnv) {
 								//in case of update customRegistry, check customRegistry record to know what env it belongs to
-								if(customRegistry && customRegistry.created) {
-									if(customRegistry.created.toUpperCase() === oneEnv.code.toUpperCase()) return;
+								if (customRegistry && customRegistry.created) {
+									if (customRegistry.created.toUpperCase() === oneEnv.code.toUpperCase()) return;
 								}
 								//in case of add customRegistry, check current environment
-								else if(currentScope.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
+								else if (currentScope.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
 									return;
 								}
-
+								
 								var envEntry = {
 									code: oneEnv.code,
 									description: oneEnv.description,
 									selected: (customRegistry && customRegistry.sharedEnv && customRegistry.sharedEnv[oneEnv.code.toUpperCase()])
 								};
-
-								if(customRegistry && customRegistry.shared && action === 'update') {
-									if(customRegistry.sharedEnv) {
+								
+								if (customRegistry && customRegistry.shared && action === 'update') {
+									if (customRegistry.sharedEnv) {
 										envEntry.selected = (customRegistry.sharedEnv[oneEnv.code.toUpperCase()]);
 									}
 									else {
@@ -648,45 +655,45 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 										$scope.envs.sharedWithAll = true;
 									}
 								}
-
+								
 								$scope.envs.list.push(envEntry);
 							});
 						}
 					});
 				};
-
-				$scope.fillForm = function() {
-						$scope.formData = angular.copy(customRegistry);
-						$scope.getEnvs();
-						//ace editor cannot take an object or array as model
+				
+				$scope.fillForm = function () {
+					$scope.formData = angular.copy(customRegistry);
+					$scope.getEnvs();
+					//ace editor cannot take an object or array as model
 					if (typeof $scope.formData.value !== "string") {
 						$scope.formData.value = JSON.stringify($scope.formData.value, null, 2);
 					}
 				};
-
-				$scope.toggleShareWithAllEnvs = function() {
-					if($scope.envs.sharedWithAll) {
-						$scope.envs.list.forEach(function(oneEnv) {
+				
+				$scope.toggleShareWithAllEnvs = function () {
+					if ($scope.envs.sharedWithAll) {
+						$scope.envs.list.forEach(function (oneEnv) {
 							oneEnv.selected = true;
 						});
 					}
-
+					
 					return;
 				};
-
-				$scope.save = function(cb) {
-					if(!$scope.options.allowEdit) {
+				
+				$scope.save = function (cb) {
+					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this Custom Registry is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
 					}
-
-					if($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
+					
+					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
 						$scope.formData.deployOptions.custom.type = 'customRegistry';
 					}
-
+					
 					saveCustomRegistry(function () {
 						if (cb) return cb();
-
+						
 						$scope.formData = {};
 						$modalInstance.close();
 						if ($scope.access.customRegistry.list) {
@@ -697,7 +704,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							}
 						}
 					});
-
+					
 					function saveCustomRegistry(cb) {
 						var saveOptions = {
 							name: $scope.formData.name,
@@ -716,17 +723,17 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								}
 							}
 						}
-						if($scope.formData.shared && !$scope.envs.sharedWithAll) {
+						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
 							saveOptions.sharedEnv = {};
-							$scope.envs.list.forEach(function(oneEnv) {
-								if(oneEnv.selected) {
+							$scope.envs.list.forEach(function (oneEnv) {
+								if (oneEnv.selected) {
 									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
 								}
 							});
 						}
-
+						
 						var options = {};
-						if($scope.options.formAction === 'add') {
+						if ($scope.options.formAction === 'add') {
 							options = {
 								method: 'post',
 								routeName: '/dashboard/customRegistry/add',
@@ -749,11 +756,11 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								}
 							};
 						}
-
+						
 						overlayLoading.show();
-						getSendDataFromServer(currentScope, ngDataApi, options, function(error, result) {
+						getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
 							overlayLoading.hide();
-							if(error) {
+							if (error) {
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -764,28 +771,28 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						});
 					}
 				};
-
-				$scope.cancel = function() {
+				
+				$scope.cancel = function () {
 					$modalInstance.close();
-					if($scope.form && $scope.form.formData){
+					if ($scope.form && $scope.form.formData) {
 						$scope.form.formData = {};
 					}
 				};
-
-				$scope.enableTextMode = function() {
+				
+				$scope.enableTextMode = function () {
 					$scope.textMode = !$scope.textMode;
-					if($scope.textMode){
+					if ($scope.textMode) {
 						$scope.editor.session.setMode("ace/mode/text");
-					}else{
+					} else {
 						$scope.editor.session.setMode("ace/mode/json");
 					}
 				};
-
+				
 				$scope.fillForm();
 			}
 		});
 	};
-
+	
 	$scope.deleteCustomRegistry = function (customRegistry) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -808,24 +815,24 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	};
-
-	$scope.togglePlugCustomRegistry = function(customRegistry, plug) {
+	
+	$scope.togglePlugCustomRegistry = function (customRegistry, plug) {
 		var customRegistryRecord = {};
 		//get the original customRegistry record
-		for(var i = 0; i < $scope.customRegistries.original.length; i++) {
-			if($scope.customRegistries.original[i]._id === customRegistry._id) {
+		for (var i = 0; i < $scope.customRegistries.original.length; i++) {
+			if ($scope.customRegistries.original[i]._id === customRegistry._id) {
 				customRegistryRecord = angular.copy($scope.customRegistries.original[i]);
 				break;
 			}
 		}
-
+		
 		var customRegistryId = customRegistryRecord._id;
 		delete customRegistryRecord._id;
 		delete customRegistryRecord.created;
 		delete customRegistryRecord.author;
 		delete customRegistryRecord.permission;
 		customRegistryRecord.plugged = plug;
-
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'put',
@@ -839,7 +846,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		}, function (error) {
 			overlayLoading.hide();
-			if(error) {
+			if (error) {
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
@@ -850,8 +857,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	};
-
-	$scope.upgradeCustomRegistry = function(){
+	
+	$scope.upgradeCustomRegistry = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'put',
@@ -872,7 +879,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	};
-
+	
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');
 	//default operation
 	if ($routeParams.id) {
@@ -886,25 +893,27 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 	}
 	if ($scope.access.customRegistry.list) {
-		$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
+		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+		}
 		$scope.listCustomRegistry();
 	}
 }]);
 
-environmentsApp.filter('customRegSearch', function() {
-	return function(input, searchKeyword) {
-		if(!searchKeyword) return input;
-		if(!input || !Array.isArray(input) || input.length === 0) return input;
-
+environmentsApp.filter('customRegSearch', function () {
+	return function (input, searchKeyword) {
+		if (!searchKeyword) return input;
+		if (!input || !Array.isArray(input) || input.length === 0) return input;
+		
 		var output = [];
-		input.forEach(function(oneInput) {
-			if(oneInput) {
-				if((oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) || (oneInput.author && oneInput.author.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1)) {
+		input.forEach(function (oneInput) {
+			if (oneInput) {
+				if ((oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) || (oneInput.author && oneInput.author.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1)) {
 					output.push(oneInput);
 				}
 			}
 		});
-
+		
 		return output;
 	}
 });

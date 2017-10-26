@@ -1,9 +1,12 @@
 "use strict";
 var deployReposService = soajsApp.components;
 deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
-	var envDeployer = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer;
-	var envPlatform = envDeployer.selected.split('.')[1];
-	var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
+	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})){
+		var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
+		var envPlatform = envDeployer.selected.split('.')[1];
+		var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
+	}
+
 	function listGitAccounts(currentScope) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',

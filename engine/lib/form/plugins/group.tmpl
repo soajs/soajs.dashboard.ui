@@ -5,6 +5,9 @@
 		<alert ng-show="entry.description" type="{{entry.description.type}}" ng-bind-html="entry.description.content"></alert>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 			<tr ng-repeat="entry in entry.entries" class="form-group tr-{{entry.name}}-wrapper" ng-switch="entry.type">
+				<td ng-if="entry.directive">
+					<div id="{{entry.name}}-wrapper" ng-include="entry.directive"></div>
+				</td>
 				<td ng-switch-when="textarea">
 					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/textarea.tmpl'"></div>
 				</td>
@@ -16,7 +19,11 @@
 				<td ng-switch-when="html" class="typeHtml">
 					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/html.tmpl'"></div>
 				</td>
-
+				
+				<td ng-switch-when="tabset">
+					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/tabSet.tmpl'"></div>
+				</td>
+				
 				<td ng-switch-when="radio">
 					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/radio.tmpl'"></div>
 				</td>
@@ -79,7 +86,15 @@
 					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/jsoneditor.tmpl'"></div>
 				</td>
 				
-				<td ng-switch-default="">
+				<td ng-switch-when="ckeditor">
+					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/ckeditor.tmpl'"></div>
+				</td>
+				
+				<td ng-switch-when="buttonSlider">
+					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/buttonSlider.tmpl'"></div>
+				</td>
+				
+				<td ng-if="!entry.directive" ng-switch-default="">
 					<div id="{{entry.name}}-wrapper" ng-include="'engine/lib/form/plugins/default.tmpl'"></div>
 				</td>
 			</tr>

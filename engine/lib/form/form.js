@@ -281,10 +281,10 @@ function buildForm(context, modal, configuration, cb) {
 			};
 		}
 	}
-
+	
 	if (configuration.data) {
 		for (var i = 0; i < context.form.entries.length; i++) {
-			if (context.form.entries[i].type === 'group') {
+			if (['group', 'accordion'].indexOf(context.form.entries[i].type) !== -1) {
 				context.form.entries[i].entries.forEach(function (oneSubEntry) {
 					rebuildData(oneSubEntry, context.form.entries[i]);
 				});
@@ -305,7 +305,7 @@ function buildForm(context, modal, configuration, cb) {
 
 	context.form.refresh = function (reload) {
 		for (var i = 0; i < context.form.entries.length; i++) {
-			if (context.form.entries[i].type === 'group') {
+			if (['group', 'accordion'].indexOf(context.form.entries[i].type) !== -1) {
 				context.form.entries[i].icon = (context.form.entries[i].collapsed) ? "plus" : "minus";
 				context.form.entries[i].entries.forEach(function (oneSubEntry) {
 					updateFormData(oneSubEntry, reload);
@@ -402,7 +402,7 @@ function buildForm(context, modal, configuration, cb) {
 	function doValidateItems(entries, data) {
 		for (var i = 0; i < entries.length; i++) {
 			var oneEntry = entries[i];
-			if (oneEntry.type === 'group') {
+			if (oneEntry.type === 'group' || oneEntry.type === 'accordion') {
 				var validation = doValidateItems(oneEntry.entries, data);
 				if (validation === false) {
 					return false;

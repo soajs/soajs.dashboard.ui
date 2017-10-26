@@ -6,7 +6,7 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.defaultPageNumber = 1;
-    $scope.defaultPerPage = 100;
+	$scope.defaultPerPage = 100;
 	$scope.imagePath = './themes/' + themeToUse + '/img/loading.gif';
 
 	$scope.access = {};
@@ -46,7 +46,7 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 		deployRepos.configureCD($scope, repo);
 	};
 
-	$scope.deployService = function (oneRepo, service,version, gitAccount, daemonGrpConf) {
+	$scope.deployService = function (oneRepo, service, version, gitAccount, daemonGrpConf) {
 		deployRepos.deployService($scope, oneRepo, service, version, gitAccount, daemonGrpConf);
 	};
 
@@ -54,15 +54,17 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 		deployRepos.doDeploy($scope, params, true);
 	};
 
-	$scope.checkHeapster = function() {
+	$scope.checkHeapster = function () {
 		deployRepos.checkHeapster($scope);
 	};
 
 	injectFiles.injectCss("modules/dashboard/environments/environments.css");
 	//default operation
 	if ($scope.access.git.listAccounts) {
-		$scope.envCode = $cookies.getObject("myEnv", {'domain': interfaceDomain}).code;
-		$scope.listGitAccounts();
-		$scope.checkHeapster();
+		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+			$scope.listGitAccounts();
+			$scope.checkHeapster();
+		}
 	}
 }]);

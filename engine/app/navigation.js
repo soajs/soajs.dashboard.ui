@@ -9,6 +9,7 @@ var navigation = [
 		'url': '#/dashboard',
 		'tplPath': 'modules/dashboard/home/directives/dashboard.tmpl',
 		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
+		'preferredEnv': "DASHBOARD",
 		'footerMenu': true,
 		'tracker': true
 	},
@@ -17,6 +18,7 @@ var navigation = [
 		'label': translation.home[LANG],
 		'url': '#/login',
 		'tplPath': 'modules/dashboard/myAccount/directives/login.tmpl',
+		'preferredEnv': "DASHBOARD",
 		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js']
 	},
 	{
@@ -33,6 +35,7 @@ var navigation = [
 			'service': 'dashboard',
 			'route': '/environment/list'
 		},
+		'preferredEnv': "DASHBOARD",
 		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
 		'tplPath': 'modules/dashboard/home/directives/noenv.tmpl'
 	},
@@ -40,6 +43,7 @@ var navigation = [
 		'id': 'help2',
 		'label': translation.help[LANG],
 		'url': '#/help',
+		'preferredEnv': "DASHBOARD",
 		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
 		'tplPath': 'modules/dashboard/home/directives/help.tmpl',
 		'footerMenu': true

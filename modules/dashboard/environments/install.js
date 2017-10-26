@@ -307,6 +307,10 @@ var envTranslation ={
 		"ENG": "It is mandatory that you copy the external key of the default login package for the dashboard environment and paste it in the config.js file [apiConfiguration.key field]. By default, the login package for dashboard is called DSBRD_MAIN. When done, re-login to dashboard and generate new external keys for all your tenants for this environment.",
 		"FRA": "It is mandatory that you copy the external key of the default login package for the dashboard environment and paste it in the config.js file [apiConfiguration.key field]. By default, the login package for dashboard is called DSBRD_MAIN. When done, re-login to dashboard and generate new external keys for all your tenants for this environment."
 	},
+	"keySecurityHasBeenUpdated": {
+		"ENG": "It is mandatory that you copy the external key of the default login package for the dashboard environment and paste it in the config.js file [apiConfiguration.key field]. By default, the login package for dashboard is called DSBRD_MAIN. When done, re-login to dashboard and generate new external keys for all your tenants for this environment.",
+		"FRA": "It is mandatory that you copy the external key of the default login package for the dashboard environment and paste it in the config.js file [apiConfiguration.key field]. By default, the login package for dashboard is called DSBRD_MAIN. When done, re-login to dashboard and generate new external keys for all your tenants for this environment."
+	},
 	"selectedEnvironmentRemoved": {
 		"ENG": "Selected Environment has been removed.",
 		"FRA": "Selected Environment has been removed."

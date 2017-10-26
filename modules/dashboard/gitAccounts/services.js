@@ -3,8 +3,8 @@ var repoService = soajsApp.components;
 repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', '$compile', 'detectBrowser', function (ngDataApi, $timeout, $modal, $cookies, $window, $compile, detectBrowser) {
 
 	function configureRepo(currentScope, oneRepo, gitAccount, config) {
-		var envDeployer = $cookies.getObject("myEnv", {'domain': interfaceDomain}).deployer;
-		var envPlatform = envDeployer.selected.split('.')[1];
+		// var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
+		// var envPlatform = envDeployer.selected.split('.')[1];
 		
 		var configureRepo = $modal.open({
 			templateUrl: 'configureRepo.tmpl',
@@ -567,7 +567,7 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 			routeName: '/dashboard/ci/providers',
 			params: {
 				'provider': opts.provider,
-				"owner": opts.owner,
+				"owner": opts.owner
 			}
 		}, function (error, response) {
 			if (error) {

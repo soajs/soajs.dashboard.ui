@@ -944,15 +944,6 @@ var envTranslation ={
 	 You need to go to Multi-Tenancy and generate new keys for all your tenants
 	 Specify the algorithm to use and a password (minimum 5 characters) to encrypt tenant keys. More info on what options are supported is found at
 	 */
-	"changingLoggingConfigurationMayCauseImproperFunctionality":{
-        "ENG": "Changing the formatter configuration will cause the analytics to function improperly.",
-        "FRA": "Changing the formatter configuration will cause the analytics to function improperly.",
-	},
-
-	"adviceToKeepConfigurationAsIs":{
-        "ENG": "It is advisable to keep the Logger configuration as is, in case you choose to turn on Analytics in the future.",
-        "FRA": "It is advisable to keep the Logger configuration as is, in case you choose to turn on Analytics in the future.",
-	},
 
 	"changingTenantKeySecurityEncryptionConfigurationDisablesTenantKeys": {
 		"ENG": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys.",
@@ -1153,22 +1144,6 @@ var envTranslation ={
 	"getContainerLogs": {
 		"ENG": "Get Container Logs",
 		"FRA": "Get Container Logs"
-	},
-	"getContainerAnalytics": {
-		"ENG": "Get Container Analytics",
-		"FRA": "Get Container Logs"
-	},
-	"getContainerMetrics": {
-		"ENG": "Get Container Metrics",
-		"FRA": "Get Container Metrics"
-	},
-	"getServiceAnalytics": {
-		"ENG": "Get Service Analytics",
-		"FRA": "Get Service Analytics"
-	},
-	"getServiceMetrics": {
-		"ENG": "Get Service Metrics",
-		"FRA": "Get Service Metrics"
 	},
 	"actions": {
 		"ENG": "Actions",

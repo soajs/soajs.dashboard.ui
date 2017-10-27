@@ -10,7 +10,10 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 	$scope.oAuthUsers.list = [];
 	$scope.availableEnv = [];
 	$scope.packagesAcl = {};
-	$scope.currentEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
+	$scope.currentEnv = '';
+	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+		$scope.currentEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+	}
 
 	$scope.getTenant = function (first) {
 		getSendDataFromServer($scope, ngDataApi, {
@@ -93,20 +96,20 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				$scope.packagesAcl[tenantApp.package]= {
+				$scope.packagesAcl[tenantApp.package] = {
 					acl: packageInfo.acl,
 					type: ''
 				};
 				//check if old or new acl and mark it
-				if (packageInfo.acl && typeof (packageInfo.acl) === 'object') {
-					if (packageInfo.acl[$scope.currentEnv] && (!packageInfo.acl[$scope.currentEnv].apis && !packageInfo.acl[$scope.currentEnv].apisRegExp && !packageInfo.acl[$scope.currentEnv].apisPermission)) {
-						$scope.packagesAcl[tenantApp.package]['type'] = 'new';
-					} else {
-						$scope.packagesAcl[tenantApp.package]['type'] = 'old';
-					}
-				} else {
-					$scope.packagesAcl[tenantApp.package] = null;
-				}
+				// if (packageInfo.acl && typeof (packageInfo.acl) === 'object') {
+				// 	if (packageInfo.acl[$scope.currentEnv] && (!packageInfo.acl[$scope.currentEnv].apis && !packageInfo.acl[$scope.currentEnv].apisRegExp && !packageInfo.acl[$scope.currentEnv].apisPermission)) {
+				// 		$scope.packagesAcl[tenantApp.package]['type'] = 'new';
+				// 	} else {
+				// 		$scope.packagesAcl[tenantApp.package]['type'] = 'old';
+				// 	}
+				// } else {
+				// 	$scope.packagesAcl[tenantApp.package] = null;
+				// }
 
 				counter++;
 				if (counter !== apps.length) {
@@ -154,19 +157,19 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		return loginMode;
 	};
 	
-	$scope.turnOffOAuth = function(){
+	$scope.turnOffOAuth = function () {
 		var data = $scope.tenant;
 		var postData = {
 			'secret': '',
 			'oauthType': 'off',
-			'availableEnv' : $scope.availableEnv
+			'availableEnv': $scope.availableEnv
 		};
 		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "put",
 			"routeName": "/dashboard/settings/tenant/oauth/update",
 			"data": postData,
-			"params": {"id": data['_id']}
+			"params": { "id": data['_id'] }
 		}, function (error) {
 			
 			if (error) {
@@ -179,7 +182,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		});
 	};
 	
-	$scope.updateOAuth = function(){
+	$scope.updateOAuth = function () {
 		var formConfig = angular.copy(settingsConfig.form.updateOauth);
 		formConfig.timeout = $timeout;
 		
@@ -229,14 +232,14 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 						var postData = {
 							'secret': formData.secret,
 							'oauthType': formData.oauthType,
-							'availableEnv' : $scope.availableEnv
+							'availableEnv': $scope.availableEnv
 						};
 						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/oauth/update",
 							"data": postData,
-							"params": {"id": data['_id']}
+							"params": { "id": data['_id'] }
 						}, function (error) {
 							
 							if (error) {
@@ -267,7 +270,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			"method": "put",
 			"routeName": "/dashboard/settings/tenant/update",
 			"data": postData,
-			"params": {"id": $scope.tenant['_id']}
+			"params": { "id": $scope.tenant['_id'] }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -291,7 +294,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/settings/tenant/application/key/delete",
-			"params": {"appId": app.appId, "key": key}
+			"params": { "appId": app.appId, "key": key }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -337,7 +340,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/oauth/users/update",
 							"data": postData,
-							"params": {'uId': user['_id']}
+							"params": { 'uId': user['_id'] }
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -443,7 +446,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/settings/tenant/oauth/users/delete",
-			"params": {'uId': user['_id']}
+			"params": { 'uId': user['_id'] }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -478,7 +481,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/oauth/users/update",
 							"data": postData,
-							"params": {'uId': user['_id']}
+							"params": { 'uId': user['_id'] }
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -511,7 +514,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/settings/tenant/application/key/add",
-			"params": {"appId": appId}
+			"params": { "appId": appId }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -534,7 +537,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			"method": "put",
 			"routeName": "/dashboard/settings/tenant/application/key/config/update",
 			"data": postData,
-			"params": {"appId": appId, "key": key}
+			"params": { "appId": appId, "key": key }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -550,7 +553,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 	$scope.updateConfiguration = function (appId, key, env, value) {
 		var data = {};
 		if (value) {
-			data.config = angular.copy (value);
+			data.config = angular.copy(value);
 		}
 		if (env) {
 			data.envCode = env;
@@ -578,7 +581,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/application/key/config/update",
 							"data": postData,
-							"params": {"appId": appId, "key": key}
+							"params": { "appId": appId, "key": key }
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -611,20 +614,18 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		var formConfig = angular.copy(settingsConfig.form.extKey);
 		if ($scope.packagesAcl[packageCode] !== null) {
 			formConfig.entries.forEach(function (oneFormField) {
-				if(oneFormField.name === 'environment') {
+				if (oneFormField.name === 'environment') {
 					var list = [];
 
-					if ($scope.packagesAcl[packageCode].type === 'new') {
-						//new acl, display envs available in acl only
-						Object.keys($scope.packagesAcl[packageCode].acl).forEach(function(envCode) {
-							list.push({"v": envCode, "l": envCode, "selected": (envCode === $scope.currentEnv)});
-						});
-					} else {
-						//old acl, display available envs
-						$scope.availableEnv.forEach(function(envCode) {
-							list.push({"v": envCode, "l": envCode, "selected": (envCode === $scope.currentEnv)});
-						});
-					}
+					//new acl, display envs available in acl only
+					Object.keys($scope.packagesAcl[packageCode].acl).forEach(function (envCode) {
+						list.push(
+							{
+								"v": envCode,
+								"l": envCode,
+								"selected": (envCode === $scope.currentEnv)
+							});
+					});
 
 					oneFormField.value = list;
 				}
@@ -657,7 +658,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 							"method": "post",
 							"routeName": "/dashboard/settings/tenant/application/key/ext/add",
 							"data": postData,
-							"params": {"appId": appId, "key": key}
+							"params": { "appId": appId, "key": key }
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -688,10 +689,10 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 	$scope.editExtKey = function (appId, data, key) {
 		var dataForm = angular.copy(data);
 		if (data.geo) {
-			dataForm.geo = angular.copy (data.geo);
+			dataForm.geo = angular.copy(data.geo);
 		}
 		if (data.device) {
-			dataForm.device = angular.copy (data.device);
+			dataForm.device = angular.copy(data.device);
 		}
 
 		var formConfig = angular.copy(settingsConfig.form.extKey);
@@ -738,7 +739,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/application/key/ext/update",
 							"data": postData,
-							"params": {"appId": appId, "key": key, "extKeyEnv": data.env}
+							"params": { "appId": appId, "key": key, "extKeyEnv": data.env }
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -770,8 +771,8 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/settings/tenant/application/key/ext/delete",
-			"data": {'extKey': data.extKey, 'extKeyEnv': data.env},
-			"params": {"appId": appId, "key": key}
+			"data": { 'extKey': data.extKey, 'extKeyEnv': data.env },
+			"params": { "appId": appId, "key": key }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -787,7 +788,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/settings/tenant/application/key/ext/list",
-			"params": {"appId": appId, "key": key}
+			"params": { "appId": appId, "key": key }
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -830,7 +831,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/settings/tenant/application/key/list",
-			"params": {"appId": appId}
+			"params": { "appId": appId }
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -856,7 +857,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/settings/tenant/application/key/config/list",
-			"params": {"appId": appId, "key": key}
+			"params": { "appId": appId, "key": key }
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);

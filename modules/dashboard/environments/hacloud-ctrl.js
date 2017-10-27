@@ -97,7 +97,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.autoRefresh = function(){
 		var tValue = $scope.selectedInterval.v * 1000;
 		autoRefreshTimeoutInstance = $timeout(function(){
-			$scope.getSettings();
 			$scope.listServices(function(){
 				$scope.autoRefresh();
 			});
@@ -156,7 +155,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
     $scope.changeTag = function(node){
 	    nodeSrv.changeTag($scope, node);
     };
-    
+
     $scope.removeNode = function (nodeId) {
 	    nodeSrv.removeNode($scope, nodeId);
     };
@@ -225,30 +224,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		hacloudSrv.hostLogs($scope, task);
 	};
 
-	$scope.metrics = function (task, serviceName, type, shipper, mode) {
-		hacloudSrv.metrics($scope, task, serviceName, type, shipper, mode);
-	};
-
-	$scope.getSettings = function () {
-		hacloudSrv.getSettings($scope);
-	};
-
-	$scope.activateAnalytics = function () {
-		hacloudSrv.activateAnalytics($scope);
-		$timeout(function(){
-			$scope.listServices(function(){
-				$scope.getSettings();
-			});
-		}, 30000);
-	};
-
-	$scope.deactivateAnalytics = function () {
-		hacloudSrv.deactivateAnalytics($scope);
-		$timeout(function(){
-			$scope.listServices(function(){});
-		}, 5000);
-	};
-
 	$scope.showHideFailures = function(service){
 		service.tasks.forEach(function(oneTask){
 			if(Object.hasOwnProperty.call(oneTask, 'hideIt')){
@@ -278,18 +253,19 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');
-	$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
-	$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-	$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+	if($cookies.getObject('myEnv', {'domain': interfaceDomain})){
+		$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
+		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
+		$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+	}
 
-	if ($scope.access.hacloud.nodes.list) {
+	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
 		$scope.getEnvironment();
 		$scope.listNodes();
 		$scope.certsExist = true;
 		$scope.checkCerts($scope.envCode);
 	}
-	if ($scope.access.listHosts) {
-		$scope.getSettings();
+	if ($scope.access.listHosts && $scope.envCode) {
 		$scope.listServices(function(){
 			$scope.listNamespaces(function () {
 				$scope.checkHeapster(function(){

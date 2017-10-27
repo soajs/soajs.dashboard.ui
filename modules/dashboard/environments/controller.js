@@ -1,5 +1,4 @@
 "use strict";
-
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
@@ -175,90 +174,6 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 		});
 	}
-	
-	$scope.addEnvironment = function () {
-		var configuration = environmentsConfig.form.template;
-		$scope.grid.rows.forEach(function (oneEnv) {
-			for (var i = 0; i < configuration.entries[0].value.length; i++) {
-				if (configuration.entries[0].value[i].v === oneEnv.code) {
-					configuration.entries[0].value.splice(i, 1);
-				}
-			}
-		});
-		var options = {
-			timeout: $timeout,
-			form: configuration,
-			name: 'addEnvironment',
-			label: translation.addNewEnvironment[LANG],
-			actions: [
-				{
-					'type': 'submit',
-					'label': translation.submit[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						var tmpl = angular.copy(env_template);
-						tmpl.code = formData.code;
-						tmpl.domain = formData.domain;
-						tmpl.description = formData.description;
-						
-						if (formData.apiPrefix) {
-							tmpl.apiPrefix = formData.apiPrefix;
-						}
-						
-						if (formData.sitePrefix) {
-							tmpl.sitePrefix = formData.sitePrefix;
-						}
-						
-						tmpl.services.config.key.password = formData.tKeyPass;
-						tmpl.services.config.cookie.secret = formData.sessionCookiePass;
-						tmpl.services.config.session.secret = formData.sessionCookiePass;
-						
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "post",
-							"routeName": "/dashboard/environment/add",
-							"data": tmpl
-						}, function (error, data) {
-							if (error) {
-								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
-								$scope.$parent.displayAlert('success', translation.environmentCreatedSuccessfully[LANG]);
-								$scope.modalInstance.close('ok');
-								$scope.form.formData = {};
-								getEnvironments({
-									code: data[0].code,
-									_id: data[0]._id.toString(),
-									deployer: data[0].deployer
-								}, function () {
-									$scope.updateEnvironment(data[0]);
-								});
-							}
-						});
-					}
-				},
-				{
-					'type': 'button',
-					'label': translation.advancedMode[LANG],
-					'btn': 'success',
-					'action': function () {
-						$scope.modalInstance.dismiss('cancel');
-						$scope.$parent.go("/environments/environment/");
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						$scope.modalInstance.dismiss('cancel');
-						$scope.form.formData = {};
-					}
-				}
-			]
-		};
-		
-		buildFormWithModal($scope, $modal, options);
-	};
 	
 	$scope.updateEnvironment = function (data) {
 		$scope.$parent.go('/environments/environment/' + data._id);
@@ -898,6 +813,163 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 		$scope.listCustomRegistry();
 	}
+}]);
+
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', '$localStorage', function($scope, $timeout, $modal, $cookies, ngDataApi, $localStorage){
+	
+	$scope.$parent.isUserLoggedIn();
+	$scope.access = {};
+	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
+	
+	
+	$scope.Step1 = function () {
+		var configuration = angular.copy(environmentsConfig.form.add.step1.entries);
+		
+		var options = {
+			timeout: $timeout,
+			entries: configuration,
+			name: 'addEnvironment',
+			label: translation.addNewEnvironment[LANG],
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						if(!$localStorage.add){
+							$localStorage.add ={};
+						}
+						
+						$localStorage.add.step1 = formData;
+						$scope.Step2();
+						
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						$scope.form.formData = {};
+						$scope.$parent.go("/environments")
+					}
+				}
+			]
+		};
+		
+		if($localStorage.add && $localStorage.add.step1){
+			options.data = $localStorage.add.step1;
+			
+			if(options.data.cookiesecret){
+				options.entries.forEach(function(oneEntry){
+					if(oneEntry.name === 'soajsFrmwk'){
+						oneEntry.collapsed = false;
+					}
+				})
+			}
+		}
+		
+		buildForm($scope, $modal, options);
+	};
+	
+	$scope.Step2 = function(){
+		var configuration = [];
+		
+		var options = {
+			timeout: $timeout,
+			entries: configuration,
+			name: 'addEnvironment',
+			label: translation.addNewEnvironment[LANG],
+			actions: [
+				{
+					'type': 'button',
+					'label': "Back",
+					'btn': 'success',
+					'action': function () {
+						if($localStorage.add.step2){
+							delete $localStorage.add.step2;
+						}
+						$scope.Step1();
+					}
+				},
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						$localStorage.add.step2 = formData;
+						$scope.Step3();
+						
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						$scope.form.formData = {};
+						$scope.$parent.go("/environments")
+					}
+				}
+			]
+		};
+		
+		if($localStorage.add && $localStorage.add.step2){
+			options.data = $localStorage.add.step2;
+		}
+		
+		buildForm($scope, $modal, options);
+	};
+	
+	$scope.Step3 = function(){
+	
+	};
+	
+	if ($scope.access.addEnvironment) {
+		$scope.Step1();
+	}
+	
+	
+	// function temporary(){
+	// 	var tmpl = angular.copy(env_template);
+	// 	tmpl.code = formData.code;
+	// 	tmpl.domain = formData.domain;
+	// 	tmpl.description = formData.description;
+	//
+	// 	if (formData.apiPrefix) {
+	// 		tmpl.apiPrefix = formData.apiPrefix;
+	// 	}
+	//
+	// 	if (formData.sitePrefix) {
+	// 		tmpl.sitePrefix = formData.sitePrefix;
+	// 	}
+	//
+	// 	tmpl.services.config.key.password = formData.tKeyPass;
+	// 	tmpl.services.config.cookie.secret = formData.sessionCookiePass;
+	// 	tmpl.services.config.session.secret = formData.sessionCookiePass;
+	//
+	// 	getSendDataFromServer($scope, ngDataApi, {
+	// 		"method": "post",
+	// 		"routeName": "/dashboard/environment/add",
+	// 		"data": tmpl
+	// 	}, function (error, data) {
+	// 		if (error) {
+	// 			$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+	// 		}
+	// 		else {
+	// 			$scope.$parent.displayAlert('success', translation.environmentCreatedSuccessfully[LANG]);
+	// 			$scope.modalInstance.close('ok');
+	// 			$scope.form.formData = {};
+	// 			getEnvironments({
+	// 				code: data[0].code,
+	// 				_id: data[0]._id.toString(),
+	// 				deployer: data[0].deployer
+	// 			}, function () {
+	// 				$scope.updateEnvironment(data[0]);
+	// 			});
+	// 		}
+	// 	});
+	// }
 }]);
 
 environmentsApp.filter('customRegSearch', function () {

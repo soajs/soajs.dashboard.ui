@@ -734,6 +734,10 @@ var envTranslation ={
 		"ENG": "Specify if CORS should should support credentials in requests",
 		"FRA": "Specify if CORS should should support credentials in requests"
 	},
+	"credentials":{
+		"ENG": "Credentials",
+		"FRA": "Credentials"
+	},
 	"methods": {
 		"ENG": "Methods",
 		"FRA": "Methods"
@@ -1345,6 +1349,28 @@ for (var attrname in envTranslation) {
 }
 
 var environmentsNav = [
+	{
+		'id': 'add-environments',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/environments/add',
+			'method': 'post'
+		},
+		'label': translation.addNewEnvironment[LANG],
+		'url': '#/environments/add',
+		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
+		'icon': 'plus',
+		'pillar':{
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'order': 1,
+		'mainMenu': true,
+		'tracker': true,
+		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/services/template.js', 'modules/dashboard/environments/controller.js'],
+		'ancestor': [translation.home[LANG]]
+	},
 	{
 		'id': 'environments',
 		'checkPermission': {

@@ -56,6 +56,9 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/nodes/list",
+			"params": {
+				env: currentScope.envCode.toLowerCase()
+			}
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
@@ -118,7 +121,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 							}
 							else {
 								currentScope.displayAlert('success', 'Node added successfully');
-								currentScope.listNodes();
+								currentScope.listNodes(currentScope);
 							}
 						});
 					}
@@ -152,7 +155,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 			}
 			else {
 				currentScope.displayAlert('success', 'Node removed successfully');
-				currentScope.listNodes();
+				currentScope.listNodes(currentScope);
 			}
 		});
 	}
@@ -179,7 +182,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 			}
 			else {
 				currentScope.displayAlert('success', 'Node updated successfully');
-				currentScope.listNodes();
+				currentScope.listNodes(currentScope);
 			}
 		});
 	}
@@ -221,7 +224,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 								currentScope.modalInstance.close();
 								currentScope.form.formData = {};
 								currentScope.displayAlert('success', 'Node tagged successfully');
-								currentScope.listNodes();
+								currentScope.listNodes(currentScope);
 							}
 						});
 					}

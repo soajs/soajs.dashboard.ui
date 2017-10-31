@@ -102,6 +102,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					}
 					else {
 						var newData = [response];
+						$scope.oneEnv = response;
 						$scope.grid = { rows: newData };
 						$scope.jsonEditor.custom.data = JSON.stringify(newData.custom, null, 2);
 					}
@@ -820,11 +821,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
-	
-	
+
 	$scope.Step1 = function () {
 		var configuration = angular.copy(environmentsConfig.form.add.step1.entries);
-		
 		var options = {
 			timeout: $timeout,
 			entries: configuration,

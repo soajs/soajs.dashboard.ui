@@ -285,6 +285,9 @@
 					<span ng-if="envPlatform === 'kubernetes' && isAutoScalable === false && access.hacloud.services.deployPlugin">
 						<button class="btn btn-info" ng-click="deployHeapster()">Enable Autoscaling</button>&nbsp;&nbsp;
 					</span>
+					<span ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed === false && access.hacloud.services.deployPlugin">
+						<button class="btn btn-info" ng-click="deployMetricsServer()">Enable Metrics</button>&nbsp;&nbsp;
+					</span>
 				</span>
 				<!--<div class="f-right w30">-->
 					<!-- <span ng-if="isAutoScalable && envDeployed">
@@ -371,8 +374,8 @@
 															</td>
 														</tr>
 													</thead>
-													<tbody>
-														<tr ng-repeat="instance in service.tasks" ng-hide="instance.hideIt && !service.hideIt">
+													<tbody ng-repeat="instance in service.tasks" ng-hide="instance.hideIt && !service.hideIt" ng-init="instanceName = (envPlatform !== 'kubernetes') ? instance.name + '.' + instance.id : instance.name">
+														<tr>
 															<td>
 																<a href="" ng-if="access.hacloud.services.logs">
 																	<span ng-click="hostLogs(instance)" class="icon icon-terminal" title="{{translation.getContainerLogs[LANG]}}"></span>
@@ -387,6 +390,43 @@
 															<td>
 																<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>{{instance.status.state}}</b></span>
 																<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
+																<a href="" ng-if= "instance.status.state === 'running' && isMetricsServerDeployed" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
+																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }" tooltip="Click to Show/Hide Metrics"></span>
+																</a>
+															</td>
+														</tr>
+														<tr ng-show="ShowMetrics[instanceName] && isMetricsServerDeployed">
+															<td colspan="5">
+																<div class="col-md-6" ng-if="servicesMetrics[instanceName].cpuPercent">
+																	<canvas id="cpuPercent" class="chart chart-line" chart-data="servicesMetrics[instanceName].cpuPercent"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].cpuPercent.options" chart-dataset-override="chartOptions[instanceName].cpuPercent.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6" ng-if="!servicesMetrics[instanceName].cpuPercent && servicesMetrics[instanceName].cpu">
+																	<canvas id="cpu" class="chart chart-line" chart-data="servicesMetrics[instanceName].cpu"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].cpu.options" chart-dataset-override="chartOptions[instanceName].cpu.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6" ng-if="servicesMetrics[instanceName].memory">
+																	<canvas id="memory" class="chart chart-line" chart-data="servicesMetrics[instanceName].memory"
+																	        chart-labels="servicesMetrics[instanceName].timestamp" chart-options="chartOptions[instanceName].memory.options" chart-dataset-override="chartOptions[instanceName].memory.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6" ng-if="!servicesMetrics[instanceName].memory && servicesMetrics[instanceName].memPercent">
+																	<canvas id="memPercent" class="chart chart-line" chart-data="servicesMetrics[instanceName].memPercent"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].memPercent.options" chart-dataset-override="chartOptions[instanceName].memPercent.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6" ng-if="servicesMetrics[instanceName].blkIO">
+																	<canvas id="blkIO" class="chart chart-line" chart-data="servicesMetrics[instanceName].blkIO"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"  chart-series="chartOptions[instanceName].blkIO.series" chart-options="chartOptions[instanceName].blkIO.options" chart-dataset-override="chartOptions[instanceName].blkIO.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6" ng-if="servicesMetrics[instanceName].netIO">
+																	<canvas id="netIO" class="chart chart-line" chart-data="servicesMetrics[instanceName].netIO"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"  chart-series="chartOptions[instanceName].netIO.series" chart-options="chartOptions[instanceName].netIO.options" chart-dataset-override="chartOptions[instanceName].netIO.override">
+																	</canvas>
+																</div>
 															</td>
 														</tr>
 													</tbody>

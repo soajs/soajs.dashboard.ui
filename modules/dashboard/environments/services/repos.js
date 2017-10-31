@@ -340,9 +340,11 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		else{
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
-				routeName: '/dashboard/cloud/heapster',
+				routeName: '/dashboard/cloud/resource',
 				params: {
-					"env": currentScope.envCode
+					"env": currentScope.envCode,
+					"resource": "heapster",
+					"namespace": "kube-system"
 				}
 			}, function (error, response) {
 				if (error) {

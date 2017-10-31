@@ -591,7 +591,8 @@ var environmentsConfig = {
 				"list": ['dashboard', '/cloud/nodes/list', 'get'],
 				"add": ['dashboard', '/cloud/nodes/add', 'post'],
 				"remove": ['dashboard', '/cloud/nodes/remove', 'delete'],
-				"update": ['dashboard', '/cloud/nodes/update', 'put']
+				"update": ['dashboard', '/cloud/nodes/update', 'put'],
+				"metrics": ['dashboard', '/cloud/metrics/nodes', 'get']
 			},
 			"services": {
 				"list": ['dashboard', '/cloud/services/list', 'get'],
@@ -603,6 +604,7 @@ var environmentsConfig = {
 				"operation": ['dashboard', '/cloud/services/maintenance', 'post'],
 				"deployPlugin": ['dashboard', '/cloud/plugins/deploy', 'post'],
 				"autoScale": ['dashboard', '/cloud/services/autoscale', 'put'],
+				"metrics": ['dashboard', '/cloud/metrics/services', 'get']
 			}
 		},
 		"git": {

@@ -1,0 +1,9 @@
+<div ng-show="!entry.hidden">
+	<label>{{entry.label}}</label>
+	
+	<textarea class="form-control" id="{{entry.name}}" name="{{entry.name}}" ckeditor="{{entry.ckeditor}}" ng-model="form.formData[entry.name]" ng-required="entry.required" ng-if="entry.disabled" disabled></textarea>
+	
+	<textarea class="form-control" id="{{entry.name}}" name="{{entry.name}}" ckeditor="{{entry.ckeditor}}" ng-model="form.formData[entry.name]" ng-required="entry.required" ng-if="!entry.disabled"></textarea>
+	
+	<div ng-show="entry.fieldMsg" class="fieldMsg hint" ng-bind-html="entry.fieldMsg|toTrustedHtml"></div>
+</div>

@@ -53,88 +53,118 @@ var environmentsConfig = {
 		}
 	},
 	
-	customRegistryIncrement : 20,
+	customRegistryIncrement: 20,
 	
 	form: {
-		template: {
-			'name': '',
-			'label': '',
-			'actions': {},
-			'entries': [
-				{
-					'name': 'code',
-					'label': translation.envCode[LANG],
-					'type': 'select',
-					'value': [
-						{'v': 'DEV', 'l': 'DEV'},
-						{'v': 'QA', 'l': 'QA'},
-						{'v': 'CAT', 'l': 'CAT'},
-						{'v': 'STG', 'l': 'STG'},
-						{'v': 'PROD', 'l': 'PROD'}
-					],
-					'required': true
-				},
-				{
-					'name': 'description',
-					'label': translation.environmentDescription[LANG],
-					'type': 'textarea',
-					'rows': '3',
-					'placeholder': translation.myEnvDescription[LANG],
-					'value': '',
-					'required': true
-				},
-				{
-					'name': 'domain',
-					'label': translation.environmentDomain[LANG],
-					'type': 'text',
-					'placeholder': translation.myDomainCom[LANG],
-					'value': '',
-					'required': true
-				},
-				{
-					'name': 'apiPrefix',
-					'label': translation.apiPrefix[LANG],
-					'type': 'text',
-					'placeholder': 'api',
-					'value': '',
-					'required': false,
-					'fieldMsg': translation.inCaseAPIPrefixNotSpecified[LANG]
-				},
-				{
-					'name': 'sitePrefix',
-					'label': translation.sitePrefix[LANG],
-					'type': 'text',
-					'placeholder': 'site',
-					'value': '',
-					'required': false,
-					'fieldMsg': translation.inCaseSitePrefixNotSpecified[LANG]
-				},
-				{
-					'name': 'tKeyPass',
-					'label': translation.tenantKeySecurityPassword[LANG],
-					'type': 'text',
-					'value': '',
-					'placeholder': translation.myTenantKeyAES256Password[LANG],
-					'required': true
-				},
-				{
-					'name': 'sensitive',
-					'label': "Sensitive",
-					'type': 'radio',
-					'value': [
-						{
-							'v': false,
-							'l': "False",
-							'selected': true
-						},
-						{
-							'v': true,
-							'l': "True"
-						}
-					],
-					'required': false
-				}
-			]
+		add: {
+			step1: {
+				'entries': [
+					{
+						"type":"accordion",
+						
+					},
+					{
+						'name': 'code',
+						'label': translation.envCode[LANG],
+						'type': 'text',
+						'placeholder': "PORTAL | DEV | QA | CAT | STG | PROD | TEST",
+						'required': true
+					},
+					{
+						'name': 'description',
+						'label': translation.environmentDescription[LANG],
+						'type': 'textarea',
+						'rows': '3',
+						'placeholder': translation.myEnvDescription[LANG],
+						'value': '',
+						'required': true
+					},
+					{
+						'name': 'domain',
+						'label': translation.environmentDomain[LANG],
+						'type': 'text',
+						'placeholder': translation.myDomainCom[LANG],
+						'value': '',
+						'required': true
+					},
+					{
+						'name': 'apiPrefix',
+						'label': translation.apiPrefix[LANG],
+						'type': 'text',
+						'placeholder': 'api',
+						'value': '',
+						'required': false,
+						'fieldMsg': translation.inCaseAPIPrefixNotSpecified[LANG]
+					},
+					{
+						'name': 'sitePrefix',
+						'label': translation.sitePrefix[LANG],
+						'type': 'text',
+						'placeholder': 'site',
+						'value': '',
+						'required': false,
+						'fieldMsg': translation.inCaseSitePrefixNotSpecified[LANG]
+					},
+					{
+						'name': 'tKeyPass',
+						'label': translation.tenantKeySecurityPassword[LANG],
+						'type': 'text',
+						'value': '',
+						'placeholder': translation.myTenantKeyAES256Password[LANG],
+						'required': true
+					},
+					{
+						'name': 'sensitive',
+						'label': "Sensitive",
+						'type': 'radio',
+						'value': [
+							{
+								'v': false,
+								'l': "False",
+								'selected': true
+							},
+							{
+								'v': true,
+								'l': "True"
+							}
+						],
+						'required': false
+					},
+					{
+						'name': 'soajsFrmwk',
+						'label': 'I want to use the SOAJS Framework in this Environment',
+						'type': 'group',
+						'collapsed': true,
+						'entries': [
+							{
+								'name': 'cookiesecret',
+								'label': "Cookie Secret",
+								'type': 'text',
+								'placeholder': "My Cookie Secret Phrase ...",
+								'required': false,
+								'fieldMsg': translation.enterCookieSecretPhraseEncryptCookieValues[LANG]
+							},
+							{
+								'name': 'sessionName',
+								'label': "Session Name",
+								'type': 'text',
+								'placeholder': "soajsID",
+								'required': false,
+								'fieldMsg': translation.specifyNameForThisSessionMinimumCharacters[LANG]
+							},
+							{
+								'name': 'sessionSecret',
+								'label': "Session Secret",
+								'type': 'text',
+								'placeholder': "My Session Secret Phrase ...",
+								'required': false,
+								'fieldMsg': translation.specifySecretPhraseUsedEncryptSessionValues[LANG]
+							}
+						]
+					}
+				]
+			},
+			step2: {}
 		},
 		database: {
 			'name': '',
@@ -291,7 +321,7 @@ var environmentsConfig = {
 					'name': 'nginx',
 					'label': 'Nginx Configuration',
 					'type': 'group',
-					'description':{
+					'description': {
 						'type': 'info',
 						'content': ""
 					},
@@ -327,7 +357,7 @@ var environmentsConfig = {
 					'name': 'controllers',
 					'label': 'Controller Configuration',
 					'type': 'group',
-					'description':{
+					'description': {
 						'type': 'none',
 						'content': ""
 					},
@@ -522,7 +552,7 @@ var environmentsConfig = {
 			msg: 'Key from SSL Provider'
 		}
 	},
-
+	
 	jsoneditorConfig: {
 		'height': '200px'
 	},
@@ -587,24 +617,24 @@ var environmentsConfig = {
 			"delete": ["dashboard", "/customRegistry/delete", "delete"]
 		}
 	},
-
+	
 	providers: serviceProviders,
-
+	
 	recipeTypes: {
-		soajs:{
-			l:"SOAJS",
+		soajs: {
+			l: "SOAJS",
 			'categories': {
 				other: {'l': "Other"}
 			}
 		},
-		database:{
-			l:"Database",
+		database: {
+			l: "Database",
 			'categories': {
 				other: {'l': "Other"}
 			}
 		},
-		nginx:{
-			l:"Nginx",
+		nginx: {
+			l: "Nginx",
 			'categories': {
 				other: {'l': "Other"}
 			}
@@ -612,46 +642,46 @@ var environmentsConfig = {
 		service: {
 			'l': "Service",
 			'categories': {
-				soajs:{
-					l:'SOAJS'
+				soajs: {
+					l: 'SOAJS'
 				},
-				nodejs:{
-					l:'NodeJs'
+				nodejs: {
+					l: 'NodeJs'
 				},
-				php:{
-					l:'PHP'
+				php: {
+					l: 'PHP'
 				},
-				java:{
-					l:'Java'
+				java: {
+					l: 'Java'
 				},
-				asp:{
-					l:'ASP'
+				asp: {
+					l: 'ASP'
 				},
-				other:{
-					l:'Other'
+				other: {
+					l: 'Other'
 				}
 			}
 		},
 		daemon: {
 			'l': "Daemon",
 			'categories': {
-				soajs:{
-					l:'SOAJS'
+				soajs: {
+					l: 'SOAJS'
 				},
-				nodejs:{
-					l:'NodeJs'
+				nodejs: {
+					l: 'NodeJs'
 				},
-				php:{
-					l:'PHP'
+				php: {
+					l: 'PHP'
 				},
-				java:{
-					l:'Java'
+				java: {
+					l: 'Java'
 				},
-				asp:{
-					l:'ASP'
+				asp: {
+					l: 'ASP'
 				},
-				other:{
-					l:'Other'
+				other: {
+					l: 'Other'
 				}
 			}
 		},
@@ -697,7 +727,7 @@ var environmentsConfig = {
 				other: {"l": "Other"}
 			}
 		},
-		other:{
+		other: {
 			'l': "Other",
 			'categories': {
 				other: {'l': "Other"}

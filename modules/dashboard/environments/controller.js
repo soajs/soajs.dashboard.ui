@@ -103,6 +103,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					}
 					else {
 						var newData = [response];
+						$scope.oneEnv = response;
 						$scope.grid = { rows: newData };
 						$scope.jsonEditor.custom.data = JSON.stringify(newData.custom, null, 2);
 					}
@@ -178,13 +179,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	
 	$scope.addEnvironment = function () {
 		var configuration = environmentsConfig.form.template;
-		$scope.grid.rows.forEach(function (oneEnv) {
-			for (var i = 0; i < configuration.entries[0].value.length; i++) {
-				if (configuration.entries[0].value[i].v === oneEnv.code) {
-					configuration.entries[0].value.splice(i, 1);
+		if($scope.grid && $scope.grid.rows){
+			$scope.grid.rows.forEach(function (oneEnv) {
+				for (var i = 0; i < configuration.entries[0].value.length; i++) {
+					if (configuration.entries[0].value[i].v === oneEnv.code) {
+						configuration.entries[0].value.splice(i, 1);
+					}
 				}
-			}
-		});
+			});
+		}
 		var options = {
 			timeout: $timeout,
 			form: configuration,

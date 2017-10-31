@@ -376,9 +376,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
-						if(response.locked){
-							myUser.locked = response.locked;
-						}
+						myUser.locked = response.locked || false;
 						$localStorage.soajs_user = myUser;
 						$cookies.put("soajs_dashboard_key", response.extKey, {'domain': interfaceDomain});
 						getPermissions();

@@ -390,7 +390,7 @@
 															<td>
 																<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>{{instance.status.state}}</b></span>
 																<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
-																<a href="" ng-if= "instance.status.state === 'running' && isMetricsServerDeployed" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
+																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory && isMetricsServerDeployed" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
 																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }" tooltip="Click to Show/Hide Metrics"></span>
 																</a>
 															</td>

@@ -56,6 +56,9 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/nodes/list",
+			params: {
+				env : currentScope.envCode.toLowerCase()
+			}
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);

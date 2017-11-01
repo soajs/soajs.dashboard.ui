@@ -738,7 +738,6 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		}
 	}
 	
-	
 	function convertToMetric(bytes) {
 		if (bytes < 1000) {
 			return (bytes) + ' B';
@@ -796,8 +795,10 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
-					currentScope.isMetricsServerDeployed = response.deployed;
-					if(cb) return cb();
+					currentScope.getServicesMetrics(function () {
+						currentScope.isMetricsServerDeployed = response.deployed;
+						if(cb) return cb();
+					});
 				}
 			});
 		}
@@ -819,7 +820,10 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/cloud/namespaces/list'
+			routeName: '/dashboard/cloud/namespaces/list',
+			params: {
+				env : currentScope.envCode.toLowerCase()
+			}
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);

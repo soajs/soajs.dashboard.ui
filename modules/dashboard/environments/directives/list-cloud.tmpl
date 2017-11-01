@@ -363,18 +363,18 @@
 													<thead>
 														<tr class="header">
 															<td class="logsHeader">Logs</td>
-															<td class="maintenanceHeader">Container Name</td>
+															<td class="nameHeader">Container Name</td>
 															<td class="maintenanceHeader">Started On</td>
 															<td ng-show="oneSubType === 'soajs'" class="maintenanceHeader">Last Check On</td>
-															<td class="statusHeader2" ng-if="service.labels['soajs.service.name'] === 'controller'">
+															<td class="statusHeader">
 																Status
 															</td>
-															<td class="statusHeader" ng-if="service.labels['soajs.service.name'] !== 'controller'">
-																Status
+															<td class="metricsHeader" ng-if="isMetricsServerDeployed">
+																Metrics
 															</td>
 														</tr>
 													</thead>
-													<tbody ng-repeat="instance in service.tasks" ng-hide="instance.hideIt && !service.hideIt" ng-init="instanceName = (envPlatform !== 'kubernetes') ? instance.name + '.' + instance.id : instance.name">
+													<tbody ng-repeat="instance in service.tasks" ng-hide="instance.hideIt && !service.hideIt" ng-init="instanceName = (envPlatform === 'kubernetes') ? instance.name : (service.labels['soajs.service.mode'] === 'global') ? instance.name + '.' + instance.ref.node.id + '.' + instance.id  : instance.name + '.' + instance.id">
 														<tr>
 															<td>
 																<a href="" ng-if="access.hacloud.services.logs">
@@ -382,21 +382,48 @@
 																</a>
 															</td>
 															<td>{{instance.name}}</td>
-															<td>{{instance.status.ts}}</td>
+															<td>{{instance.status.ts | prettyLocalDate}}</td>
 															<td ng-show="oneSubType === 'soajs' && instance.status.lastTs">
-																{{instance.status.lastTs|fulldate}}
+																{{instance.status.lastTs| prettyLocalDate}}
 															</td>
 															<td ng-show="oneSubType === 'soajs' && !instance.status.lastTs">N/A</td>
 															<td>
 																<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>{{instance.status.state}}</b></span>
 																<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
-																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory && isMetricsServerDeployed" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
+															</td>
+															<td ng-if= "isMetricsServerDeployed">
+																<div style="width:80px; float : left; text-align: left; padding-left: 2px;">
+																	<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
+																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpu}}m&nbsp;
+																	</span>
+																		<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent')">
+																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpuPercent}}%&nbsp;
+																	</span>
+																		<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent') && !servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
+																		<b>CPU:</b> N/A&nbsp;
+																	</span>
+																</div>
+																<div style=" float : left; text-align: left">
+																	<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentMemory')">
+																		<b>Memory:</b>&nbsp;{{servicesMetrics[instanceName].currentMemory}}
+																		<span ng-if="servicesMetrics[instanceName].hasOwnProperty('memoryLimit')">
+																			&nbsp;/&nbsp;{{servicesMetrics[instanceName].memoryLimit}}
+																		</span>
+																		<span ng-if="servicesMetrics[instanceName].currentMemPercent">
+																			&nbsp;({{servicesMetrics[instanceName].currentMemPercent}}%)
+																		</span>
+																	</span>
+																	<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentMemory')">
+																		<b>Memory:</b> N/A&nbsp;
+																	</span>
+																</div>
+																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
 																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }" tooltip="Click to Show/Hide Metrics"></span>
 																</a>
 															</td>
 														</tr>
 														<tr ng-show="ShowMetrics[instanceName] && isMetricsServerDeployed">
-															<td colspan="5">
+															<td colspan="6">
 																<div class="col-md-6" ng-if="servicesMetrics[instanceName].cpuPercent">
 																	<canvas id="cpuPercent" class="chart chart-line" chart-data="servicesMetrics[instanceName].cpuPercent"
 																	        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].cpuPercent.options" chart-dataset-override="chartOptions[instanceName].cpuPercent.override">

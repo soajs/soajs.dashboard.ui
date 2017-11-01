@@ -1,0 +1,125 @@
+<h4>General Information</h4>
+<hr>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tbody>
+		<tr>
+			<td colspan="2">
+				<div id="code-wrapper">
+					<label>Environment Code</label>
+					<input class="form-control" ng-model="form.formData.code" type="text" placeholder="PORTAL | DEV | QA | CAT | STG | PROD | TEST" ng-required="tempFormEntries.code.required"/>
+					<div class="fieldMsg hint">Provide a Code for your Environment</div>
+				</div>
+			</td>
+			<td align="center">
+				<div id="sensitive-wrapper" style="margin-top:20px;">
+					<div>
+						<label style="position:relative; top:-3px;">Sensitive</label>
+						<label class="toggleSwitch">
+							<input type="checkbox" ng-model="form.formData.sensitive"><span class="buttonSlider round"></span>
+						</label>
+						<div class="fieldMsg hint">If this environment is sensitive, then the Swagger Simulator will not
+							interact with it.
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<div id="description-wrapper">
+					<label>Environment Description</label>
+					<textarea rows="3" ng-model="form.formData.description" class="form-control" placeholder="My Environment Description..." ng-required="tempFormEntries.description.required"></textarea>
+					<div class="fieldMsg hint">Provide a description for your environment</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<div id="domain-wrapper" style="width:90%; margin:0 10% 0 0;">
+					<div>
+						<label class="ng-binding">Environment Domain</label>
+						<input class="form-control" ng-model="form.formData.domain" type="text" placeholder="mydomain.com" ng-required="tempFormEntries.domain.required"/>
+						<div class="fieldMsg hint">Enter the domain associated with this environment</div>
+					</div>
+				</div>
+			</td>
+			<td width="33%">
+				<div id="apiPrefix-wrapper" style="width:90%; margin:0 auto;">
+					<div>
+						<label class="ng-binding">API Prefix</label>
+						<input class="form-control" ng-model="form.formData.apiPrefix" type="text" placeholder="api" ng-required="tempFormEntries.apiPrefix.required"/>
+						<div class="fieldMsg hint">What is the api prefix of this domain ?</div>
+					</div>
+				</div>
+			</td>
+			<td width="34%">
+				<div id="sitePrefix-wrapper" style="width:90%; margin:0 0 0 10%;">
+					<div>
+						<label class="ng-binding">Site Prefix</label>
+						<input class="form-control" ng-model="form.formData.sitePrefix" type="text" placeholder="site" ng-required="tempFormEntries.sitePrefix.required"/>
+						<div class="fieldMsg hint">What is the frontend site prefix associated with this domain ?</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<div id="tKeyPass-wrapper">
+					<div>
+						<label>Tenant Key Security Password</label>
+						<input class="form-control" ng-model="form.formData.tKeyPass" type="text" placeholder="My Tenant Key AES256 Password..." ng-required="tempFormEntries.tKeyPass.required"/>
+						<div class="fieldMsg hint">Provide a secret phrase to encrypt the tenants keys that will access
+							this environment.
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<div>
+					<label>I Want to use the SOAJS Framework in this Environment</label>
+					<label class="toggleSwitch">
+						<input type="checkbox" ng-model="form.formData.soajsFrmwrk" ng-change="tempFormEntries.soajsFrmwrk.onAction()"/><span class="buttonSlider round"></span>
+					</label>
+					<div class="fieldMsg hint">Turn On if you want to use the soajs framework and provide security
+						phrases to encrypt cookies and sessions
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr ng-show="form.formData.soajsFrmwrk">
+			<td colspan="3">
+				<div id="cookiesecret-wrapper">
+					<label>Cookie Secret</label>
+					<input class="form-control" ng-model="form.formData.cookiesecret" type="text" placeholder="My Cookie Secret Phrase ..." ng-required="form.formData.soajsFrmwrk"/>
+					<div class="fieldMsg hint">
+						Enter the cookie secret phrase, used to encrypt cookie values, minimum 5 characters.
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr ng-show="form.formData.soajsFrmwrk">
+			<td colspan="3">
+				<div id="sessionName-wrapper">
+					<label>Session Name</label>
+					<input class="form-control" ng-model="form.formData.sessionName" type="text" placeholder="soajsID" ng-required="form.formData.soajsFrmwrk"/>
+					<div class="fieldMsg hint">
+						Specify a name for the session, minimum 5 characters.
+					</div>
+				</div>
+			</td>
+		<tr ng-show="form.formData.soajsFrmwrk">
+			<td colspan="3">
+				<div id="sessionSecret-wrapper">
+					<label>Session Secret</label>
+					<input class="form-control" ng-model="form.formData.sessionSecret" type="text" placeholder="My Session Secret Phrase ..." ng-required="form.formData.soajsFrmwrk"/>
+					<div class="fieldMsg hint">
+						Specify a secret phrase used to encrypt session values, minimum 5 characters.
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>

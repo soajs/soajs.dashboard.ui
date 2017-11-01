@@ -1,0 +1,68 @@
+<label>I want to Deploy This Environment</label>
+<label class="toggleSwitch">
+	<input type="checkbox" ng-model="form.formData.deploy"><span class="buttonSlider round"></span>
+</label>
+<div ng-show="form.formData.deploy">
+	<alert type="info">
+		<h4>SOAJS Controller</h4>
+		<hr/>
+		<p>Turns on API management, lifecycle, security, multi tenancy, multi version, awareness, ...</p>
+	</alert>
+	
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tbody>
+			<tr>
+				<td>
+					<div>
+						<label class="ng-binding">Controller Deployment Mode</label>
+						<select ng-model="form.formData.mode" ng-change="tempFormEntries.mode.onAction()" class="form-control" ng-required="tempFormEntries.mode.required">
+							<option ng-repeat="mode in allowedModes" value="{{mode.v}}">{{mode.l}}</option>
+						</select>
+						<div class="fieldMsg hint">
+							Global/Daemonset mode deploys one replica of the service on each node.<br>Replicated/Deployment
+							mode deploys the specified number of replicas based on the availability of
+							resources.
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div ng-show="form.formData.mode ==='replicated' || form.formData.mode ==='deployment'">
+						<label class="ng-binding">Number of Controller Instances</label>
+						<input class="form-control" ng-model="form.formData.number" type="number" ng-required="tempFormEntries.number.required"/>
+						<div ng-show="entry.fieldMsg" class="fieldMsg hint ng-binding" ng-bind-html="entry.fieldMsg|toTrustedHtml">
+							Choose how many controllers to deploy
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<label class="ng-binding">Memory Limit Per Instance for Controllers (in MBytes)</label>
+						<input class="form-control" ng-model="form.formData.memory" type="number" placeholder="500" ng-required="tempFormEntries.memory.required"/>
+						<div class="fieldMsg hint">
+							Set a custom memory limit for controller instances
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<label class="ng-binding">Controller Catalog Recipe</label>
+						<select ng-model="form.formData.catalog" class="form-control" ng-required="tempFormEntries.catalog.required" ng-change="tempFormEntries.catalog.onAction()">
+							<option ng-repeat="oneRecipe in controllerRecipes" value="{{oneRecipe._id}}">
+								{{oneRecipe.name}}
+							</option>
+						</select>
+						<div class="fieldMsg hint"></div>
+					</div>
+					
+					<div ng-include="'modules/dashboard/environments/directives/deploy-controller-customCatalogInputs.tmpl'"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

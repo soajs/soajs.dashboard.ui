@@ -1368,7 +1368,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/services/template.js', 'modules/dashboard/environments/controller.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -1390,7 +1390,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/services/template.js', 'modules/dashboard/environments/controller.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

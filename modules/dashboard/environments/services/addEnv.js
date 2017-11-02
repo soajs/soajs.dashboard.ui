@@ -346,7 +346,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			},
 			"custom": {
 				type: 'nginx',
-				name: 'nginx'
+				name: currentScope.wizard.gi.code.toLowerCase() + '_nginx'
 			},
 			"recipe": catalogId,
 			"env": currentScope.wizard.gi.code.toUpperCase()

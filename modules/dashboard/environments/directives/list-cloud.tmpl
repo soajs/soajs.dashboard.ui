@@ -369,7 +369,7 @@
 															<td class="statusHeader">
 																Status
 															</td>
-															<td class="metricsHeader" ng-if="isMetricsServerDeployed">
+															<td ng-class="{metricsHeader : envPlatform !== 'kubernetes' , metricsHeader2 : envPlatform === 'kubernetes'}" ng-if="isMetricsServerDeployed">
 																Metrics
 															</td>
 														</tr>
@@ -392,15 +392,15 @@
 																<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
 															</td>
 															<td ng-if= "isMetricsServerDeployed">
-																<div style="width:80px; float : left; text-align: left; padding-left: 2px;">
+																<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
 																	<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
-																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpu}}m&nbsp;
+																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpu}}m
 																	</span>
 																		<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent')">
-																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpuPercent}}%&nbsp;
+																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpuPercent}}%
 																	</span>
 																		<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent') && !servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
-																		<b>CPU:</b> N/A&nbsp;
+																		<b>CPU:</b> N/A
 																	</span>
 																</div>
 																<div style=" float : left; text-align: left">
@@ -414,7 +414,7 @@
 																		</span>
 																	</span>
 																	<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentMemory')">
-																		<b>Memory:</b> N/A&nbsp;
+																		<b>Memory:</b> N/A
 																	</span>
 																</div>
 																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
@@ -535,6 +535,9 @@
 										<td>Availability</td>
 										<td>Memory Resources</td>
 										<td>CPU Count</td>
+										<td class="metricsHeader2" ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
+											Metrics
+										</td>
 									</tr>
 								</thead>
 								<tbody>
@@ -544,6 +547,41 @@
 										<td>{{node.spec.availability}}</td>
 										<td>{{node.resources.memory | bytesToGbytes}} GB</td>
 										<td>{{node.resources.cpus}}</td>
+										<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
+											<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
+												<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
+													 <b>CPU:</b>&nbsp;{{nodesMetrics[node.hostname].currentCpu}}m
+												</span>
+												<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
+													<b>CPU:</b> N/A
+												</span>
+											</div>
+											<div style=" float : left; text-align: left">
+												<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
+													<b>Memory:</b>&nbsp;{{nodesMetrics[node.hostname].currentMemory}}
+												</span>
+												<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
+													<b>Memory:</b> N/A
+												</span>
+											</div>
+											<a href="" ng-if="nodesMetrics[node.hostname].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
+												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }" tooltip="Click to Show/Hide Metrics"></span>
+											</a>
+										</td>
+									</tr>
+									<tr ng-show="ShowMetrics[node.hostname] && isMetricsServerDeployed">
+										<td colspan="6">
+											<div class="col-md-6" ng-if="nodesMetrics[node.hostname].cpu">
+												<canvas id="nodeCpu" class="chart chart-line" chart-data="nodesMetrics[node.hostname].cpu"
+												        chart-labels="nodesMetrics[node.hostname].timestamp"  chart-options="chartOptions[node.hostname].cpu.options" chart-dataset-override="chartOptions[node.hostname].cpu.override">
+												</canvas>
+											</div>
+											<div class="col-md-6" ng-if="nodesMetrics[node.hostname].memory">
+												<canvas id="nodeMemory" class="chart chart-line" chart-data="nodesMetrics[node.hostname].memory"
+												        chart-labels="nodesMetrics[node.hostname].timestamp" chart-options="chartOptions[node.hostname].memory.options" chart-dataset-override="chartOptions[node.hostname].memory.override">
+												</canvas>
+											</div>
+										</td>
 									</tr>
 								</tbody>
 							</table>

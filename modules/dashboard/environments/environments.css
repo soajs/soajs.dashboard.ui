@@ -90,7 +90,7 @@ ul {
 }
 
 .maintenanceHeader {
-    width: 15% !important;
+    width: 14% !important;
 }
 
 .hostnameHeader {
@@ -98,15 +98,19 @@ ul {
 }
 
 .statusHeader {
-    width: 10% !important;
+    width: 12% !important;
 }
 
 .metricsHeader {
-     width: 30% !important;
+     width: 33% !important;
  }
 
+.metricsHeader2 {
+    width: 20% !important;
+}
+
 .nameHeader {
-     width: 20% !important;
+     width: 18% !important;
  }
 
 .ipHeader {
@@ -116,6 +120,10 @@ ul {
 .serviceOpsDropdown {
     float: right !important;
     height: 28px !important;
+}
+
+a.tooltipToggle {
+    outline: 0;
 }
 
 .serviceOpsDropdown .btn {

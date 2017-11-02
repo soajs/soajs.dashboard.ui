@@ -1368,7 +1368,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

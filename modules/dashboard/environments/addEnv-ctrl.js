@@ -157,6 +157,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	$scope.Step2 = function () {
 		overlayLoading.show();
 		var configuration = angular.copy(environmentsConfig.form.add.step2.entries);
+		$scope.remoteCertificates ={};
 		
 		var options = {
 			timeout: $timeout,
@@ -197,21 +198,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 										return false;
 									}
 									
-									if (!formData.deployment.docker.ca || !formData.deployment.docker.cert || !formData.deployment.docker.key) {
+									if (!$scope.remoteCertificates.ca || !$scope.remoteCertificates.cert || !$scope.remoteCertificates.key) {
 										$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");
 										return false;
-									}
-									
-									if (formData.deployment.docker.ca && formData.deployment.docker.cert && formData.deployment.docker.key) {
-										$scope.remoteCertificates = {
-											ca: formData.deployment.docker.ca,
-											cert: formData.deployment.docker.cert,
-											key: formData.deployment.docker.key
-										};
-										
-										delete formData.deployment.docker.ca;
-										delete formData.deployment.docker.cert;
-										delete formData.deployment.docker.key;
 									}
 								}
 								else {
@@ -286,12 +275,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				kubernetes: $scope.form.formData.selectedDriver === 'kubernetes' || false,
 				manual: $scope.form.formData.selectedDriver === 'manual' || false
 			};
-			
-			if ($scope.remoteCertificates && Object.keys($scope.remoteCertificates).length > 0) {
-				$scope.form.formData.deployment.docker.ca = $scope.remoteCertificates.ca;
-				$scope.form.formData.deployment.docker.cert = $scope.remoteCertificates.cert;
-				$scope.form.formData.deployment.docker.key = $scope.remoteCertificates.key;
-			}
 			overlayLoading.hide();
 		});
 	};
@@ -660,10 +643,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	};
 	
 	$scope.overview = function () {
-		console.log($localStorage.addEnv);
-		console.log($scope.wizard);
-		console.log($scope.remoteCertificates);
-		
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {
 			timeout: $timeout,
@@ -783,9 +762,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		function uploadEnvCertificates(cb) {
 			if ($scope.wizard.deploy.selectedDriver === 'docker' && $scope.wizard.deploy.deployment.docker.dockerremote) {
 				let certificatesNames = Object.keys($scope.remoteCertificates);
-				console.log(certificatesNames);
-				return cb();
-				// uploadFiles(certificatesNames, 0, cb);
+				uploadFiles(certificatesNames, 0, cb);
 			}
 			else {
 				return cb();
@@ -793,7 +770,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 			
 			function uploadFiles(certificatesNames, counter, uCb) {
 				let oneCertificate = certificatesNames[counter];
-				if (!$scope.remoteCertificates[oneCertificate] || !$scope.remoteCertificates[oneCertificate].name) {
+				if (!$scope.remoteCertificates[oneCertificate]) {
 					//to avoid incompatibility issues when using safari browsers
 					return uCb();
 				}
@@ -850,7 +827,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				data: {
 					catalog: {
 						description: "Nginx Recipe for " + $scope.wizard.gi.code.toUpperCase() + " Environment",
-						name: $scope.wizard.gi.code.toLowerCase() + "_nginx",
+						name: "Deployer Recipe for " + $scope.wizard.gi.code.toUpperCase() + " Nginx",
 						recipe: recipe,
 						type: "server",
 						subtype: "nginx"

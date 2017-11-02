@@ -55,7 +55,7 @@
 								<span ng-show="remoteCertificates && remoteCertificates.ca" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="form.formData.deployment.docker.ca"/>
+								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.ca"/>
 								<div class="fieldMsg hint">Specify the location of the certificate of type CA.</div>
 							</div>
 							<div id="Cert-wrapper"  class="w30 f-left">
@@ -63,7 +63,7 @@
 								<span ng-show="remoteCertificates && remoteCertificates.cert" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="form.formData.deployment.docker.cert"/>
+								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.cert"/>
 								<div class="fieldMsg hint">Specify the location of the certificate of type Cert.</div>
 							</div>
 							<div id="Key-wrapper"  class="w30 f-left">
@@ -71,7 +71,7 @@
 								<span ng-show="remoteCertificates && remoteCertificates.key" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="form.formData.deployment.docker.key"/>
+								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.key"/>
 								<div class="fieldMsg hint">Specify the location of the certificate of type Key.</div>
 							</div>
 						</fieldset>

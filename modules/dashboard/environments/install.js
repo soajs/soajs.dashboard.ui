@@ -1357,7 +1357,7 @@ var environmentsNav = [
 			'method': 'post'
 		},
 		'label': translation.addNewEnvironment[LANG],
-		'url': '#/environments/add',
+		'url': '#/environments-add',
 		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
 		'icon': 'plus',
 		'pillar':{

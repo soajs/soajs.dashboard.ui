@@ -110,7 +110,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', 'Upload', fun
 			let recipe = {
 				"deployOptions": {
 					"image": {
-						"prefix": currentScope.wizard.nginx.imagePrefix || "soajs",
+						"prefix": currentScope.wizard.nginx.imagePrefix || "soajsorg",
 						"name": currentScope.wizard.nginx.imageName || "nginx",
 						"tag": currentScope.wizard.nginx.imageTag || "latest",
 						"pullPolicy": "IfNotPresent"

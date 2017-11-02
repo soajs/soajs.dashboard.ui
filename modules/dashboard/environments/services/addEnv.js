@@ -1,6 +1,6 @@
 "use strict";
 var dbServices = soajsApp.components;
-dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', 'Upload', function (ngDataApi, $timeout, $cookies, Upload) {
+dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorage', 'Upload', function (ngDataApi, $timeout, $cookies, $localStorage, Upload) {
 	
 	function createEnvironment(currentScope, cb) {
 		let data = currentScope.wizard.gi;
@@ -471,12 +471,41 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', 'Upload', fun
 		});
 	}
 	
+	function getPermissions(currentScope, cb) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/key/permission/get"
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$localStorage.soajs_user = null;
+				$cookies.remove('access_token', {'domain': interfaceDomain});
+				$cookies.remove('refresh_token', {'domain': interfaceDomain});
+				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
+				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$localStorage.acl_access = response.acl;
+				$localStorage.environments = response.environments;
+				response.environments.forEach(function (oneEnv) {
+					if (oneEnv.code.toLowerCase() === 'dashboard') {
+						// todo
+						// $cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
+						// $scope.$parent.currentDeployer.type = oneEnv.deployer.type;
+					}
+				});
+				return cb();
+			}
+		});
+	}
+	
 	return {
 		'createEnvironment': createEnvironment,
 		'uploadEnvCertificates': uploadEnvCertificates,
 		'createNginxRecipe': createNginxRecipe,
 		'deployNginx': deployNginx,
-		'deployController': deployController
+		'deployController': deployController,
+		'getPermissions': getPermissions
 	};
 	
 }]);

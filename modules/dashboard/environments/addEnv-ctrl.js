@@ -685,41 +685,35 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									addEnv.deployController($scope, () => {
 										if ($scope.wizard.nginx.catalog) {
 											addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, () => {
-												delete $localStorage.addEnv;
-												$scope.form.formData = {};
-												$scope.remoteCertificates = {};
-												delete $scope.wizard;
-												overlayLoading.hide();
-												$scope.displayAlert('success', "Environment Created");
-												$scope.$parent.go("#/environments");
+												finalResponse();
 											});
 										}
 										else {
 											addEnv.createNginxRecipe($scope, (catalogId) => {
 												addEnv.deployNginx($scope, catalogId, () => {
-													delete $localStorage.addEnv;
-													$scope.form.formData = {};
-													$scope.remoteCertificates = {};
-													delete $scope.wizard;
-													overlayLoading.hide();
-													$scope.displayAlert('success', "Environment Created");
-													$scope.$parent.go("#/environments");
+													finalResponse();
 												});
 											});
 										}
 									});
 								}
 								else {
-									delete $localStorage.addEnv;
-									$scope.form.formData = {};
-									$scope.remoteCertificates = {};
-									delete $scope.wizard;
-									overlayLoading.hide();
-									$scope.displayAlert('success', "Environment Created");
-									$scope.$parent.go("#/environments");
+									finalResponse();
 								}
 							});
 						});
+						
+						function finalResponse(){
+							addEnv.getPermissions($scope, () => {
+								delete $localStorage.addEnv;
+								$scope.form.formData = {};
+								$scope.remoteCertificates = {};
+								delete $scope.wizard;
+								overlayLoading.hide();
+								$scope.displayAlert('success', "Environment Created");
+								$scope.$parent.go("#/environments");
+							});
+						}
 					}
 				},
 				{

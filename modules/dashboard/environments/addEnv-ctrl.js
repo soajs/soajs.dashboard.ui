@@ -787,7 +787,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						filename: $scope.remoteCertificates[oneCertificate].name,
 						certType: oneCertificate,
 						platform: "docker",
-						driver: "docker.remote",
+						driver: "remote",
 						access_token: access_token
 					},
 					file: $scope.remoteCertificates[oneCertificate],

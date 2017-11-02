@@ -1,11 +1,13 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', function ($scope, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope','$routeParams', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', function ($scope,$routeParams , $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
+	
+	$scope.portal = $routeParams.portal
 	
 	$scope.wizard = {};
 	
@@ -122,6 +124,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				$scope.form.formData = angular.copy($localStorage.addEnv.step1);
 				$scope.wizard.gi = angular.copy($scope.form.formData);
 			}
+			
+			if($scope.portal){
+				$scope.form.formData.code = 'PORTAL';
+			}
+			
 			overlayLoading.hide();
 		});
 	};

@@ -8,12 +8,12 @@
                         <span class="icon icon-{{link.icon}}"></span>{{link.label}}
                     </a>
                 </li>
-	            <li ng-show="portalDeployed">
+	            <li ng-show="isPortalDeployed()">
 		            <a href="" ng-click="openMy('portal')" class="userMenu-portal" id="userMenu-portal">
 			            <span class="icon icon-home"></span>Open Portal
 		            </a>
 	            </li>
-	            <li ng-show="!portalDeployed">
+	            <li ng-show="!isPortalDeployed()">
 		            <a href="#/environments-add?portal=true" class="btn btn-warning userMenu-portal" id="userMenu-portal2" style="position:relative; top:-6px;">
 			            <span class="icon icon-rocket"></span>Deploy Portal
 		            </a>

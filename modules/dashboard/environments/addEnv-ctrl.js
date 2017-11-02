@@ -183,6 +183,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							formData.selectedDriver = 'manual';
 							delete formData.kubernetes;
 							delete formData.docker;
+							$localStorage.addEnv.step2 = angular.copy(formData);
+							$scope.wizard.deploy = angular.copy(formData);
 							$scope.lastStep = 2;
 							$scope.overview();
 						}
@@ -679,7 +681,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						overlayLoading.show();
 						createEnvironment(() => {
 							uploadEnvCertificates(() => {
-								if ($scope.wizard.controller.deploy) {
+								if ($scope.wizard.controller && $scope.wizard.controller.deploy) {
 									deployController(() => {
 										
 										if ($scope.wizard.nginx.catalog) {
@@ -760,7 +762,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		}
 		
 		function uploadEnvCertificates(cb) {
-			if ($scope.wizard.deploy.selectedDriver === 'docker' && $scope.wizard.deploy.deployment.docker.dockerremote) {
+			if ($scope.wizard.deploy && $scope.wizard.deploy.selectedDriver === 'docker' && $scope.wizard.deploy.deployment.docker.dockerremote) {
 				let certificatesNames = Object.keys($scope.remoteCertificates);
 				uploadFiles(certificatesNames, 0, cb);
 			}

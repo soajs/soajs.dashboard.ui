@@ -1585,8 +1585,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	}
 
 	injectFiles.injectCss("modules/dashboard/multitenancy/multitenancy.css");
-}])
-;
+}]);
 
 multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$routeParams', 'aclHelper', function ($scope, ngDataApi, $routeParams, aclHelper) {
 	$scope.$parent.isUserLoggedIn();
@@ -1640,10 +1639,9 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 				// get product info
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/product/packages/get",
+					"routeName": "/dashboard/product/get",
 					"params": {
-						"productCode": $scope.currentApplication.product,
-						"packageCode": $scope.currentApplication.package
+						"productCode": $scope.currentApplication.product
 					}
 
 				}, function (error, response) {
@@ -1652,7 +1650,24 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
-						$scope.currentApplication.parentPckgAcl = response.acl;
+						if (!response.locked) {
+							for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
+								if ($scope.environments_codes[i].code === 'DASHBOARD') {
+									$scope.environments_codes.splice(i, 1);
+									break;
+								}
+							}
+						}
+						for (var x = 0; x < response.packages.length; x++) {
+							if (response.packages[x].code === $scope.currentApplication.package) {
+								$scope.currentApplication.parentPckgAcl = response.packages[x].acl;
+								break;
+							}
+						}
+						if ($scope.environments_codes.length === 0) {
+							overlayLoading.hide();
+							return;
+						}
 						aclHelper.fillAcl($scope);
 						var serviceNames = $scope.currentApplication.serviceNames;
 						getSendDataFromServer($scope, ngDataApi, {

@@ -4,11 +4,11 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.$parent.isUserLoggedIn();
 	$scope.newEntry = true;
 	$scope.envId = null;
-	$scope.formEnvironment = { services: {} };
+	$scope.formEnvironment = {services: {}};
 	$scope.formEnvironment.config_loggerObj = '';
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
-
+	
 	$scope.waitMessage = {
 		type: "",
 		message: "",
@@ -94,16 +94,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				"routeName": "/dashboard/environment",
 				"params": {}
 			};
-			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-				options.params.code = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+				options.params.code = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 				getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 					if (error) {
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
 						var newData = [response];
-						$scope.oneEnv = response;
-						$scope.grid = { rows: newData };
+						$scope.grid = {rows: newData};
 						$scope.jsonEditor.custom.data = JSON.stringify(newData.custom, null, 2);
 					}
 				});
@@ -153,20 +152,20 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}, function (error, response) {
 			if (error) {
 				$localStorage.soajs_user = null;
-				$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
-				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+				$cookies.remove('soajs_auth', {'domain': interfaceDomain});
+				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				$localStorage.environments = response.environments;
 				
 				if (newEnvRecord) {
-					$cookies.putObject('myEnv', newEnvRecord, { 'domain': interfaceDomain });
+					$cookies.putObject('myEnv', newEnvRecord, {'domain': interfaceDomain});
 				}
 				else {
 					response.environments.forEach(function (oneEnv) {
 						if (oneEnv.code.toLowerCase() === 'dashboard') {
-							$cookies.putObject('myEnv', oneEnv, { 'domain': interfaceDomain });
+							$cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
 						}
 					});
 				}
@@ -214,7 +213,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": (($scope.newEntry) ? "post" : "put"),
 			"routeName": "/dashboard/environment/" + (($scope.newEntry) ? "add" : "update"),
-			"params": ($scope.newEntry) ? {} : { "id": $scope.envId },
+			"params": ($scope.newEntry) ? {} : {"id": $scope.envId},
 			"data": postData
 		}, function (error, response) {
 			if (error) {
@@ -232,7 +231,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "put",
 			"routeName": "/dashboard/environment/key/update",
-			"params": { "id": $scope.envId },
+			"params": {"id": $scope.envId},
 			"data": {
 				'algorithm': $scope.formEnvironment.services.config.key.algorithm,
 				'password': $scope.formEnvironment.services.config.key.password
@@ -287,7 +286,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/environment/delete",
-			"params": { "id": row['_id'] }
+			"params": {"id": row['_id']}
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -372,7 +371,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						var nextLimit = $scope.startLimit + $scope.increment;
 						$scope.showNext = ($scope.totalCount > nextLimit);
 						
-						$scope.customRegistries = { list: response.records };
+						$scope.customRegistries = {list: response.records};
 						$scope.customRegistries.original = angular.copy($scope.customRegistries.list); //keep a copy of the original customRegistry records
 						
 						$scope.customRegistries.list.forEach(function (oneCustomRegistry) {
@@ -809,166 +808,11 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 	}
 	if ($scope.access.customRegistry.list) {
-		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+		if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+			$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		}
 		$scope.listCustomRegistry();
 	}
-}]);
-
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', '$localStorage', function($scope, $timeout, $modal, $cookies, ngDataApi, $localStorage){
-	
-	$scope.$parent.isUserLoggedIn();
-	$scope.access = {};
-	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
-
-	$scope.Step1 = function () {
-		var configuration = angular.copy(environmentsConfig.form.add.step1.entries);
-		var options = {
-			timeout: $timeout,
-			entries: configuration,
-			name: 'addEnvironment',
-			label: translation.addNewEnvironment[LANG],
-			actions: [
-				{
-					'type': 'submit',
-					'label': "Next",
-					'btn': 'primary',
-					'action': function (formData) {
-						if(!$localStorage.add){
-							$localStorage.add ={};
-						}
-						
-						$localStorage.add.step1 = formData;
-						$scope.Step2();
-						
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						$scope.form.formData = {};
-						$scope.$parent.go("/environments")
-					}
-				}
-			]
-		};
-		
-		if($localStorage.add && $localStorage.add.step1){
-			options.data = $localStorage.add.step1;
-			
-			if(options.data.cookiesecret){
-				options.entries.forEach(function(oneEntry){
-					if(oneEntry.name === 'soajsFrmwk'){
-						oneEntry.collapsed = false;
-					}
-				})
-			}
-		}
-		
-		buildForm($scope, $modal, options);
-	};
-	
-	$scope.Step2 = function(){
-		var configuration = [];
-		
-		var options = {
-			timeout: $timeout,
-			entries: configuration,
-			name: 'addEnvironment',
-			label: translation.addNewEnvironment[LANG],
-			actions: [
-				{
-					'type': 'button',
-					'label': "Back",
-					'btn': 'success',
-					'action': function () {
-						if($localStorage.add.step2){
-							delete $localStorage.add.step2;
-						}
-						$scope.Step1();
-					}
-				},
-				{
-					'type': 'submit',
-					'label': "Next",
-					'btn': 'primary',
-					'action': function (formData) {
-						$localStorage.add.step2 = formData;
-						$scope.Step3();
-						
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						$scope.form.formData = {};
-						$scope.$parent.go("/environments")
-					}
-				}
-			]
-		};
-		
-		if($localStorage.add && $localStorage.add.step2){
-			options.data = $localStorage.add.step2;
-		}
-		
-		buildForm($scope, $modal, options);
-	};
-	
-	$scope.Step3 = function(){
-	
-	};
-	
-	if ($scope.access.addEnvironment) {
-		$scope.Step1();
-	}
-	
-	
-	// function temporary(){
-	// 	var tmpl = angular.copy(env_template);
-	// 	tmpl.code = formData.code;
-	// 	tmpl.domain = formData.domain;
-	// 	tmpl.description = formData.description;
-	//
-	// 	if (formData.apiPrefix) {
-	// 		tmpl.apiPrefix = formData.apiPrefix;
-	// 	}
-	//
-	// 	if (formData.sitePrefix) {
-	// 		tmpl.sitePrefix = formData.sitePrefix;
-	// 	}
-	//
-	// 	tmpl.services.config.key.password = formData.tKeyPass;
-	// 	tmpl.services.config.cookie.secret = formData.sessionCookiePass;
-	// 	tmpl.services.config.session.secret = formData.sessionCookiePass;
-	//
-	// 	getSendDataFromServer($scope, ngDataApi, {
-	// 		"method": "post",
-	// 		"routeName": "/dashboard/environment/add",
-	// 		"data": tmpl
-	// 	}, function (error, data) {
-	// 		if (error) {
-	// 			$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-	// 		}
-	// 		else {
-	// 			$scope.$parent.displayAlert('success', translation.environmentCreatedSuccessfully[LANG]);
-	// 			$scope.modalInstance.close('ok');
-	// 			$scope.form.formData = {};
-	// 			getEnvironments({
-	// 				code: data[0].code,
-	// 				_id: data[0]._id.toString(),
-	// 				deployer: data[0].deployer
-	// 			}, function () {
-	// 				$scope.updateEnvironment(data[0]);
-	// 			});
-	// 		}
-	// 	});
-	// }
 }]);
 
 environmentsApp.filter('customRegSearch', function () {

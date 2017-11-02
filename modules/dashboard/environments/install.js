@@ -1365,7 +1365,7 @@ var environmentsNav = [
 			'method': 'post'
 		},
 		'label': translation.addNewEnvironment[LANG],
-		'url': '#/environments/add',
+		'url': '#/environments-add',
 		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
 		'icon': 'plus',
 		'pillar':{
@@ -1376,7 +1376,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/services/template.js', 'modules/dashboard/environments/controller.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -1398,7 +1398,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/services/template.js', 'modules/dashboard/environments/controller.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

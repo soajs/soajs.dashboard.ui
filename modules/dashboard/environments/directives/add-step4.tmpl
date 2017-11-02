@@ -1,0 +1,71 @@
+<div ng-show="form.formData.deploy">
+	<alert type="info">
+		<h4>SOAJS Nginx</h4>
+		<hr/>
+		<p>Allows you to add static content and empower with the ability to access this environment via domain(s):
+		</p>
+		<ul>
+			<li>&bullet;&nbsp;&nbsp;&nbsp;{{wizard.gi.sitePrefix}}.{{wizard.gi.domain}}&nbsp;( Static Content )</li>
+			<li>&bullet;&nbsp;&nbsp;&nbsp;{{wizard.gi.apiPrefix}}.{{wizard.gi.domain}}&nbsp;( API )</li>
+		</ul>
+		<p>
+			<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes#CatalogRecipes-nginxRecipe" target="_blank">Click
+				Here</a> to learn how to build a Catalog Recipe for an <b>Nginx Service</b>.
+		</p>
+		<hr />
+		<p>
+		<h4>Nginx will be deployed as <span class="capitalize">{{form.formData.mode}}</span> Mode</h4>
+		<p>Nginx will be deployed as {{form.formData.mode}} mode on each
+			machine in this environment allowing it to capture the real IP value when requests arrive to the
+			cloud.
+		</p>
+		</p>
+	</alert>
+	
+	<table width="100%" cellspacing="0" cellpadding="0" border="0">
+		<tbody>
+			<tr class="form-group">
+				<td>
+					<div id="nginxmemory-wrapper">
+						<div>
+							<label>Memory Limit Per Instance for Nginx (in MBytes)</label>
+							<input type="number" ng-required="tempFormEntries.memory.required" ng-model="form.formData.memory" class="form-control" placeholder="500"/>
+							<div class="fieldMsg hint">Set a custom memory limit for Nginx instances</div>
+						</div>
+					
+					</div>
+				</td>
+			</tr>
+			<tr class="form-group">
+				<td>
+					<div id="norecipe-wrapper">
+						<label>I don't have a recipe yet, create one for me and use it</label>
+						<label class="toggleSwitch">
+							<input type="checkbox" ng-model="form.formData.norecipe" ng-change="tempFormEntries.norecipe.onAction()"><span class="buttonSlider round"></span>
+						</label>
+						<div class="fieldMsg hint">
+							Specify if you want the deployer to create a new nginx recipe for you and use it
+							to deploy the Nginx in this environment.
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr class="form-group">
+				<td>
+					<div id="catalog-wrapper" ng-show="!form.formData.norecipe" >
+						<label class="f-left">I already Prepared an Nginx Catalog Recipe</label>
+						<select ng-required="tempFormEntries.catalog.required" class="form-control" ng-model="form.formData.catalog" ng-change="tempFormEntries.catalog.onAction()">
+							<option ng-repeat="oneRecipe in nginxRecipes" value="{{oneRecipe._id}}">{{oneRecipe.name}}</option>
+						</select>
+						<div class="fieldMsg hint">Choose which catalog recipe to use to deploy this Nginx.</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div ng-include="'modules/dashboard/environments/directives/deploy-nginx-customCatalogInputs.tmpl'"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

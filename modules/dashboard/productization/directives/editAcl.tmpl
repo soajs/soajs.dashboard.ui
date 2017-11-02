@@ -7,6 +7,11 @@
 					<alert type="{{msg.type}}">{{msg.msg}}</alert>
 					<br>
 				</div>
+				<div ng-if="environments_codes.length===0">
+					<alert type="warning">No environments found.
+						Add your environment before you can edit the ACL.
+					</alert>
+				</div>
 				<tabset>
 					<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
 						<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
@@ -20,7 +25,7 @@
 					</tab>
 				</tabset>
 			</div>
-			<div class="footer"><br/>
+			<div class="footer" ng-if="environments_codes.length"><br/>
 				<input type="submit" class="btn btn-sm btn-primary" ng-click="saveACL()" value="Save ACL"/>
 			</div>
 		</form>

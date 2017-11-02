@@ -1,0 +1,41 @@
+
+<accordion close-others="false">
+	<accordion-group is-open="true">
+		<accordion-heading>
+			General Information
+		</accordion-heading>
+		
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+			<thead>
+				<tr>
+					<th>Property Name</th>
+					<th>Property Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="(k,v) in wizard.gi">
+					<td><label>{{k}}</label></td>
+					<td>{{v}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</accordion-group>
+	<accordion-group is-open="true">
+		<accordion-heading>
+			Deployment Strategy
+		</accordion-heading>
+		
+	</accordion-group>
+	<accordion-group is-open="true" ng-show="wizard.controller.deploy">
+		<accordion-heading>
+			SOAJS Controller
+		</accordion-heading>
+		
+	</accordion-group>
+	<accordion-group is-open="true" ng-show="wizard.controller.deploy">
+		<accordion-heading>
+			Nginx Server
+		</accordion-heading>
+		
+	</accordion-group>
+</accordion>

@@ -1,0 +1,42 @@
+<div ng-show="tempFormEntries.branches && tempFormEntries.branches.length > 0">
+	<label>Select Branch</label>
+	<select ng-model="form.formData.branch" class="form-control" ng-required="true">
+		<option ng-repeat="oneBranch in tempFormEntries.branches" value="{{oneBranch.name}}">{{oneBranch.name}}</option>
+	</select>
+	<div class="fieldMsg hint">Choose which branch to deploy the controller from.</div>
+</div>
+<br />
+<accordion close-others="false">
+	<accordion-group ng-show="tempFormEntries.imagePrefix" is-open="true">
+		<accordion-heading>Image Properties</accordion-heading>
+	
+		<div ng-show="tempFormEntries.imagePrefix">
+			<label>Image Prefix</label>
+			<input type="text" class="form-control" ng-model="form.formData.imagePrefix" ng-required="tempFormEntries.imagePrefix.required"/>
+			<div class="fieldMsg hint">Override the image prefix if you want</div>
+			<br />
+		</div>
+		<div ng-show="tempFormEntries.imageName">
+			<label>Image Name</label>
+			<input type="text" class="form-control" ng-model="form.formData.imageName" ng-required="tempFormEntries.imagePrefix.required"/>
+			<div class="fieldMsg hint">Override the image name if you want</div>
+			<br />
+		</div>
+		<div ng-show="tempFormEntries.imageTag">
+			<label>Image Tag</label>
+			<input type="text" class="form-control" ng-model="form.formData.imageTag" ng-required="tempFormEntries.imagePrefix.required"/>
+			<div class="fieldMsg hint">Override the image tag if you want</div>
+			<br />
+		</div>
+	
+	</accordion-group>
+	<accordion-group ng-show="tempFormEntries.custom" is-open="true">
+		<accordion-heading>Custom Inputs</accordion-heading>
+		<div ng-repeat="(userInputName,userInput) in tempFormEntries.custom">
+			<label>{{userInput.label || userInput.name}}</label>
+			<input type="text" class="form-control" ng-model="form.formData.custom[userInputName].value" value="{{userInput.value}}" ng-required="userInput.required"/>
+			<div class="fieldMsg hint">{{userInput.fieldMsg}}</div>
+			<br />
+		</div>
+	</accordion-group>
+</accordion>

@@ -60,111 +60,43 @@ var environmentsConfig = {
 			step1: {
 				'entries': [
 					{
-						"type":"accordion",
-						
-					},
-					{
-						'name': 'code',
-						'label': translation.envCode[LANG],
-						'type': 'text',
-						'placeholder': "PORTAL | DEV | QA | CAT | STG | PROD | TEST",
-						'required': true
-					},
-					{
-						'name': 'description',
-						'label': translation.environmentDescription[LANG],
-						'type': 'textarea',
-						'rows': '3',
-						'placeholder': translation.myEnvDescription[LANG],
-						'value': '',
-						'required': true
-					},
-					{
-						'name': 'domain',
-						'label': translation.environmentDomain[LANG],
-						'type': 'text',
-						'placeholder': translation.myDomainCom[LANG],
-						'value': '',
-						'required': true
-					},
-					{
-						'name': 'apiPrefix',
-						'label': translation.apiPrefix[LANG],
-						'type': 'text',
-						'placeholder': 'api',
-						'value': '',
-						'required': false,
-						'fieldMsg': translation.inCaseAPIPrefixNotSpecified[LANG]
-					},
-					{
-						'name': 'sitePrefix',
-						'label': translation.sitePrefix[LANG],
-						'type': 'text',
-						'placeholder': 'site',
-						'value': '',
-						'required': false,
-						'fieldMsg': translation.inCaseSitePrefixNotSpecified[LANG]
-					},
-					{
-						'name': 'tKeyPass',
-						'label': translation.tenantKeySecurityPassword[LANG],
-						'type': 'text',
-						'value': '',
-						'placeholder': translation.myTenantKeyAES256Password[LANG],
-						'required': true
-					},
-					{
-						'name': 'sensitive',
-						'label': "Sensitive",
-						'type': 'radio',
-						'value': [
-							{
-								'v': false,
-								'l': "False",
-								'selected': true
-							},
-							{
-								'v': true,
-								'l': "True"
-							}
-						],
-						'required': false
-					},
-					{
-						'name': 'soajsFrmwk',
-						'label': 'I want to use the SOAJS Framework in this Environment',
-						'type': 'group',
-						'collapsed': true,
-						'entries': [
-							{
-								'name': 'cookiesecret',
-								'label': "Cookie Secret",
-								'type': 'text',
-								'placeholder': "My Cookie Secret Phrase ...",
-								'required': false,
-								'fieldMsg': translation.enterCookieSecretPhraseEncryptCookieValues[LANG]
-							},
-							{
-								'name': 'sessionName',
-								'label': "Session Name",
-								'type': 'text',
-								'placeholder': "soajsID",
-								'required': false,
-								'fieldMsg': translation.specifyNameForThisSessionMinimumCharacters[LANG]
-							},
-							{
-								'name': 'sessionSecret',
-								'label': "Session Secret",
-								'type': 'text',
-								'placeholder': "My Session Secret Phrase ...",
-								'required': false,
-								'fieldMsg': translation.specifySecretPhraseUsedEncryptSessionValues[LANG]
-							}
-						]
+						"name": "generalInfo",
+						"directive": "modules/dashboard/environments/directives/add-step1.tmpl"
 					}
 				]
 			},
-			step2: {}
+			step2: {
+				"entries": [
+					{
+						"name": "deployment",
+						"directive": "modules/dashboard/environments/directives/add-step2.tmpl"
+					}
+				]
+			},
+			step3: {
+				"entries": [
+					{
+						"name": "deployment",
+						"directive": "modules/dashboard/environments/directives/add-step3.tmpl"
+					}
+				]
+			},
+			step4: {
+				"entries": [
+					{
+						"name": "deployment",
+						"directive": "modules/dashboard/environments/directives/add-step4.tmpl"
+					}
+				]
+			},
+			overview: {
+				"entries": [
+					{
+						"name": "deployment",
+						"directive": "modules/dashboard/environments/directives/add-overview.tmpl"
+					}
+				]
+			}
 		},
 		database: {
 			'name': '',

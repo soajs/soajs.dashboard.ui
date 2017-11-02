@@ -7,7 +7,7 @@
 			<br/>
 
 			<div class="entryBoxes">
-				<div class="entryBox">
+				<div ng-repeat="oneEnv in grid.rows" class="entryBox">
 					<div class="header">
 						<span>{{translation.code[LANG]}}: {{oneEnv['code']}} / {{translation.siteDomain[LANG]}}: {{oneEnv['sitePrefix']}}.{{oneEnv.domain}} / <span ng-show="oneEnv['portalPrefix']">{{translation.portalDomain[LANG]}} : {{oneEnv['portalPrefix']}}.{{oneEnv.domain}} /</span> {{translation.apiDomain[LANG]}} : {{oneEnv['apiPrefix']}}.{{oneEnv.domain}} /</span>
 						<span ng-if="oneEnv.sensitive" style="margin-left: 3px">[Sensitive]</span>

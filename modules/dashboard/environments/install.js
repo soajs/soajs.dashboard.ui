@@ -382,6 +382,14 @@ var envTranslation ={
 		"ENG": "Unable to retrieve services hosts information.",
 		"FRA": "Unable to retrieve services hosts information."
 	},
+	"unableRetrieveServicesMetrics": {
+		"ENG": "Unable to retrieve services metrics.",
+		"FRA": "Unable to retrieve services metrics."
+	},
+	"unableRetrieveNodesMetrics": {
+		"ENG": "Unable to retrieve services metrics.",
+		"FRA": "Unable to retrieve nodes metrics."
+	},
 	"unableToRetrieveZombieContainers": {
 		"ENG": "Unable to retrieve zombie containers",
 		"FRA": "Unable to retrieve zombie containers"

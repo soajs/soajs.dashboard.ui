@@ -8,11 +8,15 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 
 	var autoRefreshTimeoutInstance;
+	var autoRefreshTimeoutMetrics;
 
 	$scope.serviceProviders = environmentsConfig.providers;
 	
     $scope.nodes = {};
 	$scope.services = {};
+	
+	$scope.ShowMetrics = {};
+	$scope.servicesMetrics = {};
 	
 	$scope.oldStyle = false;
 
@@ -99,6 +103,15 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		autoRefreshTimeoutInstance = $timeout(function(){
 			$scope.listServices(function(){
 				$scope.autoRefresh();
+			});
+		}, tValue);
+	};
+	
+	$scope.autoRefreshMetrics = function () {
+		var tValue = 20000;
+		autoRefreshTimeoutMetrics= $timeout(function () {
+			$scope.getServicesMetrics(function () {
+				$scope.autoRefreshMetrics();
 			});
 		}, tValue);
 	};
@@ -223,6 +236,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.hostLogs = function (task) {
 		hacloudSrv.hostLogs($scope, task);
 	};
+	
+	$scope.getServicesMetrics = function (cb) {
+		hacloudSrv.getServicesMetrics($scope, cb);
+	};
 
 	$scope.showHideFailures = function(service){
 		service.tasks.forEach(function(oneTask){
@@ -232,14 +249,23 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		});
 	};
 
-	$scope.checkHeapster = function() {
-		hacloudSrv.checkHeapster($scope);
+	$scope.checkHeapster = function(cb) {
+		hacloudSrv.checkHeapster($scope, cb);
+	};
+	
+	$scope.checkMetricsServer = function(cb) {
+		hacloudSrv.checkMetricsServer($scope, cb);
 	};
 
 	$scope.deployHeapster = function(){
 		deploySrv.deployHeapster($scope);
 	};
-
+	
+	$scope.deployMetricsServer = function(){
+		deploySrv.deployMetricsServer($scope);
+	};
+	
+	
 	$scope.autoScale = function (service) {
 		hacloudSrv.autoScale($scope, service);
 	};
@@ -250,6 +276,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	$scope.numToArray = function(num) {
 		return new Array(num);
+	};
+	
+	$scope.showHideMetrics = function(containerName){
+		$scope.ShowMetrics[containerName] = !($scope.ShowMetrics[containerName]);
 	};
 
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');
@@ -266,17 +296,29 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		$scope.checkCerts($scope.envCode);
 	}
 	if ($scope.access.listHosts && $scope.envCode) {
-		$scope.listServices(function(){
+		$scope.listServices(function () {
 			$scope.listNamespaces(function () {
-				$scope.checkHeapster(function(){
+				$scope.checkHeapster(function () {
 					$scope.autoRefresh();
 				});
 			});
 		});
 	}
-
-	$scope.$on("$destroy", function(){
+	if ($scope.access.hacloud.services.metrics) {
+		$scope.checkMetricsServer(function () {
+			$scope.getServicesMetrics(function () {
+				$timeout(function () {
+					$scope.getServicesMetrics(function () {
+						$scope.autoRefreshMetrics();
+					});
+				}, 3000);
+			});
+		});
+	}
+	
+	$scope.$on("$destroy", function () {
 		$timeout.cancel(autoRefreshTimeoutInstance);
+		$timeout.cancel(autoRefreshTimeoutMetrics);
 	});
 }]);
 

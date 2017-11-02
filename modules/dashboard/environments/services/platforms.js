@@ -360,7 +360,10 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 				$scope.listNamespaces = function () {
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
-						routeName: '/dashboard/cloud/namespaces/list'
+						routeName: '/dashboard/cloud/namespaces/list',
+						params: {
+							env : currentScope.envCode.toLowerCase()
+						}
 					}, function (error, namespaces) {
 						if (error) {
 							$scope.message = {

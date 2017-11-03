@@ -291,7 +291,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
 		$scope.getEnvironment();
-		$scope.listNodes();
+		$scope.listNodes($scope);
 		$scope.certsExist = true;
 		$scope.checkCerts($scope.envCode);
 	}

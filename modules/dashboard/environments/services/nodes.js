@@ -121,7 +121,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 							}
 							else {
 								currentScope.displayAlert('success', 'Node added successfully');
-								currentScope.listNodes();
+								currentScope.listNodes(currentScope);
 							}
 						});
 					}
@@ -155,7 +155,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 			}
 			else {
 				currentScope.displayAlert('success', 'Node removed successfully');
-				currentScope.listNodes();
+				currentScope.listNodes(currentScope);
 			}
 		});
 	}
@@ -182,7 +182,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 			}
 			else {
 				currentScope.displayAlert('success', 'Node updated successfully');
-				currentScope.listNodes();
+				currentScope.listNodes(currentScope);
 			}
 		});
 	}
@@ -224,7 +224,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 								currentScope.modalInstance.close();
 								currentScope.form.formData = {};
 								currentScope.displayAlert('success', 'Node tagged successfully');
-								currentScope.listNodes();
+								currentScope.listNodes(currentScope);
 							}
 						});
 					}

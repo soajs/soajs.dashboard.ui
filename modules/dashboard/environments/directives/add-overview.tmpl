@@ -21,23 +21,26 @@
 			Deployment Strategy
 		</accordion-heading>
 		<div>
-			<h4 class="text-capitalize l-left dockerHead">{{wizard.deploy.selectedDriver}}</h4>
+			<h4 style="display:inline-block;" class="text-capitalize">{{wizard.deploy.selectedDriver}}</h4>
 			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='docker'">
 				<img ng-src="themes/default/img/docker_logo.png" width="100%"/>
 			</div>
-			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='kuberentes'">>
+			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='kubernetes'">
 				<img ng-src="themes/default/img/kubernetes_logo.png" width="100%"/>
 			</div>
 		</div>
-		<hr>
-		<div ng-if="wizard.deploy.selectedDriver=='docker'" class="c-both">
-			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].dockerremote==true" class="addEnvTable">
+		<hr style="clear:right;">
+		<!--Docker-->
+		<div ng-if="wizard.deploy.selectedDriver=='docker'">
+			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].dockerremote==false">
 				<div class="alert alert-info">
 					<h4><span class="icon icon-info"></span> Info:</h4>
 					<p> I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span>
 						as my container technology.
 					</p>
 				</div>
+			</div>
+			<div class="addEnvTable">
 				<table>
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.deploy.deployment[wizard.deploy.selectedDriver]">
@@ -49,14 +52,17 @@
 			</div>
 		</div>
 		<!--Kuberenetes-->
-		<div ng-if="wizard.deploy.selectedDriver==kubernetes">
-			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].kubernetesremote==true" class="addEnvTable">
+		<div ng-if="wizard.deploy.selectedDriver=='kubernetes'">
+			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].kubernetesremote==false">
 				<div class="alert alert-info">
 					<h4><span class="icon icon-info"></span> Info:</h4>
 					<p> I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span>
 						as my container technology.
 					</p>
 				</div>
+			</div>
+			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].kubernetesremote==true" class="addEnvTable">
+				
 				<table>
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.deploy.deployment[wizard.deploy.selectedDriver]">
@@ -65,6 +71,15 @@
 						</tr>
 					</tbody>
 				</table>
+			</div>
+		</div>
+		<!--Manual-->
+		<div ng-if="wizard.deploy.selectedDriver=='manual'">
+			<div class="alert alert-info">
+				<h4><span class="icon icon-info"></span> Info:</h4>
+				<p> I will not use any container technology to deploy my Service(s) and Daemon(s).
+					I will also handle pulling and applying updates on the machines of this Environment myself.
+				</p>
 			</div>
 		</div>
 	</accordion-group>
@@ -90,17 +105,52 @@
 		<accordion-heading>
 			Nginx Server
 		</accordion-heading>
-		<div class="addEnvTable">
+		<fieldset ng-if="wizard.nginx" class="addEnvTable">
 			<table>
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.nginx">
-						<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
+						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit'"><label class="text-capitalize">{{k}}
+							<span ng-if="k=='memory'">(in MBytes)</span></label>
 						</td>
-						<td ng-if="k!='deploy'"> {{v}}</td>
-					
+						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit'"> {{v}}</td>
 					</tr>
 				</tbody>
 			</table>
-		</div>
+		</fieldset>
+		<fieldset ng-if="wizard.nginx.customUi" class="addEnvTable">
+			<legend>
+				Custom UI
+			</legend>
+			<div>
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.nginx.customUi">
+							<td><label class="text-capitalize">{{k}}
+								<span ng-if="k=='memory'">(in MBytes)</span></label>
+							</td>
+							<td> {{v}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset ng-if="wizard.nginx.certsGit" class="addEnvTable">
+			<legend>
+				Certificate
+			</legend>
+			<div>
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.nginx.certsGit">
+							<td><label class="text-capitalize">{{k}}
+								<span ng-if="k=='memory'">(in MBytes)</span></label>
+							</td>
+							<td> {{v}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+	
 	</accordion-group>
 </accordion>

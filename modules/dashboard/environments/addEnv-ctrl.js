@@ -654,10 +654,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	};
 	
 	$scope.overview = function () {
-		
-		console.log($scope.wizard);
-		console.log($localStorage.addEnv);
-		
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {
 			timeout: $timeout,
@@ -692,17 +688,31 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									2.4.2- deploy nginx using recipe
 						 */
 						overlayLoading.show();
-						addEnv.createEnvironment($scope, () => {
-							addEnv.uploadEnvCertificates($scope, () => {
-								if($scope.portalDeployment){
-									productize( () => {
+						addEnv.createEnvironment($scope, (error, response) => {
+							if(error){
+								rollback([{method: 'removeEnvironment'}], error);
+							}
+							else{
+								$scope.envId = response.data;
+								addEnv.uploadEnvCertificates($scope, (error) => {
+									if(error){
+										rollback([{method: 'removeEnvironment'}], error);
+									}
+									else if($scope.portalDeployment){
+										productize( (error) => {
+											if(error){
+												rollback([{method: 'removeEnvironment'}, {method: 'removeProduct'}], error);
+											}
+											else{
+												handleDeployment();
+											}
+										});
+									}
+									else{
 										handleDeployment();
-									});
-								}
-								else{
-									handleDeployment();
-								}
-							});
+									}
+								});
+							}
 						});
 						
 						function productize(cb){
@@ -710,18 +720,45 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						}
 						
 						function handleDeployment(){
+							let steps = [{method: 'removeEnvironment'}];
+							if($scope.portalDeployment){
+								steps.push({method: 'removeProduct'});
+							}
+							
 							if ($scope.wizard.controller && $scope.wizard.controller.deploy) {
-								addEnv.deployController($scope, () => {
-									if ($scope.wizard.nginx.catalog) {
-										addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, () => {
-											finalResponse();
+								addEnv.deployController($scope, (error, controllerId) => {
+									if(error){
+										rollback(steps, error);
+									}
+									else if ($scope.wizard.nginx.catalog) {
+										addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, (error) => {
+											if(error){
+												steps.push({method: 'removeController', id: controllerId});
+												rollback(steps, error);
+											}
+											else{
+												finalResponse();
+											}
 										});
 									}
 									else {
-										addEnv.createNginxRecipe($scope, (catalogId) => {
-											addEnv.deployNginx($scope, catalogId, () => {
-												finalResponse();
-											});
+										addEnv.createNginxRecipe($scope, (error, catalogId) => {
+											if(error){
+												steps.push({method: 'removeController'});
+												rollback(steps, error);
+											}
+											else {
+												addEnv.deployNginx($scope, catalogId, () => {
+													if(error){
+														steps.push({method: 'removeController', id: controllerId});
+														steps.push({method: 'removeCatalog', id: catalogId});
+														rollback(steps, error);
+													}
+													else {
+														finalResponse();
+													}
+												});
+											}
 										});
 									}
 								});
@@ -729,6 +766,28 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							else {
 								finalResponse();
 							}
+						}
+						
+						function rollback(steps, error){
+							
+							//steps cases
+							//['environment']
+							//['environment', 'product']
+							//['environment', 'controller']
+							//['environment', 'product', 'controller']
+							//['environment', 'controller', 'catalog']
+							//['environment', 'product', 'controller', 'catalog']
+							
+							steps.forEach((oneStep) => {
+								if(oneStep.id){
+									addEnv[oneStep.method]($scope, oneStep.id);
+								}
+								else{
+									addEnv[oneStep.method]($scope);
+								}
+							});
+							
+							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
 						
 						function finalResponse(){

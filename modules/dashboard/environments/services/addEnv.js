@@ -11,15 +11,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			data: {
 				data: data
 			}
-		}, function (error) {
-			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				return cb();
-			}
-		});
+		}, cb);
 	}
 	
 	function uploadEnvCertificates(currentScope, cb) {
@@ -64,8 +56,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				progress.value = parseInt(100.0 * evt.loaded / evt.total);
 			}).success(function (response) {
 				if (!response.result) {
-					overlayLoading.hide();
-					currentScope.displayAlert('danger', response.errors.details[0].message);
+					return uCb(new Error(response.errors.details[0].message));
 				}
 				else {
 					counter++;
@@ -75,9 +66,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						uploadFiles(certificatesNames, counter, uCb);
 					}
 				}
-			}).error(function () {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', translation.errorOccurredWhileUploadingFile[LANG] + " " + options.params.filename);
+			}).error(function (error) {
+				return uCb(error);
 			});
 		}
 	}
@@ -98,11 +88,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}, function (error, response) {
 			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.message);
+				return cb(error);
 			}
 			else {
-				return cb(response.data);
+				return cb(null, response.data);
 			}
 		});
 		
@@ -381,15 +370,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			method: 'post',
 			routeName: '/dashboard/cloud/services/soajs/deploy',
 			data: data
-		}, function (error) {
-			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.message);
-			}
-			else {
-				return cb();
-			}
-		});
+		}, cb);
 	}
 	
 	function deployController(currentScope, cb) {
@@ -454,10 +435,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 			}
-		}, function (error) {
+		}, function (error, serviceId) {
 			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.message);
+				return cb(error);
 			} else {
 				
 				//deploy Controller
@@ -467,11 +447,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"data": data
 				}, function (error) {
 					if (error) {
-						overlayLoading.hide();
-						currentScope.displayAlert('danger', error.message);
+						return cb(error);
 					} else {
 						$timeout(function () {
-							return cb();
+							return cb(null, serviceId.data);
 						}, 2000);
 					}
 				});
@@ -490,8 +469,13 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				2.2- create user application that uses user package
 					2.2.1- create key & extKey -> dashboard Access : true
 		 */
-		productize( () => {
-			multitenancy(cb);
+		productize( (error) => {
+			if(error){
+				return cb(error);
+			}
+			else{
+				multitenancy(cb);
+			}
 		});
 		
 		function productize(mCb){
@@ -506,11 +490,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				"data": postData
 			}, function (error, productId) {
 				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return mCb(error);
 				}
 				else {
-					addBasicPackage(productId, () => {
-						addUserPackage(productId, mCb);
+					addBasicPackage(productId.data, (error) => {
+						if(error){
+							return mCb(error);
+						}
+						else{
+							currentScope.envProductId = productId.data;
+							addUserPackage(productId.data, mCb);
+						}
 					});
 				}
 			});
@@ -531,14 +521,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
 					"params": { "id": productId }
-				}, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-					else {
-						return mCb();
-					}
-				});
+				}, mCb);
 			}
 			
 			function addUserPackage(productId, mCb){
@@ -557,14 +540,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
 					"params": { "id": productId }
-				}, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-					else {
-						return mCb();
-					}
-				});
+				}, mCb);
 			}
 		}
 		
@@ -583,12 +559,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				"data": postData
 			}, function (error, response) {
 				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return mCb(error);
 				}
 				else {
 					var tId = response.id;
-					addApplication(tId, 'basic', ()=>{
-						addApplication(tId, 'user', mCb);
+					addApplication(tId, 'basic', (error)=>{
+						if(error){
+							return mCb(error);
+						}
+						else{
+							currentScope.envTenantId = response.id;
+							addApplication(tId, 'user', mCb);
+						}
 					});
 				}
 			});
@@ -609,7 +591,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"params": { "id": tenantId }
 				}, function (error, response) {
 					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						return mCb(error);
 					}
 					else {
 						var appId = response.appId;
@@ -619,7 +601,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"params": { "id": tenantId, "appId": appId }
 						}, function (error, response) {
 							if (error) {
-								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								return mCb(error);
 							}
 							else {
 								var key = response.key;
@@ -634,14 +616,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 									"routeName": "/dashboard/tenant/application/key/ext/add",
 									"data": postData,
 									"params": { "id": tId, "appId": appId, "key": key }
-								}, function (error) {
-									if (error) {
-										currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-									}
-									else {
-										return mCb();
-									}
-								});
+								}, mCb);
 								
 							}
 						});
@@ -680,6 +655,101 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 	
+	function removeEnvironment(currentScope){
+		getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/environment/delete",
+				"params": { "id": currentScope.envId }
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else{
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "get",
+						"routeName": "/dashboard/environment/platforms/list",
+						"params": {
+							env: currentScope.wizard.gi.code
+						}
+					}, function (error, response) {
+						if (error) {
+							currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
+						} else {
+							response.data.forEach((oneCert) =>{
+								getSendDataFromServer(currentScope, ngDataApi, {
+									"method": "delete",
+									"routeName": "/dashboard/environment/platforms/cert/delete",
+									"params": {
+										"id": oneCert._id,
+										"env": currentScope.wizard.gi.code,
+										"driverName": 'docker.remove'
+									}
+								}, function (error, response) {
+									if (error) {
+										currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
+									}
+								});
+							});
+						}
+					});
+				}
+			});
+	}
+	
+	function removeProduct(currentScope){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "delete",
+			"routeName": "/dashboard/product/delete",
+			"params": { "id": currentScope.envProductId }
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				//remove the tenant as well
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "delete",
+					"routeName": "/dashboard/tenant/delete",
+					"params": { "id": currentScope.envTenantId }
+				}, function (error) {
+					if (error) {
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+				});
+			}
+		});
+	}
+	
+	function removeController(currentScope, id){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'delete',
+			routeName: '/dashboard/cloud/services/delete',
+			params: {
+				env: currentScope.wizard.gi.code,
+				serviceId: id,
+				mode: currentScope.wizard.controller.mode
+			}
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+		});
+	}
+	
+	function removeCatalog(currentScope, id){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'delete',
+			routeName: '/dashboard/catalog/recipes/delete',
+			params: {
+				id: id
+			}
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+		});
+	}
+	
 	return {
 		'createEnvironment': createEnvironment,
 		'uploadEnvCertificates': uploadEnvCertificates,
@@ -687,7 +757,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'deployNginx': deployNginx,
 		'deployController': deployController,
 		'getPermissions': getPermissions,
-		'productize': productize
+		'productize': productize,
+		
+		'removeEnvironment': removeEnvironment,
+		'removeProduct': removeProduct,
+		'removeController': removeController,
+		'removeCatalog': removeCatalog
 	};
 	
 }]);

@@ -696,7 +696,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									2.4.2- deploy nginx using recipe
 						 */
 						let parentScope = $scope;
-						let parentScope = $scope;
 						$modal.open({
 							templateUrl: "progressAddEnv.tmpl",
 							size: 'm',
@@ -718,21 +717,37 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									}, 2000);
 								});
 								
-								function  addEnvironment (cb){
-									addEnv.createEnvironment(parentScope, () => {
-										$scope.progressCounter++;
-										addEnv.uploadEnvCertificates(parentScope, () => {
+								function addEnvironment(cb) {
+									addEnv.createEnvironment(parentScope, (error, response) => {
+										if (error) {
+											rollback([], error);
+										}
+										else {
+											parentScope.envId = response.data;
 											$scope.progressCounter++;
-											if(parentScope.portalDeployment){
-												productize( () => {
+											addEnv.uploadEnvCertificates(parentScope, (error) => {
+												if (error) {
+													rollback([{method: 'removeEnvironment'}], error);
+												}
+												else if (parentScope.portalDeployment) {
+													$scope.progressCounter++;
+													productize((error) => {
+														if(error){
+															rollback([{method: 'removeEnvironment'}, {method: 'removeProduct'}], error);
+														}
+														else{
+															$scope.progressCounter++;
+															handleDeployment(cb);
+														}
+													});
+												}
+												else {
 													$scope.progressCounter++;
 													handleDeployment(cb);
-												});
-											}
-											else{
-												handleDeployment(cb);
-											}
-										});
+												}
+												
+											});
+										}
 									});
 								}
 								
@@ -741,22 +756,50 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								}
 								
 								function handleDeployment(cb){
+									let steps = [{method: 'removeEnvironment'}];
+									if(parentScope.portalDeployment){
+										steps.push({method: 'removeProduct'});
+									}
 									if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
-										addEnv.deployController(parentScope, () => {
-											$scope.progressCounter++;
-											if (parentScope.wizard.nginx.catalog) {
-												addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, () => {
-													$scope.progressCounter++;
-													return cb();
-												});
+										addEnv.deployController(parentScope, (error, controllerId) => {
+											if(error){
+												rollback(steps, error);
 											}
-											else {
-												addEnv.createNginxRecipe(parentScope, (catalogId) => {
-													addEnv.deployNginx(parentScope, catalogId, () => {
-														$scope.progressCounter++;
-														return cb();
+											else{
+												$scope.progressCounter++;
+												if (parentScope.wizard.nginx.catalog) {
+													addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, (error) => {
+														if(error){
+															steps.push({method: 'removeController', id: controllerId});
+															rollback(steps, error);
+														}
+														else {
+															$scope.progressCounter++;
+															return cb();
+														}
 													});
-												});
+												}
+												else {
+													addEnv.createNginxRecipe(parentScope, (error, catalogId) => {
+														if(error){
+															steps.push({method: 'removeController'});
+															rollback(steps, error);
+														}
+														else {
+															addEnv.deployNginx(parentScope, catalogId, (error) => {
+																if(error){
+																	steps.push({method: 'removeController', id: controllerId});
+																	steps.push({method: 'removeCatalog', id: catalogId});
+																	rollback(steps, error);
+																}
+																else {
+																	$scope.progressCounter++;
+																	return cb();
+																}
+															});
+														}
+													});
+												}
 											}
 										});
 									}
@@ -764,6 +807,30 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 										$scope.progressCounter++;
 										return cb();
 									}
+								}
+								
+								function rollback(steps, error){
+									
+									//steps cases
+									//['environment']
+									//['environment', 'product']
+									//['environment', 'controller']
+									//['environment', 'product', 'controller']
+									//['environment', 'controller', 'catalog']
+									//['environment', 'product', 'controller', 'catalog']
+									if(steps && typeof Array.isArray(steps)){
+										steps.forEach((oneStep) => {
+											if(oneStep.id){
+												addEnv[oneStep.method](parentScope, oneStep.id);
+											}
+											else{
+												addEnv[oneStep.method](parentScope);
+											}
+										});
+									}
+									$modalInstance.close();
+									overlayLoading.hide();
+									parentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 								}
 								
 								function finalResponse(){
@@ -779,122 +846,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								}
 							}
 						});
-						
-						addEnv.createEnvironment($scope, (error, response) => {
-							if(error){
-								rollback([], error);
-							}
-							else{
-								$scope.envId = response.data;
-								addEnv.uploadEnvCertificates($scope, (error) => {
-									if(error){
-										rollback([{method: 'removeEnvironment'}], error);
-									}
-									else if($scope.portalDeployment){
-										productize( (error) => {
-											if(error){
-												rollback([{method: 'removeEnvironment'}, {method: 'removeProduct'}], error);
-											}
-											else{
-												handleDeployment();
-											}
-										});
-									}
-									else{
-										handleDeployment();
-									}
-								});
-							}
-						});
-						
-						function productize(cb){
-							addEnv.productize($scope, $scope.wizard, cb);
-						}
-						
-						function handleDeployment(){
-							let steps = [{method: 'removeEnvironment'}];
-							if($scope.portalDeployment){
-								steps.push({method: 'removeProduct'});
-							}
-							
-							if ($scope.wizard.controller && $scope.wizard.controller.deploy) {
-								addEnv.deployController($scope, (error, controllerId) => {
-									if(error){
-										rollback(steps, error);
-									}
-									else if ($scope.wizard.nginx.catalog) {
-										addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, (error) => {
-											if(error){
-												steps.push({method: 'removeController', id: controllerId});
-												rollback(steps, error);
-											}
-											else{
-												finalResponse();
-											}
-										});
-									}
-									else {
-										addEnv.createNginxRecipe($scope, (error, catalogId) => {
-											if(error){
-												steps.push({method: 'removeController'});
-												rollback(steps, error);
-											}
-											else {
-												addEnv.deployNginx($scope, catalogId, () => {
-													if(error){
-														steps.push({method: 'removeController', id: controllerId});
-														steps.push({method: 'removeCatalog', id: catalogId});
-														rollback(steps, error);
-													}
-													else {
-														finalResponse();
-													}
-												});
-											}
-										});
-									}
-								});
-							}
-							else {
-								finalResponse();
-							}
-						}
-						
-						function rollback(steps, error){
-							
-							//steps cases
-							//['environment']
-							//['environment', 'product']
-							//['environment', 'controller']
-							//['environment', 'product', 'controller']
-							//['environment', 'controller', 'catalog']
-							//['environment', 'product', 'controller', 'catalog']
-							if(steps && typeof Array.isArray(steps)){
-								steps.forEach((oneStep) => {
-									if(oneStep.id){
-										addEnv[oneStep.method]($scope, oneStep.id);
-									}
-									else{
-										addEnv[oneStep.method]($scope);
-									}
-								});
-							}
-							
-							overlayLoading.hide();
-							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						
-						function finalResponse(){
-							addEnv.getPermissions($scope, () => {
-								delete $localStorage.addEnv;
-								$scope.form.formData = {};
-								$scope.remoteCertificates = {};
-								delete $scope.wizard;
-								overlayLoading.hide();
-								$scope.displayAlert('success', "Environment Created");
-								$scope.$parent.go("#/environments");
-							});
-						}
 					}
 				},
 				{

@@ -153,10 +153,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"type": "computed",
 							"value": "$SOAJS_ENV"
 						},
-						"SOAJS_EXTKEY": {
-							"type": "computed",
-							"value": "$SOAJS_EXTKEY"
-						},
 						"SOAJS_NX_DOMAIN": {
 							"type": "computed",
 							"value": "$SOAJS_NX_DOMAIN"
@@ -203,6 +199,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 			};
+			
+			//only for case of portal
+			if(currentScope.portalDeployment){
+				recipe.buildOptions.env["SOAJS_EXTKEY"] = {
+					"type": "computed",
+						"value": "$SOAJS_EXTKEY"
+				};
+				recipe.buildOptions.env["SOAJS_GIT_PORTAL_BRANCH"] = {
+					"type": "static",
+					"value": "master"
+				};
+			}
 			
 			if(currentScope.wizard.nginx.imageName){
 				recipe.deployOptions.image.override = true;
@@ -471,6 +479,179 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 	
+	function productize(currentScope, wizard, cb){
+		/*
+			1- create product portal
+				1.1- create main package -> access to login only
+				1.2- create user package -> access to manage urac users and regenerate oauth tokens
+			2- create portal tenant
+				2.1- create main application that uses main package
+					2.1.1- create key & extKey -> dashboard Access : false
+				2.2- create user application that uses user package
+					2.2.1- create key & extKey -> dashboard Access : true
+		 */
+		productize( () => {
+			multitenancy(cb);
+		});
+		
+		function productize(mCb){
+			var postData = {
+				'code': wizard.gi.code,
+				'name': "Portal Product",
+				'description': "This product contains packages that offer access to the portal interface of SOAJS to manage your products."
+			};
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "post",
+				"routeName": "/dashboard/product/add",
+				"data": postData
+			}, function (error, productId) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					addBasicPackage(productId, () => {
+						addUserPackage(productId, mCb);
+					});
+				}
+			});
+			
+			function addBasicPackage(productId, mCb){
+				var postData = {
+					'code': "BASIC",
+					'name': "Basic Package",
+					'description': "This is a public package for the portal product that allows users to login to the portal interface.",
+					'_TTL': 7 * 24,
+					"acl": {
+						//todo: fill the acl with canned permissions
+					}
+				};
+				
+				getSendDataFromServer($scope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/product/packages/add",
+					"data": postData,
+					"params": { "id": productId }
+				}, function (error) {
+					if (error) {
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						return mCb();
+					}
+				});
+			}
+			
+			function addUserPackage(productId, mCb){
+				var postData = {
+					'code': "USER",
+					'name': "User Package",
+					'description': "This package offers the minimum ACL needed to execute management operation in the portal interface.",
+					'_TTL': 7 * 24,
+					"acl": {
+						//todo: fill the acl with canned permissions
+					}
+				};
+				
+				getSendDataFromServer($scope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/product/packages/add",
+					"data": postData,
+					"params": { "id": productId }
+				}, function (error) {
+					if (error) {
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						return mCb();
+					}
+				});
+			}
+		}
+		
+		function multitenancy(mCb){
+			var postData = {
+				'type': "client",
+				'code': "PORTAL",
+				'name': "Portal Product",
+				'email': "me@localhost.com",
+				'description': "Portal Tenant that uses the portal product and its packages",
+				'tag': "portal"
+			};
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "post",
+				"routeName": "/dashboard/tenant/add",
+				"data": postData
+			}, function (error, response) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					var tId = response.id;
+					addApplication(tId, 'basic', ()=>{
+						addApplication(tId, 'user', mCb);
+					});
+				}
+			});
+			
+			function addApplication(tenantId, packageName, mCb){
+				var ttl = 7 * 24;
+				var postData = {
+					'description': 'Portal ' + packageName + ' application',
+					'_TTL': ttl.toString(),
+					'productCode': "PRODUCT",
+					'packageCode': packageName.toUpperCase()
+				};
+				
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/tenant/application/add",
+					"data": postData,
+					"params": { "id": tenantId }
+				}, function (error, response) {
+					if (error) {
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						var appId = response.appId;
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/tenant/application/key/add",
+							"params": { "id": tenantId, "appId": appId }
+						}, function (error, response) {
+							if (error) {
+								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							else {
+								var key = response.key;
+								var postData = {
+									'expDate': null,
+									'device': null,
+									'geo': null,
+									'env': 'PORTAL'
+								};
+								getSendDataFromServer(currentScope, ngDataApi, {
+									"method": "post",
+									"routeName": "/dashboard/tenant/application/key/ext/add",
+									"data": postData,
+									"params": { "id": tId, "appId": appId, "key": key }
+								}, function (error) {
+									if (error) {
+										currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+									}
+									else {
+										return mCb();
+									}
+								});
+								
+							}
+						});
+						
+					}
+				});
+			}
+		}
+	}
+	
 	function getPermissions(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
@@ -505,7 +686,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'createNginxRecipe': createNginxRecipe,
 		'deployNginx': deployNginx,
 		'deployController': deployController,
-		'getPermissions': getPermissions
+		'getPermissions': getPermissions,
+		'productize': productize
 	};
 	
 }]);

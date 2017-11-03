@@ -1,11 +1,13 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', function ($scope, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', '$routeParams', function ($scope, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window, $routeParams) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
+	
+	$scope.portalDeployment = $routeParams.portal || false;
 	
 	$scope.wizard = {};
 	
@@ -14,7 +16,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		
 		let entries = {
 			code: {
-				required: true
+				required: true,
+				disabled: false
 			},
 			description: {
 				required: false
@@ -121,6 +124,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 			if ($localStorage.addEnv && $localStorage.addEnv.step1) {
 				$scope.form.formData = angular.copy($localStorage.addEnv.step1);
 				$scope.wizard.gi = angular.copy($scope.form.formData);
+			}
+			
+			//check if portal
+			if($scope.portalDeployment){
+				entries.code.disabled = true;
+				$scope.form.formData.code = "PORTAL";
 			}
 			overlayLoading.hide();
 		});
@@ -645,6 +654,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	};
 	
 	$scope.overview = function () {
+		
+		console.log($scope.wizard);
+		console.log($localStorage.addEnv);
+		
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {
 			timeout: $timeout,
@@ -681,27 +694,42 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						overlayLoading.show();
 						addEnv.createEnvironment($scope, () => {
 							addEnv.uploadEnvCertificates($scope, () => {
-								if ($scope.wizard.controller && $scope.wizard.controller.deploy) {
-									addEnv.deployController($scope, () => {
-										if ($scope.wizard.nginx.catalog) {
-											addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, () => {
-												finalResponse();
-											});
-										}
-										else {
-											addEnv.createNginxRecipe($scope, (catalogId) => {
-												addEnv.deployNginx($scope, catalogId, () => {
-													finalResponse();
-												});
-											});
-										}
+								if($scope.portalDeployment){
+									productize( () => {
+										handleDeployment();
 									});
 								}
-								else {
-									finalResponse();
+								else{
+									handleDeployment();
 								}
 							});
 						});
+						
+						function productize(cb){
+							addEnv.productize($scope, $scope.wizard, cb);
+						}
+						
+						function handleDeployment(){
+							if ($scope.wizard.controller && $scope.wizard.controller.deploy) {
+								addEnv.deployController($scope, () => {
+									if ($scope.wizard.nginx.catalog) {
+										addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, () => {
+											finalResponse();
+										});
+									}
+									else {
+										addEnv.createNginxRecipe($scope, (catalogId) => {
+											addEnv.deployNginx($scope, catalogId, () => {
+												finalResponse();
+											});
+										});
+									}
+								});
+							}
+							else {
+								finalResponse();
+							}
+						}
 						
 						function finalResponse(){
 							addEnv.getPermissions($scope, () => {

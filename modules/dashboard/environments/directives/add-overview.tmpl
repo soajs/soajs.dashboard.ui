@@ -87,25 +87,33 @@
 		<accordion-heading>
 			SOAJS Controller
 		</accordion-heading>
-		<div class="addEnvTable">
-			<table>
-				<tbody>
-					<tr ng-repeat="(k,v) in wizard.controller ">
+		<fieldset>
+			<legend>
+				Container
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.controller ">
+							
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
+							</td>
+							<td ng-if="k!='deploy'"> {{v}}</td>
 						
-						<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
-						</td>
-						<td ng-if="k!='deploy'"> {{v}}</td>
-					
-					</tr>
-				</tbody>
-			</table>
-		</div>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
 	</accordion-group>
 	<accordion-group is-open="true" ng-show="wizard.nginx.deploy">
 		<accordion-heading>
 			Nginx Server
 		</accordion-heading>
 		<fieldset ng-if="wizard.nginx" class="addEnvTable">
+			<legend>
+				Container
+			</legend>
 			<table>
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.nginx">
@@ -136,7 +144,7 @@
 		</fieldset>
 		<fieldset ng-if="wizard.nginx.certsGit" class="addEnvTable">
 			<legend>
-				Certificate
+				Certificates
 			</legend>
 			<div>
 				<table>

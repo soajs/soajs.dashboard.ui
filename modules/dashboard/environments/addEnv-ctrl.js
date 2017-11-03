@@ -20,7 +20,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				disabled: false
 			},
 			description: {
-				required: false
+				required: true
 			},
 			domain: {
 				required: true

@@ -545,7 +545,7 @@
 										<td>{{node.ip}}</td>
 										<td>{{node.spec.role}}</td>
 										<td>{{node.spec.availability}}</td>
-										<td>{{node.resources.memory | bytesToGbytes}} GB</td>
+										<td>{{node.resources.memory | bytesToGbytes}} Gi</td>
 										<td>{{node.resources.cpus}}</td>
 										<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
 											<div style="width:93px; float : left; text-align: left; padding-left: 2px;">

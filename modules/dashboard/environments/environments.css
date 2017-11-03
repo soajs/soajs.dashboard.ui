@@ -672,3 +672,15 @@ input:checked + .buttonSlider:before {
     margin-bottom: 10px !important;
     padding-left: 8px !important;
 }
+.addEnvImg div{
+    width: 15%;
+}
+.addEnvImg div img {
+    width: 100%;
+}
+.addEnvImg h4 {
+    display: inline-block;
+}
+.c-right {
+    clear: right;
+}

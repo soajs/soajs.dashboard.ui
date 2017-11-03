@@ -7,29 +7,27 @@
 			<table>
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.gi">
-						<td><label class="text-capitalize">{{k}}</label></td>
-						<td>{{v}}</td>
+						<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}}</label></td>
+						<td ng-if="k!='deploy'">{{v}}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-	
-	
 	</accordion-group>
-	<accordion-group is-open="true">
+	<accordion-group>
 		<accordion-heading>
 			Deployment Strategy
 		</accordion-heading>
-		<div>
-			<h4 style="display:inline-block;" class="text-capitalize">{{wizard.deploy.selectedDriver}}</h4>
-			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='docker'">
-				<img ng-src="themes/default/img/docker_logo.png" width="100%"/>
+		<div class="addEnvImg">
+			<h4 class="text-capitalize">{{wizard.deploy.selectedDriver}}</h4>
+			<div class="f-right" ng-if="wizard.deploy.selectedDriver=='docker'">
+				<img ng-src="themes/default/img/docker_logo.png"/>
 			</div>
-			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='kubernetes'">
-				<img ng-src="themes/default/img/kubernetes_logo.png" width="100%"/>
+			<div class="f-right" ng-if="wizard.deploy.selectedDriver=='kubernetes'">
+				<img ng-src="themes/default/img/kubernetes_logo.png"/>
 			</div>
 		</div>
-		<hr style="clear:right;">
+		<hr class="c-right">
 		<!--Docker-->
 		<div ng-if="wizard.deploy.selectedDriver=='docker'">
 			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].dockerremote==false">
@@ -83,7 +81,7 @@
 			</div>
 		</div>
 	</accordion-group>
-	<accordion-group is-open="true" ng-show="wizard.controller.deploy">
+	<accordion-group ng-show="wizard.controller.deploy">
 		<accordion-heading>
 			SOAJS Controller
 		</accordion-heading>
@@ -106,7 +104,7 @@
 			</div>
 		</fieldset>
 	</accordion-group>
-	<accordion-group is-open="true" ng-show="wizard.nginx.deploy">
+	<accordion-group ng-show="wizard.nginx.deploy">
 		<accordion-heading>
 			Nginx Server
 		</accordion-heading>

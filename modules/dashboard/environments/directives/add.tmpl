@@ -1,3 +1,14 @@
 <section ng-controller="addEnvironmentCtrl">
 	<ngform></ngform>
 </section>
+
+<script type="text/ng-template" id="progressAddEnv.tmpl">
+	<div class="form">
+		<div class="modal-header">
+			<h3 class="modal-title">Creating Environment</h3>
+		</div>
+		<div class="modal-body">
+			<progressbar class="progress-striped active" value="progressCounter/maxCounter*100" type="info">{{progressCounter/maxCounter*100}}%</progressbar>
+		</div>
+	</div>
+</script>

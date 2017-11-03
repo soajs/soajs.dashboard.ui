@@ -691,57 +691,90 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									2.4.1- create recipe
 									2.4.2- deploy nginx using recipe
 						 */
-						overlayLoading.show();
-						addEnv.createEnvironment($scope, () => {
-							addEnv.uploadEnvCertificates($scope, () => {
-								if($scope.portalDeployment){
-									productize( () => {
-										handleDeployment();
+						//overlayLoading.show();
+						let parentScope = $scope;
+						$modal.open({
+							templateUrl: "progressAddEnv.tmpl",
+							size: 'm',
+							backdrop: false,
+							keyboard: false,
+							controller: function($scope, $modalInstance){
+								$scope.progressCounter = 0;
+								$scope.maxCounter = 3;
+								if ($scope.portalDeployment) {
+									$scope.maxCounter++;
+								}
+								if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
+									$scope.maxCounter++;
+								}
+								
+								addEnvironment (function(){
+									$timeout(function () {
+										finalResponse();
+									}, 2000);
+								});
+								
+								function  addEnvironment (cb){
+									addEnv.createEnvironment(parentScope, () => {
+										$scope.progressCounter++;
+										addEnv.uploadEnvCertificates(parentScope, () => {
+											$scope.progressCounter++;
+											if(parentScope.portalDeployment){
+												productize( () => {
+													$scope.progressCounter++;
+													handleDeployment(cb);
+												});
+											}
+											else{
+												handleDeployment(cb);
+											}
+										});
 									});
 								}
-								else{
-									handleDeployment();
+								
+								function productize(cb){
+									addEnv.productize(parentScope, parentScope.wizard, cb);
 								}
-							});
-						});
-						
-						function productize(cb){
-							addEnv.productize($scope, $scope.wizard, cb);
-						}
-						
-						function handleDeployment(){
-							if ($scope.wizard.controller && $scope.wizard.controller.deploy) {
-								addEnv.deployController($scope, () => {
-									if ($scope.wizard.nginx.catalog) {
-										addEnv.deployNginx($scope, $scope.wizard.nginx.catalog, () => {
-											finalResponse();
+								
+								function handleDeployment(cb){
+									if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
+										addEnv.deployController(parentScope, () => {
+											$scope.progressCounter++;
+											if (parentScope.wizard.nginx.catalog) {
+												addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, () => {
+													$scope.progressCounter++;
+													return cb();
+												});
+											}
+											else {
+												addEnv.createNginxRecipe(parentScope, (catalogId) => {
+													addEnv.deployNginx(parentScope, catalogId, () => {
+														$scope.progressCounter++;
+														return cb();
+													});
+												});
+											}
 										});
 									}
 									else {
-										addEnv.createNginxRecipe($scope, (catalogId) => {
-											addEnv.deployNginx($scope, catalogId, () => {
-												finalResponse();
-											});
-										});
+										$scope.progressCounter++;
+										return cb();
 									}
-								});
+								}
+								
+								function finalResponse(){
+									addEnv.getPermissions(parentScope, () => {
+										$modalInstance.close();
+										delete $localStorage.addEnv;
+										parentScope.form.formData = {};
+										parentScope.remoteCertificates = {};
+										delete parentScope.wizard;
+										parentScope.displayAlert('success', "Environment Created");
+										parentScope.$parent.go("#/environments");
+									});
+								}
 							}
-							else {
-								finalResponse();
-							}
-						}
-						
-						function finalResponse(){
-							addEnv.getPermissions($scope, () => {
-								delete $localStorage.addEnv;
-								$scope.form.formData = {};
-								$scope.remoteCertificates = {};
-								delete $scope.wizard;
-								overlayLoading.hide();
-								$scope.displayAlert('success', "Environment Created");
-								$scope.$parent.go("#/environments");
-							});
-						}
+						});
 					}
 				},
 				{

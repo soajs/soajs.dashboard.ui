@@ -477,17 +477,11 @@
 				<br/>
 			</div>
 			<div ng-if="!localDeployment">
-				<div ng-if="envCode === 'DASHBOARD'">
+				<div>
 					<button class="btn btn-primary" ng-if="access.hacloud.nodes.add && envPlatform !== 'kubernetes'" ng-click="addNode()">
 						Add New Node
 					</button>
 					<br/><br/>
-				</div>
-				<div ng-if="envCode !== 'DASHBOARD'">
-					<alert type="info">
-						Node management is only allowed in the DASHBOARD environment
-					</alert>
-					<br/>
 				</div>
 			</div>
 			<div class="entryBoxes nodes">

@@ -874,6 +874,10 @@ var translation = {
 	"pleaseinsertErrorCode": {
 		"ENG": "Please insert your error code(s)",
 		"FRA": "Prière d'insérer votre code"
+	},
+	"progress": {
+		"ENG": "Progress",
+		"FRA": "Progress"
 	}
 };
 

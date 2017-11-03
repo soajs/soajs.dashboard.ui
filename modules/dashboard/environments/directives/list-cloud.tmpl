@@ -266,6 +266,14 @@
 					If you already updated your <b>catalog recipes</b> and still see this warning then execute operation <b>Redeploy Service</b> on every deployed service.
 				</alert>
 			</div>
+			<div ng-if="myNginx && (!myEnvironment.protocol || !myEnvironment.port)">
+				<alert type="warning">
+					<h3 style="margin-top: 0">Warning</h3>
+					<hr>
+					Detected an old style deployment for this environment. Make sure you pull the latest images of SOAJS and redeploy the Nginx of this environment.
+				</alert>
+				<br><br>
+			</div>
 			<div ng-if="!myController && !myNginx">
 				<alert type="warning">
 					<div class="w100 c-both table" style="margin-bottom:0;">
@@ -418,7 +426,7 @@
 																	</span>
 																</div>
 																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
-																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }" tooltip="Click to Show/Hide Metrics" tooltip-placement="left"></span>
+																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }"></span>
 																</a>
 															</td>
 														</tr>
@@ -565,7 +573,7 @@
 												</span>
 											</div>
 											<a href="" ng-if="nodesMetrics[node.hostname].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
-												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }" tooltip="Click to Show/Hide Metrics" tooltip-placement="left"></span>
+												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }"></span>
 											</a>
 										</td>
 									</tr>

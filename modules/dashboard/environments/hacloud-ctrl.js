@@ -100,7 +100,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	$scope.autoRefresh = function(){
 		var tValue = $scope.selectedInterval.v * 1000;
-		autoRefreshTimeoutInstance = $timeout(function(){
+		autoRefreshTimeoutInstance = setTimeout(function(){
 			$scope.listServices(function(){
 				$scope.autoRefresh();
 			});
@@ -108,7 +108,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 	
 	$scope.autoRefreshMetrics = function () {
-		autoRefreshTimeoutMetrics= $timeout(function () {
+		autoRefreshTimeoutMetrics = setTimeout(function () {
 			$scope.getServicesMetrics(function () {
 				$scope.autoRefreshMetrics();
 			});
@@ -312,8 +312,8 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	}
 	
 	$scope.$on("$destroy", function () {
-		$timeout.cancel(autoRefreshTimeoutInstance);
-		$timeout.cancel(autoRefreshTimeoutMetrics);
+		clearTimeout(autoRefreshTimeoutInstance);
+		clearTimeout(autoRefreshTimeoutMetrics);
 	});
 }]);
 

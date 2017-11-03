@@ -243,6 +243,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 	
 	function getServicesMetrics(currentScope, cb) {
 		var env = currentScope.envCode.toLowerCase();
+		var maxData = 900000/currentScope.metricsRefreshInterval;
 		if (currentScope.access.hacloud.services.list && currentScope.access.hacloud.services.metrics && currentScope.isMetricsServerDeployed) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
@@ -290,7 +291,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].timestamp = []
 							}
 							currentScope.servicesMetrics[oneContainer].timestamp.push(ts);
-							if(currentScope.servicesMetrics[oneContainer].timestamp.length > 45){
+							if(currentScope.servicesMetrics[oneContainer].timestamp.length > maxData){
 								currentScope.servicesMetrics[oneContainer].timestamp.shift();
 							}
 						}
@@ -356,7 +357,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 							currentScope.servicesMetrics[oneContainer].memory.push(metrics[oneContainer].memory);
 							currentScope.servicesMetrics[oneContainer].currentMemory = convertBytes(metrics[oneContainer].memory);
-							if(currentScope.servicesMetrics[oneContainer].memory.length > 45){
+							if(currentScope.servicesMetrics[oneContainer].memory.length > maxData){
 								currentScope.servicesMetrics[oneContainer].memory.shift();
 							}
 						}
@@ -412,7 +413,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 							currentScope.servicesMetrics[oneContainer].cpu.push(metrics[oneContainer].cpu);
 							currentScope.servicesMetrics[oneContainer].currentCpu = metrics[oneContainer].cpu;
-							if(currentScope.servicesMetrics[oneContainer].cpu.length > 45){
+							if(currentScope.servicesMetrics[oneContainer].cpu.length > maxData){
 								currentScope.servicesMetrics[oneContainer].cpu.shift();
 							}
 						}
@@ -478,7 +479,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 							currentScope.servicesMetrics[oneContainer].cpuPercent.push(metrics[oneContainer].cpuPercent);
 							currentScope.servicesMetrics[oneContainer].currentCpuPercent = metrics[oneContainer].cpuPercent;
-							if(currentScope.servicesMetrics[oneContainer].cpuPercent.length > 45){
+							if(currentScope.servicesMetrics[oneContainer].cpuPercent.length > maxData){
 								currentScope.servicesMetrics[oneContainer].cpuPercent.shift();
 							}
 						}
@@ -547,7 +548,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 							currentScope.servicesMetrics[oneContainer].memPercent.push(metrics[oneContainer].memPercent);
 							currentScope.servicesMetrics[oneContainer].currentMemPercent = metrics[oneContainer].memPercent;
-							if(currentScope.servicesMetrics[oneContainer].memPercent.length > 45){
+							if(currentScope.servicesMetrics[oneContainer].memPercent.length > maxData){
 								currentScope.servicesMetrics[oneContainer].memPercent.shift();
 							}
 						}
@@ -639,7 +640,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 							currentScope.servicesMetrics[oneContainer].blkIO[0].push(metrics[oneContainer].blkRead);
 							currentScope.servicesMetrics[oneContainer].blkIO[1].push(metrics[oneContainer].blkWrite);
-							if(currentScope.servicesMetrics[oneContainer].blkIO[0].length > 45){
+							if(currentScope.servicesMetrics[oneContainer].blkIO[0].length > maxData){
 								currentScope.servicesMetrics[oneContainer].blkIO[0].shift();
 								currentScope.servicesMetrics[oneContainer].blkIO[1].shift();
 							}
@@ -729,7 +730,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 							currentScope.servicesMetrics[oneContainer].netIO[0].push(metrics[oneContainer].netIn);
 							currentScope.servicesMetrics[oneContainer].netIO[1].push(metrics[oneContainer].netOut);
-							if(currentScope.servicesMetrics[oneContainer].netIO[0].length > 45){
+							if(currentScope.servicesMetrics[oneContainer].netIO[0].length > maxData){
 								currentScope.servicesMetrics[oneContainer].netIO[0].shift();
 								currentScope.servicesMetrics[oneContainer].netIO[1].shift();
 							}
@@ -775,7 +776,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										currentScope.nodesMetrics[oneNode].timestamp = []
 									}
 									currentScope.nodesMetrics[oneNode].timestamp.push(ts);
-									if(currentScope.nodesMetrics[oneNode].timestamp.length > 45){
+									if(currentScope.nodesMetrics[oneNode].timestamp.length > maxData){
 										currentScope.nodesMetrics[oneNode].timestamp.shift();
 									}
 								}
@@ -841,7 +842,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									}
 									currentScope.nodesMetrics[oneNode].memory.push(metrics[oneNode].memory);
 									currentScope.nodesMetrics[oneNode].currentMemory = convertBytes(metrics[oneNode].memory);
-									if(currentScope.nodesMetrics[oneNode].memory.length > 45){
+									if(currentScope.nodesMetrics[oneNode].memory.length > maxData){
 										currentScope.nodesMetrics[oneNode].memory.shift();
 									}
 								}
@@ -897,7 +898,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									}
 									currentScope.nodesMetrics[oneNode].cpu.push(metrics[oneNode].cpu);
 									currentScope.nodesMetrics[oneNode].currentCpu = metrics[oneNode].cpu;
-									if(currentScope.nodesMetrics[oneNode].cpu.length > 45){
+									if(currentScope.nodesMetrics[oneNode].cpu.length > maxData){
 										currentScope.nodesMetrics[oneNode].cpu.shift();
 									}
 								}

@@ -17,7 +17,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	
 	$scope.ShowMetrics = {};
 	$scope.servicesMetrics = {};
-	
+	$scope.metricsRefreshInterval = 5000;
 	$scope.oldStyle = false;
 
 	$scope.namespaceConfig = {
@@ -108,12 +108,11 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 	
 	$scope.autoRefreshMetrics = function () {
-		var tValue = 20000;
 		autoRefreshTimeoutMetrics= $timeout(function () {
 			$scope.getServicesMetrics(function () {
 				$scope.autoRefreshMetrics();
 			});
-		}, tValue);
+		}, $scope.metricsRefreshInterval);
 	};
 
 	$scope.generateNewMsg = function (env, type, msg) {
@@ -291,7 +290,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
 		$scope.getEnvironment();
-		$scope.listNodes();
+		$scope.listNodes($scope);
 		$scope.certsExist = true;
 		$scope.checkCerts($scope.envCode);
 	}
@@ -307,11 +306,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	if ($scope.access.hacloud.services.metrics) {
 		$scope.checkMetricsServer(function () {
 			$scope.getServicesMetrics(function () {
-				$timeout(function () {
-					$scope.getServicesMetrics(function () {
-						$scope.autoRefreshMetrics();
-					});
-				}, 3000);
+				$scope.autoRefreshMetrics();
 			});
 		});
 	}

@@ -5,6 +5,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	function createEnvironment(currentScope, cb) {
 		let data = currentScope.wizard.gi;
 		data.deploy = currentScope.wizard.deploy;
+		
+		if(currentScope.portalDeployment){
+			data.deployPortal = true;
+		}
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
@@ -469,16 +474,16 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				2.2- create user application that uses user package
 					2.2.1- create key & extKey -> dashboard Access : true
 		 */
-		productize( (error) => {
+		productizeCall( (error) => {
 			if(error){
 				return cb(error);
 			}
 			else{
-				multitenancy(cb);
+				multitenancyCall(cb);
 			}
 		});
 		
-		function productize(mCb){
+		function productizeCall(mCb){
 			var postData = {
 				'code': wizard.gi.code,
 				'name': "Portal Product",
@@ -507,16 +512,69 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			
 			function addBasicPackage(productId, mCb){
 				var postData = {
-					'code': "BASIC",
-					'name': "Basic Package",
+					'code': "MAIN",
+					'name': "Main Package",
 					'description': "This is a public package for the portal product that allows users to login to the portal interface.",
-					'_TTL': 7 * 24,
+					'_TTL': (7 * 24).toString(),
 					"acl": {
-						//todo: fill the acl with canned permissions
+						"dashboard": {
+							"oauth": {
+								"access": false,
+								"apisPermission": "restricted",
+								"get": {
+									"apis": {
+										"/authorization": {}
+									}
+								},
+								"post": {
+									"apis": {
+										"/token": {}
+									}
+								},
+								"delete": {
+									"apis": {
+										"/accessToken/:token": {
+											"access": true
+										},
+										"/refreshToken/:token": {
+											"access": true
+										}
+									}
+								}
+							},
+							"urac": {
+								"access": false,
+								"apisPermission": "restricted",
+								"get": {
+									"apis": {
+										"/forgotPassword": {},
+										"/changeEmail/validate": {},
+										"/checkUsername": {},
+										"/account/getUser": {
+											"access": true
+										}
+									}
+								},
+								"post": {
+									"apis": {
+										"/resetPassword": {},
+										"/account/changePassword": {
+											"access": true
+										},
+										"/account/changeEmail": {
+											"access": true
+										},
+										"/account/editProfile": {
+											"access": true
+										}
+									}
+								}
+							}
+						}
 					}
 				};
 				
-				getSendDataFromServer($scope, ngDataApi, {
+				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
@@ -529,13 +587,57 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'code': "USER",
 					'name': "User Package",
 					'description': "This package offers the minimum ACL needed to execute management operation in the portal interface.",
-					'_TTL': 7 * 24,
+					'_TTL': (7 * 24).toString(),
 					"acl": {
-						//todo: fill the acl with canned permissions
+						"dashboard": {
+							"oauth": {
+								"access": true
+							},
+							"urac": {
+								"access": true,
+								"apisPermission": "restricted",
+								"get": {
+									"apis": {
+										"/account/getUser": {},
+										"/changeEmail/validate": {},
+										"/checkUsername": {},
+										"/forgotPassword": {},
+										"/owner/admin/users/count": {},
+										"/owner/admin/listUsers": {},
+										"/owner/admin/changeUserStatus": {},
+										"/owner/admin/getUser": {},
+										"/owner/admin/group/list": {},
+										"/owner/admin/tokens/list": {},
+										"/tenant/getUserAclInfo": {},
+										"/tenant/list": {}
+									}
+								},
+								"post": {
+									"apis": {
+										"/account/changePassword": {},
+										"/account/changeEmail": {},
+										"/account/editProfile": {},
+										"/resetPassword": {},
+										"/owner/admin/addUser": {},
+										"/owner/admin/editUser": {},
+										"/owner/admin/editUserConfig": {},
+										"/owner/admin/group/add": {},
+										"/owner/admin/group/edit": {},
+										"/owner/admin/group/addUsers": {}
+									}
+								},
+								"delete": {
+									"apis": {
+										"/owner/admin/group/delete": {},
+										"/owner/admin/tokens/delete": {}
+									}
+								}
+							}
+						}
 					}
 				};
 				
-				getSendDataFromServer($scope, ngDataApi, {
+				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
@@ -544,10 +646,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}
 		
-		function multitenancy(mCb){
+		function multitenancyCall(mCb){
 			var postData = {
 				'type': "client",
-				'code': "PORTAL",
+				'code': "PRTL",
 				'name': "Portal Product",
 				'email': "me@localhost.com",
 				'description': "Portal Tenant that uses the portal product and its packages",
@@ -563,7 +665,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				}
 				else {
 					var tId = response.id;
-					addApplication(tId, 'basic', (error)=>{
+					addApplication(tId, 'main', (error)=>{
 						if(error){
 							return mCb(error);
 						}
@@ -580,7 +682,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				var postData = {
 					'description': 'Portal ' + packageName + ' application',
 					'_TTL': ttl.toString(),
-					'productCode': "PRODUCT",
+					'productCode': "PORTAL",
 					'packageCode': packageName.toUpperCase()
 				};
 				
@@ -594,6 +696,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						return mCb(error);
 					}
 					else {
+						//todo: check response and find out why both keys where created under the first application only
 						var appId = response.appId;
 						getSendDataFromServer(currentScope, ngDataApi, {
 							"method": "post",
@@ -615,8 +718,72 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 									"method": "post",
 									"routeName": "/dashboard/tenant/application/key/ext/add",
 									"data": postData,
-									"params": { "id": tId, "appId": appId, "key": key }
-								}, mCb);
+									"params": { "id": tenantId, "appId": appId, "key": key }
+								}, function (error) {
+									if (error) {
+										return cb(error);
+									}
+									else {
+										
+										var postData = {
+											'envCode': currentScope.wizard.gi.code.toLowerCase(),
+											'config': {
+												"oauth": {
+													"loginMode": "urac"
+												},
+												"commonFields": {
+													"mail": {
+														"from": "me@localhost.com",
+														"transport": {
+															"type": "sendmail",
+															"options": {}
+														}
+													}
+												},
+												"urac": {
+													"hashIterations": 1024,
+													"seedLength": 32,
+													"link": {
+														"addUser": "http://dashboard.soajs.org/#/setNewPassword",
+														"changeEmail": "http://dashboard.soajs.org/#/changeEmail/validate",
+														"forgotPassword": "http://dashboard.soajs.org/#/resetPassword",
+														"join": "http://dashboard.soajs.org/#/join/validate"
+													},
+													"tokenExpiryTTL": 172800000,
+													"validateJoin": true,
+													"mail": {
+														"join": {
+															"subject": "Welcome to SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
+														},
+														"forgotPassword": {
+															"subject": "Reset Your Password at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
+														},
+														"addUser": {
+															"subject": "Account Created at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
+														},
+														"changeUserStatus": {
+															"subject": "Account Status changed at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
+														},
+														"changeEmail": {
+															"subject": "Change Account Email at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
+														}
+													}
+												}
+											}
+										};
+										
+										getSendDataFromServer(currentScope, ngDataApi, {
+											"method": "put",
+											"routeName": "/dashboard/tenant/application/key/config/update",
+											"data": postData,
+											"params": { "id": tenantId, "appId": appId, "key": key }
+										},  mCb);}
+								});
 								
 							}
 						});

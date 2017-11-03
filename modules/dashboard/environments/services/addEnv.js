@@ -474,16 +474,16 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				2.2- create user application that uses user package
 					2.2.1- create key & extKey -> dashboard Access : true
 		 */
-		productizeCall( (error) => {
+		productizeApiCall( (error) => {
 			if(error){
 				return cb(error);
 			}
 			else{
-				multitenancyCall(cb);
+				multitenancyApiCall(cb);
 			}
 		});
 		
-		function productizeCall(mCb){
+		function productizeApiCall(mCb){
 			var postData = {
 				'code': wizard.gi.code,
 				'name': "Portal Product",
@@ -646,7 +646,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}
 		
-		function multitenancyCall(mCb){
+		function multitenancyApiCall(mCb){
 			var postData = {
 				'type': "client",
 				'code': "PRTL",
@@ -665,12 +665,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				}
 				else {
 					var tId = response.id;
+					currentScope.envTenantId = response.id;
 					addApplication(tId, 'main', (error)=>{
 						if(error){
 							return mCb(error);
 						}
 						else{
-							currentScope.envTenantId = response.id;
 							addApplication(tId, 'user', mCb);
 						}
 					});
@@ -696,7 +696,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						return mCb(error);
 					}
 					else {
-						//todo: check response and find out why both keys where created under the first application only
 						var appId = response.appId;
 						getSendDataFromServer(currentScope, ngDataApi, {
 							"method": "post",
@@ -724,7 +723,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 										return cb(error);
 									}
 									else {
-										
 										var postData = {
 											'envCode': currentScope.wizard.gi.code.toLowerCase(),
 											'config': {
@@ -832,33 +830,37 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else{
-					getSendDataFromServer(currentScope, ngDataApi, {
-						"method": "get",
-						"routeName": "/dashboard/environment/platforms/list",
-						"params": {
-							env: currentScope.wizard.gi.code
-						}
-					}, function (error, response) {
-						if (error) {
-							currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
-						} else {
-							response.data.forEach((oneCert) =>{
-								getSendDataFromServer(currentScope, ngDataApi, {
-									"method": "delete",
-									"routeName": "/dashboard/environment/platforms/cert/delete",
-									"params": {
-										"id": oneCert._id,
-										"env": currentScope.wizard.gi.code,
-										"driverName": 'docker.remove'
-									}
-								}, function (error, response) {
-									if (error) {
-										currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
-									}
+					if(currentScope.wizard.deploy.selectedDriver ==='docker' &&
+						currentScope.wizard.deploy.deployment.docker.dockerremote){
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "get",
+							"routeName": "/dashboard/environment/platforms/list",
+							"params": {
+								env: currentScope.wizard.gi.code
+							}
+						}, function (error, response) {
+							if (error) {
+								currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
+							} else {
+								response.data.forEach((oneCert) =>{
+									getSendDataFromServer(currentScope, ngDataApi, {
+										"method": "delete",
+										"routeName": "/dashboard/environment/platforms/cert/delete",
+										"params": {
+											"id": oneCert._id,
+											"env": currentScope.wizard.gi.code,
+											"driverName": 'docker.remove'
+										}
+									}, function (error, response) {
+										if (error) {
+											currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
+										}
+									});
 								});
-							});
-						}
-					});
+							}
+						});
+					}
+					// else some error appeared
 				}
 			});
 	}

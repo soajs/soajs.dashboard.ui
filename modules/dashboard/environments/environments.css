@@ -646,3 +646,7 @@ input:checked + .buttonSlider:before {
 .ownerLabel {
     color: #A9A9A9;
 }
+
+.cloud-tr-bgColor {
+    background-color: rgba(112, 128, 141, 0.1)
+}

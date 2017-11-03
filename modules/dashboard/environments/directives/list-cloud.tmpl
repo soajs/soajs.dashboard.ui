@@ -294,7 +294,7 @@
 						<button class="btn btn-info" ng-click="envAutoScale()">Configure Autoscaling</button>&nbsp;&nbsp;
 					</span> -->
 				<!--</div>-->
-				<br /><br />
+				<!--<br /><br />-->
 			</div>
 			<div class="c-both w100 table" ng-if="envPlatform !=='kubernetes'">
 			</div>
@@ -375,7 +375,7 @@
 														</tr>
 													</thead>
 													<tbody ng-repeat="instance in service.tasks" ng-hide="instance.hideIt && !service.hideIt" ng-init="instanceName = (envPlatform === 'kubernetes') ? instance.name : (service.labels['soajs.service.mode'] === 'global') ? instance.name + '.' + instance.ref.node.id + '.' + instance.id  : instance.name + '.' + instance.id">
-														<tr>
+														<tr class="cloud-tr-bgColor">
 															<td>
 																<a href="" ng-if="access.hacloud.services.logs">
 																	<span ng-click="hostLogs(instance)" class="icon icon-terminal" title="{{translation.getContainerLogs[LANG]}}"></span>
@@ -418,7 +418,7 @@
 																	</span>
 																</div>
 																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
-																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }" tooltip="Click to Show/Hide Metrics"></span>
+																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }" tooltip="Click to Show/Hide Metrics" tooltip-placement="left"></span>
 																</a>
 															</td>
 														</tr>
@@ -541,11 +541,11 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
+									<tr class="cloud-tr-bgColor">
 										<td>{{node.ip}}</td>
 										<td>{{node.spec.role}}</td>
 										<td>{{node.spec.availability}}</td>
-										<td>{{node.resources.memory | bytesToGbytes}} GB</td>
+										<td>{{node.resources.memory | bytesToGbytes}} Gi</td>
 										<td>{{node.resources.cpus}}</td>
 										<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
 											<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
@@ -565,7 +565,7 @@
 												</span>
 											</div>
 											<a href="" ng-if="nodesMetrics[node.hostname].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
-												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }" tooltip="Click to Show/Hide Metrics"></span>
+												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }" tooltip="Click to Show/Hide Metrics" tooltip-placement="left"></span>
 											</a>
 										</td>
 									</tr>

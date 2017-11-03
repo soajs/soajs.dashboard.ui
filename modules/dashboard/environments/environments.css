@@ -646,3 +646,29 @@ input:checked + .buttonSlider:before {
 .ownerLabel {
     color: #A9A9A9;
 }
+
+.addEnvTable {
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+.addEnvTable table{
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+.addEnvTable th, .addEnvTable td{
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+.addEnvTable tr:nth-child(odd){
+    background-color: #f2f2f2 !important;
+    width: 100% !important;
+}
+.addEnvTable td{
+    width: 50% !important;
+}
+.addEnvTable td label{
+    width: 50% !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    padding-left: 8px !important;
+}

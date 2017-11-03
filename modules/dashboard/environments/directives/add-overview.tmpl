@@ -1,41 +1,106 @@
-
 <accordion close-others="false">
 	<accordion-group is-open="true">
 		<accordion-heading>
 			General Information
 		</accordion-heading>
-		
-		<table border="0" cellspacing="0" cellpadding="0" width="100%">
-			<thead>
-				<tr>
-					<th>Property Name</th>
-					<th>Property Value</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="(k,v) in wizard.gi">
-					<td><label>{{k}}</label></td>
-					<td>{{v}}</td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="addEnvTable">
+			<table>
+				<tbody>
+					<tr ng-repeat="(k,v) in wizard.gi">
+						<td><label class="text-capitalize">{{k}}</label></td>
+						<td>{{v}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	
+	
 	</accordion-group>
 	<accordion-group is-open="true">
 		<accordion-heading>
 			Deployment Strategy
 		</accordion-heading>
-		
+		<div>
+			<h4 class="text-capitalize l-left dockerHead">{{wizard.deploy.selectedDriver}}</h4>
+			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='docker'">
+				<img ng-src="themes/default/img/docker_logo.png" width="100%"/>
+			</div>
+			<div class="f-right" style="width:15%;" ng-if="wizard.deploy.selectedDriver=='kuberentes'">>
+				<img ng-src="themes/default/img/kubernetes_logo.png" width="100%"/>
+			</div>
+		</div>
+		<hr>
+		<div ng-if="wizard.deploy.selectedDriver=='docker'" class="c-both">
+			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].dockerremote==true" class="addEnvTable">
+				<div class="alert alert-info">
+					<h4><span class="icon icon-info"></span> Info:</h4>
+					<p> I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span>
+						as my container technology.
+					</p>
+				</div>
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.deploy.deployment[wizard.deploy.selectedDriver]">
+							<td ng-if="k!='dockerremote'"><label class="text-capitalize">{{k}}</label></td>
+							<td ng-if="k!='dockerremote'"> {{v}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!--Kuberenetes-->
+		<div ng-if="wizard.deploy.selectedDriver==kubernetes">
+			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].kubernetesremote==true" class="addEnvTable">
+				<div class="alert alert-info">
+					<h4><span class="icon icon-info"></span> Info:</h4>
+					<p> I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span>
+						as my container technology.
+					</p>
+				</div>
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.deploy.deployment[wizard.deploy.selectedDriver]">
+							<td ng-if="k!='kubernetesremote'"><label class="text-capitalize">{{k}}</label></td>
+							<td ng-if="k!='kubernetesremote'"> {{v}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</accordion-group>
 	<accordion-group is-open="true" ng-show="wizard.controller.deploy">
 		<accordion-heading>
 			SOAJS Controller
 		</accordion-heading>
-		
+		<div class="addEnvTable">
+			<table>
+				<tbody>
+					<tr ng-repeat="(k,v) in wizard.controller ">
+						
+						<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
+						</td>
+						<td ng-if="k!='deploy'"> {{v}}</td>
+					
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</accordion-group>
-	<accordion-group is-open="true" ng-show="wizard.controller.deploy">
+	<accordion-group is-open="true" ng-show="wizard.nginx.deploy">
 		<accordion-heading>
 			Nginx Server
 		</accordion-heading>
-		
+		<div class="addEnvTable">
+			<table>
+				<tbody>
+					<tr ng-repeat="(k,v) in wizard.nginx">
+						<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
+						</td>
+						<td ng-if="k!='deploy'"> {{v}}</td>
+					
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</accordion-group>
 </accordion>

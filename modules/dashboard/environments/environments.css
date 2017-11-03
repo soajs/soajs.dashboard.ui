@@ -124,6 +124,7 @@ ul {
 
 a.tooltipToggle {
     outline: 0;
+    text-decoration: none;
 }
 
 .serviceOpsDropdown .btn {
@@ -683,4 +684,8 @@ input:checked + .buttonSlider:before {
 }
 .c-right {
     clear: right;
+}
+
+.cloud-tr-bgColor {
+    background-color: rgba(112, 128, 141, 0.1)
 }

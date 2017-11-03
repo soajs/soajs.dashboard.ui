@@ -5,21 +5,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	function createEnvironment(currentScope, cb) {
 		let data = currentScope.wizard.gi;
 		data.deploy = currentScope.wizard.deploy;
+		
+		if(currentScope.portalDeployment){
+			data.deployPortal = true;
+		}
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
 			data: {
 				data: data
 			}
-		}, function (error) {
-			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				return cb();
-			}
-		});
+		}, cb);
 	}
 	
 	function uploadEnvCertificates(currentScope, cb) {
@@ -64,8 +61,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				progress.value = parseInt(100.0 * evt.loaded / evt.total);
 			}).success(function (response) {
 				if (!response.result) {
-					overlayLoading.hide();
-					currentScope.displayAlert('danger', response.errors.details[0].message);
+					return uCb(new Error(response.errors.details[0].message));
 				}
 				else {
 					counter++;
@@ -75,9 +71,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						uploadFiles(certificatesNames, counter, uCb);
 					}
 				}
-			}).error(function () {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', translation.errorOccurredWhileUploadingFile[LANG] + " " + options.params.filename);
+			}).error(function (error) {
+				return uCb(error);
 			});
 		}
 	}
@@ -98,11 +93,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}, function (error, response) {
 			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.message);
+				return cb(error);
 			}
 			else {
-				return cb(response.data);
+				return cb(null, response.data);
 			}
 		});
 		
@@ -381,15 +375,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			method: 'post',
 			routeName: '/dashboard/cloud/services/soajs/deploy',
 			data: data
-		}, function (error) {
-			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.message);
-			}
-			else {
-				return cb();
-			}
-		});
+		}, cb);
 	}
 	
 	function deployController(currentScope, cb) {
@@ -454,10 +440,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 			}
-		}, function (error) {
+		}, function (error, serviceId) {
 			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error.message);
+				return cb(error);
 			} else {
 				
 				//deploy Controller
@@ -467,11 +452,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"data": data
 				}, function (error) {
 					if (error) {
-						overlayLoading.hide();
-						currentScope.displayAlert('danger', error.message);
+						return cb(error);
 					} else {
 						$timeout(function () {
-							return cb();
+							return cb(null, serviceId.data);
 						}, 2000);
 					}
 				});
@@ -490,11 +474,16 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				2.2- create user application that uses user package
 					2.2.1- create key & extKey -> dashboard Access : true
 		 */
-		productize( () => {
-			multitenancy(cb);
+		productizeApiCall( (error) => {
+			if(error){
+				return cb(error);
+			}
+			else{
+				multitenancyApiCall(cb);
+			}
 		});
 		
-		function productize(mCb){
+		function productizeApiCall(mCb){
 			var postData = {
 				'code': wizard.gi.code,
 				'name': "Portal Product",
@@ -506,39 +495,91 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				"data": postData
 			}, function (error, productId) {
 				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return mCb(error);
 				}
 				else {
-					addBasicPackage(productId, () => {
-						addUserPackage(productId, mCb);
+					addBasicPackage(productId.data, (error) => {
+						if(error){
+							return mCb(error);
+						}
+						else{
+							currentScope.envProductId = productId.data;
+							addUserPackage(productId.data, mCb);
+						}
 					});
 				}
 			});
 			
 			function addBasicPackage(productId, mCb){
 				var postData = {
-					'code': "BASIC",
-					'name': "Basic Package",
+					'code': "MAIN",
+					'name': "Main Package",
 					'description': "This is a public package for the portal product that allows users to login to the portal interface.",
-					'_TTL': 7 * 24,
+					'_TTL': (7 * 24).toString(),
 					"acl": {
-						//todo: fill the acl with canned permissions
+						"dashboard": {
+							"oauth": {
+								"access": false,
+								"apisPermission": "restricted",
+								"get": {
+									"apis": {
+										"/authorization": {}
+									}
+								},
+								"post": {
+									"apis": {
+										"/token": {}
+									}
+								},
+								"delete": {
+									"apis": {
+										"/accessToken/:token": {
+											"access": true
+										},
+										"/refreshToken/:token": {
+											"access": true
+										}
+									}
+								}
+							},
+							"urac": {
+								"access": false,
+								"apisPermission": "restricted",
+								"get": {
+									"apis": {
+										"/forgotPassword": {},
+										"/changeEmail/validate": {},
+										"/checkUsername": {},
+										"/account/getUser": {
+											"access": true
+										}
+									}
+								},
+								"post": {
+									"apis": {
+										"/resetPassword": {},
+										"/account/changePassword": {
+											"access": true
+										},
+										"/account/changeEmail": {
+											"access": true
+										},
+										"/account/editProfile": {
+											"access": true
+										}
+									}
+								}
+							}
+						}
 					}
 				};
 				
-				getSendDataFromServer($scope, ngDataApi, {
+				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
 					"params": { "id": productId }
-				}, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-					else {
-						return mCb();
-					}
-				});
+				}, mCb);
 			}
 			
 			function addUserPackage(productId, mCb){
@@ -546,32 +587,69 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'code': "USER",
 					'name': "User Package",
 					'description': "This package offers the minimum ACL needed to execute management operation in the portal interface.",
-					'_TTL': 7 * 24,
+					'_TTL': (7 * 24).toString(),
 					"acl": {
-						//todo: fill the acl with canned permissions
+						"dashboard": {
+							"oauth": {
+								"access": true
+							},
+							"urac": {
+								"access": true,
+								"apisPermission": "restricted",
+								"get": {
+									"apis": {
+										"/account/getUser": {},
+										"/changeEmail/validate": {},
+										"/checkUsername": {},
+										"/forgotPassword": {},
+										"/owner/admin/users/count": {},
+										"/owner/admin/listUsers": {},
+										"/owner/admin/changeUserStatus": {},
+										"/owner/admin/getUser": {},
+										"/owner/admin/group/list": {},
+										"/owner/admin/tokens/list": {},
+										"/tenant/getUserAclInfo": {},
+										"/tenant/list": {}
+									}
+								},
+								"post": {
+									"apis": {
+										"/account/changePassword": {},
+										"/account/changeEmail": {},
+										"/account/editProfile": {},
+										"/resetPassword": {},
+										"/owner/admin/addUser": {},
+										"/owner/admin/editUser": {},
+										"/owner/admin/editUserConfig": {},
+										"/owner/admin/group/add": {},
+										"/owner/admin/group/edit": {},
+										"/owner/admin/group/addUsers": {}
+									}
+								},
+								"delete": {
+									"apis": {
+										"/owner/admin/group/delete": {},
+										"/owner/admin/tokens/delete": {}
+									}
+								}
+							}
+						}
 					}
 				};
 				
-				getSendDataFromServer($scope, ngDataApi, {
+				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
 					"params": { "id": productId }
-				}, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-					else {
-						return mCb();
-					}
-				});
+				}, mCb);
 			}
 		}
 		
-		function multitenancy(mCb){
+		function multitenancyApiCall(mCb){
 			var postData = {
 				'type': "client",
-				'code': "PORTAL",
+				'code': "PRTL",
 				'name': "Portal Product",
 				'email': "me@localhost.com",
 				'description': "Portal Tenant that uses the portal product and its packages",
@@ -583,12 +661,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				"data": postData
 			}, function (error, response) {
 				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return mCb(error);
 				}
 				else {
 					var tId = response.id;
-					addApplication(tId, 'basic', ()=>{
-						addApplication(tId, 'user', mCb);
+					currentScope.envTenantId = response.id;
+					addApplication(tId, 'main', (error)=>{
+						if(error){
+							return mCb(error);
+						}
+						else{
+							addApplication(tId, 'user', mCb);
+						}
 					});
 				}
 			});
@@ -598,7 +682,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				var postData = {
 					'description': 'Portal ' + packageName + ' application',
 					'_TTL': ttl.toString(),
-					'productCode': "PRODUCT",
+					'productCode': "PORTAL",
 					'packageCode': packageName.toUpperCase()
 				};
 				
@@ -609,7 +693,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"params": { "id": tenantId }
 				}, function (error, response) {
 					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						return mCb(error);
 					}
 					else {
 						var appId = response.appId;
@@ -619,7 +703,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"params": { "id": tenantId, "appId": appId }
 						}, function (error, response) {
 							if (error) {
-								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								return mCb(error);
 							}
 							else {
 								var key = response.key;
@@ -633,14 +717,70 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 									"method": "post",
 									"routeName": "/dashboard/tenant/application/key/ext/add",
 									"data": postData,
-									"params": { "id": tId, "appId": appId, "key": key }
+									"params": { "id": tenantId, "appId": appId, "key": key }
 								}, function (error) {
 									if (error) {
-										currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+										return cb(error);
 									}
 									else {
-										return mCb();
-									}
+										var postData = {
+											'envCode': currentScope.wizard.gi.code.toLowerCase(),
+											'config': {
+												"oauth": {
+													"loginMode": "urac"
+												},
+												"commonFields": {
+													"mail": {
+														"from": "me@localhost.com",
+														"transport": {
+															"type": "sendmail",
+															"options": {}
+														}
+													}
+												},
+												"urac": {
+													"hashIterations": 1024,
+													"seedLength": 32,
+													"link": {
+														"addUser": "http://dashboard.soajs.org/#/setNewPassword",
+														"changeEmail": "http://dashboard.soajs.org/#/changeEmail/validate",
+														"forgotPassword": "http://dashboard.soajs.org/#/resetPassword",
+														"join": "http://dashboard.soajs.org/#/join/validate"
+													},
+													"tokenExpiryTTL": 172800000,
+													"validateJoin": true,
+													"mail": {
+														"join": {
+															"subject": "Welcome to SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
+														},
+														"forgotPassword": {
+															"subject": "Reset Your Password at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
+														},
+														"addUser": {
+															"subject": "Account Created at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
+														},
+														"changeUserStatus": {
+															"subject": "Account Status changed at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
+														},
+														"changeEmail": {
+															"subject": "Change Account Email at SOAJS",
+															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
+														}
+													}
+												}
+											}
+										};
+										
+										getSendDataFromServer(currentScope, ngDataApi, {
+											"method": "put",
+											"routeName": "/dashboard/tenant/application/key/config/update",
+											"data": postData,
+											"params": { "id": tenantId, "appId": appId, "key": key }
+										},  mCb);}
 								});
 								
 							}
@@ -680,6 +820,105 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 	
+	function removeEnvironment(currentScope){
+		getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/environment/delete",
+				"params": { "id": currentScope.envId }
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else{
+					if(currentScope.wizard.deploy.selectedDriver ==='docker' &&
+						currentScope.wizard.deploy.deployment.docker.dockerremote){
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "get",
+							"routeName": "/dashboard/environment/platforms/list",
+							"params": {
+								env: currentScope.wizard.gi.code
+							}
+						}, function (error, response) {
+							if (error) {
+								currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
+							} else {
+								response.data.forEach((oneCert) =>{
+									getSendDataFromServer(currentScope, ngDataApi, {
+										"method": "delete",
+										"routeName": "/dashboard/environment/platforms/cert/delete",
+										"params": {
+											"id": oneCert._id,
+											"env": currentScope.wizard.gi.code,
+											"driverName": 'docker.remove'
+										}
+									}, function (error, response) {
+										if (error) {
+											currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
+										}
+									});
+								});
+							}
+						});
+					}
+					// else some error appeared
+				}
+			});
+	}
+	
+	function removeProduct(currentScope){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "delete",
+			"routeName": "/dashboard/product/delete",
+			"params": { "id": currentScope.envProductId }
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				//remove the tenant as well
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "delete",
+					"routeName": "/dashboard/tenant/delete",
+					"params": { "id": currentScope.envTenantId }
+				}, function (error) {
+					if (error) {
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+				});
+			}
+		});
+	}
+	
+	function removeController(currentScope, id){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'delete',
+			routeName: '/dashboard/cloud/services/delete',
+			params: {
+				env: currentScope.wizard.gi.code,
+				serviceId: id,
+				mode: currentScope.wizard.controller.mode
+			}
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+		});
+	}
+	
+	function removeCatalog(currentScope, id){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'delete',
+			routeName: '/dashboard/catalog/recipes/delete',
+			params: {
+				id: id
+			}
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+		});
+	}
+	
 	return {
 		'createEnvironment': createEnvironment,
 		'uploadEnvCertificates': uploadEnvCertificates,
@@ -687,7 +926,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'deployNginx': deployNginx,
 		'deployController': deployController,
 		'getPermissions': getPermissions,
-		'productize': productize
+		'productize': productize,
+		
+		'removeEnvironment': removeEnvironment,
+		'removeProduct': removeProduct,
+		'removeController': removeController,
+		'removeCatalog': removeCatalog
 	};
 	
 }]);

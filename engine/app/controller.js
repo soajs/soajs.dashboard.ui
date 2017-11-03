@@ -803,21 +803,15 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 	
 	$scope.openMy = function (interfaceName) {
 		
-		let mydomain = "";
-		
-		//detect domain
-		if (location && location.host) {
-			let customDomain = location.host;
-			customDomain = customDomain.split(":")[0];
-			customDomain = customDomain.split(".");
-			customDomain = customDomain[customDomain.length - 2] + "." + customDomain[customDomain.length - 1];
-			mydomain = $localStorage.sites[interfaceName] + "." + customDomain;
+		let link = "";
+		if($localStorage && $localStorage.environments){
+			$localStorage.environments.forEach(function (currentEnv) {
+				if(currentEnv.code.toLowerCase() === 'portal'){
+					link = currentEnv.protocol + "://" + currentEnv.sitePrefix + "." + currentEnv.domain + ":" + currentEnv.port;
+				}
+			});
 		}
 		
-		//detect port
-		let mydomainport = (location && location.port && parseInt(location.port) !== 80) ? location.port : 80;
-		
-		let link = window.location.protocol + "//" + mydomain + ":" + mydomainport;
 		window.open(link);
 	};
 	

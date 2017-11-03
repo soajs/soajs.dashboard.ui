@@ -789,6 +789,18 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		$scope.setUser();
 	});
 	
+	$scope.isPortalDeployed =  function(){
+		let hasPortal = false;
+		if($localStorage && $localStorage.environments){
+			$localStorage.environments.forEach(function (currentEnv) {
+				if(currentEnv.code.toLowerCase() === 'portal'){
+					hasPortal = true;
+				}
+			});
+		}
+		return hasPortal;
+	};
+	
 	$scope.openMy = function (interfaceName) {
 		
 		let mydomain = "";

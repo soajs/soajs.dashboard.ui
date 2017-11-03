@@ -1117,28 +1117,26 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 	}
 
 	function inspectService(currentScope, service) {
-		$modal.open({
-			templateUrl: "infoService.tmpl",
-			size: 'm',
-			backdrop: true,
-			keyboard: true,
-			controller: function ($scope, $modalInstance) {
-				fixBackDrop();
-
-				$scope.title = service.name + ' | Service Info';
-				$scope.serviceInfo = service;
-
-				$scope.fillAceWithInfo = function (_editor) {
-					$timeout(function () {
-						_editor.setValue(JSON.stringify($scope.serviceInfo, null, 2));
-					}, 1000);
-				};
-
-				$scope.closeModal = function () {
-					$modalInstance.close();
-				};
-			}
-		});
+		var formConfig = angular.copy(environmentsConfig.form.serviceInfo);
+		formConfig.entries[0].value = service;
+		var options = {
+			timeout: $timeout,
+			form: formConfig,
+			name: 'serviceInfo',
+			label: service.name + ' | Service Info',
+			actions: [
+				{
+					'type': 'reset',
+					'label': translation.ok[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						currentScope.modalInstance.dismiss('cancel');
+						currentScope.form.formData = {};
+					}
+				}
+			]
+		};
+		buildFormWithModal(currentScope, $modal, options);
 	}
 
     function redeployService(currentScope, service) {

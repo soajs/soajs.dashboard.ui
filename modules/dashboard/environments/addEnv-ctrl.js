@@ -194,6 +194,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							delete formData.docker;
 							$localStorage.addEnv.step2 = angular.copy(formData);
 							$scope.wizard.deploy = angular.copy(formData);
+							
+							delete $scope.wizard.controller;
+							delete $scope.wizard.nginx;
+							
 							$scope.lastStep = 2;
 							$scope.overview();
 						}
@@ -690,7 +694,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						overlayLoading.show();
 						addEnv.createEnvironment($scope, (error, response) => {
 							if(error){
-								rollback([{method: 'removeEnvironment'}], error);
+								rollback([], error);
 							}
 							else{
 								$scope.envId = response.data;
@@ -777,16 +781,18 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							//['environment', 'product', 'controller']
 							//['environment', 'controller', 'catalog']
 							//['environment', 'product', 'controller', 'catalog']
+							if(steps && typeof Array.isArray(steps)){
+								steps.forEach((oneStep) => {
+									if(oneStep.id){
+										addEnv[oneStep.method]($scope, oneStep.id);
+									}
+									else{
+										addEnv[oneStep.method]($scope);
+									}
+								});
+							}
 							
-							steps.forEach((oneStep) => {
-								if(oneStep.id){
-									addEnv[oneStep.method]($scope, oneStep.id);
-								}
-								else{
-									addEnv[oneStep.method]($scope);
-								}
-							});
-							
+							overlayLoading.hide();
 							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
 						

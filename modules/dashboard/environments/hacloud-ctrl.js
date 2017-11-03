@@ -108,12 +108,12 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 	
 	$scope.autoRefreshMetrics = function () {
-		var tValue = 20000;
+		$scope.metricsRefreshInterval = 5000;
 		autoRefreshTimeoutMetrics= $timeout(function () {
 			$scope.getServicesMetrics(function () {
 				$scope.autoRefreshMetrics();
 			});
-		}, tValue);
+		}, $scope.metricsRefreshInterval);
 	};
 
 	$scope.generateNewMsg = function (env, type, msg) {
@@ -307,11 +307,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	if ($scope.access.hacloud.services.metrics) {
 		$scope.checkMetricsServer(function () {
 			$scope.getServicesMetrics(function () {
-				$timeout(function () {
-					$scope.getServicesMetrics(function () {
-						$scope.autoRefreshMetrics();
-					});
-				}, 3000);
+				$scope.autoRefreshMetrics();
 			});
 		});
 	}

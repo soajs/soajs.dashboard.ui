@@ -723,6 +723,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 										return cb(error);
 									}
 									else {
+										let domain = currentScope.wizard.gi.sitePrefix + "." + currentScope.wizard.gi.domain;
+										
 										var postData = {
 											'envCode': currentScope.wizard.gi.code.toLowerCase(),
 											'config': {
@@ -742,10 +744,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 													"hashIterations": 1024,
 													"seedLength": 32,
 													"link": {
-														"addUser": "http://dashboard.soajs.org/#/setNewPassword",
-														"changeEmail": "http://dashboard.soajs.org/#/changeEmail/validate",
-														"forgotPassword": "http://dashboard.soajs.org/#/resetPassword",
-														"join": "http://dashboard.soajs.org/#/join/validate"
+														"addUser": "http://"+domain+"/#/setNewPassword",
+														"changeEmail": "http://"+domain+"/#/changeEmail/validate",
+														"forgotPassword": "http://"+domain+"/#/resetPassword",
+														"join": "http://"+domain+"/#/join/validate"
 													},
 													"tokenExpiryTTL": 172800000,
 													"validateJoin": true,

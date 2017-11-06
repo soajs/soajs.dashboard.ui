@@ -11,6 +11,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	
 	$scope.wizard = {};
 	
+	//Check whether each part of the domain is not longer than 63 characters,
+	//Allow internationalized domain names
+	$scope.domainRegex= '^((?=[a-z0-9-]{1,63}\\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,63}$';
+	
 	$scope.Step1 = function () {
 		overlayLoading.show();
 		

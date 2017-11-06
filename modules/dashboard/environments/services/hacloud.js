@@ -691,7 +691,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										tooltips: {
 											callbacks: {
 												label: function (tooltipItem) {
-													return currentScope.chartOptions[oneContainer].blkIO.series[tooltipItem.datasetIndex] + ": " + convertToMetric(tooltipItem.yLabel);
+													return currentScope.chartOptions[oneContainer].netIO.series[tooltipItem.datasetIndex] + ": " + convertToMetric(tooltipItem.yLabel);
 												}
 											}
 										},

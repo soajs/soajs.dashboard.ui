@@ -102,17 +102,22 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		var tValue = $scope.selectedInterval.v * 1000;
 		autoRefreshTimeoutInstance = setTimeout(function(){
 			$scope.listServices(function(){
-				$scope.autoRefresh();
+				if(!$scope.destroyed) {
+					$scope.autoRefresh();
+				}
 			});
 		}, tValue);
 	};
 	
 	$scope.autoRefreshMetrics = function () {
+		var tValue = $scope.metricsRefreshInterval;
 		autoRefreshTimeoutMetrics = setTimeout(function () {
 			$scope.getServicesMetrics(function () {
-				$scope.autoRefreshMetrics();
+				if(!$scope.destroyed){
+					$scope.autoRefreshMetrics();
+				}
 			});
-		}, $scope.metricsRefreshInterval);
+		}, tValue);
 	};
 
 	$scope.generateNewMsg = function (env, type, msg) {
@@ -312,6 +317,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	}
 	
 	$scope.$on("$destroy", function () {
+		$scope.destroyed = true;
 		clearTimeout(autoRefreshTimeoutInstance);
 		clearTimeout(autoRefreshTimeoutMetrics);
 	});

@@ -8,7 +8,25 @@
 			<h3 class="modal-title">Creating Environment</h3>
 		</div>
 		<div class="modal-body">
-			<progressbar class="progress-striped active" value="progressCounter/maxCounter*100" type="info">{{progressCounter/maxCounter*100}}%</progressbar>
+			<progressbar class="progress-striped active" value="progressCounter/maxCounter*100" type="info">{{(progressCounter/maxCounter*100).toFixed(2)}}%</progressbar>
+			<span ng-if="createEnvironment">
+				<span class="icon icon-checkmark green"></span> Created Environment.<br>
+			</span>
+			<span ng-if="uploadEnvCertificates">
+				<span class="icon icon-checkmark green"></span> Environment Certificates Uploaded.<br>
+			</span>
+			<span ng-if="productize">
+				<span class="icon icon-checkmark green"></span> Added Product.<br>
+			</span>
+			<span ng-if="deployController">
+				<span class="icon icon-checkmark green"></span> Deployed Controller.<br>
+			</span>
+			<span ng-if="createNginxRecipe">
+				<span class="icon icon-checkmark green"></span> Created Nginx Recipe.<br>
+			</span>
+			<span ng-if="deployNginx">
+				<span class="icon icon-checkmark green"></span> Deployed Nginx.<br>
+			</span>
 		</div>
 	</div>
 </script>

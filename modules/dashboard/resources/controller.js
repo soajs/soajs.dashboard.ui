@@ -929,7 +929,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 			$scope.envDeployer = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).deployer;
 			$scope.envType = $scope.envDeployer.type;
-			$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+			$scope.envPlatform = '';
+			if($scope.envType !== 'manual') {
+				$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+			}
+
 			$scope.load();
 		}
 	}

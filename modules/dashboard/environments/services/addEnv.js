@@ -519,7 +519,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'description': "This is a public package for the portal product that allows users to login to the portal interface.",
 					'_TTL': (7 * 24).toString(),
 					"acl": {
-						"dashboard": {
+						"portal": {
 							"oauth": {
 								"access": false,
 								"apisPermission": "restricted",
@@ -591,7 +591,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'description': "This package offers the minimum ACL needed to execute management operation in the portal interface.",
 					'_TTL': (7 * 24).toString(),
 					"acl": {
-						"dashboard": {
+						"portal": {
 							"oauth": {
 								"access": true
 							},

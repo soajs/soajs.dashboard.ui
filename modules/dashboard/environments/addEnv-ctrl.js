@@ -261,7 +261,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							$localStorage.addEnv.step2 = angular.copy(formData);
 							$scope.wizard.deploy = angular.copy(formData);
 							$scope.lastStep = 2;
-							$scope.Step3();
+							$scope.Step21();
 						}
 					}
 				},
@@ -308,6 +308,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 			};
 			overlayLoading.hide();
 		});
+	};
+	
+	$scope.Step21 = function () {
+		//this only shows up iza el deployment is container w ya amma fi cluster ya amma create one for me
 	};
 	
 	$scope.Step3 = function () {
@@ -372,7 +376,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						'btn': 'success',
 						'action': function () {
 							$scope.form.formData = {};
-							$scope.Step2();
+							$scope.Step21();
 						}
 					},
 					{
@@ -733,6 +737,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						'btn': 'success',
 						'action': function () {
 							$scope.form.formData = {};
+							if($scope.wizard.urac && $scope.wizard.oauth){
+								$scope.lastStep = 6;
+							}
+							else{
+								$scope.lastStep = 3;
+							}
 							let stepNumber = "Step" + $scope.lastStep;
 							$scope[stepNumber]();
 						}

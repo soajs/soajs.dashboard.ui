@@ -898,11 +898,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							controller: function($scope, $modalInstance){
 								$scope.progressCounter = 0;
 								$scope.maxCounter = 3;
-								if ($scope.portalDeployment) {
+								if (parentScope.portalDeployment) {
 									$scope.maxCounter++;
 								}
 								if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
 									$scope.maxCounter++;
+									if (!parentScope.wizard.nginx.catalog) {
+										$scope.maxCounter++;
+									}
 								}
 								
 								addEnvironment (function(){
@@ -943,7 +946,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 													$scope.uploadEnvCertificates = true;
 													handleDeployment(cb);
 												}
-												
 											});
 										}
 									});
@@ -1035,7 +1037,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												rollback(steps, error);
 											}
 											else {
-												$scope.createNginxRecipe = true;
+												$scope.progressCounter++;
+															$scope.createNginxRecipe = true;
 												addEnv.deployNginx(parentScope, catalogId, (error) => {
 													if(error){
 														steps.push({method: 'removeController', id: $scope.controllerId});

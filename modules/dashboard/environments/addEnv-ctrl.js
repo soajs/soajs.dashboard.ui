@@ -638,6 +638,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 					$scope.form.formData = $scope.wizard.nginx;
 				}
 				
+				$scope.supportSSL = false;
+				if($scope.wizard.deploy && $scope.wizard.deploy.deployment){
+					if(($scope.wizard.deploy.deployment.docker && $scope.wizard.deploy.deployment.docker.dockerremote) || ($scope.wizard.deploy.deployment.kubernetes && $scope.wizard.deploy.deployment.kubernetes.kubernetesremote)){
+						$scope.supportSSL = true;
+					}
+				}
+				
 				if ($scope.wizard.controller) {
 					$scope.form.formData.deploy = $scope.wizard.controller.deploy;
 				}

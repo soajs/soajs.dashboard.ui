@@ -720,7 +720,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							keyboard: false,
 							controller: function($scope, $modalInstance){
 								$scope.progressCounter = 0;
-								$scope.maxCounter = 3;
+								$scope.maxCounter = 5;
 								if ($scope.portalDeployment) {
 									$scope.maxCounter++;
 								}
@@ -803,6 +803,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 															rollback(steps, error);
 														}
 														else {
+															$scope.progressCounter++;
 															addEnv.deployNginx(parentScope, catalogId, (error) => {
 																if(error){
 																	steps.push({method: 'removeController', id: controllerId});

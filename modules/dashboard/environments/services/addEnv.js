@@ -870,27 +870,44 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	}
 	
 	function removeProduct(currentScope){
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "delete",
-			"routeName": "/dashboard/product/delete",
-			"params": { "id": currentScope.envProductId }
-		}, function (error) {
-			if (error) {
-				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				//remove the tenant as well
-				getSendDataFromServer(currentScope, ngDataApi, {
-					"method": "delete",
-					"routeName": "/dashboard/tenant/delete",
-					"params": { "id": currentScope.envTenantId }
-				}, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		
+		if(currentScope.envProductId){
+			productRemove();
+		}
+		else if(currentScope.envTenantId){
+			
+			tenantRemove();
+		}
+		
+		function productRemove(){
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/product/delete",
+				"params": { "id": currentScope.envProductId }
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					if(currentScope.envTenantId){
+						tenantRemove();
 					}
-				});
-			}
-		});
+				}
+			});
+		}
+		
+		function tenantRemove(){
+			//remove the tenant as well
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/tenant/delete",
+				"params": { "id": currentScope.envTenantId }
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+			});
+		}
 	}
 	
 	function removeController(currentScope, id){

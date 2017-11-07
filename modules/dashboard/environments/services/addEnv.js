@@ -732,11 +732,15 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 									"routeName": "/dashboard/tenant/application/key/ext/add",
 									"data": postData,
 									"params": { "id": tenantId, "appId": appId, "key": key }
-								}, function (error) {
+								}, function (error, response) {
 									if (error) {
 										return cb(error);
 									}
 									else {
+										if(packageName === 'main'){
+											currentScope.tenantExtKey = response.extKey;
+										}
+										
 										let domain = currentScope.wizard.gi.sitePrefix + "." + currentScope.wizard.gi.domain;
 										
 										var postData = {

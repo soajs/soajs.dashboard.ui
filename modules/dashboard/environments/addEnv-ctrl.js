@@ -990,7 +990,22 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 																	$scope.oAuthId = oAuthId;
 																	$scope.progressCounter++;
 																	$scope.deployOauth = true;
-																	handleNginx(steps, cb);
+																	handleNginx(steps, (error) => {
+																		//add user and group using new tenant
+																		addUserAndGroup( (error) => {
+																			if(error){
+																				steps.push({method: 'removeController', id: $scope.controllerId});
+																				steps.push({method: 'removeUrac', id: $scope.uracId});
+																				steps.push({method: 'removeOauth', id: $scope.oAuthId});
+																				steps.push({method: 'removeCatalog', id: $scope.catalogId});
+																				steps.push({method: 'removeNginx', id: $scope.nginxId});
+																				rollback(steps, error);
+																			}
+																			else{
+																				return cb();
+																			}
+																		});
+																	});
 																}
 															});
 														}
@@ -1010,7 +1025,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								
 								function handleNginx(steps, cb){
 									if (parentScope.wizard.nginx.catalog) {
-										addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, (error) => {
+										addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, (error, nginxId) => {
 											if(error){
 												steps.push({method: 'removeController', id: $scope.controllerId});
 												if($scope.portalDeployment){
@@ -1020,6 +1035,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												rollback(steps, error);
 											}
 											else {
+												$scope.nginxId = nginxId;
 												$scope.progressCounter++;
 												$scope.deployNginx = true;
 												return cb();
@@ -1037,9 +1053,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												rollback(steps, error);
 											}
 											else {
+												$scope.catalogId = catalogId;
 												$scope.progressCounter++;
-															$scope.createNginxRecipe = true;
-												addEnv.deployNginx(parentScope, catalogId, (error) => {
+												$scope.createNginxRecipe = true;
+												addEnv.deployNginx(parentScope, catalogId, (error, nginxId) => {
 													if(error){
 														steps.push({method: 'removeController', id: $scope.controllerId});
 														if($scope.portalDeployment){
@@ -1050,6 +1067,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 														rollback(steps, error);
 													}
 													else {
+														$scope.nginxId = nginxId;
 														$scope.progressCounter++;
 														$scope.deployNginx = true;
 														return cb();
@@ -1058,6 +1076,49 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 											}
 										});
 									}
+								}
+								
+								function addUserAndGroup(cb){
+									getSendDataFromServer($scope, ngDataApi, {
+										method: 'post',
+										proxy: true,
+										routeName: '/urac/admin/group/add',
+										header: {
+											key: $scope.tenantExtKey
+										},
+										data: {
+											"name":"administrator",
+											"code":"administrator",
+											"description":"Portal administration group",
+											"tId": $scope.tenantId,
+											"tCode":"PRTL"
+										}
+									}, function (error) {
+										if (error) {
+											return cb(error);
+										}
+										else {
+											getSendDataFromServer($scope, ngDataApi, {
+												method: 'post',
+												proxy: true,
+												routeName: '/urac/admin/addUser',
+												header: {
+													key: $scope.tenantExtKey
+												},
+												data: {
+													"username": $scope.wizard.gi.username,
+													"firstName":"PORTAL",
+													"lastName":"OWNER",
+													"email": $scope.wizard.gi.email,
+													"groups":["administrator"],
+													"tId":$scope.tenantId,
+													"tCode":"PRTL",
+													"status": "active",
+													"password": $scope.wizard.gi.password
+												}
+											}, cb);
+										}
+									});
 								}
 								
 								function rollback(steps, error){

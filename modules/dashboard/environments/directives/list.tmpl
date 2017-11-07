@@ -2,6 +2,13 @@
     <span ng-if="access.addEnvironment">
 	    <a href="#/environments-add" class="btn btn-primary">{{translation.addNewEnvironment[LANG]}}</a><br/><br/>
     </span>
+	<div ng-show = "!grid.rows">
+		<!--
+		Todo
+		Mike:
+		Insert page here
+		-->
+	</div>
 	<tabset ng-show="grid.rows">
 		<tab heading="{{translation.defaultRegistry[LANG]}}">
 			<br/>

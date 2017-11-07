@@ -669,9 +669,9 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 					if ($scope.currentDeployer.type === 'manual' && navigation[i].id === 'environments-hacloud' ||
 						$scope.currentDeployer.type !== 'manual' && navigation[i].id === 'environments-hosts' ||
 						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'repositories' ||
-						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'updates-upgrades') {
+						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'updates-upgrades' ||
+						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'continuous-delivery') {
 						navigation.splice(i, 1);
-						// break;
 					}
 				}
 			}

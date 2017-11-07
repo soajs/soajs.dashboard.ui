@@ -7,7 +7,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
-	$scope.portalDeployment = $routeParams.portal || false;
+	$scope.portalDeployment = false;
 	
 	$scope.wizard = {};
 	
@@ -21,7 +21,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		let entries = {
 			code: {
 				required: true,
-				disabled: false
+				disabled: false,
+				onAction : function(){
+					if($scope.form && $scope.form.formData && $scope.form.formData.code === 'PORTAL'){
+						$scope.portalDeployment = true;
+					}
+				}
 			},
 			description: {
 				required: true
@@ -128,13 +133,18 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 			if ($localStorage.addEnv && $localStorage.addEnv.step1) {
 				$scope.form.formData = angular.copy($localStorage.addEnv.step1);
 				$scope.wizard.gi = angular.copy($scope.form.formData);
+				
+				if($scope.wizard.gi.code === 'PORTAL'){
+					$scope.portalDeployment = true;
+				}
 			}
 			
-			//check if portal
-			if($scope.portalDeployment){
-				entries.code.disabled = true;
-				$scope.form.formData.code = "PORTAL";
+			if($routeParams.portal){
+				$scope.form.formData.code = 'PORTAL';
 			}
+			
+			$scope.tempFormEntries.code.onAction();
+			
 			overlayLoading.hide();
 		});
 	};
@@ -628,6 +638,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 					$scope.form.formData = $scope.wizard.nginx;
 				}
 				
+				$scope.supportSSL = false;
+				if($scope.wizard.deploy && $scope.wizard.deploy.deployment){
+					if(($scope.wizard.deploy.deployment.docker && $scope.wizard.deploy.deployment.docker.dockerremote) || ($scope.wizard.deploy.deployment.kubernetes && $scope.wizard.deploy.deployment.kubernetes.kubernetesremote)){
+						$scope.supportSSL = true;
+					}
+				}
+				
 				if ($scope.wizard.controller) {
 					$scope.form.formData.deploy = $scope.wizard.controller.deploy;
 				}
@@ -662,7 +679,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	};
 	
 	$scope.overview = function () {
-		
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {
 			timeout: $timeout,

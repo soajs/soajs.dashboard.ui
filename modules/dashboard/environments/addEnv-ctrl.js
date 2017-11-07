@@ -740,6 +740,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 											rollback([], error);
 										}
 										else {
+											console.log("------- response env code shoufaaaa");
+											console.log(response);
+											console.log("------- response env code shoufaaaa");
 											parentScope.envId = response.data;
 											$scope.progressCounter++;
 											addEnv.uploadEnvCertificates(parentScope, (error) => {
@@ -835,6 +838,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									//['environment', 'product', 'controller']
 									//['environment', 'controller', 'catalog']
 									//['environment', 'product', 'controller', 'catalog']
+									
+									console.log("----");
+									console.log(steps);
+									console.log("----");
+									
 									if(steps && typeof Array.isArray(steps)){
 										steps.forEach((oneStep) => {
 											if(oneStep.id){

@@ -284,67 +284,71 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	
 	$scope.removeEnvironment = function (row) {
 		
-		if(row.code === 'PORTAL'){
-			let purgeall = $window.confirm("The following Environment has a product and a tenant associated to it.\n Do you want to remove them as well ?");
-			
-			if(purgeall){
-				//remove product portal
-				getSendDataFromServer($scope, ngDataApi, {
-					"method": "delete",
-					"routeName": "/dashboard/product/delete",
-					"params": { "code": "PORTAL" }
-				}, function (error) {
-					if (error) {
-						$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-					else {
-						//remove tenant portal
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "delete",
-							"routeName": "/dashboard/tenant/delete",
-							"params": { "code": "PRTL" }
-						}, function (error) {
-							if (error) {
-								$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							
-							//remove environment
-							doRemoveEnvironment();
-						});
-					}
-				});
+		function deletePortalProductsAndTenants(deleteCb){
+			if(row.code === 'PORTAL'){
+				let purgeall = $window.confirm("The following Environment has a product and a tenant associated to it.\n Do you want to remove them as well ?");
+				
+				if(purgeall){
+					//remove product portal
+					getSendDataFromServer($scope, ngDataApi, {
+						"method": "delete",
+						"routeName": "/dashboard/product/delete",
+						"params": { "code": "PORTAL" }
+					}, function (error) {
+						if (error) {
+							deleteCb(error);
+						}
+						else {
+							//remove tenant portal
+							getSendDataFromServer($scope, ngDataApi, {
+								"method": "delete",
+								"routeName": "/dashboard/tenant/delete",
+								"params": { "code": "PRTL" }
+							}, function (error) {
+								if (error) {
+									deleteCb(error);
+								}else{
+									deleteCb(false);
+								}
+							});
+						}
+					});
+				}else{
+					deleteCb();
+				}
+			}else{
+				deleteCb();
 			}
-			else{
-				//remove environment
-				doRemoveEnvironment();
-			}
-		}
-		else{
-			doRemoveEnvironment();
 		}
 		
-		function doRemoveEnvironment(){
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "delete",
-				"routeName": "/dashboard/environment/delete",
-				"params": { "id": row['_id'] }
-			}, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				else {
-					if (response) {
-						$scope.$parent.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "delete",
+			"routeName": "/dashboard/environment/delete",
+			"params": {"id": row['_id']}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				if (response) {
+					deletePortalProductsAndTenants(function(error){
+						if(error){
+							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						}else{
+							$scope.$parent.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+						}
+						
 						getEnvironments(null, function () {
 							$scope.listEnvironments();
 						});
-					}
-					else {
-						$scope.$parent.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
-					}
+					});
 				}
-			});
-		}
+				else {
+					$scope.$parent.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+				}
+			}
+		});
+		
 	};
 	
 	

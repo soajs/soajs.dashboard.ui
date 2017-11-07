@@ -476,14 +476,120 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				2.2- create user application that uses user package
 					2.2.1- create key & extKey -> dashboard Access : true
 		 */
-		productizeApiCall( (error) => {
-			if(error){
-				return cb(error);
-			}
-			else{
-				multitenancyApiCall(cb);
-			}
+		
+		// variables updated in checkIfProductAndPacksExists
+		let productFound = false; // will also hold the product id if found
+		let mainPackFound = false;
+		let userPackFound = false;
+		
+		// variables updated in checkIfTenantAppsAndKeysExist
+		let tenantFound = false;
+		let mainApplicationFound = false;
+		let userApplicationFound = false;
+		let mainApplicationKeyFound = false;
+		let userApplicationKeyFound = false;
+		
+		checkIfProductAndPacksExists(function () {
+			checkIfTenantAppsAndKeysExist(function () {
+				// now that the above variables are defined
+				productizeApiCall( (error) => {
+					if(error){
+						return cb(error);
+					}
+					else{
+						multitenancyApiCall(cb);
+					}
+				});
+			});
 		});
+		
+		/**
+		 *  check if products and packages exist and update the following 3 variables: productFound, mainPackFound, userPackFound
+		 *
+		 * @param productCheckCb
+		 */
+		function checkIfProductAndPacksExists(productCheckCb) {
+			var params = {
+				'productCode': 'PORTAL'
+			};
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/product/get",
+				params
+			}, function (error, product) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					if (!product || !product.code) {
+						productFound = false;
+						productCheckCb();
+					}else{
+						productFound = product['_id'];
+					}
+					
+					let packs = product.packages;
+					
+					if (packs) {
+						packs.forEach(function (eachPack) {
+							if (eachPack.code === 'PORTAL_MAIN') {
+								mainPackFound = true;
+							}
+							if (eachPack.code === 'PORTAL_USER') {
+								userPackFound = true;
+							}
+						});
+					}
+					productCheckCb();
+				}
+			});
+		}
+		
+		function checkIfTenantAppsAndKeysExist(tenantCheckCb) {
+			var params = {
+				'code': 'PRTL'
+			};
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/tenant/get",
+				params
+			}, function (error, tenant) {
+				if (error) {
+					if(error.code === 452){ // its not an error, the tenant is simply not found
+						tenantFound = false;
+						tenantCheckCb();
+					}else{
+						return cb(error);
+					}
+				}
+				else {
+					tenantFound = true;
+					
+					let applications = tenant.applications;
+					
+					if(applications){
+						applications.forEach(function(eachApp){
+							if(eachApp.package === 'PORTAL_MAIN' && eachApp.product === 'PORTAL'){
+								mainApplicationFound = true;
+								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
+									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
+									mainApplicationKeyFound = true;
+								}
+							}
+							if(eachApp.package === 'PORTAL_USER' && eachApp.product === 'PORTAL'){
+								userApplicationFound = true;
+								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
+									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
+									userApplicationKeyFound = true;
+								}
+							}
+						});
+					}
+					
+					tenantCheckCb();
+				}
+			});
+		}
 		
 		function productizeApiCall(mCb){
 			var postData = {
@@ -491,26 +597,39 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				'name': "Portal Product",
 				'description': "This product contains packages that offer access to the portal interface of SOAJS to manage your products."
 			};
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "post",
-				"routeName": "/dashboard/product/add",
-				"data": postData
-			}, function (error, productId) {
-				if (error) {
-					return mCb(error);
-				}
-				else {
-					addBasicPackage(productId.data, (error) => {
-						if(error){
-							return mCb(error);
-						}
-						else{
-							currentScope.envProductId = productId.data;
-							addUserPackage(productId.data, mCb);
-						}
-					});
-				}
-			});
+			
+			if(!productFound){
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/product/add",
+					"data": postData
+				}, function (error, productId) {
+					if (error) {
+						return mCb(error);
+					}
+					else {
+						addBasicPackage(productId.data, (error) => {
+							if(error){
+								return mCb(error);
+							}
+							else{
+								currentScope.envProductId = productId.data;
+								addUserPackage(productId.data, mCb);
+							}
+						});
+					}
+				});
+			}else{
+				addBasicPackage(productFound, (error) => {
+					if(error){
+						return mCb(error);
+					}
+					else{
+						currentScope.envProductId = productFound;
+						addUserPackage(productFound, mCb);
+					}
+				});
+			}
 			
 			function addBasicPackage(productId, mCb){
 				var postData = {
@@ -576,12 +695,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				};
 				
-				getSendDataFromServer(currentScope, ngDataApi, {
-					"method": "post",
-					"routeName": "/dashboard/product/packages/add",
-					"data": postData,
-					"params": { "id": productId }
-				}, mCb);
+				if(!mainPackFound){
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "post",
+						"routeName": "/dashboard/product/packages/add",
+						"data": postData,
+						"params": { "id": productId }
+					}, mCb);
+				}else{
+					mCb();
+				}
+				
 			}
 			
 			function addUserPackage(productId, mCb){
@@ -639,12 +763,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				};
 				
-				getSendDataFromServer(currentScope, ngDataApi, {
-					"method": "post",
-					"routeName": "/dashboard/product/packages/add",
-					"data": postData,
-					"params": { "id": productId }
-				}, mCb);
+				if(!userPackFound){
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "post",
+						"routeName": "/dashboard/product/packages/add",
+						"data": postData,
+						"params": { "id": productId }
+					}, mCb);
+				}else{
+					mCb();
+				}
+				
 			}
 		}
 		
@@ -657,27 +786,43 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				'description': "Portal Tenant that uses the portal product and its packages",
 				'tag': "portal"
 			};
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "post",
-				"routeName": "/dashboard/tenant/add",
-				"data": postData
-			}, function (error, response) {
-				if (error) {
-					return mCb(error);
-				}
-				else {
-					var tId = response.id;
-					currentScope.envTenantId = response.id;
-					addApplication(tId, 'main', (error)=>{
-						if(error){
-							return mCb(error);
-						}
-						else{
-							addApplication(tId, 'user', mCb);
-						}
-					});
-				}
-			});
+			
+			if(!tenantFound){
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/tenant/add",
+					"data": postData
+				}, function (error, response) {
+					if (error) {
+						return mCb(error);
+					}
+					else {
+						var tId = response.id;
+						currentScope.envTenantId = response.id;
+						
+						addApplication(tId, 'main', (error)=>{
+							if(error){
+								return mCb(error);
+							}
+							else{
+								addApplication(tId, 'user', mCb);
+							}
+						});
+					}
+				});
+			}else{
+				var tId = tenantFound;
+				currentScope.envTenantId = tenantFound;
+				addApplication(tId, 'main', (error)=>{
+					if(error){
+						return mCb(error);
+					}
+					else{
+						addApplication(tId, 'user', mCb);
+					}
+				});
+			}
+			
 			
 			function addApplication(tenantId, packageName, mCb){
 				var ttl = 7 * 24;
@@ -699,95 +844,110 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 					else {
 						var appId = response.appId;
+						
+						addApplicationKey(appId, tenantId, packageName, mCb);
+					}
+				});
+			}
+			
+			function addApplicationKey(appId, tenantId, addKeyCb){
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/tenant/application/key/add",
+					"params": { "id": tenantId, "appId": appId }
+				}, function (error, response) {
+					if (error) {
+						return addKeyCb(error);
+					}
+					else {
+						var key = response.key;
+						var postData = {
+							'expDate': null,
+							'device': null,
+							'geo': null,
+							'env': 'PORTAL'
+						};
+						
+						let params = {
+							"id": tenantId,
+							"appId": appId,
+							"key": key,
+							"dashboardAccess": (packageName === 'user')
+						};
+						
 						getSendDataFromServer(currentScope, ngDataApi, {
 							"method": "post",
-							"routeName": "/dashboard/tenant/application/key/add",
-							"params": { "id": tenantId, "appId": appId }
-						}, function (error, response) {
+							"routeName": "/dashboard/tenant/application/key/ext/add",
+							"data": postData,
+							params
+						}, function (error) {
 							if (error) {
-								return mCb(error);
+								return cb(error);
 							}
 							else {
-								var key = response.key;
+								// TODO: check how the nginx was deployed to determine the protocol and the port
+								let protocol = "http";
+								let port = 80;
+								let domain = protocol + "://" + currentScope.wizard.gi.sitePrefix + "." + currentScope.wizard.gi.domain + ":" + port;
+								
 								var postData = {
-									'expDate': null,
-									'device': null,
-									'geo': null,
-									'env': 'PORTAL'
-								};
-								getSendDataFromServer(currentScope, ngDataApi, {
-									"method": "post",
-									"routeName": "/dashboard/tenant/application/key/ext/add",
-									"data": postData,
-									"params": { "id": tenantId, "appId": appId, "key": key }
-								}, function (error) {
-									if (error) {
-										return cb(error);
-									}
-									else {
-										let domain = currentScope.wizard.gi.sitePrefix + "." + currentScope.wizard.gi.domain;
-										
-										var postData = {
-											'envCode': currentScope.wizard.gi.code.toLowerCase(),
-											'config': {
-												"oauth": {
-													"loginMode": "urac"
-												},
-												"commonFields": {
-													"mail": {
-														"from": "me@localhost.com",
-														"transport": {
-															"type": "sendmail",
-															"options": {}
-														}
-													}
-												},
-												"urac": {
-													"hashIterations": 1024,
-													"seedLength": 32,
-													"link": {
-														"addUser": "http://"+domain+"/#/setNewPassword",
-														"changeEmail": "http://"+domain+"/#/changeEmail/validate",
-														"forgotPassword": "http://"+domain+"/#/resetPassword",
-														"join": "http://"+domain+"/#/join/validate"
-													},
-													"tokenExpiryTTL": 172800000,
-													"validateJoin": true,
-													"mail": {
-														"join": {
-															"subject": "Welcome to SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
-														},
-														"forgotPassword": {
-															"subject": "Reset Your Password at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
-														},
-														"addUser": {
-															"subject": "Account Created at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
-														},
-														"changeUserStatus": {
-															"subject": "Account Status changed at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
-														},
-														"changeEmail": {
-															"subject": "Change Account Email at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
-														}
-													}
+									'envCode': currentScope.wizard.gi.code.toLowerCase(),
+									'config': {
+										"oauth": {
+											"loginMode": "urac"
+										},
+										"commonFields": {
+											"mail": {
+												"from": "me@localhost.com",
+												"transport": {
+													"type": "sendmail",
+													"options": {}
 												}
 											}
-										};
-										
-										getSendDataFromServer(currentScope, ngDataApi, {
-											"method": "put",
-											"routeName": "/dashboard/tenant/application/key/config/update",
-											"data": postData,
-											"params": { "id": tenantId, "appId": appId, "key": key }
-										},  mCb);}
-								});
+										},
+										"urac": {
+											"hashIterations": 1024,
+											"seedLength": 32,
+											"link": {
+												"addUser": domain+"/#/setNewPassword",
+												"changeEmail": domain+"/#/changeEmail/validate",
+												"forgotPassword": domain+"/#/resetPassword",
+												"join": domain+"/#/join/validate"
+											},
+											"tokenExpiryTTL": 172800000,
+											"validateJoin": true,
+											"mail": {
+												"join": {
+													"subject": "Welcome to SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
+												},
+												"forgotPassword": {
+													"subject": "Reset Your Password at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
+												},
+												"addUser": {
+													"subject": "Account Created at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
+												},
+												"changeUserStatus": {
+													"subject": "Account Status changed at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
+												},
+												"changeEmail": {
+													"subject": "Change Account Email at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
+												}
+											}
+										}
+									}
+								};
 								
-							}
+								getSendDataFromServer(currentScope, ngDataApi, {
+									"method": "put",
+									"routeName": "/dashboard/tenant/application/key/config/update",
+									"data": postData,
+									"params": { "id": tenantId, "appId": appId, "key": key }
+								},  addKeyCb);}
 						});
 						
 					}

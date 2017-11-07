@@ -720,12 +720,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							keyboard: false,
 							controller: function($scope, $modalInstance){
 								$scope.progressCounter = 0;
-								$scope.maxCounter = 5;
-								if ($scope.portalDeployment) {
+								$scope.maxCounter = 3;
+								if (parentScope.portalDeployment) {
 									$scope.maxCounter++;
 								}
 								if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
 									$scope.maxCounter++;
+									if (!parentScope.wizard.nginx.catalog) {
+										$scope.maxCounter++;
+									}
 								}
 								
 								addEnvironment (function(){
@@ -766,7 +769,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 													$scope.uploadEnvCertificates = true;
 													handleDeployment(cb);
 												}
-												
 											});
 										}
 									});

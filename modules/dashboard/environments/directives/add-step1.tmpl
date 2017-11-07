@@ -7,7 +7,7 @@
 			<td colspan="2">
 				<div id="code-wrapper">
 					<label>Environment Code</label>
-					<input class="form-control" ng-model="form.formData.code" type="text" placeholder="PORTAL | DEV | QA | CAT | STG | PROD | TEST" ng-required="tempFormEntries.code.required" ng-disabled="tempFormEntries.code.disabled"/>
+					<input class="form-control" ng-model="form.formData.code" type="text" placeholder="DEV | QA | CAT | STG | PROD | TEST" ng-required="tempFormEntries.code.required" ng-disabled="tempFormEntries.code.disabled" ng-change="tempFormEntries.code.onAction()"/>
 					<div class="fieldMsg hint">Provide a Code for your Environment</div>
 				</div>
 			</td>
@@ -39,7 +39,7 @@
 				<div id="domain-wrapper" style="width:90%; margin:0 10% 0 0;">
 					<div>
 						<label class="ng-binding">Environment Domain</label>
-						<input class="form-control" ng-model="form.formData.domain" type="text" placeholder="mydomain.com" ng-required="tempFormEntries.domain.required"/>
+						<input class="form-control" ng-model="form.formData.domain" ng-pattern="domainRegex" type="text" placeholder="mydomain.com" ng-required="tempFormEntries.domain.required"/>
 						<div class="fieldMsg hint">Enter the domain associated with this environment</div>
 					</div>
 				</div>

@@ -302,11 +302,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					};
 				}
 				
-				if (currentScope.wizard.nginx.customUi) {
+				if (currentScope.wizard.nginx.customUi && currentScope.wizard.nginx.customUi.source && currentScope.wizard.nginx.customUi.provider && currentScope.wizard.nginx.customUi.repo && currentScope.wizard.nginx.customUi.owner && currentScope.wizard.nginx.customUi.branch && currentScope.wizard.nginx.customUi.token){
 					recipe.buildOptions.env["SOAJS_GIT_BRANCH"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.branch
 					};
+					
 					recipe.buildOptions.env["SOAJS_GIT_OWNER"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.owner
@@ -315,6 +316,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.repo
 					};
+					
 					recipe.buildOptions.env["SOAJS_GIT_TOKEN"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.token
@@ -517,7 +519,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'description': "This is a public package for the portal product that allows users to login to the portal interface.",
 					'_TTL': (7 * 24).toString(),
 					"acl": {
-						"dashboard": {
+						"portal": {
 							"oauth": {
 								"access": false,
 								"apisPermission": "restricted",
@@ -589,7 +591,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'description': "This package offers the minimum ACL needed to execute management operation in the portal interface.",
 					'_TTL': (7 * 24).toString(),
 					"acl": {
-						"dashboard": {
+						"portal": {
 							"oauth": {
 								"access": true
 							},
@@ -868,27 +870,44 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	}
 	
 	function removeProduct(currentScope){
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "delete",
-			"routeName": "/dashboard/product/delete",
-			"params": { "id": currentScope.envProductId }
-		}, function (error) {
-			if (error) {
-				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				//remove the tenant as well
-				getSendDataFromServer(currentScope, ngDataApi, {
-					"method": "delete",
-					"routeName": "/dashboard/tenant/delete",
-					"params": { "id": currentScope.envTenantId }
-				}, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		
+		if(currentScope.envProductId){
+			productRemove();
+		}
+		else if(currentScope.envTenantId){
+			
+			tenantRemove();
+		}
+		
+		function productRemove(){
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/product/delete",
+				"params": { "id": currentScope.envProductId }
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					if(currentScope.envTenantId){
+						tenantRemove();
 					}
-				});
-			}
-		});
+				}
+			});
+		}
+		
+		function tenantRemove(){
+			//remove the tenant as well
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/tenant/delete",
+				"params": { "id": currentScope.envTenantId }
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+			});
+		}
 	}
 	
 	function removeController(currentScope, id){

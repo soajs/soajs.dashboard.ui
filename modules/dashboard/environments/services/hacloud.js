@@ -557,7 +557,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							currentScope.servicesMetrics[oneContainer].memoryLimit = convertBytes(metrics[oneContainer].memoryLimit);
 						}
 						
-						if (metrics[oneContainer].hasOwnProperty('blkRead') && metrics[oneContainer].hasOwnProperty('blkWrite')) {
+						if (currentScope.envPlatform === 'docker') {
 							if (!currentScope.servicesMetrics[oneContainer].blkIO) {
 								currentScope.servicesMetrics[oneContainer].blkIO = [[], []];
 								currentScope.chartOptions[oneContainer].blkIO = {
@@ -638,16 +638,13 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									}
 								}
 							}
-							currentScope.servicesMetrics[oneContainer].blkIO[0].push(metrics[oneContainer].blkRead);
-							currentScope.servicesMetrics[oneContainer].blkIO[1].push(metrics[oneContainer].blkWrite);
+							currentScope.servicesMetrics[oneContainer].blkIO[0].push((metrics[oneContainer].hasOwnProperty('blkRead')) ? metrics[oneContainer].blkRead : 0);
+							currentScope.servicesMetrics[oneContainer].blkIO[1].push((metrics[oneContainer].hasOwnProperty('blkWrite')) ? metrics[oneContainer].blkWrite : 0);
 							if(currentScope.servicesMetrics[oneContainer].blkIO[0].length > maxData){
 								currentScope.servicesMetrics[oneContainer].blkIO[0].shift();
 								currentScope.servicesMetrics[oneContainer].blkIO[1].shift();
 							}
 							
-						}
-						
-						if (metrics[oneContainer].hasOwnProperty('netIn') && metrics[oneContainer].hasOwnProperty('netOut')) {
 							if (!currentScope.servicesMetrics[oneContainer].netIO) {
 								currentScope.servicesMetrics[oneContainer].netIO = [[], []];
 								currentScope.chartOptions[oneContainer].netIO = {
@@ -691,7 +688,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										tooltips: {
 											callbacks: {
 												label: function (tooltipItem) {
-													return currentScope.chartOptions[oneContainer].blkIO.series[tooltipItem.datasetIndex] + ": " + convertToMetric(tooltipItem.yLabel);
+													return currentScope.chartOptions[oneContainer].netIO.series[tooltipItem.datasetIndex] + ": " + convertToMetric(tooltipItem.yLabel);
 												}
 											}
 										},
@@ -728,12 +725,13 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									}
 								}
 							}
-							currentScope.servicesMetrics[oneContainer].netIO[0].push(metrics[oneContainer].netIn);
-							currentScope.servicesMetrics[oneContainer].netIO[1].push(metrics[oneContainer].netOut);
+							currentScope.servicesMetrics[oneContainer].netIO[0].push((metrics[oneContainer].hasOwnProperty('netIn')) ? metrics[oneContainer].netIn : 0);
+							currentScope.servicesMetrics[oneContainer].netIO[1].push((metrics[oneContainer].hasOwnProperty('netOut')) ? metrics[oneContainer].netOut : 0);
 							if(currentScope.servicesMetrics[oneContainer].netIO[0].length > maxData){
 								currentScope.servicesMetrics[oneContainer].netIO[0].shift();
 								currentScope.servicesMetrics[oneContainer].netIO[1].shift();
 							}
+							
 						}
 					});
 					if (currentScope.envPlatform === 'kubernetes' && currentScope.access.hacloud.nodes.metrics) {

@@ -1,6 +1,6 @@
 "use strict";
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage) {
+environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', '$window', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage, $window) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.newEntry = true;
 	$scope.envId = null;
@@ -283,26 +283,68 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	};
 	
 	$scope.removeEnvironment = function (row) {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "delete",
-			"routeName": "/dashboard/environment/delete",
-			"params": { "id": row['_id'] }
-		}, function (error, response) {
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		
+		if(row.code === 'PORTAL'){
+			let purgeall = $window.confirm("The following Environment has a product and a tenant associated to it.\n Do you want to remove them as well ?");
+			
+			if(purgeall){
+				//remove product portal
+				getSendDataFromServer($scope, ngDataApi, {
+					"method": "delete",
+					"routeName": "/dashboard/product/delete",
+					"params": { "code": "PORTAL" }
+				}, function (error) {
+					if (error) {
+						$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						//remove tenant portal
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "delete",
+							"routeName": "/dashboard/tenant/delete",
+							"params": { "code": "PRTL" }
+						}, function (error) {
+							if (error) {
+								$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							
+							//remove environment
+							doRemoveEnvironment();
+						});
+					}
+				});
 			}
-			else {
-				if (response) {
-					$scope.$parent.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-					getEnvironments(null, function () {
-						$scope.listEnvironments();
-					});
+			else{
+				//remove environment
+				doRemoveEnvironment();
+			}
+		}
+		else{
+			doRemoveEnvironment();
+		}
+		
+		function doRemoveEnvironment(){
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/environment/delete",
+				"params": { "id": row['_id'] }
+			}, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else {
-					$scope.$parent.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+					if (response) {
+						$scope.$parent.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+						getEnvironments(null, function () {
+							$scope.listEnvironments();
+						});
+					}
+					else {
+						$scope.$parent.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+					}
 				}
-			}
-		});
+			});
+		}
 	};
 	
 	

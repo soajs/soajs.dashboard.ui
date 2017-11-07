@@ -2,6 +2,13 @@
     <span ng-if="access.addEnvironment">
 	    <a href="#/environments-add" class="btn btn-primary">{{translation.addNewEnvironment[LANG]}}</a><br/><br/>
     </span>
+	<div ng-show = "!grid.rows">
+		<!--
+		Todo
+		Mike:
+		Insert page here
+		-->
+	</div>
 	<tabset ng-show="grid.rows">
 		<tab heading="{{translation.defaultRegistry[LANG]}}">
 			<br/>
@@ -24,7 +31,7 @@
 								<span class="icon icon-pencil2" tooltip="{{translation.editEnvironment[LANG]}}"></span>
 							</a>
 
-							<a ng-if="access.deleteEnvironment" href="" ng-confirm-click="{{translation.areYouSureWantRemoveThisEnvironment[LANG]}}" ng-click="removeEnvironment(oneEnv);">
+							<a ng-if="access.deleteEnvironment && oneEnv.code !== 'DASHBOARD'" href="" ng-confirm-click="{{translation.areYouSureWantRemoveThisEnvironment[LANG]}}" ng-click="removeEnvironment(oneEnv);">
 								<span class="icon icon-cross" tooltip="{{translation.removeEnvironment[LANG]}}"></span>
 							</a>
 						</div>

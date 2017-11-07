@@ -3,9 +3,9 @@ var tenantConfig = {
 		'tenant': {
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
-				{'label': translation.code[LANG], 'field': 'code'},
-				{'label': translation.name[LANG], 'field': 'name'},
-				{'label': translation.description[LANG], 'field': 'description'}
+				{ 'label': translation.code[LANG], 'field': 'code' },
+				{ 'label': translation.name[LANG], 'field': 'name' },
+				{ 'label': translation.description[LANG], 'field': 'description' }
 			],
 			'leftActions': [],
 			'topActions': [],
@@ -15,10 +15,10 @@ var tenantConfig = {
 		'applications': {
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
-				{'label': translation.product[LANG], 'field': 'product'},
-				{'label': translation.package[LANG], 'field': 'package'},
-				{'label': translation.description[LANG], 'field': 'description'},
-				{'label': 'TTL ( ' + translation.hours[LANG] + ' )', 'field': '_TTL', filter: "TTL"}
+				{ 'label': translation.product[LANG], 'field': 'product' },
+				{ 'label': translation.package[LANG], 'field': 'package' },
+				{ 'label': translation.description[LANG], 'field': 'description' },
+				{ 'label': 'TTL ( ' + translation.hours[LANG] + ' )', 'field': '_TTL', filter: "TTL" }
 			],
 			'leftActions': [],
 			'topActions': [],
@@ -29,8 +29,8 @@ var tenantConfig = {
 			search: false,
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
-				{'label': translation.externalKey[LANG], 'field': 'extKey', filter: 'trimmed'},
-				{'label': translation.expiryDate[LANG], 'field': 'expDate', filter: 'date'}
+				{ 'label': translation.externalKey[LANG], 'field': 'extKey', filter: 'trimmed' },
+				{ 'label': translation.expiryDate[LANG], 'field': 'expDate', filter: 'date' }
 				//{'label': 'Geo', 'field': 'geo', filter: 'json'},
 				//{'label': 'Device', 'field': 'device', filter: 'json'}
 			],
@@ -43,7 +43,7 @@ var tenantConfig = {
 			search: false,
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
-				{'label': translation.userID[LANG], 'field': 'userId'}
+				{ 'label': translation.userID[LANG], 'field': 'userId' }
 			],
 			'leftActions': [],
 			'topActions': [],
@@ -53,8 +53,8 @@ var tenantConfig = {
 		'keys': {
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
-				{'label': translation.code[LANG], 'field': 'code'},
-				{'label': translation.key[LANG], 'field': 'key'}
+				{ 'label': translation.code[LANG], 'field': 'code' },
+				{ 'label': translation.key[LANG], 'field': 'key' }
 			],
 			'leftActions': [],
 			'topActions': [],
@@ -361,14 +361,14 @@ var tenantConfig = {
 					'name': '_TTL',
 					'label': 'TTL',
 					'type': 'select',
-					'value': [{'v': 6, 'l': '6 ' + translation.hours[LANG]}, {
+					'value': [{ 'v': 6, 'l': '6 ' + translation.hours[LANG] }, {
 						'v': 12,
 						'l': '12 ' + translation.hours[LANG]
-					}, {'v': 24, 'l': '24 ' + translation.hours[LANG]},
-						{'v': 120, 'l': '5 ' + translation.days[LANG]}, {
+					}, { 'v': 24, 'l': '24 ' + translation.hours[LANG] },
+						{ 'v': 120, 'l': '5 ' + translation.days[LANG] }, {
 							'v': 144,
 							'l': '6 ' + translation.days[LANG]
-						}, {'v': 168, 'l': '7 ' + translation.days[LANG]}],
+						}, { 'v': 168, 'l': '7 ' + translation.days[LANG] }],
 					'tooltip': translation.formTTLToolTip[LANG]
 				}
 			]
@@ -393,10 +393,10 @@ var tenantConfig = {
 					'type': 'jsoneditor',
 					'options': {
 						'mode': 'code',
-						'availableModes': [{'v': 'code', 'l': 'Code View'}, {
+						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
 							'v': 'tree',
 							'l': 'Tree View'
-						}, {'v': 'form', 'l': 'Form View'}]
+						}, { 'v': 'form', 'l': 'Form View' }]
 					},
 					'height': '300px',
 					"value": {},
@@ -432,10 +432,10 @@ var tenantConfig = {
 					'type': 'jsoneditor',
 					'options': {
 						'mode': 'code',
-						'availableModes': [{'v': 'code', 'l': 'Code View'}, {
+						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
 							'v': 'tree',
 							'l': 'Tree View'
-						}, {'v': 'form', 'l': 'Form View'}]
+						}, { 'v': 'form', 'l': 'Form View' }]
 					},
 					'height': '200px',
 					"value": {},
@@ -448,10 +448,10 @@ var tenantConfig = {
 					'type': 'jsoneditor',
 					'options': {
 						'mode': 'code',
-						'availableModes': [{'v': 'code', 'l': 'Code View'}, {
+						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
 							'v': 'tree',
 							'l': 'Tree View'
-						}, {'v': 'form', 'l': 'Form View'}]
+						}, { 'v': 'form', 'l': 'Form View' }]
 					},
 					'height': '200px',
 					"value": {},
@@ -504,9 +504,7 @@ var tenantConfig = {
 				'update': ['dashboard', '/tenant/application/key/ext/update', 'put']
 			}
 		},
-		'db': {
-			'listKeys': ['dashboard', "/tenant/db/keys/list", 'get']
-		}
+		'db': {}
 	}
 	
 };

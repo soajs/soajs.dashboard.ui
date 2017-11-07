@@ -2,10 +2,10 @@
 var settingsApp = soajsApp.components;
 settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$compile', 'ngDataApi', '$cookies', 'injectFiles', function ($scope, $timeout, $modal, $routeParams, $compile, ngDataApi, $cookies, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
-
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, settingsConfig.permissions);
-
+	
 	$scope.oAuthUsers = {};
 	$scope.oAuthUsers.list = [];
 	$scope.availableEnv = [];
@@ -14,7 +14,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 		$scope.currentEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
 	}
-
+	
 	$scope.getTenant = function (first) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -24,64 +24,30 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				getSendDataFromServer($scope, ngDataApi, {
-					"method": "get",
-					"routeName": "/dashboard/tenant/db/keys/list"
-				}, function (error, tenantDbKeys) {
-					if (error) {
-						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					} else {
-						$scope.markTenantDashboardAccess(response.tenant, tenantDbKeys, function (tenant) {
-							$scope.tenant = tenant;
-							
-							// set oauth data
-							var data = $scope.tenant;
-							var oAuth = data.oauth;
-							if (oAuth.secret) {
-								data.secret = oAuth.secret;
-							}
-							data.oauthType = $scope.getTenantLoginMode(data);
-							
-							$scope.availableEnv = []; // reset available env
-							response.environments.forEach(function (oneEnv) {
-								$scope.availableEnv.push(oneEnv.code.toLowerCase());
-							});
-							
-							if (first && first == true) {
-								$scope.listOauthUsers();
-							}
+				$scope.tenant = response.tenant;
+				// set oauth data
+				var data = $scope.tenant;
+				var oAuth = data.oauth;
+				if (oAuth.secret) {
+					data.secret = oAuth.secret;
+				}
+				data.oauthType = $scope.getTenantLoginMode(data);
 
-							var counter = 0;
-							$scope.getPackageAcl($scope.tenant.applications, counter);
-						});
-					}
+				$scope.availableEnv = []; // reset available env
+				response.environments.forEach(function (oneEnv) {
+					$scope.availableEnv.push(oneEnv.code.toLowerCase());
 				});
+
+				if (first && first == true) {
+					$scope.listOauthUsers();
+				}
+
+				var counter = 0;
+				$scope.getPackageAcl($scope.tenant.applications, counter);
 			}
 		});
 	};
-
-	$scope.markTenantDashboardAccess = function (oneTenant, tenantDbKeys, callback) {
-		for (var i = 0; i < tenantDbKeys.length; i++) {
-			if (oneTenant.code === tenantDbKeys[i].code) {
-				if (!oneTenant.dashboardAccess) {
-					oneTenant.dashboardAccess = true;
-				}
-				for (var j = 0; j < oneTenant.applications.length; j++) {
-					for (var k = 0; k < oneTenant.applications[j].keys.length; k++) {
-						for (var l = 0; l < oneTenant.applications[j].keys[k].extKeys.length; l++) {
-							if (oneTenant.applications[j].keys[k].extKeys[l].extKey === tenantDbKeys[i].key && oneTenant.applications[j].keys[k].extKeys[l].env === tenantDbKeys[i].env) {
-								oneTenant.applications[j].dashboardAccess = true;
-								oneTenant.applications[j].keys[k].dashboardAccess = true;
-								oneTenant.applications[j].keys[k].extKeys[l].dashboardAccess = true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return callback(oneTenant);
-	};
-
+	
 	$scope.getPackageAcl = function (apps, counter) {
 		var tenantApp = apps[counter];
 		tenantApp.showKeys = true;
@@ -110,7 +76,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				// } else {
 				// 	$scope.packagesAcl[tenantApp.package] = null;
 				// }
-
+				
 				counter++;
 				if (counter !== apps.length) {
 					$scope.getPackageAcl(apps, counter);
@@ -118,7 +84,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			}
 		});
 	};
-
+	
 	$scope.clearOauth = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
@@ -259,7 +225,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.saveTenant = function () {
 		var postData = {
 			'name': $scope.tenant.name,
@@ -281,15 +247,15 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			}
 		});
 	};
-
+	
 	$scope.openKeys = function (app) {
 		app.showKeys = true;
 	};
-
+	
 	$scope.closeKeys = function (app) {
 		app.showKeys = false;
 	};
-
+	
 	$scope.removeAppKey = function (app, key, event) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
@@ -308,7 +274,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			event.stopPropagation();
 		}
 	};
-
+	
 	$scope.editMyOauthUser = function (user) {
 		user.password = null;
 		user.confirmPassword = null;
@@ -335,7 +301,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 								return;
 							}
 						}
-
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/oauth/users/update",
@@ -365,10 +331,10 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				}
 			]
 		};
-
+		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.addThisOauthUser = function () {
 		var options = {
 			timeout: $timeout,
@@ -393,7 +359,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 							'userId': formData.userId,
 							'password': formData.user_password
 						};
-
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
 							"routeName": "/dashboard/settings/tenant/oauth/users/add",
@@ -424,7 +390,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		};
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.listOauthUsers = function () {
 		if ($scope.access.tenant.oauth.users.list) {
 			getSendDataFromServer($scope, ngDataApi, {
@@ -441,7 +407,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			});
 		}
 	};
-
+	
 	$scope.removeTenantOauthUser = function (user) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
@@ -457,7 +423,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			}
 		});
 	};
-
+	
 	$scope.editTenantOauthUser = function (user) {
 		user.password = null;
 		user.confirmPassword = null;
@@ -506,10 +472,10 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				}
 			]
 		};
-
+		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.addNewKey = function (appId) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
@@ -525,14 +491,14 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			}
 		});
 	};
-
+	
 	$scope.emptyConfiguration = function (appId, key, env) {
 		var configObj = {};
 		var postData = {
 			'envCode': env,
 			'config': configObj
 		};
-
+		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "put",
 			"routeName": "/dashboard/settings/tenant/application/key/config/update",
@@ -547,9 +513,9 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				$scope.reloadConfiguration(appId, key);
 			}
 		});
-
+		
 	};
-
+	
 	$scope.updateConfiguration = function (appId, key, env, value) {
 		var data = {};
 		if (value) {
@@ -571,12 +537,12 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 					'btn': 'primary',
 					'action': function (formData) {
 						var configObj = (formData.config) ? formData.config : {};
-
+						
 						var postData = {
 							'envCode': formData.envCode,
 							'config': configObj
 						};
-
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/application/key/config/update",
@@ -606,17 +572,17 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				}
 			]
 		};
-
+		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.addNewExtKey = function (appId, key, packageCode) {
 		var formConfig = angular.copy(settingsConfig.form.extKey);
 		if ($scope.packagesAcl[packageCode] !== null) {
 			formConfig.entries.forEach(function (oneFormField) {
 				if (oneFormField.name === 'environment') {
 					var list = [];
-
+					
 					//new acl, display envs available in acl only
 					Object.keys($scope.packagesAcl[packageCode].acl).forEach(function (envCode) {
 						list.push(
@@ -626,7 +592,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 								"selected": (envCode === $scope.currentEnv)
 							});
 					});
-
+					
 					oneFormField.value = list;
 				}
 			});
@@ -646,14 +612,14 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 					'action': function (formData) {
 						var deviceObj = (formData.device) ? formData.device : {};
 						var geoObj = (formData.geo) ? formData.geo : {};
-
+						
 						var postData = {
 							'expDate': formData.expDate,
 							'device': deviceObj,
 							'geo': geoObj,
 							'env': formData.environment
 						};
-
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
 							"routeName": "/dashboard/settings/tenant/application/key/ext/add",
@@ -682,10 +648,10 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 					}
 				}]
 		};
-
+		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.editExtKey = function (appId, data, key) {
 		var dataForm = angular.copy(data);
 		if (data.geo) {
@@ -694,7 +660,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		if (data.device) {
 			dataForm.device = angular.copy(data.device);
 		}
-
+		
 		var formConfig = angular.copy(settingsConfig.form.extKey);
 		for (var i = 0; i < formConfig.entries.length; i++) {
 			if (formConfig.entries[i].name === 'environment') {
@@ -702,7 +668,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				break;
 			}
 		}
-
+		
 		formConfig.entries.unshift({
 			'name': 'extKey',
 			'label': translation.externalKeyValue[LANG],
@@ -725,7 +691,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 					'action': function (formData) {
 						var deviceObj = (formData.device) ? formData.device : {};
 						var geoObj = (formData.geo) ? formData.geo : {};
-
+						
 						var postData = {
 							'device': deviceObj,
 							'geo': geoObj,
@@ -734,7 +700,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 						if (formData.expDate) {
 							postData.expDate = new Date(formData.expDate).toISOString();
 						}
-
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
 							"routeName": "/dashboard/settings/tenant/application/key/ext/update",
@@ -751,7 +717,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 								$scope.listExtKeys(appId, key);
 							}
 						});
-
+						
 					}
 				},
 				{
@@ -766,7 +732,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		};
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.removeExtKey = function (appId, data, key) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
@@ -783,7 +749,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			}
 		});
 	};
-
+	
 	$scope.listExtKeys = function (appId, key) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -794,15 +760,15 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-
+				
 				var apps = $scope.tenant.applications;
 				for (var j = 0; j < apps.length; j++) {
-
+					
 					if (apps[j].appId === appId) {
 						var app = apps[j];
 						var keys = app.keys;
 						for (var v = 0; v < keys.length; v++) {
-
+							
 							if (keys[v].key === key) {
 								delete response['soajsauth'];
 								var extKeys = keys[v].extKeys;
@@ -822,11 +788,11 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 						break;
 					}
 				}
-
+				
 			}
 		});
 	};
-
+	
 	$scope.listKeys = function (appId) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -840,20 +806,20 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				delete response['soajsauth'];
 				var apps = $scope.tenant.applications;
 				for (var j = 0; j < apps.length; j++) {
-
+					
 					if (apps[j].appId === appId) {
 						$scope.tenant.applications[j].keys = response;
 						break;
 					}
 				}
-
+				
 			}
 		});
 	};
-
+	
 	$scope.reloadConfiguration = function (appId, key) {
 		$scope.currentApplicationKey = key;
-
+		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/settings/tenant/application/key/config/list",
@@ -865,7 +831,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			else {
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
-
+					
 					var apps = $scope.tenant.applications;
 					for (var j = 0; j < apps.length; j++) {
 						if (apps[j].appId === appId) {
@@ -883,8 +849,8 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			}
 		});
 	};
-
+	
 	$scope.getTenant(true);
 	injectFiles.injectCss("modules/dashboard/settings/settings.css");
-
+	
 }]);

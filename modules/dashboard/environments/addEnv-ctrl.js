@@ -743,9 +743,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 											rollback([], error);
 										}
 										else {
-											console.log("------- response env code shoufaaaa");
-											console.log(response);
-											console.log("------- response env code shoufaaaa");
 											parentScope.envId = response.data;
 											$scope.progressCounter++;
 											$scope.createEnvironment = true;
@@ -854,16 +851,18 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									console.log(steps);
 									console.log("----");
 									
-									if(steps && typeof Array.isArray(steps)){
-										steps.forEach((oneStep) => {
-											if(oneStep.id){
-												addEnv[oneStep.method](parentScope, oneStep.id);
-											}
-											else{
-												addEnv[oneStep.method](parentScope);
-											}
-										});
-									}
+									// rollback removed -=-=-=-=-=-==
+									
+									// if(steps && typeof Array.isArray(steps)){
+									// 	steps.forEach((oneStep) => {
+									// 		if(oneStep.id){
+									// 			addEnv[oneStep.method](parentScope, oneStep.id);
+									// 		}
+									// 		else{
+									// 			addEnv[oneStep.method](parentScope);
+									// 		}
+									// 	});
+									// }
 									$modalInstance.close();
 									overlayLoading.hide();
 									parentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);

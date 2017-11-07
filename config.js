@@ -10,7 +10,8 @@ if(location && location.host){
 	var customDomain = location.host;
 	customDomain = customDomain.split(":")[0];
 	customDomain = customDomain.split(".");
-	customDomain = customDomain[customDomain.length-2] + "." + customDomain[customDomain.length-1];
+	customDomain.shift();
+	customDomain = customDomain.join(".");
 	mydomain = customDomain;
 }
 

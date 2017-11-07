@@ -380,51 +380,51 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		}, cb);
 	}
 	
-	function deployController(currentScope, cb) {
+	function deployservice(currentScope, serviceName, cb) {
 		let data = {
 			"deployConfig": {
 				"replication": {
-					"mode": currentScope.wizard.controller.mode
+					"mode": currentScope.wizard[serviceName].mode
 				},
-				"memoryLimit": currentScope.wizard.controller.memory * 1048576
+				"memoryLimit": currentScope.wizard[serviceName].memory * 1048576
 			},
 			"gitSource": {
 				"owner": "soajs",
-				"repo": "soajs.controller",
-				"branch": currentScope.wizard.controller.branch
+				"repo": "soajs." + serviceName,
+				"branch": currentScope.wizard[serviceName].branch
 			},
 			"custom": {
-				"name": "controller",
+				"name": serviceName,
 				"type": "service"
 			},
-			"recipe": currentScope.wizard.controller.catalog,
+			"recipe": currentScope.wizard[serviceName].catalog,
 			"env": currentScope.wizard.gi.code.toUpperCase()
 		};
 		
 		//get the commit
-		if (currentScope.wizard.controller.commit) {
-			data.gitSource.commit = currentScope.wizard.controller.commit;
+		if (currentScope.wizard[serviceName].commit) {
+			data.gitSource.commit = currentScope.wizard[serviceName].commit;
 		}
 		
 		//check the replicas
-		if (['replicated', 'deployment'].indexOf(currentScope.wizard.controller.mode) !== -1) {
-			data.deployConfig.replication.replicas = currentScope.wizard.controller.number;
+		if (['replicated', 'deployment'].indexOf(currentScope.wizard[serviceName].mode) !== -1) {
+			data.deployConfig.replication.replicas = currentScope.wizard[serviceName].number;
 		}
 		
 		//if custom image info
-		if (currentScope.wizard.controller.imageName) {
+		if (currentScope.wizard[serviceName].imageName) {
 			data.custom.image = {
-				name: currentScope.wizard.controller.imageName,
-				prefix: currentScope.wizard.controller.imagePrefix,
-				tag: currentScope.wizard.controller.imageTag
+				name: currentScope.wizard[serviceName].imageName,
+				prefix: currentScope.wizard[serviceName].imagePrefix,
+				tag: currentScope.wizard[serviceName].imageTag
 			}
 		}
 		
 		//if user input env variables
-		if (currentScope.wizard.controller.custom) {
+		if (currentScope.wizard[serviceName].custom) {
 			data.custom.env = {};
-			for (let env in currentScope.wizard.controller.custom) {
-				data.custom.env[env] = currentScope.wizard.controller.custom[env].value;
+			for (let env in currentScope.wizard[serviceName].custom) {
+				data.custom.env[env] = currentScope.wizard[serviceName].custom[env].value;
 			}
 		}
 		
@@ -434,7 +434,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			"routeName": "/dashboard/cd",
 			"data": {
 				config: {
-					serviceName: "controller",
+					serviceName: serviceName,
 					env: currentScope.wizard.gi.code.toUpperCase(),
 					default: {
 						deploy: true,
@@ -447,7 +447,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				return cb(error);
 			} else {
 				
-				//deploy Controller
+				//deploy Service
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/cloud/services/soajs/deploy",
@@ -463,6 +463,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				});
 			}
 		});
+	}
+	
+	function deployController(currentScope, cb) {
+		deployservice(currentScope, 'controller', cb)
+	}
+	
+	function deployUrac(currentScope, cb) {
+		deployservice(currentScope, 'urac', cb)
+	}
+	
+	function deployOauth(currentScope, cb) {
+		deployservice(currentScope, 'oauth', cb)
 	}
 	
 	function productize(currentScope, wizard, cb){
@@ -910,20 +922,32 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		}
 	}
 	
-	function removeController(currentScope, id){
+	function removeService(currentScope, serviceName, id){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'delete',
 			routeName: '/dashboard/cloud/services/delete',
 			params: {
 				env: currentScope.wizard.gi.code,
 				serviceId: id,
-				mode: currentScope.wizard.controller.mode
+				mode: currentScope.wizard[serviceName].mode
 			}
 		}, function (error) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			}
 		});
+	}
+	
+	function removeController(currentScope, id){
+		removeService(currentScope, 'controller', id);
+	}
+	
+	function removeUrac(currentScope, id){
+		removeService(currentScope, 'controller', id);
+	}
+	
+	function removeOauth(currentScope, id){
+		removeService(currentScope, 'controller', id);
 	}
 	
 	function removeCatalog(currentScope, id){
@@ -945,13 +969,21 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'uploadEnvCertificates': uploadEnvCertificates,
 		'createNginxRecipe': createNginxRecipe,
 		'deployNginx': deployNginx,
+		
 		'deployController': deployController,
+		'deployUrac': deployUrac,
+		'deployOauth': deployOauth,
+		
 		'getPermissions': getPermissions,
 		'productize': productize,
 		
 		'removeEnvironment': removeEnvironment,
 		'removeProduct': removeProduct,
+		
 		'removeController': removeController,
+		'removeUrac': removeUrac,
+		'removeOauth': removeOauth,
+		
 		'removeCatalog': removeCatalog
 	};
 	

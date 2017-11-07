@@ -1,12 +1,28 @@
-<label>I want to Deploy This Environment</label>
-<label class="toggleSwitch">
-	<input type="checkbox" ng-model="form.formData.deploy"><span class="buttonSlider round"></span>
-</label>
+<div ng-show="currentServiceName === 'controller'">
+	<label>I want to Deploy This Environment</label>
+	<label class="toggleSwitch">
+		<input type="checkbox" ng-model="form.formData.deploy"><span class="buttonSlider round"></span>
+	</label>
+</div>
+
 <div ng-show="form.formData.deploy">
+	<hr />
 	<alert type="info">
-		<h4>SOAJS Controller</h4>
-		<hr/>
-		<p>Turns on API management, lifecycle, security, multi tenancy, multi version, awareness, ...</p>
+		<div ng-show="currentServiceName === 'controller'">
+			<h4>SOAJS Controller</h4>
+			<hr/>
+			<p>Turns on API management, lifecycle, security, multi tenancy, multi version, awareness, ...</p>
+		</div>
+		<div ng-show="currentServiceName === 'urac'">
+			<h4>SOAJS URAC</h4>
+			<hr/>
+			<p>Ready Made Service that provides all the APIs needed to perform User Registration and Access Control Management Operations.</p>
+		</div>
+		<div ng-show="currentServiceName === 'oauth'">
+			<h4>SOAJS oAuth</h4>
+			<hr/>
+			<p>Secures the services deployed in this environment using Open Authentication 2.0.</p>
+		</div>
 	</alert>
 	
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -14,7 +30,7 @@
 			<tr>
 				<td>
 					<div>
-						<label class="ng-binding">Controller Deployment Mode</label>
+						<label class="ng-binding"><span class="capitalize">{{currentServiceName}}</span> Deployment Mode</label>
 						<select ng-model="form.formData.mode" ng-change="tempFormEntries.mode.onAction()" class="form-control" ng-required="tempFormEntries.mode.required">
 							<option ng-repeat="mode in allowedModes" value="{{mode.v}}">{{mode.l}}</option>
 						</select>
@@ -29,10 +45,10 @@
 			<tr>
 				<td>
 					<div ng-show="form.formData.mode ==='replicated' || form.formData.mode ==='deployment'">
-						<label class="ng-binding">Number of Controller Instances</label>
+						<label class="ng-binding">Number of <span class="capitalize">{{currentServiceName}}</span> Instances</label>
 						<input class="form-control" ng-model="form.formData.number" type="number" ng-required="tempFormEntries.number.required"/>
 						<div ng-show="entry.fieldMsg" class="fieldMsg hint ng-binding" ng-bind-html="entry.fieldMsg|toTrustedHtml">
-							Choose how many controllers to deploy
+							Choose how many {{currentServiceName}}(s) to deploy
 						</div>
 					</div>
 				</td>
@@ -40,10 +56,10 @@
 			<tr>
 				<td>
 					<div>
-						<label class="ng-binding">Memory Limit Per Instance for Controllers (in MBytes)</label>
+						<label class="ng-binding">Memory Limit Per Instance for <span class="capitalize">{{currentServiceName}}</span> (in MBytes)</label>
 						<input class="form-control" ng-model="form.formData.memory" type="number" placeholder="500" ng-required="tempFormEntries.memory.required"/>
 						<div class="fieldMsg hint">
-							Set a custom memory limit for controller instances
+							Set a custom memory limit for {{currentServiceName}} instances
 						</div>
 					</div>
 				</td>
@@ -51,16 +67,16 @@
 			<tr>
 				<td>
 					<div>
-						<label class="ng-binding">Controller Catalog Recipe</label>
+						<label class="ng-binding"><span class="capitalize">{{currentServiceName}}</span> Catalog Recipe</label>
 						<select ng-model="form.formData.catalog" class="form-control" ng-required="tempFormEntries.catalog.required" ng-change="tempFormEntries.catalog.onAction()">
-							<option ng-repeat="oneRecipe in controllerRecipes" value="{{oneRecipe._id}}">
+							<option ng-repeat="oneRecipe in serviceRecipes" value="{{oneRecipe._id}}">
 								{{oneRecipe.name}}
 							</option>
 						</select>
 						<div class="fieldMsg hint"></div>
 					</div>
 					
-					<div ng-include="'modules/dashboard/environments/directives/deploy-controller-customCatalogInputs.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/directives/deploy-service-customCatalogInputs.tmpl'"></div>
 				</td>
 			</tr>
 		</tbody>

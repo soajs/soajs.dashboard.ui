@@ -25,6 +25,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				onAction : function(){
 					if($scope.form && $scope.form.formData && $scope.form.formData.code === 'PORTAL'){
 						$scope.portalDeployment = true;
+						$scope.tempFormEntries.soajsFrmwrk.required = true;
+						$scope.form.formData.soajsFrmwrk = true;
 					}
 				}
 			},
@@ -310,13 +312,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 	
 	$scope.Step3 = function () {
 		overlayLoading.show();
-		$scope.controllerRecipes = [];
-		
+		$scope.serviceRecipes = [];
+		$scope.currentServiceName = 'controller';
 		getCatalogRecipes((recipes) => {
-			getControllerBranches((controllerBranches) => {
+			getServiceBranches($scope.currentServiceName, (repoBranches) => {
 				recipes.forEach((oneRecipe) => {
 					if (oneRecipe.type === 'service' && oneRecipe.subtype === 'soajs') {
-						$scope.controllerRecipes.push(oneRecipe);
+						$scope.serviceRecipes.push(oneRecipe);
 					}
 				});
 				
@@ -343,7 +345,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							delete $scope.form.formData.imageTag;
 							delete $scope.form.formData.custom;
 							
-							injectCatalogInputs(recipes, controllerBranches);
+							injectCatalogInputs($scope.serviceRecipes, repoBranches);
 						}
 					},
 					branch: {
@@ -351,7 +353,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 					}
 				};
 				
-				doBuildForm(entries, controllerBranches);
+				doBuildForm(entries, repoBranches);
 			});
 		});
 		
@@ -408,7 +410,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								
 								$localStorage.addEnv.step3 = angular.copy(formData);
 								$scope.wizard.controller = angular.copy(formData);
-								$scope.Step4();
+								
+								if($scope.portalDeployment){
+									$scope.Step5();
+								}
+								else{
+									$scope.Step4();
+								}
 							}
 							else {
 								$localStorage.addEnv.step3 = angular.copy(formData);
@@ -465,12 +473,180 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				
 				//if catalog recipe selected, open it's sub items
 				if ($scope.wizard.controller && $scope.wizard.controller.catalog) {
-					injectCatalogInputs($scope.controllerRecipes, controllerBranches);
+					injectCatalogInputs($scope.serviceRecipes, controllerBranches);
 				}
 				overlayLoading.hide();
 			});
 		}
 	};
+	
+	$scope.Step5 = function(){
+		$scope.currentServiceName = "urac";
+		$scope.currentStep = "step5";
+		$scope.nextStep = "Step6";
+		$scope.lastStep = 5;
+		
+		serviceDeployment();
+	};
+	
+	$scope.Step6 = function(){
+		$scope.currentServiceName = "oauth";
+		$scope.currentStep = "step6";
+		$scope.nextStep = "Step4";
+		$scope.lastStep = 6;
+		
+		serviceDeployment();
+	};
+	
+	function serviceDeployment(){
+		overlayLoading.show();
+		getServiceBranches($scope.currentServiceName, (repoBranches) => {
+			let entries = {
+				mode: {
+					required: true,
+					onAction: function () {
+						$scope.tempFormEntries.number.required = ['deployment', 'replicated'].indexOf($scope.form.formData.mode) !== -1;
+					}
+				},
+				number: {
+					required: false
+				},
+				memory: {
+					required: true
+				},
+				catalog: {
+					required: true,
+					onAction: function () {
+						//reset form entries
+						delete $scope.form.formData.branch;
+						delete $scope.form.formData.imagePrefix;
+						delete $scope.form.formData.imageName;
+						delete $scope.form.formData.imageTag;
+						delete $scope.form.formData.custom;
+						
+						injectCatalogInputs($scope.serviceRecipes, repoBranches);
+					}
+				},
+				branch: {
+					required: true
+				}
+			};
+			
+			doBuildForm(entries, repoBranches);
+		});
+		
+		function doBuildForm(entries, repoBranches) {
+			var configuration = angular.copy(environmentsConfig.form.add.step3.entries);
+			$scope.tempFormEntries = entries;
+			var options = {
+				timeout: $timeout,
+				entries: configuration,
+				name: 'addEnvironment',
+				label: translation.addNewEnvironment[LANG],
+				actions: [
+					{
+						'type': 'button',
+						'label': "Back",
+						'btn': 'success',
+						'action': function () {
+							$scope.form.formData = {};
+							let stepNumber = "Step" + $scope.lastStep;
+							$scope[stepNumber]();
+						}
+					},
+					{
+						'type': 'submit',
+						'label': "Next",
+						'btn': 'primary',
+						'action': function (formData) {
+							//check mandatory fields
+							for (let fieldName in $scope.tempFormEntries) {
+								if (fieldName === 'custom') {
+									for (let env in $scope.tempFormEntries.custom) {
+										if ($scope.tempFormEntries.custom[env].required) {
+											if (!formData.custom[env].value) {
+												$window.alert('Some of the fields under ' + $scope.currentServiceName + ' section are still missing.');
+												return false;
+											}
+										}
+									}
+								}
+								else if ($scope.tempFormEntries[fieldName].required) {
+									if (!formData[fieldName]) {
+										$window.alert('Some of the fields under ' + $scope.currentServiceName + ' section are still missing.');
+										return false;
+									}
+								}
+							}
+							
+							repoBranches.branches.forEach((oneBranch) => {
+								if (oneBranch.name === formData.branch && oneBranch.commit && oneBranch.commit.sha) {
+									formData.commit = oneBranch.commit.sha;
+								}
+							});
+							
+							$localStorage.addEnv[$scope.currentStep] = angular.copy(formData);
+							$scope.wizard[$scope.currentServiceName] = angular.copy(formData);
+							
+							$scope[$scope.nextStep]();
+						}
+					},
+					{
+						'type': 'reset',
+						'label': translation.cancel[LANG],
+						'btn': 'danger',
+						'action': function () {
+							delete $localStorage.addEnv;
+							$scope.form.formData = {};
+							$scope.remoteCertificates = {};
+							delete $scope.wizard;
+							$scope.$parent.go("/environments")
+						}
+					}
+				]
+			};
+			
+			buildForm($scope, $modal, options, function () {
+				if ($localStorage.addEnv && $localStorage.addEnv[$scope.currentStep]) {
+					$scope.wizard[$scope.currentServiceName] = angular.copy($localStorage.addEnv[$scope.currentStep]);
+					$scope.form.formData = $scope.wizard[$scope.currentServiceName];
+				}
+				
+				$scope.form.formData.deploy = true;
+				
+				if ($scope.wizard.deploy.selectedDriver === 'docker') {
+					$scope.allowedModes = [
+						{
+							v: 'global',
+							l: 'Global'
+						},
+						{
+							v: 'replicated',
+							l: 'Replicated'
+						}
+					];
+				}
+				else {
+					$scope.allowedModes = [
+						{
+							v: 'daemonset',
+							l: 'Daemonset'
+						},
+						{
+							v: 'deployment',
+							l: 'Deployment'
+						}
+					];
+				}
+				
+				//if catalog recipe selected, open it's sub items
+				if ($scope.wizard[$scope.currentServiceName] && $scope.wizard[$scope.currentServiceName].catalog) {
+					injectCatalogInputs($scope.serviceRecipes, repoBranches);
+				}
+				overlayLoading.hide();
+			});
+		}
+	}
 	
 	$scope.Step4 = function () {
 		overlayLoading.show();
@@ -557,7 +733,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						'btn': 'success',
 						'action': function () {
 							$scope.form.formData = {};
-							$scope.Step3();
+							let stepNumber = "Step" + $scope.lastStep;
+							$scope[stepNumber]();
 						}
 					},
 					{
@@ -787,43 +964,38 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												rollback(steps, error);
 											}
 											else{
+												$scope.controllerId = controllerId;
 												$scope.progressCounter++;
 												$scope.deployController = true;
-												if (parentScope.wizard.nginx.catalog) {
-													addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, (error) => {
+												if($scope.portalDeployment){
+													addEnv.deployUrac(parentScope, (error, uracId) => {
 														if(error){
-															steps.push({method: 'removeController', id: controllerId});
+															steps.push({method: 'removeController', id: $scope.controllerId});
 															rollback(steps, error);
 														}
-														else {
+														else{
+															$scope.uracId = uracId;
 															$scope.progressCounter++;
-															$scope.deployNginx = true;
-															return cb();
-														}
-													});
-												}
-												else {
-													addEnv.createNginxRecipe(parentScope, (error, catalogId) => {
-														if(error){
-															steps.push({method: 'removeController'});
-															rollback(steps, error);
-														}
-														else {
-															$scope.createNginxRecipe = true;
-															addEnv.deployNginx(parentScope, catalogId, (error) => {
+															$scope.deployUrac = true;
+															
+															addEnv.deployOauth(parentScope, (error, oAuthId) => {
 																if(error){
-																	steps.push({method: 'removeController', id: controllerId});
-																	steps.push({method: 'removeCatalog', id: catalogId});
+																	steps.push({method: 'removeController', id: $scope.controllerId});
+																	steps.push({method: 'removeUrac', id: $scope.uracId});
 																	rollback(steps, error);
 																}
-																else {
+																else{
+																	$scope.oAuthId = oAuthId;
 																	$scope.progressCounter++;
-																	$scope.deployNginx = true;
-																	return cb();
+																	$scope.deployOauth = true;
+																	handleNginx(steps, cb);
 																}
 															});
 														}
 													});
+												}
+												else{
+													handleNginx(steps, cb);
 												}
 											}
 										});
@@ -831,6 +1003,57 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									else {
 										$scope.progressCounter++;
 										return cb();
+									}
+								}
+								
+								function handleNginx(steps, cb){
+									if (parentScope.wizard.nginx.catalog) {
+										addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, (error) => {
+											if(error){
+												steps.push({method: 'removeController', id: $scope.controllerId});
+												if($scope.portalDeployment){
+													steps.push({method: 'removeUrac', id: $scope.uracId});
+													steps.push({method: 'removeOauth', id: $scope.oAuthId});
+												}
+												rollback(steps, error);
+											}
+											else {
+												$scope.progressCounter++;
+												$scope.deployNginx = true;
+												return cb();
+											}
+										});
+									}
+									else {
+										addEnv.createNginxRecipe(parentScope, (error, catalogId) => {
+											if(error){
+												steps.push({method: 'removeController', id: $scope.controllerId});
+												if($scope.portalDeployment){
+													steps.push({method: 'removeUrac', id: $scope.uracId});
+													steps.push({method: 'removeOauth', id: $scope.oAuthId});
+												}
+												rollback(steps, error);
+											}
+											else {
+												$scope.createNginxRecipe = true;
+												addEnv.deployNginx(parentScope, catalogId, (error) => {
+													if(error){
+														steps.push({method: 'removeController', id: $scope.controllerId});
+														if($scope.portalDeployment){
+															steps.push({method: 'removeUrac', id: $scope.uracId});
+															steps.push({method: 'removeOauth', id: $scope.oAuthId});
+														}
+														steps.push({method: 'removeCatalog', id: catalogId});
+														rollback(steps, error);
+													}
+													else {
+														$scope.progressCounter++;
+														$scope.deployNginx = true;
+														return cb();
+													}
+												});
+											}
+										});
 									}
 								}
 								
@@ -906,13 +1129,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		});
 	}
 	
-	function getControllerBranches(cb) {
+	function getServiceBranches(serviceName, cb) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/gitAccounts/getBranches',
 			params: {
-				name: 'controller',
+				name: serviceName,
 				type: 'service'
 			}
 		}, function (error, response) {
@@ -926,7 +1149,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		});
 	}
 	
-	function injectCatalogInputs(recipes, controllerBranches) {
+	function injectCatalogInputs(recipes, serviceBranches) {
 		let entries = $scope.tempFormEntries;
 		let chosenRecipe = $scope.form.formData.catalog;
 		
@@ -936,7 +1159,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				
 				delete entries.branches;
 				if (oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
-					entries.branches = controllerBranches.branches;
+					entries.branches = serviceBranches.branches;
 				}
 				
 				delete entries.imagePrefix;
@@ -995,6 +1218,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						}
 						
 						entries.custom[envVariable] = {
+							name: newInput.name,
+							label: newInput.label,
+							value: newInput.value,
+							type: newInput.type,
+							fieldMsg: newInput.fieldMsg,
 							required: true
 						};
 					}

@@ -1027,6 +1027,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									delete formData.imageTag;
 									delete formData.custom;
 									delete formData.catalog;
+									
+									//get the port and protocol from inputs
 								}
 								else {
 									delete formData.certs;
@@ -1035,6 +1037,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									delete formData.http;
 									delete formData.https;
 									delete formData.ssl;
+									
+									$scope.nginxRecipes.forEach(function(oneNginxRecipe){
+										if(oneNginxRecipe._id === formData.catalog){
+											formData.recipe = oneNginxRecipe;
+										}
+									});
 								}
 								
 								$localStorage.addEnv.step4 = angular.copy(formData);

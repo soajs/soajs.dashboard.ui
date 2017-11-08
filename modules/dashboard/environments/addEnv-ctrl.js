@@ -378,18 +378,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 					'action': function (formData) {
 						if ($scope.clusters.local) {
 							//todo: need assertions ....
+							// ensure name, at least one server in array and url param
 							
 							delete formData.cluster.external;
 							delete formData.cluster.share;
 						}
 						else if($scope.clusters.external){
 							//todo: need assertions ....
+							// ensure at least one server in array and url param
 							
 							delete formData.cluster.local;
 							delete formData.cluster.share;
 						}
 						else if($scope.clusters.share){
 							//todo: need assertions ....
+							// ensure the name
 							
 							delete formData.cluster.local;
 							delete formData.cluster.external;
@@ -1173,6 +1176,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 																		$scope.progressCounter++;
 																		$scope.deployOauth = true;
 																		handleNginx(steps, cb);
+																		
 																		// handleNginx(steps, (error) => {
 																		// 	//add user and group using new tenant
 																		// 	addUserAndGroup( (error) => {

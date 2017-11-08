@@ -1182,11 +1182,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		
 		if(currentScope.wizard.cluster.local){
 		
+			//need to deploy the resource using mongo recipe, replica 1 and the name specified
+			//need to add the resource in the database
 		}
 		else if (currentScope.wizard.cluster.share){
 		
 		}
-		//no need to handle external mongo
+		else if(currentScope.wizard.cluster.external){
+			//need to add the resource in the database
+		}
+		
+		//regardless of the above, need to add a new urac database with the cluster chosen
+		//regardless of the above, need to add update the session databse with the cluster chosen
 		
 		// let data = {
 		// 	"deployConfig": {
@@ -1220,9 +1227,14 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	
 	function removeCluster(currentScope){
 		if(currentScope.wizard.cluster.local){
+			//need to remove the deployed service of the server
 			removeService(currentScope, 'mongo_cluster', currentScope.clusterId);
 		}
-		//no need to worry about the other types in this case
+		
+		if(!currentScope.wizard.cluster.share){
+			//need to remove the resource created in the database
+			
+		}
 	}
 	
 	return {

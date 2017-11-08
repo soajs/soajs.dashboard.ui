@@ -1261,9 +1261,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let counter = 0;
 		let portalAPI = getAPIInfo(currentScope, currentScope.wizard.nginx, 'apiPrefix');
 		
-		checkIfUracRunning(() => {
+		return cb();
+		
+		// checkIfUracRunning(() => {
 			// doAdd(cb);
-		});
+		// });
 		
 		function checkIfUracRunning(cb){
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -1291,7 +1293,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 				else if(response){
-					
 					return cb();
 				}
 			});
@@ -1404,7 +1405,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 		'listServers': listServers,
 		'handleClusters': handleClusters,
-		'removeCluster': removeCluster
+		'removeCluster': removeCluster,
+		
+		"addUserAndGroup": addUserAndGroup
 	};
 
 }]);

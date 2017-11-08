@@ -377,22 +377,42 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 					'btn': 'primary',
 					'action': function (formData) {
 						if ($scope.clusters.local) {
-							//todo: need assertions ....
 							// ensure name, at least one server in array and url param
-							
+							if(!formData.cluster.local.name){
+								$window.alert("Enter a name for the server");
+								return false;
+							}
+							if(formData.cluster.local.servers.length === 0){
+								$window.alert("At least one server should be configured");
+								return false;
+							}
+							if(!formData.cluster.local.servers[0].host || !formData.cluster.local.servers[0].port){
+								$window.alert("At least one server should be configured");
+								return false;
+							}
 							delete formData.cluster.external;
 							delete formData.cluster.share;
 						}
 						else if($scope.clusters.external){
-							//todo: need assertions ....
-							// ensure at least one server in array and url param
+							// ensure at least one server in array
+							if(formData.cluster.external.servers.length === 0){
+								$window.alert("At least one server should be configured");
+								return false;
+							}
+							if(!formData.cluster.external.servers[0].host || !formData.cluster.local.servers[0].port){
+								$window.alert("At least one server should be configured");
+								return false;
+							}
 							
 							delete formData.cluster.local;
 							delete formData.cluster.share;
 						}
 						else if($scope.clusters.share){
-							//todo: need assertions ....
 							// ensure the name
+							if(!formData.cluster.share.name){
+								$window.alert("Choose an existing shared server to use");
+								return false;
+							}
 							
 							delete formData.cluster.local;
 							delete formData.cluster.external;

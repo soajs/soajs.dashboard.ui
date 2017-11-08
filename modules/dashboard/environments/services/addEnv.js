@@ -1176,52 +1176,171 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		});
 	}
-
-	function handleClusters(currentScope, cb){
-		//todo: finish the data before proceeding
-
-		if(currentScope.wizard.cluster.local){
-			//call get catalog recipes and find the mongo recipe id and use it
-			//need to deploy the resource using mongo recipe, replica 1 and the name specified
-			//need to add the resource in the database
-		}
-		else if (currentScope.wizard.cluster.share){
-
-		}
-		else if(currentScope.wizard.cluster.external){
-			//need to add the resource in the database
-		}
-
-		//regardless of the above, need to add a new urac database with the cluster chosen
-		//regardless of the above, need to add update the session databse with the cluster chosen
-
-		let data = {
-			"deployConfig": {
-				"replication": {
-					"mode": (currentScope.wizard.deploy.deployment.docker) ? "replicated": "deployment",
-					"replicas": 1
+	
+	function deployCluster(currentScope, cb) {
+		if (currentScope.wizard.cluster.local) {
+			//list all recipes to find mongo recipe
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/catalog/recipes/list',
+			}, function (error, recipes) {
+				if (error) {
+					return cb(error);
 				}
-			},
-			"custom": {
-				"name": currentScope.wizard.cluster.local.name,
-				"type": ""
-			},
-			"recipe": 123,
-			"env": currentScope.wizard.gi.code.toUpperCase()
-		};
-
-		//deploy Service
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "post",
-			"routeName": "/dashboard/cloud/services/soajs/deploy",
-			"data": data
-		}, function (error, serviceId) {
-			if (error) {
-				return cb(error);
-			} else {
-				currentScope.clusterId = serviceId;
-				return cb(null, true);
+				else {
+					var mongoRecipeId;
+					if (recipes && recipes.length > 0) {
+						recipes.forEach(function (oneRecipe) {
+							if (oneRecipe.name === 'Mongo Recipe') {
+								mongoRecipeId = oneRecipe._id.toString();
+							}
+						});
+					}
+					//create resource object
+					var resourceObj = {
+						env: currentScope.wizard.gi.code.toUpperCase(),
+						resource: {
+							"name": currentScope.wizard.cluster.local.name,
+							"type": "cluster",
+							"category": "mongo",
+							"plugged": "true",
+							"config": {
+								"servers": currentScope.wizard.cluster.local.servers,
+								"URLParam": currentScope.wizard.cluster.local.URLParam || {},
+								"streaming": currentScope.wizard.cluster.local.streaming || {}
+							}
+						}
+					};
+					if (currentScope.wizard.cluster.local.credentials) {
+						resourceObj.resource.config.credentials = currentScope.wizard.cluster.local.credentials;
+					}
+					if (currentScope.wizard.cluster.local.prefix) {
+						resourceObj.resource.config.prefix = currentScope.wizard.cluster.local.prefix;
+					}
+					//add mongo cluster
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'get',
+						routeName: '/dashboard/resources/add',
+						"params": resourceObj
+					}, function (error, resources) {
+						if (error) {
+							return cb(error);
+						}
+						else {
+							var deployObject = {
+								env: currentScope.wizard.gi.code.toUpperCase(),
+								recipe: mongoRecipeId,
+								deployConfig: {
+									"replication": {
+										"replicas": 1,
+										"mode": (currentScope.wizard.deploy.selectedDriver === "kubernetes")
+											? "deployment" : "replicated"
+									}
+								},
+								custom: {
+									"resourceId": resources._id.toString(),
+									"name": currentScope.wizard.cluster.local.name,
+									"type": "cluster",
+								}
+							};
+							//deploy mongo cluster
+							getSendDataFromServer(currentScope, ngDataApi, {
+								method: 'get',
+								routeName: '/dashboard/cloud/services/soajs/deploy',
+								"params": deployObject
+							}, function (error) {
+								return cb(error, currentScope.wizard.cluster.local.name);
+							});
+						}
+					});
+				}
+			});
+		}
+		else if (currentScope.wizard.cluster.share) {
+			//return shared cluster name
+			return currentScope.wizard.cluster.share.name
+		}
+		else if (currentScope.wizard.cluster.external) {
+			//only add the resource
+			var resourceObj = {
+				env: currentScope.wizard.gi.code.toUpperCase(),
+				resource: {
+					"name": currentScope.wizard.cluster.external.name,
+					"type": "cluster",
+					"category": "mongo",
+					"plugged": "true",
+					"config": {
+						"servers": currentScope.wizard.cluster.external.servers,
+						"URLParam": currentScope.wizard.cluster.external.URLParam || {},
+						"streaming": currentScope.wizard.cluster.external.streaming || {}
+					}
+				}
+			};
+			if (currentScope.wizard.cluster.external.credentials) {
+				resourceObj.resource.config.credentials = currentScope.wizard.cluster.external.credentials;
 			}
+			if (currentScope.wizard.cluster.external.prefix) {
+				resourceObj.resource.config.prefix = currentScope.wizard.cluster.external.prefix;
+			}
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/resources/add',
+				"params": resourceObj
+			}, function (error) {
+				return cb(error, currentScope.wizard.cluster.external.name);
+			});
+		}
+	}
+	
+	function handleClusters(currentScope, cb) {
+		deployCluster(currentScope, function (error, clusterName) {
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			let uracData = {
+				"env": currentScope.wizard.gi.code.toUpperCase(),
+				"name": "urac",
+				"cluster": clusterName,
+				"tenantSpecific": true
+			};
+			//add urac db using cluster
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "post",
+				"routeName": "/dashboard/environment/dbs/add",
+				"data": uracData
+			}, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					var sessionData = {
+						"env": currentScope.wizard.gi.code.toUpperCase(),
+						"name": "session",
+						"cluster": clusterName,
+						"tenantSpecific": false,
+						"sessionInfo": {
+							dbName: "urac",
+							store: {},
+							collection: "sessions",
+							stringify: false,
+							expireAfter: 1209600000
+						}
+					};
+					//update session db
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "post",
+						"routeName": "/dashboard/environment/dbs/update",
+						"data": sessionData
+					}, function (error) {
+						if (error) {
+							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						}
+						else {
+							return cb(null, true);
+						}
+					});
+				}
+			});
 		});
 	}
 

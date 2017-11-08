@@ -161,7 +161,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				response.forEach(function (oneEnv) {
 					$scope.availableEnv.push(oneEnv.code.toLowerCase());
 				});
-				cb();
+				return cb();
 			}
 		});
 	};
@@ -177,48 +177,37 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				getSendDataFromServer($scope, ngDataApi, {
-					"method": "get",
-					"routeName": "/dashboard/tenant/db/keys/list"
-				}, function (error, tenantDbKeys) {
-					if (error) {
-						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-
-					$scope.markTenantsWithDashboardAccess(response, tenantDbKeys, function () {
-						$scope.splitTenantsByType(response, function () {
-							$scope.tenantsList = {
-								rows: response
-							};
-							$scope.tenantsList.actions = {
-								'editTenant': {
-									'label': translation.editTenant[LANG],
-									'command': function (row) {
-										$scope.edit_Tenant(row);
-									}
-								},
-								'updateOAuth': {
-									'label': translation.updateOAuth[LANG],
-									'command': function (row) {
-										$scope.update_oAuth(row);
-									}
-								},
-								'turnOffOAuth': {
-									'label': translation.turnOffOAuth[LANG],
-									'command': function (row) {
-										$scope.turnOffOAuth(row);
-									}
-								},
-								'delete': {
-									'label': 'Remove',
-									'commandMsg': translation.areYouSureWantRemoveTenant[LANG],
-									'command': function (row) {
-										$scope.removeTenant(row);
-									}
-								}
-							};
-						});
-					});
+				$scope.splitTenantsByType(response, function () {
+					$scope.tenantsList = {
+						rows: response
+					};
+					$scope.tenantsList.actions = {
+						'editTenant': {
+							'label': translation.editTenant[LANG],
+							'command': function (row) {
+								$scope.edit_Tenant(row);
+							}
+						},
+						'updateOAuth': {
+							'label': translation.updateOAuth[LANG],
+							'command': function (row) {
+								$scope.update_oAuth(row);
+							}
+						},
+						'turnOffOAuth': {
+							'label': translation.turnOffOAuth[LANG],
+							'command': function (row) {
+								$scope.turnOffOAuth(row);
+							}
+						},
+						'delete': {
+							'label': 'Remove',
+							'commandMsg': translation.areYouSureWantRemoveTenant[LANG],
+							'command': function (row) {
+								$scope.removeTenant(row);
+							}
+						}
+					};
 				});
 			}
 		});
@@ -277,31 +266,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		$scope.originalTenants = angular.copy($scope.tenantTabs);
 		callback();
 	};
-
-	$scope.markTenantsWithDashboardAccess = function (tenants, tenantDbKeys, callback) {
-		tenants.forEach(function (oneTenant) {
-			for (var i = 0; i < tenantDbKeys.length; i++) {
-				if (oneTenant.code === tenantDbKeys[i].code) {
-					if (!oneTenant.dashboardAccess) {
-						oneTenant.dashboardAccess = true;
-					}
-					for (var j = 0; j < oneTenant.applications.length; j++) {
-						for (var k = 0; k < oneTenant.applications[j].keys.length; k++) {
-							for (var l = 0; l < oneTenant.applications[j].keys[k].extKeys.length; l++) {
-								if (oneTenant.applications[j].keys[k].extKeys[l].extKey === tenantDbKeys[i].key && oneTenant.applications[j].keys[k].extKeys[l].env === tenantDbKeys[i].env) {
-									oneTenant.applications[j].dashboardAccess = true;
-									oneTenant.applications[j].keys[k].dashboardAccess = true;
-									oneTenant.applications[j].keys[k].extKeys[l].dashboardAccess = true;
-								}
-							}
-						}
-					}
-				}
-			}
-		});
-		callback();
-	};
-
+	
 	$scope.listOauthUsers = function (row) {
 		var tId = row['_id'];
 		if (!row.alreadyGotAuthUsers) {

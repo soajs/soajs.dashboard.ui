@@ -9,6 +9,21 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
+	function putMyEnv(record){
+		var data = {
+			"_id": record._id,
+			"code": record.code,
+			"sensitive": record.sensitive,
+			"domain": record.domain,
+			"profile": record.profile,
+			"sitePrefix": record.sitePrefix,
+			"apiPrefix": record.apiPrefix,
+			"description": record.description,
+			"deployer": record.deployer
+		};
+		$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
+	}
+	
 	$scope.waitMessage = {
 		type: "",
 		message: "",
@@ -91,22 +106,33 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		else {
 			var options = {
 				"method": "get",
-				"routeName": "/dashboard/environment",
+				"routeName": "/dashboard/environment/list",
 				"params": {}
 			};
-			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-				options.params.code = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-				getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
-					if (error) {
-						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					$localStorage.environments = angular.copy(response);
+					var myEnvCookie = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
+					var found = false;
+					var newList = [];
+					if (myEnvCookie) {
+						for (var i = response.length - 1; i >= 0; i--) {
+							if (response[i].code === myEnvCookie.code) {
+								newList.push(response[i]);
+								found = true;
+							}
+						}
 					}
-					else {
-						var newData = [response];
-						$scope.grid = { rows: newData };
-						$scope.jsonEditor.custom.data = JSON.stringify(newData.custom, null, 2);
+					if (!found) {
+						newList = response[0];
 					}
-				});
-			}
+					$scope.grid = { rows: newList };
+					$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
+				}
+			});
 		}
 	};
 	
@@ -159,12 +185,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			else {
 				$localStorage.environments = response.environments;
 				if (newEnvRecord) {
-					$cookies.putObject('myEnv', newEnvRecord, { 'domain': interfaceDomain });
+					putMyEnv(newEnvRecord);
 				}
 				else {
 					if (response.environments.length) {
 						// not dashboard
-						$cookies.putObject('myEnv', response.environments[0], { 'domain': interfaceDomain });
+						putMyEnv(response.environments[0]);
 					} else {
 						$cookies.remove('myEnv', { 'domain': interfaceDomain });
 					}
@@ -182,7 +208,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.save = function () {
 		var postData = angular.copy($scope.formEnvironment);
 		
-		if (typeof($scope.formEnvironment.services.config.session.proxy) == 'undefined') {
+		if (typeof($scope.formEnvironment.services.config.session.proxy) === 'undefined') {
 			postData.services.config.session.proxy = 'undefined';
 		}
 		else if ($scope.formEnvironment.services.config.session.proxy === false) {
@@ -221,7 +247,6 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			}
 			else {
 				var successMessage = translation.environment[LANG] + ' ' + (($scope.newEntry) ? translation.created[LANG] : translation.updated[LANG]) + ' ' + translation.successfully[LANG];
-				
 				$scope.$parent.displayAlert('success', successMessage);
 			}
 		});
@@ -350,8 +375,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		});
 		
 	};
-	
-	
+
 	$scope.startLimit = 0;
 	$scope.totalCount = 0;
 	$scope.endLimit = environmentsConfig.customRegistryIncrement;
@@ -638,7 +662,6 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							oneEnv.selected = true;
 						});
 					}
-					
 					return;
 				};
 				

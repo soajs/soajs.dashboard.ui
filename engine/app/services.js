@@ -184,7 +184,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			data: opts.data || {},
 			json: true
 		};
-		
+
 		var soajsAuthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 		if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
 			config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
@@ -202,11 +202,13 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		
 		var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 		if (access_token && config.token) {
-			if (config.params) {
-				config.params.access_token = access_token;
-			}
+			config.params.access_token = access_token;
 		}
-		
+		var projectId = $cookies.get('projectId', {'domain': interfaceDomain});
+		if (projectId) {
+			config.params.projectId = projectId;
+		}
+
 		if (opts.proxy) {
 			if (!config.params.__env) {
 				var env;

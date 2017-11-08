@@ -1266,7 +1266,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 								method: 'get',
 								routeName: '/dashboard/cloud/services/soajs/deploy',
 								"params": deployObject
-							}, function (error) {
+							}, function (error, service) {
+								currentScope.wizard.cluster.serviceId = service;
 								return cb(error, currentScope.wizard.cluster.local.name);
 							});
 						}
@@ -1344,12 +1345,16 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							expireAfter: 1209600000
 						}
 					};
+					
 					//update session db
 					getSendDataFromServer(currentScope, ngDataApi, {
 						"method": "post",
 						"routeName": "/dashboard/environment/dbs/update",
 						"data": sessionData
-					}, function (error) {
+					}, function (error, cluster) {
+						if (cluster && cluster._id){
+							currentScope.wizard.cluster.clusterId = cluster._id;
+						}
 						return cb(error, true);
 					});
 				}
@@ -1357,18 +1362,44 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 
-	function removeCluster(currentScope){
-		if(currentScope.wizard.cluster.local){
-			//need to remove the deployed service of the server
-			removeService(currentScope, 'mongo_cluster', currentScope.clusterId);
+	function removeCluster(currentScope, cb){
+		if (currentScope.wizard.cluster.local) {
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'delete',
+				routeName: '/dashboard/cloud/services/delete',
+				params: {
+					env: currentScope.wizard.gi.code.toUpperCase(),
+					serviceId: currentScope.wizard.cluster.serviceId.id,
+					"mode": (currentScope.wizard.deploy.selectedDriver === "kubernetes")
+						? "deployment" : "replicated"
+				}
+			}, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					deleteResource(currentScope, cb);
+				}
+			});
 		}
 
-		if(!currentScope.wizard.cluster.share){
-			//need to remove the resource created in the database
-
+		if(currentScope.wizard.cluster.external){
+			deleteResource (currentScope, cb);
 		}
 	}
-	
+	function deleteResource (currentScope, cb){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/resources/delete",
+			"data": {
+				"env" : currentScope.wizard.gi.code.toUpperCase(),
+				"id" : currentScope.wizard.cluster.clusterId
+			}
+		}, function (error) {
+			return cb(error, true);
+		});
+		
+	}
 	function addUserAndGroup(currentScope, cb){
 		
 		let max = 10;

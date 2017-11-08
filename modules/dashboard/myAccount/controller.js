@@ -400,15 +400,26 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 					else {
 						$localStorage.acl_access = response.acl;
 						$localStorage.environments = response.environments;
-						response.environments.forEach(function (oneEnv) {
-							if (oneEnv.code.toLowerCase() === 'dashboard') {
-								// todo
-								// $cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
-								// $scope.$parent.currentDeployer.type = oneEnv.deployer.type;
+						var options = {
+							"method": "get",
+							"routeName": "/dashboard/environment/list",
+							"params": {}
+						};
+						getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+							if (error) {
+								$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							else {
+								$localStorage.environments = angular.copy(response);
+								response.forEach(function (oneEnv) {
+									if (oneEnv.code.toLowerCase() === 'dashboard') {
+										// $scope.$parent.currentDeployer.type = oneEnv.deployer.type;
+									}
+								});
+								$scope.$parent.$emit("loadUserInterface", {});
+								$scope.$parent.$emit('refreshWelcome', {});
 							}
 						});
-						$scope.$parent.$emit("loadUserInterface", {});
-						$scope.$parent.$emit('refreshWelcome', {});
 					}
 				});
 			}

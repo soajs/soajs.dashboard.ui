@@ -340,12 +340,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		}, 100);
 	};
 	
-	$scope.removeServer = function(index){
-		$scope.form.formData.cluster.external.servers.splice(index, 1);
+	$scope.removeServer = function(index, type){
+		$scope.form.formData.cluster[type].servers.splice(index, 1);
 	};
 	
-	$scope.AddNewServer = function(){
-		$scope.form.formData.cluster.external.servers.push({
+	$scope.AddNewServer = function(type){
+		$scope.form.formData.cluster[type].servers.push({
 			host: 'localhost',
 			port: 27017
 		});

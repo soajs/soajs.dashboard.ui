@@ -78,6 +78,10 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		envHosts.loadDaemonStats($scope, env, oneHost);
 	};
 	
+	$scope.downloadProfile = function (env) {
+		envHosts.downloadProfile($scope, env);
+	};
+	
 	if ($scope.access.listHosts) {
 		injectFiles.injectCss('modules/dashboard/environments/environments.css');
 		if ($scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain })) {

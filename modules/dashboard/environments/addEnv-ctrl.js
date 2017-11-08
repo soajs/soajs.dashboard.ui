@@ -1027,6 +1027,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									delete formData.imageTag;
 									delete formData.custom;
 									delete formData.catalog;
+									
+									//get the port and protocol from inputs
 								}
 								else {
 									delete formData.certs;
@@ -1035,6 +1037,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									delete formData.http;
 									delete formData.https;
 									delete formData.ssl;
+									
+									$scope.nginxRecipes.forEach(function(oneNginxRecipe){
+										if(oneNginxRecipe._id === formData.catalog){
+											formData.recipe = oneNginxRecipe;
+										}
+									});
 								}
 								
 								$localStorage.addEnv.step4 = angular.copy(formData);
@@ -1163,25 +1171,28 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									}, 2000);
 								});
 								
+								let steps = [];
 								function addEnvironment(cb) {
 									addEnv.createEnvironment(parentScope, (error, response) => {
 										if (error) {
-											rollback([], error);
+											rollback(steps, error);
 										}
 										else {
 											parentScope.envId = response.data;
 											$scope.progressCounter++;
 											$scope.createEnvironment = true;
+											steps.push({method: 'removeEnvironment'});
 											addEnv.uploadEnvCertificates(parentScope, (error) => {
 												if (error) {
-													rollback([{method: 'removeEnvironment'}], error);
+													rollback(steps, error);
 												}
 												else if (parentScope.portalDeployment) {
 													$scope.progressCounter++;
 													$scope.uploadEnvCertificates = true;
 													productize((error) => {
+														steps.push({method: 'removeProduct'});
 														if(error){
-															rollback([{method: 'removeEnvironment'}, {method: 'removeProduct'}], error);
+															rollback(steps, error);
 														}
 														else{
 															$scope.progressCounter++;
@@ -1205,11 +1216,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								}
 								
 								function handleDeployment(cb){
-									let steps = [{method: 'removeEnvironment'}];
-									if(parentScope.portalDeployment){
-										steps.push({method: 'removeProduct'});
-									}
-									if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
+									if(parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
 										addEnv.deployController(parentScope, (error, controllerId) => {
 											if(error){
 												rollback(steps, error);
@@ -1218,52 +1225,47 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												$scope.controllerId = controllerId;
 												$scope.progressCounter++;
 												$scope.deployController = true;
+												steps.push({method: 'removeController', id: $scope.controllerId});
+												
 												if($scope.portalDeployment){
-													
 													addEnv.handleClusters(parentScope, (error) => {
+														steps.push({method: 'removeCluster'});
 														if(error){
-															steps.push({method: 'removeCluster'});
 															rollback(steps, error);
 														}
 														
 														addEnv.deployUrac(parentScope, (error, uracId) => {
 															if(error){
-																steps.push({method: 'removeController', id: $scope.controllerId});
 																rollback(steps, error);
 															}
 															else{
+																
 																$scope.uracId = uracId;
 																$scope.progressCounter++;
 																$scope.deployUrac = true;
+																steps.push({method: 'removeUrac', id: $scope.uracId});
 																
 																addEnv.deployOauth(parentScope, (error, oAuthId) => {
 																	if(error){
-																		steps.push({method: 'removeController', id: $scope.controllerId});
-																		steps.push({method: 'removeUrac', id: $scope.uracId});
 																		rollback(steps, error);
 																	}
 																	else{
 																		$scope.oAuthId = oAuthId;
 																		$scope.progressCounter++;
 																		$scope.deployOauth = true;
-																		handleNginx(steps, cb);
+																		steps.push({method: 'removeOauth', id: $scope.oAuthId});
 																		
-																		// handleNginx(steps, (error) => {
-																		// 	//add user and group using new tenant
-																		// 	addUserAndGroup( (error) => {
-																		// 		if(error){
-																		// 			steps.push({method: 'removeController', id: $scope.controllerId});
-																		// 			steps.push({method: 'removeUrac', id: $scope.uracId});
-																		// 			steps.push({method: 'removeOauth', id: $scope.oAuthId});
-																		// 			steps.push({method: 'removeCatalog', id: $scope.catalogId});
-																		// 			steps.push({method: 'removeNginx', id: $scope.nginxId});
-																		// 			rollback(steps, error);
-																		// 		}
-																		// 		else{
-																		// 			return cb();
-																		// 		}
-																		// 	});
-																		// });
+																		handleNginx( () => {
+																			//add user and group using new tenant
+																			addEnv.addUserAndGroup( (error) => {
+																				if(error){
+																					rollback(steps, error);
+																				}
+																				else{
+																					return cb();
+																				}
+																			});
+																		});
 																	}
 																});
 															}
@@ -1271,7 +1273,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 													});
 												}
 												else{
-													handleNginx(steps, cb);
+													handleNginx(cb);
 												}
 											}
 										});
@@ -1282,21 +1284,17 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									}
 								}
 								
-								function handleNginx(steps, cb){
+								function handleNginx(cb){
 									if (parentScope.wizard.nginx.catalog) {
 										addEnv.deployNginx(parentScope, parentScope.wizard.nginx.catalog, (error, nginxId) => {
 											if(error){
-												steps.push({method: 'removeController', id: $scope.controllerId});
-												if($scope.portalDeployment){
-													steps.push({method: 'removeUrac', id: $scope.uracId});
-													steps.push({method: 'removeOauth', id: $scope.oAuthId});
-												}
 												rollback(steps, error);
 											}
 											else {
 												$scope.nginxId = nginxId;
 												$scope.progressCounter++;
 												$scope.deployNginx = true;
+												steps.push({method: 'removeNginx', id: $scope.nginxId});
 												return cb();
 											}
 										});
@@ -1304,31 +1302,23 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									else {
 										addEnv.createNginxRecipe(parentScope, (error, catalogId) => {
 											if(error){
-												steps.push({method: 'removeController', id: $scope.controllerId});
-												if($scope.portalDeployment){
-													steps.push({method: 'removeUrac', id: $scope.uracId});
-													steps.push({method: 'removeOauth', id: $scope.oAuthId});
-												}
 												rollback(steps, error);
 											}
 											else {
 												$scope.catalogId = catalogId;
 												$scope.progressCounter++;
 												$scope.createNginxRecipe = true;
+												steps.push({method: 'removeCatalog', id: catalogId});
+												
 												addEnv.deployNginx(parentScope, catalogId, (error, nginxId) => {
 													if(error){
-														steps.push({method: 'removeController', id: $scope.controllerId});
-														if($scope.portalDeployment){
-															steps.push({method: 'removeUrac', id: $scope.uracId});
-															steps.push({method: 'removeOauth', id: $scope.oAuthId});
-														}
-														steps.push({method: 'removeCatalog', id: catalogId});
 														rollback(steps, error);
 													}
 													else {
 														$scope.nginxId = nginxId;
 														$scope.progressCounter++;
 														$scope.deployNginx = true;
+														steps.push({method: 'removeNginx', id: $scope.nginxId});
 														return cb();
 													}
 												});
@@ -1336,49 +1326,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 										});
 									}
 								}
-								
-								// function addUserAndGroup(cb){
-								// 	getSendDataFromServer($scope, ngDataApi, {
-								// 		method: 'post',
-								// 		proxy: true,
-								// 		routeName: '/urac/admin/group/add',
-								// 		header: {
-								// 			key: $scope.tenantExtKey
-								// 		},
-								// 		data: {
-								// 			"name":"administrator",
-								// 			"code":"administrator",
-								// 			"description":"Portal administration group",
-								// 			"tId": $scope.tenantId,
-								// 			"tCode":"PRTL"
-								// 		}
-								// 	}, function (error) {
-								// 		if (error) {
-								// 			return cb(error);
-								// 		}
-								// 		else {
-								// 			getSendDataFromServer($scope, ngDataApi, {
-								// 				method: 'post',
-								// 				proxy: true,
-								// 				routeName: '/urac/admin/addUser',
-								// 				header: {
-								// 					key: $scope.tenantExtKey
-								// 				},
-								// 				data: {
-								// 					"username": $scope.wizard.gi.username,
-								// 					"firstName":"PORTAL",
-								// 					"lastName":"OWNER",
-								// 					"email": $scope.wizard.gi.email,
-								// 					"groups":["administrator"],
-								// 					"tId":$scope.tenantId,
-								// 					"tCode":"PRTL",
-								// 					"status": "active",
-								// 					"password": $scope.wizard.gi.password
-								// 				}
-								// 			}, cb);
-								// 		}
-								// 	});
-								// }
 								
 								function rollback(steps, error){
 									

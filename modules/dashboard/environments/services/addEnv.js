@@ -717,6 +717,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 										},
 										"/account/editProfile": {
 											"access": true
+										},
+										"/owner/admin/addUser": {
+										
 										}
 									}
 								}
@@ -808,7 +811,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				'description': "Portal Tenant that uses the portal product and its packages",
 				'tag': "portal"
 			};
-
+			
 			if (!tenantFound) {
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
@@ -819,15 +822,33 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						mCb(error);
 					}
 					else {
-						var tId = response.id;
-						currentScope.envTenantId = response.id;
-
-						addApplication(tId, 'main', (error) => {
-							if (error) {
-								mCb(error);
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/tenant/oauth/add",
+							"params" : {
+								"id" : response.id
+							},
+							"data": {
+								"secret" : "soajs beaver",
+								"oauthType" : "urac",
+								"availableEnv" : ["PORTAL"]
+							}
+						}, function (oauthUpdateError, oauthUpdateResponse) { // oauthUpdateResponse unused, resuming the main flow
+							if (oauthUpdateError) {
+								mCb(oauthUpdateError);
 							}
 							else {
-								addApplication(tId, 'user', mCb);
+								var tId = response.id;
+								currentScope.envTenantId = response.id;
+								
+								addApplication(tId, 'main', (error) => {
+									if (error) {
+										mCb(error);
+									}
+									else {
+										addApplication(tId, 'user', mCb);
+									}
+								});
 							}
 						});
 					}
@@ -921,14 +942,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 								return cb(error);
 							}
 							else {
-								// if(packageName === 'main'){
-								// 	currentScope.tenantExtKey = response.extKey;
-								// }
+								if(packageName === 'main'){
+									currentScope.tenantExtKey = response.extKey;
+								}
 
-								// TODO: check how the nginx was deployed to determine the protocol and the port
-								let protocol = "http";
-								let port = 80;
-								let domain = protocol + "://" + currentScope.wizard.gi.sitePrefix + "." + currentScope.wizard.gi.domain + ":" + port;
+								let domain = getAPIInfo(currentScope, currentScope.wizard.nginx, 'sitePrefix');
 
 								var postData = {
 									'envCode': currentScope.wizard.gi.code.toLowerCase(),
@@ -1355,7 +1373,133 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 		}
 	}
-
+	
+	function addUserAndGroup(currentScope, cb){
+		
+		let max = 10;
+		let counter = 0;
+		let portalAPI = getAPIInfo(currentScope, currentScope.wizard.nginx, 'apiPrefix');
+		
+		return cb();
+		
+		// checkIfUracRunning(() => {
+			// doAdd(cb);
+		// });
+		
+		function checkIfUracRunning(cb){
+			getSendDataFromServer(currentScope, ngDataApi, {
+				url: portalAPI + '/urac/checkUsername',
+				method: 'get',
+				proxy: true,
+				header: {
+					key: currentScope.tenantExtKey
+				},
+				params:{
+					username: currentScope.wizard.gi.username
+				}
+			}, function(error, response){
+				console.log(error, response);
+				
+				if(error){
+					counter++;
+					if(counter === max){
+						return cb();
+					}
+					else{
+						$timeout(function(){
+							checkIfUracRunning(cb);
+						}, 1000);
+					}
+				}
+				else if(response){
+					return cb();
+				}
+			});
+		}
+		
+		
+		function doAdd(cb) {
+			//add the group
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'post',
+				proxy: true,
+				routeName: '/urac/admin/group/add',
+				header: {
+					key: currentScope.tenantExtKey
+				},
+				data: {
+					"name": "administrator",
+					"code": "administrator",
+					"description": "Portal administration group",
+					"tId": currentScope.tenantId,
+					"tCode": "PRTL"
+				}
+			}, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					//add the user
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'post',
+						proxy: true,
+						routeName: '/urac/admin/addUser',
+						header: {
+							key: currentScope.tenantExtKey
+						},
+						data: {
+							"username": currentScope.wizard.gi.username,
+							"firstName": "PORTAL",
+							"lastName": "OWNER",
+							"email": currentScope.wizard.gi.email,
+							"groups": ["administrator"],
+							"tId": currentScope.tenantId,
+							"tCode": "PRTL",
+							"status": "active",
+							"password": currentScope.wizard.gi.password
+						}
+					}, cb);
+				}
+			});
+		}
+	}
+	
+	function getAPIInfo(currentScope, nginx, type){
+		let protocol = "http";
+		let port = 80;
+		
+		if(nginx.recipe){
+			for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
+				var onePort = nginx.recipe.deployOptions.ports[i];
+				
+				//check for http port first, if found set it as env port
+				if(onePort.name === 'http' && onePort.isPublished && onePort.published) {
+					port = onePort.published;
+					protocol = 'http';
+				}
+				
+				//then check if https port is found and published, if yes check if ssl is on and set the port and protocol accordingly
+				if(onePort.name === 'https' && onePort.isPublished && onePort.published) {
+					for (var oneEnv in nginx.recipe.buildOptions.env) {
+						if(oneEnv === 'SOAJS_NX_API_HTTPS' && ['true', '1'].indexOf(nginx.recipe.buildOptions.env[oneEnv].value) !== -1) {
+							protocol = 'https';
+							port = onePort.published;
+						}
+					}
+				}
+			}
+		}
+		else{
+			port = nginx.http;
+			if(nginx.ssl){
+				port = nginx.https;
+				protocol = "https";
+			}
+		}
+		
+		return protocol + "://" + currentScope.wizard.gi[type] + "." + currentScope.wizard.gi.domain + ":" + port;
+	}
+	
 	return {
 		'createEnvironment': createEnvironment,
 		'uploadEnvCertificates': uploadEnvCertificates,
@@ -1380,7 +1524,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 		'listServers': listServers,
 		'handleClusters': handleClusters,
-		'removeCluster': removeCluster
+		'removeCluster': removeCluster,
+		
+		"addUserAndGroup": addUserAndGroup
 	};
 
 }]);

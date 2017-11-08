@@ -73,6 +73,14 @@ var environmentsConfig = {
 					}
 				]
 			},
+			step21: {
+				"entries": [
+					{
+						"name": "deployment",
+						"directive": "modules/dashboard/environments/directives/add-step21.tmpl"
+					}
+				]
+			},
 			step3: {
 				"entries": [
 					{

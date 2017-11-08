@@ -20,7 +20,13 @@
 			</span>
 			<span ng-if="deployController">
 				<span class="icon icon-checkmark green"></span> Deployed Controller.<br>
-			</span>
+			</span><br>
+			<span ng-if="deployUrac">
+				<span class="icon icon-checkmark green"></span> Deployed Urac.<br>
+			</span><br>
+			<span ng-if="deployOauth">
+				<span class="icon icon-checkmark green"></span> Deployed oAuth.<br>
+			</span><br>
 			<span ng-if="createNginxRecipe">
 				<span class="icon icon-checkmark green"></span> Created Nginx Recipe.<br>
 			</span>

@@ -1,0 +1,300 @@
+<accordion close-others="true">
+	<accordion-group is-open="clusters.local" ng-click="switchCluster('local')">
+		<accordion-heading>
+			<input type="radio" ng-checked="clusters.local" value="true" name="local" disabled/>&nbsp;
+			I do not have a MongoDB server, i want SOAJS to deploy one for me
+		</accordion-heading>
+		<p>
+			SOAJS installer will deploy a preconfigured MongoDB server for you.<br />
+			You can provide an optional prefix for your databases and/or change the exposed port.
+			<hr>
+		</p>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div>
+							<label class="f-left">Name</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.local.name" />
+							<div class="fieldMsg hint">Provide a name for your mongo server.</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div>
+							<label class="f-left">Database Prefix</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.local.prefix" />
+							<div class="fieldMsg hint">Provide an optional prefix for your databases names</div>
+						</div>
+					</td>
+				</tr>
+				<!--<tr class="form-group tr-code-wrapper">-->
+					<!--<td class="form-select">-->
+						<!--<div id="isReplica-wrapper">-->
+							<!--<input class="f-left form-control" ng-model="form.formData.cluster.external.isReplica"-->
+							       <!--ng-required="false" type="checkbox" ng-change="" style="box-shadow: none; width:2%;"/>&nbsp;-->
+							<!--<label>Replicated Database</label>-->
+							<!--<div class="fieldMsg hint">Check the box if the MongoDB is hosted on multiple servers.</div>-->
+						<!--</div>-->
+					<!--</td>-->
+				<!--</tr>-->
+				<!--<tr class="form-group replicaSet-wrapper" ng-show="form.formData.cluster.external.isReplica">-->
+					<!--<td>-->
+						<!--<div id="replicaSet-wrapper">-->
+							<!--<label class="f-left  ">Replica Set Name</label>-->
+							<!--<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.external.replicaSet"/>-->
+							<!--<div class="fieldMsg hint">Provide the name of the replica Set you are connecting to.</div>-->
+						<!--</div>-->
+					<!--</td>-->
+				<!--</tr>-->
+				<tr class="form-group servers-wrapper">
+					<td>
+						<fieldset>
+							<legend>Servers List</legend>
+							<div id="servers">
+								<table width="100%" cellspacing="0" cellpadding="0" border="0">
+									<tbody>
+										<tr class="form-group host-wrapper" ng-repeat="oneServer in form.formData.cluster.local.servers track by $index">
+											<td width="80%" valign="top">
+												<div>
+													<label>Hostname</label>
+													<input class="form-control " ng-model="form.formData.cluster.local.servers[$index].host" ng-required="true" type="text">
+													<div class="fieldMsg hint">The hostname must not hold the default localhost IP address(127.0.0.1).</div>
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="14%" valign="top">
+												<div>
+													<label>Port</label>
+													<input class="form-control " ng-model="form.formData.cluster.local.servers[$index].port" placeholder="27017" ng-required="true" type="text">
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="4%" valign="top">
+												<br /><br />
+												<div>
+													<input  type="button" class="f-right btn btn-sm btn-danger" value="remove" ng-click="removeServer($index, 'local')" ng-disabled="$index === 0"/>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</fieldset>
+					</td>
+				</tr>
+				<!--<tr class="form-group addServer-wrapper" ng-show="form.formData.cluster.external.isReplica">-->
+					<!--<td class="typeHtml">-->
+						<!--<br />-->
+						<!--<input class="btn btn-sm btn-success f-right" value="Add New Server" type="button" ng-click="AddNewServer('external')" />-->
+					<!--</td>-->
+				<!--</tr>-->
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div id="credentials-wrapper"><br>
+							<fieldset class="floatGroup">
+								<legend>Credentials</legend>
+								<div id="credentials">
+									<table width="100%" cellspacing="0" cellpadding="0" border="0">
+										<tbody>
+											<tr class="form-group" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="username-wrapper">
+														<label>Username</label>
+														<input class="form-control" ng-model="form.formData.cluster.local.credentials.username" placeholder="Username" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+											<tr class="form-group password-wrapper" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="password-wrapper">
+														<label>Password</label>
+														<input class="form-control " ng-model="form.formData.cluster.local.credentials.password" placeholder="Password" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</fieldset>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group urlParam-wrapper">
+					<td>
+						<div id="urlParam-wrapper">
+							<label class="f-left  ">Connection Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.local.URLParam" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group streaming-wrapper">
+					<td>
+						<div id="streaming-wrapper">
+							<label class="f-left  ">Streaming Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.local.streaming" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</accordion-group>
+	<accordion-group is-open="clusters.share" ng-click="switchCluster('share')" ng-show="sharedClusters.length > 0">
+		<accordion-heading>
+			<input type="radio" ng-checked="clusters.share" value="true" name="share" disabled/>&nbsp;
+			I want to use one of my shared MongoDB Servers
+		</accordion-heading>
+		<p>
+			I have a MongoDB server deployed in an another environment and i configured it to be shared for other environments.<br />
+			I want to use it here as well
+		</p>
+		<hr>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div>
+							<label class="f-left">Server Name</label>
+							<select ng-model="form.formData.cluster.share.name" class="form-control">
+								<option value="{{oneCluster.name}}" ng-repeat="oneCluster in sharedClusters">{{oneCluster.name}}</option>
+							</select>
+							<div class="fieldMsg hint">Select which Server to use</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</accordion-group>
+	<accordion-group is-open="clusters.external" ng-click="switchCluster('external')">
+		<accordion-heading>
+			<input type="radio" ng-checked="clusters.external" value="true" name="external" disabled/>&nbsp;
+			I have an external MongoDB Server and i want to connect to it
+		</accordion-heading>
+		<p>
+			Please provide the configuration to connect to your MongoDB Server.
+		</p>
+		<hr>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div id="clusterPrefix-wrapper">
+							<label class="f-left">Database Prefix</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.external.prefix" />
+							<div class="fieldMsg hint">Provide an optional prefix for your databases names</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group tr-code-wrapper">
+					<td class="form-select">
+						<div id="isReplica-wrapper">
+							<input class="f-left form-control" ng-model="form.formData.cluster.external.isReplica"
+							       ng-required="false" type="checkbox" ng-change="" style="box-shadow: none; width:2%;"/>&nbsp;
+							<label>Replicated Database</label>
+							<div class="fieldMsg hint">Check the box if the MongoDB is hosted on multiple servers.</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group replicaSet-wrapper" ng-show="form.formData.cluster.external.isReplica">
+					<td>
+						<div id="replicaSet-wrapper">
+							<label class="f-left  ">Replica Set Name</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.external.replicaSet"/>
+							<div class="fieldMsg hint">Provide the name of the replica Set you are connecting to.</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group servers-wrapper">
+					<td>
+						<fieldset>
+							<legend>Servers List</legend>
+							<div id="servers">
+								<table width="100%" cellspacing="0" cellpadding="0" border="0">
+									<tbody>
+										<tr class="form-group host-wrapper" ng-repeat="oneServer in form.formData.cluster.external.servers track by $index">
+											<td width="80%" valign="top">
+												<div>
+													<label>Hostname</label>
+													<input class="form-control " ng-model="form.formData.cluster.external.servers[$index].host" ng-required="true" type="text">
+													<div class="fieldMsg hint">The hostname must not hold the default localhost IP address(127.0.0.1).</div>
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="14%" valign="top">
+												<div>
+													<label>Port</label>
+													<input class="form-control " ng-model="form.formData.cluster.external.servers[$index].port" placeholder="27017" ng-required="true" type="text">
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="4%" valign="top">
+												<br /><br />
+												<div>
+													<input  type="button" class="f-right btn btn-sm btn-danger" value="remove" ng-click="removeServer($index, 'external')" ng-disabled="$index === 0"/>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</fieldset>
+					</td>
+				</tr>
+				<tr class="form-group addServer-wrapper" ng-show="form.formData.cluster.external.isReplica">
+					<td class="typeHtml">
+						<br />
+						<input class="btn btn-sm btn-success f-right" value="Add New Server" type="button" ng-click="AddNewServer('external')" />
+					</td>
+				</tr>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div id="credentials-wrapper"><br>
+							<fieldset class="floatGroup">
+								<legend>Credentials</legend>
+								<div id="credentials">
+									<table width="100%" cellspacing="0" cellpadding="0" border="0">
+										<tbody>
+											<tr class="form-group" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="username-wrapper">
+														<label>Username</label>
+														<input class="form-control" ng-model="form.formData.cluster.external.credentials.username" placeholder="Username" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+											<tr class="form-group password-wrapper" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="password-wrapper">
+														<label>Password</label>
+														<input class="form-control " ng-model="form.formData.cluster.external.credentials.password" placeholder="Password" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</fieldset>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group urlParam-wrapper">
+					<td>
+						<div id="urlParam-wrapper">
+							<label class="f-left  ">Connection Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.external.URLParam" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group streaming-wrapper">
+					<td>
+						<div id="streaming-wrapper">
+							<label class="f-left  ">Streaming Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.external.streaming" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</accordion-group>
+</accordion>

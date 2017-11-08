@@ -281,6 +281,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								}
 							}
 							
+							if(!formData.selectedDriver){
+								$window.alert("You have not specified the deployment strategy of this environment.");
+								return false;
+							}
+							
 							$localStorage.addEnv.step2 = angular.copy(formData);
 							$scope.wizard.deploy = angular.copy(formData);
 							$scope.lastStep = 2;

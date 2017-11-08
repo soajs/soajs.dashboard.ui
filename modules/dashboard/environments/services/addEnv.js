@@ -1181,7 +1181,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		//todo: finish the data before proceeding
 		
 		if(currentScope.wizard.cluster.local){
-		
+			//call get catalog recipes and find the mongo recipe id and use it
 			//need to deploy the resource using mongo recipe, replica 1 and the name specified
 			//need to add the resource in the database
 		}
@@ -1195,34 +1195,34 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		//regardless of the above, need to add a new urac database with the cluster chosen
 		//regardless of the above, need to add update the session databse with the cluster chosen
 		
-		// let data = {
-		// 	"deployConfig": {
-		// 		"replication": {
-		// 			"mode": '',
-		// 			"replicas": 1
-		// 		}
-		// 	},
-		// 	"custom": {
-		// 		"name": currentScope.wizard.cluster.local.name,
-		// 		"type": ""
-		// 	},
-		// 	"recipe": 123,
-		// 	"env": currentScope.wizard.gi.code.toUpperCase()
-		// };
-		//
-		// //deploy Service
-		// getSendDataFromServer(currentScope, ngDataApi, {
-		// 	"method": "post",
-		// 	"routeName": "/dashboard/cloud/services/soajs/deploy",
-		// 	"data": data
-		// }, function (error, serviceId) {
-		// 	if (error) {
-		// 		return cb(error);
-		// 	} else {
-		// 		currentScope.clusterId = serviceId;
-		// 		return cb(null, true);
-		// 	}
-		// });
+		let data = {
+			"deployConfig": {
+				"replication": {
+					"mode": (currentScope.wizard.deploy.deployment.docker) ? "replicated": "deployment",
+					"replicas": 1
+				}
+			},
+			"custom": {
+				"name": currentScope.wizard.cluster.local.name,
+				"type": ""
+			},
+			"recipe": 123,
+			"env": currentScope.wizard.gi.code.toUpperCase()
+		};
+
+		//deploy Service
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/cloud/services/soajs/deploy",
+			"data": data
+		}, function (error, serviceId) {
+			if (error) {
+				return cb(error);
+			} else {
+				currentScope.clusterId = serviceId;
+				return cb(null, true);
+			}
+		});
 	}
 	
 	function removeCluster(currentScope){

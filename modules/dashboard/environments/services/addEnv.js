@@ -598,6 +598,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 								userApplicationFound = eachApp.appId;
 								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
 									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
+									currentScope.tenantExtKey = eachApp.keys[0].extKeys[0].extKey;
 									userApplicationKeyFound = true;
 								}
 							}
@@ -1316,7 +1317,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				return cb(error);
 			}
 			let uracData = {
-				"env": currentScope.wizard.gi.code.toUpperCase(),
 				"name": "urac",
 				"cluster": clusterName,
 				"tenantSpecific": true
@@ -1325,6 +1325,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "post",
 				"routeName": "/dashboard/environment/dbs/add",
+				"params": {
+					"env": currentScope.wizard.gi.code.toUpperCase()
+				},
 				"data": uracData
 			}, function (error) {
 				if (error) {
@@ -1332,7 +1335,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				}
 				else {
 					var sessionData = {
-						"env": currentScope.wizard.gi.code.toUpperCase(),
 						"name": "session",
 						"cluster": clusterName,
 						"tenantSpecific": false,
@@ -1347,8 +1349,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					
 					//update session db
 					getSendDataFromServer(currentScope, ngDataApi, {
-						"method": "post",
+						"method": "put",
 						"routeName": "/dashboard/environment/dbs/update",
+						"params": {
+							"env": currentScope.wizard.gi.code.toUpperCase()
+						},
 						"data": sessionData
 					}, function (error, cluster) {
 						if (cluster && cluster._id){
@@ -1407,30 +1412,33 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let counter = 0;
 		let portalAPI = getAPIInfo(currentScope, currentScope.wizard.nginx, 'apiPrefix');
 		
-		return cb();
-		
-		// checkIfUracRunning(() => {
-			// doAdd(cb);
-		// });
+		checkIfUracRunning((error) => {
+			if(error){
+				return cb(error);
+			}
+			else{
+				doAdd(cb);
+			}
+		});
 		
 		function checkIfUracRunning(cb){
-			getSendDataFromServer(currentScope, ngDataApi, {
-				url: portalAPI + '/urac/checkUsername',
+			let opts = {
+				url: portalAPI,
+				routeName: '/urac/checkUsername',
 				method: 'get',
 				proxy: true,
-				header: {
+				headers: {
 					key: currentScope.tenantExtKey
 				},
 				params:{
 					username: currentScope.wizard.gi.username
 				}
-			}, function(error, response){
-				console.log(error, response);
-				
+			};
+			getSendDataFromServer(currentScope, ngDataApi, opts, function(error, response){
 				if(error){
 					counter++;
 					if(counter === max){
-						return cb();
+						return cb(error);
 					}
 					else{
 						$timeout(function(){
@@ -1438,20 +1446,20 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						}, 1000);
 					}
 				}
-				else if(response){
+				else {
 					return cb();
 				}
 			});
 		}
 		
-		
 		function doAdd(cb) {
 			//add the user
 			getSendDataFromServer(currentScope, ngDataApi, {
+				url: portalAPI,
 				method: 'post',
 				proxy: true,
 				routeName: '/urac/join',
-				header: {
+				headers: {
 					key: currentScope.tenantExtKey
 				},
 				data: {
@@ -1469,32 +1477,36 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let protocol = "http";
 		let port = 80;
 		
-		if(nginx && nginx.recipe && nginx.recipe.deployOptions && nginx.recipe.deployOptions.ports){
-			for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
-				var onePort = nginx.recipe.deployOptions.ports[i];
-				
-				//check for http port first, if found set it as env port
-				if(onePort.name === 'http' && onePort.isPublished && onePort.published) {
-					port = onePort.published;
-					protocol = 'http';
-				}
-				
-				//then check if https port is found and published, if yes check if ssl is on and set the port and protocol accordingly
-				if(onePort.name === 'https' && onePort.isPublished && onePort.published) {
-					for (var oneEnv in nginx.recipe.buildOptions.env) {
-						if(oneEnv === 'SOAJS_NX_API_HTTPS' && ['true', '1'].indexOf(nginx.recipe.buildOptions.env[oneEnv].value) !== -1) {
-							protocol = 'https';
-							port = onePort.published;
+		if(nginx){
+			if(nginx.recipe && nginx.recipe.deployOptions && nginx.recipe.deployOptions.ports){
+				for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
+					var onePort = nginx.recipe.deployOptions.ports[i];
+					
+					//check for http port first, if found set it as env port
+					if(onePort.name === 'http' && onePort.isPublished && onePort.published) {
+						port = onePort.published;
+						protocol = 'http';
+					}
+					
+					//then check if https port is found and published, if yes check if ssl is on and set the port and protocol accordingly
+					if(onePort.name === 'https' && onePort.isPublished && onePort.published) {
+						for (var oneEnv in nginx.recipe.buildOptions.env) {
+							if(oneEnv === 'SOAJS_NX_API_HTTPS' && ['true', '1'].indexOf(nginx.recipe.buildOptions.env[oneEnv].value) !== -1) {
+								protocol = 'https';
+								port = onePort.published;
+							}
 						}
 					}
 				}
 			}
-		}
-		else{
-			port = nginx.http;
-			if(nginx.ssl){
-				port = nginx.https;
-				protocol = "https";
+			else{
+				if(nginx.http){
+					port = nginx.http;
+				}
+				if(nginx.ssl){
+					port = nginx.https;
+					protocol = "https";
+				}
 			}
 		}
 		

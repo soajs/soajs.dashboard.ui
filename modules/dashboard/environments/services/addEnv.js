@@ -377,7 +377,14 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			method: 'post',
 			routeName: '/dashboard/cloud/services/soajs/deploy',
 			data: data
-		}, cb);
+		}, function(error, response){
+			if(error){
+				return cb(error);
+			}
+			else {
+				return cb(null, response.id);
+			}
+		});
 	}
 
 	function deployservice(currentScope, serviceName, cb) {
@@ -922,14 +929,14 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							'expDate': null,
 							'device': null,
 							'geo': null,
-							'env': 'PORTAL'
+							'env': 'PORTAL',
+							"dashboardAccess": (packageName === 'user')
 						};
 
 						let params = {
 							"id": tenantId,
 							"appId": appId,
-							"key": key,
-							"dashboardAccess": (packageName === 'user')
+							"key": key
 						};
 
 						getSendDataFromServer(currentScope, ngDataApi, {
@@ -1155,6 +1162,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 	function removeOauth(currentScope, id){
 		removeService(currentScope, 'controller', id);
+	}
+	
+	function removeNginx(currentScope, id){
+		removeService(currentScope, 'nginx', id);
 	}
 
 	function removeCatalog(currentScope, id){
@@ -1442,7 +1453,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					else{
 						$timeout(function(){
 							checkIfUracRunning(cb);
-						}, 1000);
+						}, 10000);
 					}
 				}
 				else {
@@ -1476,10 +1487,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let port = 80;
 		
 		if(nginx){
-			if(nginx.recipe && nginx.recipe.deployOptions && nginx.recipe.deployOptions.ports){
-				for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
-					var onePort = nginx.recipe.deployOptions.ports[i];
-					
+			if(nginx.recipe && nginx.recipe.recipe && nginx.recipe.recipe.deployOptions && nginx.recipe.recipe.deployOptions.ports){
+				for(var i = 0; i < nginx.recipe.recipe.deployOptions.ports.length; i++) {
+					var onePort = nginx.recipe.recipe.deployOptions.ports[i];
 					//check for http port first, if found set it as env port
 					if(onePort.name === 'http' && onePort.isPublished && onePort.published) {
 						port = onePort.published;
@@ -1488,8 +1498,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					
 					//then check if https port is found and published, if yes check if ssl is on and set the port and protocol accordingly
 					if(onePort.name === 'https' && onePort.isPublished && onePort.published) {
-						for (var oneEnv in nginx.recipe.buildOptions.env) {
-							if(oneEnv === 'SOAJS_NX_API_HTTPS' && ['true', '1'].indexOf(nginx.recipe.buildOptions.env[oneEnv].value) !== -1) {
+						for (var oneEnv in nginx.recipe.recipe.buildOptions.env) {
+							if(oneEnv === 'SOAJS_NX_API_HTTPS' && ['true', '1'].indexOf(nginx.recipe.recipe.buildOptions.env[oneEnv].value) !== -1) {
 								protocol = 'https';
 								port = onePort.published;
 							}
@@ -1530,6 +1540,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'removeController': removeController,
 		'removeUrac': removeUrac,
 		'removeOauth': removeOauth,
+		'removeNginx': removeNginx,
 
 		'removeCatalog': removeCatalog,
 

@@ -1163,6 +1163,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									if (!parentScope.wizard.nginx.catalog) {
 										$scope.maxCounter++;
 									}
+									$scope.maxCounter+=3;
 								}
 								
 								addEnvironment (function(){
@@ -1233,7 +1234,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 														if(error){
 															rollback(steps, error);
 														}
-														
+														$scope.deployCluster = true;
 														addEnv.deployUrac(parentScope, (error, uracId) => {
 															if(error){
 																rollback(steps, error);
@@ -1256,6 +1257,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 																		steps.push({method: 'removeOauth', id: $scope.oAuthId});
 																		
 																		handleNginx( () => {
+																			$scope.user = true;
 																			//add user and group using new tenant
 																			addEnv.addUserAndGroup(parentScope, (error) => {
 																				if(error){
@@ -1335,7 +1337,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									//['environment', 'product', 'controller']
 									//['environment', 'controller', 'catalog']
 									//['environment', 'product', 'controller', 'catalog']
-									
 									if(steps && typeof Array.isArray(steps)) {
 										manualAsyncSeriesInverted(steps.length - 1);
 									}
@@ -1360,6 +1361,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 										
 										// i'll wait some time and do the next one
 										setTimeout(function () {
+											$scope.progressCounter--;
 											let newIndex = currentIndex - 1;
 											manualAsyncSeriesInverted(newIndex);
 										}, 1000);

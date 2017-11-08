@@ -1,166 +1,300 @@
 <accordion close-others="true">
-	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
+	<accordion-group is-open="clusters.local" ng-click="switchCluster('local')">
 		<accordion-heading>
-			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
-			I will use Docker to Deploy my containers
+			<input type="radio" ng-checked="clusters.local" value="true" name="local" disabled/>&nbsp;
+			I do not have a MongoDB server, i want SOAJS to deploy one for me
 		</accordion-heading>
-		<div class="f-right" style="width:15%;">
-			<img ng-src="themes/default/img/docker_logo.png" width="100%" />
-		</div>
-		<label>Use a new machine to deploy my Environment</label>
-		<label class="toggleSwitch">
-			<input type="checkbox" ng-model="form.formData.deployment.docker.dockerremote" /><span class="buttonSlider round"></span>
-		</label>
-		<p ng-show="form.formData.deployment.docker.dockerremote">
-			I have already prepared my machine(s) and installed <a href="https://www.docker.com/" target="_blank">Docker</a> as my container technology.
+		<p>
+			SOAJS installer will deploy a preconfigured MongoDB server for you.<br />
+			You can provide an optional prefix for your databases and/or change the exposed port.
 			<hr>
 		</p>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0" ng-show="form.formData.deployment.docker.dockerremote">
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
-				<tr class="form-group machinePort-wrapper">
+				<tr class="form-group credentials-wrapper">
 					<td>
-						<div id="dockerPort-wrapper">
-							<div class="f-left" style="width:49%;">
-								<label class="f-left">Docker Port</label>
-								<input type="text" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" ng-model="form.formData.deployment.docker.externalPort" class="form-control" placeholder="2376" />
-								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker Internal Port so that the Dashboard can connect to your machine(s).</div>
-							</div>
-							<div class="f-left" style="width:2%;">&nbsp;</div>
-							<div class="f-left" style="width:49%;">
-								<label class="f-left">Docker Internal Port</label>
-								<input type="text" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" ng-model="form.formData.deployment.docker.internalPort" class="form-control" placeholder="2377" />
-								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker External Port so that the Dashboard can connect to your machine(s).</div>
-							</div>
-							
+						<div>
+							<label class="f-left">Name</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.local.name" />
+							<div class="fieldMsg hint">Provide a name for your mongo server.</div>
 						</div>
 					</td>
 				</tr>
-				<tr class="form-group network-wrapper">
-					<td >
-						<div id="network-wrapper">
-							<label class="f-left">Docker Network Name</label>
-							<input type="text" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" placeholder="soajsnet" ng-model="form.formData.deployment.docker.network" />
-							<div class="fieldMsg hint">Provide the Docker network name of your machine(s).</div>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div>
+							<label class="f-left">Database Prefix</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.local.prefix" />
+							<div class="fieldMsg hint">Provide an optional prefix for your databases names</div>
+						</div>
+					</td>
+				</tr>
+				<!--<tr class="form-group tr-code-wrapper">-->
+					<!--<td class="form-select">-->
+						<!--<div id="isReplica-wrapper">-->
+							<!--<input class="f-left form-control" ng-model="form.formData.cluster.external.isReplica"-->
+							       <!--ng-required="false" type="checkbox" ng-change="" style="box-shadow: none; width:2%;"/>&nbsp;-->
+							<!--<label>Replicated Database</label>-->
+							<!--<div class="fieldMsg hint">Check the box if the MongoDB is hosted on multiple servers.</div>-->
+						<!--</div>-->
+					<!--</td>-->
+				<!--</tr>-->
+				<!--<tr class="form-group replicaSet-wrapper" ng-show="form.formData.cluster.external.isReplica">-->
+					<!--<td>-->
+						<!--<div id="replicaSet-wrapper">-->
+							<!--<label class="f-left  ">Replica Set Name</label>-->
+							<!--<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.external.replicaSet"/>-->
+							<!--<div class="fieldMsg hint">Provide the name of the replica Set you are connecting to.</div>-->
+						<!--</div>-->
+					<!--</td>-->
+				<!--</tr>-->
+				<tr class="form-group servers-wrapper">
+					<td>
+						<fieldset>
+							<legend>Servers List</legend>
+							<div id="servers">
+								<table width="100%" cellspacing="0" cellpadding="0" border="0">
+									<tbody>
+										<tr class="form-group host-wrapper" ng-repeat="oneServer in form.formData.cluster.local.servers track by $index">
+											<td width="80%" valign="top">
+												<div>
+													<label>Hostname</label>
+													<input class="form-control " ng-model="form.formData.cluster.local.servers[$index].host" ng-required="true" type="text">
+													<div class="fieldMsg hint">The hostname must not hold the default localhost IP address(127.0.0.1).</div>
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="14%" valign="top">
+												<div>
+													<label>Port</label>
+													<input class="form-control " ng-model="form.formData.cluster.local.servers[$index].port" placeholder="27017" ng-required="true" type="text">
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="4%" valign="top">
+												<br /><br />
+												<div>
+													<input  type="button" class="f-right btn btn-sm btn-danger" value="remove" ng-click="removeServer($index, 'local')" ng-disabled="$index === 0"/>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</fieldset>
+					</td>
+				</tr>
+				<!--<tr class="form-group addServer-wrapper" ng-show="form.formData.cluster.external.isReplica">-->
+					<!--<td class="typeHtml">-->
+						<!--<br />-->
+						<!--<input class="btn btn-sm btn-success f-right" value="Add New Server" type="button" ng-click="AddNewServer('external')" />-->
+					<!--</td>-->
+				<!--</tr>-->
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div id="credentials-wrapper"><br>
+							<fieldset class="floatGroup">
+								<legend>Credentials</legend>
+								<div id="credentials">
+									<table width="100%" cellspacing="0" cellpadding="0" border="0">
+										<tbody>
+											<tr class="form-group" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="username-wrapper">
+														<label>Username</label>
+														<input class="form-control" ng-model="form.formData.cluster.local.credentials.username" placeholder="Username" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+											<tr class="form-group password-wrapper" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="password-wrapper">
+														<label>Password</label>
+														<input class="form-control " ng-model="form.formData.cluster.local.credentials.password" placeholder="Password" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</fieldset>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group urlParam-wrapper">
+					<td>
+						<div id="urlParam-wrapper">
+							<label class="f-left  ">Connection Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.local.URLParam" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group streaming-wrapper">
+					<td>
+						<div id="streaming-wrapper">
+							<label class="f-left  ">Streaming Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.local.streaming" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</accordion-group>
+	<accordion-group is-open="clusters.share" ng-click="switchCluster('share')" ng-show="sharedClusters.length > 0">
+		<accordion-heading>
+			<input type="radio" ng-checked="clusters.share" value="true" name="share" disabled/>&nbsp;
+			I want to use one of my shared MongoDB Servers
+		</accordion-heading>
+		<p>
+			I have a MongoDB server deployed in an another environment and i configured it to be shared for other environments.<br />
+			I want to use it here as well
+		</p>
+		<hr>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div>
+							<label class="f-left">Server Name</label>
+							<select ng-model="form.formData.cluster.share.name" class="form-control">
+								<option value="{{oneCluster.name}}" ng-repeat="oneCluster in sharedClusters">{{oneCluster.name}}</option>
+							</select>
+							<div class="fieldMsg hint">Select which Server to use</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</accordion-group>
+	<accordion-group is-open="clusters.external" ng-click="switchCluster('external')">
+		<accordion-heading>
+			<input type="radio" ng-checked="clusters.external" value="true" name="external" disabled/>&nbsp;
+			I have an external MongoDB Server and i want to connect to it
+		</accordion-heading>
+		<p>
+			Please provide the configuration to connect to your MongoDB Server.
+		</p>
+		<hr>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr class="form-group credentials-wrapper">
+					<td>
+						<div id="clusterPrefix-wrapper">
+							<label class="f-left">Database Prefix</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.external.prefix" />
+							<div class="fieldMsg hint">Provide an optional prefix for your databases names</div>
 						</div>
 					</td>
 				</tr>
 				<tr class="form-group tr-code-wrapper">
 					<td class="form-select">
+						<div id="isReplica-wrapper">
+							<input class="f-left form-control" ng-model="form.formData.cluster.external.isReplica"
+							       ng-required="false" type="checkbox" ng-change="" style="box-shadow: none; width:2%;"/>&nbsp;
+							<label>Replicated Database</label>
+							<div class="fieldMsg hint">Check the box if the MongoDB is hosted on multiple servers.</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group replicaSet-wrapper" ng-show="form.formData.cluster.external.isReplica">
+					<td>
+						<div id="replicaSet-wrapper">
+							<label class="f-left  ">Replica Set Name</label>
+							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.external.replicaSet"/>
+							<div class="fieldMsg hint">Provide the name of the replica Set you are connecting to.</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group servers-wrapper">
+					<td>
 						<fieldset>
-							<legend>
-								Docker Certificates:
-							</legend>
-							<div id="CA-wrapper" class="w30 f-left">
-								<label>CA</label>
-								<span ng-show="remoteCertificates && remoteCertificates.ca" class="green">
-									<span class="icon icon-checkmark"></span> Already Selected
-								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.ca"/>
-								<div class="fieldMsg hint">Specify the location of the certificate of type CA.</div>
-							</div>
-							<div id="Cert-wrapper"  class="w30 f-left">
-								<label>Cert</label>
-								<span ng-show="remoteCertificates && remoteCertificates.cert" class="green">
-									<span class="icon icon-checkmark"></span> Already Selected
-								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.cert"/>
-								<div class="fieldMsg hint">Specify the location of the certificate of type Cert.</div>
-							</div>
-							<div id="Key-wrapper"  class="w30 f-left">
-								<label>Key</label>
-								<span ng-show="remoteCertificates && remoteCertificates.key" class="green">
-									<span class="icon icon-checkmark"></span> Already Selected
-								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.key"/>
-								<div class="fieldMsg hint">Specify the location of the certificate of type Key.</div>
+							<legend>Servers List</legend>
+							<div id="servers">
+								<table width="100%" cellspacing="0" cellpadding="0" border="0">
+									<tbody>
+										<tr class="form-group host-wrapper" ng-repeat="oneServer in form.formData.cluster.external.servers track by $index">
+											<td width="80%" valign="top">
+												<div>
+													<label>Hostname</label>
+													<input class="form-control " ng-model="form.formData.cluster.external.servers[$index].host" ng-required="true" type="text">
+													<div class="fieldMsg hint">The hostname must not hold the default localhost IP address(127.0.0.1).</div>
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="14%" valign="top">
+												<div>
+													<label>Port</label>
+													<input class="form-control " ng-model="form.formData.cluster.external.servers[$index].port" placeholder="27017" ng-required="true" type="text">
+												</div>
+											</td>
+											<td width="1%"></td>
+											<td width="4%" valign="top">
+												<br /><br />
+												<div>
+													<input  type="button" class="f-right btn btn-sm btn-danger" value="remove" ng-click="removeServer($index, 'external')" ng-disabled="$index === 0"/>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</fieldset>
 					</td>
 				</tr>
-			</tbody>
-		</table>
-	</accordion-group>
-	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')">
-		<accordion-heading>
-			<input type="radio" ng-checked="platforms.kubernetes" value="true" name="kubernetes" disabled/>&nbsp;
-			I will use Kubernetes to Deploy my containers
-		</accordion-heading>
-		<div class="f-right" style="width:15%;">
-			<img ng-src="themes/default/img/kubernetes_logo.png" width="100%" />
-		</div>
-		<label>Use a new machine to deploy my Environment</label>
-		<label class="toggleSwitch">
-			<input type="checkbox" ng-model="form.formData.deployment.kubernetes.kubernetesremote"><span class="buttonSlider round"></span>
-		</label>
-		<p ng-show="form.formData.deployment.kubernetes.kubernetesremote">
-			I have already prepared my machine(s) and installed <a href="https://kubernetes.io/" target="_blank">Kubernetes</a> as my container technology.<br />
-		</p>
-		<hr>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0" ng-show="form.formData.deployment.kubernetes.kubernetesremote">
-			<tbody>
-				<tr class="form-group machinePort-wrapper">
+				<tr class="form-group addServer-wrapper" ng-show="form.formData.cluster.external.isReplica">
+					<td class="typeHtml">
+						<br />
+						<input class="btn btn-sm btn-success f-right" value="Add New Server" type="button" ng-click="AddNewServer('external')" />
+					</td>
+				</tr>
+				<tr class="form-group credentials-wrapper">
 					<td>
-						<div id="kubernetesPort-wrapper">
-							<label class="f-left">Kubernetes Port</label>
-							<input type="text" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" ng-model="form.formData.deployment.kubernetes.port" class="form-control" placeholder="6443" />
-							<div class="fieldMsg hint">Provide the Kubernetes Port so that the Dashboard can connect to your machine(s).</div>
+						<div id="credentials-wrapper"><br>
+							<fieldset class="floatGroup">
+								<legend>Credentials</legend>
+								<div id="credentials">
+									<table width="100%" cellspacing="0" cellpadding="0" border="0">
+										<tbody>
+											<tr class="form-group" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="username-wrapper">
+														<label>Username</label>
+														<input class="form-control" ng-model="form.formData.cluster.external.credentials.username" placeholder="Username" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+											<tr class="form-group password-wrapper" style="float:left; width:50%">
+												<td style="width:99%; display: block">
+													<div id="password-wrapper">
+														<label>Password</label>
+														<input class="form-control " ng-model="form.formData.cluster.external.credentials.password" placeholder="Password" ng-required="false" type="text">
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</fieldset>
 						</div>
 					</td>
 				</tr>
-				<tr class="form-group token-wrapper">
-					<td >
-						<div id="token-wrapper">
-							<label class="f-left">Kubernetes Secret Token</label>
-							<textarea ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" class="form-control" rows="4" placeholder="My Kubernetes Secret Token" ng-model="form.formData.deployment.kubernetes.token"></textarea>
-							<div class="fieldMsg hint">Provide the Kubernetes Secret Token so that the Dashboard can connect to your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group namespace-wrapper">
-					<td >
-						<div id="namespace-wrapper">
-							<label class="f-left">Kubernetes Namespace Value</label>
-							<input type="text" class="form-control" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" placeholder="soajs" ng-model="form.formData.deployment.kubernetes.NS" /><br />
-							<div class="fieldMsg hint">Provide the Kubernetes namespace that will be used when deploying services in this environment.</div>
-							<label class="f-left">Kubernetes Namespace Mode</label>
-							<div class="f-left" style="margin:15px 0 0 35px;">
-								<input type="radio" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" ng-model="form.formData.deployment.kubernetes.perService" name="global" ng-value="false" />&nbsp;Global Namespace Per Project
-								<input type="radio" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" ng-model="form.formData.deployment.kubernetes.perService" name="service" ng-value="true" style="margin-left:35px;" />&nbsp;Specific Namespace Per Service
-							</div>
-							<div class="fieldMsg hint">Provide the Kubernetes Secret Token so that the Dashboard can connect to your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
+				<tr class="form-group urlParam-wrapper">
 					<td>
-						<div>
-							<label>Nginx Deployment Type</label>
-							<select ng-model="form.formData.deployment.kubernetes.nginxDeployType" class="form-control">
-								<option value="NodePort">NodePort</option>
-								<option value="LoadBalancer">LoadBalancer</option>
-							</select>
-							<div class="fieldMsg hint">Choose how kubernetes should deploy Nginx Containers in this environment.</div>
+						<div id="urlParam-wrapper">
+							<label class="f-left  ">Connection Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.external.URLParam" cols="30" rows="10"></textarea>
+						</div>
+					</td>
+				</tr>
+				<tr class="form-group streaming-wrapper">
+					<td>
+						<div id="streaming-wrapper">
+							<label class="f-left  ">Streaming Options</label>
+							<textarea class="form-control" ng-required="false" ng-model="form.formData.cluster.external.streaming" cols="30" rows="10"></textarea>
 						</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-	</accordion-group>
-	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')">
-		<accordion-heading>
-			<input type="radio" ng-checked="platforms.manual" value="true" name="manual" disabled/>&nbsp;
-			I will Deploy Everything Manually
-		</accordion-heading>
-		<p>
-			I will not use any container technology to deploy my Service(s) and Daemon(s).<br />
-			I will also handle pulling and applying updates on the machines of this Environment myself.
-		</p>
-		<hr />
-		<alert type="warning">
-			<p>
-				Please make sure that the machines you will use for this environment will be in the same network range as the <b>dashboard </b> environment.<br />
-				Otherwise you will not be able to trigger any maintenance operation on the service(s) and/or daemon(s) that are running on these machines using this interface.
-			</p>
-		</alert>
 	</accordion-group>
 </accordion>

@@ -921,9 +921,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 								return cb(error);
 							}
 							else {
-								if(packageName === 'main'){
-									currentScope.tenantExtKey = response.extKey;
-								}
+								// if(packageName === 'main'){
+								// 	currentScope.tenantExtKey = response.extKey;
+								// }
 								
 								// TODO: check how the nginx was deployed to determine the protocol and the port
 								let protocol = "http";
@@ -1153,6 +1153,78 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 	
+	function listServers(currentScope, cb){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/resources/list',
+			params: {
+				env: currentScope.wizard.gi.code.toUpperCase()
+			}
+		}, function (error, response) {
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				let servers = [];
+				response.forEach( (oneResource) => {
+					if(oneResource.type === 'cluster' && oneResource.category === 'mongo' && oneResource.plugged && oneResource.shared && (!oneResource.sharedEnvs || oneResource.sharedEnvs[currentScope.wizard.gi.code.toUpperCase()])){
+						servers.push(oneResource);
+					}
+				});
+				
+				return cb(servers);
+			}
+		});
+	}
+	
+	function handleClusters(currentScope, cb){
+		//todo: finish the data before proceeding
+		
+		if(currentScope.wizard.cluster.local){
+		
+		}
+		else if (currentScope.wizard.cluster.share){
+		
+		}
+		//no need to handle external mongo
+		
+		// let data = {
+		// 	"deployConfig": {
+		// 		"replication": {
+		// 			"mode": '',
+		// 			"replicas": 1
+		// 		}
+		// 	},
+		// 	"custom": {
+		// 		"name": currentScope.wizard.cluster.local.name,
+		// 		"type": ""
+		// 	},
+		// 	"recipe": 123,
+		// 	"env": currentScope.wizard.gi.code.toUpperCase()
+		// };
+		//
+		// //deploy Service
+		// getSendDataFromServer(currentScope, ngDataApi, {
+		// 	"method": "post",
+		// 	"routeName": "/dashboard/cloud/services/soajs/deploy",
+		// 	"data": data
+		// }, function (error, serviceId) {
+		// 	if (error) {
+		// 		return cb(error);
+		// 	} else {
+		// 		currentScope.clusterId = serviceId;
+		// 		return cb(null, true);
+		// 	}
+		// });
+	}
+	
+	function removeCluster(currentScope){
+		if(currentScope.wizard.cluster.local){
+			removeService(currentScope, 'mongo_cluster', currentScope.clusterId);
+		}
+		//no need to worry about the other types in this case
+	}
+	
 	return {
 		'createEnvironment': createEnvironment,
 		'uploadEnvCertificates': uploadEnvCertificates,
@@ -1173,7 +1245,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'removeUrac': removeUrac,
 		'removeOauth': removeOauth,
 		
-		'removeCatalog': removeCatalog
+		'removeCatalog': removeCatalog,
+		
+		'listServers': listServers,
+		'handleClusters': handleClusters,
+		'removeCluster': removeCluster
 	};
 	
 }]);

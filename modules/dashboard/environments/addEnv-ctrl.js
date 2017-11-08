@@ -310,8 +310,173 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		});
 	};
 	
+	$scope.switchCluster = function (driver) {
+		if (!$scope.clusters) {
+			$scope.clusters = {
+				local: true,
+				external: false,
+				share: false
+			};
+		}
+		$timeout(function(){
+			switch (driver) {
+				case 'external':
+					$scope.clusters.local = false;
+					$scope.clusters.share = false;
+					$scope.clusters.external = true;
+					break;
+				case 'share':
+					$scope.clusters.share = true;
+					$scope.clusters.local = false;
+					$scope.clusters.external = false;
+					break;
+				default:
+				case 'local':
+					$scope.clusters.local = true;
+					$scope.clusters.share = false;
+					$scope.clusters.external = false;
+					break;
+			}
+		}, 100);
+	};
+	
+	$scope.removeServer = function(index){
+		$scope.form.formData.cluster.external.servers.splice(index, 1);
+	};
+	
+	$scope.AddNewServer = function(){
+		$scope.form.formData.cluster.external.servers.push({
+			host: 'localhost',
+			port: 27017
+		});
+	};
+	
 	$scope.Step21 = function () {
-		//this only shows up iza el deployment is container w ya amma fi cluster ya amma create one for me
+		overlayLoading.show();
+		$scope.sharedClusters = [];
+		var configuration = angular.copy(environmentsConfig.form.add.step21.entries);
+		
+		var options = {
+			timeout: $timeout,
+			entries: configuration,
+			name: 'addEnvironment',
+			label: translation.addNewEnvironment[LANG],
+			actions: [
+				{
+					'type': 'button',
+					'label': "Back",
+					'btn': 'success',
+					'action': function () {
+						$scope.form.formData = {};
+						$scope.Step2();
+					}
+				},
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						if ($scope.clusters.local) {
+							//todo: need assertions ....
+							
+							delete formData.cluster.external;
+							delete formData.cluster.share;
+						}
+						else if($scope.clusters.external){
+							//todo: need assertions ....
+							
+							delete formData.cluster.local;
+							delete formData.cluster.share;
+						}
+						else if($scope.clusters.share){
+							//todo: need assertions ....
+							
+							delete formData.cluster.local;
+							delete formData.cluster.external;
+						}
+						
+						$localStorage.addEnv.step21 = angular.copy(formData);
+						$scope.wizard.cluster = angular.copy(formData);
+						$scope.lastStep = 21;
+						$scope.Step3();
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						delete $localStorage.addEnv;
+						$scope.form.formData = {};
+						$scope.remoteCertificates = {};
+						delete $scope.wizard;
+						$scope.$parent.go("/environments")
+					}
+				}
+			]
+		};
+		addEnv.listServers($scope,  (servers) => {
+			$scope.sharedClusters = servers;
+			
+			buildForm($scope, $modal, options, function () {
+				$scope.form.formData = {
+					cluster: {
+						local: {
+							servers : [
+								{
+									host: 'localhost',
+									port: 27017
+								}
+							],
+							URLParam: JSON.stringify({
+								"bufferMaxEntries": 0,
+								"maxPoolSize": 5
+							}, null, 2)
+						},
+						share: {},
+						external :{
+							servers : [
+								{
+									host: 'localhost',
+									port: 27017
+								}
+							],
+							URLParam: JSON.stringify({
+								"bufferMaxEntries": 0,
+								"maxPoolSize": 5
+							}, null, 2)
+						}
+					}
+				};
+				
+				if ($localStorage.addEnv && $localStorage.addEnv.step21) {
+					let alreadyChosen = angular.copy($localStorage.addEnv.step21);
+					if(alreadyChosen.cluster.local){
+						$scope.form.formData.cluster.local = alreadyChosen.cluster.local;
+						$scope.switchCluster('local');
+					}
+					if(alreadyChosen.cluster.external){
+						$scope.form.formData.cluster.external = alreadyChosen.cluster.external;
+						$scope.switchCluster('external');
+					}
+					if(alreadyChosen.cluster.share){
+						$scope.form.formData.cluster.share = alreadyChosen.cluster.share;
+						$scope.switchCluster('share');
+					}
+				}
+				else{
+					if (!$scope.clusters) {
+						$scope.clusters = {
+							local: true,
+							external: false,
+							share: false
+						};
+					}
+					$scope.switchCluster('local');
+				}
+				overlayLoading.hide();
+			});
+		});
 	};
 	
 	$scope.Step3 = function () {
@@ -980,45 +1145,54 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												$scope.progressCounter++;
 												$scope.deployController = true;
 												if($scope.portalDeployment){
-													addEnv.deployUrac(parentScope, (error, uracId) => {
+													
+													addEnv.handleClusters(parentScope, (error) => {
 														if(error){
-															steps.push({method: 'removeController', id: $scope.controllerId});
+															steps.push({method: 'removeCluster'});
 															rollback(steps, error);
 														}
-														else{
-															$scope.uracId = uracId;
-															$scope.progressCounter++;
-															$scope.deployUrac = true;
-															
-															addEnv.deployOauth(parentScope, (error, oAuthId) => {
-																if(error){
-																	steps.push({method: 'removeController', id: $scope.controllerId});
-																	steps.push({method: 'removeUrac', id: $scope.uracId});
-																	rollback(steps, error);
-																}
-																else{
-																	$scope.oAuthId = oAuthId;
-																	$scope.progressCounter++;
-																	$scope.deployOauth = true;
-																	handleNginx(steps, (error) => {
-																		//add user and group using new tenant
-																		addUserAndGroup( (error) => {
-																			if(error){
-																				steps.push({method: 'removeController', id: $scope.controllerId});
-																				steps.push({method: 'removeUrac', id: $scope.uracId});
-																				steps.push({method: 'removeOauth', id: $scope.oAuthId});
-																				steps.push({method: 'removeCatalog', id: $scope.catalogId});
-																				steps.push({method: 'removeNginx', id: $scope.nginxId});
-																				rollback(steps, error);
-																			}
-																			else{
-																				return cb();
-																			}
-																		});
-																	});
-																}
-															});
-														}
+														
+														addEnv.deployUrac(parentScope, (error, uracId) => {
+															if(error){
+																steps.push({method: 'removeController', id: $scope.controllerId});
+																rollback(steps, error);
+															}
+															else{
+																$scope.uracId = uracId;
+																$scope.progressCounter++;
+																$scope.deployUrac = true;
+																
+																addEnv.deployOauth(parentScope, (error, oAuthId) => {
+																	if(error){
+																		steps.push({method: 'removeController', id: $scope.controllerId});
+																		steps.push({method: 'removeUrac', id: $scope.uracId});
+																		rollback(steps, error);
+																	}
+																	else{
+																		$scope.oAuthId = oAuthId;
+																		$scope.progressCounter++;
+																		$scope.deployOauth = true;
+																		handleNginx(steps, cb);
+																		// handleNginx(steps, (error) => {
+																		// 	//add user and group using new tenant
+																		// 	addUserAndGroup( (error) => {
+																		// 		if(error){
+																		// 			steps.push({method: 'removeController', id: $scope.controllerId});
+																		// 			steps.push({method: 'removeUrac', id: $scope.uracId});
+																		// 			steps.push({method: 'removeOauth', id: $scope.oAuthId});
+																		// 			steps.push({method: 'removeCatalog', id: $scope.catalogId});
+																		// 			steps.push({method: 'removeNginx', id: $scope.nginxId});
+																		// 			rollback(steps, error);
+																		// 		}
+																		// 		else{
+																		// 			return cb();
+																		// 		}
+																		// 	});
+																		// });
+																	}
+																});
+															}
+														});
 													});
 												}
 												else{
@@ -1088,48 +1262,48 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									}
 								}
 								
-								function addUserAndGroup(cb){
-									getSendDataFromServer($scope, ngDataApi, {
-										method: 'post',
-										proxy: true,
-										routeName: '/urac/admin/group/add',
-										header: {
-											key: $scope.tenantExtKey
-										},
-										data: {
-											"name":"administrator",
-											"code":"administrator",
-											"description":"Portal administration group",
-											"tId": $scope.tenantId,
-											"tCode":"PRTL"
-										}
-									}, function (error) {
-										if (error) {
-											return cb(error);
-										}
-										else {
-											getSendDataFromServer($scope, ngDataApi, {
-												method: 'post',
-												proxy: true,
-												routeName: '/urac/admin/addUser',
-												header: {
-													key: $scope.tenantExtKey
-												},
-												data: {
-													"username": $scope.wizard.gi.username,
-													"firstName":"PORTAL",
-													"lastName":"OWNER",
-													"email": $scope.wizard.gi.email,
-													"groups":["administrator"],
-													"tId":$scope.tenantId,
-													"tCode":"PRTL",
-													"status": "active",
-													"password": $scope.wizard.gi.password
-												}
-											}, cb);
-										}
-									});
-								}
+								// function addUserAndGroup(cb){
+								// 	getSendDataFromServer($scope, ngDataApi, {
+								// 		method: 'post',
+								// 		proxy: true,
+								// 		routeName: '/urac/admin/group/add',
+								// 		header: {
+								// 			key: $scope.tenantExtKey
+								// 		},
+								// 		data: {
+								// 			"name":"administrator",
+								// 			"code":"administrator",
+								// 			"description":"Portal administration group",
+								// 			"tId": $scope.tenantId,
+								// 			"tCode":"PRTL"
+								// 		}
+								// 	}, function (error) {
+								// 		if (error) {
+								// 			return cb(error);
+								// 		}
+								// 		else {
+								// 			getSendDataFromServer($scope, ngDataApi, {
+								// 				method: 'post',
+								// 				proxy: true,
+								// 				routeName: '/urac/admin/addUser',
+								// 				header: {
+								// 					key: $scope.tenantExtKey
+								// 				},
+								// 				data: {
+								// 					"username": $scope.wizard.gi.username,
+								// 					"firstName":"PORTAL",
+								// 					"lastName":"OWNER",
+								// 					"email": $scope.wizard.gi.email,
+								// 					"groups":["administrator"],
+								// 					"tId":$scope.tenantId,
+								// 					"tCode":"PRTL",
+								// 					"status": "active",
+								// 					"password": $scope.wizard.gi.password
+								// 				}
+								// 			}, cb);
+								// 		}
+								// 	});
+								// }
 								
 								function rollback(steps, error){
 									

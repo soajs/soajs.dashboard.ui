@@ -1349,6 +1349,14 @@ var envTranslation ={
 	"loadDaemonGroupConfig":{
 		"ENG": "Load Daemon Group Config",
 		"FRA": "Load Daemon Group Config"
+	},
+	"unableToDownloadProfile":{
+		"ENG": "Unable to Download Profile",
+		"FRA": "Unable to Download Profile"
+	},
+	"downloadProfile":{
+		"ENG": "Download Profile",
+		"FRA": "Download Profile"
 	}
 };
 

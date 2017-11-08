@@ -104,6 +104,52 @@
 			</div>
 		</fieldset>
 	</accordion-group>
+	<accordion-group ng-show="wizard.urac.deploy">
+		<accordion-heading>
+			SOAJS URAC
+		</accordion-heading>
+		<fieldset>
+			<legend>
+				Container
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.urac ">
+							
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
+							</td>
+							<td ng-if="k!='deploy'"> {{v}}</td>
+						
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+	</accordion-group>
+	<accordion-group ng-show="wizard.oauth.deploy">
+		<accordion-heading>
+			SOAJS oAuth
+		</accordion-heading>
+		<fieldset>
+			<legend>
+				Container
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr ng-repeat="(k,v) in wizard.oauth ">
+							
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
+							</td>
+							<td ng-if="k!='deploy'"> {{v}}</td>
+						
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+	</accordion-group>
 	<accordion-group ng-show="wizard.nginx.deploy">
 		<accordion-heading>
 			Nginx Server
@@ -115,10 +161,10 @@
 			<table>
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.nginx">
-						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit'"><label class="text-capitalize">{{k}}
+						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"><label class="text-capitalize">{{k}}
 							<span ng-if="k=='memory'">(in MBytes)</span></label>
 						</td>
-						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit'"> {{v}}</td>
+						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"> {{v}}</td>
 					</tr>
 				</tbody>
 			</table>

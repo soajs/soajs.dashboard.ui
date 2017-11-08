@@ -7,10 +7,13 @@
 		<div class="f-right" style="width:15%;">
 			<img ng-src="themes/default/img/docker_logo.png" width="100%" />
 		</div>
-		<label>Use a new machine to deploy my Environment</label>
-		<label class="toggleSwitch">
-			<input type="checkbox" ng-model="form.formData.deployment.docker.dockerremote" /><span class="buttonSlider round"></span>
-		</label>
+		<div ng-show="allowLocalContainerDeployment">
+			<label>Use a new machine to deploy my Environment</label>
+			<label class="toggleSwitch">
+				<input type="checkbox" ng-model="form.formData.deployment.docker.dockerremote" /><span class="buttonSlider round"></span>
+			</label>
+		</div>
+		
 		<p ng-show="form.formData.deployment.docker.dockerremote">
 			I have already prepared my machine(s) and installed <a href="https://www.docker.com/" target="_blank">Docker</a> as my container technology.
 			<hr>
@@ -88,10 +91,14 @@
 		<div class="f-right" style="width:15%;">
 			<img ng-src="themes/default/img/kubernetes_logo.png" width="100%" />
 		</div>
-		<label>Use a new machine to deploy my Environment</label>
-		<label class="toggleSwitch">
-			<input type="checkbox" ng-model="form.formData.deployment.kubernetes.kubernetesremote"><span class="buttonSlider round"></span>
-		</label>
+		
+		<div ng-show="allowLocalContainerDeployment">
+			<label>Use a new machine to deploy my Environment</label>
+			<label class="toggleSwitch">
+				<input type="checkbox" ng-model="form.formData.deployment.kubernetes.kubernetesremote"><span class="buttonSlider round"></span>
+			</label>
+		</div>
+		
 		<p ng-show="form.formData.deployment.kubernetes.kubernetesremote">
 			I have already prepared my machine(s) and installed <a href="https://kubernetes.io/" target="_blank">Kubernetes</a> as my container technology.<br />
 		</p>

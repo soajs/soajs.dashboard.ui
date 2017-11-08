@@ -3,7 +3,7 @@
 	<select ng-model="form.formData.branch" class="form-control" ng-required="true">
 		<option ng-repeat="oneBranch in tempFormEntries.branches" value="{{oneBranch.name}}">{{oneBranch.name}}</option>
 	</select>
-	<div class="fieldMsg hint">Choose which branch to deploy the controller from.</div>
+	<div class="fieldMsg hint">Choose which branch to deploy the {{currentServiceName}} from.</div>
 </div>
 <br />
 <accordion close-others="false">

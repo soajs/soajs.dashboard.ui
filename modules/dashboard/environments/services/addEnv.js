@@ -1,15 +1,15 @@
 "use strict";
 var dbServices = soajsApp.components;
 dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorage', 'Upload', function (ngDataApi, $timeout, $cookies, $localStorage, Upload) {
-	
+
 	function createEnvironment(currentScope, cb) {
 		let data = currentScope.wizard.gi;
 		data.deploy = currentScope.wizard.deploy;
-		
+
 		if(currentScope.portalDeployment){
 			data.deployPortal = true;
 		}
-		
+
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
@@ -18,7 +18,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}, cb);
 	}
-	
+
 	function uploadEnvCertificates(currentScope, cb) {
 		if (currentScope.wizard.deploy.selectedDriver === 'docker' && currentScope.wizard.deploy.deployment.docker.dockerremote) {
 			let certificatesNames = Object.keys(currentScope.remoteCertificates);
@@ -27,19 +27,19 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		else {
 			return cb();
 		}
-		
+
 		function uploadFiles(certificatesNames, counter, uCb) {
 			let oneCertificate = certificatesNames[counter];
 			if (!currentScope.remoteCertificates[oneCertificate]) {
 				//to avoid incompatibility issues when using safari browsers
 				return uCb();
 			}
-			
+
 			var soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 			var dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
 			var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 			var progress = {value: 0};
-			
+
 			var options = {
 				url: apiConfiguration.domain + "/dashboard/environment/platforms/cert/upload",
 				params: {
@@ -56,7 +56,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'key': dashKeyCookie
 				}
 			};
-			
+
 			Upload.upload(options).progress(function (evt) {
 				progress.value = parseInt(100.0 * evt.loaded / evt.total);
 			}).success(function (response) {
@@ -76,7 +76,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			});
 		}
 	}
-	
+
 	function createNginxRecipe(currentScope, cb) {
 		let recipe = buildRecipe();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -99,7 +99,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				return cb(null, response.data);
 			}
 		});
-		
+
 		function buildRecipe(){
 			let recipe = {
 				"deployOptions": {
@@ -193,7 +193,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 			};
-			
+
 			//only for case of portal
 			if(currentScope.portalDeployment){
 				recipe.buildOptions.env["SOAJS_EXTKEY"] = {
@@ -205,11 +205,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"value": "master"
 				};
 			}
-			
+
 			if(currentScope.wizard.nginx.imageName){
 				recipe.deployOptions.image.override = true;
 			}
-			
+
 			if(currentScope.wizard.deploy.selectedDriver === 'docker'){
 				recipe.deployOptions.voluming.volumes = [
 					{
@@ -241,7 +241,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				];
 			}
-			
+
 			if (currentScope.wizard.nginx.ssl) {
 				if(currentScope.wizard.deploy.selectedDriver === 'docker') {
 					recipe.deployOptions.ports.push({
@@ -261,7 +261,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"preserveClientIP": true
 					});
 				}
-				
+
 				var https = ["SOAJS_NX_API_HTTPS", "SOAJS_NX_API_HTTP_REDIRECT", "SOAJS_NX_SITE_HTTPS", "SOAJS_NX_SITE_HTTP_REDIRECT"];
 				https.forEach((oneEnv) => {
 					recipe.buildOptions.env[oneEnv] = {
@@ -269,13 +269,13 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"value": "true"
 					};
 				});
-				
+
 				if (currentScope.wizard.nginx.certs && Object.keys(currentScope.wizard.nginx.certsGit).length > 0) {
 					recipe.buildOptions.env["SOAJS_NX_CUSTOM_SSL"] = {
 						"type": "static",
 						"value": 'true'
 					};
-					
+
 					recipe.buildOptions.env["SOAJS_CONFIG_REPO_BRANCH"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.certsGit.branch
@@ -301,13 +301,13 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"value": currentScope.wizard.nginx.certsGit.domain
 					};
 				}
-				
+
 				if (currentScope.wizard.nginx.customUi && currentScope.wizard.nginx.customUi.source && currentScope.wizard.nginx.customUi.provider && currentScope.wizard.nginx.customUi.repo && currentScope.wizard.nginx.customUi.owner && currentScope.wizard.nginx.customUi.branch && currentScope.wizard.nginx.customUi.token){
 					recipe.buildOptions.env["SOAJS_GIT_BRANCH"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.branch
 					};
-					
+
 					recipe.buildOptions.env["SOAJS_GIT_OWNER"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.owner
@@ -316,7 +316,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.repo
 					};
-					
+
 					recipe.buildOptions.env["SOAJS_GIT_TOKEN"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.customUi.token
@@ -335,11 +335,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					};
 				}
 			}
-			
+
 			return recipe;
 		}
 	}
-	
+
 	function deployNginx(currentScope, catalogId, cb) {
 		let data = {
 			"deployConfig": {
@@ -350,12 +350,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			},
 			"custom": {
 				type: 'nginx',
-				name: currentScope.wizard.gi.code.toLowerCase() + '_nginx'
+				name: currentScope.wizard.gi.code.toLowerCase() + '-nginx'
 			},
 			"recipe": catalogId,
 			"env": currentScope.wizard.gi.code.toUpperCase()
 		};
-		
+
 		//if custom image info
 		if (currentScope.wizard.nginx.imageName) {
 			data.custom.image = {
@@ -364,7 +364,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				tag: currentScope.wizard.nginx.imageTag
 			}
 		}
-		
+
 		//if user input env variables
 		if (currentScope.wizard.nginx.custom) {
 			data.custom.env = {};
@@ -372,69 +372,69 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				data.custom.env[env] = currentScope.wizard.nginx.custom[env].value;
 			}
 		}
-		
+
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/cloud/services/soajs/deploy',
 			data: data
 		}, cb);
 	}
-	
-	function deployController(currentScope, cb) {
+
+	function deployservice(currentScope, serviceName, cb) {
 		let data = {
 			"deployConfig": {
 				"replication": {
-					"mode": currentScope.wizard.controller.mode
+					"mode": currentScope.wizard[serviceName].mode
 				},
-				"memoryLimit": currentScope.wizard.controller.memory * 1048576
+				"memoryLimit": currentScope.wizard[serviceName].memory * 1048576
 			},
 			"gitSource": {
 				"owner": "soajs",
-				"repo": "soajs.controller",
-				"branch": currentScope.wizard.controller.branch
+				"repo": "soajs." + serviceName,
+				"branch": currentScope.wizard[serviceName].branch
 			},
 			"custom": {
-				"name": "controller",
+				"name": serviceName,
 				"type": "service"
 			},
-			"recipe": currentScope.wizard.controller.catalog,
+			"recipe": currentScope.wizard[serviceName].catalog,
 			"env": currentScope.wizard.gi.code.toUpperCase()
 		};
-		
+
 		//get the commit
-		if (currentScope.wizard.controller.commit) {
-			data.gitSource.commit = currentScope.wizard.controller.commit;
+		if (currentScope.wizard[serviceName].commit) {
+			data.gitSource.commit = currentScope.wizard[serviceName].commit;
 		}
-		
+
 		//check the replicas
-		if (['replicated', 'deployment'].indexOf(currentScope.wizard.controller.mode) !== -1) {
-			data.deployConfig.replication.replicas = currentScope.wizard.controller.number;
+		if (['replicated', 'deployment'].indexOf(currentScope.wizard[serviceName].mode) !== -1) {
+			data.deployConfig.replication.replicas = currentScope.wizard[serviceName].number;
 		}
-		
+
 		//if custom image info
-		if (currentScope.wizard.controller.imageName) {
+		if (currentScope.wizard[serviceName].imageName) {
 			data.custom.image = {
-				name: currentScope.wizard.controller.imageName,
-				prefix: currentScope.wizard.controller.imagePrefix,
-				tag: currentScope.wizard.controller.imageTag
+				name: currentScope.wizard[serviceName].imageName,
+				prefix: currentScope.wizard[serviceName].imagePrefix,
+				tag: currentScope.wizard[serviceName].imageTag
 			}
 		}
-		
+
 		//if user input env variables
-		if (currentScope.wizard.controller.custom) {
+		if (currentScope.wizard[serviceName].custom) {
 			data.custom.env = {};
-			for (let env in currentScope.wizard.controller.custom) {
-				data.custom.env[env] = currentScope.wizard.controller.custom[env].value;
+			for (let env in currentScope.wizard[serviceName].custom) {
+				data.custom.env[env] = currentScope.wizard[serviceName].custom[env].value;
 			}
 		}
-		
+
 		//register Controller in CD as deployed
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cd",
 			"data": {
 				config: {
-					serviceName: "controller",
+					serviceName: serviceName,
 					env: currentScope.wizard.gi.code.toUpperCase(),
 					default: {
 						deploy: true,
@@ -446,8 +446,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			if (error) {
 				return cb(error);
 			} else {
-				
-				//deploy Controller
+
+				//deploy Service
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/cloud/services/soajs/deploy",
@@ -464,7 +464,19 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		});
 	}
-	
+
+	function deployController(currentScope, cb) {
+		deployservice(currentScope, 'controller', cb)
+	}
+
+	function deployUrac(currentScope, cb) {
+		deployservice(currentScope, 'urac', cb)
+	}
+
+	function deployOauth(currentScope, cb) {
+		deployservice(currentScope, 'oauth', cb)
+	}
+
 	function productize(currentScope, wizard, cb){
 		/*
 			1- create product portal
@@ -476,43 +488,180 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				2.2- create user application that uses user package
 					2.2.1- create key & extKey -> dashboard Access : true
 		 */
-		productizeApiCall( (error) => {
-			if(error){
-				return cb(error);
-			}
-			else{
-				multitenancyApiCall(cb);
-			}
+
+		// variables updated in checkIfProductAndPacksExists
+		let productFound = false; // will also hold the product id if found
+		let mainPackFound = false;
+		let userPackFound = false;
+
+		// variables updated in checkIfTenantAppsAndKeysExist
+		let tenantFound = false;
+		let mainApplicationFound = false;
+		let userApplicationFound = false;
+		let mainApplicationKeyFound = false;
+		let userApplicationKeyFound = false;
+
+		checkIfProductAndPacksExists(function () {
+			checkIfTenantAppsAndKeysExist(function () {
+				// now that the above variables are defined
+				productizeApiCall((error) => {
+					if (error) {
+						return cb(error);
+					}
+					else {
+						multitenancyApiCall(cb);
+					}
+				});
+			});
 		});
-		
-		function productizeApiCall(mCb){
+
+		/**
+		 *  check if products and packages exist and update the following 3 variables: productFound, mainPackFound, userPackFound
+		 * will also fill variables with id if found
+		 *
+		 * @param productCheckCb
+		 */
+		function checkIfProductAndPacksExists(productCheckCb) {
+			var params = {
+				'productCode': 'PORTAL'
+			};
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/product/get",
+				params
+			}, function (error, product) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					if (!product || !product.code) {
+						productFound = false;
+						productCheckCb();
+					} else {
+						productFound = product['_id'];
+
+						let packs = product.packages;
+
+						if (packs) {
+							packs.forEach(function (eachPack) {
+								if (eachPack.code === 'PORTAL_MAIN') {
+									mainPackFound = true;
+								}
+								if (eachPack.code === 'PORTAL_USER') {
+									userPackFound = true;
+								}
+							});
+						}
+						productCheckCb();
+					}
+				}
+			});
+		}
+
+		/**
+		 * check if the tenant found and update the following variables: tenantFound,mainApplicationFound,userApplicationFound,mainApplicationKeyFound,userApplicationKeyFound
+		 * will also fill variables with id if found
+		 * @param tenantCheckCb
+		 */
+		function checkIfTenantAppsAndKeysExist(tenantCheckCb) {
+			var params = {
+				'code': 'PRTL'
+			};
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/tenant/get",
+				params
+			}, function (error, tenant) {
+				if (error) {
+					if (error.code === 452) { // its not an error, the tenant is simply not found
+						tenantFound = false;
+						tenantCheckCb();
+					} else {
+						return cb(error);
+					}
+				}
+				else {
+					tenantFound = tenant['_id'];
+
+					let applications = tenant.applications;
+
+					if (applications) {
+						applications.forEach(function (eachApp) {
+							if (eachApp.package === 'PORTAL_MAIN' && eachApp.product === 'PORTAL') {
+								mainApplicationFound = eachApp.appId;
+								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
+									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
+									mainApplicationKeyFound = true;
+								}
+							}
+							if (eachApp.package === 'PORTAL_USER' && eachApp.product === 'PORTAL') {
+								userApplicationFound = eachApp.appId;
+								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
+									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
+									userApplicationKeyFound = true;
+								}
+							}
+						});
+					}
+
+					tenantCheckCb();
+				}
+			});
+		}
+
+		function productizeApiCall(mCb) {
 			var postData = {
 				'code': wizard.gi.code,
 				'name': "Portal Product",
 				'description': "This product contains packages that offer access to the portal interface of SOAJS to manage your products."
 			};
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "post",
-				"routeName": "/dashboard/product/add",
-				"data": postData
-			}, function (error, productId) {
-				if (error) {
-					return mCb(error);
-				}
-				else {
-					addBasicPackage(productId.data, (error) => {
-						if(error){
-							return mCb(error);
+
+			if (!productFound) {
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/product/add",
+					"data": postData
+				}, function (error, productId) {
+					if (error) {
+						return mCb(error);
+					}
+					else {
+						addBasicPackage(productId.data, (error) => {
+							if (error) {
+								return mCb(error);
+							}
+							else {
+								currentScope.envProductId = productId.data;
+								addUserPackage(productId.data, mCb);
+							}
+						});
+					}
+				});
+			} else {
+				currentScope.envProductId = productFound;
+				if (!mainPackFound) {
+					addBasicPackage(productFound, (error) => {
+						if (error) {
+							mCb(error);
 						}
-						else{
-							currentScope.envProductId = productId.data;
-							addUserPackage(productId.data, mCb);
+						else {
+							if (!userPackFound) {
+								addUserPackage(productFound, mCb);
+							} else {
+								mCb();
+							}
 						}
 					});
+				} else {
+					if (!userPackFound) {
+						addUserPackage(productFound, mCb);
+					} else {
+						mCb();
+					}
 				}
-			});
-			
-			function addBasicPackage(productId, mCb){
+			}
+
+			function addBasicPackage(productId, mCb) {
 				var postData = {
 					'code': "MAIN",
 					'name': "Main Package",
@@ -568,6 +717,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 										},
 										"/account/editProfile": {
 											"access": true
+										},
+										"/owner/admin/addUser": {
+										
 										}
 									}
 								}
@@ -575,16 +727,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						}
 					}
 				};
-				
+
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
-					"params": { "id": productId }
+					"params": {"id": productId}
 				}, mCb);
+
 			}
-			
-			function addUserPackage(productId, mCb){
+
+			function addUserPackage(productId, mCb) {
 				var postData = {
 					'code': "USER",
 					'name': "User Package",
@@ -638,17 +791,18 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						}
 					}
 				};
-				
+
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
 					"routeName": "/dashboard/product/packages/add",
 					"data": postData,
-					"params": { "id": productId }
+					"params": {"id": productId}
 				}, mCb);
+
 			}
 		}
-		
-		function multitenancyApiCall(mCb){
+
+		function multitenancyApiCall(mCb) {
 			var postData = {
 				'type': "client",
 				'code': "PRTL",
@@ -657,29 +811,62 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				'description': "Portal Tenant that uses the portal product and its packages",
 				'tag': "portal"
 			};
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "post",
-				"routeName": "/dashboard/tenant/add",
-				"data": postData
-			}, function (error, response) {
-				if (error) {
-					return mCb(error);
-				}
-				else {
-					var tId = response.id;
-					currentScope.envTenantId = response.id;
-					addApplication(tId, 'main', (error)=>{
-						if(error){
-							return mCb(error);
-						}
-						else{
-							addApplication(tId, 'user', mCb);
-						}
-					});
-				}
-			});
 			
-			function addApplication(tenantId, packageName, mCb){
+			if (!tenantFound) {
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/tenant/add",
+					"data": postData
+				}, function (error, response) {
+					if (error) {
+						mCb(error);
+					}
+					else {
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/tenant/oauth/add",
+							"params" : {
+								"id" : response.id
+							},
+							"data": {
+								"secret" : "soajs beaver",
+								"oauthType" : "urac",
+								"availableEnv" : ["PORTAL"]
+							}
+						}, function (oauthUpdateError, oauthUpdateResponse) { // oauthUpdateResponse unused, resuming the main flow
+							if (oauthUpdateError) {
+								mCb(oauthUpdateError);
+							}
+							else {
+								var tId = response.id;
+								currentScope.envTenantId = response.id;
+								
+								addApplication(tId, 'main', (error) => {
+									if (error) {
+										mCb(error);
+									}
+									else {
+										addApplication(tId, 'user', mCb);
+									}
+								});
+							}
+						});
+					}
+				});
+			} else {
+				currentScope.envTenantId = tenantFound;
+				addApplication(tenantFound, 'main', (error) => {
+					if (error) {
+						mCb(error);
+					}
+					else {
+						addApplication(tenantFound, 'user', mCb);
+					}
+				});
+			}
+
+
+			function addApplication(tenantId, packageName, mCb) {
 				var ttl = 7 * 24;
 				var postData = {
 					'description': 'Portal ' + packageName + ' application',
@@ -687,115 +874,147 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					'productCode': "PORTAL",
 					'packageCode': packageName.toUpperCase()
 				};
-				
+
+				if ((!mainApplicationFound && packageName === 'main') || (!userApplicationFound && packageName === 'user')) {
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "post",
+						"routeName": "/dashboard/tenant/application/add",
+						"data": postData,
+						"params": {"id": tenantId}
+					}, function (error, response) {
+						if (error) {
+							return mCb(error);
+						}
+						else {
+							var appId = response.appId;
+							addApplicationKey(appId, tenantId, packageName, mCb);
+						}
+					});
+				} else {
+					if (packageName === 'main') {
+						if (!mainApplicationKeyFound) {
+							addApplicationKey(mainApplicationFound, tenantId, packageName, mCb);
+						} else {
+							mCb();
+						}
+					} else { // user
+						if (!userApplicationKeyFound) {
+							addApplicationKey(userApplicationFound, tenantId, packageName, mCb);
+						} else {
+							mCb();
+						}
+					}
+				}
+			}
+
+			function addApplicationKey(appId, tenantId, packageName, addKeyCb) {
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
-					"routeName": "/dashboard/tenant/application/add",
-					"data": postData,
-					"params": { "id": tenantId }
+					"routeName": "/dashboard/tenant/application/key/add",
+					"params": {"id": tenantId, "appId": appId}
 				}, function (error, response) {
 					if (error) {
-						return mCb(error);
+						return addKeyCb(error);
 					}
 					else {
-						var appId = response.appId;
+						var key = response.key;
+						var postData = {
+							'expDate': null,
+							'device': null,
+							'geo': null,
+							'env': 'PORTAL'
+						};
+
+						let params = {
+							"id": tenantId,
+							"appId": appId,
+							"key": key,
+							"dashboardAccess": (packageName === 'user')
+						};
+
 						getSendDataFromServer(currentScope, ngDataApi, {
 							"method": "post",
-							"routeName": "/dashboard/tenant/application/key/add",
-							"params": { "id": tenantId, "appId": appId }
+							"routeName": "/dashboard/tenant/application/key/ext/add",
+							"data": postData,
+							params
 						}, function (error, response) {
 							if (error) {
-								return mCb(error);
+								return cb(error);
 							}
 							else {
-								var key = response.key;
+								if(packageName === 'main'){
+									currentScope.tenantExtKey = response.extKey;
+								}
+
+								let domain = getAPIInfo(currentScope, currentScope.wizard.nginx, 'sitePrefix');
+
 								var postData = {
-									'expDate': null,
-									'device': null,
-									'geo': null,
-									'env': 'PORTAL'
-								};
-								getSendDataFromServer(currentScope, ngDataApi, {
-									"method": "post",
-									"routeName": "/dashboard/tenant/application/key/ext/add",
-									"data": postData,
-									"params": { "id": tenantId, "appId": appId, "key": key }
-								}, function (error) {
-									if (error) {
-										return cb(error);
-									}
-									else {
-										let domain = currentScope.wizard.gi.sitePrefix + "." + currentScope.wizard.gi.domain;
-										
-										var postData = {
-											'envCode': currentScope.wizard.gi.code.toLowerCase(),
-											'config': {
-												"oauth": {
-													"loginMode": "urac"
-												},
-												"commonFields": {
-													"mail": {
-														"from": "me@localhost.com",
-														"transport": {
-															"type": "sendmail",
-															"options": {}
-														}
-													}
-												},
-												"urac": {
-													"hashIterations": 1024,
-													"seedLength": 32,
-													"link": {
-														"addUser": "http://"+domain+"/#/setNewPassword",
-														"changeEmail": "http://"+domain+"/#/changeEmail/validate",
-														"forgotPassword": "http://"+domain+"/#/resetPassword",
-														"join": "http://"+domain+"/#/join/validate"
-													},
-													"tokenExpiryTTL": 172800000,
-													"validateJoin": true,
-													"mail": {
-														"join": {
-															"subject": "Welcome to SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
-														},
-														"forgotPassword": {
-															"subject": "Reset Your Password at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
-														},
-														"addUser": {
-															"subject": "Account Created at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
-														},
-														"changeUserStatus": {
-															"subject": "Account Status changed at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
-														},
-														"changeEmail": {
-															"subject": "Change Account Email at SOAJS",
-															"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
-														}
-													}
+									'envCode': currentScope.wizard.gi.code.toLowerCase(),
+									'config': {
+										"oauth": {
+											"loginMode": "urac"
+										},
+										"commonFields": {
+											"mail": {
+												"from": "me@localhost.com",
+												"transport": {
+													"type": "sendmail",
+													"options": {}
 												}
 											}
-										};
-										
-										getSendDataFromServer(currentScope, ngDataApi, {
-											"method": "put",
-											"routeName": "/dashboard/tenant/application/key/config/update",
-											"data": postData,
-											"params": { "id": tenantId, "appId": appId, "key": key }
-										},  mCb);}
-								});
-								
+										},
+										"urac": {
+											"hashIterations": 1024,
+											"seedLength": 32,
+											"link": {
+												"addUser": domain + "/#/setNewPassword",
+												"changeEmail": domain + "/#/changeEmail/validate",
+												"forgotPassword": domain + "/#/resetPassword",
+												"join": domain + "/#/join/validate"
+											},
+											"tokenExpiryTTL": 172800000,
+											"validateJoin": true,
+											"mail": {
+												"join": {
+													"subject": "Welcome to SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/join.tmpl"
+												},
+												"forgotPassword": {
+													"subject": "Reset Your Password at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/forgotPassword.tmpl"
+												},
+												"addUser": {
+													"subject": "Account Created at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/addUser.tmpl"
+												},
+												"changeUserStatus": {
+													"subject": "Account Status changed at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeUserStatus.tmpl"
+												},
+												"changeEmail": {
+													"subject": "Change Account Email at SOAJS",
+													"path": "/opt/soajs/node_modules/soajs.urac/mail/urac/changeEmail.tmpl"
+												}
+											}
+										}
+									}
+								};
+
+								getSendDataFromServer(currentScope, ngDataApi, {
+									"method": "put",
+									"routeName": "/dashboard/tenant/application/key/config/update",
+									"data": postData,
+									"params": {"id": tenantId, "appId": appId, "key": key}
+								}, addKeyCb);
 							}
 						});
-						
+
 					}
 				});
 			}
 		}
 	}
-	
+
 	function getPermissions(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
@@ -823,7 +1042,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		});
 	}
-	
+
 	function removeEnvironment(currentScope){
 		getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "delete",
@@ -868,17 +1087,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				}
 			});
 	}
-	
+
 	function removeProduct(currentScope){
-		
+
 		if(currentScope.envProductId){
 			productRemove();
 		}
 		else if(currentScope.envTenantId){
-			
+
 			tenantRemove();
 		}
-		
+
 		function productRemove(){
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "delete",
@@ -895,7 +1114,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				}
 			});
 		}
-		
+
 		function tenantRemove(){
 			//remove the tenant as well
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -909,15 +1128,15 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			});
 		}
 	}
-	
-	function removeController(currentScope, id){
+
+	function removeService(currentScope, serviceName, id){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'delete',
 			routeName: '/dashboard/cloud/services/delete',
 			params: {
 				env: currentScope.wizard.gi.code,
 				serviceId: id,
-				mode: currentScope.wizard.controller.mode
+				mode: currentScope.wizard[serviceName].mode
 			}
 		}, function (error) {
 			if (error) {
@@ -925,7 +1144,19 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		});
 	}
-	
+
+	function removeController(currentScope, id){
+		removeService(currentScope, 'controller', id);
+	}
+
+	function removeUrac(currentScope, id){
+		removeService(currentScope, 'controller', id);
+	}
+
+	function removeOauth(currentScope, id){
+		removeService(currentScope, 'controller', id);
+	}
+
 	function removeCatalog(currentScope, id){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'delete',
@@ -939,20 +1170,389 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		});
 	}
+
+	function listServers(currentScope, cb){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/resources/list',
+			params: {
+				env: currentScope.wizard.gi.code.toUpperCase()
+			}
+		}, function (error, response) {
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				let servers = [];
+				response.forEach( (oneResource) => {
+					if(oneResource.type === 'cluster' && oneResource.category === 'mongo' && oneResource.plugged && oneResource.shared && (!oneResource.sharedEnvs || oneResource.sharedEnvs[currentScope.wizard.gi.code.toUpperCase()])){
+						servers.push(oneResource);
+					}
+				});
+
+				return cb(servers);
+			}
+		});
+	}
+	
+	function deployCluster(currentScope, cb) {
+		if (currentScope.wizard.cluster.local) {
+			//list all recipes to find mongo recipe
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/catalog/recipes/list',
+			}, function (error, recipes) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					var mongoRecipeId;
+					if (recipes && recipes.length > 0) {
+						recipes.forEach(function (oneRecipe) {
+							if (oneRecipe.name === 'Mongo Recipe') {
+								mongoRecipeId = oneRecipe._id.toString();
+							}
+						});
+					}
+					//create resource object
+					var resourceObj = {
+						env: currentScope.wizard.gi.code.toUpperCase(),
+						resource: {
+							"name": currentScope.wizard.cluster.local.name,
+							"type": "cluster",
+							"category": "mongo",
+							"plugged": "true",
+							"config": {
+								"servers": currentScope.wizard.cluster.local.servers,
+								"URLParam": currentScope.wizard.cluster.local.URLParam || {},
+								"streaming": currentScope.wizard.cluster.local.streaming || {}
+							}
+						}
+					};
+					if (currentScope.wizard.cluster.local.credentials) {
+						resourceObj.resource.config.credentials = currentScope.wizard.cluster.local.credentials;
+					}
+					if (currentScope.wizard.cluster.local.prefix) {
+						resourceObj.resource.config.prefix = currentScope.wizard.cluster.local.prefix;
+					}
+					//add mongo cluster
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'get',
+						routeName: '/dashboard/resources/add',
+						"params": resourceObj
+					}, function (error, resources) {
+						if (error) {
+							return cb(error);
+						}
+						else {
+							var deployObject = {
+								env: currentScope.wizard.gi.code.toUpperCase(),
+								recipe: mongoRecipeId,
+								deployConfig: {
+									"replication": {
+										"replicas": 1,
+										"mode": (currentScope.wizard.deploy.selectedDriver === "kubernetes")
+											? "deployment" : "replicated"
+									}
+								},
+								custom: {
+									"resourceId": resources._id.toString(),
+									"name": currentScope.wizard.cluster.local.name,
+									"type": "cluster",
+								}
+							};
+							//deploy mongo cluster
+							getSendDataFromServer(currentScope, ngDataApi, {
+								method: 'get',
+								routeName: '/dashboard/cloud/services/soajs/deploy',
+								"params": deployObject
+							}, function (error, service) {
+								currentScope.wizard.cluster.serviceId = service;
+								return cb(error, currentScope.wizard.cluster.local.name);
+							});
+						}
+					});
+				}
+			});
+		}
+		else if (currentScope.wizard.cluster.share) {
+			//return shared cluster name
+			return cb (null, currentScope.wizard.cluster.share.name);
+		}
+		else if (currentScope.wizard.cluster.external) {
+			//only add the resource
+			var resourceObj = {
+				env: currentScope.wizard.gi.code.toUpperCase(),
+				resource: {
+					"name": currentScope.wizard.cluster.external.name,
+					"type": "cluster",
+					"category": "mongo",
+					"plugged": "true",
+					"config": {
+						"servers": currentScope.wizard.cluster.external.servers,
+						"URLParam": currentScope.wizard.cluster.external.URLParam || {},
+						"streaming": currentScope.wizard.cluster.external.streaming || {}
+					}
+				}
+			};
+			if (currentScope.wizard.cluster.external.credentials) {
+				resourceObj.resource.config.credentials = currentScope.wizard.cluster.external.credentials;
+			}
+			if (currentScope.wizard.cluster.external.prefix) {
+				resourceObj.resource.config.prefix = currentScope.wizard.cluster.external.prefix;
+			}
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/resources/add',
+				"params": resourceObj
+			}, function (error) {
+				return cb(error, currentScope.wizard.cluster.external.name);
+			});
+		}
+	}
+	
+	function handleClusters(currentScope, cb) {
+		deployCluster(currentScope, function (error, clusterName) {
+			if (error) {
+				return cb(error);
+			}
+			let uracData = {
+				"env": currentScope.wizard.gi.code.toUpperCase(),
+				"name": "urac",
+				"cluster": clusterName,
+				"tenantSpecific": true
+			};
+			//add urac db using cluster
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "post",
+				"routeName": "/dashboard/environment/dbs/add",
+				"data": uracData
+			}, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					var sessionData = {
+						"env": currentScope.wizard.gi.code.toUpperCase(),
+						"name": "session",
+						"cluster": clusterName,
+						"tenantSpecific": false,
+						"sessionInfo": {
+							dbName: "urac",
+							store: {},
+							collection: "sessions",
+							stringify: false,
+							expireAfter: 1209600000
+						}
+					};
+					
+					//update session db
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "post",
+						"routeName": "/dashboard/environment/dbs/update",
+						"data": sessionData
+					}, function (error, cluster) {
+						if (cluster && cluster._id){
+							currentScope.wizard.cluster.clusterId = cluster._id;
+						}
+						return cb(error, true);
+					});
+				}
+			});
+		});
+	}
+
+	function removeCluster(currentScope, cb){
+		if (currentScope.wizard.cluster.local) {
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'delete',
+				routeName: '/dashboard/cloud/services/delete',
+				params: {
+					env: currentScope.wizard.gi.code.toUpperCase(),
+					serviceId: currentScope.wizard.cluster.serviceId.id,
+					"mode": (currentScope.wizard.deploy.selectedDriver === "kubernetes")
+						? "deployment" : "replicated"
+				}
+			}, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					deleteResource(currentScope, cb);
+				}
+			});
+		}
+
+		if(currentScope.wizard.cluster.external){
+			deleteResource (currentScope, cb);
+		}
+	}
+	function deleteResource (currentScope, cb){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/resources/delete",
+			"data": {
+				"env" : currentScope.wizard.gi.code.toUpperCase(),
+				"id" : currentScope.wizard.cluster.clusterId
+			}
+		}, function (error) {
+			return cb(error, true);
+		});
+		
+	}
+	function addUserAndGroup(currentScope, cb){
+		
+		let max = 10;
+		let counter = 0;
+		let portalAPI = getAPIInfo(currentScope, currentScope.wizard.nginx, 'apiPrefix');
+		
+		return cb();
+		
+		// checkIfUracRunning(() => {
+			// doAdd(cb);
+		// });
+		
+		function checkIfUracRunning(cb){
+			getSendDataFromServer(currentScope, ngDataApi, {
+				url: portalAPI + '/urac/checkUsername',
+				method: 'get',
+				proxy: true,
+				header: {
+					key: currentScope.tenantExtKey
+				},
+				params:{
+					username: currentScope.wizard.gi.username
+				}
+			}, function(error, response){
+				console.log(error, response);
+				
+				if(error){
+					counter++;
+					if(counter === max){
+						return cb();
+					}
+					else{
+						$timeout(function(){
+							checkIfUracRunning(cb);
+						}, 1000);
+					}
+				}
+				else if(response){
+					return cb();
+				}
+			});
+		}
+		
+		
+		function doAdd(cb) {
+			//add the group
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'post',
+				proxy: true,
+				routeName: '/urac/admin/group/add',
+				header: {
+					key: currentScope.tenantExtKey
+				},
+				data: {
+					"name": "administrator",
+					"code": "administrator",
+					"description": "Portal administration group",
+					"tId": currentScope.tenantId,
+					"tCode": "PRTL"
+				}
+			}, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				else {
+					//add the user
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'post',
+						proxy: true,
+						routeName: '/urac/admin/addUser',
+						header: {
+							key: currentScope.tenantExtKey
+						},
+						data: {
+							"username": currentScope.wizard.gi.username,
+							"firstName": "PORTAL",
+							"lastName": "OWNER",
+							"email": currentScope.wizard.gi.email,
+							"groups": ["administrator"],
+							"tId": currentScope.tenantId,
+							"tCode": "PRTL",
+							"status": "active",
+							"password": currentScope.wizard.gi.password
+						}
+					}, cb);
+				}
+			});
+		}
+	}
+	
+	function getAPIInfo(currentScope, nginx, type){
+		let protocol = "http";
+		let port = 80;
+		
+		if(nginx.recipe){
+			for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
+				var onePort = nginx.recipe.deployOptions.ports[i];
+				
+				//check for http port first, if found set it as env port
+				if(onePort.name === 'http' && onePort.isPublished && onePort.published) {
+					port = onePort.published;
+					protocol = 'http';
+				}
+				
+				//then check if https port is found and published, if yes check if ssl is on and set the port and protocol accordingly
+				if(onePort.name === 'https' && onePort.isPublished && onePort.published) {
+					for (var oneEnv in nginx.recipe.buildOptions.env) {
+						if(oneEnv === 'SOAJS_NX_API_HTTPS' && ['true', '1'].indexOf(nginx.recipe.buildOptions.env[oneEnv].value) !== -1) {
+							protocol = 'https';
+							port = onePort.published;
+						}
+					}
+				}
+			}
+		}
+		else{
+			port = nginx.http;
+			if(nginx.ssl){
+				port = nginx.https;
+				protocol = "https";
+			}
+		}
+		
+		return protocol + "://" + currentScope.wizard.gi[type] + "." + currentScope.wizard.gi.domain + ":" + port;
+	}
 	
 	return {
 		'createEnvironment': createEnvironment,
 		'uploadEnvCertificates': uploadEnvCertificates,
 		'createNginxRecipe': createNginxRecipe,
 		'deployNginx': deployNginx,
+
 		'deployController': deployController,
+		'deployUrac': deployUrac,
+		'deployOauth': deployOauth,
+
 		'getPermissions': getPermissions,
 		'productize': productize,
-		
+
 		'removeEnvironment': removeEnvironment,
 		'removeProduct': removeProduct,
+
 		'removeController': removeController,
-		'removeCatalog': removeCatalog
+		'removeUrac': removeUrac,
+		'removeOauth': removeOauth,
+
+		'removeCatalog': removeCatalog,
+
+		'listServers': listServers,
+		'handleClusters': handleClusters,
+		'removeCluster': removeCluster,
+		
+		"addUserAndGroup": addUserAndGroup
 	};
-	
+
 }]);

@@ -23,7 +23,10 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 	function renderDisplay(currentScope, record, cb) {
 		currentScope.deployer.type = record.type;
 		currentScope.originalDeployerType = record.type;//used to detect changes in type on UI level
-		currentScope.currentSelected = record.selected.split('.');
+		currentScope.currentSelected = '';
+		if(currentScope.deployer.type !== 'manual') {
+			currentScope.currentSelected = record.selected.split('.');
+		}
 
 		if (currentScope.currentSelected[0] === 'container') {
 			currentScope.deployer.selected = currentScope.currentSelected[1] + '.' + currentScope.currentSelected[2];

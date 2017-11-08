@@ -18,6 +18,11 @@
 						<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
 					</a>
 				</div>
+				<div ng-show="hosts.controller && hosts.controller.healthy && hosts.controller.ips && hosts.controller.ips.length > 0">
+					<a href="" ng-click="downloadProfile(envCode)" class="btn btn-primary f-left">
+						<span class="icon icon-download3" tooltip="Download Profile"></span>{{translation.downloadProfile[LANG]}}
+					</a>
+				</div>
 				<br/><br/>
 
 				<div class="entryBoxes entryBoxesGrid" ng-init="" style="padding-left: 5px;" ng-show="hosts.controller || nginxHosts.length > 0">

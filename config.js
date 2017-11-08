@@ -10,7 +10,8 @@ if(location && location.host){
 	var customDomain = location.host;
 	customDomain = customDomain.split(":")[0];
 	customDomain = customDomain.split(".");
-	customDomain = customDomain[customDomain.length-2] + "." + customDomain[customDomain.length-1];
+	customDomain.shift();
+	customDomain = customDomain.join(".");
 	mydomain = customDomain;
 }
 
@@ -45,7 +46,6 @@ var apiConfiguration = {
 var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs'];
 var soajsAppModules = ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.select', 'luegg.directives', 'angular-sortable-view', 'ngRoute', 'ngCookies', 'ngStorage', 'textAngular', "ngFileUpload", "swaggerUi", "ui.ace", "ngCkeditor", "chart.js"];
 
-var uiModulePortal = 'modules/portal';
 var modules = {
 	"develop": {
 		"dashboard": {
@@ -70,11 +70,6 @@ var modules = {
 		"dashboard": {
 			environments: 'modules/dashboard/environments/install.js',
 			resources: 'modules/dashboard/resources/install.js'
-		}
-	},
-	"operate": {
-		"portal": {
-			urac: 'modules/portal/urac/install.js'
 		}
 	},
 	"common": {

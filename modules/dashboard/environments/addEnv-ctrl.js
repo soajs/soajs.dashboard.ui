@@ -164,11 +164,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				$scope.platforms.docker = true;
 				$scope.platforms.kubernetes = false;
 				$scope.platforms.manual = false;
+				$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				break;
 			case 'kubernetes':
 				$scope.platforms.kubernetes = true;
 				$scope.platforms.docker = false;
 				$scope.platforms.manual = false;
+				$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				break;
 			case 'manual':
 			default:
@@ -178,6 +180,27 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				break;
 		}
 	};
+	
+	function getDashboardDeploymentStyle(){
+		let status = false;
+		$localStorage.environments.forEach( (oneEnv) => {
+			if(oneEnv.code === 'DASHBOARD' && oneEnv.deployer.type !== 'manual'){
+				status = true
+			}
+		});
+		
+		if(!status){
+			if($scope.platforms.docker){
+				$scope.form.formData.deployment.docker.dockerremote = true;
+			}
+			
+			if($scope.platforms.kubernetes){
+				$scope.form.formData.deployment.kubernetes.kubernetesremote = true;
+			}
+		}
+		
+		return status;
+	}
 	
 	$scope.Step2 = function () {
 		overlayLoading.show();
@@ -306,6 +329,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				kubernetes: $scope.form.formData.selectedDriver === 'kubernetes' || false,
 				manual: $scope.form.formData.selectedDriver === 'manual' || false
 			};
+			
+			$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 			overlayLoading.hide();
 		});
 	};

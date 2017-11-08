@@ -442,7 +442,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 			}
-		}, function (error, serviceId) {
+		}, function (error, cdResponse) {
 			if (error) {
 				return cb(error);
 			} else {
@@ -452,12 +452,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"method": "post",
 					"routeName": "/dashboard/cloud/services/soajs/deploy",
 					"data": data
-				}, function (error) {
+				}, function (error, serviceId) {
 					if (error) {
 						return cb(error);
 					} else {
 						$timeout(function () {
-							return cb(null, serviceId.data);
+							return cb(null, serviceId.id);
 						}, 2000);
 					}
 				});
@@ -1349,7 +1349,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let protocol = "http";
 		let port = 80;
 		
-		if(nginx.recipe){
+		if(nginx && nginx.recipe && nginx.recipe.deployOptions && nginx.recipe.deployOptions.ports){
 			for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
 				var onePort = nginx.recipe.deployOptions.ports[i];
 				

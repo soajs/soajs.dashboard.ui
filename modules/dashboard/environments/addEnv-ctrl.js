@@ -1140,16 +1140,23 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									//['environment', 'product', 'controller']
 									//['environment', 'controller', 'catalog']
 									//['environment', 'product', 'controller', 'catalog']
-									if(steps && typeof Array.isArray(steps)){
-										steps.forEach((oneStep) => {
-											if(oneStep.id){
-												addEnv[oneStep.method](parentScope, oneStep.id);
-											}
-											else{
-												addEnv[oneStep.method](parentScope);
-											}
-										});
-									}
+									
+									console.log("----");
+									console.log(steps);
+									console.log("----");
+									
+									// rollback removed -=-=-=-=-=-==
+									
+									// if(steps && typeof Array.isArray(steps)){
+									// 	steps.forEach((oneStep) => {
+									// 		if(oneStep.id){
+									// 			addEnv[oneStep.method](parentScope, oneStep.id);
+									// 		}
+									// 		else{
+									// 			addEnv[oneStep.method](parentScope);
+									// 		}
+									// 	});
+									// }
 									$modalInstance.close();
 									overlayLoading.hide();
 									parentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);

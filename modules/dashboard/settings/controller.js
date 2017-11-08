@@ -24,26 +24,29 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				$scope.tenant = response.tenant;
-				// set oauth data
-				var data = $scope.tenant;
-				var oAuth = data.oauth;
-				if (oAuth.secret) {
-					data.secret = oAuth.secret;
-				}
-				data.oauthType = $scope.getTenantLoginMode(data);
-
+				$scope.tenant = {};
 				$scope.availableEnv = []; // reset available env
 				response.environments.forEach(function (oneEnv) {
 					$scope.availableEnv.push(oneEnv.code.toLowerCase());
 				});
 
-				if (first && first == true) {
-					$scope.listOauthUsers();
-				}
+				if (response.tenant) {
+					$scope.tenant = response.tenant;
+					// set oauth data
+					var data = $scope.tenant;
+					var oAuth = data.oauth;
+					if (oAuth.secret) {
+						data.secret = oAuth.secret;
+					}
+					data.oauthType = $scope.getTenantLoginMode(data);
 
-				var counter = 0;
-				$scope.getPackageAcl($scope.tenant.applications, counter);
+					if (first && first == true) {
+						$scope.listOauthUsers();
+					}
+
+					var counter = 0;
+					$scope.getPackageAcl($scope.tenant.applications, counter);
+				}
 			}
 		});
 	};

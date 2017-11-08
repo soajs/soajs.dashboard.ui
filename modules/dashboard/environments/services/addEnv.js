@@ -808,7 +808,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				'description': "Portal Tenant that uses the portal product and its packages",
 				'tag': "portal"
 			};
-
+			
 			if (!tenantFound) {
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
@@ -819,15 +819,33 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						mCb(error);
 					}
 					else {
-						var tId = response.id;
-						currentScope.envTenantId = response.id;
-
-						addApplication(tId, 'main', (error) => {
-							if (error) {
-								mCb(error);
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/tenant/oauth/add",
+							"params" : {
+								"id" : response.id
+							},
+							"data": {
+								"secret" : "soajs beaver",
+								"oauthType" : "urac",
+								"availableEnv" : ["PORTAL"]
+							}
+						}, function (oauthUpdateError, oauthUpdateResponse) { // oauthUpdateResponse unused, resuming the main flow
+							if (oauthUpdateError) {
+								mCb(oauthUpdateError);
 							}
 							else {
-								addApplication(tId, 'user', mCb);
+								var tId = response.id;
+								currentScope.envTenantId = response.id;
+								
+								addApplication(tId, 'main', (error) => {
+									if (error) {
+										mCb(error);
+									}
+									else {
+										addApplication(tId, 'user', mCb);
+									}
+								});
 							}
 						});
 					}

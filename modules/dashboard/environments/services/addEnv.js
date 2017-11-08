@@ -1426,7 +1426,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				url: portalAPI,
 				routeName: '/urac/checkUsername',
 				method: 'get',
-				proxy: true,
 				headers: {
 					key: currentScope.tenantExtKey
 				},
@@ -1457,7 +1456,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			getSendDataFromServer(currentScope, ngDataApi, {
 				url: portalAPI,
 				method: 'post',
-				proxy: true,
 				routeName: '/urac/join',
 				headers: {
 					key: currentScope.tenantExtKey

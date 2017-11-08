@@ -453,8 +453,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							delete formData.cluster.external;
 						}
 						
-						$localStorage.addEnv.step21 = angular.copy(formData);
-						$scope.wizard.cluster = angular.copy(formData);
+						$localStorage.addEnv.step21 = angular.copy(formData.cluster);
+						$scope.wizard.cluster = angular.copy(formData.cluster);
 						$scope.lastStep = 21;
 						$scope.Step3();
 					}
@@ -509,16 +509,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 				
 				if ($localStorage.addEnv && $localStorage.addEnv.step21) {
 					let alreadyChosen = angular.copy($localStorage.addEnv.step21);
-					if(alreadyChosen.cluster.local){
-						$scope.form.formData.cluster.local = alreadyChosen.cluster.local;
+					if(alreadyChosen.local){
+						$scope.form.formData.cluster.local = alreadyChosen.local;
 						$scope.switchCluster('local');
 					}
-					if(alreadyChosen.cluster.external){
-						$scope.form.formData.cluster.external = alreadyChosen.cluster.external;
+					if(alreadyChosen.external){
+						$scope.form.formData.cluster.external = alreadyChosen.external;
 						$scope.switchCluster('external');
 					}
-					if(alreadyChosen.cluster.share){
-						$scope.form.formData.cluster.share = alreadyChosen.cluster.share;
+					if(alreadyChosen.share){
+						$scope.form.formData.cluster.share = alreadyChosen.share;
 						$scope.switchCluster('share');
 					}
 				}
@@ -1227,10 +1227,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												$scope.deployController = true;
 												steps.push({method: 'removeController', id: $scope.controllerId});
 												
-												if($scope.portalDeployment){
+												if(parentScope.portalDeployment){
 													addEnv.handleClusters(parentScope, (error) => {
 														steps.push({method: 'removeCluster'});
-														
 														if(error){
 															rollback(steps, error);
 														}
@@ -1258,7 +1257,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 																		
 																		handleNginx( () => {
 																			//add user and group using new tenant
-																			addEnv.addUserAndGroup( (error) => {
+																			addEnv.addUserAndGroup(parentScope, (error) => {
 																				if(error){
 																					rollback(steps, error);
 																				}
@@ -1329,7 +1328,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 								}
 								
 								function rollback(steps, error){
-									
 									//steps cases
 									//['environment']
 									//['environment', 'product']
@@ -1365,7 +1363,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 											let newIndex = currentIndex - 1;
 											manualAsyncSeriesInverted(newIndex);
 										}, 1000);
-									};
+									}
 								}
 								
 								function finalResponse(){

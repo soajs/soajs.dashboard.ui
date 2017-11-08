@@ -1,7 +1,7 @@
 <div ng-show="currentServiceName === 'controller'">
-	<label>I want to Deploy This Environment</label>
+	<label>I want to Deploy SOAJS Ready Made Services in this Environment</label>
 	<label class="toggleSwitch">
-		<input type="checkbox" ng-model="form.formData.deploy"><span class="buttonSlider round"></span>
+		<input type="checkbox" ng-model="form.formData.deploy" ng-change="removeDeploymentEntries()"><span class="buttonSlider round"></span>
 	</label>
 </div>
 

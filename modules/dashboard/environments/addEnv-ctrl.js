@@ -289,7 +289,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 							$localStorage.addEnv.step2 = angular.copy(formData);
 							$scope.wizard.deploy = angular.copy(formData);
 							$scope.lastStep = 2;
-							$scope.Step21();
+							if($scope.portalDeployment){
+								$scope.Step21();
+							}
+							else{
+								$scope.Step3();
+							}
 						}
 					}
 				},
@@ -532,6 +537,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		});
 	};
 	
+	$scope.removeDeploymentEntries = function(){
+		if(!$scope.form.formData.deploy){
+			delete $scope.wizard.urac;
+			delete $scope.wizard.controller;
+			delete $scope.wizard.oauth;
+			delete $scope.wizard.nginx;
+		}
+	};
+	
 	$scope.Step3 = function () {
 		overlayLoading.show();
 		$scope.serviceRecipes = [];
@@ -594,7 +608,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						'btn': 'success',
 						'action': function () {
 							$scope.form.formData = {};
-							$scope.Step21();
+							if($scope.portalDeployment){
+								$scope.Step21();
+							}
+							else{
+								$scope.Step2();
+							}
 						}
 					},
 					{
@@ -706,6 +725,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		$scope.currentServiceName = "urac";
 		$scope.currentStep = "step5";
 		$scope.nextStep = "Step6";
+		$scope.previousStep = 3;
 		$scope.lastStep = 5;
 		
 		serviceDeployment();
@@ -715,6 +735,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 		$scope.currentServiceName = "oauth";
 		$scope.currentStep = "step6";
 		$scope.nextStep = "Step4";
+		$scope.previousStep = 5;
 		$scope.lastStep = 6;
 		
 		serviceDeployment();
@@ -772,7 +793,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 						'btn': 'success',
 						'action': function () {
 							$scope.form.formData = {};
-							let stepNumber = "Step" + $scope.lastStep;
+							let stepNumber = "Step" + $scope.previousStep;
 							$scope[stepNumber]();
 						}
 					},

@@ -1276,7 +1276,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		}
 		else if (currentScope.wizard.cluster.share) {
 			//return shared cluster name
-			return currentScope.wizard.cluster.share.name
+			return cb (null, currentScope.wizard.cluster.share.name);
 		}
 		else if (currentScope.wizard.cluster.external) {
 			//only add the resource
@@ -1313,7 +1313,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	function handleClusters(currentScope, cb) {
 		deployCluster(currentScope, function (error, clusterName) {
 			if (error) {
-				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				return cb(error);
 			}
 			let uracData = {
 				"env": currentScope.wizard.gi.code.toUpperCase(),
@@ -1328,7 +1328,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				"data": uracData
 			}, function (error) {
 				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return cb(error);
 				}
 				else {
 					var sessionData = {
@@ -1350,12 +1350,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"routeName": "/dashboard/environment/dbs/update",
 						"data": sessionData
 					}, function (error) {
-						if (error) {
-							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						else {
-							return cb(null, true);
-						}
+						return cb(error, true);
 					});
 				}
 			});

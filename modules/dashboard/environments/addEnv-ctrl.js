@@ -1230,6 +1230,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 												if($scope.portalDeployment){
 													addEnv.handleClusters(parentScope, (error) => {
 														steps.push({method: 'removeCluster'});
+														
 														if(error){
 															rollback(steps, error);
 														}
@@ -1337,25 +1338,34 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 									//['environment', 'controller', 'catalog']
 									//['environment', 'product', 'controller', 'catalog']
 									
-									console.log("----");
-									console.log(steps);
-									console.log("----");
+									if(steps && typeof Array.isArray(steps)) {
+										manualAsyncSeriesInverted(steps.length - 1);
+									}
 									
-									// rollback removed -=-=-=-=-=-==
-									
-									// if(steps && typeof Array.isArray(steps)){
-									// 	steps.forEach((oneStep) => {
-									// 		if(oneStep.id){
-									// 			addEnv[oneStep.method](parentScope, oneStep.id);
-									// 		}
-									// 		else{
-									// 			addEnv[oneStep.method](parentScope);
-									// 		}
-									// 	});
-									// }
-									$modalInstance.close();
-									overlayLoading.hide();
-									parentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+									function manualAsyncSeriesInverted(currentIndex) {
+										// base case // last function in rollback
+										if (currentIndex < 0) {
+											$modalInstance.close();
+											overlayLoading.hide();
+											parentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+											return;
+										}
+										
+										let oneStep = steps[currentIndex];
+										
+										if (oneStep.id) {
+											addEnv[oneStep.method](parentScope, oneStep.id);
+										}
+										else {
+											addEnv[oneStep.method](parentScope);
+										}
+										
+										// i'll wait some time and do the next one
+										setTimeout(function () {
+											let newIndex = currentIndex - 1;
+											manualAsyncSeriesInverted(newIndex);
+										}, 1000);
+									};
 								}
 								
 								function finalResponse(){

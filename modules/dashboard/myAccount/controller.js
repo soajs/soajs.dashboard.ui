@@ -29,7 +29,7 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 								"key": apiConfiguration.key
 							},
 							"routeName": "/urac/account/changeEmail",
-							"params": {"uId": $scope.memberData._id},
+							"params": { "uId": $scope.memberData._id },
 							"data": postData
 						}, function (error) {
 							overlayLoading.hide();
@@ -87,7 +87,7 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 								"key": apiConfiguration.key
 							},
 							"routeName": "/urac/account/changePassword",
-							"params": {"uId": $scope.memberData._id},
+							"params": { "uId": $scope.memberData._id },
 							"data": postData
 						}, function (error) {
 							overlayLoading.hide();
@@ -169,10 +169,10 @@ myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDat
 					'type': 'jsoneditor',
 					'options': {
 						'mode': 'code',
-						'availableModes': [{'v': 'code', 'l': 'Code View'}, {
+						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
 							'v': 'tree',
 							'l': 'Tree View'
-						}, {'v': 'form', 'l': 'Form View'}]
+						}, { 'v': 'form', 'l': 'Form View' }]
 					},
 					'height': '300px',
 					"value": {},
@@ -201,7 +201,7 @@ myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDat
 							"headers": {
 								"key": apiConfiguration.key
 							},
-							"params": {"uId": $scope.uId},
+							"params": { "uId": $scope.uId },
 							"data": postData
 						}, function (error) {
 							if (error) {
@@ -231,7 +231,7 @@ myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDat
 					"key": apiConfiguration.key
 				},
 				"routeName": "/urac/account/getUser",
-				"params": {"username": username}
+				"params": { "username": username }
 			}, function (error, response) {
 				if (error) {
 					$scope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
@@ -243,7 +243,7 @@ myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDat
 					formConfig.data.profile = p;
 					buildForm($scope, null, formConfig);
 					
-					$scope.$parent.$emit('xferData', {'memberData': response});
+					$scope.$parent.$emit('xferData', { 'memberData': response });
 				}
 			});
 		};
@@ -265,7 +265,7 @@ myAccountApp.controller('validateCtrl', ['$scope', 'ngDataApi', '$route', 'isUse
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/urac/changeEmail/validate",
-			"params": {"token": $route.current.params.token}
+			"params": { "token": $route.current.params.token }
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
@@ -327,8 +327,8 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 							}
 							else {
 								if (Object.hasOwnProperty.call(response, "access_token")) {
-									$cookies.put('access_token', response.access_token, {'domain': interfaceDomain});
-									$cookies.put('refresh_token', response.refresh_token, {'domain': interfaceDomain});
+									$cookies.put('access_token', response.access_token, { 'domain': interfaceDomain });
+									$cookies.put('refresh_token', response.refresh_token, { 'domain': interfaceDomain });
 								}
 								uracLogin();
 							}
@@ -340,6 +340,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			
 			loginOauth();
 			var myUser;
+
 			function uracLogin() {
 				var options = {
 					"method": "get",
@@ -351,8 +352,8 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 					if (error) {
 						overlayLoading.hide();
-						$cookies.remove('access_token', {'domain': interfaceDomain});
-						$cookies.remove('refresh_token', {'domain': interfaceDomain});
+						$cookies.remove('access_token', { 'domain': interfaceDomain });
+						$cookies.remove('refresh_token', { 'domain': interfaceDomain });
 						$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 					}
 					else {
@@ -367,18 +368,18 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
 					"routeName": "/key/permission/get",
-					"params": {"main": false}
+					"params": { "main": false }
 				}, function (error, response) {
 					if (error) {
 						overlayLoading.hide();
-						$cookies.remove('access_token', {'domain': interfaceDomain});
-						$cookies.remove('refresh_token', {'domain': interfaceDomain});
+						$cookies.remove('access_token', { 'domain': interfaceDomain });
+						$cookies.remove('refresh_token', { 'domain': interfaceDomain });
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
 						myUser.locked = response.locked || false;
 						$localStorage.soajs_user = myUser;
-						$cookies.put("soajs_dashboard_key", response.extKey, {'domain': interfaceDomain});
+						$cookies.put("soajs_dashboard_key", response.extKey, { 'domain': interfaceDomain });
 						getPermissions();
 					}
 				});
@@ -392,9 +393,9 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 					overlayLoading.hide();
 					if (error) {
 						$localStorage.soajs_user = null;
-						$cookies.remove('access_token', {'domain': interfaceDomain});
-						$cookies.remove('refresh_token', {'domain': interfaceDomain});
-						$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
+						$cookies.remove('access_token', { 'domain': interfaceDomain });
+						$cookies.remove('refresh_token', { 'domain': interfaceDomain });
+						$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
@@ -494,7 +495,7 @@ myAccountApp.controller('setPasswordCtrl', ['$scope', 'ngDataApi', '$routeParams
 					"key": apiConfiguration.key
 				},
 				"routeName": "/urac/resetPassword",
-				"params": {"token": $routeParams.token},
+				"params": { "token": $routeParams.token },
 				"data": postData
 			}, function (error) {
 				if (error) {
@@ -535,7 +536,7 @@ myAccountApp.controller('resetPwCtrl', ['$scope', 'ngDataApi', '$routeParams', '
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "send",
 				"routeName": "/urac/resetPassword",
-				"params": {"token": $routeParams.token},
+				"params": { "token": $routeParams.token },
 				"data": postData
 			}, function (error) {
 				if (error) {

@@ -442,7 +442,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 			}
-		}, function (error, serviceId) {
+		}, function (error, cdResponse) {
 			if (error) {
 				return cb(error);
 			} else {
@@ -452,12 +452,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"method": "post",
 					"routeName": "/dashboard/cloud/services/soajs/deploy",
 					"data": data
-				}, function (error) {
+				}, function (error, serviceId) {
 					if (error) {
 						return cb(error);
 					} else {
 						$timeout(function () {
-							return cb(null, serviceId.data);
+							return cb(null, serviceId.id);
 						}, 2000);
 					}
 				});
@@ -703,7 +703,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 										"/checkUsername": {},
 										"/account/getUser": {
 											"access": true
-										}
+										},
+										"/join/validate": {}
 									}
 								},
 								"post": {
@@ -718,9 +719,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 										"/account/editProfile": {
 											"access": true
 										},
-										"/owner/admin/addUser": {
-										
-										}
+										"/join": {}
 									}
 								}
 							}
@@ -1387,6 +1386,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			deleteResource (currentScope, cb);
 		}
 	}
+	
 	function deleteResource (currentScope, cb){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
@@ -1400,6 +1400,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 		
 	}
+	
 	function addUserAndGroup(currentScope, cb){
 		
 		let max = 10;
@@ -1445,48 +1446,22 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		
 		
 		function doAdd(cb) {
-			//add the group
+			//add the user
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'post',
 				proxy: true,
-				routeName: '/urac/admin/group/add',
+				routeName: '/urac/join',
 				header: {
 					key: currentScope.tenantExtKey
 				},
 				data: {
-					"name": "administrator",
-					"code": "administrator",
-					"description": "Portal administration group",
-					"tId": currentScope.tenantId,
-					"tCode": "PRTL"
+					"username": currentScope.wizard.gi.username,
+					"firstName": "PORTAL",
+					"lastName": "OWNER",
+					"email": currentScope.wizard.gi.email,
+					"password": currentScope.wizard.gi.password
 				}
-			}, function (error) {
-				if (error) {
-					return cb(error);
-				}
-				else {
-					//add the user
-					getSendDataFromServer(currentScope, ngDataApi, {
-						method: 'post',
-						proxy: true,
-						routeName: '/urac/admin/addUser',
-						header: {
-							key: currentScope.tenantExtKey
-						},
-						data: {
-							"username": currentScope.wizard.gi.username,
-							"firstName": "PORTAL",
-							"lastName": "OWNER",
-							"email": currentScope.wizard.gi.email,
-							"groups": ["administrator"],
-							"tId": currentScope.tenantId,
-							"tCode": "PRTL",
-							"status": "active",
-							"password": currentScope.wizard.gi.password
-						}
-					}, cb);
-				}
-			});
+			}, cb);
 		}
 	}
 	
@@ -1494,7 +1469,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let protocol = "http";
 		let port = 80;
 		
-		if(nginx.recipe){
+		if(nginx && nginx.recipe && nginx.recipe.deployOptions && nginx.recipe.deployOptions.ports){
 			for(var i = 0; i < nginx.recipe.deployOptions.ports.length; i++) {
 				var onePort = nginx.recipe.deployOptions.ports[i];
 				

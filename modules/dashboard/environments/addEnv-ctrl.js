@@ -110,6 +110,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						if (!$localStorage.addEnv) {
 							$localStorage.addEnv = {};
 						}
+						if (!formData.sitePrefix){
+							formData.sitePrefix = "site";
+						}
+						if (!formData.apiPrefix){
+							formData.apiPrefix = "api";
+						}
 						//todo: assert the inputs
 						$localStorage.addEnv.step1 = angular.copy(formData);
 						$scope.wizard.gi = angular.copy(formData);
@@ -431,6 +437,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								$window.alert("Enter a name for the server");
 								return false;
 							}
+							formData.cluster.local.servers[0].host= formData.cluster.local.name;
 							if(formData.cluster.local.servers.length === 0){
 								$window.alert("At least one server should be configured");
 								return false;
@@ -444,6 +451,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						}
 						else if($scope.clusters.external){
 							// ensure at least one server in array
+							if(!formData.cluster.local.name){
+								$window.alert("Enter a name for the server");
+								return false;
+							}
 							if(formData.cluster.external.servers.length === 0){
 								$window.alert("At least one server should be configured");
 								return false;

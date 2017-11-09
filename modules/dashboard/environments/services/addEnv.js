@@ -627,7 +627,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					else {
 						resourceObj.resource.config.streaming = {};
 					}
-					if (currentScope.wizard.cluster.local.credentials) {
+					if (currentScope.wizard.cluster.local.credentials
+						&& Object.hasOwnProperty.call(currentScope.wizard.cluster.local.credentials, "username")
+						&& Object.hasOwnProperty.call(currentScope.wizard.cluster.local.credentials, "password")
+						&& currentScope.wizard.cluster.local.credentials.username !== ""
+						&& currentScope.wizard.cluster.local.credentials.password !== "") {
 						resourceObj.resource.config.credentials = currentScope.wizard.cluster.local.credentials;
 					}
 					if (currentScope.wizard.cluster.local.prefix) {
@@ -707,9 +711,14 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			else {
 				resourceObj.resource.config.streaming = {};
 			}
-			if (currentScope.wizard.cluster.external.credentials) {
+			if (currentScope.wizard.cluster.local.credentials
+				&& Object.hasOwnProperty.call(currentScope.wizard.cluster.local.credentials, "username")
+				&& Object.hasOwnProperty.call(currentScope.wizard.cluster.local.credentials, "password")
+				&& currentScope.wizard.cluster.local.credentials.username !== ""
+				&& currentScope.wizard.cluster.local.credentials.password !== "") {
 				resourceObj.resource.config.credentials = currentScope.wizard.cluster.external.credentials;
 			}
+			
 			if (currentScope.wizard.cluster.external.prefix) {
 				resourceObj.resource.config.prefix = currentScope.wizard.cluster.external.prefix;
 			}

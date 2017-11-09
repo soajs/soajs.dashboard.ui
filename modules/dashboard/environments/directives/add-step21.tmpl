@@ -15,7 +15,7 @@
 					<td>
 						<div>
 							<label class="f-left">Name</label>
-							<input type="text" class="form-control" ng-required="false" ng-model="form.formData.cluster.local.name" />
+							<input type="text" class="form-control" ng-required="true" ng-model="form.formData.cluster.local.name" />
 							<div class="fieldMsg hint">Provide a name for your mongo server.</div>
 						</div>
 					</td>
@@ -55,11 +55,11 @@
 							<div id="servers">
 								<table width="100%" cellspacing="0" cellpadding="0" border="0">
 									<tbody>
-										<tr class="form-group host-wrapper" ng-repeat="oneServer in form.formData.cluster.local.servers track by $index">
+										<tr class="form-group host-wrapper">
 											<td width="80%" valign="top">
 												<div>
 													<label>Hostname</label>
-													<input class="form-control " ng-model="form.formData.cluster.local.servers[$index].host" ng-required="true" type="text">
+													<input class="form-control" ng-disabled="true" ng-model="form.formData.cluster.local.name"  ng-required="true" type="text">
 													<div class="fieldMsg hint">The hostname must not hold the default localhost IP address(127.0.0.1).</div>
 												</div>
 											</td>
@@ -67,7 +67,7 @@
 											<td width="14%" valign="top">
 												<div>
 													<label>Port</label>
-													<input class="form-control " ng-model="form.formData.cluster.local.servers[$index].port" placeholder="27017" ng-required="true" type="text">
+													<input class="form-control" ng-model="form.formData.cluster.local.servers[0].port" placeholder="27017" ng-required="true" type="text">
 												</div>
 											</td>
 											<td width="1%"></td>
@@ -176,6 +176,13 @@
 		<hr>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
+				<td>
+					<div>
+						<label class="f-left">Name</label>
+						<input type="text" class="form-control" ng-required="true" ng-model="form.formData.cluster.local.name" />
+						<div class="fieldMsg hint">Provide a name for your mongo server.</div>
+					</div>
+				</td>
 				<tr class="form-group credentials-wrapper">
 					<td>
 						<div id="clusterPrefix-wrapper">

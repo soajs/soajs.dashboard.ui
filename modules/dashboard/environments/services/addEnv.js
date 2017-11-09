@@ -1423,12 +1423,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		let counter = 0;
 		let portalAPI = getAPIInfo(currentScope, currentScope.wizard.nginx, 'apiPrefix');
 		
-		checkIfUracRunning((error) => {
+		checkIfUracRunning((error, response) => {
 			if(error){
 				return cb(error);
 			}
 			else{
-				doAdd(cb);
+				if(typeof(response) ==='boolean' && !response){
+					doAdd(cb);
+				}
+				else{
+					return cb(null, 'User Already Exist, you can login with this username!');
+				}
 			}
 		});
 		
@@ -1448,7 +1453,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				if(error){
 					counter++;
 					if(counter === max){
-						return cb(error);
+						return cb(null, response);
 					}
 					else{
 						$timeout(function(){
@@ -1457,7 +1462,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 				}
 				else {
-					return cb();
+					return cb(null, response);
 				}
 			});
 		}
@@ -1478,7 +1483,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"email": currentScope.wizard.gi.email,
 					"password": currentScope.wizard.gi.password
 				}
-			}, cb);
+			}, function(){
+				return cb(null, true);
+			});
 		}
 	}
 	

@@ -1259,11 +1259,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$timeout', '$modal'
 																		handleNginx( () => {
 																			$scope.user = true;
 																			//add user and group using new tenant
-																			addEnv.addUserAndGroup(parentScope, (error) => {
+																			addEnv.addUserAndGroup(parentScope, (error, response) => {
 																				if(error){
 																					rollback(steps, error);
 																				}
 																				else{
+																					if(typeof(response) === 'string'){
+																						$window.alert(response);
+																					}
 																					return cb();
 																				}
 																			});

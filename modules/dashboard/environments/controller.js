@@ -318,7 +318,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "delete",
 						"routeName": "/dashboard/product/delete",
-						"params": { "code": "PORTAL" }
+						"params": { "code": "PRTAL" }
 					}, function (error) {
 						if (error) {
 							deleteCb(error);

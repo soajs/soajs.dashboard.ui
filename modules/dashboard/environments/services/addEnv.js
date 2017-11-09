@@ -530,7 +530,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		 */
 		function checkIfProductAndPacksExists(productCheckCb) {
 			var params = {
-				'productCode': 'PORTAL'
+				'productCode': 'PRTAL'
 			};
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
@@ -551,10 +551,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 						if (packs) {
 							packs.forEach(function (eachPack) {
-								if (eachPack.code === 'PORTAL_MAIN') {
+								if (eachPack.code === 'PRTAL_MAIN') {
 									mainPackFound = true;
 								}
-								if (eachPack.code === 'PORTAL_USER') {
+								if (eachPack.code === 'PRTAL_USER') {
 									userPackFound = true;
 								}
 							});
@@ -594,14 +594,14 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 					if (applications) {
 						applications.forEach(function (eachApp) {
-							if (eachApp.package === 'PORTAL_MAIN' && eachApp.product === 'PORTAL') {
+							if (eachApp.package === 'PRTAL_MAIN' && eachApp.product === 'PRTAL') {
 								mainApplicationFound = eachApp.appId;
 								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
 									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
 									mainApplicationKeyFound = true;
 								}
 							}
-							if (eachApp.package === 'PORTAL_USER' && eachApp.product === 'PORTAL') {
+							if (eachApp.package === 'PRTAL_USER' && eachApp.product === 'PRTAL') {
 								userApplicationFound = eachApp.appId;
 								if (eachApp.keys && eachApp.keys.length > 0 && eachApp.keys[0].config && eachApp.keys[0].config.portal
 									&& eachApp.keys[0].extKeys && eachApp.keys[0].extKeys.length > 0 && eachApp.keys[0].extKeys[0].env === 'PORTAL') {
@@ -619,7 +619,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 		function productizeApiCall(mCb) {
 			var postData = {
-				'code': wizard.gi.code,
+				'code': "PRTAL",
 				'name': "Portal Product",
 				'description': "This product contains packages that offer access to the portal interface of SOAJS to manage your products."
 			};
@@ -813,7 +813,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			var postData = {
 				'type': "client",
 				'code': "PRTL",
-				'name': "Portal Product",
+				'name': "Portal Tenant",
 				'email': "me@localhost.com",
 				'description': "Portal Tenant that uses the portal product and its packages",
 				'tag': "portal"
@@ -878,7 +878,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				var postData = {
 					'description': 'Portal ' + packageName + ' application',
 					'_TTL': ttl.toString(),
-					'productCode': "PORTAL",
+					'productCode': "PRTAL",
 					'packageCode': packageName.toUpperCase()
 				};
 

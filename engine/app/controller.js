@@ -607,6 +607,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.isUserLoggedIn = function (stopRedirect) {
 			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$localStorage.soajs_user) {
 				$cookies.remove('access_token', { 'domain': interfaceDomain });
+				$cookies.remove('myEnv', { 'domain': interfaceDomain });
+				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+				$cookies.remove('soajsID', { 'domain': interfaceDomain });
 				$localStorage.soajs_user = null;
 				$localStorage.acl_access = null;
 				$scope.enableInterface = false;

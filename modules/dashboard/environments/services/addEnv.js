@@ -611,12 +611,22 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"plugged": true,
 							"shared": false,
 							"config": {
-								"servers": currentScope.wizard.cluster.local.servers,
-								"URLParam": JSON.parse(currentScope.wizard.cluster.local.URLParam) || {},
-								"streaming": JSON.parse(currentScope.wizard.cluster.local.streaming) || {}
+								"servers": currentScope.wizard.cluster.local.servers
 							}
 						}
 					};
+					if (currentScope.wizard.cluster.local.URLParam){
+						resourceObj.resource.config.URLParam = JSON.parse(currentScope.wizard.cluster.local.URLParam);
+					}
+					else {
+						resourceObj.resource.config.URLParam = {};
+					}
+					if (currentScope.wizard.cluster.local.streaming){
+						resourceObj.resource.config.streaming = JSON.parse(currentScope.wizard.cluster.local.streaming);
+					}
+					else {
+						resourceObj.resource.config.streaming = {};
+					}
 					if (currentScope.wizard.cluster.local.credentials) {
 						resourceObj.resource.config.credentials = currentScope.wizard.cluster.local.credentials;
 					}
@@ -681,12 +691,22 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"plugged": true,
 					"shared": false,
 					"config": {
-						"servers": currentScope.wizard.cluster.external.servers,
-						"URLParam": JSON.parse(currentScope.wizard.cluster.external.URLParam) || {},
-						"streaming": JSON.parse(currentScope.wizard.cluster.external.streaming) || {}
+						"servers": currentScope.wizard.cluster.external.servers
 					}
 				}
 			};
+			if (currentScope.wizard.cluster.external.URLParam){
+				resourceObj.resource.config.URLParam = JSON.parse(currentScope.wizard.cluster.external.URLParam);
+			}
+			else {
+				resourceObj.resource.config.URLParam = {};
+			}
+			if (currentScope.wizard.cluster.external.streaming){
+				resourceObj.resource.config.streaming = JSON.parse(currentScope.wizard.cluster.external.streaming);
+			}
+			else {
+				resourceObj.resource.config.streaming = {};
+			}
 			if (currentScope.wizard.cluster.external.credentials) {
 				resourceObj.resource.config.credentials = currentScope.wizard.cluster.external.credentials;
 			}

@@ -27,6 +27,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						$scope.portalDeployment = true;
 						$scope.tempFormEntries.soajsFrmwrk.required = true;
 						$scope.form.formData.soajsFrmwrk = true;
+					}else{
+						$scope.portalDeployment = false;
+						$scope.tempFormEntries.soajsFrmwrk.required = false;
+						$scope.form.formData.soajsFrmwrk = false;
 					}
 				}
 			},
@@ -148,7 +152,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			}
 			
 			if($routeParams.portal){
-				if($scope.wizard.gi.code){
+				if($scope.wizard.gi && $scope.wizard.gi.code){
 					$scope.form.formData = {};
 					$scope.wizard.gi = {};
 				}

@@ -419,6 +419,13 @@ var tenantConfig = {
 					'required': true
 				},
 				{
+					'name': 'dashboardAccess',
+					'label': translation.dashboardAccess[LANG],
+					'type': 'buttonSlider',
+					'fieldMsg': translation.dashboardAccessFieldMsg[LANG],
+					'required': false
+				},
+				{
 					'name': 'expDate',
 					'label': translation.expiryDate[LANG],
 					'type': 'date-picker',

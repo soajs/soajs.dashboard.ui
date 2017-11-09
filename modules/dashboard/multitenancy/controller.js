@@ -1256,11 +1256,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'action': function (formData) {
 						var deviceObj = (formData.device) ? formData.device : {};
 						var geoObj = (formData.geo) ? formData.geo : {};
-
 						var postData = {
 							'expDate': formData.expDate,
 							'device': deviceObj,
 							'geo': geoObj,
+							'dashboardAccess': formData.dashboardAccess ? true : false,
 							'env': formData.environment.toUpperCase()
 						};
 
@@ -1304,14 +1304,20 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		if (data.device) {
 			dataForm.device = angular.copy(data.device);
 		}
+		
+		let dashboardAccessIndex;
 
 		var formConfig = angular.copy(tenantConfig.form.extKey);
 		for (var i = 0; i < formConfig.entries.length; i++) {
 			if (formConfig.entries[i].name === 'environment') {
 				formConfig.entries.splice(i, 1);
-				break;
+			}else if(formConfig.entries[i].name === 'dashboardAccess'){
+				dashboardAccessIndex = i;
 			}
 		}
+		
+		formConfig.entries.splice(dashboardAccessIndex, 1);
+		
 		formConfig.entries.unshift({
 			'name': 'extKey',
 			'label': translation.externalKeyValue[LANG],

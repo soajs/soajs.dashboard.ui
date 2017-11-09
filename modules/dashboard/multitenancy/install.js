@@ -31,6 +31,10 @@ var mtTranslation = {
 		"ENG": "Enter Tenant Code; maximum 4 characters.",
 		"FRA": "Enter Tenant Code;"
 	},
+	"dashboardAccessFieldMsg" : {
+		"ENG": "Set it true if you want the portal to use this key and proxy requests to other environments",
+		"FRA": "Set it true if you want the portal to use this key and proxy requests to other environments"
+	},
 	"formTntTypeToolTip": {
 		"ENG": "Choose Tenant Role",
 		"FRA": "Choose Tenant Role"

@@ -147,16 +147,20 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					else{
 						$scope.form.formData = {};
 						$scope.wizard.gi = {};
+						$localStorage.addEnv = {};
 					}
 				}
 			}
 			
 			if($routeParams.portal){
-				if($scope.wizard.gi && $scope.wizard.gi.code){
+				$scope.form.formData.code = 'PORTAL';
+			}
+			else{
+				if($scope.wizard.gi && $scope.wizard.gi.code && $scope.wizard.gi.code === 'PORTAL'){
 					$scope.form.formData = {};
 					$scope.wizard.gi = {};
+					$localStorage.addEnv = {};
 				}
-				$scope.form.formData.code = 'PORTAL';
 			}
 			
 			$scope.tempFormEntries.code.onAction();

@@ -3,7 +3,7 @@
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, injectFiles, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
-	
+
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 
@@ -11,10 +11,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	var autoRefreshTimeoutMetrics;
 
 	$scope.serviceProviders = environmentsConfig.providers;
-	
+
     $scope.nodes = {};
 	$scope.services = {};
-	
+
 	$scope.ShowMetrics = {};
 	$scope.servicesMetrics = {};
 	$scope.metricsRefreshInterval = 5000;
@@ -108,7 +108,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			});
 		}, tValue);
 	};
-	
+
 	$scope.autoRefreshMetrics = function () {
 		var tValue = $scope.metricsRefreshInterval;
 		autoRefreshTimeoutMetrics = setTimeout(function () {
@@ -135,7 +135,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.showHideGroupContent = function (groupName) {
 		$scope.groups[groupName].showContent = !$scope.groups[groupName].showContent;
 	};
-	
+
 	$scope.showHideGroupContent2= function (group) {
 		group.expanded = !group.expanded;
 	};
@@ -143,7 +143,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.checkCerts = function(env) {
 		nodeSrv.checkCerts($scope, env);
 	};
-	
+
 	$scope.getEnvironment = function(){
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -237,10 +237,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		hacloudSrv.loadDaemonGroupConfig($scope, service);
 	};
 
-	$scope.hostLogs = function (task) {
-		hacloudSrv.hostLogs($scope, task);
+	$scope.hostLogs = function (service, task) {
+		hacloudSrv.hostLogs($scope, service, task);
 	};
-	
+
 	$scope.getServicesMetrics = function (cb) {
 		hacloudSrv.getServicesMetrics($scope, cb);
 	};
@@ -256,7 +256,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.checkHeapster = function(cb) {
 		hacloudSrv.checkHeapster($scope, cb);
 	};
-	
+
 	$scope.checkMetricsServer = function(cb) {
 		hacloudSrv.checkMetricsServer($scope, cb);
 	};
@@ -264,12 +264,12 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.deployHeapster = function(){
 		deploySrv.deployHeapster($scope);
 	};
-	
+
 	$scope.deployMetricsServer = function(){
 		deploySrv.deployMetricsServer($scope);
 	};
-	
-	
+
+
 	$scope.autoScale = function (service) {
 		hacloudSrv.autoScale($scope, service);
 	};
@@ -281,7 +281,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.numToArray = function(num) {
 		return new Array(num);
 	};
-	
+
 	$scope.showHideMetrics = function(containerName){
 		$scope.ShowMetrics[containerName] = !($scope.ShowMetrics[containerName]);
 	};
@@ -324,7 +324,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			});
 		});
 	}
-	
+
 	$scope.$on("$destroy", function () {
 		$scope.destroyed = true;
 		clearTimeout(autoRefreshTimeoutInstance);

@@ -665,7 +665,11 @@ input:checked + .buttonSlider:before {
     width: 100% !important;
 }
 .addEnvTable td{
-    width: 50% !important;
+    width: 50%!important;
+    max-width: 500px;
+    overflow: auto;
+    text-overflow: clip;
+    white-space: nowrap;
 }
 .addEnvTable td label{
     width: 50% !important;

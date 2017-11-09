@@ -430,7 +430,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "delete",
 				"routeName": "/dashboard/environment/delete",
-				"params": { "id": currentScope.envId }
+				"params": { "id": currentScope.envId, "force": true }
 			}, function (error) {
 				if (error) {
 					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);

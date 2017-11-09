@@ -1428,12 +1428,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				return cb(error);
 			}
 			else{
-				if(typeof(response) ==='boolean' && !response){
-					doAdd(cb);
-				}
-				else{
-					return cb(null, 'User Already Exist, you can login with this username!');
-				}
+				doAdd(cb);
 			}
 		});
 		
@@ -1469,7 +1464,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		
 		function doAdd(cb) {
 			//add the user
-			getSendDataFromServer(currentScope, ngDataApi, {
+			let opts = {
 				url: portalAPI,
 				method: 'post',
 				routeName: '/urac/join',
@@ -1483,8 +1478,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"email": currentScope.wizard.gi.email,
 					"password": currentScope.wizard.gi.password
 				}
-			}, function(){
-				return cb(null, true);
+			};
+			getSendDataFromServer(currentScope, ngDataApi, opts, function(error, response){
+				if(error){
+					if(error.code === 402){
+						return cb(null, error.message);
+					}
+					else return cb(error);
+				}
+				else{
+					return cb(null, true);
+				}
 			});
 		}
 	}

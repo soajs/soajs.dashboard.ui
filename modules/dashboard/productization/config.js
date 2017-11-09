@@ -29,7 +29,8 @@ var productizationConfig = {
 					'placeholder': 'TPROD...',
 					'value': '',
 					'tooltip': translation.formProductCodeToolTip[LANG],
-					'required': true
+					'required': true,
+					'maxlength': 5
 				},
 				{
 					'name': 'name',
@@ -64,7 +65,8 @@ var productizationConfig = {
 					'placeholder': translation.formPackageCodePlaceholder[LANG],
 					'value': '',
 					'tooltip': translation.formPackageCodeToolTip[LANG],
-					'required': true
+					'required': true,
+					'maxlength': 5
 				},
 				{
 					'name': 'name',

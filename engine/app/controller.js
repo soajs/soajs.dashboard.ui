@@ -85,8 +85,8 @@ soajsApp.run(function ($rootScope) {
 	$rootScope.translation = translation;
 });
 
-soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers',
-	function ($scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers) {
+soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers',
+	function ($window, $scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers) {
 		document.title = titlePrefix;
 		$scope.appNavigation = navigation;
 		$scope.navigation = [];
@@ -339,7 +339,7 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 						});
 					}
 					else {
-						$route.reload();
+						$window.location.reload();
 					}
 				}
 			}

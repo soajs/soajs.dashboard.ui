@@ -1232,7 +1232,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"name": currentScope.wizard.cluster.local.name,
 							"type": "cluster",
 							"category": "mongo",
-							"plugged": "true",
+							"plugged": true,
+							"shared": false,
 							"config": {
 								"servers": currentScope.wizard.cluster.local.servers,
 								"URLParam": currentScope.wizard.cluster.local.URLParam || {},
@@ -1248,14 +1249,17 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 					//add mongo cluster
 					getSendDataFromServer(currentScope, ngDataApi, {
-						method: 'get',
+						method: 'post',
 						routeName: '/dashboard/resources/add',
-						"params": resourceObj
+						data: resourceObj
 					}, function (error, resources) {
 						if (error) {
 							return cb(error);
 						}
 						else {
+							if (resources && resources._id){
+								currentScope.wizard.cluster.clusterId = resources._id;
+							}
 							var deployObject = {
 								env: currentScope.wizard.gi.code.toUpperCase(),
 								recipe: mongoRecipeId,
@@ -1274,9 +1278,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							};
 							//deploy mongo cluster
 							getSendDataFromServer(currentScope, ngDataApi, {
-								method: 'get',
+								method: 'post',
 								routeName: '/dashboard/cloud/services/soajs/deploy',
-								"params": deployObject
+								"data": deployObject
 							}, function (error, service) {
 								currentScope.wizard.cluster.serviceId = service;
 								return cb(error, currentScope.wizard.cluster.local.name);
@@ -1298,11 +1302,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"name": currentScope.wizard.cluster.external.name,
 					"type": "cluster",
 					"category": "mongo",
-					"plugged": "true",
+					"plugged": true,
+					"shared": false,
 					"config": {
 						"servers": currentScope.wizard.cluster.external.servers,
-						"URLParam": currentScope.wizard.cluster.external.URLParam || {},
-						"streaming": currentScope.wizard.cluster.external.streaming || {}
+						"URLParam": JSON.parse(currentScope.wizard.cluster.external.URLParam) || {},
+						"streaming": JSON.parse(currentScope.wizard.cluster.external.streaming) || {}
 					}
 				}
 			};
@@ -1313,10 +1318,13 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				resourceObj.resource.config.prefix = currentScope.wizard.cluster.external.prefix;
 			}
 			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'get',
+				method: 'post',
 				routeName: '/dashboard/resources/add',
-				"params": resourceObj
-			}, function (error) {
+				data: resourceObj
+			}, function (error, cluster) {
+				if (cluster && cluster._id){
+						currentScope.wizard.cluster.clusterId = cluster._id;
+				}
 				return cb(error, currentScope.wizard.cluster.external.name);
 			});
 		}
@@ -1366,10 +1374,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"env": currentScope.wizard.gi.code.toUpperCase()
 						},
 						"data": sessionData
-					}, function (error, cluster) {
-						if (cluster && cluster._id){
-							currentScope.wizard.cluster.clusterId = cluster._id;
-						}
+					}, function (error) {
 						return cb(error, true);
 					});
 				}
@@ -1379,40 +1384,40 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 
 	function removeCluster(currentScope, cb){
 		if (currentScope.wizard.cluster.local) {
-			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'delete',
-				routeName: '/dashboard/cloud/services/delete',
-				params: {
-					env: currentScope.wizard.gi.code.toUpperCase(),
-					serviceId: currentScope.wizard.cluster.serviceId.id,
-					"mode": (currentScope.wizard.deploy.selectedDriver === "kubernetes")
-						? "deployment" : "replicated"
-				}
-			}, function (error) {
-				if (error) {
-					return cb(error);
-				}
-				else {
-					deleteResource(currentScope, cb);
-				}
-			});
+			if (currentScope.wizard.cluster.serviceId && currentScope.wizard.cluster.serviceId.id){
+				getSendDataFromServer(currentScope, ngDataApi, {
+					method: 'delete',
+					routeName: '/dashboard/cloud/services/delete',
+					params: {
+						env: currentScope.wizard.gi.code.toUpperCase(),
+						serviceId: currentScope.wizard.cluster.serviceId.id,
+						"mode": (currentScope.wizard.deploy.selectedDriver === "kubernetes")
+							? "deployment" : "replicated"
+					}
+				}, function () {
+					deleteResource(currentScope);
+				});
+			}
+			else {
+				deleteResource(currentScope);
+			}
+			
 		}
-
 		if(currentScope.wizard.cluster.external){
 			deleteResource (currentScope, cb);
 		}
 	}
 	
-	function deleteResource (currentScope, cb){
+	function deleteResource (currentScope){
 		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "post",
+			"method": "delete",
 			"routeName": "/dashboard/resources/delete",
-			"data": {
+			"params": {
 				"env" : currentScope.wizard.gi.code.toUpperCase(),
 				"id" : currentScope.wizard.cluster.clusterId
 			}
-		}, function (error) {
-			return cb(error, true);
+		}, function () {
+			return true;
 		});
 		
 	}

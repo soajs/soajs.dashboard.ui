@@ -413,7 +413,7 @@
 																		<b>Memory:</b> N/A
 																	</span>
 																</div>
-																<a href="" ng-if= "instance.status.state === 'running' && servicesMetrics[instanceName].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
+																<a href="" ng-if= "servicesMetrics[instanceName].memory || servicesMetrics[instanceName].cpu ||  servicesMetrics[instanceName].cpuPercent || servicesMetrics[instanceName].blkIO || servicesMetrics[instanceName].netIO" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
 																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }"></span>
 																</a>
 															</td>
@@ -554,7 +554,7 @@
 													<b>Memory:</b> N/A
 												</span>
 											</div>
-											<a href="" ng-if="nodesMetrics[node.hostname].memory" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
+											<a href="" ng-if="nodesMetrics[node.hostname].memory || nodesMetrics[node.hostname].cpu" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
 												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }"></span>
 											</a>
 										</td>

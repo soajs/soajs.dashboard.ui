@@ -137,11 +137,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.wizard.gi = angular.copy($scope.form.formData);
 				
 				if($scope.wizard.gi.code === 'PORTAL'){
-					$scope.portalDeployment = true;
+					if($routeParams.portal){
+						$scope.portalDeployment = true;
+					}
+					else{
+						$scope.form.formData = {};
+						$scope.wizard.gi = {};
+					}
 				}
 			}
 			
 			if($routeParams.portal){
+				if($scope.wizard.gi.code){
+					$scope.form.formData = {};
+					$scope.wizard.gi = {};
+				}
 				$scope.form.formData.code = 'PORTAL';
 			}
 			

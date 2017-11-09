@@ -44,16 +44,21 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 							keyboard: false,
 							controller: function ($scope, $modalInstance) {
 								$scope.progressCounter = 0;
-								$scope.maxCounter = 3;
+								$scope.maxCounter = 2;
 								if (parentScope.portalDeployment) {
 									$scope.maxCounter++;
 								}
 								if (parentScope.wizard.controller && parentScope.wizard.controller.deploy) {
 									$scope.maxCounter++;
-									if (!parentScope.wizard.nginx.catalog) {
-										$scope.maxCounter++;
+									if (parentScope.portalDeployment) {
+										$scope.maxCounter += 4;
 									}
-									$scope.maxCounter += 3;
+									
+									if (parentScope.wizard.nginx.catalog) {
+										$scope.maxCounter++;
+									} else {
+										$scope.maxCounter += 2;
+									}
 								}
 								
 								addEnvironment(function () {
@@ -121,6 +126,8 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 														if (error) {
 															rollback(steps, error);
 														}
+														
+														$scope.progressCounter++;
 														$scope.deployCluster = true;
 														addEnv.deployUrac(parentScope, (error, uracId) => {
 															if (error) {
@@ -154,6 +161,7 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 																					rollback(steps, error);
 																				}
 																				else {
+																					$scope.progressCounter++;
 																					if (typeof(response) === 'string') {
 																						$window.alert(response);
 																					}
@@ -174,7 +182,6 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 										});
 									}
 									else {
-										$scope.progressCounter++;
 										return cb();
 									}
 								}

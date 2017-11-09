@@ -204,9 +204,9 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		if (access_token && config.token) {
 			config.params.access_token = access_token;
 		}
-		var projectId = $cookies.get('projectId', {'domain': interfaceDomain});
-		if (projectId) {
-			config.params.projectId = projectId;
+		var project = $cookies.get('projectId', {'domain': interfaceDomain});
+		if (project) {
+			config.params.project = projectId;
 		}
 
 		if (opts.proxy) {

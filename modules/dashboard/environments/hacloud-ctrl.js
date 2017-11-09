@@ -153,7 +153,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			}
 		}, function (error, response) {
 			if (error) {
-				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				$scope.myEnvironment = response;
@@ -290,7 +290,16 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	if($cookies.getObject('myEnv', {'domain': interfaceDomain})){
 		$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-		$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+		
+		if($scope.envDeployer.type === 'manual'){
+			$scope.$parent.go("#/environments-hosts");
+		}
+		
+		if($scope.envDeployer && $scope.envDeployer.selected){
+			$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+		}
+		
+		
 	}
 
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {

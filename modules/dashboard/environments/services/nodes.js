@@ -23,27 +23,29 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 			if (error) {
 				currentScope.$parent.displayAlert("danger", error.code, true, 'dashboard', error.message);
 			}
-			else if (response.selected.split('.')[1] === "kubernetes" || (response.selected.split('.')[1] === "docker" && response.selected.split('.')[2] === "remote")) {
-				var requiredCerts = environmentsConfig.deployer.certificates.required;
-				
-				requiredCerts.forEach(function (oneCertType) {
-					for (var i = 0; i < response.certs.length; i++) {
-						if (response.certs[i].metadata.env[currentScope.envCode.toUpperCase()] && response.certs[i].metadata.env[currentScope.envCode.toUpperCase()].length > 0) {
-							var currentSelected = response.selected.split('.')[1] + "." + response.selected.split('.')[2];
-							if (response.certs[i].metadata.env[currentScope.envCode.toUpperCase()].indexOf(currentSelected) !== -1) {
-								if (response.certs[i].metadata.certType === oneCertType) {
-									currentScope.certsExist[oneCertType] = true;
+			else if(response && response.selected){
+				if (response.selected.split('.')[1] === "kubernetes" || (response.selected.split('.')[1] === "docker" && response.selected.split('.')[2] === "remote")) {
+					var requiredCerts = environmentsConfig.deployer.certificates.required;
+					
+					requiredCerts.forEach(function (oneCertType) {
+						for (var i = 0; i < response.certs.length; i++) {
+							if (response.certs[i].metadata.env[currentScope.envCode.toUpperCase()] && response.certs[i].metadata.env[currentScope.envCode.toUpperCase()].length > 0) {
+								var currentSelected = response.selected.split('.')[1] + "." + response.selected.split('.')[2];
+								if (response.certs[i].metadata.env[currentScope.envCode.toUpperCase()].indexOf(currentSelected) !== -1) {
+									if (response.certs[i].metadata.certType === oneCertType) {
+										currentScope.certsExist[oneCertType] = true;
+									}
 								}
 							}
 						}
-					}
-				});
-				
-				currentScope.certsExist.all = (currentScope.certsExist.ca && currentScope.certsExist.cert && currentScope.certsExist.key);
-			}
-			else {
-				//docker local does not require certificates, it uses unix socket
-				currentScope.certsExist.all = true;
+					});
+					
+					currentScope.certsExist.all = (currentScope.certsExist.ca && currentScope.certsExist.cert && currentScope.certsExist.key);
+				}
+				else {
+					//docker local does not require certificates, it uses unix socket
+					currentScope.certsExist.all = true;
+				}
 			}
 		});
 	}

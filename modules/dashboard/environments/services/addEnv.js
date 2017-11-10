@@ -763,7 +763,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"cluster": clusterName,
 						"tenantSpecific": false,
 						"sessionInfo": {
-							dbName: "urac",
+							dbName: "core_session",
 							store: {},
 							collection: "sessions",
 							stringify: false,

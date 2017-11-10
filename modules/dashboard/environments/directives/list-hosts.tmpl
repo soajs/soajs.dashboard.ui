@@ -4,6 +4,11 @@
 	</div>
 	<br/>
 	<div>
+		<div ng-if="access.getEnvironmentProfile">
+			<a href="" ng-click="downloadProfile(envCode)" class="btn btn-primary f-right">
+				<span class="icon icon-download3" tooltip="Download Profile"></span>{{translation.downloadProfile[LANG]}}
+			</a>
+		</div>
 		<tabset>
 			<tab heading="{{translation.activeHosts[LANG]}}">
 				<br>
@@ -16,11 +21,6 @@
 				<div ng-show="hosts.controller || nginxHosts.length > 0">
 					<a href="" ng-click="listHosts(envCode)" class="btn btn-primary f-right">
 						<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
-					</a>
-				</div>
-				<div ng-show="hosts.controller && hosts.controller.healthy && hosts.controller.ips && hosts.controller.ips.length > 0">
-					<a href="" ng-click="downloadProfile(envCode)" class="btn btn-primary f-left">
-						<span class="icon icon-download3" tooltip="Download Profile"></span>{{translation.downloadProfile[LANG]}}
 					</a>
 				</div>
 				<br/><br/>

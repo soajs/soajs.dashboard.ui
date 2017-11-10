@@ -656,42 +656,22 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 	}
 	
 	function downloadProfile(currentScope, env) {
-		var controller = {};
-		var alive = false;
-		for(var i = 0; i < currentScope.hosts.controller.ips.length; i++){
-			if(currentScope.hosts.controller.ips[i].heartbeat) {
-				controller = currentScope.hosts.controller.ips[i];
-				alive = true;
-				break;
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment/profile"
+		}, function (error, response) {
+			if (error || !response) {
+				currentScope.generateNewMsg(env, 'danger', translation.unableToDownloadProfile[LANG]);
 			}
-		}
-		if(alive && Object.keys(controller).length > 0){
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "post",
-				"routeName": "/dashboard/hosts/maintenanceOperation",
-				"data": {
-					"serviceName": controller.name,
-					"operation": "reloadRegistry",
-					"serviceHost": controller.ip,
-					"servicePort": controller.port,
-					"hostname": controller.hostname,
-					"env": env
-				}
-			}, function (error, response) {
-				if (error || !response || !response.data || !response.data.coreDB || !response.data.coreDB.provision) {
-					currentScope.generateNewMsg(env, 'danger', translation.unableToDownloadProfile[LANG]);
-				}
-				else {
-					var contentType = "application/javascript; charset=utf-8";
-					delete response.data.coreDB.provision.registryLocation;
-					delete response.data.coreDB.provision.timeConnected;
-					var data = "\"use strict\";\n\n module.exports = "+ JSON.stringify(response.data.coreDB.provision, null, 2) + ";";
-					openSaveAsDialog("Profile-"+env+".js", data, contentType);
-				}
-			});
-		}else{
-			currentScope.generateNewMsg(env, 'danger', translation.unableToDownloadProfile[LANG]);
-		}
+			else {
+				var contentType = "application/javascript; charset=utf-8";
+				delete response.registryLocation;
+				delete response.timeConnected;
+				delete response.soajsauth;
+				var data = "\"use strict\";\n\n module.exports = " + JSON.stringify(response, null, 2) + ";";
+				openSaveAsDialog("Profile-" + env + ".js", data, contentType);
+			}
+		});
 	}
 
 	return {

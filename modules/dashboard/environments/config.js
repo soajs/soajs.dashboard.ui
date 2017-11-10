@@ -503,6 +503,7 @@ var environmentsConfig = {
 		"addEnvironment": ['dashboard', '/environment/add', 'post'],
 		"deleteEnvironment": ['dashboard', '/environment/delete', 'delete'],
 		"editEnvironment": ['dashboard', '/environment/update', 'put'],
+		"getEnvironmentProfile": ['dashboard', '/environment/profile', 'get'],
 		"listHosts": ['dashboard', '/hosts/list', 'get'],
 		"cd": ['dashboard', '/cd', 'post'],
 		"dbs": {

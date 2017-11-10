@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, injectFiles, ngDataApi) {
+environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv','metricsSrv', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, metricsSrv, injectFiles, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -242,7 +242,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 	
 	$scope.getServicesMetrics = function (cb) {
-		hacloudSrv.getServicesMetrics($scope, cb);
+		metricsSrv.getServicesMetrics($scope, cb);
 	};
 
 	$scope.showHideFailures = function(service){
@@ -258,7 +258,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 	
 	$scope.checkMetricsServer = function(cb) {
-		hacloudSrv.checkMetricsServer($scope, cb);
+		metricsSrv.checkMetricsServer($scope, cb);
 	};
 
 	$scope.deployHeapster = function(){

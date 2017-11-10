@@ -732,8 +732,8 @@ var translation = {
 		"FRA": "Expiry Date"
 	},
 	"dashboardAccess": {
-		"ENG": "Dashboard Access",
-		"FRA": "Dashboard Access"
+		"ENG": "Proxy Support",
+		"FRA": "Proxy Support"
 	},
 	"edit": {
 		"ENG": "Edit",

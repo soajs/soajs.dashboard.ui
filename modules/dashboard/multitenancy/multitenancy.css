@@ -43,6 +43,7 @@ div.entryBox .body .btn-primary {
     float: right;
     top: -10px;
     position: inherit;
+    margin-bottom: 10px;
 }
 
 .tenantTab .entryBoxes .btn {

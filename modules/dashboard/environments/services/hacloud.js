@@ -240,7 +240,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			});
 		}
 	}
-	
+
 	function getServicesMetrics(currentScope, cb) {
 		var env = currentScope.envCode.toLowerCase();
 		var maxData = 900000/currentScope.metricsRefreshInterval;
@@ -261,25 +261,25 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						if (!currentScope.servicesMetrics) {
 							currentScope.servicesMetrics = {};
 						}
-						
+
 						if (!currentScope.servicesMetrics[oneContainer]) {
 							currentScope.servicesMetrics[oneContainer] = {};
 						}
-						
+
 						if (!currentScope.chartOptions) {
 							currentScope.chartOptions = {};
 						}
-						
+
 						if (!currentScope.chartOptions[oneContainer]) {
 							currentScope.chartOptions[oneContainer] = {};
 						}
-						
+
 						currentScope.servicesMetrics[oneContainer].online_cpus = 1;
-						
+
 						if (metrics[oneContainer].hasOwnProperty('online_cpus')) {
 							currentScope.servicesMetrics[oneContainer].online_cpus = metrics[oneContainer].online_cpus;
 						}
-						
+
 						if (metrics[oneContainer].hasOwnProperty('timestamp')) {
 							var ts = new Date(metrics[oneContainer].timestamp).toLocaleString('en-US', {
 								hour: 'numeric',
@@ -295,7 +295,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].timestamp.shift();
 							}
 						}
-						
+
 						if (metrics[oneContainer].hasOwnProperty('memory')) {
 							if (!currentScope.servicesMetrics[oneContainer].memory) {
 								currentScope.servicesMetrics[oneContainer].memory = [];
@@ -332,7 +332,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Memory (Bytes)',
 														display: true,
-														
+
 													},
 													ticks: {
 														callback: function (bytes) {
@@ -347,7 +347,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-														
+
 													}
 												}
 											]
@@ -361,7 +361,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].memory.shift();
 							}
 						}
-						
+
 						if (metrics[oneContainer].hasOwnProperty('cpu')) {
 							if (!currentScope.servicesMetrics[oneContainer].cpu) {
 								currentScope.servicesMetrics[oneContainer].cpu = [];
@@ -391,7 +391,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'CPU (milliCores)',
 														display: true,
-														
+
 													},
 													ticks: {
 														beginAtZero: true
@@ -403,7 +403,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-														
+
 													}
 												}
 											]
@@ -417,7 +417,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].cpu.shift();
 							}
 						}
-						
+
 						if (metrics[oneContainer].hasOwnProperty('cpuPercent')) {
 							if (!currentScope.servicesMetrics[oneContainer].cpuPercent) {
 								currentScope.servicesMetrics[oneContainer].cpuPercent = [];
@@ -454,7 +454,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'CPU (%)',
 														display: true,
-														
+
 													},
 													ticks: {
 														callback: function (percent) {
@@ -469,7 +469,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-														
+
 													}
 												}
 											]
@@ -483,7 +483,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].cpuPercent.shift();
 							}
 						}
-						
+
 						if (metrics[oneContainer].hasOwnProperty('memPercent')) {
 							if (!currentScope.servicesMetrics[oneContainer].memPercent) {
 								currentScope.servicesMetrics[oneContainer].memPercent = [];
@@ -520,7 +520,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Memory (%)',
 														display: true,
-														
+
 													},
 													ticks: {
 														callback: function (percent) {
@@ -538,7 +538,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-														
+
 													}
 												}
 											]
@@ -552,11 +552,11 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].memPercent.shift();
 							}
 						}
-						
+
 						if (metrics[oneContainer].hasOwnProperty('memoryLimit')) {
 							currentScope.servicesMetrics[oneContainer].memoryLimit = convertBytes(metrics[oneContainer].memoryLimit);
 						}
-						
+
 						if (currentScope.envPlatform === 'docker') {
 							if (!currentScope.servicesMetrics[oneContainer].blkIO) {
 								currentScope.servicesMetrics[oneContainer].blkIO = [[], []];
@@ -615,7 +615,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Bytes',
 														display: true,
-														
+
 													},
 													ticks: {
 														callback: function (bytes) {
@@ -630,7 +630,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-														
+
 													}
 												}
 											]
@@ -644,7 +644,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].blkIO[0].shift();
 								currentScope.servicesMetrics[oneContainer].blkIO[1].shift();
 							}
-							
+
 							if (!currentScope.servicesMetrics[oneContainer].netIO) {
 								currentScope.servicesMetrics[oneContainer].netIO = [[], []];
 								currentScope.chartOptions[oneContainer].netIO = {
@@ -702,7 +702,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Bytes',
 														display: true,
-														
+
 													},
 													ticks: {
 														callback: function (bytes) {
@@ -717,7 +717,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-														
+
 													}
 												}
 											]
@@ -731,7 +731,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								currentScope.servicesMetrics[oneContainer].netIO[0].shift();
 								currentScope.servicesMetrics[oneContainer].netIO[1].shift();
 							}
-							
+
 						}
 					});
 					if (currentScope.envPlatform === 'kubernetes' && currentScope.access.hacloud.nodes.metrics) {
@@ -750,19 +750,19 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								if (!currentScope.nodesMetrics) {
 									currentScope.nodesMetrics = {};
 								}
-								
+
 								if (!currentScope.nodesMetrics[oneNode]) {
 									currentScope.nodesMetrics[oneNode] = {};
 								}
-								
+
 								if (!currentScope.chartOptions) {
 									currentScope.chartOptions = {};
 								}
-								
+
 								if (!currentScope.chartOptions[oneNode]) {
 									currentScope.chartOptions[oneNode] = {};
 								}
-								
+
 								if (metrics[oneNode].hasOwnProperty('timestamp')) {
 									var ts = new Date(metrics[oneNode].timestamp).toLocaleString('en-US', {
 										hour: 'numeric',
@@ -778,7 +778,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										currentScope.nodesMetrics[oneNode].timestamp.shift();
 									}
 								}
-								
+
 								if (metrics[oneNode].hasOwnProperty('memory')) {
 									if (!currentScope.nodesMetrics[oneNode].memory) {
 										currentScope.nodesMetrics[oneNode].memory = [];
@@ -815,7 +815,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 															scaleLabel: {
 																labelString: 'Memory (Bytes)',
 																display: true,
-																
+
 															},
 															ticks: {
 																callback: function (bytes) {
@@ -830,7 +830,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 															scaleLabel: {
 																labelString: 'Time',
 																display: true,
-																
+
 															}
 														}
 													]
@@ -844,7 +844,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										currentScope.nodesMetrics[oneNode].memory.shift();
 									}
 								}
-								
+
 								if (metrics[oneNode].hasOwnProperty('cpu')) {
 									if (!currentScope.nodesMetrics[oneNode].cpu) {
 										currentScope.nodesMetrics[oneNode].cpu = [];
@@ -874,7 +874,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 															scaleLabel: {
 																labelString: 'CPU (milliCores)',
 																display: true,
-																
+
 															},
 															ticks: {
 																beginAtZero: true
@@ -886,7 +886,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 															scaleLabel: {
 																labelString: 'Time',
 																display: true,
-																
+
 															}
 														}
 													]
@@ -901,7 +901,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									}
 								}
 							});
-							
+
 						});
 					}
 				}
@@ -914,9 +914,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				return cb();
 			}
 		}
-		
+
 	}
-	
+
 	function convertBytes(bytes) {
 		if (bytes < 1024) {
 			return (bytes) + ' B';
@@ -928,7 +928,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' Gi';
 		}
 	}
-	
+
 	function convertToMetric(bytes) {
 		if (bytes < 1000) {
 			return (bytes) + ' B';
@@ -966,7 +966,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			});
 		}
 	}
-	
+
 	function checkMetricsServer(currentScope, cb) {
 		if(currentScope.envPlatform !== 'kubernetes') {
 			currentScope.isMetricsServerDeployed = true;
@@ -1039,6 +1039,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 
 		var params = {
 			env: currentScope.envCode,
+			namespace: service.namespace,
 			serviceId: service.id,
 			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : '')
 		};
@@ -1087,6 +1088,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'put',
 						routeName: '/dashboard/cloud/services/scale',
+						params: {
+							namespace: service.namespace || '',
+						},
 						data: {
 							env: currentScope.envCode,
 							serviceId: service.id,
@@ -1149,6 +1153,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'put',
 			routeName: '/dashboard/cloud/services/redeploy',
+			params: {
+				namespace: service.namespace || ''
+			},
 			data: params
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -1431,12 +1438,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					if(!params.custom){
 						params.custom = {};
 					}
-					
+
 					var t = formData.branch;
 					if(typeof t === 'string'){
 						t = JSON.parse(angular.copy(formData.branch));
 					}
-					
+
 					params.custom.branch = t.name;
 					if(t.commit && t.commit.sha){
 						params.custom.commit = t.commit.sha;
@@ -1457,6 +1464,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'put',
 				routeName: '/dashboard/cloud/services/redeploy',
+				params: {
+					namespace: service.namespace || ''
+				},
 				data: params
 			}, function (error, response) {
 				overlayLoading.hide();
@@ -1488,6 +1498,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1548,6 +1561,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1608,6 +1624,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1668,6 +1687,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1728,6 +1750,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1787,6 +1812,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": "controller",
@@ -1804,13 +1832,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		});
 	}
 
-	function hostLogs(currentScope, task) {
+	function hostLogs(currentScope, service, task) {
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: "get",
 			routeName: "/dashboard/cloud/services/instances/logs",
 			params: {
 				env: currentScope.envCode,
+				namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
 				serviceId: task.ref.service.id,
 				taskId: task.id
 			}
@@ -1842,6 +1871,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								routeName: "/dashboard/cloud/services/instances/logs",
 								params: {
 									env: currentScope.envCode,
+									namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
 									serviceId: task.ref.service.id,
 									taskId: task.id
 								}
@@ -1953,7 +1983,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						method: 'put',
 						routeName: '/dashboard/cloud/services/autoscale',
 						params:{
-							env: currentScope.envCode
+							env: currentScope.envCode,
+							namespace: service.namespace || ''
 						},
 						data: data
 					}, function (error) {

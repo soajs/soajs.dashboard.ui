@@ -656,26 +656,30 @@ input:checked + .buttonSlider:before {
     border-collapse: collapse !important;
     width: 100% !important;
 }
-.addEnvTable th, .addEnvTable td{
+.addEnvTable th{
     border-collapse: collapse !important;
-    width: 100% !important;
+    width: 50% !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    padding-left: 8px !important;
 }
+
 .addEnvTable tr:nth-child(odd){
     background-color: #f2f2f2 !important;
     width: 100% !important;
 }
 .addEnvTable td{
-    width: 50%!important;
+    padding-top: 5px;
     max-width: 500px;
     overflow: auto;
     text-overflow: clip;
     white-space: nowrap;
+    border-collapse: collapse !important;
+    width: 50% !important;
+    padding-left: 8px !important;
 }
 .addEnvTable td label{
-    width: 50% !important;
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-    padding-left: 8px !important;
+    padding-bottom: 5px;
 }
 .addEnvImg div{
     width: 15%;

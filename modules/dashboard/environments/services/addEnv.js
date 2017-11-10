@@ -611,22 +611,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"plugged": true,
 							"shared": false,
 							"config": {
-								"servers": currentScope.wizard.cluster.local.servers
+								"servers": currentScope.wizard.cluster.local.servers,
+								"URLParam": currentScope.wizard.cluster.local.URLParam || {},
+								"streaming": currentScope.wizard.cluster.local.streaming || {}
 							}
 						}
 					};
-					if (currentScope.wizard.cluster.local.URLParam){
-						resourceObj.resource.config.URLParam = JSON.parse(currentScope.wizard.cluster.local.URLParam);
-					}
-					else {
-						resourceObj.resource.config.URLParam = {};
-					}
-					if (currentScope.wizard.cluster.local.streaming){
-						resourceObj.resource.config.streaming = JSON.parse(currentScope.wizard.cluster.local.streaming);
-					}
-					else {
-						resourceObj.resource.config.streaming = {};
-					}
 					if (currentScope.wizard.cluster.local.credentials
 						&& Object.hasOwnProperty.call(currentScope.wizard.cluster.local.credentials, "username")
 						&& Object.hasOwnProperty.call(currentScope.wizard.cluster.local.credentials, "password")
@@ -695,22 +685,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					"plugged": true,
 					"shared": false,
 					"config": {
-						"servers": currentScope.wizard.cluster.external.servers
+						"servers": currentScope.wizard.cluster.external.servers,
+						"URLParam": currentScope.wizard.cluster.external.URLParam || {},
+						"streaming": currentScope.wizard.cluster.external.streaming || {}
 					}
 				}
 			};
-			if (currentScope.wizard.cluster.external.URLParam){
-				resourceObj.resource.config.URLParam = JSON.parse(currentScope.wizard.cluster.external.URLParam);
-			}
-			else {
-				resourceObj.resource.config.URLParam = {};
-			}
-			if (currentScope.wizard.cluster.external.streaming){
-				resourceObj.resource.config.streaming = JSON.parse(currentScope.wizard.cluster.external.streaming);
-			}
-			else {
-				resourceObj.resource.config.streaming = {};
-			}
 			if (currentScope.wizard.cluster.external.credentials
 				&& Object.hasOwnProperty.call(currentScope.wizard.cluster.external.credentials, "username")
 				&& Object.hasOwnProperty.call(currentScope.wizard.cluster.external.credentials, "password")

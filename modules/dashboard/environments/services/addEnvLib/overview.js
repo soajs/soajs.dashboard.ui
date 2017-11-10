@@ -3,6 +3,9 @@ var dbServices = soajsApp.components;
 dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout', '$cookies', '$localStorage', '$window', function (addEnv, productize, ngDataApi, $timeout, $cookies, $localStorage, $window) {
 	
 	let overviewFunction = function ($scope, $modal) {
+		if ($scope.wizard.cluster){
+			$scope.wizard.cluster.type= Object.keys($scope.wizard.cluster)[0];
+		}
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {
 			timeout: $timeout,

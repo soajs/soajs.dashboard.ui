@@ -515,10 +515,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									port: 27017
 								}
 							],
-							URLParam: JSON.stringify({
+							URLParam: {
 								"bufferMaxEntries": 0,
 								"maxPoolSize": 5
-							}, null, 2)
+							}
 						},
 						share: {},
 						external :{
@@ -528,10 +528,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									port: 27017
 								}
 							],
-							URLParam: JSON.stringify({
+							URLParam: {
 								"bufferMaxEntries": 0,
 								"maxPoolSize": 5
-							}, null, 2)
+							}
 						}
 					}
 				};

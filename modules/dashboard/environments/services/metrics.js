@@ -5,7 +5,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 	function getServicesMetrics(currentScope, cb) {
 		var env = currentScope.envCode.toLowerCase();
 		var maxData = 900000/currentScope.metricsRefreshInterval;
-		if (currentScope.access.hacloud.services.list && currentScope.access.hacloud.services.metrics && currentScope.isMetricsServerDeployed) {
+		if (currentScope.access.hacloud.services.list && currentScope.access.hacloud.services.metrics && currentScope.isMetricsServerDeployed && !currentScope.pauseRefresh) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
 				"routeName": "/dashboard/cloud/metrics/services",
@@ -670,7 +670,8 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 					return cb();
 				}
 			});
-		} else {
+		}
+		else {
 			if (cb) {
 				return cb();
 			}

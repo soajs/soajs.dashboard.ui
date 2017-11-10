@@ -9,13 +9,13 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 	 */
 	function listServices(currentScope, cb) {
 		var env = currentScope.envCode.toLowerCase();
+		var hosts = null;
 		currentScope.showCtrlHosts = true;
 		currentScope.soajsServices = false;
         currentScope.controllers =[];
-		currentScope.hosts = null;
 		currentScope.recipeTypes = environmentsConfig.recipeTypes;
 
-		if (currentScope.access.hacloud.services.list) {
+		if (currentScope.access.hacloud.services.list && !currentScope.pauseRefresh) {
 			getUpdatesNotifications(function(){
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "get",
@@ -47,8 +47,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 
 							for (var j = 0; j < response.length; j++) {
-								if(!currentScope.hosts){
-									currentScope.hosts = {};
+								if(!hosts){
+									hosts = {};
 								}
 
 								response[j].expanded = true;
@@ -93,12 +93,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									currentScope.oldStyle = true;
 								}
 
-								if(!currentScope.hosts[serviceType]){
-									currentScope.hosts[serviceType] = {};
+								if(!hosts[serviceType]){
+									hosts[serviceType] = {};
 								}
 
-								if(!currentScope.hosts[serviceType][serviceSubType]){
-									currentScope.hosts[serviceType][serviceSubType] = {};
+								if(!hosts[serviceType][serviceSubType]){
+									hosts[serviceType][serviceSubType] = {};
 								}
 
 								if(!response[j].labels['soajs.service.version'] || response[j].labels['soajs.service.version'] === ''){
@@ -141,14 +141,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									response[j]['color'] = 'green';
 									response[j]['healthy'] = true;
 
-									if (!currentScope.hosts[serviceType][serviceSubType][serviceGroup]) {
-										currentScope.hosts[serviceType][serviceSubType][serviceGroup] = {
+									if (!hosts[serviceType][serviceSubType][serviceGroup]) {
+										hosts[serviceType][serviceSubType][serviceGroup] = {
 											expanded: true,
 											list: []
 										};
 									}
 
-									currentScope.hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
+									hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
 								}
 								else{
 
@@ -166,14 +166,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										}
 									}
 
-									if(!currentScope.hosts[serviceType][serviceSubType][serviceGroup]){
-										currentScope.hosts[serviceType][serviceSubType][serviceGroup] = {
+									if(!hosts[serviceType][serviceSubType][serviceGroup]){
+										hosts[serviceType][serviceSubType][serviceGroup] = {
 											expanded: true,
 											list: []
 										};
 									}
 
-									currentScope.hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
+									hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
 								}
 							}
 
@@ -182,9 +182,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							if(currentScope.oldStyle){
 								currentScope.myController = currentScope.myNginx = true;
 							}
-						}
-						else{
-							delete currentScope.hosts;
+							currentScope.hosts = hosts;
 						}
 					}
 
@@ -1106,6 +1104,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 
 	function hostLogs(currentScope, service, task) {
 		overlayLoading.show();
+		currentScope.pauseRefresh = true;
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: "get",
 			routeName: "/dashboard/cloud/services/instances/logs",
@@ -1179,9 +1178,11 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 
 				mInstance.result.then(function () {
 					//Get triggers when modal is closed
+					currentScope.pauseRefresh = false;
 					$timeout.cancel(autoRefreshPromise);
 				}, function () {
 					//gets triggers when modal is dismissed.
+					currentScope.pauseRefresh = false;
 					$timeout.cancel(autoRefreshPromise);
 				});
 			}

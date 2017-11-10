@@ -1,6 +1,6 @@
 "use strict";
 var dbServices = soajsApp.components;
-dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout', '$cookies', '$localStorage', function (addEnv, productize, ngDataApi, $timeout, $cookies, $localStorage) {
+dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout', '$cookies', '$localStorage', '$window', function (addEnv, productize, ngDataApi, $timeout, $cookies, $localStorage, $window) {
 	
 	let overviewFunction = function ($scope, $modal) {
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);

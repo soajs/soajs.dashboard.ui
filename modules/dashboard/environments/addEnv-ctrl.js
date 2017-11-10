@@ -455,7 +455,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						}
 						else if($scope.clusters.external){
 							// ensure at least one server in array
-							if(!formData.cluster.local.name){
+							if(!formData.cluster.external.name){
 								$window.alert("Enter a name for the server");
 								return false;
 							}

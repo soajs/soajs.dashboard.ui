@@ -31,17 +31,10 @@ var navigation = [
 		'order': 2,
 		'checkPermission': {
 			'service': 'dashboard',
+			'method': 'get',
 			'route': '/environment/list'
 		},
 		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
 		'tplPath': 'modules/dashboard/home/directives/noenv.tmpl'
-	},
-	{
-		'id': 'help2',
-		'label': translation.help[LANG],
-		'url': '#/help',
-		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
-		'tplPath': 'modules/dashboard/home/directives/help.tmpl',
-		'footerMenu': true
 	}
 ];

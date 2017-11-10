@@ -311,6 +311,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 
 		var params = {
 			env: currentScope.envCode,
+			namespace: service.namespace,
 			serviceId: service.id,
 			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : '')
 		};
@@ -359,6 +360,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'put',
 						routeName: '/dashboard/cloud/services/scale',
+						params: {
+							namespace: service.namespace || '',
+						},
 						data: {
 							env: currentScope.envCode,
 							serviceId: service.id,
@@ -421,6 +425,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'put',
 			routeName: '/dashboard/cloud/services/redeploy',
+			params: {
+				namespace: service.namespace || ''
+			},
 			data: params
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -703,12 +710,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					if(!params.custom){
 						params.custom = {};
 					}
-					
+
 					var t = formData.branch;
 					if(typeof t === 'string'){
 						t = JSON.parse(angular.copy(formData.branch));
 					}
-					
+
 					params.custom.branch = t.name;
 					if(t.commit && t.commit.sha){
 						params.custom.commit = t.commit.sha;
@@ -729,6 +736,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'put',
 				routeName: '/dashboard/cloud/services/redeploy',
+				params: {
+					namespace: service.namespace || ''
+				},
 				data: params
 			}, function (error, response) {
 				overlayLoading.hide();
@@ -760,6 +770,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -820,6 +833,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -880,6 +896,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -940,6 +959,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1000,6 +1022,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": service.labels['soajs.service.name'],
@@ -1059,6 +1084,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
 			"data": {
 				"serviceId": service.id,
 				"serviceName": "controller",
@@ -1076,13 +1104,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		});
 	}
 
-	function hostLogs(currentScope, task) {
+	function hostLogs(currentScope, service, task) {
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: "get",
 			routeName: "/dashboard/cloud/services/instances/logs",
 			params: {
 				env: currentScope.envCode,
+				namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
 				serviceId: task.ref.service.id,
 				taskId: task.id
 			}
@@ -1114,6 +1143,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								routeName: "/dashboard/cloud/services/instances/logs",
 								params: {
 									env: currentScope.envCode,
+									namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
 									serviceId: task.ref.service.id,
 									taskId: task.id
 								}
@@ -1225,7 +1255,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						method: 'put',
 						routeName: '/dashboard/cloud/services/autoscale',
 						params:{
-							env: currentScope.envCode
+							env: currentScope.envCode,
+							namespace: service.namespace || ''
 						},
 						data: data
 					}, function (error) {

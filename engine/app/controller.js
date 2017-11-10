@@ -85,8 +85,8 @@ soajsApp.run(function ($rootScope) {
 	$rootScope.translation = translation;
 });
 
-soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers',
-	function ($scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers) {
+soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers',
+	function ($window, $scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers) {
 		document.title = titlePrefix;
 		$scope.appNavigation = navigation;
 		$scope.navigation = [];
@@ -339,7 +339,7 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 						});
 					}
 					else {
-						$route.reload();
+						$window.location.reload();
 					}
 				}
 			}
@@ -566,7 +566,7 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 											$scope.displayAlert('danger', 'You do not have permissions to access this section');
 											$timeout(function () {
 												$scope.closeAlert();
-												$scope.go("/help");
+												$scope.go("/dashboard");
 											}, 9000);
 										}
 									}
@@ -607,6 +607,9 @@ soajsApp.controller('soajsAppController', ['$scope', '$location', '$timeout', '$
 		$scope.isUserLoggedIn = function (stopRedirect) {
 			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$localStorage.soajs_user) {
 				$cookies.remove('access_token', { 'domain': interfaceDomain });
+				$cookies.remove('myEnv', { 'domain': interfaceDomain });
+				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+				$cookies.remove('soajsID', { 'domain': interfaceDomain });
 				$localStorage.soajs_user = null;
 				$localStorage.acl_access = null;
 				$scope.enableInterface = false;

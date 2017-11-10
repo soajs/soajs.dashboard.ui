@@ -33,20 +33,12 @@ var navigation = [
 		'order': 2,
 		'checkPermission': {
 			'service': 'dashboard',
-			'route': '/environment/list'
+			'route': '/environment/list',
+			'method': 'get'
 		},
 		'preferredEnv': "DASHBOARD",
 		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
 		'tplPath': 'modules/dashboard/home/directives/noenv.tmpl'
-	},
-	{
-		'id': 'help2',
-		'label': translation.help[LANG],
-		'url': '#/help',
-		'preferredEnv': "DASHBOARD",
-		'scripts': ['modules/dashboard/home/config.js', 'modules/dashboard/home/controller.js'],
-		'tplPath': 'modules/dashboard/home/directives/help.tmpl',
-		'footerMenu': true
 	}
 ];
 
@@ -55,7 +47,7 @@ var navigation = [
 	link.type = "text/javascript";
 	link.src = "themes/" + themeToUse + "/bootstrap.js";
 	document.getElementsByTagName("head")[0].appendChild(link);
-
+	
 	if (modules) {
 		var allFiles = [];
 		for (var pillar in modules) {
@@ -69,7 +61,7 @@ var navigation = [
 							else if (typeof modules[pillar][env][install] === 'object') {
 								if (modules[pillar][env][install].latest) {
 									allFiles.push(modules[pillar][env][install][modules[pillar][env][install].latest]);
-
+									
 								}
 								else {
 									var latest = parseInt(Object.keys(modules[pillar][env][install])[0]);
@@ -86,9 +78,9 @@ var navigation = [
 				}
 			}
 		}
-
+		
 		var head = document.getElementsByTagName("head")[0];
-
+		
 		function getFile(entry) {
 			var x = document.createElement("script");
 			x.type = "text/javascript";
@@ -96,7 +88,7 @@ var navigation = [
 			//head.appendChild(x);
 			head.insertBefore(x, head.firstChild);
 		}
-
+		
 		for (var j = 0; j < allFiles.length; j++) {
 			getFile(allFiles[j]);
 		}

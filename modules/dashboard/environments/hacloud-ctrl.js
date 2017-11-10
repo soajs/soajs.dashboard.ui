@@ -3,7 +3,7 @@
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv','metricsSrv', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, metricsSrv, injectFiles, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
-	
+
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 
@@ -11,10 +11,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	var autoRefreshTimeoutMetrics;
 
 	$scope.serviceProviders = environmentsConfig.providers;
-	
+
     $scope.nodes = {};
 	$scope.services = {};
-	
+
 	$scope.ShowMetrics = {};
 	$scope.servicesMetrics = {};
 	$scope.metricsRefreshInterval = 5000;
@@ -108,7 +108,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			});
 		}, tValue);
 	};
-	
+
 	$scope.autoRefreshMetrics = function () {
 		var tValue = $scope.metricsRefreshInterval;
 		autoRefreshTimeoutMetrics = setTimeout(function () {
@@ -135,7 +135,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.showHideGroupContent = function (groupName) {
 		$scope.groups[groupName].showContent = !$scope.groups[groupName].showContent;
 	};
-	
+
 	$scope.showHideGroupContent2= function (group) {
 		group.expanded = !group.expanded;
 	};
@@ -143,7 +143,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.checkCerts = function(env) {
 		nodeSrv.checkCerts($scope, env);
 	};
-	
+
 	$scope.getEnvironment = function(){
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -153,7 +153,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			}
 		}, function (error, response) {
 			if (error) {
-				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				$scope.myEnvironment = response;
@@ -237,10 +237,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		hacloudSrv.loadDaemonGroupConfig($scope, service);
 	};
 
-	$scope.hostLogs = function (task) {
-		hacloudSrv.hostLogs($scope, task);
+	$scope.hostLogs = function (service, task) {
+		hacloudSrv.hostLogs($scope, service, task);
 	};
-	
+
 	$scope.getServicesMetrics = function (cb) {
 		metricsSrv.getServicesMetrics($scope, cb);
 	};
@@ -256,7 +256,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.checkHeapster = function(cb) {
 		hacloudSrv.checkHeapster($scope, cb);
 	};
-	
+
 	$scope.checkMetricsServer = function(cb) {
 		metricsSrv.checkMetricsServer($scope, cb);
 	};
@@ -264,12 +264,12 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.deployHeapster = function(){
 		deploySrv.deployHeapster($scope);
 	};
-	
+
 	$scope.deployMetricsServer = function(){
 		deploySrv.deployMetricsServer($scope);
 	};
-	
-	
+
+
 	$scope.autoScale = function (service) {
 		hacloudSrv.autoScale($scope, service);
 	};
@@ -281,7 +281,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.numToArray = function(num) {
 		return new Array(num);
 	};
-	
+
 	$scope.showHideMetrics = function(containerName){
 		$scope.ShowMetrics[containerName] = !($scope.ShowMetrics[containerName]);
 	};
@@ -290,7 +290,16 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	if($cookies.getObject('myEnv', {'domain': interfaceDomain})){
 		$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-		$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+		
+		if($scope.envDeployer.type === 'manual'){
+			$scope.$parent.go("#/environments-hosts");
+		}
+		
+		if($scope.envDeployer && $scope.envDeployer.selected){
+			$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+		}
+		
+		
 	}
 
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
@@ -315,7 +324,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			});
 		});
 	}
-	
+
 	$scope.$on("$destroy", function () {
 		$scope.destroyed = true;
 		clearTimeout(autoRefreshTimeoutInstance);

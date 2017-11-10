@@ -60,11 +60,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							$scope.maxEntries++;
 							$scope.configuration[service].icon = 'minus';
 							$scope.configuration[service].versions = {};
-							
+
 							if ($scope.configuration[service].type === 'daemon') {
 								for (var i in $scope.configuration[service]) {
 									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options'].indexOf(i) === -1) {
-										
+
 										$scope.configuration[service].versions[i] = {};
 										for (var groupName in $scope.configuration[service][i]) {
 											$scope.configuration[service].versions[i][groupName] = angular.copy($scope.configuration[service][i][groupName]);
@@ -72,11 +72,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 										delete $scope.configuration[service][i];
 									}
 								}
-								
+
 							}
 							else {
 								for (var i in $scope.configuration[service]) {
-									
+
 									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options'].indexOf(i) === -1) {
 										$scope.configuration[service].versions[i] = angular.copy($scope.configuration[service][i]);
 										delete $scope.configuration[service][i];
@@ -147,7 +147,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				data.default.options = $scope.configuration[service].options;
 			}
 		}
-		
+
 		overlayLoading.show();
 		if ($scope.configuration[service].type === 'daemon') {
 			var newData = {
@@ -155,7 +155,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				serviceName: data.serviceName,
 				version: {}
 			};
-			
+
 			var max = Object.keys(data.version).length;
 			updateDaemonsGroupCD(data.version, 0, function () {
 				overlayLoading.hide();
@@ -181,7 +181,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				}
 			});
 		}
-		
+
 		function updateDaemonsGroupCD(version, counter, cb) {
 			var groupName = Object.keys(version)[counter];
 			if (groupName === 'v') {
@@ -192,7 +192,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				var daemonGroupData = angular.copy(newData);
 				daemonGroupData.version = data.version[groupName];
 				daemonGroupData.version.v = data.version.v;
-				
+
 				getSendDataFromServer($scope, ngDataApi, {
 					method: 'post',
 					routeName: '/dashboard/cd',
@@ -485,6 +485,8 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 					}
 				}
 			}
+
+			params.env = oneEntry.env.toLowerCase(); //NOTE: this is required at the root level to get the registry of the environment
 
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {

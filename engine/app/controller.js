@@ -566,7 +566,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 											$scope.displayAlert('danger', 'You do not have permissions to access this section');
 											$timeout(function () {
 												$scope.closeAlert();
-												$scope.go("/help");
+												$scope.go("/dashboard");
 											}, 9000);
 										}
 									}

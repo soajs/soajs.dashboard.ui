@@ -580,7 +580,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'type': tType,
 							'code': tCode,
 							'name': formData.name,
-							'email': formData.email,
 							'description': formData.description,
 							'tag': formData.tag
 						};

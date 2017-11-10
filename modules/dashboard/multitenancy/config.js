@@ -219,15 +219,6 @@ var tenantConfig = {
 					'required': true
 				},
 				{
-					'name': 'email',
-					'label': 'Email',
-					'type': 'email',
-					'placeholder': translation.formEmailPlaceHolder[LANG],
-					'value': '',
-					'tooltip': translation.formEmailToolTip[LANG],
-					'required': true
-				},
-				{
 					'name': 'description',
 					'label': translation.description[LANG],
 					'type': 'textarea',

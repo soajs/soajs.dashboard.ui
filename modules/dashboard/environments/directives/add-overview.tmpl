@@ -104,6 +104,92 @@
 			</div>
 		</fieldset>
 	</accordion-group>
+	<accordion-group ng-show="wizard.cluster">
+		<accordion-heading>
+			MongoDB <span class="text-capitalize">{{wizard.cluster.type}}</span>
+		</accordion-heading>
+		<div class="addEnvTable">
+			<table>
+				<tbody>
+					<tr ng-repeat="(a,b) in wizard.cluster[wizard.cluster.type]" ng-if="b && (a ==='name' || a ==='prefix' || a ==='replicaSet')">
+						<td ><label class="text-capitalize">{{a}}</label></td>
+						<td >{{b}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div ng-if="wizard.cluster.type !== 'share'">
+		<hr>
+		<fieldset>
+			<legend>
+				Servers
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr>
+							<th><label class="text-capitalize">Host</label></th>
+							<th>Port</th>
+						</tr>
+						<tr ng-repeat="(a, b) in wizard.cluster[wizard.cluster.type]['servers']">
+							<td><label style="font-weight: normal;">{{b.host}}</label>
+							</td>
+							<td>{{b.port}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>
+				Credentials
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr ng-repeat="(a, b) in wizard.cluster[wizard.cluster.type]['credentials']">
+							<td><label>{{a}}</label>
+							</td>
+							<td>{{b}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>
+				URLParam
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr ng-repeat="(a, b) in wizard.cluster[wizard.cluster.type]['URLParam']">
+							<td><label class="text-capitalize">{{a}}</label>
+							</td>
+							<td>{{b}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>
+				Streaming
+			</legend>
+			<div class="addEnvTable">
+				<table>
+					<tbody>
+						<tr ng-repeat="(a, b) in wizard.cluster[wizard.cluster.type]['streaming']">
+							<td><label class="text-capitalize">{{a}}</label>
+							</td>
+							<td>{{b}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		</div>
+	</accordion-group>
 	<accordion-group ng-show="wizard.urac.deploy">
 		<accordion-heading>
 			SOAJS URAC
@@ -161,8 +247,9 @@
 			<table>
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.nginx">
-						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"><label class="text-capitalize">{{k}}
-							<span ng-if="k=='memory'">(in MBytes)</span></label>
+						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'">
+							<label class="text-capitalize">{{k}}
+								<span ng-if="k=='memory'">(in MBytes)</span></label>
 						</td>
 						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"> {{v}}</td>
 					</tr>

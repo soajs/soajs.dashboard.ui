@@ -1037,6 +1037,32 @@ soajsApp.directive('textSizeSlider', ['$document', function ($document) {
 	}
 }]);
 
+soajsApp.directive('jsonText', function() {
+	return {
+		restrict: 'A',
+		require: 'ngModel',
+		link: function(scope, element, attr, ngModel) {
+			function into(input) {
+				try {
+					return JSON.parse(input);
+				}
+				catch (e){
+					return {};
+				}
+			}
+			function out(data) {
+				try {
+					return JSON.stringify(data, null, 2);
+				}
+				catch (e){
+					return JSON.stringify("", null, 2);
+				}
+			}
+			ngModel.$parsers.push(into);
+			ngModel.$formatters.push(out);
+		}
+	};
+});
 var overlay = {
 	show: function (cb) {
 		var overlayHeight = jQuery(document).height();

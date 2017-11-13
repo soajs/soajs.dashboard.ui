@@ -663,7 +663,10 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 								"data": deployObject
 							}, function (error, service) {
 								currentScope.wizard.cluster.serviceId = service;
-								return cb(error, currentScope.wizard.cluster.local.name);
+								return cb(error, {
+									name: currentScope.wizard.cluster.local.name,
+									prefix: currentScope.wizard.cluster.local.prefix || null
+								});
 							});
 						}
 					});
@@ -671,8 +674,11 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			});
 		}
 		else if (currentScope.wizard.cluster.share) {
-			//return shared cluster name
-			return cb (null, currentScope.wizard.cluster.share.name);
+			//return shared cluster
+			return cb (null, {
+				name: currentScope.wizard.cluster.share.name,
+				prefix: currentScope.wizard.cluster.share.prefix || null
+			});
 		}
 		else if (currentScope.wizard.cluster.external) {
 			//only add the resource
@@ -710,21 +716,27 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				if (cluster && cluster._id){
 						currentScope.wizard.cluster.clusterId = cluster._id;
 				}
-				return cb(error, currentScope.wizard.cluster.external.name);
+				return cb(error, {
+					name: currentScope.wizard.cluster.external.name,
+					prefix: currentScope.wizard.cluster.external.prefix || null
+				});
 			});
 		}
 	}
 	
 	function handleClusters(currentScope, cb) {
-		deployCluster(currentScope, function (error, clusterName) {
+		deployCluster(currentScope, function (error, cluster) {
 			if (error) {
 				return cb(error);
 			}
 			let uracData = {
 				"name": "urac",
-				"cluster": clusterName,
+				"cluster": cluster.name,
 				"tenantSpecific": true
 			};
+			if (cluster.prefix){
+				uracData.prefix = cluster.prefix;
+			}
 			//add urac db using cluster
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "post",
@@ -740,7 +752,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				else {
 					var sessionData = {
 						"name": "session",
-						"cluster": clusterName,
+						"cluster": cluster.name,
 						"tenantSpecific": false,
 						"sessionInfo": {
 							dbName: "core_session",
@@ -750,7 +762,9 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							expireAfter: 1209600000
 						}
 					};
-					
+					if (cluster.prefix){
+						sessionData.prefix = cluster.prefix;
+					}
 					//update session db
 					getSendDataFromServer(currentScope, ngDataApi, {
 						"method": "put",

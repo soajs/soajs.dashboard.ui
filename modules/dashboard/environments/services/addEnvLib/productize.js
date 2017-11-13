@@ -343,7 +343,7 @@ dbServices.service('productize', ['ngDataApi', 'addEnv', function (ngDataApi, ad
 								
 								let domain = addEnv.getAPIInfo(currentScope, currentScope.wizard.nginx, 'sitePrefix');
 								
-								var postData = environmentsConfig.portal.tenantApplicationKeyConfig;
+								var postData = angular.copy(environmentsConfig.portal.tenantApplicationKeyConfig);
 								
 								postData.envCode = currentScope.wizard.gi.code.toLowerCase();
 								postData.config.urac.link.addUser = domain + "/#/setNewPassword";

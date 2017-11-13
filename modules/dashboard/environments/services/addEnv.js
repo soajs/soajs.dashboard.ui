@@ -101,7 +101,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 
 		function buildRecipe(){
-			let recipe = environmentsConfig.portal.nginxRecipe;
+			let recipe = angular.copy(environmentsConfig.portal.nginxRecipe);
 			
 			recipe.deployOptions.image.prefix = currentScope.wizard.nginx.imagePrefix || "soajsorg";
 			recipe.deployOptions.image.name = currentScope.wizard.nginx.imageName || "nginx";

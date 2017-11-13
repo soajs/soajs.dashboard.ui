@@ -18,7 +18,7 @@ if(location && location.host){
 var protocol = window.location.protocol;
 
 //detect port
-var mydomainport = (protocol ==='https') ? 443 : 80;
+var mydomainport = (protocol ==='https:') ? 443 : 80;
 if (location && location.port && parseInt(location.port) !== 80) {
 	mydomainport = location.port;
 }

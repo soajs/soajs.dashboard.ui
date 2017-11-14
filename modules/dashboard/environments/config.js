@@ -89,6 +89,14 @@ var environmentsConfig = {
 					}
 				]
 			},
+			step31: {
+				"entries": [
+					{
+						"name": "deployment",
+						"directive": "modules/dashboard/environments/directives/deploy-service-details.tmpl"
+					}
+				]
+			},
 			step4: {
 				"entries": [
 					{

@@ -11,19 +11,6 @@
 					<div class="fieldMsg hint">Provide a Code for your Environment</div>
 				</div>
 			</td>
-			<td align="center">
-				<div id="sensitive-wrapper" style="margin-top:20px;">
-					<div>
-						<label style="position:relative; top:-3px;">Sensitive</label>
-						<label class="toggleSwitch">
-							<input type="checkbox" ng-model="form.formData.sensitive"><span class="buttonSlider round"></span>
-						</label>
-						<div class="fieldMsg hint">If this environment is sensitive, then the Swagger Simulator will not
-							interact with it.
-						</div>
-					</div>
-				</div>
-			</td>
 		</tr>
 		<tr>
 			<td colspan="3">
@@ -60,104 +47,6 @@
 						<input class="form-control" ng-model="form.formData.sitePrefix" type="text" placeholder="site" ng-required="tempFormEntries.sitePrefix.required"/>
 						<div class="fieldMsg hint">What is the frontend site prefix associated with this domain ?</div>
 					</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<div id="tKeyPass-wrapper">
-					<div>
-						<label>Tenant Key Security Password</label>
-						<input class="form-control" ng-model="form.formData.tKeyPass" type="text" placeholder="My Tenant Key AES256 Password..." ng-required="tempFormEntries.tKeyPass.required"/>
-						<div class="fieldMsg hint">Provide a secret phrase to encrypt the tenants keys that will access
-							this environment.
-						</div>
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr ng-show="!portalDeployment">
-			<td colspan="3">
-				<div>
-					<label>I Want to use the SOAJS Framework in this Environment</label>
-					<label class="toggleSwitch">
-						<input type="checkbox" ng-model="form.formData.soajsFrmwrk" ng-change="tempFormEntries.soajsFrmwrk.onAction()"/><span class="buttonSlider round"></span>
-					</label>
-					<div class="fieldMsg hint">Turn On if you want to use the soajs framework and provide security
-						phrases to encrypt cookies and sessions
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr ng-show="form.formData.soajsFrmwrk">
-			<td colspan="3">
-				<div id="cookiesecret-wrapper">
-					<label>Cookie Secret</label>
-					<input class="form-control" ng-model="form.formData.cookiesecret" type="text" placeholder="My Cookie Secret Phrase ..." ng-required="form.formData.soajsFrmwrk"/>
-					<div class="fieldMsg hint">
-						Enter the cookie secret phrase, used to encrypt cookie values, minimum 5 characters.
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr ng-show="form.formData.soajsFrmwrk">
-			<td colspan="3">
-				<div id="sessionName-wrapper">
-					<label>Session Name</label>
-					<input class="form-control" ng-model="form.formData.sessionName" type="text" placeholder="soajsID" ng-required="form.formData.soajsFrmwrk"/>
-					<div class="fieldMsg hint">
-						Specify a name for the session, minimum 5 characters.
-					</div>
-				</div>
-			</td>
-		<tr ng-show="form.formData.soajsFrmwrk">
-			<td colspan="3">
-				<div id="sessionSecret-wrapper">
-					<label>Session Secret</label>
-					<input class="form-control" ng-model="form.formData.sessionSecret" type="text" placeholder="My Session Secret Phrase ..." ng-required="form.formData.soajsFrmwrk"/>
-					<div class="fieldMsg hint">
-						Specify a secret phrase used to encrypt session values, minimum 5 characters.
-					</div>
-				</div>
-			</td>
-		</tr>
-		<tr ng-show="portalDeployment">
-			<td colspan="3">
-				<br />
-				<alert type="info">
-					<h4>Portal Account</h4>
-					<hr>
-					<p>
-						The portal environment provides the ability to manage the user accounts in all environments but is completely isolated and independent from the Dashboard Environment.<br />
-						Therefore, you need to create at least one administrator account for the portal environment so you can login after you deploy it.
-					</p>
-				</alert>
-			</td>
-		</tr>
-		<tr ng-show="portalDeployment">
-			<td colspan="3">
-				<div>
-					<label>Username</label>
-					<input class="form-control" ng-model="form.formData.username" type="text" placeholder="portal" ng-required="form.formData.soajsFrmwrk"/>
-					<div class="fieldMsg hint">Provide the username of the first account to create in the portal environment.</div>
-				</div>
-			</td>
-		</tr>
-		<tr ng-show="portalDeployment">
-			<td colspan="3">
-				<div>
-					<label>Password</label>
-					<input class="form-control" ng-model="form.formData.password" type="password" placeholder="password" ng-required="form.formData.soajsFrmwrk"/>
-					<div class="fieldMsg hint">Provide the password of the first account to create in the portal environment.</div>
-				</div>
-			</td>
-		</tr>
-		<tr ng-show="portalDeployment">
-			<td colspan="3">
-				<div>
-					<label>Email</label>
-					<input class="form-control" ng-model="form.formData.email" type="email" placeholder="portal@soajs.org" ng-required="form.formData.soajsFrmwrk"/>
-					<div class="fieldMsg hint">Provide the email of the first account to create in the portal environment.</div>
 				</div>
 			</td>
 		</tr>

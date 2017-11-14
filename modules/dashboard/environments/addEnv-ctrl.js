@@ -686,7 +686,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							$scope.wizard.gi.sensitive = formData.sensitive;
 							$scope.wizard.gi.tKeyPass = formData.tKeyPass;
 							
-							if($scope.deployPortal){
+							if($scope.portalDeployment){
 								$scope.wizard.gi.username = formData.username;
 								$scope.wizard.gi.password = formData.password;
 								$scope.wizard.gi.email = formData.email;

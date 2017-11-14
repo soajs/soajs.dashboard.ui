@@ -324,22 +324,22 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						deletePortalProductsAndTenants($scope, function (error) {
 							if (error) {
 								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							} else {
-								deleteEnvironment($scope, function (error, response) {
-									if (error) {
-										currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-									}
-									else if (response) {
-										currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-										getEnvironments(null, function () {
-											currentScope.listEnvironments();
-										});
-									}
-									else {
-										currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
-									}
-								});
 							}
+							deleteEnvironment($scope, function (error, response) {
+								if (error) {
+									currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								}
+								else if (response) {
+									currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+									getEnvironments(null, function () {
+										currentScope.listEnvironments();
+									});
+								}
+								else {
+									currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+								}
+							});
+							
 						});
 					};
 					

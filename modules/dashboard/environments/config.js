@@ -545,7 +545,7 @@ var environmentsConfig = {
 			},
 			"services": {
 				"list": ['dashboard', '/cloud/services/list', 'get'],
-				"add": ['dashboard', '/cloud/hosts/deployService', 'post'],
+				"add": ['dashboard', '/cloud/services/soajs/deploy', 'post'],
 				"delete": ['dashboard', '/cloud/services/delete', 'delete'],
 				"scale": ['dashboard', '/cloud/services/scale', 'put'],
 				"redeploy": ['dashboard', '/cloud/services/redeploy', 'put'],

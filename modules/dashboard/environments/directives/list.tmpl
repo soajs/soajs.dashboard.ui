@@ -72,7 +72,7 @@
 								<span class="icon icon-pencil2" tooltip="{{translation.editEnvironment[LANG]}}"></span>
 							</a>
 
-							<a ng-if="access.deleteEnvironment && oneEnv.code !== 'DASHBOARD'" href="" ng-confirm-click="{{translation.areYouSureWantRemoveThisEnvironment[LANG]}}" ng-click="removeEnvironment(oneEnv);">
+							<a ng-if="access.deleteEnvironment && oneEnv.code !== 'DASHBOARD'" href="" ng-click="removeEnvironment(oneEnv);">
 								<span class="icon icon-cross" tooltip="{{translation.removeEnvironment[LANG]}}"></span>
 							</a>
 						</div>
@@ -228,6 +228,21 @@
 	            Save
             </button>
         </span>
+		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="deletePortal.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">Delete Portal</h3>
+	</div>
+	<div class="modal-body">
+		<p>The following Environment has a product and a tenant associated to it.
+			Do you want to remove them as well ?</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success"  ng-click="confirmDeleteProductsAndTenants()"> Yes, Delete Everything!</button>
+		<button class="btn btn-primary"  ng-click="onlyDeleteEnv()"> No, Only Delete The Environment</button>
 		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
 	</div>
 </script>

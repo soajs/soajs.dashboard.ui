@@ -43,7 +43,7 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 						$modal.open({
 							templateUrl: "progressAddEnv.tmpl",
 							size: 'm',
-							backdrop: true,
+							backdrop: 'static',
 							keyboard: false,
 							controller: function ($scope, $modalInstance) {
 								$scope.progressCounter = 0;

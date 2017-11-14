@@ -767,8 +767,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					}
 					//update session db
 					getSendDataFromServer(currentScope, ngDataApi, {
-						"method": "put",
-						"routeName": "/dashboard/environment/dbs/update",
+						"method": "post",
+						"routeName": "/dashboard/environment/dbs/add",
 						"params": {
 							"env": currentScope.wizard.gi.code.toUpperCase()
 						},

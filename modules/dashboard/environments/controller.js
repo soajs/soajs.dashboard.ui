@@ -9,7 +9,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
-	function putMyEnv(record){
+	function putMyEnv(record) {
 		var data = {
 			"_id": record._id,
 			"code": record.code,
@@ -130,7 +130,9 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						newList = response[0];
 					}
 					$scope.grid = { rows: newList };
-					$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
+					if ($scope.grid.rows && $scope.grid.rows.length) {
+						$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
+					}
 				}
 			});
 		}

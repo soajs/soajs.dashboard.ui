@@ -25,12 +25,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				onAction : function(){
 					if($scope.form && $scope.form.formData && $scope.form.formData.code === 'PORTAL'){
 						$scope.portalDeployment = true;
-						$scope.tempFormEntries.soajsFrmwrk.required = true;
-						$scope.form.formData.soajsFrmwrk = true;
+						// $scope.tempFormEntries.soajsFrmwrk.required = true;
+						// $scope.form.formData.soajsFrmwrk = true;
 					}else{
 						$scope.portalDeployment = false;
-						$scope.tempFormEntries.soajsFrmwrk.required = false;
-						$scope.form.formData.soajsFrmwrk = false;
+						// $scope.tempFormEntries.soajsFrmwrk.required = false;
+						// $scope.form.formData.soajsFrmwrk = false;
 					}
 				}
 			},
@@ -44,34 +44,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				required: false
 			},
 			sitePrefix: {
-				required: false
-			},
-			tKeyPass: {
-				required: true
-			},
-			soajsFrmwrk: {
-				required: false,
-				onAction: function () {
-					
-					if ($scope.form.formData.soajsFrmwrk) {
-						entries.cookiesecret.required = true;
-						entries.sessionName.required = true;
-						entries.sessionSecret.required = true;
-					}
-					else {
-						entries.cookiesecret.required = false;
-						entries.sessionName.required = false;
-						entries.sessionSecret.required = false;
-					}
-				}
-			},
-			cookiesecret: {
-				required: false
-			},
-			sessionName: {
-				required: false
-			},
-			sessionSecret: {
 				required: false
 			}
 		};
@@ -97,13 +69,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									$window.alert('Some of the fields under controller section are still missing.');
 									return false;
 								}
-							}
-						}
-						
-						if (formData.soajsFrmwrk) {
-							if (!formData.cookiesecret || !formData.sessionName || !formData.sessionSecret) {
-								$window.alert("If you want to use the SOAJS Framework, make sure you fill all of: cookie secret, session name & session secret");
-								return false;
 							}
 						}
 						
@@ -262,7 +227,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							delete $scope.wizard.nginx;
 							
 							$scope.lastStep = 2;
-							overview($scope, $modal);
+							if($scope.portalDeployment){
+								$scope.Step21();
+							}
+							else{
+								$scope.Step3();
+							}
 						}
 						else {
 							if ($scope.platforms.docker) {
@@ -567,11 +537,24 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	};
 	
 	$scope.removeDeploymentEntries = function(){
+		
+		console.log($scope.form.formData.deploy);
 		if(!$scope.form.formData.deploy){
 			delete $scope.wizard.urac;
 			delete $scope.wizard.controller;
 			delete $scope.wizard.oauth;
 			delete $scope.wizard.nginx;
+			
+			$scope.tempFormEntries.mode.required = false;
+			$scope.tempFormEntries.memory.required = false;
+			$scope.tempFormEntries.catalog.required = false;
+			$scope.tempFormEntries.branch.required = false;
+		}
+		else{
+			$scope.tempFormEntries.mode.required = true;
+			$scope.tempFormEntries.memory.required = true;
+			$scope.tempFormEntries.catalog.required = true;
+			$scope.tempFormEntries.branch.required = true;
 		}
 	};
 	
@@ -588,8 +571,45 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				});
 				
 				let entries = {
+					tKeyPass: {
+						required: true
+					},
+					soajsFrmwrk: {
+						required: false,
+						onAction: function () {
+							
+							if ($scope.form.formData.soajsFrmwrk) {
+								entries.cookiesecret.required = true;
+								entries.sessionName.required = true;
+								entries.sessionSecret.required = true;
+							}
+							else {
+								entries.cookiesecret.required = false;
+								entries.sessionName.required = false;
+								entries.sessionSecret.required = false;
+							}
+						}
+					},
+					cookiesecret: {
+						required: false
+					},
+					sessionName: {
+						required: false
+					},
+					sessionSecret: {
+						required: false
+					},
+					username: {
+						required: ($scope.portalDeployment === true)
+					},
+					password: {
+						required: ($scope.portalDeployment === true)
+					},
+					email: {
+						required: ($scope.portalDeployment === true)
+					},
 					mode: {
-						required: true,
+						required: false,
 						onAction: function () {
 							$scope.tempFormEntries.number.required = ['deployment', 'replicated'].indexOf($scope.form.formData.mode) !== -1;
 						}
@@ -598,10 +618,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						required: false
 					},
 					memory: {
-						required: true
+						required: false
 					},
 					catalog: {
-						required: true,
+						required: false,
 						onAction: function () {
 							//reset form entries
 							delete $scope.form.formData.branch;
@@ -614,10 +634,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						}
 					},
 					branch: {
-						required: true
+						required: false
 					}
 				};
-				
 				doBuildForm(entries, repoBranches);
 			});
 		});
@@ -650,6 +669,36 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						'label': "Next",
 						'btn': 'primary',
 						'action': function (formData) {
+							for (let fieldName in $scope.tempFormEntries) {
+								if($scope.tempFormEntries[fieldName].required && !formData[fieldName]){
+									$window.alert('Some fields are still missing: ' + fieldName);
+									return false;
+								}
+							}
+							
+							if (formData.soajsFrmwrk) {
+								if (!formData.cookiesecret || !formData.sessionName || !formData.sessionSecret) {
+									$window.alert("If you want to SOAJS Framework to persist your session, make sure you fill all of: cookie secret, session name & session secret");
+									return false;
+								}
+							}
+							
+							$scope.wizard.gi.sensitive = formData.sensitive;
+							$scope.wizard.gi.tKeyPass = formData.tKeyPass;
+							
+							if($scope.portalDeployment){
+								$scope.wizard.gi.username = formData.username;
+								$scope.wizard.gi.password = formData.password;
+								$scope.wizard.gi.email = formData.email;
+							}
+							
+							if (formData.soajsFrmwrk) {
+								$scope.wizard.gi.soajsFrmwrk = formData.soajsFrmwrk;
+								$scope.wizard.gi.cookiesecret = formData.cookiesecret;
+								$scope.wizard.gi.sessionName = formData.sessionName;
+								$scope.wizard.gi.sessionSecret = formData.sessionSecret;
+							}
+							
 							$scope.lastStep = 3;
 							if (formData.deploy) {
 								//check mandatory fields
@@ -662,12 +711,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 													return false;
 												}
 											}
-										}
-									}
-									else if ($scope.tempFormEntries[fieldName].required) {
-										if (!formData[fieldName]) {
-											$window.alert('Some of the fields under controller section are still missing.');
-											return false;
 										}
 									}
 								}
@@ -712,6 +755,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			
 			buildForm($scope, $modal, options, function () {
 				if ($localStorage.addEnv && $localStorage.addEnv.step3) {
+					$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
 					$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);
 					$scope.form.formData = $scope.wizard.controller;
 				}
@@ -745,6 +789,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				if ($scope.wizard.controller && $scope.wizard.controller.catalog) {
 					injectCatalogInputs($scope.serviceRecipes, controllerBranches);
 				}
+				
+				if($scope.wizard.gi.code === 'PORTAL'){
+					if($routeParams.portal){
+						$scope.portalDeployment = true;
+					}
+				}
+				
 				overlayLoading.hide();
 			});
 		}
@@ -808,7 +859,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		});
 		
 		function doBuildForm(entries, repoBranches) {
-			var configuration = angular.copy(environmentsConfig.form.add.step3.entries);
+			var configuration = angular.copy(environmentsConfig.form.add.step31.entries);
 			$scope.tempFormEntries = entries;
 			var options = {
 				timeout: $timeout,

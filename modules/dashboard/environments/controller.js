@@ -9,7 +9,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
-	function putMyEnv(record){
+	function putMyEnv(record) {
 		var data = {
 			"_id": record._id,
 			"code": record.code,
@@ -130,7 +130,9 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						newList = response[0];
 					}
 					$scope.grid = { rows: newList };
-					$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
+					if ($scope.grid.rows && $scope.grid.rows.length) {
+						$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
+					}
 				}
 			});
 		}
@@ -309,11 +311,11 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	
 	$scope.removeEnvironment = function (row) {
 		
-		function deletePortalProductsAndTenants(deleteCb){
-			if(row.code === 'PORTAL'){
+		function deletePortalProductsAndTenants(deleteCb) {
+			if (row.code === 'PORTAL') {
 				let purgeall = $window.confirm("The following Environment has a product and a tenant associated to it.\n Do you want to remove them as well ?");
 				
-				if(purgeall){
+				if (purgeall) {
 					//remove product portal
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "delete",
@@ -332,16 +334,16 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							}, function (error) {
 								if (error) {
 									deleteCb(error);
-								}else{
+								} else {
 									deleteCb(false);
 								}
 							});
 						}
 					});
-				}else{
+				} else {
 					deleteCb();
 				}
-			}else{
+			} else {
 				deleteCb();
 			}
 		}
@@ -349,17 +351,17 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/environment/delete",
-			"params": {"id": row['_id']}
+			"params": { "id": row['_id'] }
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				if (response) {
-					deletePortalProductsAndTenants(function(error){
-						if(error){
+					deletePortalProductsAndTenants(function (error) {
+						if (error) {
 							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}else{
+						} else {
 							$scope.$parent.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
 						}
 						

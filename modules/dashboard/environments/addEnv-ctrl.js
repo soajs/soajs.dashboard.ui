@@ -570,87 +570,76 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		$scope.serviceRecipes = [];
 		$scope.currentServiceName = 'controller';
 		getCatalogRecipes((recipes) => {
-			getServiceBranches($scope.currentServiceName, (repoBranches) => {
-				recipes.forEach((oneRecipe) => {
-					if (oneRecipe.type === 'service' && oneRecipe.subtype === 'soajs') {
-						$scope.serviceRecipes.push(oneRecipe);
-					}
-				});
-				
-				let entries = {
-					tKeyPass: {
-						required: true
-					},
-					soajsFrmwrk: {
-						required: false,
-						onAction: function () {
-							
-							if ($scope.form.formData.soajsFrmwrk) {
-								entries.cookiesecret.required = true;
-								entries.sessionName.required = true;
-								entries.sessionSecret.required = true;
-							}
-							else {
-								entries.cookiesecret.required = false;
-								entries.sessionName.required = false;
-								entries.sessionSecret.required = false;
-							}
-						}
-					},
-					cookiesecret: {
-						required: false
-					},
-					sessionName: {
-						required: false
-					},
-					sessionSecret: {
-						required: false
-					},
-					username: {
-						required: ($scope.portalDeployment === true)
-					},
-					password: {
-						required: ($scope.portalDeployment === true)
-					},
-					email: {
-						required: ($scope.portalDeployment === true)
-					},
-					mode: {
-						required: false,
-						onAction: function () {
-							$scope.tempFormEntries.number.required = ['deployment', 'replicated'].indexOf($scope.form.formData.mode) !== -1;
-						}
-					},
-					number: {
-						required: false
-					},
-					memory: {
-						required: false
-					},
-					catalog: {
-						required: false,
-						onAction: function () {
-							//reset form entries
-							delete $scope.form.formData.branch;
-							delete $scope.form.formData.imagePrefix;
-							delete $scope.form.formData.imageName;
-							delete $scope.form.formData.imageTag;
-							delete $scope.form.formData.custom;
-							
-							injectCatalogInputs($scope.serviceRecipes, repoBranches);
-						}
-					},
-					branch: {
-						required: false
-					}
-				};
-				doBuildForm(entries, repoBranches);
+			recipes.forEach((oneRecipe) => {
+				if (oneRecipe.type === 'service' && oneRecipe.subtype === 'soajs') {
+					$scope.serviceRecipes.push(oneRecipe);
+				}
 			});
+			
+			let entries = {
+				tKeyPass: {
+					required: true
+				},
+				soajsFrmwrk: {
+					required: false,
+					onAction: function () {
+						
+						if ($scope.form.formData.soajsFrmwrk) {
+							entries.cookiesecret.required = true;
+							entries.sessionName.required = true;
+							entries.sessionSecret.required = true;
+						}
+						else {
+							entries.cookiesecret.required = false;
+							entries.sessionName.required = false;
+							entries.sessionSecret.required = false;
+						}
+					}
+				},
+				cookiesecret: {
+					required: false
+				},
+				sessionName: {
+					required: false
+				},
+				sessionSecret: {
+					required: false
+				},
+				username: {
+					required: ($scope.portalDeployment === true)
+				},
+				password: {
+					required: ($scope.portalDeployment === true)
+				},
+				email: {
+					required: ($scope.portalDeployment === true)
+				},
+				mode: {
+					required: false,
+					onAction: function () {
+						$scope.tempFormEntries.number.required = ['deployment', 'replicated'].indexOf($scope.form.formData.mode) !== -1;
+					}
+				},
+				number: {
+					required: false
+				},
+				memory: {
+					required: false
+				},
+				catalog: {
+					required: false
+				},
+				branch: {
+					required: false
+				}
+			};
+			doBuildForm(entries);
 		});
 		
-		function doBuildForm(entries, controllerBranches) {
+		function doBuildForm(entries) {
 			var configuration = angular.copy(environmentsConfig.form.add.step3.entries);
 			$scope.tempFormEntries = entries;
+			let serviceBranches;
 			var options = {
 				timeout: $timeout,
 				entries: configuration,
@@ -722,7 +711,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									}
 								}
 								
-								controllerBranches.branches.forEach((oneBranch) => {
+								serviceBranches.branches.forEach((oneBranch) => {
 									if (oneBranch.name === formData.branch && oneBranch.commit && oneBranch.commit.sha) {
 										formData.commit = oneBranch.commit.sha;
 									}
@@ -761,49 +750,63 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			};
 			
 			buildForm($scope, $modal, options, function () {
-				if ($localStorage.addEnv && $localStorage.addEnv.step3) {
-					$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
-					$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);
-					$scope.form.formData = $scope.wizard.controller;
-				}
-				
-				if ($scope.wizard.deploy.selectedDriver === 'docker') {
-					$scope.allowedModes = [
-						{
-							v: 'global',
-							l: 'Global'
-						},
-						{
-							v: 'replicated',
-							l: 'Replicated'
-						}
-					];
-				}
-				else {
-					$scope.allowedModes = [
-						{
-							v: 'daemonset',
-							l: 'Daemonset'
-						},
-						{
-							v: 'deployment',
-							l: 'Deployment'
-						}
-					];
-				}
-				
-				//if catalog recipe selected, open it's sub items
-				if ($scope.wizard.controller && $scope.wizard.controller.catalog) {
-					injectCatalogInputs($scope.serviceRecipes, controllerBranches);
-				}
-				
-				if($scope.wizard.gi.code === 'PORTAL'){
-					if($routeParams.portal){
-						$scope.portalDeployment = true;
+				getServiceBranches($scope.currentServiceName, (controllerBranches) => {
+					serviceBranches = controllerBranches;
+					$scope.tempFormEntries.catalog.onAction = function () {
+						//reset form entries
+						delete $scope.form.formData.branch;
+						delete $scope.form.formData.imagePrefix;
+						delete $scope.form.formData.imageName;
+						delete $scope.form.formData.imageTag;
+						delete $scope.form.formData.custom;
+						
+						injectCatalogInputs($scope.serviceRecipes, controllerBranches);
+					};
+					
+					if ($localStorage.addEnv && $localStorage.addEnv.step3) {
+						$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
+						$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);
+						$scope.form.formData = $scope.wizard.controller;
 					}
-				}
-				
-				overlayLoading.hide();
+					
+					if ($scope.wizard.deploy.selectedDriver === 'docker') {
+						$scope.allowedModes = [
+							{
+								v: 'global',
+								l: 'Global'
+							},
+							{
+								v: 'replicated',
+								l: 'Replicated'
+							}
+						];
+					}
+					else {
+						$scope.allowedModes = [
+							{
+								v: 'daemonset',
+								l: 'Daemonset'
+							},
+							{
+								v: 'deployment',
+								l: 'Deployment'
+							}
+						];
+					}
+					
+					//if catalog recipe selected, open it's sub items
+					if ($scope.wizard.controller && $scope.wizard.controller.catalog) {
+						injectCatalogInputs($scope.serviceRecipes, controllerBranches);
+					}
+					
+					if($scope.wizard.gi.code === 'PORTAL'){
+						if($routeParams.portal){
+							$scope.portalDeployment = true;
+						}
+					}
+					
+					overlayLoading.hide();
+				});
 			});
 		}
 	};
@@ -830,8 +833,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	
 	function serviceDeployment(){
 		overlayLoading.show();
-		getServiceBranches($scope.currentServiceName, (repoBranches) => {
-			let entries = {
+		let entries = {
 				mode: {
 					required: true,
 					onAction: function () {
@@ -845,29 +847,19 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					required: true
 				},
 				catalog: {
-					required: true,
-					onAction: function () {
-						//reset form entries
-						delete $scope.form.formData.branch;
-						delete $scope.form.formData.imagePrefix;
-						delete $scope.form.formData.imageName;
-						delete $scope.form.formData.imageTag;
-						delete $scope.form.formData.custom;
-						
-						injectCatalogInputs($scope.serviceRecipes, repoBranches);
-					}
+					required: true
 				},
 				branch: {
 					required: true
 				}
 			};
-			
-			doBuildForm(entries, repoBranches);
-		});
 		
-		function doBuildForm(entries, repoBranches) {
+		doBuildForm(entries);
+		
+		function doBuildForm(entries) {
 			var configuration = angular.copy(environmentsConfig.form.add.step31.entries);
 			$scope.tempFormEntries = entries;
+			let serviceBranches;
 			var options = {
 				timeout: $timeout,
 				entries: configuration,
@@ -909,7 +901,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								}
 							}
 							
-							repoBranches.branches.forEach((oneBranch) => {
+							serviceBranches.branches.forEach((oneBranch) => {
 								if (oneBranch.name === formData.branch && oneBranch.commit && oneBranch.commit.sha) {
 									formData.commit = oneBranch.commit.sha;
 								}
@@ -937,43 +929,57 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			};
 			
 			buildForm($scope, $modal, options, function () {
-				if ($localStorage.addEnv && $localStorage.addEnv[$scope.currentStep]) {
-					$scope.wizard[$scope.currentServiceName] = angular.copy($localStorage.addEnv[$scope.currentStep]);
-					$scope.form.formData = $scope.wizard[$scope.currentServiceName];
-				}
-				
-				$scope.form.formData.deploy = true;
-				
-				if ($scope.wizard.deploy.selectedDriver === 'docker') {
-					$scope.allowedModes = [
-						{
-							v: 'global',
-							l: 'Global'
-						},
-						{
-							v: 'replicated',
-							l: 'Replicated'
-						}
-					];
-				}
-				else {
-					$scope.allowedModes = [
-						{
-							v: 'daemonset',
-							l: 'Daemonset'
-						},
-						{
-							v: 'deployment',
-							l: 'Deployment'
-						}
-					];
-				}
-				
-				//if catalog recipe selected, open it's sub items
-				if ($scope.wizard[$scope.currentServiceName] && $scope.wizard[$scope.currentServiceName].catalog) {
-					injectCatalogInputs($scope.serviceRecipes, repoBranches);
-				}
-				overlayLoading.hide();
+				getServiceBranches($scope.currentServiceName, (repoBranches) => {
+					serviceBranches = repoBranches;
+					$scope.tempFormEntries.catalog.onAction = function () {
+						//reset form entries
+						delete $scope.form.formData.branch;
+						delete $scope.form.formData.imagePrefix;
+						delete $scope.form.formData.imageName;
+						delete $scope.form.formData.imageTag;
+						delete $scope.form.formData.custom;
+						
+						injectCatalogInputs($scope.serviceRecipes, repoBranches);
+					};
+					
+					if ($localStorage.addEnv && $localStorage.addEnv[$scope.currentStep]) {
+						$scope.wizard[$scope.currentServiceName] = angular.copy($localStorage.addEnv[$scope.currentStep]);
+						$scope.form.formData = $scope.wizard[$scope.currentServiceName];
+					}
+					
+					$scope.form.formData.deploy = true;
+					
+					if ($scope.wizard.deploy.selectedDriver === 'docker') {
+						$scope.allowedModes = [
+							{
+								v: 'global',
+								l: 'Global'
+							},
+							{
+								v: 'replicated',
+								l: 'Replicated'
+							}
+						];
+					}
+					else {
+						$scope.allowedModes = [
+							{
+								v: 'daemonset',
+								l: 'Daemonset'
+							},
+							{
+								v: 'deployment',
+								l: 'Deployment'
+							}
+						];
+					}
+					
+					//if catalog recipe selected, open it's sub items
+					if ($scope.wizard[$scope.currentServiceName] && $scope.wizard[$scope.currentServiceName].catalog) {
+						injectCatalogInputs($scope.serviceRecipes, repoBranches);
+					}
+					overlayLoading.hide();
+				});
 			});
 		}
 	}
@@ -1216,7 +1222,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	}
 	
 	function getServiceBranches(serviceName, cb) {
-		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/gitAccounts/getBranches',
@@ -1225,7 +1230,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				type: 'service'
 			}
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}

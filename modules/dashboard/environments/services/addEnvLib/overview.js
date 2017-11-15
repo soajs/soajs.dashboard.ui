@@ -279,7 +279,9 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 										parentScope.remoteCertificates = {};
 										delete parentScope.wizard;
 										parentScope.displayAlert('success', "Environment Created");
-										parentScope.$parent.go("#/environments");
+										$timeout(function(){
+											parentScope.$parent.go("#/environments");
+										}, 1000);
 									});
 								}
 							}

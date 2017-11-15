@@ -622,9 +622,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			}
 			else {
 				var user = $localStorage.soajs_user;
-				if ($scope.footerMenu.selectedMenu === '#/login') {
-					$scope.footerMenu.selectedMenu = '#/dashboard';
-				}
 				
 				$scope.enableInterface = true;
 				$scope.userFirstName = user.firstName;
@@ -634,10 +631,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.$on("loadUserInterface", function (event, args) {
 			doEnvPerNav();
-			if ($scope.footerMenu.selectedMenu === '#/login') {
-				$scope.footerMenu.selectedMenu = '#/dashboard';
-			}
-			
 			var user = $localStorage.soajs_user;
 			if (user) {
 				$scope.userFirstName = user.firstName;
@@ -852,7 +845,6 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		var user = $localStorage.soajs_user;
 		
 		function clearData() {
-			console.log('clearData');
 			$cookies.remove('access_token', { 'domain': interfaceDomain });
 			$cookies.remove('refresh_token', { 'domain': interfaceDomain });
 			$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
@@ -865,6 +857,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 			$localStorage.acl_access = null;
 			$localStorage.environments = null;
 			$scope.$parent.enableInterface = false;
+			$scope.$parent.go("/login");
 		}
 		
 		function logout() {
@@ -892,11 +885,9 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 					if (error) {
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
-					
+					$scope.dashboard = [];
 					$scope.currentSelectedEnvironment = null;
 					clearData();
-					$scope.dashboard = [];
-					$scope.$parent.go("/login");
 				});
 			});
 		}
@@ -906,7 +897,6 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		}
 		else {
 			clearData();
-			$scope.$parent.go("/login");
 		}
 	};
 }]);

@@ -7,6 +7,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
+	$scope.cloudProviders = environmentsConfig.providers;
+	$scope.cloudProviderHelpLink = {};
+	
 	$scope.portalDeployment = false;
 	
 	$scope.wizard = {};
@@ -14,6 +17,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	//Check whether each part of the domain is not longer than 63 characters,
 	//Allow internationalized domain names
 	$scope.domainRegex= '^((?=[a-zA-Z0-9-]{1,63}\\.)(xn--)?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\\.)+[a-zA-Z]{2,63}$';
+	
+	$scope.showProviderLink = function(myCloudProvider, technology){
+		$scope.cloudProviderHelpLink[technology] = myCloudProvider.help[technology];
+	};
 	
 	$scope.Step1 = function () {
 		overlayLoading.show();

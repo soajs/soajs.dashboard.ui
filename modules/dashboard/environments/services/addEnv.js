@@ -841,6 +841,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				url: portalAPI,
 				routeName: '/urac/checkUsername',
 				method: 'get',
+				token: false,
 				headers: {
 					key: currentScope.tenantExtKey
 				},
@@ -875,6 +876,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				headers: {
 					key: currentScope.tenantExtKey
 				},
+				token: false,
 				data: {
 					"username": currentScope.wizard.gi.username,
 					"firstName": "PORTAL",

@@ -190,10 +190,10 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 		}
 		
-		if (opts.headers.key && config.token) {
+		if (opts.headers.key) {
 			config.headers.key = opts.headers.key;
 		}
-		else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}) && config.token) {
+		else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
 			config.headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
 		}
 		else {

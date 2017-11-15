@@ -227,11 +227,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							formData.selectedDriver = 'manual';
 							delete formData.kubernetes;
 							delete formData.docker;
-							$localStorage.addEnv.step2 = angular.copy(formData);
-							$scope.wizard.deploy = angular.copy(formData);
 							
 							delete $scope.wizard.controller;
 							delete $scope.wizard.nginx;
+							
+							$localStorage.addEnv.step2 = angular.copy(formData);
+							$scope.wizard.deploy = angular.copy(formData);
 							
 							$scope.lastStep = 2;
 							if($scope.portalDeployment){
@@ -765,8 +766,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					
 					if ($localStorage.addEnv && $localStorage.addEnv.step3) {
 						$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
+						
 						$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);
 						$scope.form.formData = $scope.wizard.controller;
+						
+						if($scope.wizard.deploy && $scope.wizard.deploy.selectedDriver === 'manual'){
+							$scope.wizard.controller.deploy = false;
+						}
 					}
 					
 					if ($scope.wizard.deploy.selectedDriver === 'docker') {

@@ -232,17 +232,26 @@
 	</div>
 </script>
 
-<script type="text/ng-template" id="deletePortal.tmpl">
+<script type="text/ng-template" id="deleteEnvironment.tmpl">
 	<div class="modal-header">
-		<h3 class="modal-title">Delete Portal</h3>
+		<h3 ng-if="deleteEnv === 'PORTAL'" class="modal-title">Delete PORTAL Environment</h3>
+		<h3 ng-if="deleteEnv !== 'PORTAL'" class="modal-title">Delete {{deleteEnv}} Environment</h3>
 	</div>
 	<div class="modal-body">
-		<p>The following Environment has a product and a tenant associated to it.
-			Do you want to remove them as well ?</p>
+		<p ng-if="deleteEnv=== 'PORTAL'" >The following Environment has a product and a tenant associated to it.
+			<br>Do you want to remove them as well ?</p>
+		
+		<p ng-if="deleteEnv!== 'PORTAL'" >Are you sure you want to delete {{deleteEnv}} Environment?</p>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-success"  ng-click="confirmDeleteProductsAndTenants()"> Yes, Delete Everything!</button>
-		<button class="btn btn-primary"  ng-click="onlyDeleteEnv()"> No, Only Delete The Environment</button>
-		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+		<div ng-if="deleteEnv=== 'PORTAL'" >
+			<button class="btn btn-success"  ng-click="confirmDeleteProductsAndTenants()"> Yes, Delete Everything!</button>
+			<button class="btn btn-primary"  ng-click="onlyDeleteEnv()"> No, Only Delete The Environment</button>
+			<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+		</div>
+		<div ng-if="deleteEnv!== 'PORTAL'" >
+			<button class="btn btn-success"  ng-click="onlyDeleteEnv()">Yes</button>
+			<button class="btn btn-danger" ng-click="cancel()">No</button>
+		</div>
 	</div>
 </script>

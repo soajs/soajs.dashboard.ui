@@ -406,6 +406,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			overlayLoading.hide();
 			if (error) {
 				$localStorage.soajs_user = null;
+				console.log('get permissions');
 				$cookies.remove('access_token', {'domain': interfaceDomain});
 				$cookies.remove('refresh_token', {'domain': interfaceDomain});
 				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});

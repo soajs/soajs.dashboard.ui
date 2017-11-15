@@ -3,6 +3,7 @@
 soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', function ($http, $cookies, $localStorage, Upload) {
 	
 	function logoutUser(scope) {
+		console.log('log out');
 		$cookies.remove('access_token', {'domain': interfaceDomain});
 		$cookies.remove('refresh_token', {'domain': interfaceDomain});
 		$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
@@ -297,6 +298,7 @@ soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', function ($cook
 			return true;
 		}
 		else {
+			console.log('222 no storage');
 			$cookies.remove('access_token', {'domain': interfaceDomain});
 			$cookies.remove('refresh_token', {'domain': interfaceDomain});
 			$localStorage.soajs_user = null;

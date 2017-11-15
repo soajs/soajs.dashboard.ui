@@ -606,6 +606,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.isUserLoggedIn = function (stopRedirect) {
 			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$localStorage.soajs_user) {
+				console.log('11 isUserLoggedIn');
 				$cookies.remove('access_token', { 'domain': interfaceDomain });
 				$cookies.remove('myEnv', { 'domain': interfaceDomain });
 				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
@@ -772,13 +773,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						"username": username
 					}
 				};
-				
+				console.log('get user');
 				getSendDataFromServer($scope, ngDataApi, apiParams, function (error, response) {
 					if (error) {
-						cb(false);
+						return cb(false);
 					}
 					else {
-						cb(true);
+						return cb(true);
 					}
 				});
 			}
@@ -787,6 +788,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				var user = $localStorage.soajs_user;
 				getUser(user.username, function (result) {
 					if (!result) {
+						console.log('11 get user');
 						$cookies.remove('access_token', { 'domain': interfaceDomain });
 						$cookies.remove('myEnv', { 'domain': interfaceDomain });
 						$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
@@ -849,6 +851,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		var user = $localStorage.soajs_user;
 		
 		function clearData() {
+			console.log('clearData');
 			$cookies.remove('access_token', { 'domain': interfaceDomain });
 			$cookies.remove('refresh_token', { 'domain': interfaceDomain });
 			$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });

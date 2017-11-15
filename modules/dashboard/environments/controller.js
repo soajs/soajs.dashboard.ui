@@ -310,87 +310,65 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	};
 	
 	$scope.removeEnvironment = function (row) {
-		if (row.code === 'PORTAL') {
-			var currentScope = $scope;
-			$modal.open({
-				templateUrl: 'deletePortal.tmpl',
-				size: 'm',
-				backdrop: 'static',
-				keyboard: false,
-				controller: function ($scope, $modalInstance) {
-					fixBackDrop();
-					$scope.confirmDeleteProductsAndTenants = function () {
-						$modalInstance.close();
-						deletePortalProductsAndTenants($scope, function (error) {
-							if (error) {
-								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							deleteEnvironment($scope, function (error, response) {
-								if (error) {
-									currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-								}
-								else if (response) {
-									currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-									getEnvironments(null, function () {
-										currentScope.listEnvironments();
-									});
-								}
-								else {
-									currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
-								}
-							});
-							
-						});
-					};
-					
-					$scope.onlyDeleteEnv = function () {
-						$modalInstance.close();
+	
+		var currentScope = $scope;
+		$modal.open({
+			templateUrl: 'deleteEnvironment.tmpl',
+			size: 'm',
+			backdrop: 'static',
+			keyboard: false,
+			controller: function ($scope, $modalInstance) {
+				$scope.deleteEnv = row.code.toUpperCase();
+				fixBackDrop();
+				$scope.confirmDeleteProductsAndTenants = function () {
+					$modalInstance.close();
+					deletePortalProductsAndTenants($scope, function (error) {
+						if (error) {
+							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						}
 						deleteEnvironment($scope, function (error, response) {
 							if (error) {
 								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							} else {
-								if (response) {
-									currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-									getEnvironments(null, function () {
-										currentScope.listEnvironments();
-									});
-								}
-								else {
-									currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
-								}
+							}
+							else if (response) {
+								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+								getEnvironments(null, function () {
+									currentScope.listEnvironments();
+								});
+							}
+							else {
+								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
 							}
 						});
-					};
-					$scope.cancel = function () {
-						$modalInstance.close();
-					};
-				}
-			});
-		}
-		else {
-			let deleteEnv = $window.confirm("Are you sure You want to delete " + row.code.toUpperCase() + " Environment?");
-			if (deleteEnv) {
-				deleteEnvironment($scope, function (error, response) {
-					if (error) {
-						$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					} else {
-						if (response) {
-							$scope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-							getEnvironments(null, function () {
-								$scope.listEnvironments();
-							});
+						
+					});
+				};
+				
+				$scope.onlyDeleteEnv = function () {
+					$modalInstance.close();
+					deleteEnvironment($scope, function (error, response) {
+						if (error) {
+							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						} else {
+							if (response) {
+								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+								getEnvironments(null, function () {
+									currentScope.listEnvironments();
+								});
+							}
+							else {
+								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+							}
 						}
-						else {
-							$scope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
-						}
-					}
-				});
+					});
+				};
+				
+				$scope.cancel = function () {
+					$modalInstance.close();
+				};
 			}
-			else {
-				return cb(false);
-			}
-			
-		}
+		});
+		
 		
 		function deletePortalProductsAndTenants(currentScope, cb) {
 			//remove product portal

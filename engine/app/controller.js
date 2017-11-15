@@ -333,7 +333,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 									$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl[envRecord.code.toLowerCase()];
 								}
 								doEnvPerNav();
-								$scope.isUserLoggedIn();
+								// $scope.isUserLoggedIn();
 								$route.reload();
 							}
 						});

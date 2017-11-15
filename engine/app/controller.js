@@ -606,7 +606,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.isUserLoggedIn = function (stopRedirect) {
 			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$localStorage.soajs_user) {
-				console.log('11 isUserLoggedIn');
+				console.log('111111111 isUser LoggedIn');
 				$cookies.remove('access_token', { 'domain': interfaceDomain });
 				$cookies.remove('myEnv', { 'domain': interfaceDomain });
 				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
@@ -798,7 +798,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						$localStorage.environments = null;
 						$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
 						$cookies.remove('soajs_envauth', { 'domain': interfaceDomain });
-						$scope.isUserLoggedIn();
+						$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
+						$scope.go("/login");
 					}
 				});
 			}
@@ -905,7 +906,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		}
 		else {
 			clearData();
-			$scope.$parent.isUserLoggedIn();
+			$scope.$parent.go("/login");
 		}
 	};
 }]);

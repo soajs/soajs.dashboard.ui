@@ -310,72 +310,124 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	};
 	
 	$scope.removeEnvironment = function (row) {
-		
-		function deletePortalProductsAndTenants(deleteCb) {
-			if (row.code === 'PORTAL') {
-				let purgeall = $window.confirm("The following Environment has a product and a tenant associated to it.\n Do you want to remove them as well ?");
-				
-				if (purgeall) {
-					//remove product portal
-					getSendDataFromServer($scope, ngDataApi, {
-						"method": "delete",
-						"routeName": "/dashboard/product/delete",
-						"params": { "code": "PRTAL" }
-					}, function (error) {
-						if (error) {
-							deleteCb(error);
-						}
-						else {
-							//remove tenant portal
-							getSendDataFromServer($scope, ngDataApi, {
-								"method": "delete",
-								"routeName": "/dashboard/tenant/delete",
-								"params": { "code": "PRTL" }
-							}, function (error) {
+		if (row.code === 'PORTAL') {
+			var currentScope = $scope;
+			$modal.open({
+				templateUrl: 'deletePortal.tmpl',
+				size: 'm',
+				backdrop: 'static',
+				keyboard: false,
+				controller: function ($scope, $modalInstance) {
+					fixBackDrop();
+					$scope.confirmDeleteProductsAndTenants = function () {
+						$modalInstance.close();
+						deletePortalProductsAndTenants($scope, function (error) {
+							if (error) {
+								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							deleteEnvironment($scope, function (error, response) {
 								if (error) {
-									deleteCb(error);
-								} else {
-									deleteCb(false);
+									currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								}
+								else if (response) {
+									currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+									getEnvironments(null, function () {
+										currentScope.listEnvironments();
+									});
+								}
+								else {
+									currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
 								}
 							});
-						}
-					});
-				} else {
-					deleteCb();
+							
+						});
+					};
+					
+					$scope.onlyDeleteEnv = function () {
+						$modalInstance.close();
+						deleteEnvironment($scope, function (error, response) {
+							if (error) {
+								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							} else {
+								if (response) {
+									currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+									getEnvironments(null, function () {
+										currentScope.listEnvironments();
+									});
+								}
+								else {
+									currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+								}
+							}
+						});
+					};
+					$scope.cancel = function () {
+						$modalInstance.close();
+					};
 				}
-			} else {
-				deleteCb();
-			}
+			});
 		}
-		
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "delete",
-			"routeName": "/dashboard/environment/delete",
-			"params": { "id": row['_id'] }
-		}, function (error, response) {
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		else {
+			let deleteEnv = $window.confirm("Are you sure You want to delete " + row.code.toUpperCase() + " Environment?");
+			if (deleteEnv) {
+				deleteEnvironment($scope, function (error, response) {
+					if (error) {
+						$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					} else {
+						if (response) {
+							$scope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+							getEnvironments(null, function () {
+								$scope.listEnvironments();
+							});
+						}
+						else {
+							$scope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+						}
+					}
+				});
 			}
 			else {
-				if (response) {
-					deletePortalProductsAndTenants(function (error) {
-						if (error) {
-							$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						} else {
-							$scope.$parent.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-						}
-						
-						getEnvironments(null, function () {
-							$scope.listEnvironments();
-						});
-					});
+				return cb(false);
+			}
+			
+		}
+		
+		function deletePortalProductsAndTenants(currentScope, cb) {
+			//remove product portal
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/product/delete",
+				"params": {"code": "PRTAL"}
+			}, function (error) {
+				if (error) {
+					cb(error);
 				}
 				else {
-					$scope.$parent.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
+					//remove tenant portal
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "delete",
+						"routeName": "/dashboard/tenant/delete",
+						"params": {"code": "PRTL"}
+					}, function (error) {
+						if (error) {
+							cb(error);
+						} else {
+							cb(false);
+						}
+					});
 				}
-			}
-		});
+			});
+		}
 		
+		function deleteEnvironment(currentScope, cb) {
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/dashboard/environment/delete",
+				"params": {"id": row['_id']}
+			}, function (error, response) {
+				return cb(error, response);
+			});
+		}
 	};
 
 	$scope.startLimit = 0;

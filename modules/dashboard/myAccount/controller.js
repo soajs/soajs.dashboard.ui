@@ -415,9 +415,9 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 							}
 							else {
 								$localStorage.environments = angular.copy(response);
+								$scope.$parent.$emit("loadUserInterface", {});
+								$scope.$parent.$emit('refreshWelcome', {});
 							}
-							$scope.$parent.$emit("loadUserInterface", {});
-							$scope.$parent.$emit('refreshWelcome', {});
 						});
 					}
 				});

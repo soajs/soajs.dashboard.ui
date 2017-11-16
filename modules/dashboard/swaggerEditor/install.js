@@ -4,6 +4,7 @@ var swaggerEditorNav = [
 		'id': 'swaggerEditor',
 		'label': 'Swagger Editor',
 		'checkPermission': {
+			'method': 'send',
 			'service': 'dashboard',
 			'route': '/swagger/generate'
 		},

@@ -84,7 +84,8 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			revalidateTokens(scope, config, cb);
 		}
 		else {
-			returnErrorOutput(opts, status, headers, config, cb)
+			return cb(new Error(errData.errors.details[0].code + ":" + errData.errors.details[0].message));
+			//returnErrorOutput(opts, status, headers, config, cb)
 		}
 	}
 	

@@ -126,7 +126,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							}
 						}
 					}
-					if (!found) {
+					if (!found && response && response[0]) {
 						newList.push(response[0]);
 						putMyEnv(response[0]);
 					}

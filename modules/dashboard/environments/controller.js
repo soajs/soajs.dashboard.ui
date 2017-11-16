@@ -334,6 +334,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
 								getEnvironments(null, function () {
 									currentScope.listEnvironments();
+									$window.location.reload();
 								});
 							}
 							else {
@@ -354,6 +355,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
 								getEnvironments(null, function () {
 									currentScope.listEnvironments();
+									$window.location.reload();
 								});
 							}
 							else {

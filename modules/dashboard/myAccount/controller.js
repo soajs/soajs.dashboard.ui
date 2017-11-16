@@ -352,8 +352,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 					if (error) {
 						overlayLoading.hide();
-						$cookies.remove('access_token', { 'domain': interfaceDomain });
-						$cookies.remove('refresh_token', { 'domain': interfaceDomain });
+						ngDataApi.logoutUser($scope);
 						$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 					}
 					else {
@@ -372,8 +371,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				}, function (error, response) {
 					if (error) {
 						overlayLoading.hide();
-						$cookies.remove('access_token', { 'domain': interfaceDomain });
-						$cookies.remove('refresh_token', { 'domain': interfaceDomain });
+						ngDataApi.logoutUser($scope);
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
@@ -393,9 +391,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 					overlayLoading.hide();
 					if (error) {
 						$localStorage.soajs_user = null;
-						$cookies.remove('access_token', { 'domain': interfaceDomain });
-						$cookies.remove('refresh_token', { 'domain': interfaceDomain });
-						$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+						ngDataApi.logoutUser($scope);
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					}
 					else {
@@ -411,9 +407,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 								if(error.code === 600){
 									$localStorage.soajs_user = null;
 									$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', "Login Failed !");
-									$cookies.remove('access_token', { 'domain': interfaceDomain });
-									$cookies.remove('refresh_token', { 'domain': interfaceDomain });
-									$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+									ngDataApi.logoutUser($scope);
 								}
 								else{
 									$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -431,7 +425,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 		}
 	}];
 	
-	if (!isUserLoggedIn()) {
+	if (!isUserLoggedIn($scope)) {
 		buildForm($scope, null, formConfig);
 	}
 	else {
@@ -470,7 +464,7 @@ myAccountApp.controller('forgotPwCtrl', ['$scope', 'ngDataApi', 'isUserLoggedIn'
 		}
 	}];
 	
-	if (!isUserLoggedIn()) {
+	if (!isUserLoggedIn($scope)) {
 		buildForm($scope, null, formConfig);
 	}
 	else {
@@ -513,7 +507,7 @@ myAccountApp.controller('setPasswordCtrl', ['$scope', 'ngDataApi', '$routeParams
 		}
 	}];
 	
-	if (!isUserLoggedIn()) {
+	if (!isUserLoggedIn($scope)) {
 		buildForm($scope, null, formConfig);
 	}
 	else {
@@ -554,7 +548,7 @@ myAccountApp.controller('resetPwCtrl', ['$scope', 'ngDataApi', '$routeParams', '
 		}
 	}];
 	
-	if (!isUserLoggedIn()) {
+	if (!isUserLoggedIn($scope)) {
 		buildForm($scope, null, formConfig);
 	}
 	else {

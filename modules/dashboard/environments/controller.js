@@ -175,36 +175,6 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		deployer.ui[value] = (deployer.selected === technology + '.' + value);
 	};
 	
-	function getEnvironments(newEnvRecord, cb) {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/key/permission/get"
-		}, function (error, response) {
-			if (error) {
-				$localStorage.soajs_user = null;
-				$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
-				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				$localStorage.environments = response.environments;
-				if (newEnvRecord) {
-					putMyEnv(newEnvRecord);
-				}
-				else {
-					if (response.environments.length) {
-						// not dashboard
-						putMyEnv(response.environments[0]);
-					} else {
-						$cookies.remove('myEnv', { 'domain': interfaceDomain });
-					}
-				}
-				$scope.$parent.reRenderMenu('deployment');
-				return cb();
-			}
-		});
-	}
-	
 	$scope.updateEnvironment = function (data) {
 		$scope.$parent.go('/environments/environment/' + data._id);
 	};

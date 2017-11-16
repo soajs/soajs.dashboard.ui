@@ -606,19 +606,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.isUserLoggedIn = function (stopRedirect) {
 			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$localStorage.soajs_user) {
-				console.log('111111111 isUser LoggedIn');
-				$cookies.remove('access_token', { 'domain': interfaceDomain });
-				$cookies.remove('myEnv', { 'domain': interfaceDomain });
-				$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
-				$cookies.remove('soajsID', { 'domain': interfaceDomain });
-				$localStorage.soajs_user = null;
-				$localStorage.acl_access = null;
-				$scope.enableInterface = false;
-				if (!stopRedirect) {
-					console.log('Session Expired');
-					$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
-					$scope.go("/login");
-				}
+				ngDataApi.logoutUser($scope);
+				$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
+				$scope.go("/login");
 			}
 			else {
 				var user = $localStorage.soajs_user;
@@ -781,16 +771,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				var user = $localStorage.soajs_user;
 				getUser(user.username, function (result) {
 					if (!result) {
-						console.log('11 get user');
-						$cookies.remove('access_token', { 'domain': interfaceDomain });
-						$cookies.remove('myEnv', { 'domain': interfaceDomain });
-						$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
-						$cookies.remove('soajsID', { 'domain': interfaceDomain });
-						$localStorage.soajs_user = null;
-						$localStorage.acl_access = null;
-						$localStorage.environments = null;
-						$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
-						$cookies.remove('soajs_envauth', { 'domain': interfaceDomain });
+						ngDataApi.logoutUser($scope);
 						$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
 						$scope.go("/login");
 					}
@@ -845,18 +826,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		var user = $localStorage.soajs_user;
 		
 		function clearData() {
-			$cookies.remove('access_token', { 'domain': interfaceDomain });
-			$cookies.remove('refresh_token', { 'domain': interfaceDomain });
-			$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
-			$cookies.remove('myEnv', { 'domain': interfaceDomain });
-			$cookies.remove('soajsID', { 'domain': interfaceDomain });
-			$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
-			$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
-			$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
-			$localStorage.soajs_user = null;
-			$localStorage.acl_access = null;
-			$localStorage.environments = null;
-			$scope.$parent.enableInterface = false;
+			ngDataApi.logoutUser($scope);
 			$scope.$parent.go("/login");
 		}
 		

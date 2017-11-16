@@ -407,10 +407,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$localStorage.soajs_user = null;
-				$cookies.remove('access_token', {'domain': interfaceDomain});
-				$cookies.remove('refresh_token', {'domain': interfaceDomain});
-				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
+				ngDataApi.logoutUser($scope);
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {

@@ -293,16 +293,13 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 	};
 }]);
 
-soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', function ($cookies, $localStorage) {
-	return function () {
+soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
+	return function (currentScope) {
 		if ($localStorage.soajs_user && $cookies.get('access_token', {'domain': interfaceDomain})) {
 			return true;
 		}
 		else {
-			console.log('222 no storage');
-			$cookies.remove('access_token', {'domain': interfaceDomain});
-			$cookies.remove('refresh_token', {'domain': interfaceDomain});
-			$localStorage.soajs_user = null;
+			ngDataApi.logoutUser(currentScope);
 			return false;
 		}
 	}

@@ -399,27 +399,38 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	}
 
 	function getPermissions(currentScope, cb) {
-		getSendDataFromServer(currentScope, ngDataApi, {
+		var options = {
 			"method": "get",
-			"routeName": "/key/permission/get"
-		}, function (error, response) {
+			"routeName": "/dashboard/environment/list",
+			"params": {}
+		};
+		getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
 				$localStorage.soajs_user = null;
-				console.log('get permissions');
 				$cookies.remove('access_token', {'domain': interfaceDomain});
 				$cookies.remove('refresh_token', {'domain': interfaceDomain});
 				$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				$localStorage.acl_access = response.acl;
-				$localStorage.environments = response.environments;
-				response.environments.forEach(function (oneEnv) {
-					if (oneEnv.code.toLowerCase() === 'dashboard') {
-						// todo
-						// $cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
-						// $scope.$parent.currentDeployer.type = oneEnv.deployer.type;
+				$localStorage.environments = response;
+				response.forEach(function (oneEnv) {
+					if (oneEnv.code.toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) {
+						currentScope.$parent.currentDeployer.type = oneEnv.deployer.type;
+						
+						var data = {
+							"_id": oneEnv._id,
+							"code": oneEnv.code,
+							"sensitive": oneEnv.sensitive,
+							"domain": oneEnv.domain,
+							"profile": oneEnv.profile,
+							"sitePrefix": oneEnv.sitePrefix,
+							"apiPrefix": oneEnv.apiPrefix,
+							"description": oneEnv.description,
+							"deployer": oneEnv.deployer
+						};
+						$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 					}
 				});
 				return cb();

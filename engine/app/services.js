@@ -300,19 +300,7 @@ soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', 'ngDataApi', fu
 			return true;
 		}
 		else {
-			console.log('log out2');
-			$cookies.remove('access_token', {'domain': interfaceDomain});
-			$cookies.remove('refresh_token', {'domain': interfaceDomain});
-			$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
-			$cookies.remove('myEnv', {'domain': interfaceDomain});
-			$cookies.remove('soajsID', {'domain': interfaceDomain});
-			$cookies.remove('soajs_auth', {'domain': interfaceDomain});
-			$cookies.remove('soajs_current_route', {'domain': interfaceDomain});
-			$cookies.remove('selectedInterval', {'domain': interfaceDomain});
-			$localStorage.soajs_user = null;
-			$localStorage.acl_access = null;
-			$localStorage.environments = null;
-			currentScope.$parent.enableInterface = false;
+			ngDataApi.logoutUser(currentScope);
 			return false;
 		}
 	}

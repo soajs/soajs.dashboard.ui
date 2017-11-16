@@ -127,8 +127,10 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						}
 					}
 					if (!found) {
-						newList = response[0];
+						newList.push(response[0]);
+						putMyEnv(response[0]);
 					}
+					
 					$scope.grid = { rows: newList };
 					if ($scope.grid.rows && $scope.grid.rows.length) {
 						$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
@@ -332,10 +334,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							}
 							else if (response) {
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-								getEnvironments(null, function () {
-									currentScope.listEnvironments();
-									$window.location.reload();
-								});
+								currentScope.listEnvironments();
+								$window.location.reload();
 							}
 							else {
 								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
@@ -353,10 +353,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						} else {
 							if (response) {
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-								getEnvironments(null, function () {
-									currentScope.listEnvironments();
-									$window.location.reload();
-								});
+								$window.location.reload();
 							}
 							else {
 								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
@@ -388,13 +385,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						"method": "delete",
 						"routeName": "/dashboard/tenant/delete",
 						"params": {"code": "PRTL"}
-					}, function (error) {
-						if (error) {
-							cb(error);
-						} else {
-							cb(false);
-						}
-					});
+					}, cb);
 				}
 			});
 		}
@@ -404,9 +395,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				"method": "delete",
 				"routeName": "/dashboard/environment/delete",
 				"params": {"id": row['_id']}
-			}, function (error, response) {
-				return cb(error, response);
-			});
+			}, cb);
 		}
 	};
 

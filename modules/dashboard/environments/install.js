@@ -1141,6 +1141,10 @@ var envTranslation ={
 		"ENG": "Reload Registry Operation",
 		"FRA": "Reload Registry Operation"
 	},
+	"restartService": {
+		"ENG": "Restart Service",
+		"FRA": "Restart Service"
+	},
 	"areYouSureYouWantRemoveHost": {
 		"ENG": "Are you sure you want to remove this host?",
 		"FRA": "Are you sure you want to remove this host?"

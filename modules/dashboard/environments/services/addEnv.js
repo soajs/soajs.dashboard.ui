@@ -217,7 +217,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				}
 			}
 			
-			if (currentScope.wizard.nginx.customUi && currentScope.wizard.nginx.customUi.source && currentScope.wizard.nginx.customUi.provider && currentScope.wizard.nginx.customUi.repo && currentScope.wizard.nginx.customUi.owner && currentScope.wizard.nginx.customUi.branch && currentScope.wizard.nginx.customUi.token){
+			if (currentScope.wizard.nginx.customUi && currentScope.wizard.nginx.customUi.source && currentScope.wizard.nginx.customUi.provider && currentScope.wizard.nginx.customUi.repo && currentScope.wizard.nginx.customUi.owner && currentScope.wizard.nginx.customUi.branch){
 				recipe.buildOptions.env["SOAJS_GIT_BRANCH"] = {
 					"type": "static",
 					"value": currentScope.wizard.nginx.customUi.branch

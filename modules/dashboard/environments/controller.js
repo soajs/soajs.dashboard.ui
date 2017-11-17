@@ -22,9 +22,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			"deployer": record.deployer
 		};
 		$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
-		$scope.$parent.currentSelectedEnvironment = record.code.toUpperCase();
-		$scope.currentSelectedEnvironment = record.code.toUpperCase();
-		$scope.$parent.go("#/environments");
+		$scope.$parent.switchEnvironment(data);
 	}
 	
 	$scope.waitMessage = {

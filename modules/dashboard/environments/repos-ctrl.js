@@ -11,7 +11,6 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
-	$scope.$parent.rerenderMenuAfterEnvExclude(environmentsNav);
 
 	$scope.showHide = function (account) {
 		if (!account.hide) {
@@ -60,7 +59,7 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 
 	injectFiles.injectCss("modules/dashboard/environments/environments.css");
 	//default operation
-	if ($scope.access.git.listAccounts) {
+	if ($scope.access.git.listAccounts && $scope.$parent.currentDeployer.type !== 'manual') {
 		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 			$scope.listGitAccounts();

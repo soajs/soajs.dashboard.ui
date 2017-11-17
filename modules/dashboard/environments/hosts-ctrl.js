@@ -52,11 +52,6 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	};
 	
 	$scope.listHosts = function (env, noPopulate) {
-		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-		if($scope.envDeployer.type === 'container'){
-			$scope.$parent.go("#/environments-hacloud");
-		}
-		
 		$scope.waitMessage.close();
 		$scope.getEnvironment(env, function () {
 			envHosts.listHosts($scope, env, noPopulate);

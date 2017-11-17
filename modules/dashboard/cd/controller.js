@@ -6,7 +6,6 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 	$scope.configuration = {};
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, cdAppConfig.permissions);
-	$scope.$parent.rerenderMenuAfterEnvExclude(cdNav);
 
 	$scope.cdData = {};
 	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
@@ -585,7 +584,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 	injectFiles.injectCss("modules/dashboard/cd/cd.css");
 
 	// Start here
-	if ($scope.access.get && $scope.myEnv) {
+	if ($scope.access.get && $scope.myEnv && $scope.$parent.currentDeployer.type !== 'manual') {
 		$scope.getLedger();
 		$scope.getUpdates();
 	}

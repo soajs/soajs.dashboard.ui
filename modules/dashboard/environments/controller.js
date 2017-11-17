@@ -22,6 +22,9 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			"deployer": record.deployer
 		};
 		$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
+		$scope.$parent.currentSelectedEnvironment = record.code.toUpperCase();
+		$scope.currentSelectedEnvironment = record.code.toUpperCase();
+		$scope.$parent.go("#/environments");
 	}
 	
 	$scope.waitMessage = {
@@ -304,8 +307,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							}
 							else if (response) {
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
+								for(let i = currentScope.$parent.leftMenu.environments.length-1; i >=0; i--){
+									if(currentScope.$parent.leftMenu.environments[i].code.toUpperCase() === $scope.deleteEnv){
+										currentScope.$parent.leftMenu.environments.splice(i, 1);
+									}
+								}
 								currentScope.listEnvironments();
-								$window.location.reload();
 							}
 							else {
 								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
@@ -323,7 +330,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						} else {
 							if (response) {
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
-								$window.location.reload();
+								for(let i = currentScope.$parent.leftMenu.environments.length-1; i >=0; i--){
+									if(currentScope.$parent.leftMenu.environments[i].code.toUpperCase() === $scope.deleteEnv){
+										currentScope.$parent.leftMenu.environments.splice(i, 1);
+									}
+								}
+								currentScope.listEnvironments();
 							}
 							else {
 								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);

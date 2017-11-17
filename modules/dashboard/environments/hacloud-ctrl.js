@@ -296,39 +296,32 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	if($cookies.getObject('myEnv', {'domain': interfaceDomain})){
 		$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-		
-		if($scope.envDeployer.type === 'manual'){
-			$scope.$parent.go("#/environments-hosts");
-		}
-		
 		if($scope.envDeployer && $scope.envDeployer.selected){
 			$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
 		}
 	}
 	
-	if($scope.envDeployer.type !== 'manual'){
-		if ($scope.access.hacloud.nodes.list && $scope.envCode) {
-			$scope.getEnvironment();
-			$scope.listNodes($scope);
-			$scope.certsExist = true;
-			$scope.checkCerts($scope.envCode);
-		}
-		if ($scope.access.listHosts && $scope.envCode) {
-			$scope.listServices(function () {
-				$scope.listNamespaces(function () {
-					$scope.checkHeapster(function () {
-						$scope.autoRefresh();
-					});
+	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
+		$scope.getEnvironment();
+		$scope.listNodes($scope);
+		$scope.certsExist = true;
+		$scope.checkCerts($scope.envCode);
+	}
+	if ($scope.access.listHosts && $scope.envCode) {
+		$scope.listServices(function () {
+			$scope.listNamespaces(function () {
+				$scope.checkHeapster(function () {
+					$scope.autoRefresh();
 				});
 			});
-		}
-		if ($scope.access.hacloud.services.metrics) {
-			$scope.checkMetricsServer(function () {
-				$scope.getServicesMetrics(function () {
-					$scope.autoRefreshMetrics();
-				});
+		});
+	}
+	if ($scope.access.hacloud.services.metrics) {
+		$scope.checkMetricsServer(function () {
+			$scope.getServicesMetrics(function () {
+				$scope.autoRefreshMetrics();
 			});
-		}
+		});
 	}
 	
 	$scope.$on("$destroy", function () {

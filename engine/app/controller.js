@@ -238,32 +238,25 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			}
 		};
 		
-		$scope.rerenderMenuAfterEnvExclude = function (moduleMenu) {
-			var pillarInfo;
-			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-				var envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-				moduleMenu.forEach(function (oneEntry) {
-					if (oneEntry.url && $location.url() === oneEntry.url.split("#")[1] && oneEntry.excludedEnvs && Array.isArray(oneEntry.excludedEnvs) && oneEntry.excludedEnvs.length > 0) {
-						if (oneEntry.excludedEnvs.indexOf(envCode.toLowerCase()) !== -1) {
-							pillarInfo = oneEntry.pillar;
-							for (var i = 0; i < $scope.mainMenu.links.length; i++) {
-								var link = $scope.mainMenu.links[i];
-								if (link.pillar.name === pillarInfo.name) {
-									$scope.pillarChange(link);
-									break;
-								}
-							}
-						}
-					}
-				});
-			}
-		};
-		
 		$scope.checkAuthEnvCookie = function () {
 			if ($localStorage.environments) {
 				return ($localStorage.environments.length > 1);
 			}
 			return false;
+		};
+		
+		$scope.hideMe = function(link){
+			let currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+			
+			let hide = false;
+			if($scope.currentDeployer.type === 'manual'){
+				hide = (['repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
+			}
+			else{
+				hide = (link.excludedEnvs && currentSelectedEnvironment&& link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)
+			}
+			
+			return hide;
 		};
 		
 		$scope.reRenderMenu = function (pillarName) {
@@ -339,7 +332,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						});
 					}
 					else {
-						$window.location.reload();
+						$route.reload();
+						// $window.location.reload();
 					}
 				}
 			}
@@ -442,6 +436,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			function doPermissions(navigation, i, cb) {
 				function pushEntry(i) {
 					navigation[i].checkPermission.access = true;
+					
 					$scope.dashboard.push(navigation[i].id);
 					if (navigation[i].mainMenu) {
 						var found = false;
@@ -471,24 +466,29 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				
 				var p = {};
 				if (navigation[i].checkPermission) {
+					navigation[i].hideMe = $scope.hideMe(navigation[i]);
 					p = navigation[i].checkPermission;
 					if (p.service && p.route) {
 						$scope.buildPermittedEnvOperation(p.service, p.route, p.method, navigation[i].env, function (hasAccess) {
-							if (hasAccess) {
+							if (hasAccess && !navigation[i].hideMe) {
 								pushEntry(i);
 							}
 							step2();
 						});
 					}
 					else {
-						navigation[i].checkPermission = {};
-						pushEntry(i);
+						if(!navigation[i].hideMe){
+							navigation[i].checkPermission = {};
+							pushEntry(i);
+						}
 						step2();
 					}
 				}
 				else {
-					navigation[i].checkPermission = {};
-					pushEntry(i);
+					if(!navigation[i].hideMe) {
+						navigation[i].checkPermission = {};
+						pushEntry(i);
+					}
 					step2();
 				}
 				
@@ -560,7 +560,11 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						if ($scope.navigation[i].tracker) {
 							if (!$scope.navigation[i].hasOwnProperty('private') && !$scope.navigation[i].hasOwnProperty('guestMenu') && !$scope.navigation[i].hasOwnProperty('footerMenu')) {
 								
-								if ($scope.navigation[i].checkPermission && !$scope.navigation[i].checkPermission.access) {
+								if($scope.navigation[i].hideMe){
+									$scope.closeAlert();
+									$scope.go($scope.navigation[i].fallbackLocation);
+								}
+								else if ($scope.navigation[i].checkPermission && !$scope.navigation[i].checkPermission.access) {
 									if ($scope.currentSelectedEnvironment && $scope.currentSelectedEnvironment !== 'dashboard') {
 										if ($scope.navigation[i].env === $scope.currentSelectedEnvironment) {
 											$scope.displayAlert('danger', 'You do not have permissions to access this section');
@@ -571,14 +575,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 										}
 									}
 								}
-							}
-							
-							if ($scope.navigation[i].preferredEnv) {
-								$localStorage.environments.forEach(function (oneEnv) {
-									if (oneEnv.code.toUpperCase() === $scope.navigation[i].preferredEnv.toUpperCase()) {
-										// $cookies.putObject('myEnv', oneEnv, {'domain': interfaceDomain});
-									}
-								});
 							}
 							
 							if ($scope.navigation[i].tracker && $scope.navigation[i].ancestor && Array.isArray($scope.navigation[i].ancestor) && $scope.navigation[i].ancestor.length > 0) {
@@ -667,19 +663,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			if (!$scope.currentDeployer) {
 				$scope.currentDeployer = { type: '' };
 			}
-			// todo
-			// var newNavigation = angular.copy(navigation);
-			for (var i = 0; i < navigation.length; i++) {
-				if ($scope.currentDeployer && $scope.currentDeployer.type) {
-					if ($scope.currentDeployer.type === 'manual' && navigation[i].id === 'environments-hacloud' ||
-						$scope.currentDeployer.type !== 'manual' && navigation[i].id === 'environments-hosts' ||
-						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'repositories' ||
-						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'updates-upgrades' ||
-						$scope.currentDeployer.type === 'manual' && navigation[i].id === 'continuous-delivery') {
-						navigation.splice(i, 1);
-					}
-				}
-			}
 			
 			$scope.appNavigation = navigation;
 			$scope.navigation = navigation;
@@ -756,7 +739,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						"username": username
 					}
 				};
-				console.log('get user');
 				getSendDataFromServer($scope, ngDataApi, apiParams, function (error, response) {
 					if (error) {
 						return cb(false);

@@ -1413,6 +1413,25 @@ var environmentsNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
+		'id': 'oneEnvironment',
+		'label': translation.environments[LANG],
+		'url': '#/environments/environment/:id?',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/environment/update',
+			'method': 'put'
+		},
+		'tplPath': 'modules/dashboard/environments/directives/edit.tmpl',
+		'tracker': true,
+		'pillar':{
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js', 'modules/dashboard/environments/services/database.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
 		'id': 'repositories',
 		'checkPermission': {
 			'service': 'dashboard',
@@ -1424,6 +1443,7 @@ var environmentsNav = [
 		'tplPath': 'modules/dashboard/environments/directives/list-repos.tmpl',
 		'icon': 'git',
 		'excludedEnvs': ['dashboard'],
+		"fallbackLocation": "#/environments",
 		'pillar':{
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
@@ -1480,57 +1500,16 @@ var environmentsNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
-		'id': 'environments-hosts',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/hosts/list',
-			'method': 'get'
-		},
-		'label': translation.hosts[LANG],
-		'url': '#/environments-hosts',
-		'tplPath': 'modules/dashboard/environments/directives/list-hosts.tmpl',
-		'icon': 'sphere',
-		'pillar':{
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'order': 7,
-		'mainMenu': true,
-		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js'],
-		'ancestor': [translation.home[LANG]]
-	},
-	{
-		'id': 'oneEnvironment',
-		'label': translation.environments[LANG],
-		'url': '#/environments/environment/:id?',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environment/update',
-			'method': 'put'
-		},
-		'tplPath': 'modules/dashboard/environments/directives/edit.tmpl',
-		'tracker': true,
-		'pillar':{
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js', 'modules/dashboard/environments/services/database.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js'],
-		'ancestor': [translation.home[LANG]]
-	},
-	{
-		'id': 'environments-hacloud',
-		'label': translation.hacloud[LANG],
-		'url': '#/environments-hacloud',
+		'id': 'environments-clouds-deployments',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/cloud/nodes/list',
 			'method': 'get'
 		},
+		'label': "Clouds & Deployments",
+		'url': '#/environments-clouds-deployments',
+		'tplPath': 'modules/dashboard/environments/directives/cloud-deployments.tmpl',
 		'icon': 'sphere',
-		'tplPath': 'modules/dashboard/environments/directives/list-cloud.tmpl',
 		'pillar':{
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
@@ -1539,7 +1518,7 @@ var environmentsNav = [
 		'order': 7,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/services/metrics.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/clouds.js','modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/metrics.js'],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

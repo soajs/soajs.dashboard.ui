@@ -18,6 +18,7 @@ var cdNav = [
 			'position': 3
 		},
 		'excludedEnvs': ['dashboard'],
+		"fallbackLocation": "#/environments",
 		'mainMenu': true,
 		'tracker': true,
 		'order': 3,
@@ -33,6 +34,7 @@ var cdNav = [
 			'method': 'get'
 		},
 		'url': '#/updates-upgrades',
+		"fallbackLocation": "#/environments",
 		'tplPath': 'modules/dashboard/cd/directives/updates-upgrades.tmpl',
 		'icon': 'drive',
 		'pillar': {

@@ -406,7 +406,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 							if (error) {
 								if(error.code === 600){
 									$localStorage.soajs_user = null;
-									$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', "Login Failed !");
+									$scope.$parent.displayAlert('danger', "Login Failed !");
 									ngDataApi.logoutUser($scope);
 								}
 								else{

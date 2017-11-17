@@ -246,7 +246,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		};
 		
 		$scope.hideMe = function(link){
-			let currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+			let currentSelectedEnvironment;
+			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
+				currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+			}
 			
 			let hide = false;
 			if($scope.currentDeployer.type === 'manual'){

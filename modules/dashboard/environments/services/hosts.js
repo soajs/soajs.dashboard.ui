@@ -22,6 +22,8 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 	
 	function listHosts(currentScope, env, noPopulate) {
 		var controllers = [];
+		let latestAwarenessTs = 0;
+		let latestAwarenessCtrl;
 		currentScope.showCtrlHosts = true;
 		currentScope.hostList = [];
 		if (currentScope.access.listHosts) {
@@ -117,16 +119,21 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				else {
 					let awarenessResponse = {};
 					response.forEach((oneAwareness) => {
+						if(oneAwareness.ts > latestAwarenessTs){
+							latestAwarenessTs = oneAwareness.ts;
+							latestAwarenessCtrl = oneAwareness.ip;
+						}
+						
 						if(oneAwareness.ip === defaultControllerHost.ip){
 							awarenessResponse = oneAwareness;
 						}
 					});
 					
-					if(Object.keys(awarenessResponse).length > 0){
+					if(latestAwarenessCtrl === defaultControllerHost.ip && Object.keys(awarenessResponse).length > 0){
 						defaultControllerHost.heartbeat = true;
 						defaultControllerHost.color = 'green';
 						updateParent();
-						
+
 						var servicesList = Object.keys(awarenessResponse.data.services);
 						for (let oneService in servicesList) {
 							for (let as1 in awarenessResponse.data.services[servicesList[oneService]].awarenessStats) {
@@ -135,17 +142,17 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 								delete awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as1];
 							}
 						}
-						
+
 						var daemonsList = Object.keys(awarenessResponse.data.daemons);
 						for (let oneDaemon in daemonsList) {
-							
+
 							for (let as1 in awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats) {
 								let as2 = as1.replace(/_dot_/g, ".");
 								awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as2] = angular.copy(awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1]);
 								delete awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1];
 							}
 						}
-						
+
 						var list = {};
 						servicesList.forEach(function (sKey) {
 							list[sKey] = awarenessResponse.data.services[sKey];
@@ -156,9 +163,32 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 							list[dKey].type = "daemon";
 						});
 						propulateServices(list);
-					}
-					else{
-						updateParent();
+					
+						for(let serviceName in list){
+							if(serviceName === 'controller'){
+								let count = 0;
+								for(let oneCtrlIP in list[serviceName].awarenessStats){
+									if(list[serviceName].awarenessStats[oneCtrlIP].healthy){
+										count++;
+										controllers.forEach((oneCtrl)=>{
+											if(oneCtrl.ip === oneCtrlIP){
+												oneCtrl.color="green";
+												oneCtrl.heartbeat = true;
+											}
+										});
+									}
+								}
+								if(count === controllers.length){
+									currentScope.hosts.controller.color = "green";
+									currentScope.hosts.controller.healthy = true;
+								}
+								else if(count > 0){
+									currentScope.hosts.controller.color = "yellow";
+									currentScope.hosts.controller.healthy = true;
+									
+								}
+							}
+						}
 					}
 				}
 			});
@@ -252,17 +282,6 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 											}
 										}
 									}
-								}
-								else{
-									if(!regServices[serviceName].awarenessStats[oneHostIP].healthy){
-										currentScope.hosts.controller.ips.forEach((oneCtrlIP) =>{
-											if(oneCtrlIP.ip === oneHostIP){
-												oneCtrlIP.color = "red";
-												oneCtrlIP.heartbeat = false;
-											}
-										});
-									}
-									updateParent();
 								}
 							});
 							

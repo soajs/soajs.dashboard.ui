@@ -28,18 +28,20 @@
 					<h4>Environment Domain</h4>
 					<hr>
 					<p>
-						Create an environment and point multiple domains to it.<br />
-						By Default, SOAJS asks for 2 domain entries when creating an environment:
+						The environment uses Nginx as an entry point to your APIs and Static Content (HTML).<br />
+						This Nginx requires a domain and at least 2 prefixes; API & SITE
 					</p>
-					<ol>
-						<li><b>API:</b> This domain upstreams requests and forwards them to your APIs</li>
-						<li><b>SITE:</b> This domain associates a virtual hosts with static content (HTML interface)</li>
-					</ol>
-					<hr>
+					<ul>
+						<li><b>API:</b>&nbsp;&nbsp;forwards requests to your APIs —> api.mydomain.com</li>
+						<li><b>SITE:</b>&nbsp;&nbsp;loads static UI content (HTML) —> site.mydomain.com</li>
+					</ul>
 					<p>
-						Make sure you already have a machine prepared and your DNS configured before you proceed.<br />
-						SOAJS uses the domain you enter and what you configure as a platform deployment technology in the next page to connect to your machine.<br />
-						Once your machine is set up and your DNS configured, fill up this form and click next.
+						Provide this information in the below 3 fields and configure your DNS to point to them.<br />
+						The last step in this wizard will deploy the Nginx for you; your environment becomes reachable.
+					</p>
+					<p>
+						<b><u>Note:</u></b><br />
+						You can also create additional domains and link them to this Nginx by providing a configuration repository in the Nginx configuration step (last step of this wizard)
 					</p>
 				</alert>
 			</td>

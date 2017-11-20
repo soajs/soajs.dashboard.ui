@@ -21,9 +21,13 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 	}
 	
 	function listHosts(currentScope, env, noPopulate) {
-		var controllers = [];
-		let latestAwarenessTs = 0;
-		let latestAwarenessCtrl;
+		let controllers = [];
+		var servicesList = [];
+		var daemonsList = [];
+		let controllerCount = 0;
+		let latestTs =0;
+		let awarenessResponse = {};
+		
 		currentScope.showCtrlHosts = true;
 		currentScope.hostList = [];
 		if (currentScope.access.listHosts) {
@@ -74,6 +78,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 								getControllerAwarenessFromDB(oneController);
 								currentScope.hosts.controller.ips.push(oneController);
 							});
+							
 						}
 						else {
 							delete currentScope.hosts.controller;
@@ -117,81 +122,104 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 					currentScope.generateNewMsg(env, 'danger', translation.unableRetrieveServicesHostsInformation[LANG]);
 				}
 				else {
-					let awarenessResponse = {};
-					response.forEach((oneAwareness) => {
-						if(oneAwareness.ts > latestAwarenessTs){
-							latestAwarenessTs = oneAwareness.ts;
-							latestAwarenessCtrl = oneAwareness.ip;
-						}
-						
+					controllerCount++;
+					defaultControllerHost.heartbeat = true;
+					
+					for(let i =0; i < response.length; i++){
+						let oneAwareness = response[i];
 						if(oneAwareness.ip === defaultControllerHost.ip){
-							awarenessResponse = oneAwareness;
-						}
-					});
-					
-					if(latestAwarenessCtrl === defaultControllerHost.ip && Object.keys(awarenessResponse).length > 0){
-						defaultControllerHost.heartbeat = true;
-						defaultControllerHost.color = 'green';
-						updateParent();
-
-						var servicesList = Object.keys(awarenessResponse.data.services);
-						for (let oneService in servicesList) {
-							for (let as1 in awarenessResponse.data.services[servicesList[oneService]].awarenessStats) {
-								let as2 = as1.replace(/_dot_/g, ".");
-								awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as2] = angular.copy(awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as1]);
-								delete awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as1];
-							}
-						}
-
-						var daemonsList = Object.keys(awarenessResponse.data.daemons);
-						for (let oneDaemon in daemonsList) {
-
-							for (let as1 in awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats) {
-								let as2 = as1.replace(/_dot_/g, ".");
-								awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as2] = angular.copy(awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1]);
-								delete awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1];
-							}
-						}
-
-						var list = {};
-						servicesList.forEach(function (sKey) {
-							list[sKey] = awarenessResponse.data.services[sKey];
-							list[sKey].type = "service";
-						});
-						daemonsList.forEach(function (dKey) {
-							list[dKey] = awarenessResponse.data.daemons[dKey];
-							list[dKey].type = "daemon";
-						});
-						propulateServices(list);
-					
-						for(let serviceName in list){
-							if(serviceName === 'controller'){
-								let count = 0;
-								for(let oneCtrlIP in list[serviceName].awarenessStats){
-									if(list[serviceName].awarenessStats[oneCtrlIP].healthy){
-										count++;
-										controllers.forEach((oneCtrl)=>{
-											if(oneCtrl.ip === oneCtrlIP){
-												oneCtrl.color="green";
-												oneCtrl.heartbeat = true;
-											}
-										});
-									}
-								}
-								if(count === controllers.length){
-									currentScope.hosts.controller.color = "green";
-									currentScope.hosts.controller.healthy = true;
-								}
-								else if(count > 0){
-									currentScope.hosts.controller.color = "yellow";
-									currentScope.hosts.controller.healthy = true;
-									
-								}
+							let dottedIP = defaultControllerHost.ip.replace(/\./g,'_dot_');
+							if(!oneAwareness.data.services.controller.awarenessStats[dottedIP].healthy){
+								defaultControllerHost.heartbeat = false;
+								continue;
 							}
 						}
 					}
+					
+					if(defaultControllerHost.heartbeat){
+						defaultControllerHost.color = 'green';
+						response.forEach((oneAwareness) => {
+							if(oneAwareness.ip === defaultControllerHost.ip && oneAwareness.ts > latestTs){
+								latestTs = oneAwareness.ts;
+								awarenessResponse = oneAwareness;
+							}
+						});
+					}
+					else{
+						defaultControllerHost.color = 'red';
+					}
+					
+					updateParent();
+					
+					if(controllerCount === controllers.length){
+						printServices();
+					}
 				}
 			});
+		}
+		
+		function printServices(){
+			if(awarenessResponse.data && awarenessResponse.data.services) {
+				servicesList = Object.keys(awarenessResponse.data.services);
+				for (let oneService in servicesList) {
+					for (let as1 in awarenessResponse.data.services[servicesList[oneService]].awarenessStats) {
+						let as2 = as1.replace(/_dot_/g, ".");
+						awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as2] = angular.copy(awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as1]);
+						delete awarenessResponse.data.services[servicesList[oneService]].awarenessStats[as1];
+					}
+				}
+			}
+			
+			if(awarenessResponse.data && awarenessResponse.data.daemons){
+				daemonsList = Object.keys(awarenessResponse.data.daemons);
+				for (let oneDaemon in daemonsList) {
+					
+					for (let as1 in awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats) {
+						let as2 = as1.replace(/_dot_/g, ".");
+						awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as2] = angular.copy(awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1]);
+						delete awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1];
+					}
+				}
+			}
+			
+			if(awarenessResponse.data && (awarenessResponse.data.services || awarenessResponse.data.daemons)){
+				var list = {};
+				servicesList.forEach(function (sKey) {
+					list[sKey] = awarenessResponse.data.services[sKey];
+					list[sKey].type = "service";
+				});
+				daemonsList.forEach(function (dKey) {
+					list[dKey] = awarenessResponse.data.daemons[dKey];
+					list[dKey].type = "daemon";
+				});
+				propulateServices(list);
+				
+				for(let serviceName in list){
+					if(serviceName !== 'controller'){
+						let count = 0;
+						for(let oneCtrlIP in list[serviceName].awarenessStats){
+							if(list[serviceName].awarenessStats[oneCtrlIP].healthy){
+								count++;
+								controllers.forEach((oneCtrl)=>{
+									if(oneCtrl.ip === oneCtrlIP){
+										oneCtrl.color="green";
+										oneCtrl.heartbeat = true;
+									}
+								});
+							}
+						}
+						if(count === controllers.length){
+							currentScope.hosts.controller.color = "green";
+							currentScope.hosts.controller.healthy = true;
+						}
+						else if(count > 0){
+							currentScope.hosts.controller.color = "yellow";
+							currentScope.hosts.controller.healthy = true;
+							
+						}
+					}
+				}
+			}
 		}
 		
 		function buildGroupsDisplay(renderedHosts) {

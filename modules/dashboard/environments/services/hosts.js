@@ -253,6 +253,17 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 										}
 									}
 								}
+								else{
+									if(!regServices[serviceName].awarenessStats[oneHostIP].healthy){
+										currentScope.hosts.controller.ips.forEach((oneCtrlIP) =>{
+											if(oneCtrlIP.ip === oneHostIP){
+												oneCtrlIP.color = "red";
+												oneCtrlIP.heartbeat = false;
+											}
+										});
+									}
+									updateParent();
+								}
 							});
 							
 							if(hostsCount === regServices[serviceName].hosts[version].length){

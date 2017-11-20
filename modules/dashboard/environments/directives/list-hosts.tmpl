@@ -19,8 +19,8 @@
 					</alert>
 				</div>
 				<div ng-show="hosts.controller || nginxHosts.length > 0">
-					<a href="" ng-click="listHosts(envCode)" class="btn btn-primary f-right">
-						<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
+					<a href="" ng-click="listHosts(envCode)" class="btn btn-primary f-right" tooltip="Refresh List">
+						<span class="icon icon-undo"></span>{{translation.refresh[LANG]}}
 					</a>
 				</div>
 				<br/><br/>
@@ -206,3 +206,16 @@
 		</tabset>
 	</div>
 </section>
+<script type="text/ng-template" id="commandBox.tmpl">
+	<div class="modal-header">
+		<h4>{{title}}</h4>
+	</div>
+	<div class="modal-body">
+		<p>{{commandTip}}</p>
+		<b><u>command:</u></b>
+		<pre id="code" style="padding:10px;"><code class="sh">{{commandToRun}}</code></pre>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
+	</div>
+</script>

@@ -283,102 +283,9 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 	}
 
 	function executeAwarenessTest(currentScope, env, oneHost) {
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/hosts/awareness",
-			"params": {
-				"env": env.toLowerCase()
-			}
-		}, function (error, response) {
-			if (error) {
-				currentScope.generateNewMsg(env, 'danger', translation.errorExecutingAwarnessTestControllerIP[LANG] + oneHost.ip + ":" + oneHost.port + " @ " + new Date().toISOString());
-			}
-			else {
-				let awarenessResponse = {};
-				response.forEach((oneAwareness) => {
-					if(oneAwareness.ip === oneHost.ip){
-						awarenessResponse = oneAwareness.data.services;
-					}
-				});
-				for (var oneService in awarenessResponse) {
-					
-					for(let as1 in awarenessResponse[oneService].awarenessStats){
-						let as2 = as1.replace(/_dot_/g, ".");
-						awarenessResponse[oneService].awarenessStats[as2] = angular.copy(awarenessResponse[oneService].awarenessStats[as1]);
-						delete awarenessResponse[oneService].awarenessStats[as1];
-					}
-					
-					if (awarenessResponse.hasOwnProperty(oneService)) {
-						if (oneService === 'controller') {
-							continue;
-						}
-
-						if (awarenessResponse[oneService].awarenessStats) {
-							var ips = Object.keys(awarenessResponse[oneService].awarenessStats);
-							ips.forEach(function (serviceIp) {
-								updateService(awarenessResponse, oneService, serviceIp);
-							});
-						}
-					}
-				}
-			}
-		});
-
-		function updateService(response, oneService, serviceIp) {
-			var count = 0, max = 0;
-
-			for (var version in currentScope.hosts[oneService].ips) {
-				for (var i = 0; i < currentScope.hosts[oneService].ips[version].length; i++) {
-					max++;
-					console.log(currentScope.hosts[oneService].ips[version][i].ip , serviceIp);
-					if (currentScope.hosts[oneService].ips[version][i].ip === serviceIp) {
-						if (response[oneService].awarenessStats[serviceIp].healthy) {
-							currentScope.hosts[oneService].ips[version][i].healthy = true;
-							currentScope.hosts[oneService].ips[version][i].color = 'green';
-						}
-						else {
-							currentScope.hosts[oneService].ips[version][i].healthy = false;
-							currentScope.hosts[oneService].ips[version][i].color = 'red';
-						}
-
-						var lc = response[oneService].awarenessStats[serviceIp].lastCheck;
-						currentScope.hosts[oneService].ips[version][i].lastCheck = getTimeAgo(lc);
-
-						if (response[oneService].awarenessStats[serviceIp].downSince) {
-							currentScope.hosts[oneService].ips[version][i].downSince = new Date(response[oneService].awarenessStats[serviceIp].downSince).toISOString();
-						}
-						if (response[oneService].awarenessStats[serviceIp].downCount) {
-							currentScope.hosts[oneService].ips[version][i].downCount = response[oneService].awarenessStats[serviceIp].downCount;
-						}
-					}
-				}
-
-
-				currentScope.hosts[oneService].ips[version].forEach(function (oneIP) {
-					if (oneIP.healthy) {
-						count++;
-					}
-				});
-			}
-
-			var healthy, color;
-			if (count === max) {
-				//if (count === currentScope.hosts[oneService].ips.length) {
-				color = 'green';
-				healthy = true;
-			}
-			else if (count === 0) {
-				color = 'red';
-				healthy = false;
-			}
-			else {
-				color = 'yellow';
-				healthy = false;
-			}
-			currentScope.hosts[oneService].healthy = healthy;
-			currentScope.hosts[oneService].color = color;
-			currentScope.generateNewMsg(env, 'success', translation.awarenessTestControllerIP[LANG] + " " + oneHost.ip + ":" + oneHost.port + " " + translation.wasSuccesful[LANG] + " @ " + new Date().toISOString());
-		}
+		
+		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/awarenessStat?update=true";
+		showDialogBox(currentScope, env, curlCommand, oneHost.name);
 	}
 
 	//ok from down here
@@ -403,28 +310,23 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 	}
 	
 	function showDialogBox(currentScope, env, curlCommand, oneHostName){
-		var formConfig = angular.copy(environmentsConfig.form.serviceInfo);
-		formConfig.entries[0].value = "Please run the following command on the machine hosting the " + env + " environment" + curlCommand;
-		var options = {
-			timeout: $timeout,
-			form: formConfig,
-			name: 'reloadDaemonConf',
-			label: "Reloaded Daemon Group Configuration for " + oneHostName,
-			actions: [
-				{
-					'type': 'reset',
-					'label': translation.ok[LANG],
-					'btn': 'primary',
-					'action': function () {
-						currentScope.modalInstance.dismiss('cancel');
-						currentScope.provisionInfo = [];
-						currentScope.form.formData = {};
-					}
-				}
-			]
-		};
 		
-		buildFormWithModal(currentScope, $modal, options);
+		$modal.open({
+			templateUrl: "commandBox.tmpl",
+			size: 'm',
+			backdrop: true,
+			keyboard: true,
+			controller: function($scope, $modalInstance){
+				fixBackDrop();
+				$scope.title = oneHostName;
+				$scope.commandTip = "Please run the following command on the machine hosting the " + oneHostName + " in the " + env + " environment";
+				$scope.commandToRun = "curl -X GET " + curlCommand;
+				
+				$scope.ok = function(){
+					$modalInstance.close();
+				}
+			}
+		});
 	}
 	
 	function downloadProfile(currentScope, env) {

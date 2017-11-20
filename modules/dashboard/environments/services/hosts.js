@@ -139,7 +139,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 						var daemonsList = Object.keys(awarenessResponse.data.daemons);
 						for (let oneDaemon in daemonsList) {
 							
-							for (let as1 in awarenessResponse.data.daemons[daemonsList[oneDaemon].awarenessStats]) {
+							for (let as1 in awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats) {
 								let as2 = as1.replace(/_dot_/g, ".");
 								awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as2] = angular.copy(awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1]);
 								delete awarenessResponse.data.daemons[daemonsList[oneDaemon]].awarenessStats[as1];

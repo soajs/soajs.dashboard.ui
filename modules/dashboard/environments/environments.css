@@ -90,7 +90,7 @@ ul {
 }
 
 .maintenanceHeader {
-    width: 14% !important;
+    width: 15% !important;
 }
 
 .hostnameHeader {
@@ -98,7 +98,7 @@ ul {
 }
 
 .statusHeader {
-    width: 12% !important;
+    width: 10% !important;
 }
 
 .metricsHeader {

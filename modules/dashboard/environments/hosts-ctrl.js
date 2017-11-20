@@ -78,6 +78,10 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		envHosts.loadDaemonStats($scope, env, oneHost);
 	};
 	
+	$scope.loadDaemonGroupConfig = function(env, oneHost) {
+		envHosts.loadDaemonGroupConfig($scope, env, oneHost);
+	};
+	
 	$scope.downloadProfile = function (env) {
 		envHosts.downloadProfile($scope, env);
 	};

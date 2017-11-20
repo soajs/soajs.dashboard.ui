@@ -51,7 +51,7 @@
 													</td>
 												</tr>
 												<tr>
-													<td valign="top" width="10%">
+													<td valign="top" width="15%">
 														<a href="" ng-click="executeHeartbeatTest(envCode, oneIp)" title="{{translation.executeHeartbeatOperation[LANG]}}">
 															<span class="icon icon-heart"></span>&nbsp;
 														</a>
@@ -138,6 +138,10 @@
 
 																			<a href="" ng-show="oneIp.healthy && hosts[service].type === 'daemon'" ng-click="loadDaemonStats(envCode, oneIp)" title="{{translation.loadDaemonStatisticsOperation[LANG]}}">
 																				<span class="icon icon-stats-dots"></span>&nbsp;
+																			</a>
+																			
+																			<a href="" ng-show="oneIp.healthy && hosts[service].type === 'daemon'" ng-click="loadDaemonGroupConfig(envCode, oneIp)" title="{{translation.loadDaemonGroupConfig[LANG]}}">
+																				<span class="icon icon-equalizer"></span>&nbsp;
 																			</a>
 																		</td>
 																	</tr>

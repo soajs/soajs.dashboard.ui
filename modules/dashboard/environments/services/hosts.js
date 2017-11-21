@@ -98,7 +98,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 					count++;
 				}
 			});
-
+			
 			if (count === currentScope.hosts.controller.ips.length) {
 				color = 'green';
 				healthy = true;
@@ -107,6 +107,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				healthy = true;
 				color = 'yellow';
 			}
+			
 			currentScope.hosts.controller.color = color;
 			currentScope.hosts.controller.healthy = healthy;
 		}
@@ -149,9 +150,9 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 						defaultControllerHost.color = 'red';
 					}
 					
-					updateParent();
 					
 					if(controllerCount === controllers.length){
+						updateParent();
 						printServices();
 					}
 				}
@@ -193,33 +194,6 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 					list[dKey].type = "daemon";
 				});
 				propulateServices(list);
-				
-				for(let serviceName in list){
-					if(serviceName !== 'controller'){
-						let count = 0;
-						controllers.forEach((oneCtrl)=>{
-							for(let oneCtrlIP in list[serviceName].awarenessStats) {
-								if(list[serviceName].awarenessStats[oneCtrl.ip].healthy){
-									count++;
-									if (oneCtrl.ip === oneCtrlIP) {
-										oneCtrl.color = "green";
-										oneCtrl.heartbeat = true;
-									}
-								}
-							}
-						});
-						
-						if(count === controllers.length){
-							currentScope.hosts.controller.color = "green";
-							currentScope.hosts.controller.healthy = true;
-						}
-						else if(count > 0){
-							currentScope.hosts.controller.color = "yellow";
-							currentScope.hosts.controller.healthy = true;
-							
-						}
-					}
-				}
 			}
 		}
 		
@@ -300,28 +274,38 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 									
 									for(let serviceCtrl in regServices[serviceName].awarenessStats){
 										if(parseInt(regServices[serviceName].awarenessStats[serviceCtrl].version) === parseInt(version)){
-											if(regServices[serviceName].awarenessStats[serviceCtrl].healthy){
-												oneHost.color= "green";
-												oneHost.healthy = true;
-												hostsCount++;
-											}
-											else{
+											if(!regServices[serviceName].awarenessStats[serviceCtrl].healthy){
+												oneHost.color= "red";
+												oneHost.healthy = false;
 												oneHost.downCount = regServices[serviceName].awarenessStats[oneHostIP].downCount;
 												oneHost.downSince = regServices[serviceName].awarenessStats[oneHostIP].downSince;
 											}
 										}
 									}
+									
+									if((!oneHost.downCount || oneHost.downCount === 'N/A' ) && (!oneHost.downSince || oneHost.downSince === 'N/A')){
+										oneHost.color= "green";
+										oneHost.healthy = true;
+										hostsCount++;
+									}
+									else{
+										oneHost.downSince = new Date(oneHost.downSince).toISOString();
+									}
+									
+									if(hostsCount >= regServices[serviceName].hosts[version].length){
+										renderedHosts[serviceName].color = 'green';
+										renderedHosts[serviceName].healthy = true;
+									}
+									else if(hostsCount > 0 && hostsCount < regServices[serviceName].hosts[version].length){
+										renderedHosts[serviceName].color = 'yellow';
+										renderedHosts[serviceName].healthy = true;
+									}
+									else{
+										renderedHosts[serviceName].color = 'red';
+										renderedHosts[serviceName].healthy = false;
+									}
 								}
 							});
-							
-							if(hostsCount >= regServices[serviceName].hosts[version].length){
-								renderedHosts[serviceName].color = 'green';
-								renderedHosts[serviceName].healthy = true;
-							}
-							else if(hostsCount > 0 && hostsCount < regServices[serviceName].hosts[version].length){
-								renderedHosts[serviceName].color = 'yellow';
-								renderedHosts[serviceName].healthy = true;
-							}
 						}
 					}
 				}

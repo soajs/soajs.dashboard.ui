@@ -30,6 +30,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 		
 		currentScope.showCtrlHosts = true;
 		currentScope.hostList = [];
+		currentScope.hosts = [];
 		if (currentScope.access.listHosts) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
@@ -124,7 +125,6 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				else {
 					controllerCount++;
 					defaultControllerHost.heartbeat = true;
-					
 					for(let i =0; i < response.length; i++){
 						let oneAwareness = response[i];
 						if(oneAwareness.ip === defaultControllerHost.ip){
@@ -197,17 +197,18 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				for(let serviceName in list){
 					if(serviceName !== 'controller'){
 						let count = 0;
-						for(let oneCtrlIP in list[serviceName].awarenessStats){
-							if(list[serviceName].awarenessStats[oneCtrlIP].healthy){
-								count++;
-								controllers.forEach((oneCtrl)=>{
-									if(oneCtrl.ip === oneCtrlIP){
-										oneCtrl.color="green";
+						controllers.forEach((oneCtrl)=>{
+							for(let oneCtrlIP in list[serviceName].awarenessStats) {
+								if(list[serviceName].awarenessStats[oneCtrl.ip].healthy){
+									count++;
+									if (oneCtrl.ip === oneCtrlIP) {
+										oneCtrl.color = "green";
 										oneCtrl.heartbeat = true;
 									}
-								});
+								}
 							}
-						}
+						});
+						
 						if(count === controllers.length){
 							currentScope.hosts.controller.color = "green";
 							currentScope.hosts.controller.healthy = true;
@@ -297,9 +298,9 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 										renderedHosts[serviceName].ips[version].push(oneHost);
 									}
 									
-									if(regServices[serviceName].awarenessStats[oneHostIP]){
-										if(parseInt(regServices[serviceName].awarenessStats[oneHostIP].version) === parseInt(version)){
-											if(regServices[serviceName].awarenessStats[oneHostIP].healthy){
+									for(let serviceCtrl in regServices[serviceName].awarenessStats){
+										if(parseInt(regServices[serviceName].awarenessStats[serviceCtrl].version) === parseInt(version)){
+											if(regServices[serviceName].awarenessStats[serviceCtrl].healthy){
 												oneHost.color= "green";
 												oneHost.healthy = true;
 												hostsCount++;
@@ -313,7 +314,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 								}
 							});
 							
-							if(hostsCount === regServices[serviceName].hosts[version].length){
+							if(hostsCount >= regServices[serviceName].hosts[version].length){
 								renderedHosts[serviceName].color = 'green';
 								renderedHosts[serviceName].healthy = true;
 							}

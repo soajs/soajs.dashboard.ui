@@ -15,9 +15,9 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 		jenkins: "./themes/" + themeToUse + "/img/jenkins_logo.png",
 		teamcity: "./themes/" + themeToUse + "/img/teamcity_logo.png"
 	};
-	
+
 	$scope.unsupported = ['jenkins', 'teamcity'];
-	
+
 	$scope.listAccounts = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -39,7 +39,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							providers: [],
 							gitProvider: oneEntry.gitProvider
 						};
-						
+
 						response.forEach(function(oneEntryAgain){
 							if(oneEntryAgain.owner === oneAccount.owner && $scope.images[oneEntryAgain.provider]){
 								oneEntryAgain.icon = $scope.images[oneEntryAgain.provider];
@@ -47,12 +47,12 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 								oneAccount.providers.push(oneEntryAgain);
 							}
 						});
-						
+
 						$scope.accounts.push(oneAccount);
 						processed.push(oneEntry.owner + oneEntry.gitProvider);
 					}
 				});
-				
+
 				$scope.accounts.forEach(function(oneAccount){
 					var logos = angular.copy($scope.images);
 					oneAccount.providers.forEach(function(oneProvider){
@@ -66,17 +66,17 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							icon: logos[logo]
 						};
 						nEntry.locked = ($scope.unsupported.indexOf(logo) !== -1);
-						
+
 						oneAccount.providers.push(nEntry);
 					}
 				});
-				
+
 				$scope.accounts[0].hide = false;
 				$scope.accounts[0].icon = 'minus';
 			}
 		});
 	};
-	
+
 	$scope.deactivateAccount = function(provider){
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -96,10 +96,10 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-	
+
 	$scope.activateAccount = function(owner, provider){
 		var formConfig;
-		
+
 		switch(provider.provider){
 			case 'travis':
 				formConfig = angular.copy(ciAppConfig.form.f1.travis);
@@ -110,7 +110,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				formConfig.entries[0].value = '';
 				break;
 		}
-		
+
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -128,7 +128,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							"owner": owner,
 							"provider": provider.provider
 						};
-						
+
 						if(formData.version){
 							if(Array.isArray(formData.version)){
 								data.version = formData.version[0];
@@ -137,7 +137,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 								data.version = formData.version;
 							}
 						}
-						
+
 						//test if protocol is supplied
 						var regex = /^[^:]+(?=:\/\/)/;
 						if (regex.test(formData.domain) && formData.domain.match(regex)[0] !== 'http' && formData.domain.match(regex)[0] !== 'https') {
@@ -179,10 +179,10 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 		};
 		buildFormWithModal($scope, $modal, options);
 	};
-	
+
 	$scope.updateAccount = function(provider){
 		var formConfig;
-		
+
 		switch(provider.provider){
 			case 'travis':
 				formConfig = angular.copy(ciAppConfig.form.f1.travis);
@@ -193,7 +193,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				formConfig.entries[0].value = '';
 				break;
 		}
-		
+
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -213,7 +213,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							"owner": provider.owner,
 							"provider": provider.provider
 						};
-						
+
 						if(formData.version){
 							if(Array.isArray(formData.version)){
 								data.version = formData.version[0];
@@ -222,7 +222,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 								data.version = formData.version;
 							}
 						}
-						
+
 						//test if protocol is supplied
 						var regex = /^[^:]+(?=:\/\/)/;
 						if (regex.test(formData.domain) && formData.domain.match(regex)[0] !== 'http' && formData.domain.match(regex)[0] !== 'https') {
@@ -246,11 +246,11 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 										$scope.modalInstance.close();
 									}
 									$scope.listAccounts();
-									
+
 								}
 							});
 						}
-						
+
 					}
 				},
 				{
@@ -266,7 +266,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 		};
 		buildFormWithModal($scope, $modal, options);
 	};
-	
+
 	$scope.showHide = function (account) {
 		if (!account.hide) {
 			jQuery('#a_' + account.owner + " .body .inner").slideUp();
@@ -279,7 +279,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			account.hide = false;
 		}
 	};
-	
+
 	$scope.listUniqueProviders = function(){
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -295,10 +295,10 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-	
+
 	$scope.addRecipe = function (provider, type) {
 		var formConfig = angular.copy(ciAppConfig.form.f2);
-		
+
 		if (type === 'blank') {
 			formConfig.entries.splice(0, 1);
 		}
@@ -307,16 +307,16 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				var label = oneRecipe.name;
 				formConfig.entries[0].value.push({ l: label, v: oneRecipe });
 			});
-			
+
 			formConfig.entries[0].onAction = function (id, data, form) {
-				var recipeTemplate = JSON.parse(data);
+				var recipeTemplate = angular.copy(data);
 				delete recipeTemplate._id;
 				delete recipeTemplate.locked;
 				form.formData.name = recipeTemplate.name;
 				form.formData.recipe = recipeTemplate.recipe;
 			};
 		}
-		
+
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -362,15 +362,15 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				}
 			]
 		};
-		
+
 		buildFormWithModal($scope, $modal, options);
 	};
-	
+
 	$scope.viewRecipe = function (recipe) {
 		var formConfig = angular.copy(ciAppConfig.form.f2);
 		formConfig.entries.splice(0,2);
 		formConfig.entries[0].value = recipe.recipe;
-		
+
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -388,17 +388,17 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				}
 			]
 		};
-		
+
 		buildFormWithModal($scope, $modal, options);
 	};
-	
+
 	$scope.updateRecipe = function (recipe) {
 		var formConfig = angular.copy(ciAppConfig.form.f2);
 		formConfig.entries.splice(0, 1);
-		
+
 		formConfig.entries[0].readonly = true;
 		formConfig.entries[0].disabled = true;
-		
+
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -448,15 +448,15 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				}
 			]
 		};
-		
+
 		buildFormWithModal($scope, $modal, options);
 	};
-	
+
 	$scope.deleteRecipe = function (recipe) {
 		var params = {
 			id: recipe._id
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
@@ -473,12 +473,12 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-	
+
 	$scope.filterData = function (provider, query) {
 		if(!$scope.originalRecipes){
 			$scope.originalRecipes = angular.copy($scope.providers[provider]);
 		}
-		
+
 		if (query && query !== "") {
 			query = query.toLowerCase();
 			var filtered = [];
@@ -493,7 +493,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			delete $scope.originalRecipes;
 		}
 	};
-	
+
 	injectFiles.injectCss("modules/dashboard/ci/ci.css");
 
 	//start here

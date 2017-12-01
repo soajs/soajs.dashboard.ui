@@ -33,10 +33,10 @@
                             <a href="" ng-if="access.platforms.drivers.changeSelected && allowSelect" ng-click="selectDriver(platform, driver)">
                                 <span class="icon icon-checkbox-checked" tooltip="{{translation.selectDriver[LANG]}}"></span>
                             </a>
-                            <a href="" ng-if="platform === 'kubernetes'" ng-click="updateNamespaceConfig(driver)">
+                            <a href="" ng-if="platform === 'kubernetes' && deployer.selected === platform + '.' + driver" ng-click="updateNamespaceConfig(driver)">
                                 <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
                             </a>
-	                        <a href="" ng-if="platform === 'docker' && driver ==='remote'" ng-click="updateDockerConfiguration(driver)">
+	                        <a href="" ng-if="platform === 'docker' && driver ==='remote' && deployer.selected === platform + '.' + driver" ng-click="updateDockerConfiguration(driver)">
                                 <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
                             </a>
                         </span>

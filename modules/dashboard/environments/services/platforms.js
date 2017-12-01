@@ -428,6 +428,57 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		});
 	}
+	
+	function updateDockerConfiguration(currentScope, driver) {
+		var currentConfig = currentScope.platforms.docker[driver];
+		delete currentConfig.certs;
+		var modal = $modal.open({
+			templateUrl: "updateDockerConfiguration.tmpl",
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope) {
+				fixBackDrop();
+				
+				$scope.title = 'Update Docker Configuration';
+				$scope.data = angular.copy(currentConfig);
+				
+				$scope.onSubmit = function () {
+					var newConfig = $scope.data;
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'put',
+						routeName: '/dashboard/environment/platforms/deployer/update',
+						params: {
+							env: currentScope.envCode.toLowerCase()
+						},
+						data: {
+							driver: driver,
+							config: newConfig
+						}
+					}, function (error) {
+						if (error) {
+							$scope.message = {
+								danger: error.message
+							};
+							setTimeout(function () {
+								$scope.message.danger = '';
+							}, 5000);
+						}
+						else {
+							$scope.data = {};
+							modal.close();
+							currentScope.displayAlert('success', 'Driver Configuration updated successfully');
+							currentScope.listPlatforms(currentScope.envCode);
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					$scope.data = {};
+					modal.close();
+				};
+			}
+		});
+	}
 
 	return {
 		'listPlatforms': listPlatforms,
@@ -435,7 +486,8 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 		'removeCert': removeCert,
 		'selectDriver': selectDriver,
 		'changeDeployerType': changeDeployerType,
-		'updateNamespaceConfig': updateNamespaceConfig
+		'updateNamespaceConfig': updateNamespaceConfig,
+		'updateDockerConfiguration': updateDockerConfiguration
 	}
 
 }]);

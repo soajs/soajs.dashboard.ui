@@ -1,0 +1,26 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body">
+    <div class="form">
+        <alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+        <form name="deploy" id="deploy" ng-submit="deploy.$valid && onSubmit()">
+            <div class="form-group">
+                <div>
+                    <label>Docker Port</label>
+	                <input type="number" class="form-control" ng-required="true" ng-model="data.apiPort" />
+                    <br />
+                </div>
+                <div>
+                    <label>Docker Node(s)</label>
+	                <input type="text" class="form-control" ng-required="true" ng-model="data.nodes" />
+                    <br />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="onSubmit()">Update</button>
+    <button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+</div>

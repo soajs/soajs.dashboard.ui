@@ -64,6 +64,10 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		envPlatforms.changeDeployerType($scope);
 	};
 
+	$scope.updateDockerConfiguration = function(driver){
+		envPlatforms.updateDockerConfiguration($scope, driver);
+	};
+	
 	$scope.updateNamespaceConfig = function (driver) {
 		envPlatforms.updateNamespaceConfig($scope, driver);
 	};

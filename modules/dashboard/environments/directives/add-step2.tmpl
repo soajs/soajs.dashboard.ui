@@ -2,9 +2,9 @@
 	<accordion-group ng-show="availableEnvironments.length > 0" is-open="platforms.previous" ng-click="switchDriver('previous')">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.previous" value="true" name="previous" disabled/>&nbsp;
-			I want to share the same machine(s) with another environment
+			I will deploy my containers using existing settings
 		</accordion-heading>
-		I want to deploy this environment using the same machine(s) that i have for
+		I want to deploy my containers in this environment using the same deployment settings that i have for
 		<select ng-change="changeLikeEnv()" ng-model="form.formData.deployment.previousEnvironment" class="form-control w30" style="display: inline-block">
 			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
 		</select>

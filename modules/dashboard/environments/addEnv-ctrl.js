@@ -388,6 +388,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.form.formData.deployment = {};
 			}
 			
+			if($scope.form.formData.previousEnvironment){
+				$scope.form.formData.deployment.previousEnvironment = $scope.form.formData.previousEnvironment;
+			}
+			
 			if (!$scope.form.formData.deployment.docker) {
 				$scope.form.formData.deployment.docker = {
 					dockerremote: false
@@ -610,8 +614,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	};
 	
 	$scope.removeDeploymentEntries = function(){
-		
-		console.log($scope.form.formData.deploy);
 		if(!$scope.form.formData.deploy){
 			delete $scope.wizard.urac;
 			delete $scope.wizard.controller;
@@ -745,7 +747,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								}
 							}
 							
-							$scope.wizard.gi.sensitive = formData.sensitive;
+							$scope.wizard.gi.sensitive = formData.sensitive || false;
 							$scope.wizard.gi.tKeyPass = formData.tKeyPass;
 							
 							if($scope.portalDeployment){

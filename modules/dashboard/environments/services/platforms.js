@@ -381,7 +381,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 					data: {
 						selection: 'existing',
 						default: currentConfig.namespace.default,
-						type: ((currentConfig.namespace.perService) ? 'perService' : 'global')
+						type: (currentConfig.namespace.perService) ? 'perService' : 'global'
 					}
 				};
 
@@ -422,7 +422,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 					var newConfig = {
 						namespace: {
 							default: $scope.namespaces.data.default,
-							perService: (($scope.namespaces.data.type.value === 'perService') ? true : false)
+							perService: (($scope.namespaces.data.type === 'perService') ? true : false)
 						}
 					};
 					getSendDataFromServer(currentScope, ngDataApi, {

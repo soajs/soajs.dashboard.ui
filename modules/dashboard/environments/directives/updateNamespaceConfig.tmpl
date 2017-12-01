@@ -49,7 +49,9 @@
 				    </div>
 				    <div>
 					    <label>Namespace Type</label>
-					    <select class="form-control" ng-required="true" ng-options="type as type.label for type in namespaces.ui.type" ng-model="namespaces.data.type"></select>
+					    <select class="form-control" ng-required="true" ng-model="namespaces.data.type">
+						    <option ng-repeat="type in namespaces.ui.type" value="{{type.value}}">{{type.label}}</option>
+					    </select>
 				    </div>
 			    </div>
 			    <div class="c-both w100">

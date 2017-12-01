@@ -27,7 +27,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.previousEnvironment = $scope.availableEnvironments[0].code;
 	
 	$scope.changeLikeEnv = function(code){
-		$scope.previousEnvironment = code;
+		$scope.previousEnvironment = $scope.form.formData.deployment.previousEnvironment;
 	};
 	
 	$scope.showProviderLink = function(myCloudProvider, technology){

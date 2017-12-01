@@ -5,16 +5,9 @@
 			I want to share the same machine(s) with another environment
 		</accordion-heading>
 		I want to deploy this environment using the same machine(s) that i have for
-		<div class="btn-group" dropdown>
-			<button id="split-button" type="button" class="btn btn-danger t-left">{{previousEnvironment}}</button>
-			<button type="button" class="btn btn-danger" dropdown-toggle>
-				<span class="caret"></span>
-				<span class="sr-only">Split button!</span>
-			</button>
-			<ul class="dropdown-menu w100" role="menu" aria-labelledby="split-button">
-				<li role="menuitem" ng-repeat="oneBtn in availableEnvironments" ng-click="changeLikeEnv(oneBtn.code)">{{oneBtn.code}}</li>
-			</ul>
-		</div>
+		<select ng-change="changeLikeEnv()" ng-model="form.formData.deployment.previousEnvironment" class="form-control w30" style="display: inline-block">
+			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
+		</select>
 	</accordion-group>
 	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
 		<accordion-heading>

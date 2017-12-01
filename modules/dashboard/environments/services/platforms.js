@@ -330,8 +330,42 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 			keyboard: true,
 			controller: function ($scope) {
 				fixBackDrop();
-
-				$scope.title = 'Update Namespace Configuration';
+				
+				$scope.title = 'Update Driver Configuration';
+				$scope.driver = {
+					token: currentConfig.auth.token,
+					nginxDeployType: currentConfig.nginxDeployType
+				};
+				
+				$scope.onSubmit2 = function () {
+					var newConfig = angular.copy($scope.driver);
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'put',
+						routeName: '/dashboard/environment/platforms/deployer/update',
+						params: {
+							env: currentScope.envCode.toLowerCase()
+						},
+						data: {
+							driver: driver,
+							config: newConfig
+						}
+					}, function (error) {
+						if (error) {
+							$scope.message = {
+								danger: error.message
+							};
+							setTimeout(function () {
+								$scope.message.danger = '';
+							}, 5000);
+						}
+						else {
+							$scope.closeModal();
+							currentScope.displayAlert('success', 'Driver configuration updated successfully');
+							currentScope.listPlatforms(currentScope.envCode);
+						}
+					});
+				};
+				
 				$scope.namespaces = {
 					ui: {
 						selection: [
@@ -411,8 +445,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 							}, 5000);
 						}
 						else {
-							$scope.namespaces.data = {};
-							modal.close();
+							$scope.closeModal();
 							currentScope.displayAlert('success', 'Namespace configuration updated successfully');
 							currentScope.listPlatforms(currentScope.envCode);
 						}
@@ -421,6 +454,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 
 				$scope.closeModal = function () {
 					$scope.namespaces.data = {};
+					$scope.driver = {};
 					modal.close();
 				};
 

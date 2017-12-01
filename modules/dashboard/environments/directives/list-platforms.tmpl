@@ -50,6 +50,8 @@
                             </div>
                             <div ng-if="!config.socketPath">
                                 <br />
+	                            <label class="customLabel">Port:</label>&nbsp;{{config.apiPort}}<br />
+	                            <label class="customLabel">Nodes:</label>&nbsp;{{config.nodes}}<br />
                                 <label class="customLabel">Certificates:</label><br />
                                 <div class="staticDiv">
                                     <div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">

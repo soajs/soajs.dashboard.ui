@@ -788,6 +788,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								$localStorage.addEnv.step3 = angular.copy(formData);
 								$scope.wizard.controller = angular.copy(formData);
 								
+								$scope.serviceRecipes.forEach((oneServiceRecipe)=>{
+									if(oneServiceRecipe._id === $scope.wizard.controller.catalog){
+										$scope.wizard.controller.catalogName = oneServiceRecipe.name;
+									}
+								});
+								
 								if($scope.portalDeployment){
 									$scope.Step5();
 								}
@@ -982,6 +988,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							
 							$localStorage.addEnv[$scope.currentStep] = angular.copy(formData);
 							$scope.wizard[$scope.currentServiceName] = angular.copy(formData);
+							
+							$scope.serviceRecipes.forEach((oneServiceRecipe)=>{
+								if(oneServiceRecipe._id === $scope.wizard[$scope.currentServiceName].catalog){
+									$scope.wizard[$scope.currentServiceName].catalogName = oneServiceRecipe.name;
+								}
+							});
 							
 							$scope[$scope.nextStep]();
 						}
@@ -1207,6 +1219,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									$scope.nginxRecipes.forEach(function(oneNginxRecipe){
 										if(oneNginxRecipe._id === formData.catalog){
 											formData.recipe = oneNginxRecipe;
+											formData.catalogName = oneNginxRecipe.name;
 										}
 									});
 								}

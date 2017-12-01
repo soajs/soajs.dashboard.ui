@@ -247,11 +247,11 @@
 			<table>
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.nginx">
-						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'">
+						<td ng-if="k!='norecipe' && k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'">
 							<label class="text-capitalize">{{k}}
 								<span ng-if="k=='memory'">(in MBytes)</span></label>
 						</td>
-						<td ng-if="k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"> {{v}}</td>
+						<td ng-if="k!='norecipe' && k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"> {{v}}</td>
 					</tr>
 				</tbody>
 			</table>

@@ -6,6 +6,8 @@ dbServices.service('overview', ['addEnv', 'productize', 'ngDataApi', '$timeout',
 		if ($scope.wizard.cluster){
 			$scope.wizard.cluster.type= Object.keys($scope.wizard.cluster)[0];
 		}
+		
+		console.log($scope.wizard);
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {
 			timeout: $timeout,

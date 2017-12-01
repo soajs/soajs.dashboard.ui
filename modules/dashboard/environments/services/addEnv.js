@@ -20,9 +20,14 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	}
 
 	function uploadEnvCertificates(currentScope, cb) {
-		if (currentScope.wizard.deploy.selectedDriver === 'docker' && currentScope.wizard.deploy.deployment.docker.dockerremote) {
+		if (currentScope.wizard.deploy.selectedDriver === 'docker') {
 			let certificatesNames = Object.keys(currentScope.remoteCertificates);
-			uploadFiles(certificatesNames, 0, cb);
+			if(currentScope.wizard.deploy.previousEnvironment){
+				return cb();
+			}
+			else{
+				uploadFiles(certificatesNames, 0, cb);
+			}
 		}
 		else {
 			return cb();
@@ -445,8 +450,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else{
-					if(currentScope.wizard.deploy.selectedDriver ==='docker' &&
-						currentScope.wizard.deploy.deployment.docker.dockerremote){
+					if(currentScope.wizard.deploy.selectedDriver ==='docker'){
 						getSendDataFromServer(currentScope, ngDataApi, {
 							"method": "get",
 							"routeName": "/dashboard/environment/platforms/list",

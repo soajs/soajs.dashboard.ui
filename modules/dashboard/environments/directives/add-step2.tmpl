@@ -1,4 +1,21 @@
 <accordion close-others="true">
+	<accordion-group is-open="platforms.previous" ng-click="switchDriver('previous')">
+		<accordion-heading>
+			<input type="radio" ng-checked="platforms.previous" value="true" name="previous" disabled/>&nbsp;
+			I want to share the same machine(s) with another environment
+		</accordion-heading>
+		I want to deploy this environment using the same machine(s) that i have for
+		<div class="btn-group" dropdown>
+			<button id="split-button" type="button" class="btn btn-danger t-left">{{previousEnvironment}}</button>
+			<button type="button" class="btn btn-danger" dropdown-toggle>
+				<span class="caret"></span>
+				<span class="sr-only">Split button!</span>
+			</button>
+			<ul class="dropdown-menu w100" role="menu" aria-labelledby="split-button">
+				<li role="menuitem" ng-repeat="oneBtn in availableEnvironments" ng-click="changeLikeEnv(oneBtn.code)">{{oneBtn.code}}</li>
+			</ul>
+		</div>
+	</accordion-group>
 	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
@@ -8,17 +25,10 @@
 			<div class="f-right" style="width:15%;">
 				<img ng-src="themes/default/img/docker_logo.png" width="100%" />
 			</div>
-			<div ng-show="allowLocalContainerDeployment">
-				<label>Use a new machine to deploy my Environment</label>
-				<label class="toggleSwitch">
-					<input type="checkbox" ng-model="form.formData.deployment.docker.dockerremote" /><span class="buttonSlider round"></span>
-				</label>
-			</div>
-			
-			<p ng-show="form.formData.deployment.docker.dockerremote">
+			<p>
 				I have already prepared my machine(s) and installed <a href="https://www.docker.com/" target="_blank">Docker</a> as my container technology.
 			</p>
-			<div ng-show="form.formData.deployment.docker.dockerremote">
+			<div>
 				<div class="f-left w20">
 					<b>Select a Cloud Provider:</b>
 					<ui-select ng-model="myCloudProvider" ng-change="showProviderLink(myCloudProvider, 'docker')">
@@ -38,20 +48,20 @@
 			</div>
 		</div>
 		<hr>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0" ng-show="form.formData.deployment.docker.dockerremote">
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
 				<tr class="form-group machinePort-wrapper">
 					<td>
 						<div id="dockerPort-wrapper">
 							<div class="f-left" style="width:49%;">
 								<label class="f-left">Docker Port</label>
-								<input type="text" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" ng-model="form.formData.deployment.docker.externalPort" class="form-control" placeholder="2376" />
+								<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.externalPort" class="form-control" placeholder="2376" />
 								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker Internal Port so that the Dashboard can connect to your machine(s).</div>
 							</div>
 							<div class="f-left" style="width:2%;">&nbsp;</div>
 							<div class="f-left" style="width:49%;">
 								<label class="f-left">Docker Internal Port</label>
-								<input type="text" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" ng-model="form.formData.deployment.docker.internalPort" class="form-control" placeholder="2377" />
+								<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.internalPort" class="form-control" placeholder="2377" />
 								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker External Port so that the Dashboard can connect to your machine(s).</div>
 							</div>
 							
@@ -62,7 +72,7 @@
 					<td >
 						<div id="network-wrapper">
 							<label class="f-left">Docker Network Name</label>
-							<input type="text" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" placeholder="soajsnet" ng-model="form.formData.deployment.docker.network" />
+							<input type="text" ng-required="platforms.docker" class="form-control" placeholder="soajsnet" ng-model="form.formData.deployment.docker.network" />
 							<div class="fieldMsg hint">Provide the Docker network name of your machine(s).</div>
 						</div>
 					</td>
@@ -78,7 +88,7 @@
 								<span ng-show="remoteCertificates && remoteCertificates.ca" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.ca"/>
+								<input type="file" ng-required="platforms.docker" class="form-control" file-model="remoteCertificates.ca"/>
 								<div class="fieldMsg hint">Specify the location of the certificate of type CA.</div>
 							</div>
 							<div id="Cert-wrapper"  class="w30 f-left">
@@ -86,7 +96,7 @@
 								<span ng-show="remoteCertificates && remoteCertificates.cert" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.cert"/>
+								<input type="file" ng-required="platforms.docker" class="form-control" file-model="remoteCertificates.cert"/>
 								<div class="fieldMsg hint">Specify the location of the certificate of type Cert.</div>
 							</div>
 							<div id="Key-wrapper"  class="w30 f-left">
@@ -94,7 +104,7 @@
 								<span ng-show="remoteCertificates && remoteCertificates.key" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 								</span>
-								<input type="file" ng-required="platforms.docker && form.formData.deployment.docker.dockerremote" class="form-control" file-model="remoteCertificates.key"/>
+								<input type="file" ng-required="platforms.docker" class="form-control" file-model="remoteCertificates.key"/>
 								<div class="fieldMsg hint">Specify the location of the certificate of type Key.</div>
 							</div>
 						</fieldset>
@@ -112,18 +122,10 @@
 			<div class="f-right" style="width:15%;">
 				<img ng-src="themes/default/img/kubernetes_logo.png" width="100%" />
 			</div>
-			
-			<div ng-show="allowLocalContainerDeployment">
-				<label>Use a new machine to deploy my Environment</label>
-				<label class="toggleSwitch">
-					<input type="checkbox" ng-model="form.formData.deployment.kubernetes.kubernetesremote"><span class="buttonSlider round"></span>
-				</label>
-			</div>
-			
-			<p ng-show="form.formData.deployment.kubernetes.kubernetesremote">
+			<p>
 				I have already prepared my machine(s) and installed <a href="https://kubernetes.io/" target="_blank">Kubernetes</a> as my container technology.
 			</p>
-			<div ng-show="form.formData.deployment.kubernetes.kubernetesremote">
+			<div>
 				<div class="f-left w20">
 					<b>Select a Cloud Provider:</b>
 					<ui-select ng-model="myCloudProvider" ng-change="showProviderLink(myCloudProvider, 'kubernetes')">
@@ -144,13 +146,13 @@
 		</div>
 		
 		<hr>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0" ng-show="form.formData.deployment.kubernetes.kubernetesremote">
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
 				<tr class="form-group machinePort-wrapper">
 					<td>
 						<div id="kubernetesPort-wrapper">
 							<label class="f-left">Kubernetes Port</label>
-							<input type="text" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" ng-model="form.formData.deployment.kubernetes.port" class="form-control" placeholder="6443" />
+							<input type="text" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.port" class="form-control" placeholder="6443" />
 							<div class="fieldMsg hint">Provide the Kubernetes Port so that the Dashboard can connect to your machine(s).</div>
 						</div>
 					</td>
@@ -159,7 +161,7 @@
 					<td >
 						<div id="token-wrapper">
 							<label class="f-left">Kubernetes Secret Token</label>
-							<textarea ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" class="form-control" rows="4" placeholder="My Kubernetes Secret Token" ng-model="form.formData.deployment.kubernetes.token"></textarea>
+							<textarea ng-required="platforms.kubernetes" class="form-control" rows="4" placeholder="My Kubernetes Secret Token" ng-model="form.formData.deployment.kubernetes.token"></textarea>
 							<div class="fieldMsg hint">Provide the Kubernetes Secret Token so that the Dashboard can connect to your machine(s).</div>
 						</div>
 					</td>
@@ -168,12 +170,12 @@
 					<td >
 						<div id="namespace-wrapper">
 							<label class="f-left">Kubernetes Namespace Value</label>
-							<input type="text" class="form-control" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" placeholder="soajs" ng-model="form.formData.deployment.kubernetes.NS" /><br />
+							<input type="text" class="form-control" ng-required="platforms.kubernetes" placeholder="soajs" ng-model="form.formData.deployment.kubernetes.NS" /><br />
 							<div class="fieldMsg hint">Provide the Kubernetes namespace that will be used when deploying services in this environment.</div>
 							<label class="f-left">Kubernetes Namespace Mode</label>
 							<div class="f-left" style="margin:15px 0 0 35px;">
-								<input type="radio" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" ng-model="form.formData.deployment.kubernetes.perService" name="global" ng-value="false" />&nbsp;Global Namespace Per Project
-								<input type="radio" ng-required="platforms.kubernetes && form.formData.deployment.kubernetes.kubernetesremote" ng-model="form.formData.deployment.kubernetes.perService" name="service" ng-value="true" style="margin-left:35px;" />&nbsp;Specific Namespace Per Service
+								<input type="radio" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.perService" name="global" ng-value="false" />&nbsp;Global Namespace Per Project
+								<input type="radio" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.perService" name="service" ng-value="true" style="margin-left:35px;" />&nbsp;Specific Namespace Per Service
 							</div>
 							<div class="fieldMsg hint">Provide the Kubernetes Secret Token so that the Dashboard can connect to your machine(s).</div>
 						</div>

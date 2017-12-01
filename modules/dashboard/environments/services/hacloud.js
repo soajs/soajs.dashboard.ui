@@ -182,8 +182,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							if(currentScope.oldStyle){
 								currentScope.myController = currentScope.myNginx = true;
 							}
-							currentScope.hosts = hosts;
 						}
+						currentScope.hosts = hosts;
 					}
 
 					if(cb){return cb(); }

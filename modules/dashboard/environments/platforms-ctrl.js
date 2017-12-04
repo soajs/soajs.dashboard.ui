@@ -1,49 +1,32 @@
 "use strict";
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms', 'injectFiles', function ($scope, $cookies, envPlatforms, injectFiles) {
+environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms', 'ngDataApi', 'injectFiles', function ($scope, $cookies, envPlatforms, ngDataApi, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 
-	$scope.platforms = [];
-
 	$scope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
-	$scope.nginxImagePath = "./themes/" + themeToUse + "/img/nginx_logo.png";
 
-	$scope.deployer = {
-		type: "",
-		platform: "",
-		selected: ""
-	};
-
-	$scope.allowSelect = $scope.deployer.type === 'container';
-
-	$scope.jsoneditorConfig = environmentsConfig.jsoneditorConfig;
-	$scope.jsoneditorConfig.onLoad = function (instance) {
-		if (instance.mode === 'code') {
-			instance.setMode('code');
-		}
-		else {
-			instance.set();
-		}
-
-		instance.editor.getSession().on('change', function () {
-			try {
-				instance.get();
-				$scope.jsoneditorConfig.jsonIsValid = true;
+	$scope.getEnvPlatform = function(){
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment/platforms/list",
+			"params": {
+				"env": $scope.envCode
 			}
-			catch (e) {
-				$scope.jsoneditorConfig.jsonIsValid = false;
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$scope.environment = response;
+				envPlatforms.renderDisplay($scope);
 			}
 		});
 	};
-
-	$scope.listPlatforms = function (envCode) {
-		envPlatforms.listPlatforms($scope, envCode);
-	};
-
+	
 	$scope.editDriverConfig = function (driver) {
 		envPlatforms.editDriverConfig($scope, driver);
 	};
@@ -56,14 +39,6 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		envPlatforms.removeCert($scope, certId, platform, driverName);
 	};
 
-	$scope.selectDriver = function (platform, driverName) {
-		envPlatforms.selectDriver($scope, platform, driverName, $scope.deployer.type);
-	};
-
-	$scope.changeDeployerType = function () {
-		envPlatforms.changeDeployerType($scope);
-	};
-
 	$scope.updateDockerConfiguration = function(driver){
 		envPlatforms.updateDockerConfiguration($scope, driver);
 	};
@@ -72,11 +47,13 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		envPlatforms.updateNamespaceConfig($scope, driver);
 	};
 
-	if ($scope.access.platforms.list) {
-		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-			injectFiles.injectCss("modules/dashboard/environments/environments.css");
-			$scope.listPlatforms($scope.envCode);
-		}
+	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+		$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 	}
+	
+	if($scope.access.platforms.getEnvironment){
+		$scope.getEnvPlatform();
+	}
+	
+	injectFiles.injectCss("modules/dashboard/environments/environments.css");
 }]);

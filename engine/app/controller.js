@@ -253,7 +253,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			
 			let hide = false;
 			if($scope.currentDeployer.type === 'manual'){
-				hide = (['repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['environments-platforms', 'repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else{
 				hide = (link.excludedEnvs && currentSelectedEnvironment&& link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)

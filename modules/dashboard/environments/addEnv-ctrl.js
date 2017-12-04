@@ -24,7 +24,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			$scope.availableEnvironments.splice(i, 1);
 		}
 	}
-	$scope.previousEnvironment = $scope.availableEnvironments[0].code;
+	$scope.previousEnvironment = "";
 	
 	$scope.changeLikeEnv = function(code){
 		$scope.previousEnvironment = $scope.form.formData.deployment.previousEnvironment;
@@ -168,6 +168,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				previous: false
 			};
 		}
+		
 		switch (driver) {
 			case 'previous':
 				$scope.platforms.previous = true;
@@ -177,6 +178,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				break;
 			case 'docker':
+				delete $scope.previousEnvironment;
 				$scope.platforms.previous = false;
 				$scope.platforms.docker = true;
 				$scope.platforms.kubernetes = false;
@@ -184,6 +186,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				break;
 			case 'kubernetes':
+				delete $scope.previousEnvironment;
 				$scope.platforms.previous = false;
 				$scope.platforms.kubernetes = true;
 				$scope.platforms.docker = false;
@@ -192,6 +195,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				break;
 			case 'manual':
 			default:
+				delete $scope.previousEnvironment;
 				$scope.platforms.previous = false;
 				$scope.platforms.docker = false;
 				$scope.platforms.kubernetes = false;
@@ -256,7 +260,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								$scope.Step3();
 							}
 						}
-						else if($scope.previousEnvironment){
+						else if($scope.platforms.previous){
+							if($scope.previousEnvironment === ''){
+								$window.alert("Select the environment your want to clone its deployment settings to proceed!");
+								return false;
+							}
 							formData.deployment = {};
 							$scope.availableEnvironments.forEach((oneEnv)=>{
 								if(oneEnv.code === $scope.previousEnvironment){

@@ -6,6 +6,7 @@
 		</accordion-heading>
 		I want to deploy my containers in this environment using the same deployment settings that i have for
 		<select ng-change="changeLikeEnv()" ng-model="form.formData.deployment.previousEnvironment" class="form-control w30" style="display: inline-block">
+			<option value=""> -- Choose Environment --</option>
 			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
 		</select>
 	</accordion-group>

@@ -1,89 +1,102 @@
 <section ng-controller="platformsCtrl">
-    <fieldset>
+	<fieldset>
         <legend>
-            Deployment Settings
+            <img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
+            <img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
         </legend>
-        <div ng-if="access.platforms.deployer.changeDeployerType">
-            <label class="f-left pt6">Deployment Type:&nbsp;&nbsp;</label>
-            <select class="form-control f-left selectCustom" ng-model="deployer.type">
-                <option value="manual">{{translation.manual[LANG]}}</option>
-                <option value="container">{{translation.container[LANG]}}</option>
-            </select>
-            <a href="" style="margin-left:10px" class="btn btn-primary" ng-click="changeDeployerType()" ng-if="access.platforms.deployer.changeDeployerType && deployer.type !== originalDeployerType">{{translation.change[LANG]}}</a>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>
-            Platforms & Certificates
-        </legend>
-        <fieldset ng-repeat="(platform, drivers) in platforms" ng-if="access.platforms.list">
-            <legend>
-                <img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="32px" width="140px" alt="Docker Logo"/>
-                <img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="40px" width="155px" alt="Kubernetes Logo"/>
-            </legend>
-            <div class="entryBoxes entryBoxesGrid">
-                <div ng-repeat="(driver, config) in drivers" class="entryBox mb20 driverEntryBox">
-                    <div class="header">
-                        {{driver|uppercase}}
-                        <span ng-if="deployer.selected === platform + '.' + driver && allowSelect" ng-style="{'color': 'green'}"><span class="icon icon-checkmark"></span>Active</span>
-                        <span class="rightActions">
-                            <a href="" ng-if="access.platforms.certs.upload && platform !== 'kubernetes' && !config.socketPath && deployer.selected === platform + '.' + driver && allowSelect" ng-click="uploadCerts(platform, driver)">
-                                <span class="icon icon-attachment" tooltip="{{translation.uploadCertificates[LANG]}}"></span>
-                            </a>
-                            <a href="" ng-if="access.platforms.drivers.changeSelected && allowSelect" ng-click="selectDriver(platform, driver)">
-                                <span class="icon icon-checkbox-checked" tooltip="{{translation.selectDriver[LANG]}}"></span>
-                            </a>
-                            <a href="" ng-if="platform === 'kubernetes' && deployer.selected === platform + '.' + driver" ng-click="updateNamespaceConfig(driver)">
-                                <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
-                            </a>
-	                        <a href="" ng-if="platform === 'docker' && driver ==='remote' && deployer.selected === platform + '.' + driver" ng-click="updateDockerConfiguration(driver)">
-                                <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
-                            </a>
-                        </span>
-                    </div>
-                    <div class="body">
-                        <div ng-if="platform === 'docker'">
-                            <div ng-if="config.socketPath">
-                                <label class="customLabel">Socket Path:&nbsp;</label>{{config.socketPath}}<br />
-                                <label class="customLabel">Certificates:</label><br />
-                                <alert type="success">This driver does not require certificates</alert>
-                            </div>
-                            <div ng-if="!config.socketPath">
-                                <br />
-	                            <label class="customLabel">Port:</label>&nbsp;{{config.apiPort}}<br />
-	                            <label class="customLabel">Nodes:</label>&nbsp;{{config.nodes}}<br />
-                                <label class="customLabel">Certificates:</label><br />
-                                <div class="staticDiv">
-                                    <div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
-                                        <div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in config.certs">
-                                            <b>{{cert.filename}} [{{cert.certType}}]</b>
-                                            <a href="" ng-if="access.platforms.certs.delete" ng-click="removeCert(cert._id, platform, driver)">
-                                                <span class="icon icon-bin pull-right" tooltip="{{translation.removeCertificate[LANG]}}"></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <alert type="warning" ng-if="!config.certs || config.certs.length === 0">{{translation.noCertificatesUploadedYet[LANG]}}</alert>
-                                </div>
-                            </div>
+		<br />
+        <div class="entryBoxes entryBoxesGrid">
+            <div class="entryBox driverEntryBox">
+                <div class="header">
+                    {{driver|uppercase}}
+                    <span class="rightActions">
+                        <a href="" ng-if="access.platforms.certs.upload && platform === 'docker' && driver ==='remote'" ng-click="uploadCerts(platform, driver)">
+                            <span class="icon icon-attachment" tooltip="{{translation.uploadCertificates[LANG]}}"></span>
+                        </a>
+                        <a href="" ng-if="platform === 'kubernetes'" ng-click="updateNamespaceConfig(driver)">
+                            <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
+                        </a>
+                        <a href="" ng-if="platform === 'docker' && driver ==='remote'" ng-click="updateDockerConfiguration(driver)">
+                            <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
+                        </a>
+                    </span>
+                </div>
+                <div class="body">
+                    <div ng-if="platform === 'docker'">
+                        <div class="grid" ng-if="config.socketPath">
+	                        <table width="100%" cellspacing="10">
+		                        <tr class="odd first last">
+			                        <td width="50%">
+				                        <b>Docker Socket</b>
+			                        </td>
+			                        <td>{{config.socketPath}}</td>
+		                        </tr>
+	                        </table>
                         </div>
-                        <div ng-if="platform === 'kubernetes'">
-                            <table ng-style="{'width': '100%'}">
-                                <tr>
-                                    <td valign="top">
-                                        <b>Namespace Configuration</b>
-                                    </td>
-                                    <td>
-                                        <b>Default:</b> {{config.namespace.default}}<br />
-                                        <b>Type:</b> {{(config.namespace.perService ? 'Per Service' : 'Global')}}<br />
-	                                    <b>Deployment Type:</b> {{config.nginxDeployType}}<br />
-                                    </td>
-                                </tr>
+                        <div class="grid" ng-if="!config.socketPath">
+                            <table width="100%" cellspacing="10">
+	                            <tr class="odd first">
+		                            <td width="50%">
+			                            <b>Docker Port</b>
+		                            </td>
+		                            <td>{{config.apiPort}}</td>
+	                            </tr>
+	                            <tr class="even">
+		                            <td colspan="2"><b>Certificates</b></td>
+	                            </tr>
+	                            <tr class="odd last">
+		                            <td colspan="2">
+			                            <div class="staticDiv">
+				                            <div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
+					                            <div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in config.certs" style="width:32% !important;">
+						                            <b>{{cert.filename}} [{{cert.certType}}]</b>
+						                            <a href="" ng-if="access.platforms.certs.delete" ng-click="removeCert(cert._id, platform, driver)">
+							                            <span class="icon icon-bin pull-right" tooltip="{{translation.removeCertificate[LANG]}}"></span>
+						                            </a>
+					                            </div>
+				                            </div>
+				                            <alert type="warning" ng-if="!config.certs || config.certs.length === 0">{{translation.noCertificatesUploadedYet[LANG]}}</alert>
+			                            </div>
+		                            </td>
+	                            </tr>
                             </table>
                         </div>
                     </div>
+                    <div class="grid" ng-if="platform === 'kubernetes'">
+                        <table width="100%" cellspacing="10">
+                            <tr class="odd first">
+                                <td width="50%">
+                                    <b>Namespace Configuration</b>
+                                </td>
+	                            <td>{{config.namespace.default}}</td>
+                            </tr>
+	                        <tr class="even">
+		                        <td><b>Namespace Type</b></td>
+		                        <td>{{(config.namespace.perService ? 'Per Service' : 'Global')}}</td>
+	                        </tr>
+	                        <tr class="odd">
+                                <td>
+                                    <b>Nginx Deployment Type</b>
+                                </td>
+		                        <td>{{config.nginxDeployType}}</td>
+                            </tr>
+	                        <tr class="even">
+		                        <td colspan="2">
+			                        <b>Kubernetes Token</b>
+		                        </td>
+	                        </tr>
+	                        <tr class="odd last">
+		                        <td colspan="2">
+			                        <div style="overflow: auto;">
+				                        {{config.auth.token | trimmed}}
+			                        </div>
+		                        </td>
+	                        </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </fieldset>
+        </div>
     </fieldset>
 </section>
 

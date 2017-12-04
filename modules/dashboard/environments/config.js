@@ -554,13 +554,7 @@ var environmentsConfig = {
 			"updatePrefix": ['dashboard', '/environment/dbs/updatePrefix', 'put']
 		},
 		"platforms": {
-			"list": ['dashboard', '/environment/platforms/list', 'get'],
-			"drivers": {
-				"changeSelected": ['dashboard', '/environment/platforms/driver/changeSelected', 'put']
-			},
-			"deployer": {
-				"changeDeployerType": ['dashboard', '/environment/platforms/deployer/type/change', 'put']
-			},
+			"getEnvironment": ['dashboard', '/environment', 'get'],
 			"certs": {
 				"upload": ['dashboard', '/environment/platforms/cert/upload', 'post'],
 				"choose": ['dashboard', '/environment/platforms/cert/choose', 'put'],

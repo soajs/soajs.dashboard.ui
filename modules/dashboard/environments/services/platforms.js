@@ -3,40 +3,17 @@ var platformsServices = soajsApp.components;
 platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $cookies, Upload) {
 
 	var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
-
-	function listPlatforms(currentScope, env, cb) {
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/environment/platforms/list",
-			"params": {
-				env: env
-			}
-		}, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert("danger", error.code, true, 'dashboard', error.message);
-			} else {
-				renderDisplay(currentScope, response, cb);
-			}
-		});
-	}
-
-	function renderDisplay(currentScope, record, cb) {
-		currentScope.deployer.type = record.type;
-		currentScope.originalDeployerType = record.type;//used to detect changes in type on UI level
-		currentScope.currentSelected = '';
-		if(currentScope.deployer.type !== 'manual') {
-			currentScope.currentSelected = record.selected.split('.');
+	
+	function renderDisplay(currentScope) {
+		currentScope.originalEnvironment = angular.copy(currentScope.environment);
+		if(currentScope.environment.type !== 'manual'){
+			currentScope.platform = currentScope.environment.selected.split(".")[1];
+			currentScope.driver = currentScope.environment.selected.split(".")[2];
+			currentScope.config = currentScope.environment.container[currentScope.platform][currentScope.driver];
 		}
-
-		if (currentScope.currentSelected[0] === 'container') {
-			currentScope.deployer.selected = currentScope.currentSelected[1] + '.' + currentScope.currentSelected[2];
-			currentScope.deployer.platform = currentScope.currentSelected[1];
-		}
-
-		currentScope.allowSelect = currentScope.deployer.type === 'container';
-
+		
 		currentScope.availableCerts = {}; //used later to view available certificates and allow user to choose them for other drivers
-		record.certs.forEach(function (oneCert) {
+		currentScope.environment.certs.forEach(function (oneCert) {
 			if (!currentScope.availableCerts[oneCert.metadata.platform]) {
 				currentScope.availableCerts[oneCert.metadata.platform] = [];
 			}
@@ -44,27 +21,21 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 			currentScope.availableCerts[oneCert.metadata.platform].push(oneCert);
 		});
 
-		currentScope.platforms = record.container;
+		currentScope.platforms = currentScope.environment.container;
 
 		//filling in certificates
 		for (var platform in currentScope.platforms) {
 			var onePlatform = currentScope.platforms[platform];
 			for (var driver in onePlatform) {
 				onePlatform[driver].certs = [];
-				for (var i = 0; i < record.certs.length; i++) {
-					if (record.certs[i].metadata.platform === platform && record.certs[i].metadata.env[currentScope.envCode] && record.certs[i].metadata.env[currentScope.envCode].indexOf(platform + '.' + driver) !== -1) {
-						currentScope.platforms[platform][driver].certs.push({
-							_id: record.certs[i]._id,
-							filename: record.certs[i].filename,
-							certType: record.certs[i].metadata.certType
-						});
-					}
+				for (var i = 0; i < currentScope.environment.certs.length; i++) {
+					currentScope.platforms[platform][driver].certs.push({
+						_id: currentScope.environment.certs[i]._id,
+						filename: currentScope.environment.certs[i].filename,
+						certType: currentScope.environment.certs[i].metadata.certType
+					});
 				}
 			}
-		}
-
-		if (cb) {
-			return cb();
 		}
 	}
 
@@ -88,15 +59,6 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 
 				$scope.platform = platform;
 				$scope.driver = driverName;
-				if (platform === 'nginx') {
-					$scope.nginxRequiredCerts = angular.copy(environmentsConfig.nginxRequiredCerts);
-					currentScope.nginx.certs.forEach(function (oneCert) {
-						if ($scope.nginxRequiredCerts[oneCert.metadata.label]) {
-							delete $scope.nginxRequiredCerts[oneCert.metadata.label];
-						}
-					});
-					$scope.nginxRequiredCertsLength = Object.keys($scope.nginxRequiredCerts).length;
-				}
 
 				$scope.onSubmit = function () {
 					if ($scope.formData && $scope.formData.certificates && Object.keys($scope.formData.certificates).length > 0) {
@@ -133,7 +95,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 								uploadDone.dismiss();
 							}, 1500);
 
-							currentScope.listPlatforms(currentScope.envCode);
+							currentScope.getEnvPlatform();
 						});
 					}
 				};
@@ -172,7 +134,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 						} else {
 							currentScope.$parent.displayAlert('success', translation.chosenCertificatesSavedSuccessfully[LANG]);
 							upload.close();
-							currentScope.listPlatforms(currentScope.envCode);
+							currentScope.getEnvPlatform();
 						}
 					});
 				};
@@ -241,7 +203,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 					}).success(function (response, status, headers, config) {
 						if (!response.result) {
 							currentScope.$parent.displayAlert('danger', response.errors.details[0].message);
-							currentScope.listPlatforms(currentScope.envCode); //refresh view in case some files were uploaded successfully
+							currentScope.getEnvPlatform(); //refresh view in case some files were uploaded successfully
 							modal.close();
 						}
 						else {
@@ -275,49 +237,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 				currentScope.$parent.displayAlert("danger", error.code, true, 'dashboard', error.message);
 			} else {
 				currentScope.$parent.displayAlert('success', translation.selectedCertificateRemoved[LANG]);
-				currentScope.listPlatforms(currentScope.envCode);
-			}
-		});
-	}
-
-	function selectDriver(currentScope, platform, driverName, type) {
-		var driver = type + "." + platform + '.' + driverName;
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "put",
-			"routeName": "/dashboard/environment/platforms/driver/changeSelected",
-			"params": {env: currentScope.envCode},
-			"data": {selected: driver}
-		}, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert("danger", error.code, true, 'dashboard', error.message);
-			} else {
-				currentScope.$parent.displayAlert('success', translation.selectedDriverUpdated[LANG]);
-				currentScope.deployer.selected = platform + '.' + driverName;
-				currentScope.deployer.platform = platform;
-				currentScope.originalDeployer = currentScope.deployer.selected;
-			}
-		});
-	}
-
-	function changeDeployerType (currentScope) {
-		//scope.allowSelect if type is container
-		var postData = {
-			deployerType: currentScope.deployer.type
-		};
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "put",
-			"routeName": "/dashboard/environment/platforms/deployer/type/change",
-			"params": {
-				env: currentScope.envCode
-			},
-			"data": postData
-		}, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert("danger", error.code, true, 'dashboard', error.message);
-			} else {
-				currentScope.$parent.displayAlert('success', 'Deployer type changed successfully');
-				currentScope.allowSelect = currentScope.deployer.type === 'container';
-				currentScope.listPlatforms(currentScope.envCode);
+				currentScope.getEnvPlatform();
 			}
 		});
 	}
@@ -361,7 +281,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 						else {
 							$scope.closeModal();
 							currentScope.displayAlert('success', 'Driver configuration updated successfully');
-							currentScope.listPlatforms(currentScope.envCode);
+							currentScope.getEnvPlatform();
 						}
 					});
 				};
@@ -501,7 +421,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 							$scope.data = {};
 							modal.close();
 							currentScope.displayAlert('success', 'Driver Configuration updated successfully');
-							currentScope.listPlatforms(currentScope.envCode);
+							currentScope.getEnvPlatform(currentScope.envCode);
 						}
 					});
 				};
@@ -515,11 +435,9 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 	}
 
 	return {
-		'listPlatforms': listPlatforms,
+		'renderDisplay': renderDisplay,
 		'uploadCerts': uploadCerts,
 		'removeCert': removeCert,
-		'selectDriver': selectDriver,
-		'changeDeployerType': changeDeployerType,
 		'updateNamespaceConfig': updateNamespaceConfig,
 		'updateDockerConfiguration': updateDockerConfiguration
 	}

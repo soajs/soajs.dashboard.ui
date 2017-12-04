@@ -1370,27 +1370,6 @@ for (var attrname in envTranslation) {
 
 var environmentsNav = [
 	{
-		'id': 'add-environments',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environments/add',
-			'method': 'post'
-		},
-		'label': translation.addNewEnvironment[LANG],
-		'url': '#/environments-add',
-		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
-		'icon': 'plus',
-		'pillar':{
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'order': 1,
-		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js', 'modules/dashboard/environments/services/addEnvLib/productize.js'],
-		'ancestor': [translation.home[LANG]]
-	},
-	{
 		'id': 'environments',
 		'checkPermission': {
 			'service': 'dashboard',
@@ -1411,6 +1390,25 @@ var environmentsNav = [
 		'tracker': true,
 		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js'],
 		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'add-environments',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/environments/add',
+			'method': 'post'
+		},
+		'label': translation.addNewEnvironment[LANG],
+		'url': '#/environments/add',
+		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
+		'pillar':{
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'tracker': true,
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js', 'modules/dashboard/environments/services/addEnvLib/productize.js'],
+		'ancestor': [translation.home[LANG], translation.registries[LANG]]
 	},
 	{
 		'id': 'oneEnvironment',
@@ -1462,6 +1460,7 @@ var environmentsNav = [
 			'route': '/environment/platforms/list',
 			'method': 'get'
 		},
+		"fallbackLocation": "#/environments",
 		'label': translation.platformsAndCertificates[LANG],
 		'url': '#/environments-platforms',
 		'tplPath': 'modules/dashboard/environments/directives/list-platforms.tmpl',

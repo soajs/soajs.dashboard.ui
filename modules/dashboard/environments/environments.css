@@ -164,7 +164,7 @@ a.tooltipToggle {
 }
 
 .driverEntryBox {
-    width: 49% !important;
+    width: 100% !important;
     padding-left: 0px !important;
 }
 
@@ -646,6 +646,10 @@ input:checked + .buttonSlider:before {
 
 .ownerLabel {
     color: #A9A9A9;
+}
+
+#addEnvironment .modal-header span.closeButton{
+    display:none;
 }
 
 .addEnvTable {

@@ -10,33 +10,31 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 			currentScope.platform = currentScope.environment.selected.split(".")[1];
 			currentScope.driver = currentScope.environment.selected.split(".")[2];
 			currentScope.config = currentScope.environment.container[currentScope.platform][currentScope.driver];
+			
+			if(currentScope.originalEnvironment.certs){
+				let certs = [];
+				currentScope.originalEnvironment.certs.forEach((oneCert)=>{
+					if(oneCert.metadata.env[currentScope.envCode.toUpperCase()]){
+						certs.push({
+							_id: oneCert._id,
+							filename: oneCert.filename,
+							certType: oneCert.metadata.certType
+						});
+					}
+				});
+				currentScope.config.certs = certs;
+			}
 		}
 		
 		currentScope.availableCerts = {}; //used later to view available certificates and allow user to choose them for other drivers
-		currentScope.environment.certs.forEach(function (oneCert) {
+		currentScope.originalEnvironment.certs.forEach(function (oneCert) {
 			if (!currentScope.availableCerts[oneCert.metadata.platform]) {
 				currentScope.availableCerts[oneCert.metadata.platform] = [];
 			}
-
-			currentScope.availableCerts[oneCert.metadata.platform].push(oneCert);
-		});
-
-		currentScope.platforms = currentScope.environment.container;
-
-		//filling in certificates
-		for (var platform in currentScope.platforms) {
-			var onePlatform = currentScope.platforms[platform];
-			for (var driver in onePlatform) {
-				onePlatform[driver].certs = [];
-				for (var i = 0; i < currentScope.environment.certs.length; i++) {
-					currentScope.platforms[platform][driver].certs.push({
-						_id: currentScope.environment.certs[i]._id,
-						filename: currentScope.environment.certs[i].filename,
-						certType: currentScope.environment.certs[i].metadata.certType
-					});
-				}
+			if(!oneCert.metadata.env[currentScope.envCode.toUpperCase()]){
+				currentScope.availableCerts[oneCert.metadata.platform].push(oneCert);
 			}
-		}
+		});
 	}
 
 	function uploadCerts(currentScope, platform, driverName) {
@@ -156,11 +154,9 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 					}
 					//check the types of the certicates that are currently available for this driver
 					//do not allow user to upload more than one certificate with the same type [ca, cert, key]
-					if (currentScope.platforms[$scope.platform][$scope.driver].certs && currentScope.platforms[$scope.platform][$scope.driver].certs.length > 0) {
-						currentScope.platforms[$scope.platform][$scope.driver].certs.forEach(function (oneCert) {
-							$scope.availableCertTypes.push(oneCert.certType);
-						});
-					}
+					currentScope.config.certs.forEach(function (oneCert) {
+						$scope.availableCertTypes.push(oneCert.certType);
+					});
 				};
 				$scope.getAvailableCerts();
 

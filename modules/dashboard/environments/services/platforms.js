@@ -239,7 +239,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 	}
 
 	function updateNamespaceConfig(currentScope, driver) {
-		var currentConfig = currentScope.platforms.kubernetes[driver];
+		var currentConfig = angular.copy(currentScope.config);
 		var modal = $modal.open({
 			templateUrl: "updateNamespaceConfig.tmpl",
 			backdrop: true,
@@ -381,7 +381,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 	
 	function updateDockerConfiguration(currentScope, driver) {
 		var currentConfig = {
-			apiPort: parseInt(currentScope.platforms.docker[driver].apiPort)
+			apiPort: parseInt(currentScope.config.apiPort)
 		};
 		delete currentConfig.certs;
 		var modal = $modal.open({
@@ -392,7 +392,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 				fixBackDrop();
 				
 				$scope.title = 'Update Docker Configuration';
-				$scope.data = angular.copy(currentConfig);
+				$scope.data = currentConfig;
 				
 				$scope.onSubmit = function () {
 					var newConfig = $scope.data;

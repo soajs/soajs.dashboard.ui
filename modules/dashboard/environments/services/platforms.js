@@ -384,7 +384,9 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 	}
 	
 	function updateDockerConfiguration(currentScope, driver) {
-		var currentConfig = currentScope.platforms.docker[driver];
+		var currentConfig = {
+			apiPort: parseInt(currentScope.platforms.docker[driver].apiPort)
+		};
 		delete currentConfig.certs;
 		var modal = $modal.open({
 			templateUrl: "updateDockerConfiguration.tmpl",

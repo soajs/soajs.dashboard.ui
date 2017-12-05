@@ -332,10 +332,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								delete formData.deployment.kubernetes;
 								formData.selectedDriver = 'docker';
 								$scope.form.formData.deployment.docker.dockerremote = true;
+								
 								if (!formData.deployment.docker.externalPort || !formData.deployment.docker.internalPort || !formData.deployment.docker.network) {
 									$window.alert("Provide the information on how to connect to docker on your remote machine.");
 									return false;
 								}
+								
+								formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
 								
 								if (!$scope.remoteCertificates.ca || !$scope.remoteCertificates.cert || !$scope.remoteCertificates.key) {
 									$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");

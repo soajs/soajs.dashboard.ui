@@ -10,7 +10,7 @@
                 <div class="header">
                     {{driver|uppercase}}
                     <span class="rightActions">
-                        <a href="" ng-if="access.platforms.certs.upload && platform === 'docker' && driver ==='remote'" ng-click="uploadCerts(platform, driver)">
+                        <a href="" ng-if="access.platforms.certs.upload && platform === 'docker' && driver ==='remote' && config.certs.length < 3" ng-click="uploadCerts(platform, driver)">
                             <span class="icon icon-attachment" tooltip="{{translation.uploadCertificates[LANG]}}"></span>
                         </a>
                         <a href="" ng-if="platform === 'kubernetes'" ng-click="updateNamespaceConfig(driver)">
@@ -50,8 +50,8 @@
 				                            <div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
 					                            <div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in config.certs" style="width:32% !important;">
 						                            <b>{{cert.filename}} [{{cert.certType}}]</b>
-						                            <a href="" ng-if="access.platforms.certs.delete" ng-click="removeCert(cert._id, platform, driver)">
-							                            <span class="icon icon-bin pull-right" tooltip="{{translation.removeCertificate[LANG]}}"></span>
+						                            <a href="" ng-if="access.platforms.certs.delete" ng-click="removeCert(cert._id, platform, driver)" tooltip="{{translation.removeCertificate[LANG]}}">
+							                            <span class="icon icon-bin pull-right"></span>
 						                            </a>
 					                            </div>
 				                            </div>

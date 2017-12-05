@@ -13,6 +13,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.portalDeployment = false;
 	
 	$scope.wizard = {};
+	$scope.remoteCertificates = {};
 	
 	//Check whether each part of the domain is not longer than 63 characters,
 	//Allow internationalized domain names
@@ -218,7 +219,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.Step2 = function () {
 		overlayLoading.show();
 		var configuration = angular.copy(environmentsConfig.form.add.step2.entries);
-		$scope.remoteCertificates ={};
 		
 		var options = {
 			timeout: $timeout,

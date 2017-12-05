@@ -333,7 +333,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								formData.selectedDriver = 'docker';
 								$scope.form.formData.deployment.docker.dockerremote = true;
 								
-								if (!formData.deployment.docker.externalPort || !formData.deployment.docker.internalPort || !formData.deployment.docker.network) {
+								if (!formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
 									$window.alert("Provide the information on how to connect to docker on your remote machine.");
 									return false;
 								}

@@ -47,17 +47,17 @@
 				<tr class="form-group machinePort-wrapper">
 					<td>
 						<div id="dockerPort-wrapper">
-							<div class="f-left" style="width:49%;">
+							<div>
 								<label class="f-left">Docker Port</label>
 								<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.externalPort" class="form-control" placeholder="2376" />
 								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker Internal Port so that the Dashboard can connect to your machine(s).</div>
 							</div>
-							<div class="f-left" style="width:2%;">&nbsp;</div>
-							<div class="f-left" style="width:49%;">
-								<label class="f-left">Docker Internal Port</label>
-								<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.internalPort" class="form-control" placeholder="2377" />
-								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker External Port so that the Dashboard can connect to your machine(s).</div>
-							</div>
+							<!--<div class="f-left" style="width:2%;">&nbsp;</div>-->
+							<!--<div class="f-left" style="width:49%;">-->
+								<!--<label class="f-left">Docker Internal Port</label>-->
+								<!--<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.internalPort" class="form-control" placeholder="2377" />-->
+								<!--<div class="w100 c-both fieldMsg hint">Provide the value of the Docker External Port so that the Dashboard can connect to your machine(s).</div>-->
+							<!--</div>-->
 							
 						</div>
 					</td>

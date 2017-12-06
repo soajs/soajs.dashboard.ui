@@ -14,6 +14,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	
 	$scope.wizard = {};
 	$scope.remoteCertificates = {};
+	$scope.removeCert = function(certName){
+		$scope.remoteCertificates[certName] = null;
+		document.getElementById('docker' + certName + 'cert').value = '';
+	};
 	
 	//Check whether each part of the domain is not longer than 63 characters,
 	//Allow internationalized domain names

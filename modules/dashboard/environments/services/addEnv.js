@@ -306,7 +306,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 
-	function deployservice(currentScope, serviceName, cb) {
+	function deployservice(currentScope, serviceName, version, cb) {
 		let data = {
 			"deployConfig": {
 				"replication": {
@@ -321,7 +321,8 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			},
 			"custom": {
 				"name": serviceName,
-				"type": "service"
+				"type": "service",
+				"version": version.toString()
 			},
 			"recipe": currentScope.wizard[serviceName].catalog,
 			"env": currentScope.wizard.gi.code.toUpperCase()
@@ -372,7 +373,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			if (error) {
 				return cb(error);
 			} else {
-
+				data.custom.version = parseInt(data.custom.version);
 				//deploy Service
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "post",
@@ -392,15 +393,15 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	}
 
 	function deployController(currentScope, cb) {
-		deployservice(currentScope, 'controller', cb)
+		deployservice(currentScope, 'controller', 1, cb)
 	}
 
 	function deployUrac(currentScope, cb) {
-		deployservice(currentScope, 'urac', cb)
+		deployservice(currentScope, 'urac', 2, cb)
 	}
 
 	function deployOauth(currentScope, cb) {
-		deployservice(currentScope, 'oauth', cb)
+		deployservice(currentScope, 'oauth', 1, cb)
 	}
 
 	function getPermissions(currentScope, cb) {

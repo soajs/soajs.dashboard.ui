@@ -355,19 +355,31 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}
 
+		let cdPost = {
+			serviceName: serviceName,
+			env: currentScope.wizard.gi.code.toUpperCase()
+		};
+		
+		if(serviceName === 'controller'){
+			cdPost.default = {
+				deploy: true,
+				options: data
+			};
+		}
+		else{
+			cdPost.version = {
+				deploy: true,
+				options: data,
+				v: 'v' + version
+			};
+		}
+		
 		//register Controller in CD as deployed
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cd",
 			"data": {
-				config: {
-					serviceName: serviceName,
-					env: currentScope.wizard.gi.code.toUpperCase(),
-					default: {
-						deploy: true,
-						options: data
-					}
-				}
+				config: cdPost
 			}
 		}, function (error, cdResponse) {
 			if (error) {

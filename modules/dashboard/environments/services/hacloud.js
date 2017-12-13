@@ -26,6 +26,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}, function (error, response) {
 				if (error || !response) {
 					currentScope.displayAlert('danger', translation.unableRetrieveServicesHostsInformation[LANG]);
+					if (cb) {
+						return cb();
+					}
 				}
 				else {
 					getUpdatesNotifications(response, function () {
@@ -185,11 +188,10 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 						}
 						currentScope.hosts = hosts;
+						if (cb) {
+							return cb();
+						}
 					});
-				}
-				
-				if (cb) {
-					return cb();
 				}
 			});
 		}

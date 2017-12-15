@@ -12,7 +12,12 @@
 				{{alert.msg}}
 			</alert>
 		</div>
-		<div ng-show="form.msgs.header" class="header-msg" ng-bind-html="form.msgs.header|toTrustedHtml"></div>
+		<div ng-show="form.msgs && form.msgs.warning">
+			<alert type="warning">
+				{{form.msgs.warning}}
+			</alert>
+		</div>
+		<div ng-show="form.msgs && form.msgs.header" class="header-msg" ng-bind-html="form.msgs.header|toTrustedHtml"></div>
 		<div ng-include="'engine/lib/form/inputs.tmpl'"></div>
 	</div>
 	<div ng-class="{'footer': !form.modal, 'modal-footer': form.modal}">

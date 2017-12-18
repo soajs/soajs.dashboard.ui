@@ -9,6 +9,11 @@
 	        <form name="deploy2" id="deploy2" ng-submit="deploy2.$valid && onSubmit2()">
 		        <div class="form-group">
 			        <div>
+				        <label>Master Node IP</label>
+				        <input type="text" class="form-control" ng-required="true" ng-model="driver.nodes" />
+				        <br />
+			        </div>
+			        <div>
 				        <label>Kubernetes Token</label>
 				        <textarea rows="5" ng-required="true" ng-model="driver.token" class="form-control"></textarea>
 				        <br />

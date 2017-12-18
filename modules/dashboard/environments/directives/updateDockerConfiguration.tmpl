@@ -6,6 +6,11 @@
         <alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
         <form name="deploy" id="deploy" ng-submit="deploy.$valid && onSubmit()">
             <div class="form-group">
+	            <div>
+		            <label>Master Node IP</label>
+		            <input type="text" class="form-control" ng-required="true" ng-model="data.nodes" />
+		            <br />
+	            </div>
                 <div>
                     <label>Docker Port</label>
 	                <input type="number" class="form-control" ng-required="true" ng-model="data.apiPort" />

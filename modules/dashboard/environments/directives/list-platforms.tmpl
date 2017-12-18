@@ -37,14 +37,20 @@
                             <table width="100%" cellspacing="10">
 	                            <tr class="odd first">
 		                            <td width="50%">
+			                            <b>Master Node IP</b>
+		                            </td>
+		                            <td>{{config.nodes}}</td>
+	                            </tr>
+	                            <tr class="even">
+		                            <td width="50%">
 			                            <b>Docker Port</b>
 		                            </td>
 		                            <td>{{config.apiPort}}</td>
 	                            </tr>
-	                            <tr class="even">
+	                            <tr class="odd">
 		                            <td colspan="2"><b>Certificates</b></td>
 	                            </tr>
-	                            <tr class="odd last">
+	                            <tr class="even last">
 		                            <td colspan="2">
 			                            <div class="staticDiv">
 				                            <div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
@@ -64,28 +70,34 @@
                     </div>
                     <div class="grid" ng-if="platform === 'kubernetes'">
                         <table width="100%" cellspacing="10">
-                            <tr class="odd first">
+	                        <tr class="odd first">
+		                        <td width="50%">
+			                        <b>Master Node IP</b>
+		                        </td>
+		                        <td>{{config.nodes}}</td>
+	                        </tr>
+	                        <tr class="even">
                                 <td width="50%">
                                     <b>Namespace Configuration</b>
                                 </td>
 	                            <td>{{config.namespace.default}}</td>
                             </tr>
-	                        <tr class="even">
+	                        <tr class="odd">
 		                        <td><b>Namespace Type</b></td>
 		                        <td>{{(config.namespace.perService ? 'Per Service' : 'Global')}}</td>
 	                        </tr>
-	                        <tr class="odd">
+	                        <tr class="even">
                                 <td>
                                     <b>Nginx Deployment Type</b>
                                 </td>
 		                        <td>{{config.nginxDeployType}}</td>
                             </tr>
-	                        <tr class="even">
+	                        <tr class="odd">
 		                        <td colspan="2">
 			                        <b>Kubernetes Token</b>
 		                        </td>
 	                        </tr>
-	                        <tr class="odd last">
+	                        <tr class="even last">
 		                        <td colspan="2">
 			                        <div style="overflow: auto;">
 				                        {{config.auth.token | trimmed}}

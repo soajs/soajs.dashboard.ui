@@ -249,6 +249,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 				
 				$scope.title = 'Update Driver Configuration';
 				$scope.driver = {
+					nodes: currentConfig.nodes,
 					token: currentConfig.auth.token,
 					nginxDeployType: currentConfig.nginxDeployType
 				};
@@ -381,6 +382,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 	
 	function updateDockerConfiguration(currentScope, driver) {
 		var currentConfig = {
+			nodes: currentScope.config.nodes,
 			apiPort: parseInt(currentScope.config.apiPort)
 		};
 		delete currentConfig.certs;

@@ -2,9 +2,9 @@
 	<accordion-group ng-show="availableEnvironments.length > 0" is-open="platforms.previous" ng-click="switchDriver('previous')">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.previous" value="true" name="previous" disabled/>&nbsp;
-			I will deploy my containers using existing settings
+			I want to use the same deployer settings of a previous environment
 		</accordion-heading>
-		I want to deploy my containers in this environment using the same deployment settings that i have for
+		I want to deploy services, daemons & resources in this environment using the same deployment settings that i have for
 		<select ng-change="changeLikeEnv()" ng-model="form.formData.deployment.previousEnvironment" class="form-control w30" style="display: inline-block">
 			<option value=""> -- Choose Environment --</option>
 			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
@@ -13,7 +13,7 @@
 	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
-			I will use Docker to Deploy my containers
+			I want to use Docker as my Deployment Technology
 		</accordion-heading>
 		<div class="table w100 c-both">
 			<div class="f-right" style="width:15%;">
@@ -120,7 +120,7 @@
 	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.kubernetes" value="true" name="kubernetes" disabled/>&nbsp;
-			I will use Kubernetes to Deploy my containers
+			I want to use Kubernetes as my Deployment Technology
 		</accordion-heading>
 		<div class="table w100 c-both">
 			<div class="f-right" style="width:15%;">

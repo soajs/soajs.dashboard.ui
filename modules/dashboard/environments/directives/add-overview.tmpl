@@ -35,7 +35,7 @@
 					<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
 				</div>
 			</div>
-			<div ng-show="!previousEnvironment && selectedInfraProvider.deploy">
+			<div ng-show="!previousEnvironment">
 				<div class="alert alert-info">
 					<h4><span class="icon icon-info"></span> Info:</h4>
 					<p>Deploying on a machine that I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span> as my container technology.
@@ -60,7 +60,7 @@
 					<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
 				</div>
 			</div>
-			<div ng-show="!previousEnvironment && selectedInfraProvider.deploy">
+			<div ng-show="!previousEnvironment">
 				<div class="alert alert-info">
 					<h4><span class="icon icon-info"></span> Info:</h4>
 					<p>Deploying on a machine I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span> as my container technology.
@@ -68,7 +68,7 @@
 				</div>
 			</div>
 			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].kubernetesremote==true" class="addEnvTable">
-				
+
 				<table>
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.deploy.deployment[wizard.deploy.selectedDriver]">
@@ -101,10 +101,10 @@
 				<table>
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.controller ">
-							
+
 							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label></td>
 							<td ng-if="k!='deploy'"> {{v}}</td>
-						
+
 						</tr>
 					</tbody>
 				</table>
@@ -209,11 +209,11 @@
 				<table>
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.urac ">
-							
+
 							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
 							</td>
 							<td ng-if="k!='deploy'"> {{v}}</td>
-						
+
 						</tr>
 					</tbody>
 				</table>
@@ -232,11 +232,11 @@
 				<table>
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.oauth ">
-							
+
 							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
 							</td>
 							<td ng-if="k!='deploy'"> {{v}}</td>
-						
+
 						</tr>
 					</tbody>
 				</table>
@@ -297,6 +297,6 @@
 				</table>
 			</div>
 		</fieldset>
-	
+
 	</accordion-group>
 </accordion>

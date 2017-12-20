@@ -250,7 +250,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							$scope.availableEnvironments.forEach((oneEnv)=>{
 								if(oneEnv.code === $scope.previousEnvironment){
 									if(oneEnv.deployer.type === 'manual'){
-										formData.selectedDriver = deployer.type;
+										formData.selectedDriver = oneEnv.deployer.type;
+										formData.deployment.manual = {
+											nodes: oneEnv.deployment.manual.nodes
+										};
 										delete formData.kubernetes;
 										delete formData.docker;
 										delete formData.previousEnvironment;
@@ -290,6 +293,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 												perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
 												token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
 											};
+											
+											if(oneEnv.deployer.container.kubernetes[localRemote].nodes){
+												formData.deployment.kubernetes.nodes = oneEnv.deployer.container.kubernetes[localRemote].nodes;
+											}
 										}
 									}
 								}
@@ -314,7 +321,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								formData.selectedDriver = 'docker';
 								$scope.form.formData.deployment.docker.dockerremote = true;
 								
-								if (!formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
+								if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
 									$window.alert("Provide the information on how to connect to docker on your remote machine.");
 									return false;
 								}
@@ -332,7 +339,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								formData.selectedDriver = 'kubernetes';
 								$scope.form.formData.deployment.kubernetes.kubernetesremote = true;
 								
-								if (!formData.deployment.kubernetes.nginxDeployType || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
+								if (!formData.deployment.kubernetes.nginxDeployType || !formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
 									$window.alert("Provide the information on how to connect to kubernetes on your remote machine.");
 									return false;
 								}

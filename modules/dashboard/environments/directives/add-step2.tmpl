@@ -44,6 +44,15 @@
 		<hr>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
+				<tr class="form-group machineIP-wrapper">
+					<td>
+						<div id="dockerIP-wrapper">
+							<label class="f-left">Machine IP</label>
+							<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.nodes" class="form-control" placeholder="127.0.0.1" />
+							<div class="fieldMsg hint">Provide the IP of the Docker Master Node.</div>
+						</div>
+					</td>
+				</tr>
 				<tr class="form-group machinePort-wrapper">
 					<td>
 						<div id="dockerPort-wrapper">
@@ -152,6 +161,15 @@
 		<hr>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
+				<tr class="form-group machineIP-wrapper">
+					<td>
+						<div id="kubernetesIP-wrapper">
+							<label class="f-left">Machine IP</label>
+							<input type="text" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.nodes" class="form-control" placeholder="127.0.0.1" />
+							<div class="fieldMsg hint">Provide the IP of the Kubernetes Master Node.</div>
+						</div>
+					</td>
+				</tr>
 				<tr class="form-group machinePort-wrapper">
 					<td>
 						<div id="kubernetesPort-wrapper">
@@ -209,6 +227,19 @@
 			I will not use any container technology to deploy my Service(s) and Daemon(s).<br />
 			I will also handle pulling and applying updates on the machines of this Environment myself.
 		</p>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr class="form-group machinePort-wrapper">
+					<td>
+						<div id="manualIP-wrapper">
+							<label class="f-left">Machine IP</label>
+							<input type="text" ng-required="platforms.manual" ng-model="form.formData.deployment.manual.nodes" class="form-control" placeholder="127.0.0.1" />
+							<div class="fieldMsg hint">Provide the IP Address of one of your machine(s).</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 		<hr />
 		<alert type="warning">
 			<p>

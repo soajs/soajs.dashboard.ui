@@ -2,7 +2,7 @@
     <span ng-if="access.addEnvironment">
 	    <a href="#/environments/add" class="btn btn-primary">{{translation.addNewEnvironment[LANG]}}</a><br/><br/>
     </span>
-	<div ng-show = "!grid.rows">
+	<div ng-show="!grid.rows || grid.rows.length === 0">
 		<hr>
 		<div class="table w100 c-both grid">
 			<table width="100%" cellpadding="10" cellspacing="10">
@@ -50,7 +50,7 @@
 			Get Started by clicking on the button at the top to create a new environment, follow the wizards steps and you will be up and running in no time !
 		</p>
 	</div>
-	<tabset ng-show="grid.rows">
+	<tabset ng-show="grid.rows && grid.rows.length > 0">
 		<tab heading="{{translation.defaultRegistry[LANG]}}">
 			<br/>
 

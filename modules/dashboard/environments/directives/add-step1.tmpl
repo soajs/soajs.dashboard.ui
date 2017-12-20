@@ -1,12 +1,9 @@
-<h4>General Information</h4>
-<hr>
-
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tbody>
 		<tr>
 			<td colspan="3">
 				<div id="code-wrapper">
-					<label>Environment Code</label>
+					<label>Code</label>
 					<input class="form-control" ng-model="form.formData.code" type="text" placeholder="DEV | QA | CAT | STG | PROD | TEST" ng-required="tempFormEntries.code.required" ng-disabled="tempFormEntries.code.disabled" ng-change="tempFormEntries.code.onAction()"/>
 					<div class="fieldMsg hint">Provide a Code for your Environment</div>
 				</div>
@@ -15,63 +12,9 @@
 		<tr>
 			<td colspan="3">
 				<div id="description-wrapper">
-					<label>Environment Description</label>
+					<label>Description</label>
 					<textarea rows="3" ng-model="form.formData.description" class="form-control" placeholder="My Environment Description..." ng-required="tempFormEntries.description.required"></textarea>
 					<div class="fieldMsg hint">Provide a description for your environment</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<br>
-				<alert type="info">
-					<h4>Environment Domain</h4>
-					<hr>
-					<p>
-						The environment uses Nginx as an entry point to your APIs and Static Content (HTML).<br />
-						This Nginx requires a domain and at least 2 prefixes; API & SITE
-					</p>
-					<ul>
-						<li><b>API:</b>&nbsp;&nbsp;forwards requests to your APIs —> api.mydomain.com</li>
-						<li><b>SITE:</b>&nbsp;&nbsp;loads static UI content (HTML) —> site.mydomain.com</li>
-					</ul>
-					<p>
-						Provide this information in the below 3 fields and configure your DNS to point to them.<br />
-						The last step in this wizard will deploy the Nginx for you; your environment becomes reachable.
-					</p>
-					<p>
-						<b><u>Note:</u></b><br />
-						You can also create additional domains and link them to this Nginx by providing a configuration repository in the Nginx configuration step (last step of this wizard)
-					</p>
-				</alert>
-			</td>
-		</tr>
-		<tr>
-			<td width="33%">
-				<div id="domain-wrapper" style="width:90%; margin:0 10% 0 0;">
-					<div>
-						<label class="ng-binding">Environment Domain</label>
-						<input class="form-control" ng-model="form.formData.domain" ng-pattern="domainRegex" type="text" placeholder="mydomain.com" ng-required="tempFormEntries.domain.required"/>
-						<div class="fieldMsg hint">Enter the domain associated with this environment</div>
-					</div>
-				</div>
-			</td>
-			<td width="33%">
-				<div id="apiPrefix-wrapper" style="width:90%; margin:0 auto;">
-					<div>
-						<label class="ng-binding">API Prefix</label>
-						<input class="form-control" ng-model="form.formData.apiPrefix" type="text" placeholder="api" ng-required="tempFormEntries.apiPrefix.required"/>
-						<div class="fieldMsg hint">What is the api prefix of this domain ?</div>
-					</div>
-				</div>
-			</td>
-			<td width="34%">
-				<div id="sitePrefix-wrapper" style="width:90%; margin:0 0 0 10%;">
-					<div>
-						<label class="ng-binding">Site Prefix</label>
-						<input class="form-control" ng-model="form.formData.sitePrefix" type="text" placeholder="site" ng-required="tempFormEntries.sitePrefix.required"/>
-						<div class="fieldMsg hint">What is the frontend site prefix associated with this domain ?</div>
-					</div>
 				</div>
 			</td>
 		</tr>

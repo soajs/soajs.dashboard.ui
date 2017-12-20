@@ -30,11 +30,15 @@
 		<hr class="c-right">
 		<!--Docker-->
 		<div ng-if="wizard.deploy.selectedDriver=='docker'">
-			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].dockerremote==false">
+			<div ng-show="previousEnvironment">
+				<div class="alert alert-info">
+					<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+				</div>
+			</div>
+			<div ng-show="!previousEnvironment && selectedInfraProvider.deploy">
 				<div class="alert alert-info">
 					<h4><span class="icon icon-info"></span> Info:</h4>
-					<p> I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span>
-						as my container technology.
+					<p>Deploying on a machine that I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span> as my container technology.
 					</p>
 				</div>
 			</div>
@@ -51,11 +55,15 @@
 		</div>
 		<!--Kuberenetes-->
 		<div ng-if="wizard.deploy.selectedDriver=='kubernetes'">
-			<div ng-if="wizard.deploy.deployment[wizard.deploy.selectedDriver].kubernetesremote==false">
+			<div ng-show="previousEnvironment">
+				<div class="alert alert-info">
+					<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+				</div>
+			</div>
+			<div ng-show="!previousEnvironment && selectedInfraProvider.deploy">
 				<div class="alert alert-info">
 					<h4><span class="icon icon-info"></span> Info:</h4>
-					<p> I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span>
-						as my container technology.
+					<p>Deploying on a machine I have already prepared my machine(s) and installed <span class="text-capitalize">{{wizard.deploy.selectedDriver}}</span> as my container technology.
 					</p>
 				</div>
 			</div>
@@ -94,8 +102,7 @@
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.controller ">
 							
-							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
-							</td>
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label></td>
 							<td ng-if="k!='deploy'"> {{v}}</td>
 						
 						</tr>

@@ -47,28 +47,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				required: true,
 				disabled: false,
 				onAction : function(){
-					if($scope.form && $scope.form.formData && $scope.form.formData.code === 'PORTAL'){
-						$scope.portalDeployment = true;
-						// $scope.tempFormEntries.soajsFrmwrk.required = true;
-						// $scope.form.formData.soajsFrmwrk = true;
-					}else{
-						$scope.portalDeployment = false;
-						// $scope.tempFormEntries.soajsFrmwrk.required = false;
-						// $scope.form.formData.soajsFrmwrk = false;
-					}
+					$scope.portalDeployment = !!($scope.form && $scope.form.formData && $scope.form.formData.code === 'PORTAL');
 				}
 			},
 			description: {
 				required: true
-			},
-			domain: {
-				required: true
-			},
-			apiPrefix: {
-				required: false
-			},
-			sitePrefix: {
-				required: false
 			}
 		};
 		
@@ -99,13 +82,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						if (!$localStorage.addEnv) {
 							$localStorage.addEnv = {};
 						}
-						if (!formData.sitePrefix){
-							formData.sitePrefix = "site";
-						}
-						if (!formData.apiPrefix){
-							formData.apiPrefix = "api";
-						}
-						//todo: assert the inputs
+						
 						$localStorage.addEnv.step1 = angular.copy(formData);
 						$scope.wizard.gi = angular.copy(formData);
 						$scope.form.formData = {};
@@ -778,6 +755,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								$scope.wizard.gi.sessionSecret = formData.sessionSecret;
 							}
 							
+							delete formData.sensitive;
+							delete formData.tKeyPass;
+							delete formData.username;
+							delete formData.password;
+							delete formData.email;
+							delete formData.soajsFrmwrk;
+							delete formData.cookiesecret;
+							delete formData.sessionName;
+							delete formData.sessionSecret;
+							
 							$scope.lastStep = 3;
 							if (formData.deploy) {
 								//check mandatory fields
@@ -800,6 +787,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									}
 								});
 								
+								$localStorage.addEnv.step1 = angular.copy($scope.wizard.gi);
 								$localStorage.addEnv.step3 = angular.copy(formData);
 								$scope.wizard.controller = angular.copy(formData);
 								
@@ -817,6 +805,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								}
 							}
 							else {
+								$localStorage.addEnv.step1 = angular.copy($scope.wizard.gi);
 								$localStorage.addEnv.step3 = angular.copy(formData);
 								$scope.wizard.controller = angular.copy(formData);
 								overview($scope, $modal);
@@ -862,6 +851,17 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							$scope.wizard.controller.deploy = false;
 						}
 					}
+					
+					$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
+					$scope.form.formData.sensitive = $scope.wizard.gi.sensitive;
+					$scope.form.formData.tKeyPass = $scope.wizard.gi.tKeyPass;
+					$scope.form.formData.username = $scope.wizard.gi.username;
+					$scope.form.formData.password = $scope.wizard.gi.password;
+					$scope.form.formData.email = $scope.wizard.gi.email;
+					$scope.form.formData.soajsFrmwrk = $scope.wizard.gi.soajsFrmwrk;
+					$scope.form.formData.cookiesecret = $scope.wizard.gi.cookiesecret;
+					$scope.form.formData.sessionName = $scope.wizard.gi.sessionName;
+					$scope.form.formData.sessionSecret = $scope.wizard.gi.sessionSecret;
 					
 					if ($scope.wizard.deploy.selectedDriver === 'docker') {
 						$scope.allowedModes = [
@@ -1096,6 +1096,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			});
 			
 			let entries = {
+				sitePrefix: {
+					required: false
+				},
+				domain: {
+					required: true
+				},
+				apiPrefix: {
+					required: false
+				},
 				memory: {
 					required: true
 				},
@@ -1185,6 +1194,19 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						'btn': 'primary',
 						'action': function (formData) {
 							$scope.lastStep = 4;
+							if (!formData.sitePrefix){
+								formData.sitePrefix = "site";
+							}
+							
+							if (!formData.apiPrefix){
+								formData.apiPrefix = "api";
+							}
+							
+							$scope.wizard.gi.sitePrefix = formData.sitePrefix;
+							$scope.wizard.gi.apiPrefix = formData.apiPrefix;
+							$scope.wizard.gi.domain = formData.domain;
+							$localStorage.addEnv.step1 = $scope.wizard.gi;
+							
 							if (formData.deploy) {
 								//check mandatory fields
 								for (let fieldName in $scope.tempFormEntries) {
@@ -1239,6 +1261,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									});
 								}
 								
+								delete formData.sitePrefix;
+								delete formData.apiPrefix;
+								delete formData.domain;
 								$localStorage.addEnv.step4 = angular.copy(formData);
 								$scope.wizard.nginx = angular.copy(formData);
 							}
@@ -1261,10 +1286,23 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			};
 			
 			buildForm($scope, $modal, options, function () {
+				$scope.wizard.gi = $localStorage.addEnv.step1;
+				
+				if(!$scope.wizard.gi.apiPrefix || $scope.wizard.gi.apiPrefix === ''){
+					$scope.wizard.gi.apiPrefix = "api";
+				}
+				
+				if(!$scope.wizard.gi.sitePrefix || $scope.wizard.gi.sitePrefix === ''){
+					$scope.wizard.gi.sitePrefix = "site";
+				}
+				
 				if ($localStorage.addEnv && $localStorage.addEnv.step4) {
 					$scope.wizard.nginx = angular.copy($localStorage.addEnv.step4);
 					$scope.form.formData = $scope.wizard.nginx;
 				}
+				$scope.form.formData.sitePrefix = $scope.wizard.gi.sitePrefix;
+				$scope.form.formData.apiPrefix = $scope.wizard.gi.apiPrefix;
+				$scope.form.formData.domain = $scope.wizard.gi.domain;
 				
 				$scope.supportSSL = false;
 				if($scope.wizard.deploy && $scope.wizard.deploy.deployment){

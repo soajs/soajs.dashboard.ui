@@ -103,7 +103,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer.manual.nodes;
 					}
 					else{
-						let deployerInfo = $scope.formEnvironment.selected.split(".");
+						let deployerInfo = $scope.formEnvironment.deployer.selected.split(".");
 						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
 					}
 					

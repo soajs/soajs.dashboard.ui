@@ -268,16 +268,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 										if (formData.selectedDriver === 'docker') {
 											delete formData.kubernetes;
 											formData.deployment.docker = {};
-											formData.deployment.docker.dockerremote = oneEnv.deployer.selected !== 'container.docker.local';
 											let localRemote = (formData.deployment.docker.dockerremote) ? 'remote' : 'local';
-											formData.deployment.docker = {
-												dockerremote: oneEnv.deployer.selected !== 'container.docker.local',
-												apiPort: oneEnv.deployer.container.docker[localRemote].apiPort
-											};
-											
-											if(oneEnv.deployer.container.docker[localRemote].nodes){
-												formData.deployment.docker.nodes = oneEnv.deployer.container.docker[localRemote].nodes;
-											}
+
+											formData.deployment.docker = oneEnv.deployer.container.docker[localRemote];
+											formData.deployment.docker.dockerremote = oneEnv.deployer.selected !== 'container.docker.local';
 										}
 										
 										if (formData.selectedDriver === 'kubernetes') {
@@ -849,7 +843,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					};
 					
 					if ($localStorage.addEnv && $localStorage.addEnv.step3) {
-						$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
 						
 						$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);
 						$scope.form.formData = $scope.wizard.controller;

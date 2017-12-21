@@ -78,7 +78,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								
 								var failures = 0;
 								response[j].tasks.forEach(function (oneTask) {
-									if (['running', 'preparing', 'pending', 'starting'].indexOf(oneTask.status.state.toLowerCase()) === -1) {
+									if (['running', 'preparing', 'pending', 'starting', 'complete','assigned'].indexOf(oneTask.status.state.toLowerCase()) === -1) {
 										failures++;
 										oneTask.hideIt = true;
 									}

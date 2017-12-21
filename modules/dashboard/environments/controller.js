@@ -132,6 +132,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					if (myEnvCookie) {
 						for (var i = response.length - 1; i >= 0; i--) {
 							if (response[i].code === myEnvCookie.code) {
+								if(response[i].deployer.type ==='manual'){
+									response[i].machineip = response[i].deployer.manual.nodes;
+								}
+								else{
+									let deployerInfo = response[i].deployer.selected.split(".");
+									if(deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local'){
+										response[i].machineip = response[i].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+									}
+								}
 								newList.push(response[i]);
 								found = true;
 							}

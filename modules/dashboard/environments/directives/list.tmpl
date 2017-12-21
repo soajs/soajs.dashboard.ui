@@ -59,6 +59,7 @@
 					<div class="header">
 						<span>{{translation.code[LANG]}}: {{oneEnv['code']}}</span>
 						
+						<span ng-show="oneEnv.machineip"> / Machine IP: {{oneEnv['machineip']}}</span>
 						<span ng-show="oneEnv['sitePrefix'] && oneEnv.domain"> / {{translation.siteDomain[LANG]}}: {{oneEnv['sitePrefix']}}.{{oneEnv.domain}}</span>
 						<span ng-show="oneEnv['apiPrefix'] && oneEnv.domain"> / {{translation.apiDomain[LANG]}} : {{oneEnv['apiPrefix']}}.{{oneEnv.domain}}</span>
 						<span ng-show="oneEnv['portalPrefix'] && oneEnv.domain"> / {{translation.portalDomain[LANG]}} : {{oneEnv['portalPrefix']}}.{{oneEnv.domain}}</span>

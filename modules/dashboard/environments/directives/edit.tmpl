@@ -15,7 +15,7 @@
                                        placeholder="DEV..." ng-model="formEnvironment.code" class="form-control" ng-disabled="!newEntry"/>
                             </td>
                         </tr>
-	                    <tr class="form-group">
+	                    <tr class="form-group" ng-if="formEnvironment.machineip">
 		                    <td class="">
 			                    <label>Machine IP</label>
 			                    <input type="text" ng-required="true" tooltip="Update the IP of the Machine that this environment uses to deploy Services & Daemons on"

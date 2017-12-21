@@ -98,13 +98,14 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						}
 					}
 					
-					$scope.formEnvironment.machineip = "";
 					if($scope.formEnvironment.deployer.type ==='manual'){
 						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer.manual.nodes;
 					}
 					else{
 						let deployerInfo = $scope.formEnvironment.deployer.selected.split(".");
-						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+						if(deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local'){
+							$scope.formEnvironment.machineip = $scope.formEnvironment.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+						}
 					}
 					
 					$scope.waitMessage.message = '';
@@ -137,6 +138,16 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						}
 					}
 					if (!found && response && response[0]) {
+						if(response[0].deployer.type ==='manual'){
+							response[0].machineip = response[0].deployer.manual.nodes;
+						}
+						else{
+							let deployerInfo = response[0].deployer.selected.split(".");
+							if(deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local'){
+								response[0].machineip = response[0].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+							}
+						}
+						
 						newList.push(response[0]);
 						putMyEnv(response[0]);
 					}

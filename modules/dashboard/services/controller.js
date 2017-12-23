@@ -148,11 +148,11 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 					$scope.settings.urac_ACL = versionEnvRecord.urac_ACL || false;
 					$scope.settings.provision_ACL = versionEnvRecord.provision_ACL || false;
 				}
-				
+
 				$scope.onOff = function(oneSetting){
 					$scope.settings[oneSetting] = !$scope.settings[oneSetting];
 				};
-				
+
 				$scope.onSubmit = function () {
 					overlayLoading.show();
 					getSendDataFromServer($scope, ngDataApi, {
@@ -198,7 +198,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 
 }]);
 
-servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', 'swaggerClient', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, swaggerClient) {
+servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.yamlContent = "";
 	$scope.access = {};
@@ -235,6 +235,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				$scope.id = response.records[0]._id;
 				$scope.owner = response.records[0].src.owner;
 				$scope.repo = response.records[0].src.repo;
+				$scope.servicePort = response.records[0].port;
 
 				var versions = Object.keys(response.records[0].versions);
 				versions.sort();
@@ -336,7 +337,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 	function watchSwaggerSimulator() {
 		//grab the swagger info
 		var x = swaggerParser.fetch();
-		if (!x || x.length === 0) {
+		if (!x || x.length === 0 || typeof(x[3]) !== 'object' || Object.keys(x[3]).length === 0) {
 			$timeout(function () {
 				watchSwaggerSimulator();
 			}, 100);
@@ -345,6 +346,9 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 			//modify the host value with the new domain
 			x[3].host = $scope.envDomain;
 			x[3].info.host = $scope.envDomain;
+			if(parseInt($scope.servicePort) === parseInt(x[3].host.split(':')[1])) {
+				x[3].basePath = '';
+			}
 
 			if($scope.selectedEnvTenant){
 				var selectedTenant = $scope.selectedEnvTenant;
@@ -354,9 +358,15 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				x[3].tenantKey = selectedTenant.extKey;
 				x[3].info.tenantKey = selectedTenant.extKey;
 			}
-			console.log("switching to new domain:", x[3].host);
-			//apply the changes
-			swaggerParser.execute.apply(null, x);
+
+			if(!x[3].host.split(':')[1] || isNaN(parseInt(x[3].host.split(':')[1]))) {
+				$window.alert('This service does not have any published ports. Either update the catalog recipe of this service and publish its port OR deploy SOAJS Controller and Nginx.');
+			}
+			else {
+				console.log("switching to new domain:", x[3].host);
+				//apply the changes
+				swaggerParser.execute.apply(null, x);
+			}
 		}
 	}
 
@@ -787,12 +797,12 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 
 					if ($scope.postData.solo === "true") $scope.postData.solo = true;
 					else $scope.postData.solo = false;
-					
+
 					if(Object.keys($scope.postData.jobs).length === 0){
 						$scope.message.danger = getCodeMessage(172, 'dashboard', "Please select a job to proceed");
 						return false;
 					}
-					
+
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "post",
 						"routeName": "/dashboard/daemons/groupConfig/add",
@@ -961,12 +971,12 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 					$scope.postData.status = parseInt($scope.postData.status);
 					if ($scope.postData.solo === "true") $scope.postData.solo = true;
 					else $scope.postData.solo = false;
-					
+
 					if(Object.keys($scope.postData.jobs).length === 0){
 						$scope.message.danger = getCodeMessage(172, 'dashboard', "Please select a job to proceed");
 						return false;
 					}
-					
+
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "put",
 						"routeName": "/dashboard/daemons/groupConfig/update",

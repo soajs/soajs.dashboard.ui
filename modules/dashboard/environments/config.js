@@ -3,7 +3,7 @@ var serviceProviders = [
 	{
 		v: 'aws',
 		l: 'Amazon Web Services',
-		image: 'http://cloudzone.azurewebsites.net/wp-content/uploads/2015/12/amazon-aws-s3-storage-logo.png',
+		image: 'https://cloudzone.azurewebsites.net/wp-content/uploads/2015/12/amazon-aws-s3-storage-logo.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213183/AWS+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344246/AWS+Kubernetes'
@@ -84,9 +84,9 @@ var environmentsConfig = {
 			required: ['ca', 'cert', 'key']
 		}
 	},
-	
+
 	customRegistryIncrement: 20,
-	
+
 	form: {
 		add: {
 			step1: {
@@ -520,7 +520,7 @@ var environmentsConfig = {
 			]
 		}
 	},
-	
+
 	nginxRequiredCerts: {
 		certificate: {
 			label: 'Chained Certificate',
@@ -532,11 +532,11 @@ var environmentsConfig = {
 			msg: 'Key from SSL Provider'
 		}
 	},
-	
+
 	jsoneditorConfig: {
 		'height': '200px'
 	},
-	
+
 	permissions: {
 		"listEnvironments": ['dashboard', '/environment/list', 'get'],
 		"getEnvironment": ['dashboard', '/environment', 'get'],
@@ -594,9 +594,9 @@ var environmentsConfig = {
 			"delete": ["dashboard", "/customRegistry/delete", "delete"]
 		}
 	},
-	
+
 	providers: serviceProviders,
-	
+
 	recipeTypes: {
 		soajs: {
 			l: "SOAJS",
@@ -711,7 +711,7 @@ var environmentsConfig = {
 			}
 		}
 	},
-	
+
 	portal: {
 		mainPackage : {
 			'code': "MAIN",

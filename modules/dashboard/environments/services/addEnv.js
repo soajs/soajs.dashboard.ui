@@ -159,6 +159,16 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"name": "soajs-log-volume"
 					}
 				];
+				
+				//supporting HT only
+				if(currentScope.wizard.deploy.selectedDriver === 'kubernetes' && currentScope.wizard.nginx.customSSL && currentScope.wizard.nginx.customSSL.secret && currentScope.wizard.nginx.customSSL.secret.volume){
+					recipe.deployOptions.voluming.volumes.push(currentScope.wizard.nginx.customSSL.secret.volume);
+				}
+				
+				//supporting HT only
+				if(currentScope.wizard.deploy.selectedDriver === 'kubernetes' && currentScope.wizard.nginx.customSSL && currentScope.wizard.nginx.customSSL.secret && currentScope.wizard.nginx.customSSL.secret.volumeMounts){
+					recipe.deployOptions.voluming.volumeMounts.push(currentScope.wizard.nginx.customSSL.secret.volumeMounts);
+				}
 			}
 
 			if (currentScope.wizard.nginx.ssl) {
@@ -194,7 +204,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"type": "static",
 						"value": 'true'
 					};
-
+					
 					recipe.buildOptions.env["SOAJS_CONFIG_REPO_BRANCH"] = {
 						"type": "static",
 						"value": currentScope.wizard.nginx.certsGit.branch
@@ -219,6 +229,13 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 						"type": "static",
 						"value": currentScope.wizard.nginx.certsGit.domain
 					};
+				}
+				
+				//supporting HT only
+				if(currentScope.wizard.deploy.selectedDriver === 'kubernetes' && currentScope.wizard.nginx.customSSL && currentScope.wizard.nginx.customSSL.secret && currentScope.wizard.nginx.customSSL.secret.env){
+					for(let envVar in currentScope.wizard.nginx.customSSL.secret.env){
+						recipe.buildOptions.env[envVar] = currentScope.wizard.nginx.customSSL.secret.env[envVar];
+					}
 				}
 			}
 			

@@ -442,7 +442,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				ngDataApi.logoutUser($scope);
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {

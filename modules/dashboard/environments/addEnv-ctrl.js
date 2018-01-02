@@ -1312,7 +1312,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				
 				$scope.supportSSL = false;
 				if($scope.wizard.deploy && $scope.wizard.deploy.deployment){
-					if($scope.wizard.deploy.deployment.docker || $scope.wizard.deploy.deployment.kubernetes.kubernetesremote){
+					if($scope.wizard.deploy.deployment.docker || ($scope.wizard.deploy.deployment.kubernetes && $scope.wizard.deploy.deployment.kubernetes.kubernetesremote)){
 						$scope.supportSSL = true;
 					}
 				}

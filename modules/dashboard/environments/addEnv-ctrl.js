@@ -383,6 +383,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			
 			if($scope.form.formData.previousEnvironment){
 				$scope.form.formData.deployment.previousEnvironment = $scope.form.formData.previousEnvironment;
+				$scope.previousEnvironment = $scope.form.formData.previousEnvironment;
 			}
 			
 			if (!$scope.form.formData.deployment.docker) {

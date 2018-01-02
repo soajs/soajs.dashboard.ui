@@ -1,6 +1,16 @@
 <section ng-controller="environmentCtrl">
     <span ng-if="access.addEnvironment">
-	    <a href="#/environments/add" class="btn btn-primary">{{translation.addNewEnvironment[LANG]}}</a><br/><br/>
+	    <div class="dropdown addEnvDropdown">
+		    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				Create Environment
+				<span class="caret"></span>
+			</button>
+		    <ul class="dropdown-menu" aria-labelledby="addEnvDropdown">
+				<li><a href="#/environments/add?empty=true">Create Empty Environment</a></li>
+				<li><a href="#/environments/add">Create a SOAJS Environment</a></li>
+			</ul>
+	    </div>
+	    <br />
     </span>
 	<div ng-show="!grid.rows || grid.rows.length === 0">
 		<hr>

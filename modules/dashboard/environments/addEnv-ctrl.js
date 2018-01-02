@@ -11,6 +11,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.cloudProviderHelpLink = {};
 	
 	$scope.portalDeployment = false;
+	$scope.emptyEnvironment = ($routeParams.empty && $routeParams.empty === 'true') || false;
 	
 	$scope.wizard = {};
 	$scope.remoteCertificates = {};
@@ -201,6 +202,151 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		overlayLoading.show();
 		var configuration = angular.copy(environmentsConfig.form.add.step2.entries);
 		
+		function handleFormData(formData, advancedMode){
+			if ($scope.platforms.manual) {
+				formData.selectedDriver = 'manual';
+				delete formData.kubernetes;
+				delete formData.docker;
+				delete formData.previousEnvironment;
+				
+				delete $scope.wizard.controller;
+				delete $scope.wizard.nginx;
+				
+				$localStorage.addEnv.step2 = angular.copy(formData);
+				$scope.wizard.deploy = angular.copy(formData);
+				
+				$scope.lastStep = 2;
+				if(advancedMode){
+					$scope.Step3();
+				}
+				else if($scope.portalDeployment){
+					$scope.Step21();
+				}
+				else{
+					overview($scope, modal);
+				}
+			}
+			else if($scope.platforms.previous){
+				if($scope.previousEnvironment === ''){
+					$window.alert("Select the environment your want to clone its deployment settings to proceed!");
+					return false;
+				}
+				formData.deployment = {};
+				$scope.availableEnvironments.forEach((oneEnv)=>{
+					if(oneEnv.code === $scope.previousEnvironment){
+						if(oneEnv.deployer.type === 'manual'){
+							formData.selectedDriver = oneEnv.deployer.type;
+							formData.deployment.manual = {
+								nodes: oneEnv.deployment.manual.nodes
+							};
+							delete formData.kubernetes;
+							delete formData.docker;
+							delete formData.previousEnvironment;
+							
+							delete $scope.wizard.controller;
+							delete $scope.wizard.nginx;
+						}
+						else{
+							formData.previousEnvironment = $scope.previousEnvironment;
+							formData.selectedDriver = oneEnv.deployer.selected.split(".")[1]; //docker || kubernetes
+							
+							if (formData.selectedDriver === 'docker') {
+								delete formData.kubernetes;
+								formData.deployment.docker = {};
+								let localRemote = (formData.deployment.docker.dockerremote) ? 'remote' : 'local';
+								
+								formData.deployment.docker = oneEnv.deployer.container.docker[localRemote];
+								formData.deployment.docker.dockerremote = oneEnv.deployer.selected !== 'container.docker.local';
+							}
+							
+							if (formData.selectedDriver === 'kubernetes') {
+								delete formData.docker;
+								formData.deployment.kubernetes ={};
+								formData.deployment.kubernetes.kubernetesremote = oneEnv.deployer.selected !== 'container.kubernetes.local';
+								let localRemote = (formData.deployment.kubernetes.kubernetesremote) ? 'remote' : 'local';
+								formData.deployment.kubernetes = {
+									kubernetesremote: oneEnv.deployer.selected !== 'container.kubernetes.local',
+									port: oneEnv.deployer.container.kubernetes[localRemote].apiPort,
+									nginxDeployType: oneEnv.deployer.container.kubernetes[localRemote].nginxDeployType,
+									NS: oneEnv.deployer.container.kubernetes[localRemote].namespace.default,
+									perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
+									token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
+								};
+								
+								if(oneEnv.deployer.container.kubernetes[localRemote].nodes){
+									formData.deployment.kubernetes.nodes = oneEnv.deployer.container.kubernetes[localRemote].nodes;
+								}
+							}
+						}
+					}
+				});
+				
+				$localStorage.addEnv.step2 = angular.copy(formData);
+				$scope.wizard.deploy = angular.copy(formData);
+				
+				$scope.lastStep = 2;
+				if(advancedMode){
+					$scope.Step3();
+				}
+				else if($scope.portalDeployment){
+					$scope.Step21();
+				}
+				else{
+					overview($scope, $modal);
+				}
+			}
+			else {
+				delete formData.previousEnvironment;
+				if ($scope.platforms.docker) {
+					delete formData.kubernetes;
+					delete formData.deployment.kubernetes;
+					formData.selectedDriver = 'docker';
+					$scope.form.formData.deployment.docker.dockerremote = true;
+					
+					if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
+						$window.alert("Provide the information on how to connect to docker on your remote machine.");
+						return false;
+					}
+					
+					formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
+					
+					if (!$scope.remoteCertificates.ca || !$scope.remoteCertificates.cert || !$scope.remoteCertificates.key) {
+						$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");
+						return false;
+					}
+				}
+				if ($scope.platforms.kubernetes) {
+					delete formData.docker;
+					delete formData.deployment.docker;
+					formData.selectedDriver = 'kubernetes';
+					$scope.form.formData.deployment.kubernetes.kubernetesremote = true;
+					
+					if (!formData.deployment.kubernetes.nginxDeployType || !formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
+						$window.alert("Provide the information on how to connect to kubernetes on your remote machine.");
+						return false;
+					}
+				}
+				
+				if(!formData.selectedDriver){
+					$window.alert("You have not specified the deployment strategy of this environment.");
+					return false;
+				}
+				
+				$localStorage.addEnv.step2 = angular.copy(formData);
+				$scope.wizard.deploy = angular.copy(formData);
+				$scope.lastStep = 2;
+				if(advancedMode){
+					$scope.Step3();
+				}
+				else if($scope.portalDeployment){
+					$scope.Step21();
+				}
+				else{
+					overview();
+				}
+			}
+		}
+		
 		var options = {
 			timeout: $timeout,
 			entries: configuration,
@@ -215,162 +361,53 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						$scope.form.formData = {};
 						$scope.Step1();
 					}
-				},
-				{
-					'type': 'submit',
-					'label': "Next",
-					'btn': 'primary',
-					'action': function (formData) {
-						if ($scope.platforms.manual) {
-							formData.selectedDriver = 'manual';
-							delete formData.kubernetes;
-							delete formData.docker;
-							delete formData.previousEnvironment;
-							
-							delete $scope.wizard.controller;
-							delete $scope.wizard.nginx;
-							
-							$localStorage.addEnv.step2 = angular.copy(formData);
-							$scope.wizard.deploy = angular.copy(formData);
-							
-							$scope.lastStep = 2;
-							if($scope.portalDeployment){
-								$scope.Step21();
-							}
-							else{
-								$scope.Step3();
-							}
-						}
-						else if($scope.platforms.previous){
-							if($scope.previousEnvironment === ''){
-								$window.alert("Select the environment your want to clone its deployment settings to proceed!");
-								return false;
-							}
-							formData.deployment = {};
-							$scope.availableEnvironments.forEach((oneEnv)=>{
-								if(oneEnv.code === $scope.previousEnvironment){
-									if(oneEnv.deployer.type === 'manual'){
-										formData.selectedDriver = oneEnv.deployer.type;
-										formData.deployment.manual = {
-											nodes: oneEnv.deployment.manual.nodes
-										};
-										delete formData.kubernetes;
-										delete formData.docker;
-										delete formData.previousEnvironment;
-										
-										delete $scope.wizard.controller;
-										delete $scope.wizard.nginx;
-									}
-									else{
-										formData.previousEnvironment = $scope.previousEnvironment;
-										formData.selectedDriver = oneEnv.deployer.selected.split(".")[1]; //docker || kubernetes
-										
-										if (formData.selectedDriver === 'docker') {
-											delete formData.kubernetes;
-											formData.deployment.docker = {};
-											let localRemote = (formData.deployment.docker.dockerremote) ? 'remote' : 'local';
-
-											formData.deployment.docker = oneEnv.deployer.container.docker[localRemote];
-											formData.deployment.docker.dockerremote = oneEnv.deployer.selected !== 'container.docker.local';
-										}
-										
-										if (formData.selectedDriver === 'kubernetes') {
-											delete formData.docker;
-											formData.deployment.kubernetes ={};
-											formData.deployment.kubernetes.kubernetesremote = oneEnv.deployer.selected !== 'container.kubernetes.local';
-											let localRemote = (formData.deployment.kubernetes.kubernetesremote) ? 'remote' : 'local';
-											formData.deployment.kubernetes = {
-												kubernetesremote: oneEnv.deployer.selected !== 'container.kubernetes.local',
-												port: oneEnv.deployer.container.kubernetes[localRemote].apiPort,
-												nginxDeployType: oneEnv.deployer.container.kubernetes[localRemote].nginxDeployType,
-												NS: oneEnv.deployer.container.kubernetes[localRemote].namespace.default,
-												perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
-												token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
-											};
-											
-											if(oneEnv.deployer.container.kubernetes[localRemote].nodes){
-												formData.deployment.kubernetes.nodes = oneEnv.deployer.container.kubernetes[localRemote].nodes;
-											}
-										}
-									}
-								}
-							});
-							
-							$localStorage.addEnv.step2 = angular.copy(formData);
-							$scope.wizard.deploy = angular.copy(formData);
-							
-							$scope.lastStep = 2;
-							if($scope.portalDeployment){
-								$scope.Step21();
-							}
-							else{
-								$scope.Step3();
-							}
-						}
-						else {
-							delete formData.previousEnvironment;
-							if ($scope.platforms.docker) {
-								delete formData.kubernetes;
-								delete formData.deployment.kubernetes;
-								formData.selectedDriver = 'docker';
-								$scope.form.formData.deployment.docker.dockerremote = true;
-								
-								if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
-									$window.alert("Provide the information on how to connect to docker on your remote machine.");
-									return false;
-								}
-								
-								formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
-								
-								if (!$scope.remoteCertificates.ca || !$scope.remoteCertificates.cert || !$scope.remoteCertificates.key) {
-									$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");
-									return false;
-								}
-							}
-							if ($scope.platforms.kubernetes) {
-								delete formData.docker;
-								delete formData.deployment.docker;
-								formData.selectedDriver = 'kubernetes';
-								$scope.form.formData.deployment.kubernetes.kubernetesremote = true;
-								
-								if (!formData.deployment.kubernetes.nginxDeployType || !formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
-									$window.alert("Provide the information on how to connect to kubernetes on your remote machine.");
-									return false;
-								}
-							}
-							
-							if(!formData.selectedDriver){
-								$window.alert("You have not specified the deployment strategy of this environment.");
-								return false;
-							}
-							
-							$localStorage.addEnv.step2 = angular.copy(formData);
-							$scope.wizard.deploy = angular.copy(formData);
-							$scope.lastStep = 2;
-							if($scope.portalDeployment){
-								$scope.Step21();
-							}
-							else{
-								$scope.Step3();
-							}
-						}
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						delete $localStorage.addEnv;
-						$scope.form.formData = {};
-						$scope.remoteCertificates = {};
-						delete $scope.wizard;
-						$scope.$parent.go("/environments")
-					}
 				}
 			]
 		};
 		
+		if($scope.portalDeployment){
+			options.actions.push({
+				'type': 'submit',
+				'label': "Next",
+				'btn': 'primary',
+				'action': function (formData) {
+					handleFormData(formData, false);
+				}
+			});
+		}
+		else if($scope.emptyEnvironment){
+			options.actions.push({
+				'type': 'submit',
+				'label': 'OverView & Finalize',
+				'btn': 'primary',
+				'action': function(formData){
+					handleFormData(formData, false);
+				}
+			});
+		}
+		else{
+			options.actions.push({
+				'type': 'submit',
+				'label': "Next",
+				'btn': 'primary',
+				'action': function (formData) {
+					handleFormData(formData, true);
+				}
+			});
+		}
+		
+		options.actions.push({
+			'type': 'reset',
+			'label': translation.cancel[LANG],
+			'btn': 'danger',
+			'action': function () {
+				delete $localStorage.addEnv;
+				$scope.form.formData = {};
+				$scope.remoteCertificates = {};
+				delete $scope.wizard;
+				$scope.$parent.go("/environments")
+			}
+		});
 		
 		buildForm($scope, $modal, options, function () {
 			if ($localStorage.addEnv && $localStorage.addEnv.step2) {
@@ -402,8 +439,17 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				docker: $scope.form.formData.selectedDriver === 'docker' || false,
 				kubernetes: $scope.form.formData.selectedDriver === 'kubernetes' || false,
 				manual: $scope.form.formData.selectedDriver === 'manual' || false,
-				previous: ($scope.form.formData.previousEnvironment)
+				previous: $scope.previousEnvironment
 			};
+			
+			if($scope.previousEnvironment && $scope.previousEnvironment !== ''){
+				$scope.platforms = {
+					docker: false,
+					kubernetes: false,
+					manual: false,
+					previous: $scope.previousEnvironment
+				};
+			}
 			
 			$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 			overlayLoading.hide();
@@ -607,31 +653,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		});
 	};
 	
-	$scope.removeDeploymentEntries = function(){
-		if(!$scope.form.formData.deploy){
-			delete $scope.wizard.urac;
-			delete $scope.wizard.controller;
-			delete $scope.wizard.oauth;
-			delete $scope.wizard.nginx;
-			
-			$scope.tempFormEntries.mode.required = false;
-			$scope.tempFormEntries.memory.required = false;
-			$scope.tempFormEntries.catalog.required = false;
-			$scope.tempFormEntries.branch.required = false;
-			$scope.tempFormEntries.tKeyPass.required = false;
-			$scope.step3NextLabel = "Preview & Finalize";
-		}
-		else{
-			$scope.tempFormEntries.mode.required = true;
-			$scope.tempFormEntries.memory.required = true;
-			$scope.tempFormEntries.catalog.required = true;
-			$scope.tempFormEntries.branch.required = true;
-			$scope.tempFormEntries.tKeyPass.required = true;
-			$scope.step3NextLabel = "Next";
-		}
-		$scope.form.actions[1].label = $scope.step3NextLabel;
-	};
-	
 	$scope.Step3 = function () {
 		overlayLoading.show();
 		$scope.serviceRecipes = [];
@@ -642,8 +663,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.serviceRecipes.push(oneRecipe);
 				}
 			});
-			
-			$scope.step3NextLabel = "Preview & Finalize";
 			
 			let entries = {
 				tKeyPass: {
@@ -731,7 +750,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					},
 					{
 						'type': 'submit',
-						'label': $scope.step3NextLabel,
+						'label': 'Next',
 						'btn': 'primary',
 						'action': function (formData) {
 							for (let fieldName in $scope.tempFormEntries) {
@@ -859,6 +878,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							$scope.wizard.controller.deploy = false;
 						}
 					}
+					$scope.form.formData.deploy = true;
 					
 					$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
 					$scope.form.formData.sensitive = $scope.wizard.gi.sensitive;

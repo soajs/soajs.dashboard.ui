@@ -617,12 +617,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			$scope.tempFormEntries.memory.required = false;
 			$scope.tempFormEntries.catalog.required = false;
 			$scope.tempFormEntries.branch.required = false;
+			$scope.tempFormEntries.tKeyPass.required = false;
+			$scope.step3NextLabel = "Preview & Finalize";
 		}
 		else{
 			$scope.tempFormEntries.mode.required = true;
 			$scope.tempFormEntries.memory.required = true;
 			$scope.tempFormEntries.catalog.required = true;
 			$scope.tempFormEntries.branch.required = true;
+			$scope.tempFormEntries.tKeyPass.required = true;
+			$scope.step3NextLabel = "Next";
 		}
 	};
 	
@@ -637,9 +641,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				}
 			});
 			
+			$scope.step3NextLabel = "Preview & Finalize";
+			
 			let entries = {
 				tKeyPass: {
-					required: true
+					required: false
 				},
 				soajsFrmwrk: {
 					required: false,
@@ -723,7 +729,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					},
 					{
 						'type': 'submit',
-						'label': "Next",
+						'label': $scope.step3NextLabel,
 						'btn': 'primary',
 						'action': function (formData) {
 							for (let fieldName in $scope.tempFormEntries) {

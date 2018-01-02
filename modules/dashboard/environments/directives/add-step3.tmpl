@@ -1,4 +1,4 @@
-<accordion close-others="false" ng-show="form.formData.deploy">
+<accordion close-others="false">
 	<accordion-group is-open="true">
 		<accordion-heading>Environment Security</accordion-heading>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -111,7 +111,7 @@
 		</table>
 	</accordion-group>
 	
-	<accordion-group is-open="true" ng-show="wizard.deploy.selectedDriver !== 'manual'">
+	<accordion-group is-open="true" ng-show="form.formData.deploy && wizard.deploy.selectedDriver !== 'manual'">
 		<accordion-heading>SOAJS Components</accordion-heading>
 		<div ng-include="'modules/dashboard/environments/directives/deploy-service-details.tmpl'"></div>
 	</accordion-group>

@@ -868,7 +868,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						
 						injectCatalogInputs($scope.serviceRecipes, controllerBranches);
 					};
-					
+					$scope.form.formData.deploy = true;
 					if ($localStorage.addEnv && $localStorage.addEnv.step3) {
 						
 						$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);
@@ -876,9 +876,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						
 						if($scope.wizard.deploy && $scope.wizard.deploy.selectedDriver === 'manual'){
 							$scope.wizard.controller.deploy = false;
+							$scope.form.formData.deploy = false;
 						}
 					}
-					$scope.form.formData.deploy = true;
 					
 					$scope.wizard.gi = angular.copy($localStorage.addEnv.step1);
 					$scope.form.formData.sensitive = $scope.wizard.gi.sensitive;

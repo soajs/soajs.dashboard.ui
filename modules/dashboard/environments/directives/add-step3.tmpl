@@ -1,5 +1,12 @@
 
-<accordion close-others="false">
+<div ng-show="currentServiceName === 'controller'">
+	<label>I want to Deploy SOAJS Components in this Environment</label>
+	<label class="toggleSwitch">
+		<input type="checkbox" ng-model="form.formData.deploy" ng-change="removeDeploymentEntries()"><span class="buttonSlider round"></span>
+	</label>
+</div>
+
+<accordion close-others="false" ng-show="form.formData.deploy">
 	<accordion-group is-open="true">
 		<accordion-heading>Environment Security</accordion-heading>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -115,12 +122,12 @@
 	<accordion-group is-open="true" ng-show="wizard.deploy.selectedDriver !== 'manual'">
 		<accordion-heading>SOAJS Components</accordion-heading>
 		
-		<div ng-show="currentServiceName === 'controller'">
-			<label>I want to Deploy SOAJS Components in this Environment</label>
-			<label class="toggleSwitch">
-				<input type="checkbox" ng-model="form.formData.deploy" ng-change="removeDeploymentEntries()"><span class="buttonSlider round"></span>
-			</label>
-		</div>
+		<!--<div ng-show="currentServiceName === 'controller'">-->
+			<!--<label>I want to Deploy SOAJS Components in this Environment</label>-->
+			<!--<label class="toggleSwitch">-->
+				<!--<input type="checkbox" ng-model="form.formData.deploy" ng-change="removeDeploymentEntries()"><span class="buttonSlider round"></span>-->
+			<!--</label>-->
+		<!--</div>-->
 		
 		<div ng-include="'modules/dashboard/environments/directives/deploy-service-details.tmpl'"></div>
 	</accordion-group>

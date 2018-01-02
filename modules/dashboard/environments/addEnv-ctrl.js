@@ -629,6 +629,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			$scope.tempFormEntries.tKeyPass.required = true;
 			$scope.step3NextLabel = "Next";
 		}
+		$scope.form.actions[1].label = $scope.step3NextLabel;
 	};
 	
 	$scope.Step3 = function () {

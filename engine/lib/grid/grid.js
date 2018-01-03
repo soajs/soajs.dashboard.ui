@@ -134,8 +134,7 @@ function buildGrid($scope, opts) {
 			recordsPerPageArray: configuration.recordsPerPageArray,
 			search: (configuration.search === false) ? false : true
 		};
-		console.log('configuration');
-		console.log(configuration);
+
 		if (Object.hasOwnProperty.call(configuration, 'showNoMessage')) {
 			context.grid.showNoMessage = configuration.showNoMessage;
 		}

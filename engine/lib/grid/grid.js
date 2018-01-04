@@ -119,6 +119,7 @@ function buildGrid($scope, opts) {
 	function constructGrid(context, configuration) {
 		
 		context.grid = {
+			showNoMessage: true,
 			//thisGridId: gridId,
 			navigation: configuration.navigation,
 			themeToUse: themeToUse,
@@ -133,7 +134,10 @@ function buildGrid($scope, opts) {
 			recordsPerPageArray: configuration.recordsPerPageArray,
 			search: (configuration.search === false) ? false : true
 		};
-		
+
+		if (Object.hasOwnProperty.call(configuration, 'showNoMessage')) {
+			context.grid.showNoMessage = configuration.showNoMessage;
+		}
 		calculateRange(1, configuration.defaultLimit);
 		
 		context.$watch('grid.currentPage + grid.numPerPage', function () {

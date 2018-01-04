@@ -134,10 +134,11 @@
 		</div>
 	</div>
 	<div ng-show="grid.filteredRows.length ===0">
-		<br>
-
-		<div class="alert-warning alert ng-isolate-scope alert-warning alert-dismissable">
-			<span class="ng-scope ng-binding">{{translation.noRecordsFound[LANG]}}</span>
+		<div ng-show="grid.showNoMessage">
+			<br>
+			<div class="alert-warning alert ng-isolate-scope alert-warning alert-dismissable">
+				<span class="ng-scope ng-binding">{{translation.noRecordsFound[LANG]}}</span>
+			</div>
 		</div>
 	</div>
 </div>

@@ -2,13 +2,13 @@
  
 	<div ng-if="access.addEnvironment" class="c-both">
 	   
-	     <div class="btn-group" style="width:15%;" dropdown>
-		    <button id="addenv-button" class="btn btn-primary t-left" style="width:83%;" dropdown-toggle>Create Environment</button>
-		    <button class="btn btn-primary" dropdown-toggle  style="width:17%">
+	     <div class="btn-group" dropdown>
+		    <button id="addenv-button" class="btn btn-primary t-left" style="border-top-right-radius: 0; border-bottom-right-radius: 0;" dropdown-toggle>Create Environment</button>
+		    <button class="btn btn-primary" dropdown-toggle >
 			    <span class="caret"></span>
 			    <span class="sr-only">Split button!</span>
 		    </button>
-		    <ul class="dropdown-menu w100" aria-labelledby="addEnvDropdown" aria-labelledby="addenv-button">
+		    <ul class="dropdown-menu" aria-labelledby="addEnvDropdown" aria-labelledby="addenv-button">
 				<li><a href="#/environments/add?empty=true">Create Empty Environment</a></li>
 				<li><a href="#/environments/add">Create a SOAJS Environment</a></li>
 			</ul>

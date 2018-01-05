@@ -1407,7 +1407,7 @@ var environmentsNav = [
 			'position': 3
 		},
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js', 'modules/dashboard/environments/services/addEnvLib/productize.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js'],
 		'ancestor': [translation.home[LANG], translation.registries[LANG]]
 	},
 	{

@@ -81,42 +81,42 @@
 							</legend>
 							<div id="CA-wrapper" class="w30 f-left">
 								<label>CA</label>
-								<span ng-show="remoteCertificates && remoteCertificates.ca" class="green">
+								<span ng-show="form.formData.remoteCertificates && form.formData.remoteCertificates.ca" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 									<br /><a class="red" href="" ng-click="removeCert('ca');">
 										<span class="icon icon-cross"></span> Remove
 									</a>
 								</span>
-								<span ng-show="!remoteCertificates || !remoteCertificates.ca" class="green">
-									<input id='dockercacert' type="file" ng-required="platforms.docker" class="form-control" file-model="remoteCertificates.ca"/>
+								<span ng-show="!form.formData.remoteCertificates || !form.formData.remoteCertificates.ca" class="green">
+									<input class="form-control" id="dockercacert" name="dockercacert" type="file" on-read-file="showContent('ca' , $fileContent, form)" ng-required="platforms.docker"/>
 									<div class="fieldMsg hint">Specify the location of the certificate of type CA.</div>
 								</span>
 							</div>
 							<div id="Cert-wrapper"  class="w30 f-left">
 								<label>Cert</label>
-								<span ng-show="remoteCertificates && remoteCertificates.cert" class="green">
+								<span ng-show="form.formData.remoteCertificates && form.formData.remoteCertificates.cert" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 									
 									<br /><a class="red" href="" ng-click="removeCert('cert');">
 										<span class="icon icon-cross"></span> Remove
 									</a>
 								</span>
-								<span ng-show="!remoteCertificates || !remoteCertificates.cert" class="green">
-									<input id='dockercertcert' type="file" ng-required="platforms.docker" class="form-control" file-model="remoteCertificates.cert"/>
+								<span ng-show="!form.formData.remoteCertificates || !form.formData.remoteCertificates.cert" class="green">
+									<input class="form-control" id="dockercertcert" name="dockercertcert" type="file" on-read-file="showContent('cert' , $fileContent, form)" ng-required="platforms.docker"/>
 									<div class="fieldMsg hint">Specify the location of the certificate of type Cert.</div>
 								</span>
 							</div>
 							<div id="Key-wrapper"  class="w30 f-left">
 								<label>Key</label>
-								<span ng-show="remoteCertificates && remoteCertificates.key" class="green">
+								<span ng-show="form.formData.remoteCertificates && form.formData.remoteCertificates.key" class="green">
 									<span class="icon icon-checkmark"></span> Already Selected
 									
 									<br /><a class="red" href="" ng-click="removeCert('key');">
 										<span class="icon icon-cross"></span> Remove
 									</a>
 								</span>
-								<span ng-show="!remoteCertificates || !remoteCertificates.key" class="green">
-									<input id='dockerkeycert' type="file" ng-required="platforms.docker" class="form-control" file-model="remoteCertificates.key"/>
+								<span ng-show="!form.formData.remoteCertificates || !form.formData.remoteCertificates.key" class="green">
+									<input class="form-control" id="dockerkeycert" name="dockerkeycert" type="file" on-read-file="showContent('key' , $fileContent, form)" ng-required="platforms.docker"/>
 									<div class="fieldMsg hint">Specify the location of the certificate of type Key.</div>
 								</span>
 							</div>

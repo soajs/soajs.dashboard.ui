@@ -1,4 +1,4 @@
-<accordion close-others="false">
+<accordion close-others="false" ng-show="!showProgress">
 	<accordion-group is-open="true">
 		<accordion-heading>
 			General Information
@@ -300,3 +300,41 @@
 
 	</accordion-group>
 </accordion>
+
+<div id="progressAddEnv" ng-show="showProgress">
+		<alert type="warning">
+			Deploying your environment might take a few minutes to finish, please do not close or refresh this page until the deployer is done.
+		</alert>
+		<br />
+		<!--<progressbar class="progress-striped active" value="progressCounter/maxCounter*100" type="info">{{(progressCounter/maxCounter*100).toFixed(2)}}%</progressbar>-->
+		<!--<span ng-if="createEnvironment">-->
+			<!--<span class="icon icon-checkmark green"></span> Environment Created ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="uploadEnvCertificates">-->
+			<!--<span class="icon icon-checkmark green"></span> Environment Platform Certificates/Tokens Saved ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="productize">-->
+			<!--<span class="icon icon-checkmark green"></span> Portal Product & Tenant Created ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="deployCluster">-->
+			<!--<span class="icon icon-checkmark green"></span> MongoDB Server Created ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="deployController">-->
+			<!--<span class="icon icon-checkmark green"></span> Controller Deployed ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="deployUrac">-->
+			<!--<span class="icon icon-checkmark green"></span> URAC Deployed ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="deployOauth">-->
+			<!--<span class="icon icon-checkmark green"></span> oAuth Deployed ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="createNginxRecipe">-->
+			<!--<span class="icon icon-checkmark green"></span> Nginx Recipe Created ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="deployNginx">-->
+			<!--<span class="icon icon-checkmark green"></span> Nginx Deployed ...<br>-->
+		<!--</span>-->
+		<!--<span ng-if="user">-->
+			<!--<span class="icon icon-loop2 green"></span> Checking and Creating User Account for Portal ...<br>-->
+		<!--</span>-->
+</div>

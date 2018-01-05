@@ -14,9 +14,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.emptyEnvironment = ($routeParams.empty && $routeParams.empty === 'true') || false;
 	
 	$scope.wizard = {};
-	$scope.remoteCertificates = {};
 	$scope.removeCert = function(certName){
-		$scope.remoteCertificates[certName] = null;
+		delete $scope.form.formData.remoteCertificates[certName];
 		document.getElementById('docker' + certName + 'cert').value = '';
 	};
 	
@@ -198,6 +197,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		return status;
 	}
 	
+	$scope.showContent = function(id, value, form){
+		if(!form.formData.remoteCertificates){
+			form.formData.remoteCertificates = {};
+		}
+		form.formData.remoteCertificates[id] = value;
+	};
+	
 	$scope.Step2 = function () {
 		overlayLoading.show();
 		var configuration = angular.copy(environmentsConfig.form.add.step2.entries);
@@ -310,7 +316,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					
 					formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
 					
-					if (!$scope.remoteCertificates.ca || !$scope.remoteCertificates.cert || !$scope.remoteCertificates.key) {
+					if (!formData.remoteCertificates.ca || !formData.remoteCertificates.cert || !formData.remoteCertificates.key) {
 						$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");
 						return false;
 					}

@@ -69,6 +69,46 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		context.waitMessage.type = '';
 	};
 	
+	$scope.goToDeploymentProgress = function(oneEnv){
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment",
+			"params": {
+				"id": oneEnv._id
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				if(!$localStorage.addEnv) {
+					$localStorage.addEnv = {};
+				}
+				$localStorage.addEnv.step1 = response.template.gi;
+				
+				if(response.template.deploy) {
+					$localStorage.addEnv.step2 = response.template.deploy;
+				}
+				if(response.template.cluster) {
+					$localStorage.addEnv.step21 = response.template.cluster;
+				}
+				if(response.template.controller) {
+					$localStorage.addEnv.step3 = response.template.controller;
+				}
+				if(response.template.nginx) {
+					$localStorage.addEnv.step4 = response.template.nginx;
+				}
+				if(response.template.urac) {
+					$localStorage.addEnv.step5 = response.template.urac;
+				}
+				if(response.template.oauth){
+					$localStorage.addEnv.step6 = response.template.oauth;
+				}
+				$scope.$parent.go("#/environments/add");
+			}
+		});
+	};
+	
 	$scope.listEnvironments = function (environmentId) {
 		if (environmentId) {
 			getSendDataFromServer($scope, ngDataApi, {
@@ -146,6 +186,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							}
 						}
 					}
+					
 					if (!found && response && response[0]) {
 						if(response[0].deployer.type ==='manual'){
 							response[0].machineip = response[0].deployer.manual.nodes;

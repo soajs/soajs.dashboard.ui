@@ -229,7 +229,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.Step21();
 				}
 				else{
-					overview($scope, modal);
+					overview.run($scope);
 				}
 			}
 			else if($scope.platforms.previous){
@@ -298,7 +298,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.Step21();
 				}
 				else{
-					overview($scope, $modal);
+					overview.run($scope);
 				}
 			}
 			else {
@@ -348,7 +348,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.Step21();
 				}
 				else{
-					overview();
+					overview.run($scope);
 				}
 			}
 		}
@@ -715,16 +715,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					}
 				},
 				number: {
-					required: false
+					required: true
 				},
 				memory: {
-					required: false
+					required: true
 				},
 				catalog: {
-					required: false
+					required: true
 				},
 				branch: {
-					required: false
+					required: true
 				}
 			};
 			doBuildForm(entries);
@@ -842,7 +842,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								$localStorage.addEnv.step1 = angular.copy($scope.wizard.gi);
 								$localStorage.addEnv.step3 = angular.copy(formData);
 								$scope.wizard.controller = angular.copy(formData);
-								overview($scope, $modal);
+								overview.run($scope);
 							}
 						}
 					},
@@ -1301,7 +1301,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								$localStorage.addEnv.step4 = angular.copy(formData);
 								$scope.wizard.nginx = angular.copy(formData);
 							}
-							overview($scope, $modal);
+							overview.run($scope);
 						}
 					},
 					{
@@ -1494,8 +1494,41 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		});
 	}
 	
+	function checkEnvironment(cb){
+		if($localStorage.addEnv && $localStorage.addEnv.step1 && $localStorage.addEnv.step1.code){
+			overlayLoading.show();
+			getSendDataFromServer($scope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/environment',
+				params: {
+					code: $localStorage.addEnv.step1.code
+				}
+			}, function (error, pendingEnvironment) {
+				overlayLoading.hide();
+				if (error) {
+					return cb();
+				}
+				else {
+					if(pendingEnvironment && pendingEnvironment.pending && pendingEnvironment.template){
+						$scope.envId = pendingEnvironment._id;
+						$scope.wizard = pendingEnvironment.template;
+						overview.check($scope);
+					}
+					else{
+						return cb();
+					}
+				}
+			});
+		}
+		else{
+			return cb();
+		}
+	}
+	
 	if ($scope.access.addEnvironment) {
-		$scope.Step1();
+		checkEnvironment(() => {
+			$scope.Step1();
+		});
 	}
 	
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');

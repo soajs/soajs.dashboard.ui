@@ -86,6 +86,15 @@
 							{{oneEnv['description']}}
 						</div>
 						<br/>
+						
+						<div ng-if="oneEnv.pending">
+							<alert type="info">
+								<input type="button" ng-click="goToDeploymentProgress(oneEnv);" value="Show Progress" class="btn btn-sm btn-primary f-left" style="margin-top: 5px;"/>
+								<span>This Environment is still being deployed.</span>
+							</alert>
+							<br />
+						</div>
+						
 						<div ng-include="'modules/dashboard/environments/directives/list-service-config.tmpl'"></div>
 						<div class="entryAction">
 

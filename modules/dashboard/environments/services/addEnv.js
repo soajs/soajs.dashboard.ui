@@ -1,15 +1,15 @@
 "use strict";
 var dbServices = soajsApp.components;
 dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorage', 'Upload', function (ngDataApi, $timeout, $cookies, $localStorage, Upload) {
-
+	
 	function createEnvironment(currentScope, cb) {
 		let data = currentScope.wizard.gi;
 		data.deploy = currentScope.wizard.deploy;
-
-		if(currentScope.portalDeployment){
+		
+		if (currentScope.portalDeployment) {
 			data.deployPortal = true;
 		}
-
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
@@ -18,47 +18,34 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 				template: currentScope.wizard
 			}
 		}, (error, response) => {
-			if(response){
+			if (response) {
 				currentScope.envId = response.data;
 			}
 			return cb(error, response);
 		});
 	}
 	
-	function checkDeploymentStatus(currentScope, cb){
-		
-		function checkStatus(){
-			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'get',
-				routeName: '/dashboard/environment/status',
-				params: {
-					code: currentScope.wizard.gi.code.toUpperCase()
-				}
-			}, (error, response) => {
-				if(error) return cb(error);
-				
-				console.log(response);
-				
-				$timeout(function() {
-					checkStatus();
-				}, 5000);
-			});
-		}
-		
-		checkStatus();
+	function checkDeploymentStatus(currentScope, cb) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/environment/status',
+			params: {
+				code: currentScope.wizard.gi.code.toUpperCase()
+			}
+		}, cb);
 	}
-
+	
 	function prepareCertificates(currentScope, cb) {
 		if (currentScope.wizard.deploy.selectedDriver === 'docker') {
-			if(currentScope.wizard.deploy.deployment.docker.certificates){
+			if (currentScope.wizard.deploy.deployment.docker.certificates) {
 				return cb();
 			}
-			else if(currentScope.wizard.deploy.remoteCertificates){
+			else if (currentScope.wizard.deploy.remoteCertificates) {
 				let certificatesNames = Object.keys(currentScope.wizard.deploy.remoteCertificates);
-				if(currentScope.wizard.deploy.previousEnvironment){
+				if (currentScope.wizard.deploy.previousEnvironment) {
 					return cb();
 				}
-				else{
+				else {
 					currentScope.wizard.deploy.deployment.docker.certificates = {};
 					prepareFiles(certificatesNames, 0, cb);
 				}
@@ -69,7 +56,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			return cb();
 		}
 		
-		function prepareFiles(certificatesNames, counter, uCb){
+		function prepareFiles(certificatesNames, counter, uCb) {
 			let oneCertificate = certificatesNames[counter];
 			if (!currentScope.wizard.deploy.remoteCertificates[oneCertificate]) {
 				//to avoid incompatibility issues when using safari browsers
@@ -95,7 +82,7 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 		}
 	}
-
+	
 	function getPermissions(currentScope, cb) {
 		var options = {
 			"method": "get",
@@ -124,59 +111,28 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"description": oneEnv.description,
 							"deployer": oneEnv.deployer
 						};
-						$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
+						$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 					}
 				});
 				return cb();
 			}
 		});
 	}
-
-	function removeEnvironment(currentScope){
+	
+	function removeEnvironment(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "delete",
-				"routeName": "/dashboard/environment/delete",
-				"params": { "id": currentScope.envId, "force": true }
-			}, function (error) {
-				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				else{
-					if(currentScope.wizard.deploy.selectedDriver ==='docker'){
-						getSendDataFromServer(currentScope, ngDataApi, {
-							"method": "get",
-							"routeName": "/dashboard/environment/platforms/list",
-							"params": {
-								env: currentScope.wizard.gi.code
-							}
-						}, function (error, response) {
-							if (error) {
-								currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
-							} else {
-								response.data.forEach((oneCert) =>{
-									getSendDataFromServer(currentScope, ngDataApi, {
-										"method": "delete",
-										"routeName": "/dashboard/environment/platforms/cert/delete",
-										"params": {
-											"id": oneCert._id,
-											"env": currentScope.wizard.gi.code,
-											"driverName": 'docker.remove'
-										}
-									}, function (error, response) {
-										if (error) {
-											currentScope.displayAlert("danger", error.code, true, 'dashboard', error.message);
-										}
-									});
-								});
-							}
-						});
-					}
-					// else some error appeared
-				}
-			});
+			"method": "delete",
+			"routeName": "/dashboard/environment/delete",
+			"params": {"id": currentScope.envId, "force": true}
+		}, function (error) {
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			return cb();
+		});
 	}
-
-	function listServers(currentScope, cb){
+	
+	function listServers(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources/list',
@@ -189,12 +145,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			}
 			else {
 				let servers = [];
-				response.forEach( (oneResource) => {
-					if(oneResource.type === 'cluster' && oneResource.category === 'mongo' && oneResource.plugged && oneResource.shared && (!oneResource.sharedEnvs || oneResource.sharedEnvs[currentScope.wizard.gi.code.toUpperCase()])){
+				response.forEach((oneResource) => {
+					if (oneResource.type === 'cluster' && oneResource.category === 'mongo' && oneResource.plugged && oneResource.shared && (!oneResource.sharedEnvs || oneResource.sharedEnvs[currentScope.wizard.gi.code.toUpperCase()])) {
 						servers.push(oneResource);
 					}
 				});
-
+				
 				return cb(servers);
 			}
 		});
@@ -206,12 +162,12 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		'createEnvironment': createEnvironment,
 		
 		'checkDeploymentStatus': checkDeploymentStatus,
-
+		
 		'getPermissions': getPermissions,
 		
 		'removeEnvironment': removeEnvironment,
-
+		
 		'listServers': listServers
 	};
-
+	
 }]);

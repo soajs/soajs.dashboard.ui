@@ -10,12 +10,21 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 			data.deployPortal = true;
 		}
 		
+		let template = angular.copy(currentScope.wizard);
+		if(currentScope.wizard.gi.code == 'PORTAL'){
+			currentScope.wizard.user = {
+				username: currentScope.wizard.gi.username,
+				password: currentScope.wizard.gi.password,
+				email: currentScope.wizard.gi.email
+			};
+		}
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
 			data: {
 				data: data,
-				template: currentScope.wizard
+				template: template
 			}
 		}, (error, response) => {
 			if (response) {

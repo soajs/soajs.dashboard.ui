@@ -104,6 +104,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				if(response.template.oauth){
 					$localStorage.addEnv.step6 = response.template.oauth;
 				}
+				
+				if(response.template.user){
+					$localStorage.addEnv.step1.username = response.template.user.username;
+					$localStorage.addEnv.step1.password = response.template.user.password;
+					$localStorage.addEnv.step1.email = response.template.user.email;
+				}
 				$scope.$parent.go("#/environments/add");
 			}
 		});

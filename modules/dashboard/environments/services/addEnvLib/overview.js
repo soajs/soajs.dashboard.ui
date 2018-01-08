@@ -53,6 +53,39 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			];
 		}
 		
+		if(type === 3){
+			actions = [
+				{
+					'type': 'submit',
+					'label': "Remove Everything",
+					'btn': 'danger',
+					'action': function (formData) {
+						$scope.statusType = "";
+						$scope.statusMsg = "";
+							overlayLoading.show();
+							addEnv.checkDeploymentStatus($scope, {rollback: true}, (error, response) => {
+							if (error) {
+								$scope.displayAlert("danger", error.message);
+							}
+							else {
+								addEnv.removeEnvironment($scope, (error) =>{
+									if (error) {
+										$scope.displayAlert("danger", error.message);
+									}
+									else{
+										overlayLoading.hide();
+										$scope.status = {};
+										$scope.displayAlert("success", "Environment Deployment has been reverted.");
+										overviewFunction($scope);
+									}
+								});
+							}
+						});
+					}
+				}
+			];
+		}
+		
 		return actions;
 	};
 	
@@ -157,40 +190,37 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 		$scope.showProgress = true;
 		
 		var autoRefreshTimeoutProgress = $timeout(() => {
-			addEnv.checkDeploymentStatus($scope, (error, response) =>{
+			addEnv.checkDeploymentStatus($scope, null, (error, response) =>{
 				if(error){
 					$scope.showProgress = false;
 					return cb(error);
 				}
 				else {
+					$scope.status = {};
+					$scope.progressCounter = 0;
+					$scope.overall = response.overall;
+					delete response.soajsauth;
+					delete response.overall;
+					$scope.maxCounter = Object.keys(response).length;
+					
+					for(let step in response){
+						if(response[step]){
+							$scope.status[step] = {};
+						}
+						
+						if(response[step].done && response[step].id){
+							$scope.progressCounter++;
+							$scope.status[step].done = true;
+						}
+					}
+					
 					if(response.error){
-						$scope.status = {};
 						$scope.progressCounter = 0;
 						$scope.statusType = "danger";
 						$scope.statusMsg = response.error.msg;
-						$timeout(() => {
-							return cb(response.error.msg);
-						}, 1500);
+						$scope.form.actions = getFormActions($scope, 3);
 					}
 					else{
-						$scope.status = {};
-						$scope.progressCounter = 0;
-						$scope.overall = response.overall;
-						delete response.soajsauth;
-						delete response.overall;
-						$scope.maxCounter = Object.keys(response).length;
-						
-						for(let step in response){
-							if(response[step]){
-								$scope.status[step] = {};
-							}
-							
-							if(response[step].done && response[step].id){
-								$scope.progressCounter++;
-								$scope.status[step].done = true;
-							}
-						}
-						
 						if($scope.overall) {
 							$scope.progressCounter = $scope.maxCounter;
 							

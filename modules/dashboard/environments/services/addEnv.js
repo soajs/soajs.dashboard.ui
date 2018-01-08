@@ -34,14 +34,20 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		});
 	}
 	
-	function checkDeploymentStatus(currentScope, cb) {
-		getSendDataFromServer(currentScope, ngDataApi, {
+	function checkDeploymentStatus(currentScope, params, cb) {
+		let opts = {
 			method: 'get',
 			routeName: '/dashboard/environment/status',
 			params: {
 				code: currentScope.wizard.gi.code.toUpperCase()
 			}
-		}, cb);
+		};
+		if(params) {
+			for(let i in params){
+				opts.params[i] = params[i];
+			}
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, cb);
 	}
 	
 	function prepareCertificates(currentScope, cb) {

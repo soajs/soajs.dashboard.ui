@@ -302,7 +302,7 @@
 </accordion>
 
 <div id="progressAddEnv" ng-show="showProgress">
-		<alert type="{{statusType}}">
+		<alert ng-if="statusMsg" type="{{statusType}}">
 			{{statusMsg}}
 		</alert>
 		<br />

@@ -19,10 +19,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			"sitePrefix": record.sitePrefix,
 			"apiPrefix": record.apiPrefix,
 			"description": record.description,
-			"deployer": record.deployer
+			"deployer": record.deployer,
+			"pending": record.pending,
+			"error": record.error 
 		};
 		$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 		$scope.$parent.switchEnvironment(data);
+		$timeout(() => {
+			$scope.$parent.rebuildMenus(function(){});
+		}, 100);
 	}
 	
 	$scope.waitMessage = {
@@ -81,36 +86,38 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				if(!$localStorage.addEnv) {
-					$localStorage.addEnv = {};
+				if(response && response.template){
+					if(!$localStorage.addEnv) {
+						$localStorage.addEnv = {};
+					}
+					$localStorage.addEnv.step1 = response.template.gi;
+					
+					if(response.template.deploy) {
+						$localStorage.addEnv.step2 = response.template.deploy;
+					}
+					if(response.template.cluster) {
+						$localStorage.addEnv.step21 = response.template.cluster;
+					}
+					if(response.template.controller) {
+						$localStorage.addEnv.step3 = response.template.controller;
+					}
+					if(response.template.nginx) {
+						$localStorage.addEnv.step4 = response.template.nginx;
+					}
+					if(response.template.urac) {
+						$localStorage.addEnv.step5 = response.template.urac;
+					}
+					if(response.template.oauth){
+						$localStorage.addEnv.step6 = response.template.oauth;
+					}
+					
+					if(response.template.user){
+						$localStorage.addEnv.step1.username = response.template.user.username;
+						$localStorage.addEnv.step1.password = response.template.user.password;
+						$localStorage.addEnv.step1.email = response.template.user.email;
+					}
+					$scope.$parent.go("#/environments/add");
 				}
-				$localStorage.addEnv.step1 = response.template.gi;
-				
-				if(response.template.deploy) {
-					$localStorage.addEnv.step2 = response.template.deploy;
-				}
-				if(response.template.cluster) {
-					$localStorage.addEnv.step21 = response.template.cluster;
-				}
-				if(response.template.controller) {
-					$localStorage.addEnv.step3 = response.template.controller;
-				}
-				if(response.template.nginx) {
-					$localStorage.addEnv.step4 = response.template.nginx;
-				}
-				if(response.template.urac) {
-					$localStorage.addEnv.step5 = response.template.urac;
-				}
-				if(response.template.oauth){
-					$localStorage.addEnv.step6 = response.template.oauth;
-				}
-				
-				if(response.template.user){
-					$localStorage.addEnv.step1.username = response.template.user.username;
-					$localStorage.addEnv.step1.password = response.template.user.password;
-					$localStorage.addEnv.step1.email = response.template.user.email;
-				}
-				$scope.$parent.go("#/environments/add");
 			}
 		});
 	};
@@ -188,6 +195,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 									}
 								}
 								newList.push(response[i]);
+								putMyEnv(response[i]);
 								found = true;
 							}
 						}

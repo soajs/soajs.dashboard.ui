@@ -3,6 +3,8 @@
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', '$routeParams', function ($scope,overview, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window, $routeParams) {
 	
+	$scope.showIntro = true;
+	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
@@ -11,7 +13,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.cloudProviderHelpLink = {};
 	
 	$scope.portalDeployment = false;
-	$scope.emptyEnvironment = ($routeParams.empty && $routeParams.empty === 'true') || false;
+	$scope.emptyEnvironment = false;
 	
 	$scope.wizard = {};
 	$scope.removeCert = function(certName){
@@ -30,6 +32,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		}
 	}
 	$scope.previousEnvironment = "";
+	
+	$scope.iwantenvironment = function(flag){
+		$scope.emptyEnvironment = flag;
+		$scope.showIntro = false;
+	};
 	
 	$scope.changeLikeEnv = function(code){
 		$scope.previousEnvironment = $scope.form.formData.deployment.previousEnvironment;
@@ -1512,6 +1519,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					if(pendingEnvironment && pendingEnvironment.pending && pendingEnvironment.template){
 						$scope.envId = pendingEnvironment._id;
 						$scope.wizard = pendingEnvironment.template;
+						$scope.showIntro = false;
+						
 						overview.check($scope);
 					}
 					else{

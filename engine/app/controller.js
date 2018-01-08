@@ -247,12 +247,17 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.hideMe = function(link){
 			let currentSelectedEnvironment;
+			let currentSelectedEnvironmentRecord;
 			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
 				currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+				currentSelectedEnvironmentRecord = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
 			}
 			
 			let hide = false;
-			if($scope.currentDeployer.type === 'manual'){
+			if(currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)){
+				hide = (['resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
+			}
+			else if($scope.currentDeployer.type === 'manual'){
 				hide = (['environments-platforms', 'repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else{

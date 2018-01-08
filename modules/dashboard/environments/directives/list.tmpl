@@ -1,21 +1,4 @@
 <section ng-controller="environmentCtrl">
- 
-	<div ng-if="access.addEnvironment" class="c-both">
-	   
-	     <div class="btn-group" dropdown>
-		    <button id="addenv-button" class="btn btn-primary t-left" style="border-top-right-radius: 0; border-bottom-right-radius: 0;" dropdown-toggle>Create Environment</button>
-		    <button class="btn btn-primary" dropdown-toggle >
-			    <span class="caret"></span>
-			    <span class="sr-only">Split button!</span>
-		    </button>
-		    <ul class="dropdown-menu" aria-labelledby="addEnvDropdown" aria-labelledby="addenv-button">
-				<li><a href="#/environments/add?empty=true">Create Empty Environment</a></li>
-				<li><a href="#/environments/add">Create a SOAJS Environment</a></li>
-			</ul>
-	    </div>
-	    <br />
-	    <br />
-    </div>
 	
 	<div ng-show="!grid.rows || grid.rows.length === 0">
 		<hr>
@@ -88,15 +71,23 @@
 						<br/>
 						
 						<div ng-if="oneEnv.pending">
-							<alert type="info">
-								<input type="button" ng-click="goToDeploymentProgress(oneEnv);" value="Show Progress" class="btn btn-sm btn-primary f-left" style="margin-top: 5px;"/>
+							<alert type="warning">
+								<input type="button" ng-click="goToDeploymentProgress(oneEnv);" value="Show Progress" class="btn btn-sm btn-warning f-right" style="margin-top: -5px;"/>
 								<span>This Environment is still being deployed.</span>
 							</alert>
 							<br />
 						</div>
 						
+						<div ng-if="oneEnv.error">
+							<alert type="danger">
+								<input type="button" ng-click="goToDeploymentProgress(oneEnv);" value="Show Logs" class="btn btn-sm btn-danger f-right" style="margin-top: -5px;"/>
+								<span>The deployment of this environment failed.</span>
+							</alert>
+							<br />
+						</div>
+						
 						<div ng-include="'modules/dashboard/environments/directives/list-service-config.tmpl'"></div>
-						<div class="entryAction">
+						<div class="entryAction" ng-show="!oneEnv.pending && !oneEnv.error">
 
 							<a ng-if="access.editEnvironment" href="" ng-click="updateEnvironment(oneEnv);">
 								<span class="icon icon-pencil2" tooltip="{{translation.editEnvironment[LANG]}}"></span>
@@ -110,7 +101,7 @@
 				</div>
 			</div>
 		</tab>
-		<tab heading="{{translation.customRegistry[LANG]}}">
+		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="{{translation.customRegistry[LANG]}}">
 			<br/>
 			<div ng-if="access.customRegistry.list">
 				<button class="btn btn-primary f-left" ng-if="access.customRegistry.add" ng-click="manageCustomRegistry({}, 'add')">

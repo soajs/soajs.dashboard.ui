@@ -1,3 +1,20 @@
 <section ng-controller="addEnvironmentCtrl">
-	<ngform></ngform>
+	
+	<div ng-if="showIntro">
+		<div class="f-left text-center" ng-click="iwantenvironment(false);"  style="width:49%; border:solid 1px green">
+			<h3>Blank Environment</h3>
+			<hr>
+			<p>desc</p>
+		</div>
+		<div class="f-left" style="width:2%;">&nbsp;</div>
+		<div class="f-left text-center" ng-click="iwantenvironment(true);" style="width:49%; border:solid 1px red;">
+			<h3>SOAJS Environment</h3>
+			<hr>
+			<p>desc</p>
+		</div>
+	</div>
+	
+	<div ng-if="!showIntro">
+		<ngform></ngform>
+	</div>
 </section>

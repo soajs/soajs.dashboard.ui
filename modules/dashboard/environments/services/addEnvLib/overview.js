@@ -80,7 +80,14 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 		if ($scope.wizard.cluster){
 			$scope.wizard.cluster.type= Object.keys($scope.wizard.cluster)[0];
 		}
-
+		
+		if($scope.wizard.nginx){
+			$scope.lastStep = 4;
+		}
+		else {
+			$scope.lastStep = 2;
+		}
+		
 		$scope.showProgress = false;
 		var configuration = angular.copy(environmentsConfig.form.add.overview.entries);
 		var options = {

@@ -1516,7 +1516,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					return cb();
 				}
 				else {
-					if(pendingEnvironment && pendingEnvironment.pending && pendingEnvironment.template){
+					if(pendingEnvironment && (pendingEnvironment.pending || pendingEnvironment.error)&& pendingEnvironment.template){
 						$scope.envId = pendingEnvironment._id;
 						$scope.wizard = pendingEnvironment.template;
 						$scope.showIntro = false;

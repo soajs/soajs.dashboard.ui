@@ -429,6 +429,8 @@ var catalogAppConfig = {
 				{'v': '$SOAJS_MONGO_SSL', 'l': "$SOAJS_MONGO_SSL", "group": "SOAJS Mongo"},
 				{'v': '$SOAJS_MONGO_IP_N', 'l': "$SOAJS_MONGO_IP_N", "group": "SOAJS Mongo"},
 				{'v': '$SOAJS_MONGO_PORT_N', 'l': "$SOAJS_MONGO_PORT_N", "group": "SOAJS Mongo"},
+				{'v': '$SOAJS_MONGO_USERNAME', 'l': "$SOAJS_MONGO_USERNAME", "group": "SOAJS Mongo"},
+				{'v': '$SOAJS_MONGO_PASSWORD', 'l': "$SOAJS_MONGO_PASSWORD", "group": "SOAJS Mongo"},
 
 				{'v': '$SOAJS_EXTKEY', 'l': "$SOAJS_EXTKEY", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_DOMAIN', 'l': "$SOAJS_NX_DOMAIN", "group": "SOAJS Nginx"},

@@ -14,6 +14,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	
 	$scope.portalDeployment = false;
 	$scope.emptyEnvironment = false;
+	$scope.nonginxEnvironment = false;
 	
 	$scope.wizard = {};
 	$scope.removeCert = function(certName){
@@ -34,7 +35,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.previousEnvironment = "";
 	
 	$scope.iwantenvironment = function(flag){
-		$scope.emptyEnvironment = flag;
+		switch(flag){
+			case 1:
+				$scope.emptyEnvironment = true;
+				$scope.nonginxEnvironment = false;
+				break;
+			case 2:
+				$scope.emptyEnvironment = false;
+				$scope.nonginxEnvironment = true;
+				break;
+			case 3:
+				$scope.emptyEnvironment = false;
+				$scope.nonginxEnvironment = false;
+				break;
+		}
+		
 		$scope.showIntro = false;
 	};
 	
@@ -741,6 +756,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			var configuration = angular.copy(environmentsConfig.form.add.step3.entries);
 			$scope.tempFormEntries = entries;
 			let serviceBranches;
+			let submitLabel = 'Next';
+			if ($scope.wizard.deploy.selectedDriver === 'manual' || $scope.nonginxEnvironment) {
+				submitLabel = 'OverView & Finalize';
+			}
+			
 			var options = {
 				timeout: $timeout,
 				entries: configuration,
@@ -763,7 +783,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					},
 					{
 						'type': 'submit',
-						'label': ($scope.wizard.deploy.selectedDriver !== 'manual') ? 'Next' : 'OverView & Finalize',
+						'label': submitLabel,
 						'btn': 'primary',
 						'action': function (formData) {
 							for (let fieldName in $scope.tempFormEntries) {
@@ -838,7 +858,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									}
 								});
 								
-								if($scope.portalDeployment){
+								if($scope.nonginxEnvironment){
+									overview.run($scope);
+								}
+								else if($scope.portalDeployment){
 									$scope.Step5();
 								}
 								else{

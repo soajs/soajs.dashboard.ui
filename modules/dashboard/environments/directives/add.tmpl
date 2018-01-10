@@ -1,16 +1,27 @@
 <section ng-controller="addEnvironmentCtrl">
 	
 	<div ng-if="showIntro">
-		<div class="f-left text-center" ng-click="iwantenvironment(true);"  style="width:49%; border:solid 1px green">
-			<h3>Blank Environment</h3>
-			<hr>
-			<p>desc</p>
+		<br /><br />
+		<div class="text-center col-md-4 col-lg-4">
+			<div class="environmentBox" ng-click="iwantenvironment(1);">
+				<h4>Empty Environment</h4>
+				<hr>
+				<p class="fieldMsg">Specify your deployment platform technology using either Docker or Kubernetes.</p>
+			</div>
 		</div>
-		<div class="f-left" style="width:2%;">&nbsp;</div>
-		<div class="f-left text-center" ng-click="iwantenvironment(false);" style="width:49%; border:solid 1px red;">
-			<h3>SOAJS Environment</h3>
-			<hr>
-			<p>desc</p>
+		<div class="text-center col-md-4 col-lg-4">
+			<div class="environmentBox"  ng-click="iwantenvironment(2);">
+				<h4>SOAJS Environment</h4>
+				<hr>
+				<p class="fieldMsg">Turn on API management, lifecycle, security, multi tenancy, multi version & awareness support.</p>
+			</div>
+		</div>
+		<div class="text-center col-md-4 col-lg-4">
+			<div class="environmentBox"  ng-click="iwantenvironment(3);">
+				<h4>SOAJS & Nginx Environment</h4>
+				<hr>
+				<p class="fieldMsg">SOAJS environment & web server serving static UI content as well as forwarding requests to your APIs.</p>
+			</div>
 		</div>
 	</div>
 	

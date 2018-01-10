@@ -1544,7 +1544,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						$scope.envId = pendingEnvironment._id;
 						$scope.wizard = pendingEnvironment.template;
 						$scope.showIntro = false;
-						
 						overview.check($scope);
 					}
 					else{
@@ -1560,6 +1559,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	
 	if ($scope.access.addEnvironment) {
 		checkEnvironment(() => {
+			if($routeParams.portal){
+				$scope.showIntro = false;
+			}
 			$scope.Step1();
 		});
 	}

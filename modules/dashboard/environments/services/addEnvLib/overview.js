@@ -2,7 +2,7 @@
 var dbServices = soajsApp.components;
 dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '$localStorage', '$window', function (addEnv, ngDataApi, $timeout, $cookies, $localStorage, $window) {
 	
-	let getFormActions = function($scope, type){
+	let getFormActions = function ($scope, type) {
 		let actions = [
 			{
 				'type': 'button',
@@ -38,7 +38,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			}
 		];
 		
-		if(type === 2){
+		if (type === 2) {
 			actions = [
 				{
 					'type': 'submit',
@@ -53,16 +53,28 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			];
 		}
 		
-		if(type === 3){
+		if (type === 3) {
 			actions = [
 				{
 					'type': 'submit',
 					'label': "Keep What was created & Finalize",
 					'btn': 'primary',
 					'action': function (formData) {
-						$scope.showProgress = true;
-						$scope.status = {};
-						finalResponse($scope);
+						
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "get",
+							"routeName": "/dashboard/environment/status",
+							"params": {"code": $scope.wizard.gi.code.toUpperCase(), 'activate': true}
+						}, function (error, response) {
+							if (error) {
+								$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							else {
+								$scope.showProgress = true;
+								$scope.status = {};
+								finalResponse($scope);
+							}
+						});
 					}
 				},
 				{
@@ -72,17 +84,17 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 					'action': function (formData) {
 						$scope.statusType = "";
 						$scope.statusMsg = "";
-							overlayLoading.show();
-							addEnv.checkDeploymentStatus($scope, {rollback: true}, (error, response) => {
+						overlayLoading.show();
+						addEnv.checkDeploymentStatus($scope, {rollback: true}, (error, response) => {
 							if (error) {
 								$scope.displayAlert("danger", error.message);
 							}
 							else {
-								addEnv.removeEnvironment($scope, (error) =>{
+								addEnv.removeEnvironment($scope, (error) => {
 									if (error) {
 										$scope.displayAlert("danger", error.message);
 									}
-									else{
+									else {
 										overlayLoading.hide();
 										$scope.status = {};
 										$scope.displayAlert("success", "Environment Deployment has been reverted.");
@@ -100,8 +112,8 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 	};
 	
 	let overviewFunction = function ($scope) {
-		if ($scope.wizard.cluster){
-			$scope.wizard.cluster.type= Object.keys($scope.wizard.cluster)[0];
+		if ($scope.wizard.cluster) {
+			$scope.wizard.cluster.type = Object.keys($scope.wizard.cluster)[0];
 		}
 		
 		$scope.showProgress = false;
@@ -120,11 +132,11 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 	};
 	
 	let overviewResume = function ($scope) {
-		if ($scope.wizard.cluster){
-			$scope.wizard.cluster.type= Object.keys($scope.wizard.cluster)[0];
+		if ($scope.wizard.cluster) {
+			$scope.wizard.cluster.type = Object.keys($scope.wizard.cluster)[0];
 		}
 		
-		if($scope.wizard.nginx){
+		if ($scope.wizard.nginx) {
 			$scope.lastStep = 4;
 		}
 		else {
@@ -140,13 +152,13 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			label: translation.addNewEnvironment[LANG],
 			actions: []
 		};
-
+		
 		buildForm($scope, null, options, function () {
 			$scope.statusType = "info";
 			$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 			//call check status
 			checkEnvDeploymentStatus($scope, (error) => {
-				if(error){
+				if (error) {
 					addEnv.removeEnvironment($scope, () => {
 						$scope.displayAlert('danger', error);
 						$scope.form.actions = getFormActions($scope);
@@ -171,7 +183,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 				else {
 					//call check status
 					checkEnvDeploymentStatus($scope, (error) => {
-						if(error){
+						if (error) {
 							addEnv.removeEnvironment($scope, () => {
 								$scope.displayAlert('danger', error);
 								$scope.form.actions = getFormActions($scope);
@@ -190,18 +202,18 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			$scope.form.formData = {};
 			delete $scope.wizard;
 			$scope.displayAlert('success', "Environment Created");
-			$timeout(function(){
+			$timeout(function () {
 				$scope.$parent.go("#/environments");
 			}, 1000);
 		});
 	};
 	
-	let checkEnvDeploymentStatus = function ($scope, cb){
+	let checkEnvDeploymentStatus = function ($scope, cb) {
 		$scope.showProgress = true;
 		
 		var autoRefreshTimeoutProgress = $timeout(() => {
-			addEnv.checkDeploymentStatus($scope, null, (error, response) =>{
-				if(error){
+			addEnv.checkDeploymentStatus($scope, null, (error, response) => {
+				if (error) {
 					$scope.showProgress = false;
 					return cb(error);
 				}
@@ -213,29 +225,29 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 					delete response.overall;
 					$scope.maxCounter = Object.keys(response).length;
 					
-					for(let step in response){
-						if(response[step]){
+					for (let step in response) {
+						if (response[step]) {
 							$scope.status[step] = {};
 						}
 						
-						if(response[step].done && response[step].id){
+						if (response[step].done && response[step].id) {
 							$scope.progressCounter++;
 							$scope.status[step].done = true;
 						}
 					}
 					
-					if(response.error){
+					if (response.error) {
 						$scope.progressCounter = 0;
 						$scope.statusType = "danger";
 						$scope.statusMsg = response.error;
 						$scope.form.actions = getFormActions($scope, 3);
 					}
-					else{
-						if($scope.overall) {
+					else {
+						if ($scope.overall) {
 							$scope.progressCounter = $scope.maxCounter;
 							
-							for(let section in response){
-								if(response[section].exception){
+							for (let section in response) {
+								if (response[section].exception) {
 									$scope.statusType = "warning";
 									$scope.statusMsg = response[section].exception.code + ":" + response[section].exception.msg;
 									$scope.status[section].exception = $scope.statusMsg;
@@ -243,7 +255,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 							}
 							$scope.form.actions = getFormActions($scope, 2);
 						}
-						else{
+						else {
 							checkEnvDeploymentStatus($scope, cb);
 						}
 					}

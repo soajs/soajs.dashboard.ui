@@ -57,6 +57,16 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			actions = [
 				{
 					'type': 'submit',
+					'label': "Keep What was created & Finalize",
+					'btn': 'primary',
+					'action': function (formData) {
+						$scope.showProgress = true;
+						$scope.status = {};
+						finalResponse($scope);
+					}
+				},
+				{
+					'type': 'submit',
 					'label': "Remove Everything",
 					'btn': 'danger',
 					'action': function (formData) {
@@ -133,7 +143,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 
 		buildForm($scope, null, options, function () {
 			$scope.statusType = "info";
-			$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please do not close or refresh this page until the deployer is done.";
+			$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 			//call check status
 			checkEnvDeploymentStatus($scope, (error) => {
 				if(error){
@@ -149,7 +159,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 	
 	function addEnvironment($scope) {
 		$scope.statusType = "info";
-		$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please do not close or refresh this page until the deployer is done.";
+		$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		$scope.showProgress = false;
 		$scope.form.actions = [];
 		addEnv.prepareCertificates($scope, () => {
@@ -224,24 +234,14 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 						if($scope.overall) {
 							$scope.progressCounter = $scope.maxCounter;
 							
-							let autoFinish = true;
 							for(let section in response){
 								if(response[section].exception){
 									$scope.statusType = "warning";
 									$scope.statusMsg = response[section].exception.code + ":" + response[section].exception.msg;
 									$scope.status[section].exception = $scope.statusMsg;
-									autoFinish = false;
 								}
 							}
-							if(autoFinish){
-								$timeout(() => {
-									$scope.status = {};
-									finalResponse($scope);
-								}, 2000);
-							}
-							else{
-								$scope.form.actions = getFormActions($scope, 2);
-							}
+							$scope.form.actions = getFormActions($scope, 2);
 						}
 						else{
 							checkEnvDeploymentStatus($scope, cb);
@@ -249,7 +249,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 					}
 				}
 			});
-		}, 3000);
+		}, 5000);
 		
 		$scope.$on("$destroy", function () {
 			$timeout.cancel(autoRefreshTimeoutProgress);

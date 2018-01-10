@@ -722,16 +722,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					}
 				},
 				number: {
-					required: true
+					required: ($scope.wizard.deploy.selectedDriver !== 'manual')
 				},
 				memory: {
-					required: true
+					required: ($scope.wizard.deploy.selectedDriver !== 'manual')
 				},
 				catalog: {
-					required: true
+					required: ($scope.wizard.deploy.selectedDriver !== 'manual')
 				},
 				branch: {
-					required: true
+					required: ($scope.wizard.deploy.selectedDriver !== 'manual')
 				}
 			};
 			doBuildForm(entries);
@@ -763,7 +763,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					},
 					{
 						'type': 'submit',
-						'label': 'Next',
+						'label': ($scope.wizard.deploy.selectedDriver !== 'manual') ? 'Next' : 'OverView & Finalize',
 						'btn': 'primary',
 						'action': function (formData) {
 							for (let fieldName in $scope.tempFormEntries) {
@@ -847,8 +847,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							}
 							else {
 								$localStorage.addEnv.step1 = angular.copy($scope.wizard.gi);
-								$localStorage.addEnv.step3 = angular.copy(formData);
-								$scope.wizard.controller = angular.copy(formData);
+								delete $localStorage.addEnv.step3;
+								delete $scope.wizard.controller;
 								overview.run($scope);
 							}
 						}
@@ -881,7 +881,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						
 						injectCatalogInputs($scope.serviceRecipes, controllerBranches);
 					};
-					$scope.form.formData.deploy = true;
+					
+					$scope.form.formData.deploy = ($scope.wizard.deploy.selectedDriver !== 'manual');
 					if ($localStorage.addEnv && $localStorage.addEnv.step3) {
 						
 						$scope.wizard.controller = angular.copy($localStorage.addEnv.step3);

@@ -128,7 +128,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			entries: configuration,
 			name: 'addEnvironment',
 			label: translation.addNewEnvironment[LANG],
-			actions: getFormActions($scope, 2)
+			actions: []
 		};
 
 		buildForm($scope, null, options, function () {
@@ -217,7 +217,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 					if(response.error){
 						$scope.progressCounter = 0;
 						$scope.statusType = "danger";
-						$scope.statusMsg = response.error.msg;
+						$scope.statusMsg = response.error;
 						$scope.form.actions = getFormActions($scope, 3);
 					}
 					else{

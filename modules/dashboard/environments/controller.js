@@ -377,15 +377,16 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			controller: function ($scope, $modalInstance) {
 				$scope.deleteEnv = row.code.toUpperCase();
 				fixBackDrop();
-				$scope.confirmDeleteProductsAndTenants = function () {
+				$scope.confirmDeleteProductsAndTenants = function (flag) {
 					$modalInstance.close();
 					deletePortalProductsAndTenants($scope, function (error) {
 						if (error) {
 							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
-						deleteEnvironment($scope, function (error, response) {
+						deleteEnvironment($scope, flag, function (error, response) {
 							if (error) {
-								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								// currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								$scope.deleteEnvError = error.message;
 							}
 							else if (response) {
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
@@ -404,11 +405,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					});
 				};
 				
-				$scope.onlyDeleteEnv = function () {
+				$scope.onlyDeleteEnv = function (flag) {
 					$modalInstance.close();
-					deleteEnvironment($scope, function (error, response) {
+					deleteEnvironment($scope, flag, function (error, response) {
 						if (error) {
-							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							// currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							$scope.deleteEnvError = error.message;
 						} else {
 							if (response) {
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
@@ -454,12 +456,17 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			});
 		}
 		
-		function deleteEnvironment(currentScope, cb) {
-			getSendDataFromServer(currentScope, ngDataApi, {
+		function deleteEnvironment(currentScope, flag, cb) {
+			let opts = {
 				"method": "delete",
 				"routeName": "/dashboard/environment/delete",
 				"params": {"id": row['_id']}
-			}, cb);
+			};
+			
+			if(flag){
+				opts.params.force = true;
+			}
+			getSendDataFromServer(currentScope, ngDataApi, opts, cb);
 		}
 	};
 

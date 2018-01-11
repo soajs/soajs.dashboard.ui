@@ -264,8 +264,14 @@
 			<br>Do you want to remove them as well ?</p>
 		
 		<p ng-if="deleteEnv!== 'PORTAL'" >Are you sure you want to delete {{deleteEnv}} Environment?</p>
+		
+		<p ng-if="deleteEnvError">{{deleteEnvError}}</p>
 	</div>
 	<div class="modal-footer">
+		<div ng-if="deleteEnvError">
+			<button class="btn btn-success"  ng-click="onlyDeleteEnv(true)">Force Remove</button>
+			<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+		</div>
 		<div ng-if="deleteEnv=== 'PORTAL'" >
 			<button class="btn btn-success"  ng-click="confirmDeleteProductsAndTenants()"> Yes, Delete Everything!</button>
 			<button class="btn btn-primary"  ng-click="onlyDeleteEnv()"> No, Only Delete The Environment</button>

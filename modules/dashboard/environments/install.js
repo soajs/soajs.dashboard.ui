@@ -1373,7 +1373,7 @@ var environmentsNav = [
 		'id': 'add-environments',
 		'checkPermission': {
 			'service': 'dashboard',
-			'route': '/environments/add',
+			'route': '/environment/add',
 			'method': 'post'
 		},
 		'label': translation.addNewEnvironment[LANG],

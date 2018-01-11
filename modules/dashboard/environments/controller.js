@@ -378,17 +378,16 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				$scope.deleteEnv = row.code.toUpperCase();
 				fixBackDrop();
 				$scope.confirmDeleteProductsAndTenants = function (flag) {
-					$modalInstance.close();
 					deletePortalProductsAndTenants($scope, function (error) {
 						if (error) {
 							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
 						deleteEnvironment($scope, flag, function (error, response) {
 							if (error) {
-								// currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 								$scope.deleteEnvError = error.message;
 							}
 							else if (response) {
+								$modalInstance.close();
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
 								for(let i = currentScope.$parent.leftMenu.environments.length-1; i >=0; i--){
 									if(currentScope.$parent.leftMenu.environments[i].code.toUpperCase() === $scope.deleteEnv){
@@ -406,13 +405,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				};
 				
 				$scope.onlyDeleteEnv = function (flag) {
-					$modalInstance.close();
 					deleteEnvironment($scope, flag, function (error, response) {
 						if (error) {
-							// currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 							$scope.deleteEnvError = error.message;
 						} else {
 							if (response) {
+								$modalInstance.close();
 								currentScope.displayAlert('success', translation.selectedEnvironmentRemoved[LANG]);
 								for(let i = currentScope.$parent.leftMenu.environments.length-1; i >=0; i--){
 									if(currentScope.$parent.leftMenu.environments[i].code.toUpperCase() === $scope.deleteEnv){

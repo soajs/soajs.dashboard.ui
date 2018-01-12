@@ -85,7 +85,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 						$scope.statusType = "";
 						$scope.statusMsg = "";
 						overlayLoading.show();
-						addEnv.checkDeploymentStatus($scope, {rollback: true}, (error, response) => {
+						addEnv.checkDeploymentStatus($scope, {rollback: 0}, (error, response) => {
 							if (error) {
 								$scope.displayAlert("danger", error.message);
 							}

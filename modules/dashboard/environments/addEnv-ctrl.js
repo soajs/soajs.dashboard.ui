@@ -27,11 +27,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.domainRegex= '^((?=[a-zA-Z0-9-]{1,63}\\.)(xn--)?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\\.)+[a-zA-Z]{2,63}$';
 	
 	$scope.availableEnvironments = angular.copy($localStorage.environments);
-	for(let i = $scope.availableEnvironments.length -1; i >=0; i--){
-		if($scope.availableEnvironments[i].deployer.type === 'manual'){
-			$scope.availableEnvironments.splice(i, 1);
+	if($scope.availableEnvironments.length > 0){
+		for(let i = $scope.availableEnvironments.length -1; i >=0; i--){
+			if($scope.availableEnvironments[i].deployer.type === 'manual'){
+				$scope.availableEnvironments.splice(i, 1);
+			}
 		}
 	}
+	
 	$scope.previousEnvironment = "";
 	
 	$scope.iwantenvironment = function(flag){

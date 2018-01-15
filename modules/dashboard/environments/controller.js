@@ -116,7 +116,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						$localStorage.addEnv.step1.password = response.template.user.password;
 						$localStorage.addEnv.step1.email = response.template.user.email;
 					}
-					$scope.$parent.go("#/environments/add");
+					$scope.$parent.go("#/environments-add");
 				}
 			}
 		});

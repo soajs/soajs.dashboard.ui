@@ -1384,12 +1384,7 @@ var environmentsNav = [
 			'label': translation.deploy[LANG],
 			'position': 3
 		},
-		'icon': 'plus',
-		'order': 2,
-		'mainMenu': true,
-		'tracker': true,
 		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js'],
-		'ancestor': [translation.home[LANG], translation.registries[LANG]]
 	},
 	{
 		'id': 'environments',

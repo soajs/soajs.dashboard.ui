@@ -1560,6 +1560,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		}
 	}
 	
+	$scope.$parent.collapseExpandMainMenu();
+	$scope.reRenderMenu('empty');
 	if ($scope.access.addEnvironment) {
 		checkEnvironment(() => {
 			if($routeParams.portal){

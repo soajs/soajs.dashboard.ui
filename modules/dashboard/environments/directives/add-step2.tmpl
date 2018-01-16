@@ -9,6 +9,26 @@
 			<option value=""> -- Choose Environment --</option>
 			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
 		</select>
+		<div ng-show="previousPlatformDeployment">
+			<hr>
+			<fieldset>
+				<legend>
+					<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
+					<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
+				</legend>
+				<br />
+				<div class="entryBoxes entryBoxesGrid">
+					<div class="entryBox driverEntryBox" style="display:block;">
+						<div class="header">
+							{{driver|uppercase}}
+						</div>
+						<div class="body">
+							<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
 	</accordion-group>
 	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
 		<accordion-heading>

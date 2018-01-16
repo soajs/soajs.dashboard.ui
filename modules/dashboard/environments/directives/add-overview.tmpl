@@ -34,6 +34,20 @@
 				<div class="alert alert-info">
 					<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
 				</div>
+				<div ng-show="previousPlatformDeployment">
+					<hr>
+					<br />
+					<div class="entryBoxes entryBoxesGrid">
+						<div class="entryBox driverEntryBox" style="display:block;">
+							<div class="header">
+								{{driver|uppercase}}
+							</div>
+							<div class="body">
+								<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div ng-show="!previousEnvironment">
 				<div class="alert alert-info">
@@ -58,6 +72,20 @@
 			<div ng-show="previousEnvironment">
 				<div class="alert alert-info">
 					<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+				</div>
+				<div ng-show="previousPlatformDeployment">
+					<hr>
+					<br />
+					<div class="entryBoxes entryBoxesGrid">
+						<div class="entryBox driverEntryBox" style="display:block;">
+							<div class="header">
+								{{driver|uppercase}}
+							</div>
+							<div class="body">
+								<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div ng-show="!previousEnvironment">

@@ -34,8 +34,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			}
 		}
 	}
-	
+	$scope.previousPlatformDeployment = false;
 	$scope.previousEnvironment = "";
+	
+	$scope.previousPlatformDeployment = false;
+	$scope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
+	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 	
 	$scope.iwantenvironment = function(flag){
 		switch(flag){
@@ -57,8 +61,56 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	};
 	
 	$scope.changeLikeEnv = function(code){
+		
+		$scope.previousPlatformDeployment = true;
 		$scope.previousEnvironment = $scope.form.formData.deployment.previousEnvironment;
+		renderPreviousDeployInfo();
 	};
+	
+	function renderPreviousDeployInfo(){
+		for(let i = $scope.availableEnvironments.length -1; i >=0; i--){
+			if($scope.availableEnvironments[i].code === $scope.previousEnvironment){
+				// console.log($scope.availableEnvironments[i]);
+				// console.log("------");
+				$scope.platform = $scope.availableEnvironments[i].deployer.selected.split(".")[1];
+				$scope.driver = $scope.availableEnvironments[i].deployer.selected.split(".")[2];
+				if($scope.platform  !== 'manual'){
+					$scope.config = $scope.availableEnvironments[i].deployer.container[$scope.platform][$scope.driver];
+				}
+				
+			}
+		}
+		
+		if($scope.platform === 'docker' && $scope.driver === 'remote'){
+			$scope.hideDeleteCert = true;
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/environment/platforms/list",
+				"params": {
+					"env": $scope.previousEnvironment
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					if(response&& response.certs){
+						let certs = [];
+						response.certs.forEach((oneCert)=>{
+							if(oneCert.metadata.env[$scope.previousEnvironment.toUpperCase()]){
+								certs.push({
+									_id: oneCert._id,
+									filename: oneCert.filename,
+									certType: oneCert.metadata.certType
+								});
+							}
+						});
+						$scope.config.certs = certs;
+					}
+				}
+			});
+		}
+	}
 	
 	$scope.showProviderLink = function(myCloudProvider, technology){
 		$scope.cloudProviderHelpLink[technology] = myCloudProvider.help[technology];
@@ -231,6 +283,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	
 	$scope.Step2 = function () {
 		overlayLoading.show();
+		$scope.previousPlatformDeployment = false;
 		var configuration = angular.copy(environmentsConfig.form.add.step2.entries);
 		
 		function handleFormData(formData, advancedMode){
@@ -474,12 +527,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			};
 			
 			if($scope.previousEnvironment && $scope.previousEnvironment !== ''){
+				$scope.previousPlatformDeployment = true;
 				$scope.platforms = {
 					docker: false,
 					kubernetes: false,
 					manual: false,
 					previous: $scope.previousEnvironment
 				};
+				renderPreviousDeployInfo();
 			}
 			
 			$scope.allowLocalContainerDeployment = getDashboardDeploymentStyle();

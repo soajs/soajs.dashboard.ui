@@ -1,0 +1,84 @@
+<div ng-if="platform === 'docker'">
+	<div class="grid" ng-if="config.socketPath">
+		<table width="100%" cellspacing="10">
+			<tr class="odd first last">
+				<td width="50%">
+					<b>Docker Socket</b>
+				</td>
+				<td>{{config.socketPath}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="grid" ng-if="!config.socketPath">
+		<table width="100%" cellspacing="10">
+			<tr class="odd first">
+				<td width="50%">
+					<b>Master Node IP</b>
+				</td>
+				<td>{{config.nodes}}</td>
+			</tr>
+			<tr class="even">
+				<td width="50%">
+					<b>Docker Port</b>
+				</td>
+				<td>{{config.apiPort}}</td>
+			</tr>
+			<tr class="odd">
+				<td colspan="2"><b>Certificates</b></td>
+			</tr>
+			<tr class="even last">
+				<td colspan="2">
+					<div class="staticDiv">
+						<div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
+							<div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in config.certs" style="width:32% !important;">
+								<b>{{cert.filename}} [{{cert.certType}}]</b>
+								<a href="" ng-if="access.platforms.certs.delete && !hideDeleteCert" ng-click="removeCert(cert._id, platform, driver)" tooltip="{{translation.removeCertificate[LANG]}}">
+									<span class="icon icon-bin pull-right"></span>
+								</a>
+							</div>
+						</div>
+						<alert type="warning" ng-if="!config.certs || config.certs.length === 0">{{translation.noCertificatesUploadedYet[LANG]}}</alert>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<div class="grid" ng-if="platform === 'kubernetes'">
+	<table width="100%" cellspacing="10">
+		<tr class="odd first">
+			<td width="50%">
+				<b>Master Node IP</b>
+			</td>
+			<td>{{config.nodes}}</td>
+		</tr>
+		<tr class="even">
+			<td width="50%">
+				<b>Namespace Configuration</b>
+			</td>
+			<td>{{config.namespace.default}}</td>
+		</tr>
+		<tr class="odd">
+			<td><b>Namespace Type</b></td>
+			<td>{{(config.namespace.perService ? 'Per Service' : 'Global')}}</td>
+		</tr>
+		<tr class="even">
+			<td>
+				<b>Nginx Deployment Type</b>
+			</td>
+			<td>{{config.nginxDeployType}}</td>
+		</tr>
+		<tr class="odd">
+			<td colspan="2">
+				<b>Kubernetes Token</b>
+			</td>
+		</tr>
+		<tr class="even last">
+			<td colspan="2">
+				<div style="overflow: auto;">
+					{{config.auth.token | trimmed}}
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>

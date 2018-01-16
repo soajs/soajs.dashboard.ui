@@ -1,7 +1,7 @@
 'use strict';
 var routeProvider;
 var interfaceDomain = location.host;
-interfaceDomain = interfaceDomain.split(":")[0];
+interfaceDomain = mydomain.split(":")[0];
 
 function configureRouteNavigation(navigation, scope) {
 	function addRoute(navigationEntry) {

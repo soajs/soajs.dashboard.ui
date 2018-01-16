@@ -450,7 +450,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			else if (operation === 'deploy') {
 				params = {
 					data: {
-						env: oneEntry.env,
+						env: $scope.myEnv.toUpperCase(),
 						serviceName: oneEntry.serviceName,
 						id: oneEntry._id.toString(),
 						action: operation
@@ -484,8 +484,8 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 					}
 				}
 			}
-
-			params.env = oneEntry.env.toLowerCase(); //NOTE: this is required at the root level to get the registry of the environment
+			
+			params.env = $scope.myEnv.toLowerCase(); //NOTE: this is required at the root level to get the registry of the environment
 
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {

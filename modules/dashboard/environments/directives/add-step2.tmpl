@@ -12,9 +12,9 @@
 		<div ng-show="previousPlatformDeployment">
 			<hr>
 			<fieldset>
-				<legend>
-					<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
-					<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
+				<legend style="width:15%;">
+					<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" width="100%" alt="Docker Logo"/>
+					<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" width="100%" alt="Kubernetes Logo"/>
 				</legend>
 				<br />
 				<div class="entryBoxes entryBoxesGrid">

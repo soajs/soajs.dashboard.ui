@@ -626,13 +626,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			doEnvPerNav();
 			var user = $localStorage.soajs_user;
 			if (user) {
+				$scope.enableInterface = true;
 				$scope.userFirstName = user.firstName;
 				$scope.userLastName = user.lastName;
 			}
 			else {
 				console.log('Missing user object');
 			}
-			$scope.enableInterface = true;
 			var defaultRoute = navigation[0].url.replace('#', '');
 			$scope.go(defaultRoute);
 		});

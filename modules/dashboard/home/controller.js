@@ -7,10 +7,9 @@ dahsboardApp.controller('dahsboardCtrl', ['$scope', '$timeout', 'injectFiles', '
 		$scope.isUserLoggedIn = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
-				if ($localStorage.soajs_user) {
+				if ($localStorage.soajs_user && $localStorage.acl_access) {
 					$scope.$parent.$emit("loadUserInterface", {});
 					$scope.$parent.$emit('refreshWelcome', {});
-					$scope.$parent.enableInterface = true;
 				}
 				else {
 					myAccountAccess.getUser($scope, username, function (result) {
@@ -19,7 +18,7 @@ dahsboardApp.controller('dahsboardCtrl', ['$scope', '$timeout', 'injectFiles', '
 								if (success) {
 									$timeout(function () {
 										window.location.reload();
-									}, 100);
+									}, 150);
 
 								}
 							});
@@ -27,7 +26,6 @@ dahsboardApp.controller('dahsboardCtrl', ['$scope', '$timeout', 'injectFiles', '
 							ngDataApi.logoutUser($scope);
 							$scope.$parent.go("/login");
 						}
-
 					});
 				}
 			}

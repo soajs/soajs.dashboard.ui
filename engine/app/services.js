@@ -838,7 +838,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				ngDataApi.logoutUser($scope);
+				ngDataApi.logoutUser(currentScope);
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
 			}
@@ -853,7 +853,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				if (error) {
 					if (error.code === 600) {
 						currentScope.$parent.displayAlert('danger', "Login Failed !");
-						ngDataApi.logoutUser($scope);
+						ngDataApi.logoutUser(currentScope);
 					}
 					else {
 						currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);

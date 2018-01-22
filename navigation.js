@@ -1,7 +1,7 @@
 /**
  * UI Navigation links
  */
-
+// todo: delete file
 var navigation = [
 	{
 		'id': 'home',

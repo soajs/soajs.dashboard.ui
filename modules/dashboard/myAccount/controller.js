@@ -119,7 +119,8 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 
 myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', '$cookies', '$localStorage',
 	function ($scope, $timeout, $modal, ngDataApi, $cookies, $localStorage) {
-		$scope.$parent.isUserLoggedIn();
+		$scope.$parent.isUserNameLoggedIn();
+
 		var userCookie = $localStorage.soajs_user;
 		
 		var formConfig = {
@@ -427,7 +428,7 @@ myAccountApp.controller('forgotPwCtrl', ['$scope', 'ngDataApi', 'isUserLoggedIn'
 				}
 				else {
 					$scope.$parent.displayAlert('success', translation.resetLinkSentYourEmailAddress[LANG]);
-					$scope.$parent.go("/login");
+					redirectToLogin($scope.$parent);
 				}
 			});
 		}
@@ -470,7 +471,7 @@ myAccountApp.controller('setPasswordCtrl', ['$scope', 'ngDataApi', '$routeParams
 				}
 				else {
 					$scope.$parent.displayAlert('success', translation.passwordSetSuccessfully[LANG]);
-					$scope.$parent.go("/login");
+					redirectToLogin($scope.$parent);
 				}
 			});
 		}
@@ -511,7 +512,7 @@ myAccountApp.controller('resetPwCtrl', ['$scope', 'ngDataApi', '$routeParams', '
 				}
 				else {
 					$scope.$parent.displayAlert('success', translation.yourPasswordReset[LANG]);
-					$scope.$parent.go("/login");
+					redirectToLogin($scope.$parent);
 				}
 			});
 		}

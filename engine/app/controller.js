@@ -606,22 +606,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				$cookies.put("soajs_current_route", $location.path(), { 'domain': interfaceDomain });
 			});
 		});
-		
-		$scope.isUserLoggedIn = function (stopRedirect) {
-			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$cookies.get('soajs_username', { 'domain': interfaceDomain })) {
-				ngDataApi.logoutUser($scope);
-				$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
-				$scope.go("/login");
-			}
-			else {
-				if ($localStorage.soajs_user) {
-					var user = $localStorage.soajs_user;
-					$scope.enableInterface = true;
-					$scope.userFirstName = user.firstName;
-				}
-			}
-		};
-		
+
 		$scope.$on("loadUserInterface", function (event, args) {
 			doEnvPerNav();
 			var user = $localStorage.soajs_user;
@@ -737,7 +722,53 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				$scope.currentDeployer.type = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).deployer.type;
 			}
 		}
-		
+
+		$scope.isUserLoggedIn = function (stopRedirect) {
+			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
+				if ($localStorage.soajs_user) {
+					$scope.enableInterface = true;
+					$scope.$emit('refreshWelcome', {});
+				}
+			}
+			else {
+				ngDataApi.logoutUser($scope);
+				$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
+				redirectToLogin($scope);
+			}
+		};
+
+		$scope.isUserNameLoggedIn = function () {
+			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
+				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
+				if ($localStorage.soajs_user && $localStorage.acl_access) {
+					$scope.enableInterface = true;
+					$scope.$emit('refreshWelcome', {});
+				}
+				else {
+					myAccountAccess.getUser($scope, username, function (result) {
+						if (result) {
+							myAccountAccess.getKeyPermissions($scope, function (success) {
+								if (success) {
+									$scope.enableInterface = true;
+									$timeout(function () {
+										window.location.reload();
+									}, 150);
+								}
+							});
+						} else {
+							ngDataApi.logoutUser($scope);
+							redirectToLogin($scope);
+						}
+					});
+				}
+			}
+			else {
+				ngDataApi.logoutUser($scope);
+				$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
+				redirectToLogin($scope);
+			}
+		};
+
 		$scope.checkUserCookie = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
@@ -745,7 +776,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 					if (!result) {
 						ngDataApi.logoutUser($scope);
 						$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
-						$scope.go("/login");
+						redirectToLogin($scope);
 					}
 				});
 			}
@@ -799,7 +830,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		
 		function clearData() {
 			ngDataApi.logoutUser($scope);
-			$scope.$parent.go("/login");
+			redirectToLogin($scope.$parent);
 		}
 		
 		function logout() {

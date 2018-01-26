@@ -298,3 +298,8 @@ a.tooltipToggle {
 .swaggerRunButtonClass{
     margin-top: 20px;
 }
+
+.buttonHover:hover
+{
+    cursor: pointer;
+}

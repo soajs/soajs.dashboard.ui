@@ -10,7 +10,7 @@
 			<table width="100%" border="0" cellpadding="5" cellspacing="3">
 				<tbody>
 					
-					<tr ng-repeat="availableRes in availableResources" class="even">
+					<tr ng-repeat="availableRes in availableResources" ng-class="{'even': $index%2==0}">
 						<td width="80%" align="left">{{availableRes.name}} ({{availableRes.category}})</td>
 						<td width="20%">
 							<a href="" ng-click="selectResource($index)" class="btn btn-sm" ng-class="{'btn-success': availableRes.isSelected, 'btn-danger': !availableRes.isSelected}">
@@ -44,8 +44,6 @@
 			
 			<span ng-if="input.type === 'object' || input.validation.type === 'object' || (input.type === 'array' && input.items.type==='object')" class='blue'><span ng-class="{'icon icon-folder': (input.collapsed),'icon icon-folder-open':(!input.collapsed)}" title='' ng-click="collapse(input)"></span></span>
 		</div>
-		
-		<div ng-if="input.type && input.validation.type">{{inputKey}} WHAAAAAAAAAAAAAAAAAAAAAAAATTTTT ??????</div>
 		
 		<ul ng-if="input.validation.type === 'object'" class="clearfix">
 			<span ng-if="!input.collapsed">
@@ -138,13 +136,13 @@
 								<tab ng-if="schemaKey!=='commonFields'" ng-repeat="(schemaKey, schemaObj) in endpoint.schema" heading="{{schemaKey}}" ng-init="isActive = isActiveTab(schemaKey, 0)" active="isActive" select="setActiveTab(schemaKey)">
 									
 									<div class="entryBoxes">
-										<button class="btn btn-primary btn-danger apiClass" ng-click="deleteSchema(endpoint,schemaKey)">
-											Delete '{{schemaKey}}' Method
-										</button>
+										<a href="" ng-click="deleteSchema(endpoint,schemaKey)" class="btn btn-primary f-right btn-danger apiClass">
+											<span class="icon icon-cross" tooltip="Delete method"></span>Delete '{{schemaKey}}' Method
+										</a>
 										
-										<button class="btn btn-primary apiClass" ng-click="addRoute(endpoint,schemaKey)">
-											Add Route
-										</button>
+										<a href="" ng-click="onAddEditRoute(endpoint,schemaKey)" class="btn btn-primary f-right apiClass">
+											<span class="icon icon-plus" tooltip="Add route"></span>Add Route
+										</a>
 									</div>
 									
 									<div>
@@ -153,16 +151,19 @@
 												
 												<fieldset>
 													<legend ng-if="mainType==='endpoints'">
-														Api : {{routeKey}} - Authentication :
+														Api : {{routeKey}}
+														<span class='blue'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
+														- Authentication :
 														{{(routeObj._authorization && routeObj._authorization!=='')?routeObj._authorization:'None'}}
-														<span class='blue'><span class='icon icon-lock' title='Edit' ng-click="onUpdateResources(mainType,endpoint.serviceName,routeObj._authorization,endpoint._id,schemaKey,routeKey)"></span></span>
+														<span class='blue'><span class='icon icon-lock buttonHover' title='Edit' ng-click="onUpdateResources(mainType,endpoint.serviceName,routeObj._authorization,endpoint._id,schemaKey,routeKey)"></span></span>
 													</legend>
-													<legend style="float:right;" ng-if="mainType==='endpoints'">
+													<legend style="float:right;">
 														<span class='blue'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
 													
 													<legend  ng-if="mainType!=='endpoints'">
 														Api : {{routeKey}}
+														<span class='blue'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
 													
 													
@@ -199,12 +200,6 @@
 								</tab>
 							
 							</tabset>
-							
-							<div  style="padding-top: 10px">
-								<button class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType, endpoint)">
-									Save
-								</button>
-							</div>
 						</div>
 						
 						<div ng-if="tempo.switchView[endpoint._id] === 'swagger'">
@@ -247,9 +242,13 @@
 								</div>
 							</div>
 							
-							
 						</div>
-					
+						
+						<div style="padding-top: 10px">
+							<button class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType, endpoint)">
+								Save
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

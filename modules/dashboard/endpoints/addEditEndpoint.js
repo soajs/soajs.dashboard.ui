@@ -19,6 +19,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			}
 			else {
 				$scope.form.formData = response;
+				$scope.form.formData.epType = response.models?response.models.name:'';
 				$scope.getAvailableResourcesAndMatchIfOnEdit(true);
 			}
 		});
@@ -99,6 +100,9 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 				required: true
 			},
 			requestTimeoutRenewal: {
+				required: true
+			},
+			epType: {
 				required: true
 			}
 		};
@@ -325,14 +329,16 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 		
 		// reformat resources before saving
 		let authentications = [];
-		$scope.availableResources.forEach(function (each) {
-			if (each.isSelected) {
-				authentications.push({
-					name: each.name,
-					category: each.category
-				});
-			}
-		});
+		if($scope.availableResources){
+			$scope.availableResources.forEach(function (each) {
+				if (each.isSelected) {
+					authentications.push({
+						name: each.name,
+						category: each.category
+					});
+				}
+			});
+		}
 		
 		$scope.mainEndpoint.authentications = authentications;
 		// $scope.mainEndpoint.swaggerInput = $scope.editor.getValue(); // on skip step3

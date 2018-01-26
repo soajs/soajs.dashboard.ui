@@ -217,7 +217,12 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		});
 	};
 	
-	$scope.addRoute = function (endpoint, schemaKey) {
+	$scope.onAddEditRoute = function (endpoint, schemaKey, routeKey) {
+		
+		let oldRoute;
+		if (routeKey) { // on edit
+			oldRoute = endpoint.schema[schemaKey][routeKey];
+		}
 		
 		let config = {
 			entries: []
@@ -230,7 +235,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			'label': 'Api Route',
 			'type': 'string',
 			'required': true,
-			'value': ''
+			'value': routeKey || ''
 		});
 		
 		config.entries.push({
@@ -238,7 +243,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			'label': 'Api Info',
 			'type': 'string',
 			'required': true,
-			'value': ''
+			'value': oldRoute ? oldRoute._apiInfo.l : ''
 		});
 		
 		config.entries.push({
@@ -246,7 +251,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			'label': 'Api Group',
 			'type': 'string',
 			'required': true,
-			'value': ''
+			'value': oldRoute ? oldRoute._apiInfo.group : ''
 		});
 		
 		let data = {};
@@ -264,19 +269,33 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'label': 'Add',
 					'btn': 'primary',
 					'action': function (formData) {
-						endpoint.schema[schemaKey]['/' + formData.api] = {
-							"_apiInfo": {
-								"l": formData.apiInfo,
-								"group": formData.apiGroup
-							},
-							// "_authorization": "OT2",
-							// "mw": "/opt/soajs/newP/node_modules/soajs.endpoint/lib/mw/rest/index.js",
-							"imfv": {
-								"commonFields": [],
-								"custom": {},
-								"tempoCommonFields": {}
+						
+						function generateApi(apiInfo, apiGroup) {
+							return {
+								"_apiInfo": {
+									"l": apiInfo,
+									"group": apiGroup
+								},
+								"imfv": {
+									"commonFields": [],
+									"custom": {},
+									"tempoCommonFields": {}
+								}
+							};
+						}
+						
+						if (formData.api.charAt(0) === '/') {
+							formData.api = formData.api.substring(1, formData.api.length);
+						}
+						
+						if (routeKey) { // on edit
+							endpoint.schema[schemaKey]['/' + formData.api] = generateApi(formData.apiInfo, formData.apiGroup);
+							if (('/' + formData.api) !== routeKey) { // new key
+								delete endpoint.schema[schemaKey][routeKey];
 							}
-						};
+						} else { // on add new
+							endpoint.schema[schemaKey]['/' + formData.api] = generateApi(formData.apiInfo, formData.apiGroup);
+						}
 						currentScope.modalInstance.dismiss('cancel');
 					}
 				},
@@ -644,7 +663,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		let count = 0;
 		standardSchemas.forEach(function (std) {
 			if (alreadyAdded.indexOf(std) === -1) {
-				count ++;
+				count++;
 			}
 		});
 		

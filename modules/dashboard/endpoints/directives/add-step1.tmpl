@@ -29,6 +29,14 @@
 				<br>
 			</div>
 			
+			<div>
+				<label class="ng-binding ng-scope">Endpoint type</label>
+				<select class="form-control" ng-model="form.formData.epType" ng-required="true">
+					<option value="soap">Soap</option>
+					<option value="rest">Rest</option>
+				</select>
+			</div>
+			
 			<br>
 			<label>Authentication Method (Resources) :</label>
 			<br>

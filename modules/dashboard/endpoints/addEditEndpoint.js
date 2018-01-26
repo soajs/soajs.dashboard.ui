@@ -15,7 +15,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			}
 		}, function (error, response) {
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
 				$scope.form.formData = response;
@@ -34,7 +34,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			}
 		}, function (error, response) {
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
 				let none = {
@@ -119,7 +119,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			actions: [
 				{
 					'type': 'submit',
-					'label': "Next",
+					'label': "Save",
 					'btn': 'primary',
 					'action': function (formData) {
 						
@@ -141,7 +141,8 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 						$scope.lastStep = 0;
 						
 						$scope.mainEndpoint = $scope.form.formData;
-						$scope.Step3(); // now skipping step 2 : -=-=-=-=-=
+						// $scope.Step3(); // now skipping step 2 : -=-=-=-=-= and step3 now skipped :)
+						$scope.saveEndpoint();
 					}
 				},
 				{
@@ -334,7 +335,8 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 		});
 		
 		$scope.mainEndpoint.authentications = authentications;
-		$scope.mainEndpoint.swaggerInput = $scope.editor.getValue();
+		// $scope.mainEndpoint.swaggerInput = $scope.editor.getValue(); // on skip step3
+		$scope.mainEndpoint.swaggerInput = '';
 		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": method,
@@ -346,7 +348,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			"data": $scope.mainEndpoint
 		}, function (error, response) {
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
 				$scope.$parent.go("/endpoints");

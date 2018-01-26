@@ -109,7 +109,7 @@
 									<span class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEditEndpoint(mainType, endpoint._id)"></span></span>
 								</td>
 								
-								<td ng-if="mainType==='endpoints'">
+								<td>
 									<span class='red'><span class='icon icon-cross' title='Remove' ng-click="onRemoveEndpoint(mainType, endpoint._id)"></span></span>
 								</td>
 							</tr>
@@ -191,7 +191,7 @@
 									</div>
 								</tab>
 								
-								<tab ng-click="addSchema(endpoint)">
+								<tab ng-click="addSchema(endpoint)" ng-if="isAddSchemaAvailable(endpoint)">
 									<tab-heading>
 										<i class="icon icon-plus"></i>
 									</tab-heading>

@@ -209,7 +209,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
 				$scope.displayAlert('success', 'Schema updated successfully');
@@ -638,6 +638,19 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 	};
 	
+	$scope.isAddSchemaAvailable = function (endpoint) {
+		let standardSchemas = ["get", "post", "put", "delete"];
+		let alreadyAdded = Object.keys(endpoint.schema);
+		let count = 0;
+		standardSchemas.forEach(function (std) {
+			if (alreadyAdded.indexOf(std) === -1) {
+				count ++;
+			}
+		});
+		
+		return count !== 0;
+	};
+	
 	$scope.addSchema = function (endpoint) {
 		
 		let alreadyAdded = Object.keys(endpoint.schema);
@@ -723,7 +736,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}
 		
 		if (input.validation && input.validation.type === 'object') {
-			if(input.validation.properties){
+			if (input.validation.properties) {
 				let props = Object.keys(input.validation.properties);
 				props.forEach(function (each, index) {
 					$scope.recursiveCleanImfv(input.validation.properties[props[index]]);
@@ -864,7 +877,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						overlayLoading.hide();
 						$modalInstance.close();
 						if (error) {
-							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 						}
 						else {
 							currentScope.displayAlert('success', 'Authentication updated successfully');
@@ -955,7 +968,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			}
 		}, function (error, response) {
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
 				if (!$scope.grid) {
@@ -1057,7 +1070,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							if (commonFields) {
 								commonFields.forEach(function (eachCommon) {
 									if (!endpoint.schema.commonFields || !endpoint.schema.commonFields[eachCommon]) {
-										alert('warning! commong field not found!');
+										alert('warning! common field not found!');
 									} else {
 										imfv.tempoCommonFields[eachCommon] = endpoint.schema.commonFields[eachCommon];
 									}
@@ -1085,10 +1098,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			}
 		}, function (error) {
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			} else {
 				$scope.$parent.displayAlert('success', "Endpoint deleted successfully");
-				$scope.listEndpoints('endpoints');
+				$scope.listEndpoints(mainType);
 			}
 		});
 	};

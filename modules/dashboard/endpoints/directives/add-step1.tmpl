@@ -8,8 +8,8 @@
 				<span class="manualToolTip">Service Name should be alphanumeric and does not contain any space or dot or hyphen characters</span>
 				<br>
 				<label>{{translation.groupName[LANG]}}</label>
-				<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="{{translation.serviceGroup[LANG]}}"/>
-				<span class="manualToolTip">Service group name</span>
+				<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="{{translation.serviceGroup[LANG]}}" minlength="3"/>
+				<span class="manualToolTip">Service group name should be 3 characters at least</span>
 				<br>
 				<label>{{translation.servicePort[LANG]}}</label>
 				<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" placeholder="{{translation.servicePort[LANG]}}"/>

@@ -51,6 +51,7 @@ var modules = {
 	"develop": {
 		"dashboard": {
 			services: 'modules/dashboard/services/install.js',
+			endpoints: 'modules/dashboard/endpoints/install.js',
 			githubApp: 'modules/dashboard/gitAccounts/install.js',
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',
 			catalogs: 'modules/dashboard/catalogs/install.js',

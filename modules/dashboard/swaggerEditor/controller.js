@@ -115,6 +115,10 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 			swaggerEditorSrv.generateService($scope);
 		}
 	};
+	
+	$scope.goBackToApiBuilder = function () {
+		$scope.$parent.go("/endpoints");
+	};
 
 	if ($scope.access.generate) {
 		//show the form

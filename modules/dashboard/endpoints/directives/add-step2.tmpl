@@ -1,0 +1,19 @@
+<div class="modal-body">
+	<div class="form">
+		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+		<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
+			<div class="form-group">
+				<div class="scrollable">
+					<ul class="blueListing">
+						<li ng-class-even="'evenSerial'" class="blueLi row-list" ng-repeat="resource in availableResources">
+							<input id="resource{{$index}}" type="checkbox" ng-model="resource.isSelected">
+							<label title="{{resource.name}}" for="resource{{$index}}" class="repoFullName">
+								<span>{{resource.name}} ({{resource.category}})</span>
+							</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</form>
+	</div>                                                                                                 
+</div>

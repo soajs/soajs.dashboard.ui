@@ -1,0 +1,52 @@
+<div class="modal-body">
+	<div class="form">
+		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+		<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
+			<div class="form-group">
+				<label>{{translation.serviceName[LANG]}}</label>
+				<input type="text" class="form-control" ng-model="form.formData.serviceName" ng-required="true" placeholder="{{translation.serviceName[LANG]}}"/>
+				<span class="manualToolTip">Service Name should be alphanumeric and does not contain any space or dot or hyphen characters</span>
+				<br>
+				<label>{{translation.groupName[LANG]}}</label>
+				<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="{{translation.serviceGroup[LANG]}}"/>
+				<span class="manualToolTip">Service group name</span>
+				<br>
+				<label>{{translation.servicePort[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" placeholder="{{translation.servicePort[LANG]}}"/>
+				<span class="manualToolTip">The service port should be equal or greater than 4100</span>
+				<br>
+				<label>{{translation.serviceVersion[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.serviceVersion" ng-required="true" placeholder="{{translation.serviceVersion[LANG]}}"/>
+				<span class="manualToolTip">The service version should be equal or greater than 1</span>
+				<br>
+				<label>{{translation.requestTimeout[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="true" placeholder="{{translation.requestTimeout[LANG]}}"/>
+				<span class="manualToolTip">Specify how many seconds the controller should wait before considering the request as a timeout, value must be equal or greater than 1.</span>
+				<br>
+				<label>{{translation.requestTimeoutRenewal[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.requestTimeoutRenewal" ng-required="true" placeholder="{{translation.requestTimeoutRenewal[LANG]}}"/>
+				<span class="manualToolTip">Specify how many attempts the controller should make after timing out before eventually giving up, value must be equal or greater than 1.</span>
+				<br>
+			</div>
+			
+			<br>
+			<label>Authentication Method (Resources) :</label>
+			<br>
+			<span class="manualToolTip">Create your resource under: Deploy/Resources/Add New/Authorization/ and configure it appropriately</span>
+			<br>
+			<span class="manualToolTip">In this section, enable your methods, and in each api select the corresponding</span>
+			<br>
+			
+			<div class="scrollable">
+				<ul class="blueListing">
+					<li ng-class-even="'evenSerial'" class="blueLi row-list" ng-repeat="resource in availableResources">
+						<input id="resource{{$index}}" type="checkbox" ng-model="resource.isSelected">
+						<label title="{{resource.name}}" for="resource{{$index}}" class="repoFullName">
+							<span>{{resource.name}} ({{resource.category}})</span>
+						</label>
+					</li>
+				</ul>
+			</div>
+		</form>
+	</div>
+</div>

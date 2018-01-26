@@ -1,0 +1,46 @@
+<div class="modal-body">
+	<div class="form">
+		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+		<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
+			<div class="form-group">
+				
+				<br>
+				<div class="c-both w100 table">
+					<h4 class="f-left">Swagger Editor</h4>
+					
+					<!--<a class="btn btn-primary f-right" ng-click="collapseExpand()" ng-show="schemaCodeF && schemaCodeF!== ''">-->
+						<!--<span class="icon icon-circle-left" ng-show="!collapsed"></span>-->
+						<!--{{(collapsed) ? "Expand" : "Collapse"}} Editor-->
+						<!--<span class="icon icon-circle-right" ng-show="collapsed"></span>-->
+					<!--</a>-->
+					<!--<a class="btn btn-danger f-right mr5" ng-click="clearYamlRight()" ng-show="schemaCodeF && schemaCodeF!== ''">-->
+						<!--<span class="icon icon-undo"></span>-->
+						<!--Reset Simulator-->
+					<!--</a>-->
+					<!--<a class="btn btn-success f-right mr5" ng-click="moveYamlRight()" ng-show="schemaCode && schemaCode!== ''">-->
+						<!--<span class="icon icon-play3"></span>-->
+						<!--Run-->
+					<!--</a>-->
+				</div>
+				
+				<h5 class="f-left">Write your Yaml code using the below Swagger Editor then click <b>Run</b> and Swagger will render your code and show you how your APIs documentation will look like.<br />
+					Swagger will also provide you with testing capability for your IMFV, and will not render the documentation unless your code is valid, well indented and has the minimal specification that the Swagger engine needs.</h5>
+				
+				<hr/>
+				
+				<div class="w100 c-both">
+					<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">
+						<div id="schemaCode" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded, onChange: updateScopeValue}" ng-model="schemaCode"></div>
+					</div>
+					<div class="f-left w2" ng-class="{'block': !collapsed, 'hidden': collapsed}">
+						<span >&nbsp;</span>
+					</div>
+					<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
+						<div swagger-ui parser="yaml" input-type="yaml" input="schemaCodeF" trusted-sources="true" loading="true" api-explorer="true" permalinks="false"></div>
+					</div>
+				</div>
+				
+			</div>
+		</form>
+	</div>
+</div>

@@ -1096,7 +1096,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 	 * Send API explorer request
 	 */
 	this.send = function (swagger, operation, values) {
-		if ($location.path() === "/swaggerEditor") {
+		if( ['/swaggerEditor', '/endpoints'].indexOf($location.path()) !== -1){
 			var oldParams = angular.copy(operation.parameters);
 			var oldValues = angular.copy(values);
 			

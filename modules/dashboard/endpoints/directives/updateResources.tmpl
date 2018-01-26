@@ -1,0 +1,69 @@
+<script type="text/ng-template" id="updateResources.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-body text-align-center">
+		<div class="grid">
+			<table width="100%" border="0" cellpadding="5" cellspacing="3">
+				<tbody>
+					<tr class="first odd">
+						<td width="80%" align="left">External Key Required</td>
+						<td width="20%">
+							<a href="" ng-click="onOff('extKeyRequired')" class="btn btn-sm" ng-class="{'btn-success': settings.extKeyRequired, 'btn-danger': !settings.extKeyRequired}">
+								<span class="icon icon-switch"></span>Turned {{(settings.extKeyRequired)? 'On' : 'Off'}}
+							</a>
+						</td>
+					</tr>
+					<tr class="even">
+						<td align="left">oAuth</td>
+						<td>
+							<a href="" ng-click="onOff('oauth')" class="btn btn-sm" ng-class="{'btn-success': settings.oauth, 'btn-danger': !settings.oauth}">
+								<span class="icon icon-switch"></span>Turned {{(settings.oauth)? 'On' : 'Off'}}
+							</a>
+						</td>
+					</tr>
+					<tr class="odd">
+						<td align="left">URAC</td>
+						<td>
+							<a href="" disabled="true" class="btn btn-sm btn-link" style="color:#333;">
+								<span class="icon icon-switch"></span>Turned {{(settings.urac)? 'On' : 'Off'}}
+							</a>
+						</td>
+					</tr>
+					
+					<tr class="even">
+						<td align="left">URAC Profile</td>
+						<td>
+							<a href="" disabled="true" class="btn btn-sm btn-link" style="color:#333;">
+								<span class="icon icon-switch"></span>Turned {{(settings.urac_Profile)? 'On' : 'Off'}}
+							</a>
+						</td>
+					</tr>
+					
+					<tr class="odd">
+						<td align="left">URAC ACL</td>
+						<td>
+							<a href="" disabled="true" class="btn btn-sm btn-link" style="color:#333;">
+								<span class="icon icon-switch"></span>Turned {{(settings.urac_ACL)? 'On' : 'Off'}}
+							</a>
+						</td>
+					</tr>
+					
+					<tr class="last even">
+						<td align="left">Provision ACL</td>
+						<td>
+							<a href="" disabled="true" class="btn btn-sm btn-link" style="color:#333;">
+								<span class="icon icon-switch"></span>Turned {{(settings.provision_ACL)? 'On' : 'Off'}}
+							</a>
+						</td>
+					</tr>
+				
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="onSubmit()">Update</button>
+		<button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+	</div>
+</script>

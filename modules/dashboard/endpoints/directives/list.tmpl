@@ -1,0 +1,265 @@
+<script type="text/ng-template" id="updateResources.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+		<div class="manualToolTip">
+			Select the desired method, and make sure to redeploy your endpoint before proceeding.
+		</div>
+	</div>
+	<div class="modal-body text-align-center">
+		<div class="grid">
+			<table width="100%" border="0" cellpadding="5" cellspacing="3">
+				<tbody>
+					
+					<tr ng-repeat="availableRes in availableResources" class="even">
+						<td width="80%" align="left">{{availableRes.name}} ({{availableRes.category}})</td>
+						<td width="20%">
+							<a href="" ng-click="selectResource($index)" class="btn btn-sm" ng-class="{'btn-success': availableRes.isSelected, 'btn-danger': !availableRes.isSelected}">
+								<span class="icon icon-switch"></span>{{(availableRes.isSelected)? 'Selected' :
+								'Select'}}
+							</a>
+						</td>
+					</tr>
+				
+				
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="onSubmit()">Update</button>
+		<button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+	</div>
+</script>
+
+
+<section ng-controller="endpointController">
+	
+	<script type="text/ng-template" id="imfv_renderer.html">
+		<div class="floater">
+			<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='red'><span class='icon icon-cross' title='Delete' ng-click="onDeleteImfv(mainType, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx,isCommonField)"></span></span>
+			<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEditImfv(mainType, true,false,isCommonField, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span></span>
+			
+			<span ng-if="input.validation.type">{{inputKey}} ( {{input.validation.type}} ) </span>
+			<span ng-if="input.type">{{inputKey}} ( {{input.type}} {{input.items.type?"("+input.items.type+")":""}} ) </span>
+			
+			<span ng-if="input.type === 'object' || input.validation.type === 'object' || (input.type === 'array' && input.items.type==='object')" class='blue'><span ng-class="{'icon icon-folder': (input.collapsed),'icon icon-folder-open':(!input.collapsed)}" title='' ng-click="collapse(input)"></span></span>
+		</div>
+		
+		<div ng-if="input.type && input.validation.type">{{inputKey}} WHAAAAAAAAAAAAAAAAAAAAAAAATTTTT ??????</div>
+		
+		<ul ng-if="input.validation.type === 'object'" class="clearfix">
+			<span ng-if="!input.collapsed">
+				<li ng-repeat="(inputKey,input) in input.validation.properties" ng-include="'imfv_renderer.html'"></li>
+				<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-plus' title='Add Property' ng-click="onEditImfv(mainType, false,false,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>.....</span>
+			</span>
+		</ul>
+		
+		
+		<ul ng-if="input.type === 'object'" class="clearfix">
+			<span ng-if="!input.collapsed">
+				<li ng-repeat="(inputKey,input) in input.properties" ng-include="'imfv_renderer.html'"></li>
+				<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-plus' title='Add Property' ng-click="onEditImfv(mainType, false,false,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>.....</span>
+			</span>
+		</ul>
+		
+		<ul ng-if="input.type === 'array' && input.items.type==='object'" class="clearfix">
+			<span ng-if="!input.collapsed">
+				<li ng-repeat="(inputKey,input) in input.items.properties" ng-include="'imfv_renderer.html'"></li>
+				<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-plus' title='Add Array Item' ng-click="onEditImfv(mainType, false,true,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>.....</span>
+			</span>
+		</ul>
+	</script>
+	
+	<tabset>
+		<tab ng-repeat="mainType in ['services','endpoints']" heading="{{mainType}}">
+			
+			<div class="entryBoxes" ng-show="grid.rows">
+				<div ng-if="access.listEndpoints">
+					<a href="" ng-click="listEndpoints(mainType)" class="btn btn-primary f-right commonButtonsClass commonGreenButtonsClass">
+						<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
+					</a>
+					<a href="" ng-click="addNewEndpoint(mainType)" class="btn btn-primary f-right commonButtonsClass">
+						<span class="icon icon-plus" tooltip="Add Endpoint"></span>{{mainType==='endpoints'?'Add new Endpoint':'Add new Service'}}
+					</a>
+					<br/><br/>
+				</div>
+				
+				<div id="s_{{endpoint._id}}" ng-repeat="endpoint in grid.rows[mainType]" class="entryBox" ng-init="endpoint.hide = true;">
+					<div class="header closed">
+						<table width="100%" class="servicesList">
+							<tr>
+								<td>
+									<a href="" ng-click="showHide(endpoint)">
+										<span class="icon icon-{{endpoint.icon || 'plus'}}"></span>
+									</a>{{endpoint['serviceName']|uppercase}}<span>[ {{endpoint['servicePort']}} ]</span>
+								</td>
+								<td>
+									<span ng-if="endpoint['group']"><b>{{translation.serviceGroup[LANG]}}</b>:<span>{{endpoint['group'] || 'Misc.'}}</span></span>
+								</td>
+								<td>
+									<b>{{translation.requestTimeout[LANG]}}</b>:<span>{{endpoint['requestTimeout'] || 0}}</span>
+								</td>
+								<td>
+									<b>{{translation.requestTimeoutRenewal[LANG]}}</b>:<span>{{endpoint['requestTimeoutRenewal'] || 0}}</span>
+								</td>
+								<td>
+								
+								</td>
+								<td ng-if="mainType==='endpoints'">
+									<span class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEditEndpoint(mainType, endpoint._id)"></span></span>
+								</td>
+								
+								<td ng-if="mainType==='endpoints'">
+									<span class='red'><span class='icon icon-cross' title='Remove' ng-click="onRemoveEndpoint(mainType, endpoint._id)"></span></span>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="entryAction">
+					</div>
+					<div class="body grid" style="display:none;">
+						
+						<div ng-if="tempo.switchView[endpoint._id] === 'swagger'" class="form schemasClass">
+							<button class="btn btn-primary" ng-click="switchView(endpoint)">
+								Switch to IMFV
+							</button>
+						</div>
+						
+						<div ng-if="tempo.switchView[endpoint._id] !== 'swagger'" >
+							<a style="float:right; padding-right: 25px; margin-top: 5px" href="" ng-click="switchView(endpoint)" title="click to run swagger simulation">
+								<span><img style="height: 25px; width:25px;" src="modules/dashboard/services/directives/images/swagger-icon.png">
+								</span>
+							</a>
+						</div>
+						
+						<div ng-if="tempo.switchView[endpoint._id] !== 'swagger'">
+							
+							<tabset>
+								<tab ng-if="schemaKey!=='commonFields'" ng-repeat="(schemaKey, schemaObj) in endpoint.schema" heading="{{schemaKey}}" ng-init="isActive = isActiveTab(schemaKey, 0)" active="isActive" select="setActiveTab(schemaKey)">
+									
+									<div class="entryBoxes">
+										<button class="btn btn-primary btn-danger apiClass" ng-click="deleteSchema(endpoint,schemaKey)">
+											Delete '{{schemaKey}}' Method
+										</button>
+										
+										<button class="btn btn-primary apiClass" ng-click="addRoute(endpoint,schemaKey)">
+											Add Route
+										</button>
+									</div>
+									
+									<div>
+										<ul class="blueListing">
+											<li class="blueLi" ng-repeat="(routeKey,routeObj) in schemaObj" class="row-list">
+												
+												<fieldset>
+													<legend ng-if="mainType==='endpoints'">
+														Api : {{routeKey}} - Authentication :
+														{{(routeObj._authorization && routeObj._authorization!=='')?routeObj._authorization:'None'}}
+														<span class='blue'><span class='icon icon-lock' title='Edit' ng-click="onUpdateResources(mainType,endpoint.serviceName,routeObj._authorization,endpoint._id,schemaKey,routeKey)"></span></span>
+													</legend>
+													<legend style="float:right;" ng-if="mainType==='endpoints'">
+														<span class='blue'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
+													</legend>
+													
+													<legend  ng-if="mainType!=='endpoints'">
+														Api : {{routeKey}}
+													</legend>
+													
+													
+													<div>
+														<span class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEnableEdit(endpoint._id,schemaKey,routeKey)">{{tempo.editEnabled[endpoint._id][schemaKey][routeKey]?' Disable editing ...':' Enable editing'}}</span></span>
+														<br>
+														<div>Common Fields</div>
+														<ul>
+															<li ng-init="isCommonField = true" ng-repeat="(inputKey,input) in routeObj.imfv.tempoCommonFields" ng-include="'imfv_renderer.html'"></li>
+															<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-plus' title='Add Property' ng-click="onAddCommonField(mainType, false,false,true,endpoint,schemaKey,routeKey,null,null,null)"></span>.....</span>
+														</ul>
+														
+														<div>Custom IMFV</div>
+														<ul>
+															<li ng-init="isCommonField = false" ng-repeat="(inputKey,input) in routeObj.imfv.custom" ng-include="'imfv_renderer.html'"></li>
+															<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-plus' title='Add Property' ng-click="onEditImfv(mainType, false,false,false,endpoint,schemaKey,routeKey,null,null,null)"></span>.....</span>
+														</ul>
+													
+													</div>
+													
+												</fieldset>
+											
+											
+											</li>
+										</ul>
+									</div>
+								</tab>
+								
+								<tab ng-click="addSchema(endpoint)">
+									<tab-heading>
+										<i class="icon icon-plus"></i>
+									</tab-heading>
+								
+								</tab>
+							
+							</tabset>
+							
+							<div  style="padding-top: 10px">
+								<button class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType, endpoint)">
+									Save
+								</button>
+							</div>
+						</div>
+						
+						<div ng-if="tempo.switchView[endpoint._id] === 'swagger'">
+							<!--<div class="grouped clearfix" style="vertical-align: top">-->
+								<!--<div id="loggerEditor" ui-ace="{maxLines: Infinity, useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}" ng-model="endpoint.swaggerInput" style="height: 500px;"></div>-->
+								<!--<div>-->
+								<!--</div>-->
+							<!--</div>-->
+							
+							<div class="c-both w100 table">
+								<h4 class="f-left">Swagger Editor</h4>
+								<a class="btn btn-primary f-right swaggerButtonsClass swaggerRunButtonClass" ng-click="collapseExpand(endpoint._id)" ng-show="tempo.swagger[endpoint._id].schemaCodeF && tempo.swagger[endpoint._id].schemaCodeF!== ''">
+									<span class="icon icon-circle-left" ng-show="!tempo.swagger[endpoint._id].collapsed"></span>
+									{{(tempo.swagger[endpoint._id].collapsed) ? "Expand" : "Collapse"}} Editor
+									<span class="icon icon-circle-right" ng-show="tempo.swagger[endpoint._id].collapsed"></span>
+								</a>
+								<a class="btn btn-danger f-right mr5 swaggerButtonsClass" ng-click="clearYamlRight(endpoint._id)" ng-show="tempo.swagger[endpoint._id].schemaCodeF && tempo.swagger[endpoint._id].schemaCodeF!== ''">
+									<span class="icon icon-undo"></span>
+									Reset Simulator
+								</a>
+								<a class="btn btn-success f-right mr5 swaggerButtonsClass" ng-click="moveYamlRight(endpoint)" ng-show="true">
+									<span class="icon icon-play3"></span>
+									Run
+								</a>
+							</div>
+							
+							<svg height="2" width="100%">
+								<line x1="0" y1="0" x2="100%" y2="0" style="stroke:rgb(220,220,220);stroke-width:2"/>
+							</svg>
+							
+							<div class="w100 c-both">
+								<div class="f-left w49" ng-class="{'block': !tempo.swagger[endpoint._id].collapsed, 'hidden': tempo.swagger[endpoint._id].collapsed}">
+									<div id="schemaCode" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded, onChange: updateScopeValue}" ng-model="endpoint.swaggerInput"></div>
+								</div>
+								<div class="f-left w2" ng-class="{'block': !tempo.swagger[endpoint._id].collapsed, 'hidden': tempo.swagger[endpoint._id].collapsed}">
+									<span >&nbsp;</span>
+								</div>
+								<div class="f-left" ng-class="{'w100': tempo.swagger[endpoint._id].collapsed, 'w49': !tempo.swagger[endpoint._id].collapsed}">
+									<div swagger-ui parser="yaml" input-type="yaml" input="tempo.swagger[endpoint._id].schemaCodeF" trusted-sources="true" loading="true" api-explorer="true" permalinks="false"></div>
+								</div>
+							</div>
+							
+							
+						</div>
+					
+					</div>
+				</div>
+			</div>
+		</tab>
+	</tabset>
+
+
+</section>
+
+
+<script type="text/ng-template" id="addEditEndpoint.tmpl">
+	<div ng-include="'modules/dashboard/endpoints/directives/addEditEndpoint.tmpl'"></div>
+</script>

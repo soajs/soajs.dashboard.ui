@@ -16,7 +16,7 @@ var swaggerEditorNav = [
 			'label': translation.develop[LANG],
 			'position': 1
 		},
-		'mainMenu': true,
+		'mainMenu': false,
 		'tracker': true,
 		'order': 6,
 		'scripts': ['modules/dashboard/swaggerEditor/config.js', 'modules/dashboard/swaggerEditor/controller.js', 'modules/dashboard/swaggerEditor/service.js'],

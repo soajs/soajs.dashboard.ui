@@ -1,0 +1,372 @@
+"use strict";
+var servicesApp = soajsApp.components;
+servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', '$localStorage', '$window', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams, $localStorage, $window) {
+	
+	$scope.mainEndpoint = {};
+	
+	$scope.getEndpoint = function (_id) {
+		
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/apiBuilder/get",
+			"params": {
+				"id": _id,
+				"mainType": "endpoints"
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$scope.form.formData = response;
+				$scope.getAvailableResourcesAndMatchIfOnEdit(true);
+			}
+		});
+		
+	};
+	
+	$scope.getAvailableResourcesAndMatchIfOnEdit = function (onEdit) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/apiBuilder/getResources",
+			"params": {
+				"mainType": "endpoints"
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				let none = {
+					name: "None",
+					category: "N/A"
+				};
+				
+				response.unshift(none);
+				
+				let availableResources = [];
+				
+				if (response) {
+					response.forEach(function (res, index) {
+						res.isSelected = false;
+						if (onEdit) {
+							let found = false;
+							if ($scope.form.formData.authentications) {
+								$scope.form.formData.authentications.forEach(function (preselectedAuth) {
+									if (preselectedAuth.name === res.name) {
+										res.isSelected = true;
+									}
+								});
+							}
+						} else {
+							// on new, select none by default
+							if (index === 0) {
+								res.isSelected = true;
+							}
+						}
+						
+						availableResources.push(res);
+					});
+				}
+				
+				$scope.availableResources = availableResources;
+			}
+		});
+	};
+	
+	$scope.wizard = {};
+	
+	$scope.access = {};
+	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
+	
+	$scope.Step1 = function () {
+		overlayLoading.show();
+		
+		let entries = {
+			serviceName: {
+				required: true
+			},
+			serviceGroup: {
+				required: true
+			},
+			servicePort: {
+				required: true
+			},
+			serviceVersion: {
+				required: true
+			},
+			requestTimeout: {
+				required: true
+			},
+			requestTimeoutRenewal: {
+				required: true
+			}
+		};
+		
+		let environmentsConfigStep1Entries = [
+			{
+				"name": "generalInfo",
+				"directive": "modules/dashboard/endpoints/directives/add-step1.tmpl"
+			}
+		];
+		var configuration = angular.copy(environmentsConfigStep1Entries);
+		$scope.tempFormEntries = entries;
+		var options = {
+			timeout: $timeout,
+			entries: configuration,
+			name: 'addEditEp',
+			label: "Add/Edit Endpoint",
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						
+						//check mandatory fields
+						for (let fieldName in $scope.tempFormEntries) {
+							if ($scope.tempFormEntries[fieldName].required) {
+								if (!formData[fieldName]) {
+									$window.alert('Some of the fields under controller section are still missing.');
+									return false;
+								}
+							}
+						}
+						
+						if (!$localStorage.addEnv) {
+							$localStorage.addEnv = {};
+						}
+						
+						$localStorage.addEnv.step1 = angular.copy(formData);
+						$scope.lastStep = 0;
+						
+						$scope.mainEndpoint = $scope.form.formData;
+						$scope.Step3(); // now skipping step 2 : -=-=-=-=-=
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						// todo
+						delete $localStorage.addEnv;
+						$scope.form.formData = {};
+						$scope.remoteCertificates = {};
+						delete $scope.wizard;
+						$scope.$parent.go("/endpoints");
+					}
+				}
+			]
+		};
+		
+		buildForm($scope, $modal, options, function () {
+			if (mode !== 'edit' && $localStorage.addEnv && $localStorage.addEnv.step1) {
+				$scope.form.formData = angular.copy($localStorage.addEnv.step1);
+			}
+			
+			overlayLoading.hide();
+		});
+	};
+	
+	$scope.Step2 = function () {
+		overlayLoading.show();
+		let environmentsConfigStep2Entries = [
+			{
+				"name": "generalInfo",
+				"directive": "modules/dashboard/endpoints/directives/add-step2.tmpl"
+			}
+		];
+		var configuration = angular.copy(environmentsConfigStep2Entries);
+		var options = {
+			timeout: $timeout,
+			entries: configuration,
+			name: 'addEnvironment2',
+			label: translation.addNewEnvironment[LANG],
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						
+						if (!$localStorage.addEnv) {
+							$localStorage.addEnv = {};
+						}
+						
+						$scope.Step3();
+						
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						delete $localStorage.addEnv;
+						$scope.form.formData = {};
+						$scope.remoteCertificates = {};
+						delete $scope.wizard;
+						$scope.$parent.go("/endpoints");
+					}
+				}
+			]
+		};
+		
+		buildForm($scope, $modal, options, function () {
+			overlayLoading.hide();
+		});
+	};
+	
+	// swagger stuff ....
+	
+	$scope.aceLoaded = function (_editor) {
+		$scope.editor = _editor;
+		_editor.setShowPrintMargin(false);
+	};
+	
+	$scope.fillDefaultEditor = function () {
+		if (!$scope.schemaCodeF || $scope.schemaCodeF === "") {
+			if ($scope.form.formData.serviceName && $scope.form.formData.serviceName.trim() !== '') {
+				var serviceName = $scope.form.formData.serviceName.trim();
+				var swaggerYML = "swagger: \"2.0\"\n" +
+					"info:\n" +
+					"  version: \"1.0.0\"\n" +
+					"  title: " + serviceName + "\n" +
+					"host: localhost\n" +
+					"basePath: /" + serviceName + "\n" +
+					"schemes:\n" +
+					"  - http\n" +
+					"paths:\n\n" +
+					"parameters:\n\n" +
+					"definitions:\n\n";
+			}
+			$scope.schemaCodeF = swaggerYML;
+			$timeout(function () {
+				if (!$scope.schemaCodeF) {
+					$scope.schemaCodeF = '';
+				}
+				$scope.editor.setValue($scope.schemaCodeF);
+			}, 100);
+		}
+	};
+	
+	$scope.Step3 = function () {
+		overlayLoading.show();
+		
+		let mainScope = $scope;
+		
+		$scope.fillDefaultEditor();
+		
+		let environmentsConfigStep3Entries = [
+			{
+				"name": "generalInfo",
+				"directive": "modules/dashboard/endpoints/directives/add-step3.tmpl"
+			}
+		];
+		var configuration = angular.copy(environmentsConfigStep3Entries);
+		var options = {
+			timeout: $timeout,
+			entries: configuration,
+			name: 'addEnvironment2',
+			label: translation.addNewEnvironment[LANG],
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						
+						if (!$localStorage.addEnv) {
+							$localStorage.addEnv = {};
+						}
+						
+						//todo: assert the inputs
+						// $localStorage.addEnv.step1 = angular.copy(formData);
+						// $scope.wizard.gi = angular.copy(formData);
+						// $scope.form.formData = {};
+						// $scope.lastStep = 1;
+						
+						$scope.saveEndpoint();
+						
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						delete $localStorage.addEnv;
+						$scope.form.formData = {};
+						$scope.remoteCertificates = {};
+						delete $scope.wizard;
+						$scope.$parent.go("/endpoints");
+					}
+				}
+			]
+		};
+		
+		buildForm($scope, $modal, options, function () {
+			overlayLoading.hide();
+		});
+	};
+	
+	$scope.saveEndpoint = function () {
+		let api, method, _id;
+		if (mode === 'edit') {
+			api = 'edit';
+			method = 'put';
+			_id = $routeParams.id;
+		} else {
+			api = 'add';
+			method = 'post';
+		}
+		
+		// reformat resources before saving
+		let authentications = [];
+		$scope.availableResources.forEach(function (each) {
+			if (each.isSelected) {
+				authentications.push({
+					name: each.name,
+					category: each.category
+				});
+			}
+		});
+		
+		$scope.mainEndpoint.authentications = authentications;
+		$scope.mainEndpoint.swaggerInput = $scope.editor.getValue();
+		
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": method,
+			"routeName": "/dashboard/apiBuilder/" + api,
+			"params": {
+				"mainType": "endpoints",
+				"id": _id
+			},
+			"data": $scope.mainEndpoint
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$scope.$parent.go("/endpoints");
+				$localStorage.addEnv.step1 = {};
+			}
+		});
+		
+	};
+	
+	let mode = "add";
+	if ($routeParams && $routeParams.id && $routeParams.id !== "new") {
+		mode = "edit";
+		$scope.getEndpoint($routeParams.id);
+	} else {
+		$scope.getAvailableResourcesAndMatchIfOnEdit(false);
+	}
+	
+	if ($scope.access.addEditEndpoint) {
+		// $scope.Step1();
+		$scope.Step1();
+	}
+	
+}]);

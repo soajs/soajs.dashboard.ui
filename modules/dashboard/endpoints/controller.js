@@ -135,7 +135,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		mainInputs.forEach(function (each) {
 			$scope.recursiveGetImfv(data[each], each, data, xxKeyxx);
 		});
-	}
+	};
 	
 	$scope.onDeleteImfv = function (mainType, endpoint, schemaKey, routeKey, inputKey, input, xxKeyxx, isCommonField) {
 		$scope.setCurrentImfvOnEdit(mainType, endpoint, schemaKey, routeKey, xxKeyxx, isCommonField);
@@ -195,7 +195,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						});
 					}
 				});
-			}else{
+			} else {
 				let commonFields = $scope.cleanCommonFieldsImfv(schemas.commonFields);
 			}
 		});
@@ -377,6 +377,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						if (formData.commonField === 'xxNewxx') {
 							$scope.onEditImfv(mainType, onEdit, isAddInArray, isCommonField, endpoint, schemaKey, routeKey, inputKey, input, xxKeyxx);
 						} else {
+							if (!$scope.currentImfvRoot.commonFields) {
+								$scope.currentImfvRoot.commonFields = {};
+							}
+							
 							$scope.currentImfvRoot.commonFields.push(formData.commonField);
 							$scope.currentImfvRoot.tempoCommonFields[formData.commonField] = $scope.currentEp.schema.commonFields[formData.commonField];
 						}
@@ -412,10 +416,28 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		let key = $scope.currentImfvOnEdit || '';
 		let type = input ? (input.validation ? input.validation.type : input.type) : '';
 		let required = input ? input.required : false;
-		let source = input ? input.source : '';
+		let source = input ? input.source : null;
 		let arrayItems = (onEdit && input) ? (input.items ? input.items.type : '') : '';
 		
-		if (!onEdit) {
+		let selectedSourcesCleaned = [];
+		
+		if (onEdit) {
+			if (source) {
+				source.forEach(function (eachSource) {
+					if (eachSource.includes("body.")) {
+						selectedSourcesCleaned.push("body");
+					}
+					
+					if (eachSource.includes("query.")) {
+						selectedSourcesCleaned.push("query");
+					}
+					
+					if (eachSource.includes("params.")) {
+						selectedSourcesCleaned.push("headers");
+					}
+				});
+			}
+		} else {
 			key = '';
 			type = '';
 			required = false;
@@ -478,15 +500,15 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				{
 					v: 'query',
 					l: 'Query',
-					selected: (source === 'query')
+					selected: (selectedSourcesCleaned.indexOf('query') !== -1)
 				}, {
 					v: 'body',
 					l: 'Body',
-					selected: (source === 'body')
+					selected: (selectedSourcesCleaned.indexOf('body') !== -1)
 				}, {
 					v: 'headers',
 					l: 'Headers',
-					selected: (source === 'headers')
+					selected: (selectedSourcesCleaned.indexOf('headers') !== -1)
 				}
 			];
 			config.entries.push({
@@ -521,6 +543,25 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'label': 'Save',
 					'btn': 'primary',
 					'action': function (formData) {
+						
+						let sourceReformatted; // if applicable
+						if (formData.source) {
+							sourceReformatted = [];
+							formData.source.forEach(function (eachSourceSelected) {
+								let sourceType = eachSourceSelected;
+								if (eachSourceSelected === 'headers') {
+									sourceType = 'params';
+								}
+								sourceReformatted.push(`${sourceType}.${formData.key}`);
+							});
+						}
+						if (onRoot) {
+							if (!sourceReformatted || sourceReformatted.length < 1) {
+								alert('You need to select at least 1 source type');
+								return;
+							}
+						}
+						
 						if (formData.type === 'array') {
 							if (!formData.arrayItems) {
 								alert("missing array of items"); // todo?
@@ -542,6 +583,9 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						
 						if (onEdit) {
 							let newObject = JSON.parse(JSON.stringify($scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit])); // old one
+							if (sourceReformatted) {
+								newObject.source = sourceReformatted;
+							}
 							
 							if (newObject.validation) {
 								newObject.validation.type = formData.type;
@@ -603,6 +647,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							formData.inTreeLevel = input ? (input.inTreeLevel + 1) : 1;
 							random_number++;
 							
+							if (sourceReformatted) {
+								formData.source = sourceReformatted;
+							}
+							
 							if (formData.type === 'object') {
 								if (onRoot) {
 									formData.validation = {
@@ -627,6 +675,9 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 									let data = imfv.custom;
 									if (isCommonField) {
 										data = imfv.tempoCommonFields;
+										if (!imfv.commonFields) { // todo: move it to main init
+											imfv.commonFields = {};
+										}
 										imfv.commonFields.push(key);
 										endpoint.schema.commonFields[key] = formData;
 									}
@@ -795,45 +846,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 		return output;
 	};
-	
-	/*
-	 $scope.updateImfv = function (mainType, ep, schemaKey, routeKey) {
-	 let id = ep._id;
-	 let newImfv = ep.schema[schemaKey][routeKey].imfv;
-	 
-	 let cleanedImfv = $scope.cleanImfv(angular.copy(newImfv));
-	 
-	 console.log(cleanedImfv);
-	 
-	 // todo common fields
-	 
-	 console.log('---');
-	 console.log(ep);
-	 console.log('---');
-	 
-	 overlayLoading.show();
-	 getSendDataFromServer($scope, ngDataApi, {
-	 "method": "put",
-	 "routeName": "/dashboard/apiBuilder/",
-	 "uri": "http://localhost:4000/endpoint.generator/updateImfv",
-	 "data": {
-	 mainType,
-	 "endpointId": id,
-	 "schemaKey": schemaKey,
-	 "routeKey": routeKey,
-	 "newImfv": cleanedImfv
-	 }
-	 }, function (error, response) {
-	 overlayLoading.hide();
-	 if (error) {
-	 $scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-	 }
-	 else {
-	 $scope.displayAlert('success', 'IMFV updated successfully');
-	 }
-	 });
-	 };
-	 */
 	
 	$scope.addNewEndpoint = function (mainType) {
 		if (mainType === 'services') {

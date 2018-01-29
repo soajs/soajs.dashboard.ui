@@ -39,7 +39,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						response.records[x].fixList = $scope.arrGroupByField(response.records[x].apis, 'group');
 					}
 					else {
-						if (response.records[x].versions) {
+						if (response.records[x].versions && Object.keys(response.records[x].versions).length > 0) {
 							var v = $scope.sortByDescending(response.records[x].versions);
 							response.records[x].latest = v[0].toString();
 							response.records[x].fixList = [];

@@ -54,9 +54,33 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						}
 					}
 				}
-				$scope.grid = {
-					rows: response.records
+				
+				$scope.tabs = {
+					"soajs": [],
+					"daas": [],
+					"ep": [],
+					"gcs": [],
+					"services": []
 				};
+				
+				response.records.forEach((oneRecord) => {
+					if(oneRecord.src && oneRecord.src.repo === 'gcs' && oneRecord.src.owner === 'HerronTech'){
+						$scope.tabs.daas.push(oneRecord);
+					}
+					else if(oneRecord.src && oneRecord.src.repo === 'soajs.gcs'){
+						$scope.tabs.gcs.push(oneRecord);
+					}
+					else if(oneRecord.src && oneRecord.src.repo === 'soajs.epg'){
+						$scope.tabs.ep.push(oneRecord);
+					}
+					else if(oneRecord.src && oneRecord.src.owner === 'soajs'){
+						$scope.tabs.soajs.push(oneRecord);
+					}
+					else{
+						$scope.tabs.services.push(oneRecord);
+					}
+				});
+				
 				$scope.envs = response.envs;
 			}
 		});

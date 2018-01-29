@@ -173,6 +173,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.updateSchemas = function (mainType, endpoint) {
+		// todo: reconsider commonFields clean up algorithm
 		let schemas = angular.copy(endpoint.schema);
 		let allCommonFieldsInEp = {};
 		
@@ -194,6 +195,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						});
 					}
 				});
+			}else{
+				let commonFields = $scope.cleanCommonFieldsImfv(schemas.commonFields);
 			}
 		});
 		
@@ -520,7 +523,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'action': function (formData) {
 						if (formData.type === 'array') {
 							if (!formData.arrayItems) {
-								alert("missing array of items todo");
+								alert("missing array of items"); // todo?
 								return;
 							} else {
 								if (!formData.items) {
@@ -762,6 +765,13 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				});
 			}
 		}
+	};
+	
+	$scope.cleanCommonFieldsImfv = function (imfv) {
+		let mainInputs = Object.keys(imfv);
+		mainInputs.forEach(function (each) {
+			$scope.recursiveCleanImfv(imfv[each]);
+		});
 	};
 	
 	$scope.cleanImfv = function (imfv) {

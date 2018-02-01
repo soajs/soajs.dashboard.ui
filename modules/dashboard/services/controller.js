@@ -39,7 +39,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						response.records[x].fixList = $scope.arrGroupByField(response.records[x].apis, 'group');
 					}
 					else {
-						if (response.records[x].versions) {
+						if (response.records[x].versions && Object.keys(response.records[x].versions).length > 0) {
 							var v = $scope.sortByDescending(response.records[x].versions);
 							response.records[x].latest = v[0].toString();
 							response.records[x].fixList = [];
@@ -54,9 +54,33 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						}
 					}
 				}
-				$scope.grid = {
-					rows: response.records
+				
+				$scope.tabs = {
+					"soajs": [],
+					"daas": [],
+					"ep": [],
+					"gcs": [],
+					"services": []
 				};
+				
+				response.records.forEach((oneRecord) => {
+					if(oneRecord.src && oneRecord.src.repo === 'gcs' && oneRecord.src.owner === 'HerronTech'){
+						$scope.tabs.daas.push(oneRecord);
+					}
+					else if(oneRecord.src && oneRecord.src.repo === 'soajs.gcs'){
+						$scope.tabs.gcs.push(oneRecord);
+					}
+					else if(oneRecord.src && oneRecord.src.repo === 'soajs.epg'){
+						$scope.tabs.ep.push(oneRecord);
+					}
+					else if(oneRecord.src && oneRecord.src.owner === 'soajs'){
+						$scope.tabs.soajs.push(oneRecord);
+					}
+					else{
+						$scope.tabs.services.push(oneRecord);
+					}
+				});
+				
 				$scope.envs = response.envs;
 			}
 		});

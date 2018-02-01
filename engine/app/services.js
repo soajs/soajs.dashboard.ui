@@ -3,14 +3,15 @@
 soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', function ($http, $cookies, $localStorage, Upload) {
 	
 	function logoutUser(scope) {
-		$cookies.remove('access_token', {'domain': interfaceDomain});
-		$cookies.remove('refresh_token', {'domain': interfaceDomain});
-		$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
-		$cookies.remove('myEnv', {'domain': interfaceDomain});
-		$cookies.remove('soajsID', {'domain': interfaceDomain});
-		$cookies.remove('soajs_auth', {'domain': interfaceDomain});
-		$cookies.remove('soajs_current_route', {'domain': interfaceDomain});
-		$cookies.remove('selectedInterval', {'domain': interfaceDomain});
+		$cookies.remove('soajs_username', { 'domain': interfaceDomain });
+		$cookies.remove('access_token', { 'domain': interfaceDomain });
+		$cookies.remove('refresh_token', { 'domain': interfaceDomain });
+		$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+		$cookies.remove('myEnv', { 'domain': interfaceDomain });
+		$cookies.remove('soajsID', { 'domain': interfaceDomain });
+		$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
+		$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
+		$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
 		$localStorage.soajs_user = null;
 		$localStorage.acl_access = null;
 		$localStorage.environments = null;
@@ -42,17 +43,17 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			getNewAccessToken.headers.Authorization = authValue;
 			delete getNewAccessToken.params;
 			getNewAccessToken.data = {
-				'refresh_token': $cookies.get('refresh_token', {'domain': interfaceDomain}),
+				'refresh_token': $cookies.get('refresh_token', { 'domain': interfaceDomain }),
 				'grant_type': "refresh_token"
 			};
 			
 			$http(getNewAccessToken).success(function (response) {
-				$cookies.put('access_token', response.access_token, {'domain': interfaceDomain});
-				$cookies.put('refresh_token', response.refresh_token, {'domain': interfaceDomain});
+				$cookies.put('access_token', response.access_token, { 'domain': interfaceDomain });
+				$cookies.put('refresh_token', response.refresh_token, { 'domain': interfaceDomain });
 				
 				//repeat the main call
 				var MainAPIConfig = angular.copy(config);
-				MainAPIConfig.params.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+				MainAPIConfig.params.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 				$http(MainAPIConfig).success(function (response, status, headers, config) {
 					returnAPIResponse(scope, response, config, cb)
 				}).error(function (errData, status, headers, config) {
@@ -83,10 +84,10 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			revalidateTokens(scope, config, cb);
 		}
 		else {
-			if(errData && errData.errors){
+			if (errData && errData.errors) {
 				return cb(new Error(errData.errors.details[0].code + ":" + errData.errors.details[0].message));
 			}
-			else{
+			else {
 				returnErrorOutput(opts, status, headers, config, cb)
 			}
 		}
@@ -127,14 +128,14 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			return cb(null, response);
 		}
 		else if (response && response.result === true) {
-			if (response.soajsauth && $cookies.get('soajs_auth', {'domain': interfaceDomain})) {
-				$cookies.put("soajs_auth", response.soajsauth, {'domain': interfaceDomain});
+			if (response.soajsauth && $cookies.get('soajs_auth', { 'domain': interfaceDomain })) {
+				$cookies.put("soajs_auth", response.soajsauth, { 'domain': interfaceDomain });
 			}
 			var resp = {};
 			for (var i in response) {
 				resp[i] = response[i];
 			}
-			if(resp.data){
+			if (resp.data) {
 				if (typeof(resp.data) !== 'object') {
 					if (typeof(resp.data) === 'string') {
 						resp.data = {
@@ -189,8 +190,8 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			data: opts.data || {},
 			json: true
 		};
-
-		var soajsAuthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
+		
+		var soajsAuthCookie = $cookies.get('soajs_auth', { 'domain': interfaceDomain });
 		if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
 			config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 		}
@@ -198,27 +199,27 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		if (opts.headers.key) {
 			config.headers.key = opts.headers.key;
 		}
-		else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
-			config.headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
+		else if ($cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain })) {
+			config.headers.key = $cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain }).replace(/\"/g, '');
 		}
 		else {
 			config.headers.key = apiConfiguration.key;
 		}
 		
-		var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+		var access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 		if (access_token && config.token) {
 			config.params.access_token = access_token;
 		}
-		var project = $cookies.get('project', {'domain': interfaceDomain});
+		var project = $cookies.get('project', { 'domain': interfaceDomain });
 		if (project) {
 			config.params.project = project;
 		}
-
+		
 		if (opts.proxy) {
 			if (!config.params.__env) {
 				var env;
-				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
-					env = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
+				if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+					env = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 					config.params.__env = env.toUpperCase();
 				}
 				else {
@@ -299,7 +300,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 
 soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	return function (currentScope) {
-		if ($localStorage.soajs_user && $cookies.get('access_token', {'domain': interfaceDomain})) {
+		if ($cookies.get('soajs_username', { 'domain': interfaceDomain }) && $cookies.get('access_token', { 'domain': interfaceDomain })) {
 			return true;
 		}
 		else {
@@ -707,7 +708,7 @@ soajsApp.service("aclDrawHelpers", function () {
 							}
 						}
 						if (aclEnvObj[serviceName].access.length === 0) {
-							return {'valid': false};
+							return { 'valid': false };
 						}
 					}
 					
@@ -745,7 +746,7 @@ soajsApp.service("aclDrawHelpers", function () {
 													}
 												}
 												if (aclEnvObj[serviceName][method].apis[apiName].access.length === 0) {
-													return {'valid': false};
+													return { 'valid': false };
 												}
 											}
 										}
@@ -782,7 +783,7 @@ soajsApp.service("aclDrawHelpers", function () {
 											}
 										}
 										if (aclEnvObj[serviceName].apis[apiName].access.length === 0) {
-											return {'valid': false};
+											return { 'valid': false };
 										}
 									}
 								}
@@ -792,7 +793,7 @@ soajsApp.service("aclDrawHelpers", function () {
 				}
 			}
 		}
-		return {'valid': true};
+		return { 'valid': true };
 	}
 	
 	return {
@@ -806,15 +807,82 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 });
 
-soajsApp.service('detectBrowser', ['$window', function($window) {
+soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	
-	return function() {
+	function getUser(currentScope, username, cb) {
+		var apiParams = {
+			"method": "get",
+			"routeName": "/urac/account/getUser",
+			"headers": {
+				"key": apiConfiguration.key
+			},
+			"params": {
+				"username": username
+			}
+		};
+		getSendDataFromServer(currentScope, ngDataApi, apiParams, function (error, response) {
+			if (error) {
+				return cb(false);
+			}
+			else {
+				$localStorage.soajs_user = response;
+				return cb(true);
+			}
+		});
+	}
+	
+	function getKeyPermissions(currentScope, cb) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/key/permission/get"
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				ngDataApi.logoutUser(currentScope);
+				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				return cb(false);
+			}
+			$localStorage.acl_access = response.acl;
+			$localStorage.environments = response.environments;
+			var options = {
+				"method": "get",
+				"routeName": "/dashboard/environment/list",
+				"params": {}
+			};
+			getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
+				if (error) {
+					if (error.code === 600) {
+						currentScope.$parent.displayAlert('danger', "Login Failed !");
+						ngDataApi.logoutUser(currentScope);
+					}
+					else {
+						currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					return cb(false);
+				}
+				else {
+					$localStorage.environments = angular.copy(response);
+					return cb(true);
+				}
+			});
+		});
+	}
+	
+	return {
+		'getUser': getUser,
+		'getKeyPermissions': getKeyPermissions
+	}
+}]);
+
+soajsApp.service('detectBrowser', ['$window', function ($window) {
+	
+	return function () {
 		
 		var userAgent = $window.navigator.userAgent;
 		
-		var browsers = {chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i};
+		var browsers = { chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i };
 		
-		for(var key in browsers) {
+		for (var key in browsers) {
 			if (browsers[key].test(userAgent)) {
 				return key;
 			}
@@ -825,7 +893,7 @@ soajsApp.service('detectBrowser', ['$window', function($window) {
 	
 }]);
 
-soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", "$location", function($q, $http, swaggerModules, $cookies, $location){
+soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", "$location", function ($q, $http, swaggerModules, $cookies, $location) {
 	
 	/**
 	 * format API explorer response before display
@@ -881,14 +949,14 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 		});
 	}
 	
-	function extractValidation (commonFields, tempInput, inputObj){
+	function extractValidation(commonFields, tempInput, inputObj) {
 		
 		//if param is in common field ( used for objects only )
-		if(tempInput.schema && tempInput.schema['$ref']){
+		if (tempInput.schema && tempInput.schema['$ref']) {
 			inputObj.validation = getIMFVfromCommonFields(commonFields, tempInput.schema['$ref']);
 		}
 		//if param is a combination of array and common field
-		else if(tempInput.schema && tempInput.schema.type === 'array' && tempInput.schema.items['$ref']){
+		else if (tempInput.schema && tempInput.schema.type === 'array' && tempInput.schema.items['$ref']) {
 			inputObj.validation = {
 				"type": "array",
 				"items": getIMFVfromCommonFields(commonFields, tempInput.schema.items['$ref'])
@@ -901,40 +969,40 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			};
 		}
 		//if param is not a common field
-		else{
+		else {
 			inputObj.validation = tempInput;
 		}
 	}
 	
-	function getIMFVfromCommonFields (commonFields, source){
+	function getIMFVfromCommonFields(commonFields, source) {
 		var commonFieldInputName = source.toLowerCase().split("/");
-		commonFieldInputName = commonFieldInputName[commonFieldInputName.length -1];
+		commonFieldInputName = commonFieldInputName[commonFieldInputName.length - 1];
 		return commonFields[commonFieldInputName].validation;
 	}
 	
-	function populateCommonFields(commonFields, cb){
+	function populateCommonFields(commonFields, cb) {
 		//loop in all common fields
-		for(var oneCommonField in commonFields){
+		for (var oneCommonField in commonFields) {
 			recursiveMapping(commonFields[oneCommonField].validation);
 		}
 		return cb();
 		
 		//loop through one common field recursively constructing and populating all its children imfv
-		function recursiveMapping(source){
-			if(source.type === 'array'){
-				if(source.items['$ref'] || source.items.type === 'object'){
+		function recursiveMapping(source) {
+			if (source.type === 'array') {
+				if (source.items['$ref'] || source.items.type === 'object') {
 					source.items = mapSimpleField(source.items);
 				}
-				else if(source.items.type === 'object'){
+				else if (source.items.type === 'object') {
 					recursiveMapping(source.items);
 				}
 			}
-			else if(source.type === 'object'){
-				for(var property in source.properties){
-					if(source.properties[property]['$ref']){
+			else if (source.type === 'object') {
+				for (var property in source.properties) {
+					if (source.properties[property]['$ref']) {
 						source.properties[property] = mapSimpleField(source.properties[property]);
 					}
-					else if(source.properties[property].type ==='object' || source.properties[property].type ==='array'){
+					else if (source.properties[property].type === 'object' || source.properties[property].type === 'array') {
 						recursiveMapping(source.properties[property]);
 					}
 				}
@@ -946,11 +1014,11 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 		}
 		
 		//if this input is a ref, get the ref and replace it.
-		function mapSimpleField(oneField){
-			if(oneField['$ref']){
+		function mapSimpleField(oneField) {
+			if (oneField['$ref']) {
 				return getIMFVfromCommonFields(commonFields, oneField['$ref']);
 			}
-			else{
+			else {
 				return oneField;
 			}
 		}
@@ -959,7 +1027,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 	/**
 	 * override the default swagger operation
 	 */
-	function overrideDefaultInputs(definitions, operation, values){
+	function overrideDefaultInputs(definitions, operation, values) {
 		var oldParams = angular.copy(operation.parameters);
 		var oldValues = angular.copy(values);
 		
@@ -967,33 +1035,33 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 		
 		//extract common fields
 		var commonFields = {};
-		if(definitions && Object.keys(definitions).length > 0){
-			for(var onecommonInput in definitions){
+		if (definitions && Object.keys(definitions).length > 0) {
+			for (var onecommonInput in definitions) {
 				commonFields[onecommonInput.toLowerCase()] = {
 					"validation": definitions[onecommonInput]
 				};
 			}
-			populateCommonFields(commonFields, function(){
+			populateCommonFields(commonFields, function () {
 				resumeE();
 			});
 		}
-		else{
+		else {
 			resumeE();
 		}
 		
-		function resumeE(){
+		function resumeE() {
 			//define new parameter for api
 			var customBody = {
 				"input": {},
 				"imfv": {}
 			};
 			
-			oldParams.forEach(function(swaggerParam){
+			oldParams.forEach(function (swaggerParam) {
 				var sourcePrefix = swaggerParam.in;
-				if(sourcePrefix === 'path'){
+				if (sourcePrefix === 'path') {
 					sourcePrefix = "params";
 				}
-				if(sourcePrefix === 'header'){
+				if (sourcePrefix === 'header') {
 					sourcePrefix = "headers";
 				}
 				var inputObj = {
@@ -1006,15 +1074,15 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				
 				customBody.imfv[swaggerParam.name] = inputObj;
 				
-				if(typeof(oldValues[swaggerParam.name]) === 'string' && oldValues[swaggerParam.name] !== '' && (inputObj.validation.type === 'object' || inputObj.validation.type === 'array')){
-					try{
+				if (typeof(oldValues[swaggerParam.name]) === 'string' && oldValues[swaggerParam.name] !== '' && (inputObj.validation.type === 'object' || inputObj.validation.type === 'array')) {
+					try {
 						customBody.input[swaggerParam.name] = JSON.parse(oldValues[swaggerParam.name]);
 					}
-					catch(e){
+					catch (e) {
 						customBody.input[swaggerParam.name] = oldValues[swaggerParam.name];
 					}
 				}
-				else{
+				else {
 					customBody.input[swaggerParam.name] = oldValues[swaggerParam.name];
 				}
 			});
@@ -1027,19 +1095,19 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 	/**
 	 * Send API explorer request
 	 */
-	this.send = function(swagger, operation, values) {
-		if($location.path() === "/swaggerEditor"){
+	this.send = function (swagger, operation, values) {
+		if ($location.path() === "/swaggerEditor") {
 			var oldParams = angular.copy(operation.parameters);
 			var oldValues = angular.copy(values);
-
+			
 			var deferred = $q.defer(),
 				query = {},
 				headers = {
-					"Accept" : "application/json",
+					"Accept": "application/json",
 					"Content-Type": "application/json"
 				},
 				path = '/dashboard/swagger/simulate';
-
+			
 			/**
 			 * call custom method to override the defaults
 			 */
@@ -1047,23 +1115,23 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			/**
 			 * hook the headers
 			 */
-			if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
-				headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
+			if ($cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain })) {
+				headers.key = $cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain }).replace(/\"/g, '');
 			}
 			else {
 				headers.key = apiConfiguration.key;
 			}
-
+			
 			// var soajsAuthCookie = $cookies.get('soajs_auth');
 			// if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
 			// headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 			// }
-
-			var soajsAccessToken = $cookies.get('access_token', {'domain': interfaceDomain});
-			if(soajsAccessToken){
-				query.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+			
+			var soajsAccessToken = $cookies.get('access_token', { 'domain': interfaceDomain });
+			if (soajsAccessToken) {
+				query.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 			}
-
+			
 			// build request
 			var options = {
 					method: "post",
@@ -1074,7 +1142,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 					},
 					params: query
 				},
-				callback = function(response) {
+				callback = function (response) {
 					// execute modules
 					var response = {
 						data: response.data,
@@ -1084,39 +1152,41 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 					};
 					swaggerModules
 						.execute(swaggerModules.AFTER_EXPLORER_LOAD, response)
-						.then(function() {
+						.then(function () {
 							formatResult2(deferred, response);
 							operation.parameters = oldParams;
 							values = oldValues;
 						});
 				};
-
+			
 			// execute modules
 			swaggerModules
 				.execute(swaggerModules.BEFORE_EXPLORER_LOAD, options)
-				.then(function() {
+				.then(function () {
 					// send request
 					$http(options)
 						.then(callback)
 						.catch(callback);
 				});
-
+			
 			return deferred.promise;
 		}
 		else {
 			var deferred = $q.defer(),
 				query = {},
-				headers = {"Accept" : "application/json",
-					"Content-Type": "application/json"},
+				headers = {
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
 				path = operation.path,
 				body;
-
+			
 			// build request parameters
 			for (var i = 0, params = operation.parameters || [], l = params.length; i < l; i++) {
 				//TODO manage 'collectionFormat' (csv etc.) !!
 				var param = params[i],
 					value = values[param.name];
-
+				
 				switch (param.in) {
 					case 'query':
 						if (!!value) {
@@ -1145,7 +1215,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 						break;
 				}
 			}
-
+			
 			// authorization
 			var authParams = operation.authParams;
 			if (authParams) {
@@ -1165,29 +1235,29 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 						break;
 				}
 			}
-
+			
 			/**
 			 * hook the headers
 			 */
-			if(swagger.tenantKey){
+			if (swagger.tenantKey) {
 				headers.key = swagger.tenantKey;
 			}
-			else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
-				headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
+			else if ($cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain })) {
+				headers.key = $cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain }).replace(/\"/g, '');
 			}
 			else {
 				headers.key = apiConfiguration.key;
 			}
-
-			var soajsAccessToken = $cookies.get('access_token', {'domain': interfaceDomain});
-			if(soajsAccessToken){
-				query.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+			
+			var soajsAccessToken = $cookies.get('access_token', { 'domain': interfaceDomain });
+			if (soajsAccessToken) {
+				query.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 			}
-
+			
 			// add headers
 			headers.Accept = values.responseType;
 			headers['Content-Type'] = body ? values.contentType : 'text/plain';
-
+			
 			// build request
 			var basePath = swagger.basePath || '',
 				baseUrl = [
@@ -1203,7 +1273,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 					data: body,
 					params: query
 				},
-				callback = function(response) {
+				callback = function (response) {
 					// execute modules
 					var response = {
 						data: response.data,
@@ -1213,21 +1283,21 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 					};
 					swaggerModules
 						.execute(swaggerModules.AFTER_EXPLORER_LOAD, response)
-						.then(function() {
+						.then(function () {
 							formatResult1(deferred, response);
 						});
 				};
-
+			
 			// execute modules
 			swaggerModules
 				.execute(swaggerModules.BEFORE_EXPLORER_LOAD, options)
-				.then(function() {
+				.then(function () {
 					// send request
 					$http(options)
 						.then(callback)
 						.catch(callback);
 				});
-
+			
 			return deferred.promise;
 		}
 	};

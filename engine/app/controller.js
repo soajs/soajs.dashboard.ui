@@ -85,8 +85,8 @@ soajsApp.run(function ($rootScope) {
 	$rootScope.translation = translation;
 });
 
-soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers',
-	function ($window, $scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers) {
+soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers', 'myAccountAccess',
+	function ($window, $scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers, myAccountAccess) {
 		document.title = titlePrefix;
 		$scope.appNavigation = navigation;
 		$scope.navigation = [];
@@ -245,23 +245,23 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			return false;
 		};
 		
-		$scope.hideMe = function(link){
+		$scope.hideMe = function (link) {
 			let currentSelectedEnvironment;
 			let currentSelectedEnvironmentRecord;
-			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
+			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 				currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
 				currentSelectedEnvironmentRecord = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
 			}
 			
 			let hide = false;
-			if(currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)){
-				hide = (['resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
+			if (currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
+				hide = (['resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
-			else if($scope.currentDeployer.type === 'manual'){
-				hide = (['environments-platforms', 'repositories','updates-upgrades','continuous-delivery'].indexOf(link.id) !== -1);
+			else if ($scope.currentDeployer.type === 'manual') {
+				hide = (['environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
-			else{
-				hide = (link.excludedEnvs && currentSelectedEnvironment&& link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)
+			else {
+				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)
 			}
 			
 			return hide;
@@ -334,7 +334,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 									$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl[envRecord.code.toLowerCase()];
 								}
 								doEnvPerNav();
-								// $scope.isUserLoggedIn();
 								$route.reload();
 							}
 						});
@@ -485,7 +484,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						});
 					}
 					else {
-						if(!navigation[i].hideMe){
+						if (!navigation[i].hideMe) {
 							navigation[i].checkPermission = {};
 							pushEntry(i);
 						}
@@ -493,7 +492,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 					}
 				}
 				else {
-					if(!navigation[i].hideMe) {
+					if (!navigation[i].hideMe) {
 						navigation[i].checkPermission = {};
 						pushEntry(i);
 					}
@@ -568,7 +567,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						if ($scope.navigation[i].tracker) {
 							if (!$scope.navigation[i].hasOwnProperty('private') && !$scope.navigation[i].hasOwnProperty('guestMenu') && !$scope.navigation[i].hasOwnProperty('footerMenu')) {
 								
-								if($scope.navigation[i].hideMe){
+								if ($scope.navigation[i].hideMe) {
 									$scope.closeAlert();
 									$scope.go($scope.navigation[i].fallbackLocation);
 								}
@@ -609,17 +608,17 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		});
 		
 		$scope.isUserLoggedIn = function (stopRedirect) {
-			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$localStorage.soajs_user) {
+			if (!$cookies.get('access_token', { 'domain': interfaceDomain }) || !$cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				ngDataApi.logoutUser($scope);
 				$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
 				$scope.go("/login");
 			}
 			else {
-				var user = $localStorage.soajs_user;
-				
-				$scope.enableInterface = true;
-				$scope.userFirstName = user.firstName;
-				$scope.userLastName = user.lastName;
+				if ($localStorage.soajs_user) {
+					var user = $localStorage.soajs_user;
+					$scope.enableInterface = true;
+					$scope.userFirstName = user.firstName;
+				}
 			}
 		};
 		
@@ -627,15 +626,15 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			doEnvPerNav();
 			var user = $localStorage.soajs_user;
 			if (user) {
+				$scope.enableInterface = true;
 				$scope.userFirstName = user.firstName;
 				$scope.userLastName = user.lastName;
 			}
 			else {
 				console.log('Missing user object');
 			}
-			$scope.enableInterface = true;
 			var defaultRoute = navigation[0].url.replace('#', '');
-			$scope.go("defaultRoute");
+			$scope.go(defaultRoute);
 		});
 		
 		$scope.buildPermittedEnvOperation = function (serviceName, routePath, method, env, cb) {
@@ -643,15 +642,19 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			if (user) {
 				var userGroups = user.groups;
 				var acl = {};
-				acl[env.toLowerCase()] = $localStorage.acl_access[env.toLowerCase()];
-				var firstEnv = Object.keys(acl)[0];
-				//check if old system
-				if (acl[firstEnv] && (acl[firstEnv].access || acl[firstEnv].apis || acl[firstEnv].apisRegExp || acl[firstEnv].apisPermission)) {
-					acl['dashboard'] = acl;
+				if ($localStorage.acl_access) {
+					acl[env.toLowerCase()] = $localStorage.acl_access[env.toLowerCase()];
+					var firstEnv = Object.keys(acl)[0];
+					//check if old system
+					if (acl[firstEnv] && (acl[firstEnv].access || acl[firstEnv].apis || acl[firstEnv].apisRegExp || acl[firstEnv].apisPermission)) {
+						acl['dashboard'] = acl;
+					}
+					checkApiHasAccess(acl, serviceName, routePath, method, userGroups, function (access) {
+						return cb(access);
+					});
+				} else {
+					return cb(false);
 				}
-				checkApiHasAccess(acl, serviceName, routePath, method, userGroups, function (access) {
-					return cb(access);
-				});
 			}
 			else {
 				return cb(false);
@@ -733,33 +736,12 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				}
 				$scope.currentDeployer.type = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).deployer.type;
 			}
-		} 
+		}
 		
 		$scope.checkUserCookie = function () {
-			function getUser(username, cb) {
-				var apiParams = {
-					"method": "get",
-					"routeName": "/urac/account/getUser",
-					"headers": {
-						"key": apiConfiguration.key
-					},
-					"params": {
-						"username": username
-					}
-				};
-				getSendDataFromServer($scope, ngDataApi, apiParams, function (error, response) {
-					if (error) {
-						return cb(false);
-					}
-					else {
-						return cb(true);
-					}
-				});
-			}
-			
-			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $localStorage.soajs_user) {
-				var user = $localStorage.soajs_user;
-				getUser(user.username, function (result) {
+			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
+				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
+				myAccountAccess.getUser($scope, username, function (result) {
 					if (!result) {
 						ngDataApi.logoutUser($scope);
 						$scope.displayAlert('danger', translation.expiredSessionPleaseLogin[LANG]);
@@ -991,27 +973,29 @@ soajsApp.directive('textSizeSlider', ['$document', function ($document) {
 	}
 }]);
 
-soajsApp.directive('jsonText', function() {
+soajsApp.directive('jsonText', function () {
 	return {
 		restrict: 'A',
 		require: 'ngModel',
-		link: function(scope, element, attr, ngModel) {
+		link: function (scope, element, attr, ngModel) {
 			function into(input) {
 				try {
 					return JSON.parse(input);
 				}
-				catch (e){
+				catch (e) {
 					return {};
 				}
 			}
+			
 			function out(data) {
 				try {
 					return JSON.stringify(data, null, 2);
 				}
-				catch (e){
+				catch (e) {
 					return JSON.stringify("", null, 2);
 				}
 			}
+			
 			ngModel.$parsers.push(into);
 			ngModel.$formatters.push(out);
 		}
@@ -1022,15 +1006,15 @@ soajsApp.directive('onReadFile', function ($parse) {
 	return {
 		restrict: 'A',
 		scope: false,
-		link: function(scope, element, attrs) {
+		link: function (scope, element, attrs) {
 			var fn = $parse(attrs.onReadFile);
 			
-			element.on('change', function(onChangeEvent) {
+			element.on('change', function (onChangeEvent) {
 				var reader = new FileReader();
 				
-				reader.onload = function(onLoadEvent) {
-					scope.$apply(function() {
-						fn(scope, {$fileContent:onLoadEvent.target.result});
+				reader.onload = function (onLoadEvent) {
+					scope.$apply(function () {
+						fn(scope, { $fileContent: onLoadEvent.target.result });
 					});
 				};
 				

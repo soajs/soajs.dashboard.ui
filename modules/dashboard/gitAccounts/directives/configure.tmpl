@@ -5,11 +5,15 @@
 	<br>
 </div>
 <div>
+	<div class="f-right">
+		<input type="button" class="btn btn-sm btn-danger" value="Go Back" ng-click="cancel();"/>
+	</div>
 	<tabset>
 		<div ng-if="noCiConfig">
 			<alert type="warning">No Continuous Integration Configuration Found. Please visit
 				<a href="" ng-click="goTOCI()">Continuous Integration</a> Section and configure a provider before you
 				can proceed.
+				<input class="btn btn-sm btn-warning" value="Refresh" ng-click="configureRepo(myCurrentRepo, gitAccount)">
 			</alert>
 		</div>
 		<tab ng-if="!noCiConfig" ng-repeat="oneProvider in ciProviders" class="{{oneProvider.provider}}" heading="{{oneProvider.provider}}" ng-click="showCIConfigForm(oneProvider)">
@@ -39,7 +43,7 @@
 				</div>
 				<hr>
 				<tabset>
-					<tab heading="Build Information">
+					<tab heading="Build Information" ng-if="oneProvider.repoBuildHistory">
 						<br />
 						<div ng-repeat="(branch, build) in oneProvider.repoBuildHistory">
 							<div ng-class="{
@@ -66,7 +70,7 @@
 												</span>
 											</div><br />
 											
-											<div style="margin-bottom: 5px;"><span class="icon icon-git"></span> Commit: <a href="{{build.commit}}" target="_blank">{{build.commit.substring(0, 6)}}</a></div>
+											<div style="margin-bottom: 5px;"><span class="icon icon-git"></span> Commit: <a href="{{build.commitLink}}" target="_blank">{{build.commit.substring(0, 6)}}</a></div>
 											<div><span class="icon icon-user"></span> Committed By: <b>{{build.committer_name}}</b></div>
 										</td>
 										<td width="25%" valign="top">
@@ -103,7 +107,7 @@
 												<span class="icon icon-cross"></span>&nbsp;Logs
 											</a>
 											&nbsp;
-											<a href="" class="btn btn-warning btn-sm" ng-click="">
+											<a href="{{build.buildHistory}}" class="btn btn-warning btn-sm" target="_blank">
 												<span class="icon icon-history"></span>&nbsp;History
 											</a>
 										</td>
@@ -113,7 +117,7 @@
 											<tabset>
 												<tab heading="Build Logs">
 													<br />
-													<a href="" ng-click="" class="btn btn-sm btn-success f-right" style="margin: 10px;">
+													<a href="" class="btn btn-sm btn-success f-right" style="margin: 10px;" ng-click="refreshBuildInformation(oneProvider)">
 														<span class="icon icon-undo"></span>&nbsp;Refresh
 													</a>
 													<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'sh', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}" ng-model="build.logs"></div>
@@ -128,10 +132,6 @@
 								</table>
 							</div>
 							<br /><br /><br />
-						</div>
-						<br />
-						<div>
-							<input type="button" class="btn btn-sm btn-danger f-right" value="Cancel" ng-click="cancel();">
 						</div>
 					</tab>
 					<tab heading="Repo Configuration">

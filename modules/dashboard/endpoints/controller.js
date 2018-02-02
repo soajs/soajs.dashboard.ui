@@ -56,11 +56,40 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.switchView = function (ep) {
+		let routeName;
+		let bodyParams = {};
+		
 		if ($scope.tempo.switchView[ep._id] === 'swagger') {
 			$scope.tempo.switchView[ep._id] = 'imfv';
+			routeName = "/dashboard/apiBuilder/convertSwaggerToImfv";
+			bodyParams.swagger = ep.swaggerInput;
+			
 		} else {
 			$scope.tempo.switchView[ep._id] = 'swagger';
+			routeName = "/dashboard/apiBuilder/convertImfvToSwagger";
+			bodyParams.schema = ep.schema;
 		}
+		
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "post",
+			"routeName": routeName,
+			"params": {},
+			 data: bodyParams
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+			}
+			else {
+				if(response.swagger){
+					ep.swaggerInput = response.swagger;
+				}else{
+					ep.schema = response.schema;
+				}
+				
+			}
+		});
 	};
 	
 	$scope.onEditEndpoint = function (mainType, id) {

@@ -474,7 +474,10 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 				
 				for( let branch in oneProvider.repoBuildHistory){
 					oneProvider.repoBuildHistory[branch].hide = true;
-					oneProvider.repoBuildHistory[branch].config = JSON.stringify(oneProvider.repoBuildHistory[branch].config, null, 2);
+					
+					if(typeof(oneProvider.repoBuildHistory[branch].config) === 'object'){
+						oneProvider.repoBuildHistory[branch].config = JSON.stringify(oneProvider.repoBuildHistory[branch].config, null, 2);
+					}
 					oneProvider.repoBuildHistory[branch].duration = fancyTimeFormat(oneProvider.repoBuildHistory[branch].duration);
 					
 					if(!oneProvider.repoBuildHistory[branch].config || oneProvider.repoBuildHistory[branch].config === ''){

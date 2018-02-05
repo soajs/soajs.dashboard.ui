@@ -181,7 +181,7 @@ var gitAccountsAppConfig = {
 				{
 					'name': 'general',
 					'label': "General Settings",
-					"type": "group",
+					"type": "accordion",
 					"entries": [
 						
 					]
@@ -189,14 +189,14 @@ var gitAccountsAppConfig = {
 				{
 					'name': 'envs',
 					'label': 'SOAJS Environment Variables',
-					'type': 'group',
+					'type': 'accordion',
 					'entries': [],
 					'collapsed': true
 				},
 				{
 					'name': 'envs',
 					'label': 'Other Environment Variables',
-					'type': 'group',
+					'type': 'accordion',
 					'entries': []
 				}
 			]
@@ -227,7 +227,7 @@ var gitAccountsAppConfig = {
 					delete form.formData['envVal' + number];
 					
 					form.entries.forEach(function (oneEntry) {
-						if (oneEntry.type === 'group' && oneEntry.name === 'envs') {
+						if (oneEntry.type === 'accordion' && oneEntry.name === 'envs') {
 							for (var i = oneEntry.entries.length - 1; i >= 0; i--) {
 								if (oneEntry.entries[i].name === 'envName' + number) {
 									oneEntry.entries.splice(i, 1);

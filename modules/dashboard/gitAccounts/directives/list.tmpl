@@ -1,9 +1,12 @@
 <section ng-controller="gitAccountsAppCtrl">
-    <a ng-if="access.login" href="" class="btn btn-primary" ng-click="addAccount()">{{translation.addAccount[LANG]}}</a>
+    <a ng-if="access.login && !configureRepoEditor" href="" class="btn btn-primary" ng-click="addAccount()">{{translation.addAccount[LANG]}}</a>
     <div ng-if="accounts && accounts.length === 0">
         <alert type="warning">{{translation.noGitAccountsAdded[LANG]}}</alert>
     </div>
-    <div ng-if="accounts.length > 0">
+	<div ng-if="configureRepoEditor">
+		<div ng-include="'modules/dashboard/gitAccounts/directives/configure.tmpl'"></div>
+	</div>
+    <div ng-if="accounts.length > 0 && !configureRepoEditor">
         <div class="entryBoxes entryBoxesGrid">
             <div ng-if="access.listAccounts" id="a_{{account._id}}" ng-repeat="account in accounts" class="entryBox customEntryBox">
                 <div class="header opened">
@@ -147,60 +150,4 @@
         <button class="btn btn-primary" ng-click="reactivate()">{{translation.reactivate[LANG]}}</button>
         <button class="btn btn-danger" ng-click="cancel()">{{translation.cancel[LANG]}}</button>
     </div>
-</script>
-
-<script type="text/ng-template" id="configureRepo.tmpl">
-    <div class="modal-header ciFormHeader">
-        <h3 class="modal-title">Configure Continuous Integration</h3>
-    </div>
-	<div class="modal-body">
-		<div ng-show="alerts.length >0">
-			<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="5000">
-				{{alert.msg}}
-			</alert>
-			<br>
-		</div>
-		<div>
-            <tabset>
-                <div ng-if="noCiConfig">
-                    <alert type="warning">No Continuous Integration Configuration Found. Please visit
-                        <a href="" ng-click="goTOCI()">Continuous Integration</a> Section and configure a provider before you
-                        can proceed.
-                    </alert>
-                </div>
-                <tab ng-if="!noCiConfig" ng-repeat="oneProvider in ciProviders" class="{{oneProvider.provider}}" heading="{{oneProvider.provider}}" ng-click="showCIConfigForm(oneProvider)">
-                    <br />
-                    <div ng-show="access.enableDisableCIRepo && activateRepo">
-                        <div class="table w100 c-both">
-                            <div class="f-left">
-                                Continuous Integration has been detected however, this repository has not been activated yet.
-                            </div>
-                            <div class="f-right">
-                                <a href="" ng-click="toggleStatus(oneProvider, true)" class="btn btn-sm btn-success">
-                                    <span class="icon icon-switch"></span>&nbsp;Turn On
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div ng-show="access.enableDisableCIRepo && !activateRepo" id="ciRepo">
-                        <div class="c-both w100 table">
-                            <div class="f-left">
-                                Repository <b>{{ciRepoName}}</b> is active, you can configure its settings.
-                            </div>
-                            <div class="f-right">
-                                <a href="" ng-click="toggleStatus(oneProvider, false)" class="btn btn-sm btn-danger">
-                                    <span class="icon icon-switch"></span>&nbsp;Turn Off
-                                </a>
-                            </div>
-                        </div>
-                        <hr>
-                        <ngform></ngform>
-                    </div>
-                </tab>
-            </tabset>
-		</div>
-	</div>
-	<div class="modal-footer">
-		<button ng-show="activateRepo || noRepoCiConfig" class="btn btn-danger" ng-click="cancel()">Close</button>
-	</div>
 </script>

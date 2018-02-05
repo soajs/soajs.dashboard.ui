@@ -499,7 +499,9 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
 			account.hide = false;
 		}
 	};
-
+	
+	$scope.configureRepoEditor = false;
+	
     injectFiles.injectCss("modules/dashboard/gitAccounts/gitAccounts.css");
     if ($scope.access.listAccounts) {
         $scope.listAccounts();

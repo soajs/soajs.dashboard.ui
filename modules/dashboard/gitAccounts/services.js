@@ -476,6 +476,17 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 					oneProvider.repoBuildHistory[branch].hide = true;
 					oneProvider.repoBuildHistory[branch].config = JSON.stringify(oneProvider.repoBuildHistory[branch].config, null, 2);
 					oneProvider.repoBuildHistory[branch].duration = fancyTimeFormat(oneProvider.repoBuildHistory[branch].duration);
+					
+					if(!oneProvider.repoBuildHistory[branch].config || oneProvider.repoBuildHistory[branch].config === ''){
+						getRepoCIremoteRecipe(currentScope, {
+							provider: oneProvider.provider,
+							repo: repo.name,
+							owner: oneProvider.owner,
+							branch
+						}, (config) =>{
+							oneProvider.repoBuildHistory[branch].config = config.file;
+						});
+					}
 				}
 				
 				if(cb && typeof cb === 'function'){

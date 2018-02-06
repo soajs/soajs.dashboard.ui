@@ -57,7 +57,9 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.switchView = function (ep) {
 		let routeName;
-		let bodyParams = {};
+		let bodyParams = {
+			"endpointId": ep._id
+		};
 		
 		if ($scope.tempo.switchView[ep._id] === 'swagger') {
 			$scope.tempo.switchView[ep._id] = 'imfv';
@@ -82,8 +84,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
-				if(response.swagger){
-					ep.swaggerInput = response.swagger;
+				if(response.data){
+					ep.swaggerInput = response.data;
 				}else{
 					ep.schema = response.schema;
 				}

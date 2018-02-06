@@ -682,13 +682,16 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 								formData.source = sourceReformatted;
 							}
 							
-							if (formData.type === 'object') {
+							if (onRoot) {
+								formData.validation = {
+									type: formData.type
+								};
+								delete formData.type;
+							}
+							
+							if (formData.type === 'object' || (formData.validation && formData.validation.type === 'object')) {
 								if (onRoot) {
-									formData.validation = {
-										type: formData.type, // object
-										properties: {}
-									};
-									delete formData.type;
+									formData.validation.properties = {};
 								} else {
 									formData.properties = {};
 								}

@@ -1,0 +1,26 @@
+{
+  "host" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "host",
+    "label": "host",
+    "placeholder": ""
+  },
+  "username" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "username",
+    "label": "Username",
+    "placeholder": ""
+  },
+  "password" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "password",
+    "label": "password",
+    "placeholder": ""
+  }
+}

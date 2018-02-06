@@ -53,6 +53,7 @@ var resourcesAppConfig = {
 					{'v': 'other', 'l': "Other", "group": "system"},
 	
 	                {'v': 'basicauth', 'l': "Basic Auth", "group": "authorization"},
+	                {'v': 'soapbasicauth', 'l': "SOAP Basic Auth", "group": "authorization"},
 	                {'v': 'digestauth', 'l': "Digest Auth", "group": "authorization"},
 	                {'v': 'oauth1', 'l': "Oauth 1", "group": "authorization"},
 	                {'v': 'oauth2', 'l': "Oauth 2", "group": "authorization"},

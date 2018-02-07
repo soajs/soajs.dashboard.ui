@@ -55,17 +55,17 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}
 	};
 	
-	$scope.switchView = function (ep) {
+	$scope.switchView = function (mainType, ep) {
 		let routeName;
 		let bodyParams = {
-			"endpointId": ep._id
+			"id": ep._id,
+			mainType
 		};
 		
 		if ($scope.tempo.switchView[ep._id] === 'swagger') {
 			$scope.tempo.switchView[ep._id] = 'imfv';
 			routeName = "/dashboard/apiBuilder/convertSwaggerToImfv";
 			bodyParams.swagger = ep.swaggerInput;
-			
 		} else {
 			$scope.tempo.switchView[ep._id] = 'swagger';
 			routeName = "/dashboard/apiBuilder/convertImfvToSwagger";
@@ -205,6 +205,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.updateSchemas = function (mainType, endpoint) {
 		// todo: reconsider commonFields clean up algorithm
+		
 		let schemas = angular.copy(endpoint.schema);
 		let allCommonFieldsInEp = {};
 		

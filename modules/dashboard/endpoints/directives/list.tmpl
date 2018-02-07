@@ -128,13 +128,13 @@
 					<div class="body grid" style="display:none;">
 						
 						<div ng-if="tempo.switchView[endpoint._id] === 'swagger'" class="form schemasClass">
-							<button class="btn btn-primary" ng-click="switchView(endpoint)">
+							<button class="btn btn-primary" ng-click="switchView(mainType, endpoint)">
 								Switch to IMFV
 							</button>
 						</div>
 						
 						<div ng-if="tempo.switchView[endpoint._id] !== 'swagger'">
-							<a style="float:right; padding-right: 25px; margin-top: 5px" href="" ng-click="switchView(endpoint)" title="click to run swagger simulation">
+							<a style="float:right; padding-right: 25px; margin-top: 5px" href="" ng-click="switchView(mainType, endpoint)" title="click to run swagger simulation">
 								<span><img style="height: 25px; width:25px;" src="modules/dashboard/services/directives/images/swagger-icon.png">
 								</span>
 							</a>

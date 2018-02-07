@@ -19,7 +19,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			}
 			else {
 				$scope.form.formData = response;
-				$scope.form.formData.epType = response.models?response.models.name:'';
+				$scope.form.formData.epType = response.models ? response.models.name : '';
 				$scope.getAvailableResourcesAndMatchIfOnEdit(true);
 			}
 		});
@@ -51,18 +51,19 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 					response.forEach(function (res, index) {
 						res.isSelected = false;
 						if (onEdit) {
-							let found = false;
 							if ($scope.form.formData.authentications) {
 								$scope.form.formData.authentications.forEach(function (preselectedAuth) {
 									if (preselectedAuth.name === res.name) {
 										res.isSelected = true;
+										res.isDefault = preselectedAuth.isDefault;
 									}
 								});
 							}
 						} else {
-							// on new, select none by default
+							// on new, select none by default and make it the default as well
 							if (index === 0) {
 								res.isSelected = true;
+								res.isDefault = true;
 							}
 						}
 						
@@ -79,6 +80,42 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
+	
+	$scope.onSelectResource = function (resource) {
+		if (resource.name === 'None') {
+			let atLeastAnotherOneIsSelected = false;
+			$scope.availableResources.forEach(function (eachRes) {
+				if (eachRes.name !== 'None') {
+					if (eachRes.isSelected) {
+						atLeastAnotherOneIsSelected = true;
+					}
+				}
+			});
+			if (!atLeastAnotherOneIsSelected) {
+				resource.isSelected = true; // force true
+			}
+		} else {
+			let atLeastAnotherOneIsSelected = false;
+			$scope.availableResources.forEach(function (eachRes) {
+				if (eachRes.name !== resource.name) {
+					if (eachRes.isSelected) {
+						atLeastAnotherOneIsSelected = true;
+					}
+				}
+			});
+			if (!atLeastAnotherOneIsSelected) {
+				$scope.availableResources[0].isSelected = true; // force select on None
+			}
+		}
+	};
+	
+	$scope.onDefaultResourceSelection = function (resource) {
+		$scope.availableResources.forEach(function (eachRes) {
+			eachRes.isDefault = false;
+		});
+		resource.isDefault = true;
+		resource.isSelected = true; // force select if not selected
+	};
 	
 	$scope.Step1 = function () {
 		overlayLoading.show();
@@ -327,19 +364,29 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			method = 'post';
 		}
 		
+		let defaultAuthentication = '';
+		
 		// reformat resources before saving
 		let authentications = [];
-		if($scope.availableResources){
+		if ($scope.availableResources) {
 			$scope.availableResources.forEach(function (each) {
 				if (each.isSelected) {
-					authentications.push({
+					let tempo = {
 						name: each.name,
 						category: each.category
-					});
+					};
+					
+					if (each.isDefault) {
+						tempo.isDefault = true;
+						defaultAuthentication = tempo.name;
+					}
+					
+					authentications.push(tempo);
 				}
 			});
 		}
 		
+		$scope.mainEndpoint.defaultAuthentication = defaultAuthentication;
 		$scope.mainEndpoint.authentications = authentications;
 		// $scope.mainEndpoint.swaggerInput = $scope.editor.getValue(); // on skip step3
 		$scope.mainEndpoint.swaggerInput = '';

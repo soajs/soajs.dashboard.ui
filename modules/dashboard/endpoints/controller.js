@@ -925,7 +925,15 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				
 				$scope.selectResource = function (index) {
 					$scope.availableResources.forEach(function (each, currentIndex) {
-						each.isSelected = (index === currentIndex);
+						if(index === currentIndex){
+							if(each.isSelected){
+								each.isSelected = false; // deselect if previously selected
+							}else{
+								each.isSelected = true;
+							}
+						}else{
+							each.isSelected = false;
+						}
 					});
 				};
 				

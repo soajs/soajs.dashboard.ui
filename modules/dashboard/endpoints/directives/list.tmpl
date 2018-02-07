@@ -166,7 +166,7 @@
 														<span class='blue'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
 														- Authentication :
 														{{(routeObj._authorization &&
-														routeObj._authorization!=='')?routeObj._authorization:'None'}}
+														routeObj._authorization!=='')?routeObj._authorization:endpoint.defaultAuthentication+'(Default)'}}
 														<span class='blue'><span class='icon icon-lock buttonHover' title='Edit' ng-click="onUpdateResources(mainType,endpoint.serviceName,routeObj._authorization,endpoint._id,schemaKey,routeKey)"></span></span>
 													</legend>
 													<legend style="float:right;">

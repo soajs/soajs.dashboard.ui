@@ -457,6 +457,9 @@ function buildForm(context, modal, configuration, cb) {
 							context.form.entries[i].value[j].selected = true;
 						}
 					}
+					else {
+						delete context.form.entries[i].value[j].selected;
+					}
 				}
 			}
 		}

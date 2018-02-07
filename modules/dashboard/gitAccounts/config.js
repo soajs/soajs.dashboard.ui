@@ -24,21 +24,20 @@ var gitAccountsAppConfig = {
 							if (form.entries[2].value[2] && form.entries[2].value[2].v === 'organization_public') {
 								form.entries[2].value.splice(2, 1);
 							}
-
+							
 							if (selected === 'bitbucket') {
 								form.entries[1].value = 'bitbucket.org';
 								form.entries[1].type = 'readonly';
-
+								
 								form.entries[4].label = 'Email Address';
 							}
 							else if (selected === 'bitbucket_enterprise') {
 								form.entries[1].value = ' ';
 								form.entries[1].type = 'text';
-
+								
 								form.entries[4].label = 'Username';
 							}
 						}
-
 						form.entries = form.entries.slice(0, 5);
 						form.refresh();
 					}
@@ -51,30 +50,30 @@ var gitAccountsAppConfig = {
 					'required': true
 				},
 				{
-		            'name': 'type',
-		            'label': 'Account Type',
-		            'class': 'accountType',
-		            'type': 'radio',
-		            'value': [
+					'name': 'type',
+					'label': 'Account Type',
+					'class': 'accountType',
+					'type': 'radio',
+					'value': [
 						{'v': 'personal_public', 'l': 'Personal Account - Public Repositories', 'selected': true},
-		                {'v': 'personal_private', 'l': 'Personal Account - Public and Private Repositories'}
+						{'v': 'personal_private', 'l': 'Personal Account - Public and Private Repositories'}
 					],
-		            'required': true,
-		            onAction: function (label, selected, formConfig) {
+					'required': true,
+					onAction: function (label, selected, formConfig) {
 						if (selected.split('_')[1] === 'private') {
 							if (!formConfig.entries[5] || (formConfig.entries[5] && formConfig.entries[5].name !== 'password')) {
 								var password = {
-			                        'name': 'password',
-			                        'label': 'Password',
-			                        'type': 'password',
-			                        'value': '',
-			                        'tooltip': 'Account Password',
-			                        'placeholder': 'Your Password',
-			                        'required': true
-			                    };
-			                    formConfig.entries.splice(5, 0, password);
+									'name': 'password',
+									'label': 'Password',
+									'type': 'password',
+									'value': '',
+									'tooltip': 'Account Password',
+									'placeholder': 'Your Password',
+									'required': true
+								};
+								formConfig.entries.splice(5, 0, password);
 							}
-
+							
 							var currentProvider;
 							for (var i =0; i < formConfig.entries[0].value.length; i++) {
 								if (formConfig.entries[0].value[i].selected) {
@@ -113,26 +112,26 @@ var gitAccountsAppConfig = {
 									"type": "html",
 									"value": "<br><p><b>" + translation.loginMessagePermissionsPartOne[LANG] + "</b><br><ul><li>" + translation.loginMessagePermissionsPartTwo[LANG] + "</li><li>" + translation.loginMessagePermissionsPartThree[LANG] + "</li></ul><br>" + translation.loginMessagePermissionsPartFour[LANG] + "</p>"
 								};
-								formConfig.entries.splice(6, 0, githubMessage);
+								formConfig.entries.splice(6, 1, githubMessage);
 							}
 						}
 						else {
-
+							
 							if (formConfig.entries[8] && formConfig.entries[8].name === 'bitbucketMessage') {
 								formConfig.entries.splice(8, 1);
 							}
 							if (formConfig.entries[7] && formConfig.entries[7].name === 'oauthSecret') {
 								formConfig.entries.splice(7, 1);
 							}
-							if (formConfig.entries[6] && formConfig.entries[6].name === 'oauthKey') {
+							if (formConfig.entries[6] && formConfig.entries[6].name === 'oauthKey' || formConfig.entries[6] && formConfig.entries[6].name === 'tokenMessage' ) {
 								formConfig.entries.splice(6, 1);
 							}
 							if (formConfig.entries[5] && formConfig.entries[5].name === 'password') {
 								formConfig.entries.splice(5, 1);
 							}
 						}
-		            }
-		        },
+					}
+				},
 				{
 					'name': 'label',
 					'label': translation.accountLabel[LANG],
@@ -183,7 +182,7 @@ var gitAccountsAppConfig = {
 					'label': "General Settings",
 					"type": "accordion",
 					"entries": [
-						
+					
 					]
 				},
 				{

@@ -351,6 +351,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				};
 
 				$scope.displayRecipeInputs = function () {
+					$scope.recipeUserInput.envs = {};
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.recipe) {
 						for (var i = 0; i < $scope.recipes.length; i++) {
 							if ($scope.recipes[i].recipe && $scope.recipes[i]._id === $scope.formData.deployOptions.recipe) {

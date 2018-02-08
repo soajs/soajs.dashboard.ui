@@ -44,16 +44,18 @@
 			<br>
 			<span class="manualToolTip">In this section, enable your methods, and in each api select the corresponding</span>
 			<br>
-			<span class="manualToolTip">Click on any row to set the authentication method as default. The red selection shows the default method.</span>
-			<br>
 			
 			<div class="scrollable">
 				<ul class="blueListing">
-					<li ng-class-even="'evenSerial'" class="blueLi row-list" ng-repeat="resource in availableResources" ng-click="onDefaultResourceSelection(resource)">
-						<input id="resource{{$index}}" type="checkbox" ng-model="resource.isSelected" ng-click="onSelectResource(resource); $event.stopPropagation()">
-						<label title="{{resource.name}}" for="resource{{$index}}" ng-class="{'red': resource.isDefault}" ng-click="$event.stopPropagation()">
+					<li ng-class-even="'evenSerial'" class="blueLi row-list" ng-repeat="resource in availableResources">
+						<input id="resource{{$index}}" type="checkbox" ng-model="resource.isSelected" ng-click="onSelectResource(resource)">
+						<label title="{{resource.name}}" for="resource{{$index}}" ng-class="{'red': resource.isDefault}">
 							<span>{{resource.name}} ({{resource.category}})</span>
 						</label>
+						<a href="" ng-click="onDefaultResourceSelection(resource)" class="btn defaultResourceButtons" ng-class="{'btn-success': resource.isDefault, 'btn-danger': !resource.isDefault}">
+							<span class="icon icon-switch"></span>{{(resource.isDefault)? 'Default' :
+							'Set as default'}}
+						</a>
 					</li>
 				</ul>
 			</div>

@@ -293,3 +293,8 @@ a.tooltipToggle {
 .buttonHover:hover {
     cursor: pointer;
 }
+
+.defaultResourceButtons{
+    float: right;
+    width:150px;
+}

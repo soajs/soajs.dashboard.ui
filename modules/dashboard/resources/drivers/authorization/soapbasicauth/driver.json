@@ -1,10 +1,10 @@
 {
-  "host" : {
+  "SOAPApi" : {
     "type": "text",
     "required": true,
     "value": "",
-    "name": "host",
-    "label": "host",
+    "name": "SOAPApi",
+    "label": "SOAP Api",
     "placeholder": ""
   },
   "username" : {

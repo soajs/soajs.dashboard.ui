@@ -420,7 +420,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 	}
 	
 	if ($scope.access.addEditEndpoint) {
-		// $scope.Step1();
+		injectFiles.injectCss("modules/dashboard/endpoints/endpoints.css");
 		$scope.Step1();
 	}
 	

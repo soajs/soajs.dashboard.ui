@@ -291,7 +291,7 @@ function returnLatestVersion(service) {
 	});
 	// sort in descending order
 	keysInt = keysInt.sort(compareNumbers);
-	return keysInt[0].toString();
+	return (keysInt && keysInt.length > 0) ? keysInt[0].toString() : null;
 }
 
 function objectIsEnv(obj) {
@@ -307,4 +307,9 @@ function objectIsEnv(obj) {
 		}
 	}
 	return false;
+}
+
+function redirectToLogin(scope) {
+	scope.enableInterface = false;
+	scope.go("/login");
 }

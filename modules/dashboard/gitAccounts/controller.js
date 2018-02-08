@@ -326,7 +326,7 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                         $scope.displayAlert('success', translation.repoHasBeenActivated[LANG]);
 
                                         repo.status = 'active';
-                                        if (Array.isArray(response) || (typeof (response) === 'object' && response.repo && response.type !=='custom')) {
+                                        if (Array.isArray(response) || (typeof (response) === 'object' && response.repo && response.type !=='custom' && response.type !== 'component')) {
                                             var repoAddSuccess = $modal.open({
                                                 templateUrl: 'repoAddSuccess.tmpl',
                                                 backdrop: true,

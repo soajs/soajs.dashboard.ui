@@ -825,7 +825,9 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				return cb(false);
 			}
 			else {
-				$localStorage.soajs_user = response;
+				if (!$localStorage.soajs_user) {
+					$localStorage.soajs_user = response;
+				}
 				return cb(true);
 			}
 		});
@@ -842,6 +844,12 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
 			}
+			if (response.locked) {
+				if ($localStorage.soajs_user) {
+					$localStorage.soajs_user.locked = response.locked;
+				}
+			}
+
 			$localStorage.acl_access = response.acl;
 			$localStorage.environments = response.environments;
 			var options = {
@@ -849,7 +857,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				"routeName": "/dashboard/environment/list",
 				"params": {}
 			};
-			getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
+			getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
 				if (error) {
 					if (error.code === 600) {
 						currentScope.$parent.displayAlert('danger', "Login Failed !");
@@ -861,7 +869,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					return cb(false);
 				}
 				else {
-					$localStorage.environments = angular.copy(response);
+					$localStorage.environments = angular.copy(envs);
 					return cb(true);
 				}
 			});

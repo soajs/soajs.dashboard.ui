@@ -293,3 +293,34 @@ li.accountType {
     display: inline;
     margin-right: 10px;
 }
+
+.ace_editor{
+    height: 600px;
+    line-height:20px;
+    position:relative;
+    overflow:hidden;
+}
+
+.successBuild {
+    padding:20px;
+    border: solid 1px #efefef;
+    border-top: solid 3px green;
+}
+
+.failBuild {
+    padding:20px;
+    border: solid 1px #efefef;
+    border-top: solid 3px red;
+}
+
+.runningBuild{
+    padding:20px;
+    border: solid 1px #efefef;
+    border-top: solid 3px #EA9632;
+}
+
+.darkYellow{
+    color: #EA9632;
+}
+
+.ace_text-input {position:absolute!important}

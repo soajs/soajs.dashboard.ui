@@ -740,11 +740,15 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.isUserNameLoggedIn = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
-				if ($localStorage.soajs_user && $localStorage.acl_access) {
+				if ($localStorage.soajs_user && $localStorage.soajs_user.username === username && $localStorage.acl_access) {
 					$scope.enableInterface = true;
 					$scope.$emit('refreshWelcome', {});
 				}
 				else {
+					$localStorage.soajs_user = null;
+					$localStorage.environments = null;
+					$localStorage.acl_access = null;
+					
 					myAccountAccess.getUser($scope, username, function (result) {
 						if (result) {
 							myAccountAccess.getKeyPermissions($scope, function (success) {

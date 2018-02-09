@@ -366,6 +366,8 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				}
 
 				function getKeys() {
+					$localStorage.acl_access = null;
+					$localStorage.environments = null;
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "get",
 						"routeName": "/key/permission/get",

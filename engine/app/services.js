@@ -825,7 +825,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				return cb(false);
 			}
 			else {
-				if (!$localStorage.soajs_user) {
+				if (!$localStorage.soajs_user || $localStorage.soajs_user.username !== username) {
 					$localStorage.soajs_user = response;
 				}
 				return cb(true);

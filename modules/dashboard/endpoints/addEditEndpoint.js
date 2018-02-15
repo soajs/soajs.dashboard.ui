@@ -182,6 +182,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 						$scope.lastStep = 0;
 						
 						$scope.mainEndpoint = $scope.form.formData;
+						
 						// $scope.Step3(); // now skipping step 2 : -=-=-=-=-= and step3 now skipped :)
 						$scope.saveEndpoint();
 					}

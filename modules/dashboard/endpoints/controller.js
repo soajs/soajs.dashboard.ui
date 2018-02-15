@@ -62,12 +62,14 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			mainType
 		};
 		
+		let switchTo; // if the converstion was successfull, switch
+		
 		if ($scope.tempo.switchView[ep._id] === 'swagger') {
-			$scope.tempo.switchView[ep._id] = 'imfv';
+			switchTo = 'imfv';
 			routeName = "/dashboard/apiBuilder/convertSwaggerToImfv";
 			bodyParams.swagger = ep.swaggerInput;
 		} else {
-			$scope.tempo.switchView[ep._id] = 'swagger';
+			switchTo = 'swagger';
 			routeName = "/dashboard/apiBuilder/convertImfvToSwagger";
 			bodyParams.schema = ep.schema;
 		}
@@ -82,12 +84,13 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
-			}
-			else {
+			} else {
+				$scope.tempo.switchView[ep._id] = switchTo;
 				if(response.data){
 					ep.swaggerInput = response.data;
 				}else{
 					ep.schema = response.schema;
+					$scope.setInitialImfv(ep);
 				}
 				
 			}
@@ -204,33 +207,41 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.updateSchemas = function (mainType, endpoint) {
-		// todo: reconsider commonFields clean up algorithm
+		let schemas = {};
+		let swaggerInput = '';
 		
-		let schemas = angular.copy(endpoint.schema);
-		let allCommonFieldsInEp = {};
-		
-		let allSchemasKeys = Object.keys(endpoint.schema);
-		allSchemasKeys.forEach(function (eachSchema) {
-			if (eachSchema !== 'commonFields') {
-				let allRoutes = Object.keys(endpoint.schema[eachSchema]);
-				allRoutes.forEach(function (route) {
-					let cleanedImfv = $scope.cleanImfv(angular.copy(endpoint.schema[eachSchema][route].imfv));
-					let thisSchema = schemas[eachSchema];
-					thisSchema[route].imfv.custom = cleanedImfv.customImfv;
-					delete thisSchema[route].imfv.tempoCommonFields;
-					
-					let thisRouteCommonFieldsUpdates = cleanedImfv.commonImfv;
-					if (thisRouteCommonFieldsUpdates) {
-						let thisRouteCommonFieldsUpdatesKeys = Object.keys(thisRouteCommonFieldsUpdates);
-						thisRouteCommonFieldsUpdatesKeys.forEach(function (eachCom) {
-							allCommonFieldsInEp[eachCom] = thisRouteCommonFieldsUpdates[eachCom]; // they will probably come from different routes but no worries
-						});
-					}
-				});
-			} else {
-				let commonFields = $scope.cleanCommonFieldsImfv(schemas.commonFields);
-			}
-		});
+		if($scope.tempo.switchView[endpoint._id] === 'swagger'){
+			schemas = null;
+			swaggerInput = endpoint.swaggerInput;
+		}else{
+			// todo: reconsider commonFields clean up algorithm
+			swaggerInput = null;
+			schemas = angular.copy(endpoint.schema);
+			let allCommonFieldsInEp = {};
+			
+			let allSchemasKeys = Object.keys(endpoint.schema);
+			allSchemasKeys.forEach(function (eachSchema) {
+				if (eachSchema !== 'commonFields') {
+					let allRoutes = Object.keys(endpoint.schema[eachSchema]);
+					allRoutes.forEach(function (route) {
+						let cleanedImfv = $scope.cleanImfv(angular.copy(endpoint.schema[eachSchema][route].imfv));
+						let thisSchema = schemas[eachSchema];
+						thisSchema[route].imfv.custom = cleanedImfv.customImfv;
+						delete thisSchema[route].imfv.tempoCommonFields;
+						
+						let thisRouteCommonFieldsUpdates = cleanedImfv.commonImfv;
+						if (thisRouteCommonFieldsUpdates) {
+							let thisRouteCommonFieldsUpdatesKeys = Object.keys(thisRouteCommonFieldsUpdates);
+							thisRouteCommonFieldsUpdatesKeys.forEach(function (eachCom) {
+								allCommonFieldsInEp[eachCom] = thisRouteCommonFieldsUpdates[eachCom]; // they will probably come from different routes but no worries
+							});
+						}
+					});
+				} else {
+					let commonFields = $scope.cleanCommonFieldsImfv(schemas.commonFields);
+				}
+			});
+		}
 		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -239,7 +250,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			"data": {
 				mainType,
 				"endpointId": endpoint._id,
-				"schemas": schemas
+				"schemas": schemas,
+				"swagger": swaggerInput
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -410,7 +422,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							$scope.onEditImfv(mainType, onEdit, isAddInArray, isCommonField, endpoint, schemaKey, routeKey, inputKey, input, xxKeyxx);
 						} else {
 							if (!$scope.currentImfvRoot.commonFields) {
-								$scope.currentImfvRoot.commonFields = {};
+								$scope.currentImfvRoot.commonFields = [];
 							}
 							
 							$scope.currentImfvRoot.commonFields.push(formData.commonField);
@@ -711,7 +723,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 									if (isCommonField) {
 										data = imfv.tempoCommonFields;
 										if (!imfv.commonFields) { // todo: move it to main init
-											imfv.commonFields = {};
+											imfv.commonFields = [];
 										}
 										imfv.commonFields.push(key);
 										endpoint.schema.commonFields[key] = formData;
@@ -862,17 +874,21 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.cleanImfv = function (imfv) {
 		let customImfv = imfv.custom;
-		let mainInputs = Object.keys(customImfv);
-		mainInputs.forEach(function (each) {
-			$scope.recursiveCleanImfv(customImfv[each]);
-		});
+		if(customImfv){
+			let mainInputs = Object.keys(customImfv);
+			mainInputs.forEach(function (each) {
+				$scope.recursiveCleanImfv(customImfv[each]);
+			});
+		}
 		
 		// todo : i think should be done one time only!
 		let commonImfv = imfv.tempoCommonFields;
-		let mainCommonInputs = Object.keys(commonImfv);
-		mainCommonInputs.forEach(function (each) {
-			$scope.recursiveCleanImfv(commonImfv[each]);
-		});
+		if(commonImfv){
+			let mainCommonInputs = Object.keys(commonImfv);
+			mainCommonInputs.forEach(function (each) {
+				$scope.recursiveCleanImfv(commonImfv[each]);
+			});
+		}
 		
 		let output = {
 			customImfv,
@@ -976,72 +992,35 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			}
 		});
 	};
-	/*
-	 $scope.listBronzo = function () {
-	 getSendDataFromServer($scope, ngDataApi, {
-	 "method": "get",
-	 "routeName": "/dashboard/apiBuilder/",
-	 "uri": "http://localhost:4000/endpoint.generator/list",
-	 "params": {
-	 "includeEnvs": true
-	 }
-	 }, function (error, response) {
-	 if (error) {
-	 $scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-	 }
-	 else {
-	 if (!$scope.grid) {
-	 $scope.grid = {};
-	 }
-	 
-	 if (!$scope.grid.rows) {
-	 $scope.grid.rows = {};
-	 }
-	 
-	 $scope.grid.rows.Bronzo = [
-	 {
-	 "_id": '5a5df6254bb5bd09d64406f2',
-	 "type": "service",
-	 "prerequisites": {
-	 "cpu": " ",
-	 "memory": " "
-	 },
-	 "swagger": true,
-	 "serviceName": "testService_bronzo",
-	 "serviceGroup": "ssss",
-	 "serviceVersion": 1,
-	 "servicePort": 4444,
-	 "requestTimeout": 1,
-	 "requestTimeoutRenewal": 1,
-	 "extKeyRequired": false,
-	 "injection": true,
-	 "oauth": false,
-	 "urac": false,
-	 "urac_Profile": false,
-	 "urac_ACL": false,
-	 "provision_ACL": false,
-	 "session": false,
-	 "errors": {},
-	 "schema": {}
-	 }
-	 ];
-	 
-	 $scope.envs = response.envs; // ???
-	 
-	 response.records.forEach(function (endpoint) {
-	 if (endpoint.authentications) {
-	 $scope.tempo.selectedResources[endpoint.serviceName] = endpoint.authentications;
-	 } else {
-	 $scope.tempo.selectedResources[endpoint.serviceName] = [];
-	 }
-	 });
-	 
-	 $scope.setActiveTab('get');
-	 $scope.setInitialImfvs(response.records);
-	 }
-	 });
-	 };
+	
+	/**
+	 * applicable for services only
+	 *
+	 * @param mainType
+	 * @param id
 	 */
+	$scope.onDownloadEndpoint = function (mainType, endpoint) {
+		var options = {
+			"method": "post",
+			"routeName": "/dashboard/swagger/generateExistingService",
+			"headers": {
+				"Accept": "application/zip"
+			},
+			"responseType": 'arraybuffer',
+			"params": {
+				id : endpoint._id
+			}
+		};
+		
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				openSaveAsDialog(endpoint.serviceName + ".zip", response, "application/zip");
+			}
+		});
+	};
 	
 	$scope.listEndpoints = function (mainType) {
 		getSendDataFromServer($scope, ngDataApi, {
@@ -1127,48 +1106,52 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}
 	};
 	
-	$scope.setInitialImfvs = function (endpoints) {
-		endpoints.forEach(function (endpoint) {
-			if (endpoint.schema) {
-				let schemas = Object.keys(endpoint.schema);
-				schemas.forEach(function (schema) {
-					let apis = Object.keys(endpoint.schema[schema]);
-					apis.forEach(function (api) {
-						let imfv = endpoint.schema[schema][api].imfv;
+	$scope.setInitialImfv = function (endpoint) {
+		if (endpoint.schema) {
+			let schemas = Object.keys(endpoint.schema);
+			schemas.forEach(function (schema) {
+				let apis = Object.keys(endpoint.schema[schema]);
+				apis.forEach(function (api) {
+					let imfv = endpoint.schema[schema][api].imfv;
+					
+					if (imfv) {
+						let custom = imfv.custom;
+						if (!custom) {
+							imfv.custom = {};
+							custom = imfv.custom;
+						}
 						
-						if (imfv) {
-							let custom = imfv.custom;
-							if (!custom) {
-								imfv.custom = {};
-								custom = imfv.custom;
-							}
-							
-							let mainInputs = Object.keys(custom);
-							mainInputs.forEach(function (each) {
-								$scope.recursiveInitImfv(custom[each], 1);
+						let mainInputs = Object.keys(custom);
+						mainInputs.forEach(function (each) {
+							$scope.recursiveInitImfv(custom[each], 1);
+						});
+						
+						
+						let commonFields = imfv.commonFields;
+						imfv.tempoCommonFields = {}; // object // similar to custom // will hold common fields complete objects
+						if (commonFields) {
+							commonFields.forEach(function (eachCommon) {
+								if (!endpoint.schema.commonFields || !endpoint.schema.commonFields[eachCommon]) {
+									alert('warning! common field not found!');
+								} else {
+									imfv.tempoCommonFields[eachCommon] = endpoint.schema.commonFields[eachCommon];
+								}
 							});
 							
-							
-							let commonFields = imfv.commonFields;
-							imfv.tempoCommonFields = {}; // object // similar to custom // will hold common fields complete objects
-							if (commonFields) {
-								commonFields.forEach(function (eachCommon) {
-									if (!endpoint.schema.commonFields || !endpoint.schema.commonFields[eachCommon]) {
-										alert('warning! common field not found!');
-									} else {
-										imfv.tempoCommonFields[eachCommon] = endpoint.schema.commonFields[eachCommon];
-									}
-								});
-								
-								let mainCommonInputs = Object.keys(imfv.tempoCommonFields);
-								mainCommonInputs.forEach(function (each) {
-									$scope.recursiveInitImfv(imfv.tempoCommonFields[each], 1);
-								});
-							}
+							let mainCommonInputs = Object.keys(imfv.tempoCommonFields);
+							mainCommonInputs.forEach(function (each) {
+								$scope.recursiveInitImfv(imfv.tempoCommonFields[each], 1);
+							});
 						}
-					});
+					}
 				});
-			}
+			});
+		}
+	};
+	
+	$scope.setInitialImfvs = function (endpoints) {
+		endpoints.forEach(function (endpoint) {
+			$scope.setInitialImfv(endpoint);
 		});
 	};
 	

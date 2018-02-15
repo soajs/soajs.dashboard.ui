@@ -117,6 +117,10 @@
 									<span class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEditEndpoint(mainType, endpoint._id)"></span></span>
 								</td>
 								
+								<td ng-if="mainType==='services'">
+									<span class='blue'><span class='icon icon-download2' title='Edit' ng-click="onDownloadEndpoint(mainType, endpoint)"></span></span>
+								</td>
+								
 								<td>
 									<span class='red'><span class='icon icon-cross' title='Remove' ng-click="onRemoveEndpoint(mainType, endpoint._id)"></span></span>
 								</td>

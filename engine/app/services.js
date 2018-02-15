@@ -810,6 +810,9 @@ soajsApp.service("aclDrawHelpers", function () {
 soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	
 	function getUser(currentScope, username, cb) {
+		if ($localStorage.soajs_user && $localStorage.soajs_user.username !== username) {
+			$localStorage.soajs_user = null;
+		}
 		var apiParams = {
 			"method": "get",
 			"routeName": "/urac/account/getUser",
@@ -827,9 +830,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 			else {
 				if (!$localStorage.soajs_user) {
 					$localStorage.soajs_user = response;
-				}
-				else if($localStorage.soajs_user && $localStorage.soajs_user.username !== username){
-					$localStorage.soajs_user = null;
 				}
 				return cb(true);
 			}

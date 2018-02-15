@@ -742,7 +742,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					delete  configuration.default.options.autoScale;
 				}
 				else if(configuration.default.options.deployConfig.replication.mode === 'deployment' && currentScope.isAutoScalable && configuration.default.options.autoScale && configuration.default.options.autoScale.replicas && configuration.default.options.autoScale.replicas.min){
-						configuration.default.options.deployConfig.replication.replicas = configuration.version.options.autoScale.replicas && configuration.version.options.autoScale.replicas.min;
+						configuration.default.options.deployConfig.replication.replicas = configuration.default.options.autoScale.replicas.min;
 				}
 				configuration.default.deploy = true;
 			}
@@ -781,7 +781,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					delete  configuration.version.options.autoScale;
 				}
 				else if(configuration.version.options.deployConfig.replication.mode === 'deployment' && configuration.version.options.autoScale && configuration.version.options.autoScale.replicas && configuration.version.options.autoScale.replicas.min){
-						configuration.version.options.deployConfig.replication.replicas = configuration.version.options.autoScale.replicas && configuration.version.options.autoScale.replicas.min;
+						configuration.version.options.deployConfig.replication.replicas = configuration.version.options.autoScale.replicas.min;
 				}
 				configuration.version.deploy = true;
 			}

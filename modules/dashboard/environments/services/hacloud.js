@@ -1267,7 +1267,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				else if (service.labels && service.labels['soajs.service.mode'] === "daemonset"){
 					currentScope.message =  "This service is deployed as a " + service.labels['soajs.service.mode'] + " and therefore does not support autoscaling.";
 				}
-				
+				currentScope.serviceType = (service && service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : null;
 				$scope.onSubmit = function (action) {
 					overlayLoading.show();
 					var data = {

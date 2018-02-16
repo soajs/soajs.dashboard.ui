@@ -1250,7 +1250,21 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 						}
 				}
-				currentScope.serviceType = (service && service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : null;
+				if (service.namespace === "kube-system" || service.namespace === "kube-public") {
+					currentScope.message = "This service is part of the Kubernetes " + service.namespace.split("-")[1]  + " namespace and does not support autoscaling.";
+				}
+				else if (currentScope.envPlatform !== 'kubernetes'){
+					currentScope.message =  "Autoscaling is only supported in Kuberentes Deployment.";
+				}
+				else if (!currentScope.isHeapsterDeployed){
+					currentScope.message =  "Heapster is not deployed. Please deploy Heapster to enable Autoscaling.";
+				}
+				else if (!service.resources || (service.resources && !service.resources.limits)|| (service.resources && !service.resources.cpu)){
+					currentScope.message =  "This service was deployed without autoscaling support.";
+				}
+				else if (service.labels && service.labels['soajs.service.mode'] === "daemonset"){
+					currentScope.message =  "This service is deployed as a " + service.labels['soajs.service.mode'] + " and therefore does not support autoscaling.";
+				}
 				
 				$scope.onSubmit = function (action) {
 					overlayLoading.show();

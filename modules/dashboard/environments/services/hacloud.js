@@ -1259,7 +1259,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				else if (!currentScope.isHeapsterDeployed){
 					currentScope.message =  "Heapster is not deployed. Please deploy Heapster to enable Autoscaling.";
 				}
-				else if (!service.resources || (service.resources && !service.resources.limits)|| (service.resources && !service.resources.cpu)){
+				else if (!service.resources || (service.resources && !service.resources.limits)
+					|| (service.resources && service.resources.limits && !service.resources.limits.memory)
+					|| (service.resources && service.resources.limits && !service.resources.limits.cpu)){
 					currentScope.message =  "This service was deployed without autoscaling support.";
 				}
 				else if (service.labels && service.labels['soajs.service.mode'] === "daemonset"){

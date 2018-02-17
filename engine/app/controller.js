@@ -740,21 +740,15 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.isUserNameLoggedIn = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
-				// todo check project cookie & local storge
-				// if ($localStorage.soajs_user && $localStorage.soajs_user.username === username && $localStorage.acl_access) {
-				// 	$scope.enableInterface = true;
-				// 	$scope.$emit('refreshWelcome', {});
-				// }
-				// else
-				//{
-					// if( cookie . soajs_project){} // set in local storage
+				if(!$cookies.get("soajs_dashboard_login", { 'domain': interfaceDomain })){
 					myAccountAccess.getUser($scope, username, function (result) {
 						if (result) {
 							myAccountAccess.getKeyPermissions($scope, function (success) {
 								if (success) {
-									$scope.enableInterface = true;
 									$timeout(function () {
-										window.location.reload();
+										// window.location.reload();
+										$scope.enableInterface = true;
+										$scope.$emit('refreshWelcome', {});
 									}, 150);
 								}
 							});
@@ -763,7 +757,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 							redirectToLogin($scope);
 						}
 					});
-				//}
+				}
 			}
 			else {
 				ngDataApi.logoutUser($scope);

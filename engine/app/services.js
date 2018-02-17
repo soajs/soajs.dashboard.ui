@@ -12,6 +12,8 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
 		$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
 		$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
+		$cookies.remove("soajs_dashboard_login", { 'domain': interfaceDomain });
+		
 		$localStorage.soajs_user = null;
 		$localStorage.acl_access = null;
 		$localStorage.environments = null;
@@ -840,16 +842,15 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 		
 		$localStorage.environments = null;
 		$localStorage.acl_access = null;
-		$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
 		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/key/permission/get",
-			"params": { "main": false }
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				return cb(false);
 			}
 			else {
 				$localStorage.soajs_user.locked = response.locked || false;
@@ -859,9 +860,8 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					"method": "get",
 					"routeName": "/key/permission/get"
 				}, function (error, response) {
-					overlayLoading.hide();
 					if (error) {
-						ngDataApi.logoutUser(currentScope);
+						overlayLoading.hide();
 						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						return cb(false);
 					}
@@ -880,9 +880,9 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					};
 					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
 						if (error) {
+							overlayLoading.hide();
 							if (error.code === 600) {
 								currentScope.displayAlert('danger', "Login Failed !");
-								ngDataApi.logoutUser(currentScope);
 							}
 							else {
 								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -890,6 +890,8 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 							return cb(false);
 						}
 						else {
+							overlayLoading.hide();
+							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
 							$localStorage.environments = angular.copy(envs);
 							return cb(true);
 						}
@@ -898,8 +900,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				
 			}
 		});
-		
-		
 	}
 	
 	return {

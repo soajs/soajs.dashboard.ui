@@ -839,44 +839,63 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 	function getKeyPermissions(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/key/permission/get"
+			"routeName": "/key/permission/get",
+			"params": { "main": false }
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
-				ngDataApi.logoutUser(currentScope);
+				overlayLoading.hide();
+				ngDataApi.logoutUser($scope);
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				return cb(false);
 			}
-			if (response.locked) {
-				if ($localStorage.soajs_user) {
-					$localStorage.soajs_user.locked = response.locked;
-				}
-			}
-
-			$localStorage.acl_access = response.acl;
-			$localStorage.environments = response.environments;
-			var options = {
-				"method": "get",
-				"routeName": "/dashboard/environment/list",
-				"params": {}
-			};
-			getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
-				if (error) {
-					if (error.code === 600) {
-						currentScope.$parent.displayAlert('danger', "Login Failed !");
+			else {
+				$localStorage.soajs_user.locked = response.locked || false;
+				$cookies.put("soajs_dashboard_key", response.extKey, { 'domain': interfaceDomain });
+				
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "get",
+					"routeName": "/key/permission/get"
+				}, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
 						ngDataApi.logoutUser(currentScope);
-					}
-					else {
 						currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						return cb(false);
 					}
-					return cb(false);
-				}
-				else {
-					$localStorage.environments = angular.copy(envs);
-					return cb(true);
-				}
-			});
+					if (response.locked) {
+						if ($localStorage.soajs_user) {
+							$localStorage.soajs_user.locked = response.locked;
+						}
+					}
+					
+					$localStorage.acl_access = response.acl;
+					$localStorage.environments = response.environments;
+					var options = {
+						"method": "get",
+						"routeName": "/dashboard/environment/list",
+						"params": {}
+					};
+					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
+						if (error) {
+							if (error.code === 600) {
+								currentScope.$parent.displayAlert('danger', "Login Failed !");
+								ngDataApi.logoutUser(currentScope);
+							}
+							else {
+								currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							return cb(false);
+						}
+						else {
+							$localStorage.environments = angular.copy(envs);
+							return cb(true);
+						}
+					});
+				});
+				
+			}
 		});
+		
+		
 	}
 	
 	return {

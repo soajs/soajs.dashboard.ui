@@ -368,27 +368,13 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				function getKeys() {
 					$localStorage.acl_access = null;
 					$localStorage.environments = null;
-					getSendDataFromServer($scope, ngDataApi, {
-						"method": "get",
-						"routeName": "/key/permission/get",
-						"params": { "main": false }
-					}, function (error, response) {
-						if (error) {
-							overlayLoading.hide();
-							ngDataApi.logoutUser($scope);
-							$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						else {
-							myUser.locked = response.locked || false;
-							$localStorage.soajs_user = myUser;
-							$cookies.put("soajs_username", myUser.username, { 'domain': interfaceDomain });
-							$cookies.put("soajs_dashboard_key", response.extKey, { 'domain': interfaceDomain });
-							myAccountAccess.getKeyPermissions($scope, function (result) {
-								if (result) {
-									$scope.$parent.$emit("loadUserInterface", {});
-									$scope.$parent.$emit('refreshWelcome', {});
-								}
-							});
+					$localStorage.soajs_user = myUser;
+					$cookies.put("soajs_username", myUser.username, { 'domain': interfaceDomain });
+
+					myAccountAccess.getKeyPermissions($scope, function (result) {
+						if (result) {
+							$scope.$parent.$emit("loadUserInterface", {});
+							$scope.$parent.$emit('refreshWelcome', {});
 						}
 					});
 				}

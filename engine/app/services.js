@@ -838,7 +838,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 	
 	function getKeyPermissions(currentScope, cb) {
 		
-		$localStorage.soajs_user = null;
 		$localStorage.environments = null;
 		$localStorage.acl_access = null;
 		$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });

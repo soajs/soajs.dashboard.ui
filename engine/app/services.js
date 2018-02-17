@@ -837,6 +837,12 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 	}
 	
 	function getKeyPermissions(currentScope, cb) {
+		
+		$localStorage.soajs_user = null;
+		$localStorage.environments = null;
+		$localStorage.acl_access = null;
+		$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/key/permission/get",
@@ -844,8 +850,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
-				ngDataApi.logoutUser($scope);
-				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				$localStorage.soajs_user.locked = response.locked || false;
@@ -858,7 +863,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					overlayLoading.hide();
 					if (error) {
 						ngDataApi.logoutUser(currentScope);
-						currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						return cb(false);
 					}
 					if (response.locked) {
@@ -877,11 +882,11 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
 						if (error) {
 							if (error.code === 600) {
-								currentScope.$parent.displayAlert('danger', "Login Failed !");
+								currentScope.displayAlert('danger', "Login Failed !");
 								ngDataApi.logoutUser(currentScope);
 							}
 							else {
-								currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 							}
 							return cb(false);
 						}

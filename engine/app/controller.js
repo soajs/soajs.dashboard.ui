@@ -746,10 +746,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				// 	$scope.$emit('refreshWelcome', {});
 				// }
 				// else
-				{
-					$localStorage.soajs_user = null;
-					$localStorage.environments = null;
-					$localStorage.acl_access = null;
+				//{
 					// if( cookie . soajs_project){} // set in local storage
 					myAccountAccess.getUser($scope, username, function (result) {
 						if (result) {
@@ -766,7 +763,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 							redirectToLogin($scope);
 						}
 					});
-				}
+				//}
 			}
 			else {
 				ngDataApi.logoutUser($scope);

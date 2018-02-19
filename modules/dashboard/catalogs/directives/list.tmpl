@@ -55,7 +55,7 @@
 							</div>
 						</div>
 						<div class="body">
-							<img ng-src="{{catalogImage}}" class="catalogIcon" width="32px" height="32px"/>
+							<img ng-src="{{catalogImage}}" width="32px" height="32px"/>
 							<label>{{recipe.type|capitalizeFirst}} Recipe</label>
 							<p>{{recipe.description}}</p>
 						</div>
@@ -89,7 +89,7 @@
 							</div>
 						</div>
 						<div class="body">
-							<img ng-src="{{catalogImage}}" class="catalogIcon" width="32px" height="32px"/>
+							<img ng-src="{{catalogImage}}"  width="32px" height="32px"/>
 							<label>{{recipe.type|capitalizeFirst}} Recipe</label>
 							<p>{{recipe.description}}</p>
 						</div>
@@ -129,7 +129,7 @@
 							<accordion close-others="false">
 								<accordion-group ng-repeat="(subtype, recipes) in recipeSubType">
 									<accordion-heading>{{subtype}}</accordion-heading>
-									<div ng-repeat="recipe in recipes | orderBy:'-v'" class="entryBox recipe-box" ng-class="{blueRecipeBox: !recipe.locked, greenRecipeBox: (recipe.subtype === 'soajs' && !recipe.locked)}">
+									<div ng-repeat="recipe in recipes | orderBy:'-v'" class="entryBox" ng-class="{blueRecipeBox: !recipe.locked, greenRecipeBox: (recipe.subtype === 'soajs' && !recipe.locked)}">
 										<div class="header" ng-class="{blueBoxHeader: !recipe.locked, greenBoxHeader: (recipe.subtype ==='soajs' && !recipe.locked)}">
 											{{recipe.name}}<span><em>( v:{{recipe.v}} )</em></span> <span ng-if="recipe.locked" class="icon icon-lock"></span>
 											<div class="rightActions" style="display:inline;">
@@ -145,9 +145,17 @@
 											</div>
 										</div>
 										<div class="body">
-											<img ng-src="{{catalogImage}}" class="catalogIcon" width="32px" height="32px"/>
-											<label>{{recipe.type|capitalizeFirst}} Recipe</label>
-											<p>{{recipe.description}}</p>
+											<table width="100%%">
+												<tr>
+													<td valign="middle" width="5%" align="center">
+														<img ng-src="{{catalogImage}}" width="32px" height="32px"/>
+													</td>
+													<td valign="middle" align="left">
+														<label>{{recipe.type|capitalizeFirst}} Recipe</label><br />
+														{{recipe.description}}
+													</td>
+												</tr>
+											</table>
 										</div>
 									</div>
 								</accordion-group>
@@ -187,7 +195,7 @@
 											</div>
 										</div>
 										<div class="body">
-											<img ng-src="{{catalogImage}}" class="catalogIcon" width="32px" height="32px"/>
+											<img ng-src="{{catalogImage}}"width="32px" height="32px"/>
 											<label>{{recipe.type|capitalizeFirst}} Recipe</label>
 											<p>{{recipe.description}}</p>
 										</div>
@@ -196,6 +204,10 @@
 							</accordion>
 						</tab>
 					</tabset>
+				</div>
+				<br /><br />
+				<div ng-if="!archives || archives.length === 0" class="alert ng-isolate-scope alert-warning">
+					<div ><span class="ng-scope">No Previous Versions added yet!</span></div>
 				</div>
 			</div>
 		</tab>

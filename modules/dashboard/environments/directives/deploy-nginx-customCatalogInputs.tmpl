@@ -39,8 +39,17 @@
 		<accordion-heading>Expose my Nginx to Port</accordion-heading>
 		<div>
 			<label>HTTP Port</label>
-			<input type="number" class="form-control" ng-model="form.formData.http" placeholder="80" ng-required="tempFormEntries.http.required"/>
+			<input ng-if = "wizard.deploy.selectedDriver !== 'kubernetes'" type="number" class="form-control" ng-model="form.formData.http" placeholder="80" ng-required="tempFormEntries.http.required"/>
+			<input ng-if = "wizard.deploy.selectedDriver === 'kubernetes'" type="number" class="form-control" ng-model="form.formData.http" placeholder="80" ng-required="tempFormEntries.http.required"  min="1" max="2767"/>
 			<div class="fieldMsg hint">Enter the port value to which the Nginx should be exposed to</div>
+			<div ng-if = "wizard.deploy.selectedDriver === 'kubernetes'">
+				<br>
+				<alert type="info">
+					Kubernetes Deployment Detected<br>
+					30000 will be added to the nginx exposed port value.
+				</alert>
+			</div>
+			
 			<br/>
 		</div>
 	</accordion-group>

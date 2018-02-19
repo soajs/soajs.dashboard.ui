@@ -12,15 +12,15 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 	if (Object.hasOwnProperty.call(opts, 'backdrop')) {
 		formConfig.backdrop = opts.backdrop;
 	}
-
+	
 	var m = ($modal && $modal !== null) ? true : false;
-
+	
 	buildForm($scope, m, formConfig, function () {
 		if (opts.postBuild && (typeof(opts.postBuild) === 'function')) {
 			opts.postBuild();
 		}
 	});
-
+	
 	if ($modal && $modal !== null) {
 		var formContext = $scope;
 		$scope.form.openForm = function () {
@@ -40,7 +40,7 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 					}
 				}
 			});
-
+			
 			newModal.result.then(function () {
 				//Get triggers when modal is closed
 			}, function () {
@@ -51,11 +51,11 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 			});
 		};
 		$scope.form.openForm();
-
+		
 		$scope.form.closeModal = function () {
 			$scope.modalInstance.close();
 		};
-
+		
 	}
 }
 
@@ -74,14 +74,14 @@ function buildForm(context, modal, configuration, cb) {
 		labels: {},
 		formData: {}
 	};
-
+	
 	context.form.closeNote = function () {
 		context.form.submitted = false;
 	};
 	context.form.closeAlert = function (i) {
 		context.form.alerts.splice(i, 1);
 	};
-
+	
 	context.form.displayAlert = function (type, msg, isCode, service, orgMesg) {
 		context.form.alerts = [];
 		if (isCode) {
@@ -90,10 +90,10 @@ function buildForm(context, modal, configuration, cb) {
 				msg = msgT;
 			}
 		}
-		context.form.alerts.push({'type': type, 'msg': msg});
+		context.form.alerts.push({ 'type': type, 'msg': msg });
 		context.form.closeAllAlerts();
 	};
-
+	
 	context.form.closeAllAlerts = function (instant) {
 		if (instant) {
 			context.form.alerts = [];
@@ -104,7 +104,7 @@ function buildForm(context, modal, configuration, cb) {
 			}, 7000);
 		}
 	};
-
+	
 	function rebuildData(fieldEntry, parentGroup) {
 		var keys = Object.keys(configuration.data);
 		for (var x = 0; x < keys.length; x++) {
@@ -112,19 +112,19 @@ function buildForm(context, modal, configuration, cb) {
 			if (fieldEntry.name === inputName) {
 				internalDataMap(fieldEntry, inputName);
 			}
-			else if (!Array.isArray(configuration.data[inputName]) && typeof(configuration.data[inputName]) === 'object' ){
-				for(let i in configuration.data[inputName]){
-					if(i === fieldEntry.name){
-						//fieldEntry.value = configuration.data[inputName][i];
+			else if (!Array.isArray(configuration.data[inputName]) && typeof(configuration.data[inputName]) === 'object') {
+				for (let i in configuration.data[inputName]) {
+					if (i === fieldEntry.name) {
+						fieldEntry.value = configuration.data[inputName][i];
 						context.form.formData[inputName + '.' + i] = configuration.data[inputName][i];
 					}
 				}
 			}
 		}
-
-		function internalDataMap(fieldEntry, inputName){
+		
+		function internalDataMap(fieldEntry, inputName) {
 			if (Array.isArray(fieldEntry.value)) {
-				for(let i=0; i < fieldEntry.value.length; i++){
+				for (let i = 0; i < fieldEntry.value.length; i++) {
 					let oneValue = fieldEntry.value[i];
 					if (Array.isArray(configuration.data[inputName])) {
 						if (configuration.data[inputName].indexOf(oneValue.v) !== -1) {
@@ -132,12 +132,12 @@ function buildForm(context, modal, configuration, cb) {
 							context.form.formData[inputName] = oneValue.v;
 							break;
 						}
-						else{
+						else {
 							delete oneValue.selected;
 						}
 					}
 					else {
-						if(fieldEntry.type === 'uiselect' && configuration.data[inputName] !== undefined && configuration.data[inputName] !== null){
+						if (fieldEntry.type === 'uiselect' && configuration.data[inputName] !== undefined && configuration.data[inputName] !== null) {
 							if (!Object.hasOwnProperty.call(configuration.data, inputName) || (oneValue.v.toString() === configuration.data[inputName].toString())) {
 								context.form.formData[inputName] = oneValue;
 								break;
@@ -149,7 +149,7 @@ function buildForm(context, modal, configuration, cb) {
 								context.form.formData[inputName] = oneValue.v;
 								break;
 							}
-							else{
+							else {
 								delete oneValue.selected;
 							}
 						}
@@ -164,11 +164,11 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	}
-
+	
 	function updateFormData(oneEntry, reload) {
 		if (!reload) {
 			if (oneEntry.value) {
-				if(oneEntry.type !== 'uiselect'){
+				if (oneEntry.type !== 'uiselect') {
 					if (Array.isArray(oneEntry.value)) {
 						context.form.formData[oneEntry.name] = [];
 						oneEntry.value.forEach(function (oneValue) {
@@ -187,7 +187,7 @@ function buildForm(context, modal, configuration, cb) {
 					context.form.formData[oneEntry.name] = oneEntry.value;
 				}
 			}
-
+			
 			if (['document', 'audio', 'image', 'video'].indexOf(oneEntry.type) !== -1) {
 				if (oneEntry.limit === undefined) {
 					oneEntry.limit = 0;
@@ -195,26 +195,26 @@ function buildForm(context, modal, configuration, cb) {
 				else if (oneEntry.limit === 0) {
 					oneEntry.addMore = true;
 				}
-
+				
 				if (oneEntry.value && Array.isArray(oneEntry.value) && oneEntry.value.length > 0) {
 					if (oneEntry.limit < oneEntry.value.length) {
 						oneEntry.limit = oneEntry.value.length;
 					}
 				}
 			}
-
+			
 			if (oneEntry.type === 'date-picker') {
 				if (typeof(oneEntry.min) === 'object') {
 					oneEntry.min = oneEntry.min.getTime();
 				}
-
+				
 				oneEntry.openDate = function ($event, index) {
 					$event.preventDefault();
 					$event.stopPropagation();
 					context.form.entries[index].opened = true;
 				};
 			}
-
+			
 			if (oneEntry.type === 'select') {
 				for (var x = 0; x < oneEntry.value.length; x++) {
 					if (oneEntry.value[x].selected) {
@@ -222,7 +222,7 @@ function buildForm(context, modal, configuration, cb) {
 						break;
 					}
 				}
-
+				
 				if (oneEntry.onChange && typeof(oneEntry.onChange.action) === 'function') {
 					oneEntry.action = oneEntry.onChange;
 				}
@@ -231,36 +231,36 @@ function buildForm(context, modal, configuration, cb) {
 				}
 			}
 		}
-
+		
 		if (oneEntry.type === 'jsoneditor') {
 			oneEntry.onLoad = function (_editor) {
 				oneEntry.editor = _editor;
 				_editor.$blockScrolling = Infinity;
-
-				if(!oneEntry.value){
+				
+				if (!oneEntry.value) {
 					oneEntry.value = {};
 				}
 				oneEntry.ngModel = JSON.stringify(oneEntry.value, null, 2);
 				_editor.setValue(JSON.stringify(oneEntry.value, null, 2));
-
+				
 				_editor.scrollToLine(0, true, true);
 				_editor.scrollPageUp();
 				_editor.clearSelection();
 				_editor.setShowPrintMargin(false);
-
+				
 				var heightUpdateFunction = function () {
 					var newHeight =
-					_editor.getSession().getScreenLength()
-					* _editor.renderer.lineHeight
-					+ _editor.renderer.scrollBar.getWidth() + 10;
-
+						_editor.getSession().getScreenLength()
+						* _editor.renderer.lineHeight
+						+ _editor.renderer.scrollBar.getWidth() + 10;
+					
 					if (oneEntry.fixedHeight) {
 						newHeight = parseInt(oneEntry.height);
 					}
-					else if(parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight){
+					else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
 						newHeight = parseInt(oneEntry.height);
 					}
-
+					
 					_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
 					_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
 					configuration.timeout(function () {
@@ -268,12 +268,12 @@ function buildForm(context, modal, configuration, cb) {
 						_editor.resize(true);
 					}, 5);
 				};
-
+				
 				context.form.timeout(function () {
 					oneEntry.editor.heightUpdate = heightUpdateFunction();
 					// Set initial size to match initial content
 					heightUpdateFunction();
-
+					
 					// Whenever a change happens inside the ACE editor, update
 					// the size again
 					_editor.getSession().on('change', heightUpdateFunction);
@@ -302,7 +302,7 @@ function buildForm(context, modal, configuration, cb) {
 		}
 		context.form.refData = configuration.data;
 	}
-
+	
 	context.form.refresh = function (reload) {
 		for (var i = 0; i < context.form.entries.length; i++) {
 			if (['group', 'accordion'].indexOf(context.form.entries[i].type) !== -1) {
@@ -323,15 +323,15 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.refresh(false);
-
+	
 	function assignListener(elementName) {
 		context.$watchCollection(elementName, function (newCol, oldCol) {
 			if (newCol && oldCol && newCol.length !== oldCol.length) {
 				context.form.refresh(true);
 			}
-
+			
 			if (oldCol && oldCol.length > 0) {
 				for (var i = 0; i < oldCol.length; i++) {
 					if (oldCol[i].type === 'group') {
@@ -341,9 +341,9 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		});
 	}
-
+	
 	assignListener('form.entries');
-
+	
 	context.form.do = function (functionObj) {
 		context.form.submitted = false;
 		var formDataKeys = Object.keys(context.form.formData);
@@ -381,8 +381,8 @@ function buildForm(context, modal, configuration, cb) {
 			functionObj.action();
 		}
 	};
-
-
+	
+	
 	context.form.callObj = function (functionObj) {
 		if (functionObj) {
 			if (functionObj.action) {
@@ -390,7 +390,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.call = function (action, id, data, form) {
 		if (action) {
 			if (typeof(action) == 'function') {
@@ -398,7 +398,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	function doValidateItems(entries, data) {
 		for (var i = 0; i < entries.length; i++) {
 			var oneEntry = entries[i];
@@ -423,7 +423,7 @@ function buildForm(context, modal, configuration, cb) {
 					data[oneEntry.name] = data[oneEntry.name][0];
 				}
 			}
-
+			
 			if (data[oneEntry.name] === 'false') {
 				data[oneEntry.name] = false;
 			}
@@ -438,13 +438,13 @@ function buildForm(context, modal, configuration, cb) {
 		}
 		return true;
 	}
-
+	
 	// testAction
 	context.form.itemsAreValid = function (data) {
 		var entries = context.form.entries;
 		return doValidateItems(entries, data);
 	};
-
+	
 	context.form.toggleSelectValues = function (fieldName, value) {
 		for (var i = 0; i < context.form.entries.length; i++) {
 			if (context.form.entries[i].name === fieldName) {
@@ -464,12 +464,12 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.toggleSelection = function (fieldName, value) {
 		if (!context.form.formData[fieldName]) {
 			context.form.formData[fieldName] = [];
 		}
-
+		
 		if (context.form.formData[fieldName].indexOf(value) === -1) {
 			context.form.formData[fieldName].push(value);
 		}
@@ -478,15 +478,15 @@ function buildForm(context, modal, configuration, cb) {
 			context.form.formData[fieldName].splice(idx, 1);
 		}
 	};
-
-	context.form.markSelected = function(entry) {
-		if(entry && entry.value && Array.isArray(entry.value)) {
-			if(!context.form.formData[entry.name]) {
+	
+	context.form.markSelected = function (entry) {
+		if (entry && entry.value && Array.isArray(entry.value)) {
+			if (!context.form.formData[entry.name]) {
 				for (var i = 0; i < entry.value.length; i++) {
-					if(entry.value[i].selected) {
+					if (entry.value[i].selected) {
 						context.form.formData[entry.name] = entry.value[i].v;
-						if(entry.onAction && typeof(entry.onAction) === 'function') {
-							context.form.call(entry.onAction, entry.name , context.form.formData[entry.name], context.form);
+						if (entry.onAction && typeof(entry.onAction) === 'function') {
+							context.form.call(entry.onAction, entry.name, context.form.formData[entry.name], context.form);
 						}
 						break;
 					}
@@ -494,7 +494,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.showHide = function (oneEntry) {
 		if (oneEntry.collapsed) {
 			oneEntry.collapsed = false;
@@ -505,7 +505,7 @@ function buildForm(context, modal, configuration, cb) {
 			oneEntry.icon = "plus";
 		}
 	};
-
+	
 	context.form.addNewInput = function (input) {
 		if (input.limit === 0) {
 			input.limit = 1;
@@ -513,7 +513,7 @@ function buildForm(context, modal, configuration, cb) {
 		input.limit++;
 		input.addMore = true;
 	};
-
+	
 	context.form.downloadFile = function (config, mediaType) {
 		var options = {
 			routeName: config.routeName,
@@ -525,7 +525,7 @@ function buildForm(context, modal, configuration, cb) {
 		getSendDataFromServer(context, configuration.ngDataApi, options, function (error, data) {
 			switch (mediaType) {
 				case 'image':
-					var blob = new Blob([data], {type: config.metadata.mime});
+					var blob = new Blob([data], { type: config.metadata.mime });
 					var URL = window.URL || window.webkitURL;
 					config.src = URL.createObjectURL(blob);
 					break;
@@ -535,7 +535,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		});
 	};
-
+	
 	context.form.removeFile = function (entry, i) {
 		getSendDataFromServer(context, configuration.ngDataApi, {
 			"method": "get",
@@ -553,7 +553,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		});
 	};
-
+	
 	context.form.uploadFileToUrl = function (Upload, config, cb) {
 		var options = {
 			url: apiConfiguration.domain + config.uploadUrl,
@@ -568,7 +568,7 @@ function buildForm(context, modal, configuration, cb) {
 				options.headers[i] = config.headers[i];
 			}
 		}
-
+		
 		Upload.upload(options).progress(function (evt) {
 			var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 			config.progress.value = progressPercentage;
@@ -583,7 +583,7 @@ function buildForm(context, modal, configuration, cb) {
 			return cb(new Error("Error Occured while uploading file: " + config.file));
 		});
 	};
-
+	
 	if (cb && (typeof(cb) == 'function')) {
 		context.form.timeout(function () {
 			cb();
@@ -611,7 +611,7 @@ soajsApp.directive('fileModel', ['$parse', function ($parse) {
 		link: function (scope, element, attrs) {
 			var model = $parse(attrs.fileModel);
 			var modelSetter = model.assign;
-
+			
 			element.bind('change', function () {
 				scope.$apply(function () {
 					modelSetter(scope, element[0].files[0]);
@@ -627,7 +627,7 @@ soajsApp.directive('fileModelMulti', ['$parse', function ($parse) {
 		link: function (scope, element, attrs) {
 			var model = $parse(attrs.fileModelMulti);
 			var modelSetter = model.assign;
-
+			
 			element.bind('change', function () {
 				scope.$apply(function () {
 					modelSetter(scope, element[0].files);

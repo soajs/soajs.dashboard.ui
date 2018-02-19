@@ -1473,7 +1473,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			method: 'get',
 			routeName: '/dashboard/catalog/recipes/list'
 		}, function (error, recipes) {
-			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}

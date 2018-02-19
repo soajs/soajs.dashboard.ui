@@ -115,7 +115,7 @@ function buildForm(context, modal, configuration, cb) {
 			else if (!Array.isArray(configuration.data[inputName]) && typeof(configuration.data[inputName]) === 'object' ){
 				for(let i in configuration.data[inputName]){
 					if(i === fieldEntry.name){
-						//fieldEntry.value = configuration.data[inputName][i];
+						fieldEntry.value = configuration.data[inputName][i];
 						context.form.formData[inputName + '.' + i] = configuration.data[inputName][i];
 					}
 				}

@@ -62,7 +62,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			mainType
 		};
 		
-		let switchTo; // if the converstion was successfull, switch
+		let switchTo; // if the conversion was successful, switch
 		
 		if ($scope.tempo.switchView[ep._id] === 'swagger') {
 			switchTo = 'imfv';
@@ -79,16 +79,33 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			"method": "post",
 			"routeName": routeName,
 			"params": {},
-			 data: bodyParams
+			data: bodyParams
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+				if (error.code === 852 || error.code === 853) {
+					var currentScope = $scope;
+					$modal.open({
+						templateUrl: 'validationWarning.tmpl',
+						size: 'm',
+						backdrop: 'static',
+						keyboard: false,
+						controller: function ($scope, $modalInstance) {
+							fixBackDrop();
+							$scope.errorDescrition = error.message;
+							$scope.cancel = function () {
+								$modalInstance.close();
+							};
+						}
+					});
+				} else {
+					$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+				}
 			} else {
 				$scope.tempo.switchView[ep._id] = switchTo;
-				if(response.data){
+				if (response.data) {
 					ep.swaggerInput = response.data;
-				}else{
+				} else {
 					ep.schema = response.schema;
 					$scope.setInitialImfv(ep);
 				}

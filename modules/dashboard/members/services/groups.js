@@ -139,6 +139,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 	function editGroup(currentScope, groupsConfig, data, useCookie) {
 		var config = angular.copy(groupsConfig.form);
 		config.entries[0].type = 'readonly';
+		delete data.tenant;
 		var options = {
 			timeout: $timeout,
 			form: config,

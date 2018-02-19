@@ -751,7 +751,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 										$scope.enableInterface = true;
 										$scope.$emit('refreshWelcome', {});
 										overlayLoading.hide();
-									}, 150);
+									}, 1000);
 								}
 							});
 						} else {

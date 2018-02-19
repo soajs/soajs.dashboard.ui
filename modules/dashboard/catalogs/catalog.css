@@ -10,10 +10,6 @@
     margin-bottom: 0;
 }
 
-.catalogIcon {
-    margin: 1% !important;
-    float: left;
-}
 
 .blueRecipeBox {
     border: solid 1px #337ab7 !important;
@@ -38,7 +34,7 @@
 }
 
 #page .catalogAppCtrl div.entryBoxes div.entryBox, .entryOneBox {
-    height: 116px;
+    height: 96px;
 }
 
 #page .catalogAppCtrl div.entryBoxes div.entryBox, .entryOneBox .body {

@@ -49,7 +49,7 @@
 		</tab>
 		<tab heading="Recipes" ng-click="listUniqueProviders()" ng-show="access.providers">
 			<br />
-			<div ng-show="!providers || Object.keys(providers).length === 0">
+			<div ng-show="!providers || ObjectKeys(providers).length === 0">
 				<alert type="warning">Did not Find any Providers Configured. Please Integrate with at least one provider in the previous tab before you can proceed.</alert>
 			</div>
 			<!--<div ng-show="providers && Object.keys(providers).length > 0">-->

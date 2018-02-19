@@ -291,6 +291,8 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				$scope.displayAlert('danger', error.message);
 			} else {
 				$scope.providers = angular.copy(response);
+				//angular doesn't allow referencing Object prototype
+				$scope.ObjectKeys = Object.keys;
 				delete $scope.providers.soajsauth;
 			}
 		});

@@ -378,11 +378,13 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				$scope.deleteEnv = row.code.toUpperCase();
 				fixBackDrop();
 				$scope.confirmDeleteProductsAndTenants = function (flag) {
+					overlayLoading.show();
 					deletePortalProductsAndTenants($scope, function (error) {
 						if (error) {
 							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
 						deleteEnvironment($scope, flag, function (error, response) {
+							overlayLoading.hide();
 							if (error) {
 								$scope.deleteEnvError = error.message;
 							}
@@ -405,7 +407,9 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				};
 				
 				$scope.onlyDeleteEnv = function (flag) {
+					overlayLoading.show();
 					deleteEnvironment($scope, flag, function (error, response) {
+						overlayLoading.hide();
 						if (error) {
 							$scope.deleteEnvError = error.message;
 						} else {

@@ -96,7 +96,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 		var yaml = currentScope.schemaCode.trim();
 		
 		if(yaml === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'No YAML Code Found');
+			currentScope.onGenerateError = "172: No YAML Code Found";
 			return false;
 		}
 		
@@ -105,7 +105,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			serviceName = currentScope.form.formData.serviceName.trim();
 		}
 		if(serviceName === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'Missing required field : service name');
+			currentScope.onGenerateError = "172: Missing required field : service name";
 			return false;
 		}
 		
@@ -114,7 +114,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			serviceGroup = currentScope.form.formData.serviceGroup.trim();
 		}
 		if(serviceGroup === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'Missing required field : service group');
+			currentScope.onGenerateError = "172: Missing required field : service group";
 			return false;
 		}
 		
@@ -123,7 +123,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			servicePort = currentScope.form.formData.servicePort;
 		}
 		if(servicePort === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'Missing required field : service port');
+			currentScope.onGenerateError = "172: Missing required field : service port";
 			return false;
 		}
 		
@@ -132,7 +132,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			serviceVersion = currentScope.form.formData.serviceVersion;
 		}
 		if(serviceVersion === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'Missing required field : service version');
+			currentScope.onGenerateError = "172: Missing required field : service version";
 			return false;
 		}
 		
@@ -141,7 +141,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			requestTimeout = currentScope.form.formData.requestTimeout;
 		}
 		if(requestTimeout === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'Missing required field : requestTimeout');
+			currentScope.onGenerateError = "172: Missing required field : requestTimeout";
 			return false;
 		}
 		
@@ -150,7 +150,7 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			requestTimeoutRenewal = currentScope.form.formData.requestTimeoutRenewal;
 		}
 		if(requestTimeoutRenewal === ''){
-			currentScope.$parent.displayAlert('danger', 172, true, 'dashboard', 'Missing required field : requestTimeoutRenewal');
+			currentScope.onGenerateError = "172: Missing required field : requestTimeoutRenewal";
 			return false;
 		}
 		
@@ -186,9 +186,10 @@ swaggerEditorSrv.service('swaggerEditorSrv',['$timeout', 'ngDataApi', '$window',
 			options["data"]['data']['service']["dbs"]= dbs;
 		}
 		
+		currentScope.onGenerateError = '';
 		getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
 			if (error) {
-				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				currentScope.onGenerateError = `${error.message}`;
 			}
 			else {
 				openSaveAsDialog(currentScope.form.formData.serviceName + ".zip", response, "application/zip");

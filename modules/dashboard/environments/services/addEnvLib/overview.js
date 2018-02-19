@@ -243,16 +243,16 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 						$scope.form.actions = getFormActions($scope, 3);
 					}
 					else {
+						for (let section in response) {
+							if (response[section].exception) {
+								$scope.statusType = "warning";
+								$scope.statusMsg = response[section].exception.code + ":" + response[section].exception.msg;
+								$scope.status[section].exception = $scope.statusMsg;
+							}
+						}
+						
 						if ($scope.overall) {
 							$scope.progressCounter = $scope.maxCounter;
-							
-							for (let section in response) {
-								if (response[section].exception) {
-									$scope.statusType = "warning";
-									$scope.statusMsg = response[section].exception.code + ":" + response[section].exception.msg;
-									$scope.status[section].exception = $scope.statusMsg;
-								}
-							}
 							$scope.form.actions = getFormActions($scope, 2);
 						}
 						else {

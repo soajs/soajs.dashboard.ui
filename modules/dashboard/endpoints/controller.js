@@ -1241,7 +1241,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}
 		
 		$scope.tempo.swagger[endpoint._id].schemaCodeF = endpoint.swaggerInput;
-		console.log($scope.tempo.swagger);
 		watchSwaggerSimulator(function () {
 			console.log("swagger ui info has been updated");
 		});

@@ -308,3 +308,8 @@ function objectIsEnv(obj) {
 	}
 	return false;
 }
+
+function redirectToLogin(scope) {
+	scope.enableInterface = false;
+	scope.go("/login");
+}

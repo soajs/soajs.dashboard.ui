@@ -313,7 +313,10 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                                 fixBackDrop();
 
                                                 $scope.title = translation.repoActivationFailed[LANG];
-                                                $scope.error = error.message + "<br>" + outerScope.referToDoc;
+                                                $scope.error = error.message;
+                                                if($scope.error.indexOf("Error[999]") === -1){
+                                                    $scope.error += "<br>" + outerScope.referToDoc;
+                                                }
                                                 $scope.ok = function () {
                                                     errorDisplay.close();
                                                 }

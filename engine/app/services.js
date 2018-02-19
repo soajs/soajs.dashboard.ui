@@ -12,6 +12,8 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
 		$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
 		$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
+		$cookies.remove("soajs_dashboard_login", { 'domain': interfaceDomain });
+		
 		$localStorage.soajs_user = null;
 		$localStorage.acl_access = null;
 		$localStorage.environments = null;
@@ -210,9 +212,9 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		if (access_token && config.token) {
 			config.params.access_token = access_token;
 		}
-		var project = $cookies.get('project', { 'domain': interfaceDomain });
+		var project = $cookies.get('soajs_project', { 'domain': interfaceDomain });
 		if (project) {
-			config.params.project = project;
+			config.params.soajs_project = project;
 		}
 		
 		if (opts.proxy) {
@@ -810,6 +812,9 @@ soajsApp.service("aclDrawHelpers", function () {
 soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	
 	function getUser(currentScope, username, cb) {
+		if ($localStorage.soajs_user && $localStorage.soajs_user.username !== username) {
+			$localStorage.soajs_user = null;
+		}
 		var apiParams = {
 			"method": "get",
 			"routeName": "/urac/account/getUser",
@@ -825,46 +830,75 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				return cb(false);
 			}
 			else {
-				$localStorage.soajs_user = response;
+				if (!$localStorage.soajs_user) {
+					$localStorage.soajs_user = response;
+				}
 				return cb(true);
 			}
 		});
 	}
 	
 	function getKeyPermissions(currentScope, cb) {
+		
+		$localStorage.environments = null;
+		$localStorage.acl_access = null;
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/key/permission/get"
+			"routeName": "/key/permission/get",
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
-				ngDataApi.logoutUser(currentScope);
-				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
 			}
-			$localStorage.acl_access = response.acl;
-			$localStorage.environments = response.environments;
-			var options = {
-				"method": "get",
-				"routeName": "/dashboard/environment/list",
-				"params": {}
-			};
-			getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
-				if (error) {
-					if (error.code === 600) {
-						currentScope.$parent.displayAlert('danger', "Login Failed !");
-						ngDataApi.logoutUser(currentScope);
+			else {
+				$localStorage.soajs_user.locked = response.locked || false;
+				$cookies.put("soajs_dashboard_key", response.extKey, { 'domain': interfaceDomain });
+				
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "get",
+					"routeName": "/key/permission/get"
+				}, function (error, response) {
+					if (error) {
+						overlayLoading.hide();
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						return cb(false);
 					}
-					else {
-						currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					if (response.locked) {
+						if ($localStorage.soajs_user) {
+							$localStorage.soajs_user.locked = response.locked;
+						}
 					}
-					return cb(false);
-				}
-				else {
-					$localStorage.environments = angular.copy(response);
-					return cb(true);
-				}
-			});
+					
+					$localStorage.acl_access = response.acl;
+					$localStorage.environments = response.environments;
+					var options = {
+						"method": "get",
+						"routeName": "/dashboard/environment/list",
+						"params": {}
+					};
+					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
+						if (error) {
+							overlayLoading.hide();
+							if (error.code === 600) {
+								currentScope.displayAlert('danger', "Login Failed !");
+							}
+							else {
+								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							}
+							return cb(false);
+						}
+						else {
+							overlayLoading.hide();
+							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+							$localStorage.environments = angular.copy(envs);
+							return cb(true);
+						}
+					});
+				});
+				
+			}
 		});
 	}
 	

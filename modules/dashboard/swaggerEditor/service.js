@@ -327,33 +327,35 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 				if (entry.type === 'group') {
 					entry.entries = [];
 					count = 0;
-					currentScope.form.formData[entry.name].forEach(function (eachSavedRecord) {
-						let dbs = angular.copy(dbForm.db);
-						
-						dbs.forEach(function (eachDb) {
-							let name = eachDb.name.substring(0, eachDb.name.indexOf('%count%'));
-							eachDb.name = eachDb.name.replace('%count%', count);
+					if(currentScope.form.formData[entry.name]){
+						currentScope.form.formData[entry.name].forEach(function (eachSavedRecord) {
+							let dbs = angular.copy(dbForm.db);
 							
-							if (eachDb.type === 'text' || eachDb.type === 'number') {
-								eachDb.value = eachSavedRecord[name];
-							}
-							
-							if (eachDb.type === 'select') { // model
-								eachDb.value.forEach(function (eachValue) {
-									eachValue.selected = eachSavedRecord.hasOwnProperty(eachValue.v);
-								});
-							}
-							
-							if (eachDb.type === 'radio') { // multitenant
-								eachDb.value.forEach(function (eachValue) {
-									eachValue.selected = (String(eachSavedRecord.hasOwnProperty(name)) === String(eachValue.v));
-								});
-							}
-							
-							entry.entries.push(eachDb);
+							dbs.forEach(function (eachDb) {
+								let name = eachDb.name.substring(0, eachDb.name.indexOf('%count%'));
+								eachDb.name = eachDb.name.replace('%count%', count);
+								
+								if (eachDb.type === 'text' || eachDb.type === 'number') {
+									eachDb.value = eachSavedRecord[name];
+								}
+								
+								if (eachDb.type === 'select') { // model
+									eachDb.value.forEach(function (eachValue) {
+										eachValue.selected = eachSavedRecord.hasOwnProperty(eachValue.v);
+									});
+								}
+								
+								if (eachDb.type === 'radio') { // multitenant
+									eachDb.value.forEach(function (eachValue) {
+										eachValue.selected = (String(eachSavedRecord.hasOwnProperty(name)) === String(eachValue.v));
+									});
+								}
+								
+								entry.entries.push(eachDb);
+							});
+							count++;
 						});
-						count++;
-					});
+					}
 				}
 			}
 		});

@@ -91,7 +91,7 @@
 	</script>
 	
 	<tabset>
-		<tab ng-repeat="mainType in ['services','endpoints']" heading="{{mainType}}">
+		<tab ng-repeat="mainType in ['services']" heading="{{mainType}}">
 			
 			<div class="entryBoxes" ng-show="grid.rows">
 				<div ng-if="access.listEndpoints">
@@ -100,8 +100,7 @@
 					</a>
 					<a href="" ng-click="addNewEndpoint(mainType)" class="btn btn-primary f-right commonButtonsClass">
 						<span class="icon icon-plus" tooltip="Add Endpoint"></span>
-						<span ng-if="mainType==='endpoints'">Add new Endpoint</span>
-						<span ng-if="mainType!=='endpoints'">Add new Service</span>
+						<span>Add new Service</span>
 					</a>
 					<br/><br/>
 				</div>
@@ -128,7 +127,7 @@
 								
 								</td>
 								
-								<td ng-if="mainType==='services'">
+								<td>
 									<span class='blue'><span class='icon icon-download2' title='Edit' ng-click="onDownloadEndpoint(mainType, endpoint)"></span></span>
 								</td>
 								
@@ -180,19 +179,11 @@
 											<li class="blueLi" ng-repeat="(routeKey,routeObj) in schemaObj" class="row-list">
 												
 												<fieldset>
-													<legend ng-if="mainType==='endpoints'">
-														Api : {{routeKey}}
-														<span class='blue'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
-														- Authentication :
-														{{(routeObj._authorization &&
-														routeObj._authorization!=='')?routeObj._authorization:endpoint.defaultAuthentication+'(Default)'}}
-														<span class='blue'><span class='icon icon-lock buttonHover' title='Edit' ng-click="onUpdateResources(mainType,endpoint.serviceName,routeObj._authorization,endpoint._id,schemaKey,routeKey)"></span></span>
-													</legend>
 													<legend style="float:right;">
 														<span class='blue'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
 													
-													<legend ng-if="mainType!=='endpoints'">
+													<legend>
 														Api : {{routeKey}}
 														<span class='blue'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>

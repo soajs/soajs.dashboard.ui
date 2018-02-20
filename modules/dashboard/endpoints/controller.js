@@ -115,11 +115,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onEditEndpoint = function (mainType, id) {
-		if(mainType === 'services'){
-			$scope.$parent.go("#/swaggerEditor/" + id);
-		}else{
-			$scope.$parent.go("#/endpoints/addEditEndpoint/" + id);
-		}
+		$scope.$parent.go("#/swaggerEditor/" + id);
 	};
 	
 	$scope.onEnableEdit = function (endpointId, schemaKey, routeKey) {
@@ -231,10 +227,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		let schemas = {};
 		let swaggerInput = '';
 		
-		if($scope.tempo.switchView[endpoint._id] === 'swagger'){
+		if ($scope.tempo.switchView[endpoint._id] === 'swagger') {
 			schemas = null;
 			swaggerInput = endpoint.swaggerInput;
-		}else{
+		} else {
 			// todo: reconsider commonFields clean up algorithm
 			swaggerInput = null;
 			schemas = angular.copy(endpoint.schema);
@@ -895,7 +891,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.cleanImfv = function (imfv) {
 		let customImfv = imfv.custom;
-		if(customImfv){
+		if (customImfv) {
 			let mainInputs = Object.keys(customImfv);
 			mainInputs.forEach(function (each) {
 				$scope.recursiveCleanImfv(customImfv[each]);
@@ -904,7 +900,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 		// todo : i think should be done one time only!
 		let commonImfv = imfv.tempoCommonFields;
-		if(commonImfv){
+		if (commonImfv) {
 			let mainCommonInputs = Object.keys(commonImfv);
 			mainCommonInputs.forEach(function (each) {
 				$scope.recursiveCleanImfv(commonImfv[each]);
@@ -920,11 +916,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.addNewEndpoint = function (mainType) {
-		if (mainType === 'services') {
-			$scope.$parent.go("#/swaggerEditor/new");
-		} else {
-			$scope.$parent.go("#/endpoints/addEditEndpoint/new");
-		}
+		$scope.$parent.go("#/swaggerEditor/new");
 	};
 	
 	$scope.setActiveTab = function (schemaTab) {
@@ -944,76 +936,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		delete endpoint.schema[schemaKey][routeKey];
 	};
 	
-	$scope.onUpdateResources = function (mainType, serviceName, authUsed, endpointId, schemaKey, routeKey) {
-		
-		var currentScope = $scope;
-		$modal.open({
-			templateUrl: "updateResources.tmpl",
-			size: 'lg',
-			backdrop: true,
-			keyboard: true,
-			controller: function ($scope, $modalInstance) {
-				$scope.title = 'Update authentication';
-				$scope.availableResources = currentScope.tempo.selectedResources[serviceName];
-				
-				$scope.availableResources.forEach(function (each) {
-					each.isSelected = each.name === authUsed;
-				});
-				
-				$scope.selectResource = function (index) {
-					$scope.availableResources.forEach(function (each, currentIndex) {
-						if(index === currentIndex){
-							if(each.isSelected){
-								each.isSelected = false; // deselect if previously selected
-							}else{
-								each.isSelected = true;
-							}
-						}else{
-							each.isSelected = false;
-						}
-					});
-				};
-				
-				$scope.onSubmit = function () {
-					
-					let authenticationSelected;
-					for (var i = 0; i < $scope.availableResources.length; i++) {
-						if ($scope.availableResources[i].isSelected) {
-							authenticationSelected = $scope.availableResources[i].name;
-						}
-					}
-					
-					overlayLoading.show();
-					getSendDataFromServer($scope, ngDataApi, {
-						"method": "post",
-						"routeName": "/dashboard/apiBuilder/authentication/update",
-						"data": {
-							mainType,
-							"endpointId": endpointId,
-							"schemaKey": schemaKey,
-							"routeKey": routeKey,
-							"authentication": authenticationSelected
-						}
-					}, function (error, response) {
-						overlayLoading.hide();
-						$modalInstance.close();
-						if (error) {
-							$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
-						}
-						else {
-							currentScope.displayAlert('success', 'Authentication updated successfully');
-							currentScope.listEndpoints('endpoints');
-						}
-					});
-				};
-				
-				$scope.closeModal = function () {
-					$modalInstance.close();
-				};
-			}
-		});
-	};
-	
 	/**
 	 * applicable for services only
 	 *
@@ -1029,7 +951,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			},
 			"responseType": 'arraybuffer',
 			"params": {
-				id : endpoint._id
+				id: endpoint._id
 			}
 		};
 		
@@ -1257,7 +1179,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	if ($scope.access.listEndpoints) {
 		injectFiles.injectCss("modules/dashboard/endpoints/endpoints.css");
-		$scope.listEndpoints('endpoints');
 		$scope.listEndpoints('services');
 	}
 }]);

@@ -441,27 +441,6 @@ var endpointsNav = [
 		'order': 3,
 		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/controller.js'],
 		'ancestor': [translation.home[LANG]]
-	},
-	{
-		'id': 'add-endpoints',
-		'label': translation.endpoints[LANG],
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/endpoints/addEditEndpoint',
-			'method': 'post'
-		},
-		'url': '#/endpoints/addEditEndpoint/:id',
-		'tplPath': 'modules/dashboard/endpoints/directives/addEditEndpoint.tmpl',
-		'icon': 'cloud',
-		'pillar': {
-			'name': 'development',
-			'label': translation.develop[LANG],
-			'position': 1
-		},
-		'tracker': true,
-		'order': 3,
-		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditEndpoint.js'],
-		'ancestor': [translation.home[LANG]]
 	}
 ];
 navigation = navigation.concat(endpointsNav);

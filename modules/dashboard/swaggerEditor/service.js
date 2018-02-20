@@ -247,7 +247,6 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 					currentScope.onGenerateError = `${error.message}`;
 				}
 				else {
-					openSaveAsDialog(currentScope.form.formData.serviceName + ".zip", response, "application/zip");
 					currentScope.$parent.go("/endpoints");
 				}
 			});

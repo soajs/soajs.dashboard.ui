@@ -471,8 +471,8 @@ soajsApp.service("aclDrawHelpers", function () {
 	function groupApisForDisplay(apisArray, apiGroupName) {
 		var result = {};
 		var defaultGroupName = 'General';
-		var len = apisArray.length;
-		if (len == 0) {
+		var len = (apisArray) ? apisArray.length : 0;
+		if (len === 0) {
 			return result;
 		}
 		for (var i = 0; i < len; i++) {

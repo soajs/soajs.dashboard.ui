@@ -8,7 +8,7 @@ var swaggerEditorNav = [
 			'service': 'dashboard',
 			'route': '/swagger/generate'
 		},
-		'url': '#/swaggerEditor',
+		'url': '#/swaggerEditor/:id',
 		'tplPath': 'modules/dashboard/swaggerEditor/directives/swaggerEditor.tmpl',
 		'icon': 'magic-wand',
 		'pillar': {

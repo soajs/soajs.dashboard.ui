@@ -5,7 +5,6 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 	$scope.mainEndpoint = {};
 	
 	$scope.getEndpoint = function (_id) {
-		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/apiBuilder/get",
@@ -23,7 +22,6 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 				$scope.getAvailableResourcesAndMatchIfOnEdit(true);
 			}
 		});
-		
 	};
 	
 	$scope.getAvailableResourcesAndMatchIfOnEdit = function (onEdit) {

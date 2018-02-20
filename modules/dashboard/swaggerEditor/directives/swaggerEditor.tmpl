@@ -54,7 +54,7 @@
 				<ngform></ngform>
 			</div>
 		</tab>
-		<tab heading="Swagger Documentation" ng-click="fillDefaultEditor()"> 
+		<tab heading="Swagger Documentation" ng-click="fillDefaultEditor()"ng-if="mode === 'add'"> 
 			<br>
 			<div class="c-both w100 table">
 				<h4 class="f-left">Swagger Editor</h4>
@@ -96,8 +96,9 @@
 	
 	<div class="w100 c-both text-center">
 		<br /><hr /><br />
+		<input type="button" value="Save Service" ng-click="saveService()" class="btn btn-primary"/>
 		<input type="button" value="Generate Service" disabled class="btn btn-primary" ng-show="!swaggerCode"/>
 		<input type="button" value="Generate Service" ng-click="GenerateService()" class="btn btn-primary" ng-show="swaggerCode && !isSafari"/>
-		<input type="button" value="Cancel" ng-click="goBackToApiBuilder()" class="btn btn-primary"/>
+		<input type="button" value="Cancel" ng-click="goBackToApiBuilder()" class="btn btn-danger"/>
 	</div>
 </section>

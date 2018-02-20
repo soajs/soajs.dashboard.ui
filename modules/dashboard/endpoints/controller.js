@@ -115,7 +115,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onEditEndpoint = function (mainType, id) {
-		$scope.$parent.go("#/endpoints/addEditEndpoint/" + id);
+		if(mainType === 'services'){
+			$scope.$parent.go("#/swaggerEditor/" + id);
+		}else{
+			$scope.$parent.go("#/endpoints/addEditEndpoint/" + id);
+		}
 	};
 	
 	$scope.onEnableEdit = function (endpointId, schemaKey, routeKey) {
@@ -917,7 +921,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.addNewEndpoint = function (mainType) {
 		if (mainType === 'services') {
-			$scope.$parent.go("#/swaggerEditor");
+			$scope.$parent.go("#/swaggerEditor/new");
 		} else {
 			$scope.$parent.go("#/endpoints/addEditEndpoint/new");
 		}

@@ -103,7 +103,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 
 	$scope.arrGroupByField = function (arr, f, version) {
 		var result = { groups: {} };
-		var l = arr.length;
+		var l = (arr) ? arr.length: 0;
 		var g = 'General';
 		for (var i = 0; i < l; i++) {
 			if (arr[i][f]) {

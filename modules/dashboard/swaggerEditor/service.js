@@ -261,7 +261,7 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 	function buildSwaggerForm(currentScope) {
 		
 		var count = 0;
-		var infoForm = swaggerEditorConfig.form;
+		var infoForm = angular.copy(swaggerEditorConfig.form);
 		infoForm.timeout = $timeout;
 		
 		infoForm.entries.forEach(function (entry) {

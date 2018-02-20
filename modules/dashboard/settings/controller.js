@@ -834,7 +834,8 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			else {
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
-					
+				}
+				if (typeof response === "object") {
 					var apps = $scope.tenant.applications;
 					for (var j = 0; j < apps.length; j++) {
 						if (apps[j].appId === appId) {

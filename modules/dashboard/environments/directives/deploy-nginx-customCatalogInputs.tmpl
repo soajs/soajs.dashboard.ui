@@ -45,11 +45,10 @@
 			<div ng-if = "wizard.deploy.selectedDriver === 'kubernetes'">
 				<br>
 				<alert type="info">
-					Kubernetes Deployment Detected<br>
-					30000 will be added to the nginx exposed port value.
+					The deployer will automatically add a value of 30000 to the port value you enter because you have selected Kubernetes as a deployment platform.<br>
+					The allowed port values you can use in this case are restricted between 1 and 2767.
 				</alert>
 			</div>
-			
 			<br/>
 		</div>
 	</accordion-group>
@@ -63,11 +62,17 @@
 			<br/>
 		</div>
 		<div ng-show="form.formData.ssl">
-			
 			<div>
 				<label>HTTPS Port</label>
-				<input type="number" class="form-control" ng-model="form.formData.https" placeholder="443" ng-required="tempFormEntries.https.required"/>
+				<input ng-if = "wizard.deploy.selectedDriver !== 'kubernetes'" type="number" class="form-control" ng-model="form.formData.https" placeholder="443" ng-required="tempFormEntries.https.required"/>
+				<input ng-if = "wizard.deploy.selectedDriver === 'kubernetes'" type="number" class="form-control" ng-model="form.formData.https" placeholder="443" ng-required="tempFormEntries.https.required"  min="1" max="2767"/>
 				<div class="fieldMsg hint">Enter the secured port value to which the Nginx should be exposed to</div>
+				<div ng-if = "wizard.deploy.selectedDriver === 'kubernetes'">
+					<alert type="info">
+						The deployer will automatically add a value of 30000 to the port value you enter because you have selected Kubernetes as a deployment platform.<br>
+						The allowed port values you can use in this case are restricted between 1 and 2767.
+					</alert>
+				</div>
 				<br/>
 			</div>
 			

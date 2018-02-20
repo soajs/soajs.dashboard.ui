@@ -102,7 +102,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 
 								repoComponents.forEach(function(oneRepoComponent){
 									currentScope.originalServices.forEach(function (oneService) {
-										if (oneService.src.repo === oneRepoComponent.name) {
+										if (oneService.src && oneService.src.repo === oneRepoComponent.name) {
 											oneService.type = 'service';
 											oneRepoComponent.servicesList.push(oneService);
 										}

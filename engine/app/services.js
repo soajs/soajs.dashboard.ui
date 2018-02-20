@@ -82,7 +82,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 	
 	function returnAPIError(scope, opts, status, headers, errData, config, cb) {
 		//try to get a new access token from the refresh
-		if (errData && errData.errors.details[0].code === 401 && ["The access token provided is invalid.", "The access token provided has expired."].indexOf(errData.errors.details[0].message) !== -1) {
+		if (errData && errData.errors && errData.errors.details[0].code === 401 && ["The access token provided is invalid.", "The access token provided has expired."].indexOf(errData.errors.details[0].message) !== -1) {
 			revalidateTokens(scope, config, cb);
 		}
 		else {
@@ -471,8 +471,8 @@ soajsApp.service("aclDrawHelpers", function () {
 	function groupApisForDisplay(apisArray, apiGroupName) {
 		var result = {};
 		var defaultGroupName = 'General';
-		var len = apisArray.length;
-		if (len == 0) {
+		var len = (apisArray) ? apisArray.length : 0;
+		if (len === 0) {
 			return result;
 		}
 		for (var i = 0; i < len; i++) {
@@ -1130,7 +1130,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 	 * Send API explorer request
 	 */
 	this.send = function (swagger, operation, values) {
-		if ($location.path() === "/swaggerEditor") {
+		if( ['/swaggerEditor', '/endpoints'].indexOf($location.path()) !== -1){
 			var oldParams = angular.copy(operation.parameters);
 			var oldValues = angular.copy(values);
 			

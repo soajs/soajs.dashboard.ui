@@ -385,8 +385,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					delete formData.kubernetes;
 					delete formData.deployment.kubernetes;
 					formData.selectedDriver = 'docker';
-					$scope.form.formData.deployment.docker.dockerremote = true;
-					
+					formData.deployment.docker.dockerremote = true;
 					if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
 						$window.alert("Provide the information on how to connect to docker on your remote machine.");
 						return false;
@@ -403,8 +402,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					delete formData.docker;
 					delete formData.deployment.docker;
 					formData.selectedDriver = 'kubernetes';
-					$scope.form.formData.deployment.kubernetes.kubernetesremote = true;
-					
+					formData.deployment.kubernetes.kubernetesremote = true;
 					if (!formData.deployment.kubernetes.nginxDeployType || !formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
 						$window.alert("Provide the information on how to connect to kubernetes on your remote machine.");
 						return false;

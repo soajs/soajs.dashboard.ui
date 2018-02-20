@@ -48,6 +48,9 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 								if (response.records[x].versions[k]) {
 									var listEntry = $scope.arrGroupByField(response.records[x].versions[k].apis, 'group', k);
 									listEntry.settings = $scope.addServiceSettings(response.records[x].versions[k]);
+									if(Object.keys(listEntry.groups).length === 0){
+										delete listEntry.groups;
+									}
 									response.records[x].fixList.push(listEntry);
 								}
 							}
@@ -103,7 +106,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 
 	$scope.arrGroupByField = function (arr, f, version) {
 		var result = { groups: {} };
-		var l = arr.length;
+		var l = (arr) ? arr.length: 0;
 		var g = 'General';
 		for (var i = 0; i < l; i++) {
 			if (arr[i][f]) {

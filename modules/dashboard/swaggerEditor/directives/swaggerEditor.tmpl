@@ -47,13 +47,14 @@
 	<a href="" class="tooltipToggle f-right" ng-click="hideShowToolTip()">
 		<span class="icon" ng-class="{'icon-circle-down': hideToolTip, 'icon-circle-up': !hideToolTip }" tooltip="Click to Hide/Show the tooltip"></span>
 	</a>
+	<div class="clearfix">
 	<tabset ng-if="access.generate" class="swaggerEditor"> 
 		<tab heading="Service Information">  <br>
 			<div class='form'>
 				<ngform></ngform>
 			</div>
 		</tab>
-		<tab heading="Swagger Documentation" ng-click="fillDefaultEditor()"> 
+		<tab heading="Swagger Documentation" ng-click="fillDefaultEditor()"ng-if="mode === 'add'"> 
 			<br>
 			<div class="c-both w100 table">
 				<h4 class="f-left">Swagger Editor</h4>
@@ -86,9 +87,18 @@
 			</div>
 		</tab>
 	</tabset>
+	</div>
+	
+	<div class="clearfix" ng-if="onGenerateError">
+		<br>
+		<alert type="danger">{{onGenerateError}}</alert>
+	</div>
+	
 	<div class="w100 c-both text-center">
 		<br /><hr /><br />
-		<input type="button" value="Generate Service" disabled class="btn btn-primary" ng-show="!swaggerCode"/>
-		<input type="button" value="Generate Service" ng-click="GenerateService()" class="btn btn-primary" ng-show="swaggerCode && !isSafari"/>
+		<input type="button" value="Save Service" ng-click="saveService()" class="btn btn-primary" ng-show="mode === 'edit'"/>
+		<input type="button" value="Generate Service" disabled class="btn btn-primary" ng-show="!swaggerCode && mode === 'add'"/>
+		<input type="button" value="Generate Service" ng-click="GenerateService()" class="btn btn-primary" ng-show="mode === 'add' && swaggerCode && !isSafari"/>
+		<input type="button" value="Cancel" ng-click="goBackToApiBuilder()" class="btn btn-danger"/>
 	</div>
 </section>

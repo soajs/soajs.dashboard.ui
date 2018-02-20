@@ -51,6 +51,7 @@
 				
 				<accordion-group class="greenAccordion">
 					<accordion-heading><span class="icon icon-cloud"></span>API</accordion-heading>
+					<alert ng-if="!oneList.groups" type="warning">No APIs found, please update your service or endpoint schema to proceed.</alert>
 					<fieldset ng-repeat="(grp, val) in oneList.groups" class="" ng-if="grp!=='_ver'">
 						<legend>{{grp}}</legend>
 						<span ng-if="val.defaultApi"><label>{{translation.defaultRoute[LANG]}}:</label> {{val.defaultApi}}<br></span>

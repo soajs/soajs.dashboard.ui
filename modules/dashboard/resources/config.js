@@ -27,6 +27,7 @@ var resourcesAppConfig = {
                     {'v': 'server', 'l': "Server"},
                     {'v': 'cdn', 'l': "CDN"},
                     {'v': 'system', 'l': "System"},
+                    {'v': 'authorization', 'l': "Authorization"},
                     {'v': 'other', 'l': "Other"}
                 ],
                 categories: [
@@ -50,6 +51,15 @@ var resourcesAppConfig = {
 					{'v': 'other', 'l': "Other", "group": "cdn"},
 	    
 					{'v': 'other', 'l': "Other", "group": "system"},
+	
+	                {'v': 'basicauth', 'l': "Basic Auth", "group": "authorization"},
+	                {'v': 'soapbasicauth', 'l': "SOAP Basic Auth", "group": "authorization"},
+	                {'v': 'digestauth', 'l': "Digest Auth", "group": "authorization"},
+	                {'v': 'oauth1', 'l': "Oauth 1", "group": "authorization"},
+	                {'v': 'oauth2', 'l': "Oauth 2", "group": "authorization"},
+	                {'v': 'hawkauth', 'l': "Hawk Auth", "group": "authorization"},
+	                {'v': 'awssignature', 'l': "AWS Signature", "group": "authorization"},
+	                {'v': 'custom', 'l': "Custom", "group": "authorization"},
 	
 	                {'v': 'other', 'l': "Other", "group": "other"}
                 ]

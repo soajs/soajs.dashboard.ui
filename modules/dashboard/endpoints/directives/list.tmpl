@@ -45,6 +45,21 @@
 	</div>
 </script>
 
+<script type="text/ng-template" id="validationWarningAndContinue.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">Warning</h3>
+	</div>
+	<div class="modal-body">
+		<alert type="danger" >{{errorDescrition}}</alert>
+	</div>
+	<div class="modal-footer">
+		<div>
+			<button class="btn btn-success" ng-click="cancel()">Fix it</button>
+			<button class="btn btn-danger" ng-click="continue()">Save Without conversion</button>
+		</div>
+	</div>
+</script>
+
 
 <section ng-controller="endpointController">
 	

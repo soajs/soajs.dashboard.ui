@@ -334,6 +334,8 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	}
 
 	function checkHeapster(currentScope, cb) {
+		let envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
+		let envPlatform = envDeployer.selected.split('.')[1];
 		if(envPlatform !== 'kubernetes') {
 			if(cb) return cb();
 		}

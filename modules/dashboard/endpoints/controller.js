@@ -140,6 +140,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.recursiveGetImfv = function (input, parent, parentObj, xxKeyxx) {
 		
+		if(!input || typeof input !== 'object'){
+			return;
+		}
+		
 		if (input.xxKeyxx === xxKeyxx) {
 			$scope.currentImfvOnEdit = parent; // parent will hold the key of the imfv object
 			$scope.currentImfvParentOnEdit = parentObj;
@@ -260,25 +264,91 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			});
 		}
 		
+		let updateSchemasApi = function (convert) {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "put",
+				"routeName": "/dashboard/apiBuilder/updateSchemas",
+				"data": {
+					mainType,
+					"endpointId": endpoint._id,
+					"schemas": schemas,
+					"swagger": swaggerInput,
+					"convert" : convert
+				}
+			}, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					if (error.code === 852 || error.code === 853) {
+						var currentScope = $scope;
+						$modal.open({
+							templateUrl: 'validationWarning.tmpl',
+							size: 'm',
+							backdrop: 'static',
+							keyboard: false,
+							controller: function ($scope, $modalInstance) {
+								fixBackDrop();
+								$scope.errorDescrition = error.message;
+								$scope.cancel = function () {
+									$modalInstance.close();
+								};
+							}
+						});
+					} else {
+						$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+					}
+				}
+				else {
+					$scope.displayAlert('success', 'Schema updated successfully');
+				}
+			});
+		};
+		
 		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "put",
-			"routeName": "/dashboard/apiBuilder/updateSchemas",
-			"data": {
-				mainType,
-				"endpointId": endpoint._id,
-				"schemas": schemas,
-				"swagger": swaggerInput
-			}
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
-			}
-			else {
-				$scope.displayAlert('success', 'Schema updated successfully');
-			}
-		});
+		if ($scope.tempo.switchView[endpoint._id] === 'swagger') { // he is forced to fix his swagger code before saving, and he is forced to convert it to soajs
+			updateSchemasApi(true);
+		}else{
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "put",
+				"routeName": "/dashboard/apiBuilder/preUpdateSchemasValidation",
+				"data": {
+					mainType,
+					"endpointId": endpoint._id,
+					"schemas": schemas,
+					"swagger": swaggerInput
+				}
+			}, function (error, response) {
+				if (error) {
+					overlayLoading.hide();
+					if (error.code === 852 || error.code === 853) {
+						var currentScope = $scope;
+						$modal.open({
+							templateUrl: 'validationWarningAndContinue.tmpl',
+							size: 'm',
+							backdrop: 'static',
+							keyboard: false,
+							controller: function ($scope, $modalInstance) {
+								fixBackDrop();
+								$scope.errorDescrition = error.message;
+								$scope.cancel = function () {
+									$modalInstance.close();
+								};
+								$scope.continue = function () {
+									overlayLoading.show();
+									$modalInstance.close();
+									updateSchemasApi(false);
+								};
+							}
+						});
+					}else{
+						$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+					}
+				}
+				else {
+					updateSchemasApi(true);
+				}
+			});
+		}
+		
 	};
 	
 	$scope.onAddEditRoute = function (endpoint, schemaKey, routeKey) {
@@ -853,6 +923,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.recursiveCleanImfv = function (input) {
+		if(!input || typeof input !== 'object'){
+			return;
+		}
+		
 		delete input.collapsed;
 		delete input.xxKeyxx;
 		delete input.inTreeLevel;
@@ -1006,6 +1080,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	let random_number = 1;
 	
 	$scope.recursiveInitImfv = function (input, inTreeLevel) {
+		if(!input || typeof input !== 'object'){
+			return;
+		}
+		
 		input.collapsed = true;
 		input.xxKeyxx = random_number;
 		input.inTreeLevel = inTreeLevel;
@@ -1038,7 +1116,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				});
 			}
 		}
-		
 	};
 	
 	$scope.isNotEmpty = function (obj) {

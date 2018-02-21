@@ -740,7 +740,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.isUserNameLoggedIn = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
-				if(!$cookies.get("soajs_dashboard_login", { 'domain': interfaceDomain })){
+				if (!$cookies.get("soajs_dashboard_login", { 'domain': interfaceDomain })) {
 					myAccountAccess.getUser($scope, username, function (result) {
 						if (result) {
 							myAccountAccess.getKeyPermissions($scope, function (success) {
@@ -751,6 +751,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 										$scope.enableInterface = true;
 										$scope.$emit('refreshWelcome', {});
 										overlayLoading.hide();
+										$timeout(function () {
+											$scope.enableInterface = true;
+											$scope.$emit('refreshWelcome', {});
+										}, 1000);
 									}, 1000);
 								}
 							});

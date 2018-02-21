@@ -751,11 +751,11 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 										$scope.enableInterface = true;
 										$scope.$emit('refreshWelcome', {});
 										overlayLoading.hide();
-										$timeout(function () {
-											$scope.enableInterface = true;
-											$scope.$emit('refreshWelcome', {});
-										}, 1000);
-									}, 1000);
+										// $timeout(function () {
+										// 	$scope.enableInterface = true;
+										// 	$scope.$emit('refreshWelcome', {});
+										// }, 1000);
+									}, 3000);
 								}
 							});
 						} else {
@@ -771,11 +771,11 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						$scope.enableInterface = true;
 						$scope.$emit('refreshWelcome', {});
 						overlayLoading.hide();
-						$timeout(function () {
-							$scope.enableInterface = true;
-							$scope.$emit('refreshWelcome', {});
-						}, 1000);
-					}, 1000);
+						// $timeout(function () {
+						// 	$scope.enableInterface = true;
+						// 	$scope.$emit('refreshWelcome', {});
+						// }, 1000);
+					}, 3000);
 				}
 			}
 			else {

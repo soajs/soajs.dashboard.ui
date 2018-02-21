@@ -747,14 +747,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 								if (success) {
 									overlayLoading.show();
 									$timeout(function () {
-										// window.location.reload();
 										$scope.enableInterface = true;
 										$scope.$emit('refreshWelcome', {});
 										overlayLoading.hide();
 										$timeout(function () {
 											$scope.enableInterface = true;
 											$scope.$emit('refreshWelcome', {});
-										}, 1000);
+										}, 2000);
 									}, 1000);
 								}
 							});
@@ -764,17 +763,16 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						}
 					});
 				}
-				else{
+				else {
 					overlayLoading.show();
 					$timeout(function () {
-						// window.location.reload();
 						$scope.enableInterface = true;
 						$scope.$emit('refreshWelcome', {});
 						overlayLoading.hide();
 						$timeout(function () {
 							$scope.enableInterface = true;
 							$scope.$emit('refreshWelcome', {});
-						}, 1000);
+						}, 2000);
 					}, 1000);
 				}
 			}

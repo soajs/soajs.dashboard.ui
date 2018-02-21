@@ -745,17 +745,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						if (result) {
 							myAccountAccess.getKeyPermissions($scope, function (success) {
 								if (success) {
-									overlayLoading.show();
 									$timeout(function () {
-										// window.location.reload();
-										$scope.enableInterface = true;
-										$scope.$emit('refreshWelcome', {});
-										overlayLoading.hide();
-										// $timeout(function () {
-										// 	$scope.enableInterface = true;
-										// 	$scope.$emit('refreshWelcome', {});
-										// }, 1000);
-									}, 3000);
+										window.location.reload();
+									}, 150);
 								}
 							});
 						} else {
@@ -767,15 +759,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				else{
 					overlayLoading.show();
 					$timeout(function () {
-						// window.location.reload();
 						$scope.enableInterface = true;
 						$scope.$emit('refreshWelcome', {});
 						overlayLoading.hide();
-						// $timeout(function () {
-						// 	$scope.enableInterface = true;
-						// 	$scope.$emit('refreshWelcome', {});
-						// }, 1000);
-					}, 3000);
+					}, 150);
 				}
 			}
 			else {

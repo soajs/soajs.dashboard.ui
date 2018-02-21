@@ -764,6 +764,19 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						}
 					});
 				}
+				else{
+					overlayLoading.show();
+					$timeout(function () {
+						// window.location.reload();
+						$scope.enableInterface = true;
+						$scope.$emit('refreshWelcome', {});
+						overlayLoading.hide();
+						$timeout(function () {
+							$scope.enableInterface = true;
+							$scope.$emit('refreshWelcome', {});
+						}, 1000);
+					}, 1000);
+				}
 			}
 			else {
 				ngDataApi.logoutUser($scope);

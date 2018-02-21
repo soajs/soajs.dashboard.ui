@@ -260,10 +260,32 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			});
 		}
 		
+		let updateSchemasApi = function (convert) {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "put",
+				"routeName": "/dashboard/apiBuilder/updateSchemas",
+				"data": {
+					mainType,
+					"endpointId": endpoint._id,
+					"schemas": schemas,
+					"swagger": swaggerInput,
+					"convert" : convert
+				}
+			}, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+				}
+				else {
+					$scope.displayAlert('success', 'Schema updated successfully');
+				}
+			});
+		};
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "put",
-			"routeName": "/dashboard/apiBuilder/updateSchemas",
+			"routeName": "/dashboard/apiBuilder/preUpdateSchemasValidation",
 			"data": {
 				mainType,
 				"endpointId": endpoint._id,
@@ -271,12 +293,34 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				"swagger": swaggerInput
 			}
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
-				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+				overlayLoading.hide();
+				if (error.code === 852 || error.code === 853) {
+					var currentScope = $scope;
+					$modal.open({
+						templateUrl: 'validationWarningAndContinue.tmpl',
+						size: 'm',
+						backdrop: 'static',
+						keyboard: false,
+						controller: function ($scope, $modalInstance) {
+							fixBackDrop();
+							$scope.errorDescrition = error.message;
+							$scope.cancel = function () {
+								$modalInstance.close();
+							};
+							$scope.continue = function () {
+								overlayLoading.show();
+								$modalInstance.close();
+								updateSchemasApi(false);
+							};
+						}
+					});
+				}else{
+					$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+				}
 			}
 			else {
-				$scope.displayAlert('success', 'Schema updated successfully');
+				updateSchemasApi(true);
 			}
 		});
 	};

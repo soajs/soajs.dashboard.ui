@@ -746,8 +746,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 							myAccountAccess.getKeyPermissions($scope, function (success) {
 								if (success) {
 									$timeout(function () {
+										$scope.enableInterface = true;
 										window.location.reload();
-									}, 150);
+									}, 300);
 								}
 							});
 						} else {

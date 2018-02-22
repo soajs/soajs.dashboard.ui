@@ -17,7 +17,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	$scope.ShowMetrics = {};
 	$scope.servicesMetrics = {};
-	$scope.metricsRefreshInterval = 5000;
+	$scope.metricsRefreshInterval = 60000;
 	$scope.oldStyle = false;
 
 	$scope.namespaceConfig = {

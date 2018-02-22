@@ -984,6 +984,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.form.formData.sessionName = $scope.wizard.gi.sessionName;
 					$scope.form.formData.sessionSecret = $scope.wizard.gi.sessionSecret;
 					
+					if($scope.wizard.deploy.selectedDriver === 'manual' || ['global', 'daemonset'].indexOf($scope.form.formData.mode) !== -1){
+						$scope.tempFormEntries.number = false;
+					}
+					
 					if ($scope.wizard.deploy.selectedDriver === 'docker') {
 						$scope.allowedModes = [
 							{
@@ -1169,6 +1173,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					}
 					
 					$scope.form.formData.deploy = true;
+					
+					if($scope.wizard.deploy.selectedDriver === 'manual' || ['global', 'daemonset'].indexOf($scope.form.formData.mode) !== -1){
+						$scope.tempFormEntries.number = false;
+					}
 					
 					if ($scope.wizard.deploy.selectedDriver === 'docker') {
 						$scope.allowedModes = [

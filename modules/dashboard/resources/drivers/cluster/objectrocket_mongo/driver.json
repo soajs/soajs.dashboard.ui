@@ -14,7 +14,7 @@
         "placeholder": "127.0.0.1"
       },
       {
-        "type": "number",
+        "type": "text",
         "required": true,
         "value": "",
         "name": "port",

@@ -8,7 +8,10 @@
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.gi">
 						<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}}</label></td>
-						<td ng-if="k!='deploy'">{{v}}</td>
+						<td ng-if="k!='deploy'">
+							<span ng-if="k === 'password'">*************</span>
+							<span ng-if="k !== 'password'">{{v}}</span>
+						</td>
 					</tr>
 				</tbody>
 			</table>

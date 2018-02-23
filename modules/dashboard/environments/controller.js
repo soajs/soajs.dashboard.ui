@@ -312,58 +312,60 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	};
 	
 	$scope.UpdateTenantSecurity = function () {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "put",
-			"routeName": "/dashboard/environment/key/update",
-			"params": { "id": $scope.envId },
-			"data": {
-				'algorithm': $scope.formEnvironment.services.config.key.algorithm,
-				'password': $scope.formEnvironment.services.config.key.password
-			}
-		}, function (error, response) {
-			if (error) {
-				$scope.waitMessage.type = 'danger';
-				$scope.waitMessage.message = getCodeMessage(error.code, 'dashboard', error.message);
-			}
-			else {
-				if (response.newKeys) {
-					$scope.newKeys = [];
-					for (var app in response.newKeys) {
-						response.newKeys[app].newKeys.forEach(function (oneKey) {
-							oneKey.extKeys.forEach(function (oneExtKey) {
-								if (!oneExtKey.deprecated) {
-									$scope.newKeys.push({
-										appPackage: response.newKeys[app].package,
-										key: oneKey.key,
-										extKey: oneExtKey.extKey
-									});
-								}
-							});
-						});
-					}
-					
-					var currentScope = $scope;
-					var keyUpdateSuccess = $modal.open({
-						templateUrl: 'keyUpdateSuccess.tmpl',
-						size: 'lg',
-						backdrop: true,
-						keyboard: true,
-						controller: function ($scope) {
-							fixBackDrop();
-							$scope.currentScope = currentScope;
-							
-							$scope.reloadDashboard = function () {
-								location.reload(true);
-								keyUpdateSuccess.close();
-							};
-						}
-					});
+		if($scope.access.tenantKeyUpdate){
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "put",
+				"routeName": "/dashboard/environment/key/update",
+				"params": { "id": $scope.envId },
+				"data": {
+					'algorithm': $scope.formEnvironment.services.config.key.algorithm,
+					'password': $scope.formEnvironment.services.config.key.password
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.waitMessage.type = 'danger';
+					$scope.waitMessage.message = getCodeMessage(error.code, 'dashboard', error.message);
 				}
 				else {
-					$scope.$parent.displayAlert('success', translation.keySecurityHasBeenUpdated[LANG]);
+					if (response.newKeys) {
+						$scope.newKeys = [];
+						for (var app in response.newKeys) {
+							response.newKeys[app].newKeys.forEach(function (oneKey) {
+								oneKey.extKeys.forEach(function (oneExtKey) {
+									if (!oneExtKey.deprecated) {
+										$scope.newKeys.push({
+											appPackage: response.newKeys[app].package,
+											key: oneKey.key,
+											extKey: oneExtKey.extKey
+										});
+									}
+								});
+							});
+						}
+						
+						var currentScope = $scope;
+						var keyUpdateSuccess = $modal.open({
+							templateUrl: 'keyUpdateSuccess.tmpl',
+							size: 'lg',
+							backdrop: true,
+							keyboard: true,
+							controller: function ($scope) {
+								fixBackDrop();
+								$scope.currentScope = currentScope;
+								
+								$scope.reloadDashboard = function () {
+									location.reload(true);
+									keyUpdateSuccess.close();
+								};
+							}
+						});
+					}
+					else {
+						$scope.$parent.displayAlert('success', translation.keySecurityHasBeenUpdated[LANG]);
+					}
 				}
-			}
-		});
+			});
+		}
 	};
 	
 	$scope.removeEnvironment = function (row) {

@@ -1268,6 +1268,14 @@ var envTranslation ={
 		"ENG": "The following configuration is not affected by reloadRegistry maintenance operation and requires a service restart so that its content is modified.",
 		"FRA": "The following configuration is not affected by reloadRegistry maintenance operation and requires a service restart so that its content is modified."
 	},
+	"changingLoggingConfigurationMayCauseImproperFunctionality": {
+		"ENG": "Changing the logger configuration may cause improper functionality",
+		"FRA": "Changing the logger configuration may cause improper functionality"
+	},
+	"adviceToKeepConfigurationAsIs": {
+		"ENG": "We Advise you to keep the configuration as it is OR read the documentation from the link below before applying any change.",
+		"FRA": "We Advise you to keep the configuration as it is OR read the documentation from the link below before applying any change."
+	},
 	"logger": {
 		"ENG": "Logger",
 		"FRA": "Logger"

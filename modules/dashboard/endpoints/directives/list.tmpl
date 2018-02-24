@@ -96,8 +96,8 @@
 		
 		
 		<div ng-if="input.type === 'array' && input.items.type==='object'" class="clearfix">
-			<ul>
-				<li ng-repeat="(inputKey,input) in input.items.properties" ng-include="'imfv_renderer.html'" ng-if="!input.collapsed"></li>
+			<ul ng-if="!input.collapsed">
+				<li ng-repeat="(inputKey,input) in input.items.properties" ng-include="'imfv_renderer.html'"></li>
 			</ul>
 			<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blue'>
 				<span class='icon icon-plus' title='Add Array Item' ng-click="onEditImfv(mainType, false,true,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>.....</span>

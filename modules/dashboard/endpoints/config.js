@@ -3,8 +3,8 @@ var servicesConfig = {
 		
 	},
 	permissions: {
-		'listEndpoints': ['dashboard', '/endpoints/list', 'post'],
-		'addEditEndpoint': ['dashboard', '/endpoints/add', 'post'],
+		'listEndpoints': ['dashboard', '/apiBuilder/list', 'get'],
+		'addEditEndpoint': ['dashboard', '/apiBuilder/add', 'post'],
 		'updateServiceSettings': ['dashboard', '/services/settings/update', 'put'],
 
 		'getEnv': ['dashboard', '/services/env/list', 'get'],

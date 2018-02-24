@@ -425,8 +425,8 @@ var endpointsNav = [
 		'label': translation.endpoints[LANG],
 		'checkPermission': {
 			'service': 'dashboard',
-			'route': '/endpoints/list',
-			'method': 'post'
+			'route': '/apiBuilder/list',
+			'method': 'get'
 		},
 		'url': '#/endpoints',
 		'tplPath': 'modules/dashboard/endpoints/directives/list.tmpl',

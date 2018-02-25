@@ -120,14 +120,14 @@
 											<tabset>
 												<tab heading="Build Logs">
 													<br />
-													<a href="" class="btn btn-sm btn-success f-right" style="margin: 10px;" ng-click="refreshBuildInformation(oneProvider)">
+													<a href="" class="btn btn-sm btn-success f-right" style="margin: 10px;" ng-click="refreshBuildInformation(oneProvider, branch)">
 														<span class="icon icon-undo"></span>&nbsp;Refresh
 													</a>
-													<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'sh', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}" ng-model="build.logs"></div>
+													<div id="logs_{{build.id}}" ui-ace="{useWrapMode : true, showGutter: true, mode: 'sh', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded, onChange: updateEditorScope}" ng-model="build.logs"></div>
 												</tab>
 												<tab heading="Build Configuration" ng-if="build.config">
 													<br />
-													<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'javascript', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}" ng-model="build.config"></div>
+													<div id="config_{{build.id}}" ui-ace="{useWrapMode : true, showGutter: true, mode: 'javascript', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded2, onChange: updateEditorScope2}" ng-model="build.config"></div>
 												</tab>
 											</tabset>
 										</td>

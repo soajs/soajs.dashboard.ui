@@ -3,9 +3,6 @@ var repoService = soajsApp.components;
 repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', '$compile', 'detectBrowser', function (ngDataApi, $timeout, $modal, $cookies, $window, $compile, detectBrowser) {
 
 	function configureRepo(currentScope, oneRepo, gitAccount, config) {
-		
-		var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-		var envPlatform = envDeployer.selected.split('.')[1];
 		currentScope.configureRepoEditor = true;
 		var exceptionProviders = ['drone'];
 		currentScope.services = {};
@@ -32,13 +29,62 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 			}
 			else{
 				jQuery("#build_" + oneBuild.id).slideDown();
+				buildLogsEditor.setValue(oneBuild.logs);
 			}
 		};
 		
+		function reRenderEditor(editor, id, newHeight){
+			editor.clearSelection();
+			var heightUpdateFunction = function () {
+				editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
+				editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
+				jQuery('#' + id).height(newHeight.toString() + "px");
+			};
+			
+			$timeout(function () {
+				editor.heightUpdate = heightUpdateFunction();
+				// Set initial size to match initial content
+				heightUpdateFunction();
+				
+				// Whenever a change happens inside the ACE editor, update
+				// the size again
+				editor.getSession().on('change', heightUpdateFunction);
+				editor.setOption("highlightActiveLine", false);
+			}, 10);
+		}
+		
+		var buildLogsEditor;
 		currentScope.aceLoaded = function (_editor) {
 			_editor.setShowPrintMargin(false);
 			_editor.$blockScrolling = Infinity;
 			_editor.renderer.setScrollMargin(20, 20, 20, 50);
+			buildLogsEditor =  _editor;
+		};
+		
+		currentScope.updateEditorScope = function(e){
+			let newHeight = 50;
+			if(e[0].data && e[0].data.lines){
+				newHeight += e[0].data.lines.length *  16.4;
+				newHeight = Math.ceil(newHeight);
+				reRenderEditor(buildLogsEditor, e[1].container.id, newHeight);
+			}
+		};
+		
+		var configEditor;
+		currentScope.aceLoaded2 = function (_editor) {
+			_editor.setShowPrintMargin(false);
+			_editor.$blockScrolling = Infinity;
+			_editor.renderer.setScrollMargin(20, 20, 20, 50);
+			configEditor = _editor;
+		};
+		
+		currentScope.updateEditorScope2 = function(e){
+			let newHeight = 50;
+			if(e[0].data && e[0].data.lines){
+				newHeight += e[0].data.lines.length *  16.5;
+				newHeight = Math.ceil(newHeight);
+				reRenderEditor(configEditor, e[1].container.id, newHeight);
+			}
 		};
 		
 		currentScope.goTOCI = function () {
@@ -386,12 +432,6 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 			});
 		};
 		
-		currentScope.saveRecipe = function () {
-			saveRecipe(currentScope, function () {
-
-			});
-		};
-		
 		currentScope.downloadRecipe = function(oneRecipeId){
 			if(currentScope.access.downloadCIRecipe){
 				downloadProviderRecipe(currentScope, oneRecipeId);
@@ -401,8 +441,10 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 			}
 		};
 		
-		currentScope.refreshBuildInformation = function(oneProvider){
-			getRepoCIBuildDetails(currentScope, currentScope.myCurrentRepo, oneProvider, null);
+		currentScope.refreshBuildInformation = function(oneProvider, branch){
+			getRepoCIBuildDetails(currentScope, currentScope.myCurrentRepo, oneProvider, ()=> {
+				oneProvider.repoBuildHistory[branch].hide = false;
+			});
 		};
 		
 		if(!currentScope.access.getCIAccountInfo){

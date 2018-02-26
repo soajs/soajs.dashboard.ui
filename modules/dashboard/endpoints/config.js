@@ -5,7 +5,7 @@ var servicesConfig = {
 	permissions: {
 		'listEndpoints': ['dashboard', '/apiBuilder/list', 'get'],
 		
-		'getEndpoints': ['dashboard', '/apiBuilder/get', 'put'],
+		'getEndpoints': ['dashboard', '/apiBuilder/get', 'get'],
 		
 		'editEndpoints': ['dashboard', '/apiBuilder/edit', 'put'],
 		

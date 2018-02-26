@@ -213,7 +213,7 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 			
 			var options = {
 				"method": method,
-				"routeName": "/dashboard/apiBuilder/"+route,
+				"routeName": "/dashboard/apiBuilder/" + route,
 				"headers": {
 					'Content-Type': 'application/json'
 				},

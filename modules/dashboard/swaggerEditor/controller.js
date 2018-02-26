@@ -141,9 +141,7 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 				$scope.form.formData = response;
 				$scope.serviceOnEditId = response._id;
 				
-				if ($scope.access.generate) {
-					$scope.buildEditorForm();
-				}
+				$scope.buildEditorForm();
 			}
 		});
 	};
@@ -154,12 +152,13 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 		}
 	};
 	
-	let mode = "add";
-	if ($routeParams && $routeParams.id && $routeParams.id !== "new") {
-		mode = "edit";
+	if ($scope.access.getService && $routeParams && $routeParams.id && $routeParams.id !== "new") {
+		$scope.mode = "edit";
 		$scope.getService($routeParams.id);
-	}else{
+	}
+	else{
 		if ($scope.access.generate) {
+			$scope.mode = "add";
 			$scope.buildEditorForm();
 		}
 	}

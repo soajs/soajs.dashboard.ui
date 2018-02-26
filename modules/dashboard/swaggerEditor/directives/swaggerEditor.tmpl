@@ -96,9 +96,9 @@
 	
 	<div class="w100 c-both text-center">
 		<br /><hr /><br />
-		<input type="button" value="Save Service" ng-click="saveService()" class="btn btn-primary" ng-show="mode === 'edit'"/>
-		<input type="button" value="Generate Service" disabled class="btn btn-primary" ng-show="!swaggerCode && mode === 'add'"/>
-		<input type="button" value="Generate Service" ng-click="GenerateService()" class="btn btn-primary" ng-show="mode === 'add' && swaggerCode && !isSafari"/>
+		<input type="button" value="Save Service" ng-click="saveService()" class="btn btn-primary" ng-show="access.editService && mode === 'edit'"/>
+		<input type="button" value="Generate Service" disabled class="btn btn-primary" ng-show="access.generate && !swaggerCode && mode === 'add'"/>
+		<input type="button" value="Generate Service" ng-click="GenerateService()" class="btn btn-primary" ng-show="access.generate && mode === 'add' && swaggerCode && !isSafari"/>
 		<input type="button" value="Cancel" ng-click="goBackToApiBuilder()" class="btn btn-danger"/>
 	</div>
 </section>

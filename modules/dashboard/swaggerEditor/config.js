@@ -246,6 +246,8 @@ var swaggerEditorConfig = {
 		]
 },
 	permissions: {
+		'getService': ['dashboard', '/apiBuilder/get', 'get'],
+		'editService': ['dashboard', '/apiBuilder/edit', 'put'],
 		'simulator': ['dashboard', '/swagger/simulate', 'post'],
 		'generate': ['dashboard', '/swagger/generate', 'post']
 	}

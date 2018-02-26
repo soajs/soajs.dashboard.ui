@@ -140,7 +140,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.recursiveGetImfv = function (input, parent, parentObj, xxKeyxx) {
 		
-		if(!input || typeof input !== 'object'){
+		if (!input || typeof input !== 'object') {
 			return;
 		}
 		
@@ -273,7 +273,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					"endpointId": endpoint._id,
 					"schemas": schemas,
 					"swagger": swaggerInput,
-					"convert" : convert
+					"convert": convert
 				}
 			}, function (error, response) {
 				overlayLoading.hide();
@@ -306,7 +306,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		overlayLoading.show();
 		if ($scope.tempo.switchView[endpoint._id] === 'swagger') { // he is forced to fix his swagger code before saving, and he is forced to convert it to soajs
 			updateSchemasApi(true);
-		}else{
+		} else {
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "put",
 				"routeName": "/dashboard/apiBuilder/preUpdateSchemasValidation",
@@ -339,7 +339,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 								};
 							}
 						});
-					}else{
+					} else {
 						$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 					}
 				}
@@ -698,14 +698,31 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 								alert("missing array of items"); // todo?
 								return;
 							} else {
-								if (!formData.items) {
-									formData.items = {
-										type: formData.arrayItems
-									};
+								if (onRoot) {
+									if (!formData.validation) {
+										formData.validation = {
+											type: 'array'
+										};
+									} else {
+										formData.validation.type = 'array';
+									}
+									
+									if (!formData.validation.items) {
+										formData.validation.items = {
+											type: formData.arrayItems
+										};
+									} else {
+										formData.validation.items.type = formData.arrayItems;
+									}
 								} else {
-									formData.items.type = formData.arrayItems;
+									if (!formData.items) {
+										formData.items = {
+											type: formData.arrayItems
+										};
+									} else {
+										formData.items.type = formData.arrayItems;
+									}
 								}
-								
 							}
 						}
 						
@@ -725,7 +742,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							}
 							
 							// applicable for arrays only
-							newObject.items = formData.items;
+							if (onRoot) {
+								newObject.validation.items = formData.items;
+							} else {
+								newObject.items = formData.items;
+							}
 							
 							// some stuff are in validation some are not even for first level objects
 							newObject.required = formData.required;
@@ -783,9 +804,12 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							}
 							
 							if (onRoot) {
-								formData.validation = {
-									type: formData.type
-								};
+								if (formData.type !== 'array') { // todo: merge the code instead of checking up and here
+									formData.validation = {
+										type: formData.type
+									};
+								}
+								
 								delete formData.type;
 							}
 							
@@ -798,10 +822,15 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							}
 							
 							if (isAddInArray) {
-								if (!$scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].items.properties) {
-									$scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].items.properties = {};
+								let itemsHolder = $scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].items;
+								if($scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].validation){ // array parent is on root
+									itemsHolder = $scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].validation.items;
 								}
-								$scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].items.properties[key] = formData;
+								
+								if (!itemsHolder.properties) {
+									itemsHolder.properties = {};
+								}
+								itemsHolder.properties[key] = formData;
 							} else {
 								if (onRoot) {
 									let imfv = endpoint.schema[schemaKey][routeKey].imfv;
@@ -923,7 +952,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.recursiveCleanImfv = function (input) {
-		if(!input || typeof input !== 'object'){
+		if (!input || typeof input !== 'object') {
 			return;
 		}
 		
@@ -1080,7 +1109,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	let random_number = 1;
 	
 	$scope.recursiveInitImfv = function (input, inTreeLevel) {
-		if(!input || typeof input !== 'object'){
+		if (!input || typeof input !== 'object') {
 			return;
 		}
 		

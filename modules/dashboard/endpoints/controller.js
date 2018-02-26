@@ -264,7 +264,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			});
 		}
 		
-		let updateSchemasApi = function (convert) {
+		let updateSchemasApi = function (promptContinueAnyway, convert) {
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "put",
 				"routeName": "/dashboard/apiBuilder/updateSchemas",
@@ -279,20 +279,41 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				overlayLoading.hide();
 				if (error) {
 					if (error.code === 852 || error.code === 853) {
-						var currentScope = $scope;
-						$modal.open({
-							templateUrl: 'validationWarning.tmpl',
-							size: 'm',
-							backdrop: 'static',
-							keyboard: false,
-							controller: function ($scope, $modalInstance) {
-								fixBackDrop();
-								$scope.errorDescrition = error.message;
-								$scope.cancel = function () {
-									$modalInstance.close();
-								};
-							}
-						});
+						
+						if (promptContinueAnyway) {
+							$modal.open({
+								templateUrl: 'validationWarningAndContinue.tmpl',
+								size: 'm',
+								backdrop: 'static',
+								keyboard: false,
+								controller: function ($scope, $modalInstance) {
+									fixBackDrop();
+									$scope.errorDescrition = error.message;
+									$scope.cancel = function () {
+										$modalInstance.close();
+									};
+									$scope.continue = function () {
+										overlayLoading.show();
+										$modalInstance.close();
+										updateSchemasApi(false, false);
+									};
+								}
+							});
+						} else {
+							$modal.open({
+								templateUrl: 'validationWarning.tmpl',
+								size: 'm',
+								backdrop: 'static',
+								keyboard: false,
+								controller: function ($scope, $modalInstance) {
+									fixBackDrop();
+									$scope.errorDescrition = error.message;
+									$scope.cancel = function () {
+										$modalInstance.close();
+									};
+								}
+							});
+						}
 					} else {
 						$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 					}
@@ -305,48 +326,9 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 		overlayLoading.show();
 		if ($scope.tempo.switchView[endpoint._id] === 'swagger') { // he is forced to fix his swagger code before saving, and he is forced to convert it to soajs
-			updateSchemasApi(true);
+			updateSchemasApi(false, true);
 		} else {
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "put",
-				"routeName": "/dashboard/apiBuilder/preUpdateSchemasValidation",
-				"data": {
-					mainType,
-					"endpointId": endpoint._id,
-					"schemas": schemas,
-					"swagger": swaggerInput
-				}
-			}, function (error, response) {
-				if (error) {
-					overlayLoading.hide();
-					if (error.code === 852 || error.code === 853) {
-						var currentScope = $scope;
-						$modal.open({
-							templateUrl: 'validationWarningAndContinue.tmpl',
-							size: 'm',
-							backdrop: 'static',
-							keyboard: false,
-							controller: function ($scope, $modalInstance) {
-								fixBackDrop();
-								$scope.errorDescrition = error.message;
-								$scope.cancel = function () {
-									$modalInstance.close();
-								};
-								$scope.continue = function () {
-									overlayLoading.show();
-									$modalInstance.close();
-									updateSchemasApi(false);
-								};
-							}
-						});
-					} else {
-						$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
-					}
-				}
-				else {
-					updateSchemasApi(true);
-				}
-			});
+			updateSchemasApi(true, true);
 		}
 		
 	};
@@ -823,7 +805,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							if (isAddInArray) {
 								let itemsHolder = $scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].items;
-								if($scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].validation){ // array parent is on root
+								if ($scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].validation) { // array parent is on root
 									itemsHolder = $scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit].validation.items;
 								}
 								

@@ -13,16 +13,6 @@ Object.defineProperty(Object.prototype, "renameProperty", {
 	},
 	enumerable: false
 });
-// Object.prototype.renameProperty = function (oldName, newName) {
-// 	if (oldName == newName) {
-// 		return this;
-// 	}
-// 	if (this.hasOwnProperty(oldName)) {
-// 		this[newName] = this[oldName];
-// 		delete this[oldName];
-// 	}
-// 	return this;
-// };
 
 var servicesApp = soajsApp.components;
 servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', '$localStorage', 'swaggerParser', 'swaggerClient', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams, $localStorage, swaggerParser, swaggerClient) {

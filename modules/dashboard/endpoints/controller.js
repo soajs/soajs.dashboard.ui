@@ -28,7 +28,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	$scope.wizard = {};
 	
 	$scope.access = {};
-	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
+	constructModulePermissions($scope, $scope.access, apiBuilderConfig.permissions);
 	
 	$scope.showHide = function (service) {
 		if (!service.hide) {

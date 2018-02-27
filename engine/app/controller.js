@@ -279,11 +279,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 					if (pillarsPerEnv.indexOf($scope.mainMenu.links[j].pillar.position) !== -1) {
 						$scope.leftMenu.environments = angular.copy($localStorage.environments);
 						
-						if (!user.locked) {
-							if ($scope.mainMenu.links[j].pillar.position === 3) {
-								if ($scope.leftMenu.environments.length === 0) {
-									$scope.leftMenu.links = [];
-								}
+						if ($scope.mainMenu.links[j].pillar.position === 3) {
+							if ($scope.leftMenu.environments.length === 0) {
+								$scope.leftMenu.links = [];
 							}
 						}
 						if ($scope.mainMenu.links[j].pillar.position === 4) {
@@ -600,7 +598,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				$cookies.put("soajs_current_route", $location.path(), { 'domain': interfaceDomain });
 			});
 		});
-
+		
 		$scope.$on("loadUserInterface", function (event, args) {
 			doEnvPerNav();
 			var user = $localStorage.soajs_user;
@@ -716,7 +714,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				$scope.currentDeployer.type = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).deployer.type;
 			}
 		}
-
+		
 		$scope.isUserLoggedIn = function (stopRedirect) {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				if ($localStorage.soajs_user) {
@@ -730,7 +728,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				redirectToLogin($scope);
 			}
 		};
-
+		
 		$scope.isUserNameLoggedIn = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
@@ -751,7 +749,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						}
 					});
 				}
-				else{
+				else {
 					overlayLoading.show();
 					$timeout(function () {
 						$scope.rebuildMenus(() => {
@@ -768,7 +766,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				redirectToLogin($scope);
 			}
 		};
-
+		
 		$scope.checkUserCookie = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });

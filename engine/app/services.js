@@ -849,7 +849,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 			"routeName": "/key/permission/get"
 		}, function (error, response) {
 			if (error) {
-				ngDataApi.logoutUser(currentScope);
 				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
@@ -863,7 +862,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					"routeName": "/key/permission/get"
 				}, function (error, response) {
 					if (error) {
-						ngDataApi.logoutUser(currentScope);
 						overlayLoading.hide();
 						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						return cb(false);
@@ -876,32 +874,10 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					
 					$localStorage.acl_access = response.acl;
 					$localStorage.environments = response.environments;
-					var options = {
-						"method": "get",
-						"routeName": "/dashboard/environment/list",
-						"params": {}
-					};
-					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
-						overlayLoading.hide();
-						if (error) {
-							if (error.code === 600) {
-								ngDataApi.logoutUser(currentScope);
-								currentScope.displayAlert('danger', "Login Failed !");
-								return cb(false);
-							}
-							else {
-								$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
-								return cb(true);
-							}
-						}
-						else {
-							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
-							$localStorage.environments = angular.copy(envs);
-							return cb(true);
-						}
-					});
+					$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+					overlayLoading.hide();
+					return cb(true);
 				});
-				
 			}
 		});
 	}

@@ -120,7 +120,7 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', '$cookies', '$localStorage',
 	function ($scope, $timeout, $modal, ngDataApi, $cookies, $localStorage) {
 		$scope.$parent.isUserNameLoggedIn();
-
+		
 		var userCookie = $localStorage.soajs_user;
 		
 		var formConfig = {
@@ -298,7 +298,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				};
 				overlayLoading.show();
 				var authValue;
-
+				
 				function loginOauth() {
 					var options1 = {
 						"token": false,
@@ -312,7 +312,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						}
 						else {
 							authValue = response.data;
-
+							
 							var options2 = {
 								"method": "post",
 								"routeName": "/oauth/token",
@@ -335,14 +335,14 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 									uracLogin();
 								}
 							});
-
+							
 						}
 					});
 				}
-
+				
 				loginOauth();
 				var myUser;
-
+				
 				function uracLogin() {
 					var options = {
 						"method": "get",
@@ -364,23 +364,25 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						}
 					});
 				}
-
+				
 				function getKeys() {
 					$localStorage.acl_access = null;
 					$localStorage.environments = null;
 					$localStorage.soajs_user = myUser;
 					$cookies.put("soajs_username", myUser.username, { 'domain': interfaceDomain });
-
+					
 					myAccountAccess.getKeyPermissions($scope, function (result) {
 						if (result) {
 							$scope.$parent.$emit("loadUserInterface", {});
 							$scope.$parent.$emit('refreshWelcome', {});
+						} else {
+							ngDataApi.logoutUser($scope);
 						}
 					});
 				}
 			}
 		}];
-
+		
 		if (!isUserLoggedIn($scope)) {
 			buildForm($scope, null, formConfig);
 		}
@@ -391,7 +393,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			}
 			$scope.$parent.go(gotoUrl);
 		}
-
+		
 	}]);
 
 myAccountApp.controller('forgotPwCtrl', ['$scope', 'ngDataApi', 'isUserLoggedIn', function ($scope, ngDataApi, isUserLoggedIn) {

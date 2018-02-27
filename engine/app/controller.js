@@ -760,10 +760,12 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				else{
 					overlayLoading.show();
 					$timeout(function () {
-						$scope.enableInterface = true;
-						$scope.$emit('refreshWelcome', {});
-						overlayLoading.hide();
-					}, 150);
+						$scope.rebuildMenus(() => {
+							$scope.enableInterface = true;
+							$scope.$emit('refreshWelcome', {});
+							overlayLoading.hide();
+						});
+					}, 200);
 				}
 			}
 			else {

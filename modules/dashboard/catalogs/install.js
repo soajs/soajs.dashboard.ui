@@ -15,7 +15,7 @@ var catalogNav = [
         'pillar': {
             'name': 'development',
             'label': translation.develop[LANG],
-            'position': 3
+            'position': 1
         },
         'mainMenu': true,
         'tracker': true,
@@ -24,4 +24,5 @@ var catalogNav = [
         'ancestor': [translation.home[LANG]]
     }
 ];
+
 navigation = navigation.concat(catalogNav);

@@ -1439,7 +1439,7 @@ var environmentsNav = [
 		'id': 'repositories',
 		'checkPermission': {
 			'service': 'dashboard',
-			'route': '/gitAccounts/accounts/list',
+			'route': '/cloud/services/list',
 			'method': 'get'
 		},
 		'label': translation.repositories[LANG],

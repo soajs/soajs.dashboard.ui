@@ -882,19 +882,19 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 						"params": {}
 					};
 					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
+						overlayLoading.hide();
 						if (error) {
-							ngDataApi.logoutUser(currentScope);
-							overlayLoading.hide();
 							if (error.code === 600) {
+								ngDataApi.logoutUser(currentScope);
 								currentScope.displayAlert('danger', "Login Failed !");
+								return cb(false);
 							}
 							else {
-								currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+								return cb(true);
 							}
-							return cb(false);
 						}
 						else {
-							overlayLoading.hide();
 							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
 							$localStorage.environments = angular.copy(envs);
 							return cb(true);

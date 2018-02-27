@@ -281,12 +281,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 						
 						if (!user.locked) {
 							if ($scope.mainMenu.links[j].pillar.position === 3) {
-								for (var k = $scope.leftMenu.environments.length - 1; k >= 0; k--) {
-									if ($scope.leftMenu.environments[k].code.toLowerCase() === "dashboard") {
-										$scope.leftMenu.environments.splice(k, 1);
-									}
-								}
-								
 								if ($scope.leftMenu.environments.length === 0) {
 									$scope.leftMenu.links = [];
 								}

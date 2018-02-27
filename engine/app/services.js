@@ -1,5 +1,6 @@
 "use strict";
 
+
 soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', function ($http, $cookies, $localStorage, Upload) {
 	
 	function logoutUser(scope) {
@@ -845,9 +846,10 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/key/permission/get",
+			"routeName": "/key/permission/get"
 		}, function (error, response) {
 			if (error) {
+				ngDataApi.logoutUser(currentScope);
 				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
@@ -861,6 +863,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					"routeName": "/key/permission/get"
 				}, function (error, response) {
 					if (error) {
+						ngDataApi.logoutUser(currentScope);
 						overlayLoading.hide();
 						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						return cb(false);
@@ -880,6 +883,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					};
 					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
 						if (error) {
+							ngDataApi.logoutUser(currentScope);
 							overlayLoading.hide();
 							if (error.code === 600) {
 								currentScope.displayAlert('danger', "Login Failed !");

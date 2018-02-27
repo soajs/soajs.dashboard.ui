@@ -195,27 +195,31 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				}
 			});
 			
-			// if no one else is using it delete it from common fields
-			let usedAtLeastonce = false;
-			let allSchemasKeys = Object.keys(endpoint.schema);
-			allSchemasKeys.forEach(function (eachSchema) {
-				if (eachSchema !== 'commonFields') {
-					let allRoutes = Object.keys(endpoint.schema[eachSchema]);
-					allRoutes.forEach(function (route) {
-						let common = endpoint.schema[eachSchema][route].imfv.commonFields;
-						if (common && common.indexOf($scope.currentImfvOnEdit) !== -1) {
-							usedAtLeastonce = true;
-							// u can break
-						}
-					});
-				}
-			});
-			
-			if (!usedAtLeastonce) {
-				delete endpoint.schema.commonFields[$scope.currentImfvOnEdit];
-			}
+			checkAndDeleteCommonField(endpoint, $scope.currentImfvOnEdit);
 		}
 	};
+	
+	function checkAndDeleteCommonField(endpoint, commonFieldKey) {
+		// if no one else is using it delete it from common fields
+		let usedAtLeastonce = false;
+		let allSchemasKeys = Object.keys(endpoint.schema);
+		allSchemasKeys.forEach(function (eachSchema) {
+			if (eachSchema !== 'commonFields') {
+				let allRoutes = Object.keys(endpoint.schema[eachSchema]);
+				allRoutes.forEach(function (route) {
+					let common = endpoint.schema[eachSchema][route].imfv.commonFields;
+					if (common && common.indexOf(commonFieldKey) !== -1) {
+						usedAtLeastonce = true;
+						// u can break
+					}
+				});
+			}
+		});
+		
+		if (!usedAtLeastonce) {
+			delete endpoint.schema.commonFields[commonFieldKey];
+		}
+	}
 	
 	$scope.updateSchemas = function (mainType, endpoint) {
 		let schemas = {};
@@ -396,6 +400,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						
 						if (routeKey) { // on edit
 							endpoint.schema[schemaKey]['/' + formData.api] = generateApi(formData.apiInfo, formData.apiGroup);
+							endpoint.schema[schemaKey]['/' + formData.api].imfv = oldRoute.imfv;
 							if (('/' + formData.api) !== routeKey) { // new key
 								delete endpoint.schema[schemaKey][routeKey];
 							}
@@ -419,7 +424,27 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.deleteSchema = function (endpoint, schemaKey) {
+		
+		// check if common fields delete are not used anymore, delete them!
+		let commonFieldsUsedWithinSchema = [];
+		let routesKeys = Object.keys(endpoint.schema[schemaKey]);
+		routesKeys.forEach(function (eachRouteKey) {
+			let apiData = endpoint.schema[schemaKey][eachRouteKey];
+			if (apiData.imfv && apiData.imfv.commonFields) {
+				apiData.imfv.commonFields.forEach(function (thisCommon) {
+					if (commonFieldsUsedWithinSchema.indexOf(thisCommon) === -1) {
+						commonFieldsUsedWithinSchema.push(thisCommon);
+					}
+				});
+			}
+		});
+		
+		// delete schema
 		delete endpoint.schema[schemaKey];
+		
+		commonFieldsUsedWithinSchema.forEach(function (eachCommon) {
+			checkAndDeleteCommonField(endpoint, eachCommon);
+		});
 	};
 	
 	$scope.onAddCommonField = function (mainType, onEdit, isAddInArray, isCommonField, endpoint, schemaKey, routeKey, inputKey, input, xxKeyxx) {
@@ -536,6 +561,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					}
 					
 					if (eachSource.includes("params.")) {
+						selectedSourcesCleaned.push("params");
+					}
+					
+					if (eachSource.includes("headers.")) {
 						selectedSourcesCleaned.push("headers");
 					}
 				});
@@ -612,6 +641,10 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					v: 'headers',
 					l: 'Headers',
 					selected: (selectedSourcesCleaned.indexOf('headers') !== -1)
+				}, {
+					v: 'params',
+					l: 'Params',
+					selected: (selectedSourcesCleaned.indexOf('params') !== -1)
 				}
 			];
 			config.entries.push({
@@ -650,11 +683,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						let sourceReformatted; // if applicable
 						if (formData.source) {
 							sourceReformatted = [];
-							formData.source.forEach(function (eachSourceSelected) {
-								let sourceType = eachSourceSelected;
-								if (eachSourceSelected === 'headers') {
-									sourceType = 'params';
-								}
+							formData.source.forEach(function (sourceType) {
 								sourceReformatted.push(`${sourceType}.${formData.key}`);
 							});
 						}
@@ -1008,7 +1037,20 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onDeleteRoute = function (endpoint, schemaKey, routeKey) {
+		
+		// check if common fields delete are not used anymore, delete them!
+		let commonFieldsUsedWithinRoute = [];
+		let apiData = endpoint.schema[schemaKey][routeKey];
+		if (apiData.imfv && apiData.imfv.commonFields) {
+			commonFieldsUsedWithinRoute = apiData.imfv.commonFields;
+		}
+		
+		// delete route
 		delete endpoint.schema[schemaKey][routeKey];
+		
+		commonFieldsUsedWithinRoute.forEach(function (eachCommon) {
+			checkAndDeleteCommonField(endpoint, eachCommon);
+		});
 	};
 	
 	/**

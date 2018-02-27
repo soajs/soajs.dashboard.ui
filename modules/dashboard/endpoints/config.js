@@ -1,4 +1,4 @@
-var servicesConfig = {
+var apiBuilderConfig = {
 	form: {
 		
 	},

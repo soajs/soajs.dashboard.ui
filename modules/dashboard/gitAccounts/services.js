@@ -89,7 +89,6 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 		
 		currentScope.goTOCI = function () {
 			currentScope.$parent.go('#/continuous-integration');
-			configureRepo.close();
 		};
 
 		currentScope.cancel = function () {

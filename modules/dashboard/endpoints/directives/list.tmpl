@@ -199,7 +199,6 @@
 									<div>
 										<ul class="blueListing">
 											<li class="blueLi" ng-repeat="(routeKey,routeObj) in schemaObj" class="row-list">
-												
 												<fieldset>
 													<legend style="float:right;">
 														<span class='blue'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
@@ -212,7 +211,7 @@
 													
 													
 													<div>
-														<span class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEnableEdit(endpoint._id,schemaKey,routeKey)">{{tempo.editEnabled[endpoint._id][schemaKey][routeKey]?' Disable editing ...':' Enable editing'}}</span></span>
+														<span ng-if="access.updateEndpointSchema" class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEnableEdit(endpoint._id,schemaKey,routeKey)">{{tempo.editEnabled[endpoint._id][schemaKey][routeKey]?' Disable editing ...':' Enable editing'}}</span></span>
 														<br>
 														<div>Common Fields</div>
 														<ul>

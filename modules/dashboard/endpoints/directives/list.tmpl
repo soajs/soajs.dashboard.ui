@@ -297,6 +297,10 @@
 						</div>
 					</div>
 				</div>
+				
+				<div ng-if="grid.rows[mainType].length === 0" class="modal-body">
+					<alert type="warning" >You don't have any {{mainType}}. Click on add new {{mainType==='services'?'Service':'Endpoint'}} to add a new entry.</alert>
+				</div>
 			</div>
 		</tab>
 	</tabset>

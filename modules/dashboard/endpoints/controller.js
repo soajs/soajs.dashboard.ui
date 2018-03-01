@@ -793,8 +793,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							if (newObject.validation) {
 								newObject.validation.type = formData.type;
-								if(formData.validation && formData.validation.properties){
+								if(formData.validation && formData.validation.properties){ // for objects
 									newObject.validation.properties = formData.validation.properties;
+								}
+								if(formData.validation && formData.validation.items){ // for arrays
+									newObject.validation.items = formData.validation.items;
 								}
 							} else {
 								newObject.type = formData.type;
@@ -805,7 +808,9 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							// applicable for arrays only
 							if (onRoot) {
-								newObject.validation.items = formData.items;
+								if(formData.items){
+									newObject.validation.items = formData.items;
+								}
 							} else {
 								newObject.items = formData.items;
 							}

@@ -159,6 +159,13 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				$scope.recursiveGetImfv(input.validation.properties[props[index]], each, input.validation.properties, xxKeyxx);
 			});
 		}
+		
+		if (input.validation && input.validation.items && input.validation.items.type === 'object' && input.validation.items.properties) {
+			let props = Object.keys(input.validation.items.properties);
+			props.forEach(function (each, index) {
+				$scope.recursiveGetImfv(input.validation.items.properties[props[index]], each, input.validation.items.properties, xxKeyxx);
+			});
+		}
 	};
 	
 	$scope.setCurrentImfvOnEdit = function (mainType, endpoint, schemaKey, routeKey, xxKeyxx, isCommonField) {
@@ -394,20 +401,53 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							};
 						}
 						
+						// filter multiple forward slashes
+						formData.api = formData.api.replace(/\/\/+/g, '/');
+						
 						if (formData.api.charAt(0) === '/') {
 							formData.api = formData.api.substring(1, formData.api.length);
 						}
 						
 						if (routeKey) { // on edit
-							endpoint.schema[schemaKey]['/' + formData.api] = generateApi(formData.apiInfo, formData.apiGroup);
-							endpoint.schema[schemaKey]['/' + formData.api].imfv = oldRoute.imfv;
-							if (('/' + formData.api) !== routeKey) { // new key
-								delete endpoint.schema[schemaKey][routeKey];
+							let newEntry = generateApi(formData.apiInfo, formData.apiGroup);
+							
+							// andDelete is done, whenever the key is updated, to delete the old entry
+							let updateEntry = function (andDelete) {
+								endpoint.schema[schemaKey]['/' + formData.api] = newEntry;
+								endpoint.schema[schemaKey]['/' + formData.api].imfv = oldRoute.imfv;
+								if (andDelete) {
+									delete endpoint.schema[schemaKey][routeKey]; // delete old name
+								}
+								currentScope.modalInstance.dismiss('cancel');
+							};
+							
+							if (('/' + formData.api) !== routeKey) {// new key
+								if (endpoint.schema[schemaKey]['/' + formData.api]) {
+									if (confirm('The same api route is already added. Are you sure you want to override it?')) {
+										updateEntry(true);
+									} else {
+										// nothing, keep the modal open
+									}
+								} else {
+									updateEntry(true);
+								}
+							} else {
+								updateEntry(false);
 							}
 						} else { // on add new
-							endpoint.schema[schemaKey]['/' + formData.api] = generateApi(formData.apiInfo, formData.apiGroup);
+							let newEntry = generateApi(formData.apiInfo, formData.apiGroup);
+							if (endpoint.schema[schemaKey]['/' + formData.api]) {
+								if (confirm('The same api route is already added. Are you sure you want to override it?')) {
+									endpoint.schema[schemaKey]['/' + formData.api] = newEntry;
+									currentScope.modalInstance.dismiss('cancel');
+								} else {
+									// nothing, keep the modal open
+								}
+							} else {
+								endpoint.schema[schemaKey]['/' + formData.api] = newEntry;
+								currentScope.modalInstance.dismiss('cancel');
+							}
 						}
-						currentScope.modalInstance.dismiss('cancel');
 					}
 				},
 				{
@@ -545,7 +585,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		let type = input ? (input.validation ? input.validation.type : input.type) : '';
 		let required = input ? input.required : false;
 		let source = input ? input.source : null;
-		let arrayItems = (onEdit && input) ? (input.items ? input.items.type : '') : '';
+		let arrayItems = (onEdit && input) ? (input.items ? input.items.type : (input.validation && input.validation.items ? input.validation.items.type : '')) : '';
 		
 		let selectedSourcesCleaned = [];
 		
@@ -665,7 +705,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			'label': 'Add / Edit IMFV',
 			'data': data,
 			"postBuild": function () {
-				if ((onEdit && input) ? (input.type === "array") : false) {
+				if ((onEdit && input) ? (input.type === "array" || (input.validation && input.validation.type === "array")) : false) {
 					jQuery("#addEditImfv #arrayItems-wrapper").slideDown(); // show array items
 				}
 				else {
@@ -727,6 +767,21 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							}
 						}
 						
+						if (formData.type === 'object' || (formData.validation && formData.validation.type === 'object')) {
+							if (onRoot) {
+								if (!formData.validation) {
+									formData.validation = {};
+								}
+								if (!formData.validation.properties) {
+									formData.validation.properties = {};
+								}
+							} else {
+								if (!formData.properties) {
+									formData.properties = {};
+								}
+							}
+						}
+						
 						let key = String(formData.key);
 						delete formData.key;
 						
@@ -738,13 +793,24 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							if (newObject.validation) {
 								newObject.validation.type = formData.type;
+								if(formData.validation && formData.validation.properties){ // for objects
+									newObject.validation.properties = formData.validation.properties;
+								}
+								if(formData.validation && formData.validation.items){ // for arrays
+									newObject.validation.items = formData.validation.items;
+								}
 							} else {
 								newObject.type = formData.type;
+								if(formData.properties){
+									newObject.properties = formData.properties;
+								}
 							}
 							
 							// applicable for arrays only
 							if (onRoot) {
-								newObject.validation.items = formData.items;
+								if(formData.items){
+									newObject.validation.items = formData.items;
+								}
 							} else {
 								newObject.items = formData.items;
 							}
@@ -806,20 +872,13 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							if (onRoot) {
 								if (formData.type !== 'array') { // todo: merge the code instead of checking up and here
-									formData.validation = {
-										type: formData.type
-									};
+									if (!formData.validation) {
+										formData.validation = {};
+									}
+									formData.validation.type = formData.type;
 								}
 								
 								delete formData.type;
-							}
-							
-							if (formData.type === 'object' || (formData.validation && formData.validation.type === 'object')) {
-								if (onRoot) {
-									formData.validation.properties = {};
-								} else {
-									formData.properties = {};
-								}
 							}
 							
 							if (isAddInArray) {

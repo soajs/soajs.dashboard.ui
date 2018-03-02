@@ -406,6 +406,7 @@ var catalogAppConfig = {
 				{'v': '$SOAJS_PROFILE', 'l': "$SOAJS_PROFILE", "group": "SOAJS Service/Daemon"},
 
 				{'v': '$SOAJS_SRV_MAIN', 'l': "$SOAJS_SRV_MAIN", "group": "SOAJS Service/Daemon"},
+				{'v': '$SOAJS_SERVICE_NAME', 'l': "$SOAJS_SERVICE_NAME", "group": "SOAJS Service/Daemon"},
 
 				{'v': '$SOAJS_DEPLOY_HA', 'l': "$SOAJS_DEPLOY_HA", "group": "SOAJS Deployer"},
 				{'v': '$SOAJS_HA_NAME', 'l': "$SOAJS_HA_NAME", "group": "SOAJS Deployer"},

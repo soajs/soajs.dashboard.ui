@@ -230,6 +230,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		
 		switch (driver) {
 			case 'previous':
+				if($scope.form.formData.deployment.previousEnvironment){
+					$scope.changeLikeEnv();
+				}
 				$scope.platforms.previous = true;
 				$scope.platforms.docker = false;
 				$scope.platforms.kubernetes = false;

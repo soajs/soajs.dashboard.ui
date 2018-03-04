@@ -77,7 +77,12 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						$scope.tabs.ep.push(oneRecord);
 					}
 					else if(oneRecord.src && oneRecord.src.owner === 'soajs'){
-						$scope.tabs.soajs.push(oneRecord);
+						if(SOAJSRMS.indexOf(oneRecord.src.repo) !== -1){
+							$scope.tabs.soajs.push(oneRecord);
+						}
+						else{
+							$scope.tabs.services.push(oneRecord);
+						}
 					}
 					else{
 						$scope.tabs.services.push(oneRecord);

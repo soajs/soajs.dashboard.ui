@@ -386,6 +386,9 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				}
 				x[3].tenantKey = selectedTenant.extKey;
 				x[3].info.tenantKey = selectedTenant.extKey;
+				if(Object.hasOwnProperty.call(selectedTenant, "access_token")){
+					x[3].tenant_access_token = selectedTenant.access_token;
+				}
 			}
 
 			if(!x[3].host.split(':')[1] || isNaN(parseInt(x[3].host.split(':')[1]))) {

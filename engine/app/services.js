@@ -1268,6 +1268,10 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				query.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 			}
 			
+			if(Object.hasOwnProperty.call(swagger, 'tenant_access_token')){
+				query.access_token = swagger.tenant_access_token;
+			}
+			
 			// add headers
 			headers.Accept = values.responseType;
 			headers['Content-Type'] = body ? values.contentType : 'text/plain';

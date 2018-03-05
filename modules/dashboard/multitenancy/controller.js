@@ -1673,8 +1673,11 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 									"routeName": "/urac/admin/group/list",
 									"params": { 'tId': tId }
 								}, function (error, response) {
+									overlayLoading.hide();
 									if (error) {
-										$scope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+										if (error.code !== 159) {
+											$scope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+										}
 									}
 									else {
 										response.forEach(function (grpObj) {
@@ -1684,7 +1687,6 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 											$scope.isInherited = true;
 										}
 										aclHelper.prepareViewAclObj($scope, $scope.currentApplication.aclFill);
-										overlayLoading.hide();
 									}
 								});
 							}

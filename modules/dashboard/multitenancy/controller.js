@@ -1683,10 +1683,22 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 										response.forEach(function (grpObj) {
 											$scope.allGroups.push(grpObj.code);
 										});
-										if (!$scope.currentApplication.acl) {
-											$scope.isInherited = true;
+									}
+									if (!$scope.currentApplication.acl) {
+										$scope.isInherited = true;
+									}
+									aclHelper.prepareViewAclObj($scope, $scope.currentApplication.aclFill);
+									for (var env in $scope.currentApplication.aclFill) {
+										if ($scope.currentApplication.aclFill[env]) {
+											if (JSON.stringify($scope.currentApplication.aclFill[env]) === '{}') {
+												for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
+													if ($scope.environments_codes[i].code === env) {
+														$scope.environments_codes.splice(i, 1);
+														break;
+													}
+												}
+											}
 										}
-										aclHelper.prepareViewAclObj($scope, $scope.currentApplication.aclFill);
 									}
 								});
 							}

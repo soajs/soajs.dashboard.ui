@@ -38,7 +38,9 @@
 				<tr>
 					<td align="left" valign="top" width="85%" colspan="2">
 						The domain you have selected does not support HTTPS, yet this interface is running with HTTPS support.<br />
-						The simulator will not work unless you enable loading unsafe scripts.
+						The simulator will not work unless you enable loading unsafe scripts.<br /><br/>
+						<b><u>Note:</u></b><br/>
+						We do not recommend using HTTP in production environment(s), we suggest you redeploy your nginx with HTTPS.
 					</td>
 				</tr>
 				<tr>
@@ -46,9 +48,9 @@
 				</tr>
 				<tr>
 					<td align="left" valign="top" width="85%">
-						<b><u>Note:</u></b><br />
+						<b><u>Behavior:</u></b><br />
 						<div ng-show="protocolConflictLink !== ''">
-							Once you enable loading unsafe scripts, all calls to <b>YOUR DOMAIN ONLY</b> will be made using http.<br />
+							Click the button on the right to enable loading unsafe scripts, all calls to <b>YOUR DOMAIN ONLY</b> will be made using HTTP.<br />
 							All requests to the current domain <b>{{uiCurrentDomain}}</b> will remain using HTTPS.<br />
 							This behavior is limited to the current browser tab only.
 						</div>

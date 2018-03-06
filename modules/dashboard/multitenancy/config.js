@@ -460,6 +460,9 @@ var tenantConfig = {
 		}
 	},
 	'permissions': {
+		'service': {
+			'list': ['dashboard', '/services/list', 'post']
+		},
 		'product': {
 			'list': ['dashboard', '/product/list', 'get']
 		},

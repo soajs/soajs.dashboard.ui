@@ -1566,6 +1566,9 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 	$scope.msg = {};
 	$scope.environments_codes = [];
 	
+	$scope.access = {};
+	constructModulePermissions($scope, $scope.access, tenantConfig.permissions);
+	
 	$scope.getEnvironments = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -1647,6 +1650,7 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 							"data": { "serviceNames": serviceNames }
 						}, function (error, response) {
 							if (error) {
+								overlayLoading.hide();
 								$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 							}
 							else {
@@ -1861,8 +1865,15 @@ multiTenantApp.controller('tenantApplicationAcl', ['$scope', 'ngDataApi', '$rout
 		}
 	};
 	
+	$scope.fullAccess = true;
 	//default operation
-	overlayLoading.show(function () {
-		$scope.getEnvironments();
-	});
+	if ($scope.access.tenant.list && $scope.access.product.list && $scope.access.service.list && $scope.access.environment.list) {
+		overlayLoading.show(function () {
+			$scope.getEnvironments();
+			
+		});
+	} else {
+		$scope.fullAccess = false;
+	}
+	
 }]);

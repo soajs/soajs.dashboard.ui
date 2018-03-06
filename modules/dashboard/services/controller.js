@@ -405,7 +405,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				$scope.protocolConflict = false;
 				$scope.protocolConflictLink = "";
 				$scope.protocolConflictBrowser = "";
-				if(x[3].info.scheme !== window.location.protocol && window.location.protocol === 'https'){
+				if(x[3].info.scheme !== window.location.protocol && window.location.protocol === 'https:'){
 					$scope.protocolConflict = true;
 					let myBrowser = detectBrowser();
 					

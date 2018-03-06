@@ -19,7 +19,9 @@
 		<div ng-show="!hosts.controller">
 			<alert type="warning" ng-if="deployer.type ==='manual'">
 				{{translation.thisEnvironmentConfiguredDeployed[LANG]}} <b>{{translation.manually[LANG]}}</b>.
-				{{translation.allServicesRunningEnvironmentHaveStartedStoppedAdministrator[LANG]}}
+				{{translation.allServicesRunningEnvironmentHaveStartedStoppedAdministrator[LANG]}}</br>
+				Please download the profile by clicking the button above and use it as the <strong>SOAJS_PROFILE</strong> environment variable prior to starting your controller(s).</br>
+				For more information <a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61975478/Environment+Variables" target="_blank">click here</a>.
 			</alert>
 		</div>
 		<div class="entryBoxes entryBoxesGrid" ng-init="" style="padding-left: 5px;" ng-show="hosts.controller || nginxHosts.length > 0">

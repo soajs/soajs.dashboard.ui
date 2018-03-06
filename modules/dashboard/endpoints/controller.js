@@ -230,48 +230,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}
 	}
 	
-	$scope.publish = function (mainType, endpoint) {
-		
-		let openOnPublishResponse = function (error) {
-			$modal.open({
-				templateUrl: 'onPublishResponse.tmpl',
-				size: 'm',
-				backdrop: 'static',
-				keyboard: false,
-				controller: function ($scope, $modalInstance) {
-					if (error) {
-						$scope.errorDescrition = error.message;
-					}else{
-						$scope.validResponse = true;
-					}
-					$scope.cancel = function () {
-						$modalInstance.close();
-					};
-				}
-			});
-		};
-		
-		if($scope.tempo.isPublishEnabled[endpoint._id]){
-			overlayLoading.show();
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/apiBuilder/publish",
-				"params": {
-					mainType,
-					"endpointId": endpoint._id
-				}
-			}, function (error, response) {
-				overlayLoading.hide();
-				openOnPublishResponse(error);
-			});
-		}else{
-			let error = {
-				message : 'Please save your updates first!'
-			};
-			openOnPublishResponse(error);
-		}
-	};
-	
 	$scope.updateSchemas = function (mainType, endpoint) {
 		let schemas = {};
 		let swaggerInput = '';

@@ -874,9 +874,30 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 					
 					$localStorage.acl_access = response.acl;
 					$localStorage.environments = response.environments;
-					$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
-					overlayLoading.hide();
-					return cb(true);
+					var options = {
+						"method": "get",
+						"routeName": "/dashboard/environment/list",
+						"params": {}
+					};
+					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
+						overlayLoading.hide();
+						if (error) {
+							if (error.code === 600) {
+								ngDataApi.logoutUser(currentScope);
+								currentScope.displayAlert('danger', "Login Failed !");
+								return cb(false);
+							}
+							else {
+								$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+								return cb(true);
+							}
+						}
+						else {
+							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+							$localStorage.environments = angular.copy(envs);
+							return cb(true);
+						}
+					});
 				});
 			}
 		});

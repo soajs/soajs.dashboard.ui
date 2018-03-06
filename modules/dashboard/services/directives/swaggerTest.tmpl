@@ -62,8 +62,8 @@
 				</tr>
 			</table>
 		</alert>
-		<br/>
 	</div>
+	<br/>
 	<hr/>
 	<br/>
 
@@ -74,8 +74,8 @@
 			{{(collapsed) ? "Expand" : "Collapse"}} Editor
 			<span class="icon icon-circle-right" ng-show="collapsed"></span>
 		</a>
+		<hr/>
 	</div>
-	<hr/>
 
 	<div class="f-left w49" ng-show="envSelected" ng-class="{'block': !collapsed, 'hidden': collapsed}">
 		<div id="editorTab" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>

@@ -60,6 +60,22 @@
 	</div>
 </script>
 
+<script type="text/ng-template" id="onPublishResponse.tmpl">
+	<div class="modal-header">
+		<h3 ng-if="errorDescrition" class="modal-title">Warning</h3>
+		<h3 ng-if="validResponse" class="modal-title">Publish Response</h3>
+	</div>
+	<div class="modal-body">
+		<alert ng-if="errorDescrition" type="danger" >{{errorDescrition}}</alert>
+		<alert ng-if="validResponse" type="success" >Published successfully!</alert>
+	</div>
+	<div class="modal-footer">
+		<div>
+			<button class="btn btn-success" ng-click="cancel()">Ok</button>
+		</div>
+	</div>
+</script>
+
 <script type="text/ng-template" id="imfv_renderer.html">
 	<div>
 		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='red'><span class='icon icon-cross' title='Delete' ng-click="onDeleteImfv(mainType, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx,isCommonField)"></span></span>
@@ -292,6 +308,9 @@
 							<br/>
 							<button ng-if="access.updateEndpointSchema" class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType, endpoint)">
 								Save
+							</button>
+							<button ng-if="access.updateEndpointSchema" class="btn btn-primary commonButtonsClass commonGreenButtonsClass" ng-click="publish(mainType, endpoint)">
+								Publish
 							</button>
 						</div>
 					</div>

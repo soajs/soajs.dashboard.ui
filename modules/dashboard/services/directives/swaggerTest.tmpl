@@ -30,6 +30,42 @@
 	</div>
 	<hr/>
 	<br/>
+	<div ng-show="protocolConflict">
+		<alert type="warning">
+			<h4>Detected Protocol Conflict</h4>
+			<hr />
+			<table width="100%" border="0">
+				<tr>
+					<td align="left" valign="top" width="85%" colspan="2">
+						The domain you have selected does not support HTTPS, yet this interface is running with HTTPS support.<br />
+						The simulator will not work unless you enable loading unsafe scripts.
+					</td>
+				</tr>
+				<tr>
+					<td><br /></td>
+				</tr>
+				<tr>
+					<td align="left" valign="top" width="85%">
+						<b><u>Note:</u></b><br />
+						<div ng-show="protocolConflictLink !== ''">
+							Once you enable loading unsafe scripts, all calls to <b>YOUR DOMAIN ONLY</b> will be made using http.<br />
+							All requests to the current domain <b>{{uiCurrentDomain}}</b> will remain using HTTPS.<br />
+							This behavior is limited to the current browser tab only.
+						</div>
+						<div ng-show="protocolConflictLink === ''">
+							The following browser does not support loading unsafe scripts, try using <b>Google Chrome</b>.
+						</div>
+					</td>
+					<td align="right" valign="bottom" width="15%">
+						<a href="{{protocolConflictLink}}" target="_blank" class="btn btn-sm btn-warning" tooltip="Enable Loading Unsafe Scripts" ng-show="protocolConflictLink !== ''">Enable in {{protocolConflictBrowser}}</a>
+					</td>
+				</tr>
+			</table>
+		</alert>
+	</div>
+	<br/>
+	<hr/>
+	<br/>
 
 	<div class="c-both w100 table" ng-show="envSelected">
 		<h4 class="f-left">Swagger Service Tester</h4>

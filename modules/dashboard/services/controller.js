@@ -230,13 +230,14 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 
 }]);
 
-servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient) {
+servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowser) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.yamlContent = "";
 	$scope.access = {};
 	$scope.tempDisable = true;
 	$scope.collapsed = false;
-
+	$scope.protocolConflict = false;
+	
 	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
 
 	//read service name from route params
@@ -395,11 +396,24 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 					x[3].tenant_access_token = selectedTenant.access_token;
 				}
 			}
-
+			
 			if(!x[3].host.split(':')[1] || isNaN(parseInt(x[3].host.split(':')[1]))) {
-				$window.alert('This service does not have any published ports. Either update the catalog recipe of this service and publish its port OR deploy SOAJS Controller and Nginx.');
+				$window.alert('This service does not have any published ports. Either update the catalog recipe of this service and publish its port OR deploy the SOAJS Controller and an Nginx in the environment you have selected to communicate with your service.');
 			}
 			else {
+				
+				$scope.protocolConflict = false;
+				$scope.protocolConflictLink = "";
+				$scope.protocolConflictBrowser = "";
+				if(x[3].info.scheme !== window.location.protocol && window.location.protocol === 'https'){
+					$scope.protocolConflict = true;
+					let myBrowser = detectBrowser();
+					
+					$scope.uiCurrentDomain = location.host;
+					$scope.protocolConflictBrowser = servicesConfig.protocolConflict[myBrowser].label;
+					$scope.protocolConflictLink = servicesConfig.protocolConflict[myBrowser].link;
+				}
+				
 				console.log("switching to new domain:", x[3].host);
 				//apply the changes
 				swaggerParser.execute.apply(null, x);

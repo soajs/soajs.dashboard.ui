@@ -76,5 +76,24 @@ var servicesConfig = {
 		'environments': {
 			'list': ['dashboard', '/environment/list', 'get']
 		}
+	},
+	
+	protocolConflict:{
+		"chrome": {
+			"label": "Google Chrome",
+			"link": "https://superuser.com/questions/487748/how-to-allow-chrome-browser-to-load-insecure-content"
+		},
+		"firefox": {
+			"label": "Firefox",
+			"link": "https://support.mozilla.org/en-US/kb/mixed-content-blocking-firefox#w_unblock-mixed-content"
+		},
+		"safari": {
+			"label": "Safari",
+			"link": ""
+		},
+		"internet explorer": {
+			"label": "Internet Explorer",
+			"link": "https://support.microsoft.com/sw-ke/help/2625928/only-secure-content-is-displayed-notification-in-internet-explorer-9-o"
+		}
 	}
 };

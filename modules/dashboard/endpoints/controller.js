@@ -22,7 +22,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		selectedResources: {}, // one array per endpoint
 		editEnabled: {}, // per ep per schema per route
 		switchView: {}, // per ep // swagger or imfv
-		swagger: {} // per ep
+		swagger: {}, // per ep
+		isPublishEnabled : {} // per ep // boolean
 	};
 	
 	$scope.wizard = {};
@@ -99,7 +100,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					ep.schema = response.schema;
 					$scope.setInitialImfv(ep);
 				}
-				
 			}
 		});
 	};
@@ -190,6 +190,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onDeleteImfv = function (mainType, endpoint, schemaKey, routeKey, inputKey, input, xxKeyxx, isCommonField) {
+		$scope.tempo.isPublishEnabled[endpoint._id] = false;
+		
 		$scope.setCurrentImfvOnEdit(mainType, endpoint, schemaKey, routeKey, xxKeyxx, isCommonField);
 		delete $scope.currentImfvParentOnEdit[$scope.currentImfvOnEdit];
 		
@@ -227,6 +229,48 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			delete endpoint.schema.commonFields[commonFieldKey];
 		}
 	}
+	
+	$scope.publish = function (mainType, endpoint) {
+		
+		let openOnPublishResponse = function (error) {
+			$modal.open({
+				templateUrl: 'onPublishResponse.tmpl',
+				size: 'm',
+				backdrop: 'static',
+				keyboard: false,
+				controller: function ($scope, $modalInstance) {
+					if (error) {
+						$scope.errorDescrition = error.message;
+					}else{
+						$scope.validResponse = true;
+					}
+					$scope.cancel = function () {
+						$modalInstance.close();
+					};
+				}
+			});
+		};
+		
+		if($scope.tempo.isPublishEnabled[endpoint._id]){
+			overlayLoading.show();
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/apiBuilder/publish",
+				"params": {
+					mainType,
+					"endpointId": endpoint._id
+				}
+			}, function (error, response) {
+				overlayLoading.hide();
+				openOnPublishResponse(error);
+			});
+		}else{
+			let error = {
+				message : 'Please save your updates first!'
+			};
+			openOnPublishResponse(error);
+		}
+	};
 	
 	$scope.updateSchemas = function (mainType, endpoint) {
 		let schemas = {};
@@ -320,6 +364,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					}
 				}
 				else {
+					$scope.tempo.isPublishEnabled[endpoint._id] = true;
 					$scope.displayAlert('success', 'Schema updated successfully');
 				}
 			});
@@ -386,6 +431,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'label': 'Add',
 					'btn': 'primary',
 					'action': function (formData) {
+						
+						$scope.tempo.isPublishEnabled[endpoint._id] = false;
 						
 						function generateApi(apiInfo, apiGroup) {
 							return {
@@ -464,6 +511,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.deleteSchema = function (endpoint, schemaKey) {
+		$scope.tempo.isPublishEnabled[endpoint._id] = false;
 		
 		// check if common fields delete are not used anymore, delete them!
 		let commonFieldsUsedWithinSchema = [];
@@ -545,6 +593,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 						if (formData.commonField === 'xxNewxx') {
 							$scope.onEditImfv(mainType, onEdit, isAddInArray, isCommonField, endpoint, schemaKey, routeKey, inputKey, input, xxKeyxx);
 						} else {
+							$scope.tempo.isPublishEnabled[endpoint._id] = false;
+							
 							if (!$scope.currentImfvRoot.commonFields) {
 								$scope.currentImfvRoot.commonFields = [];
 							}
@@ -720,6 +770,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'btn': 'primary',
 					'action': function (formData) {
 						
+						$scope.tempo.isPublishEnabled[endpoint._id] = false;
+						
 						let sourceReformatted; // if applicable
 						if (formData.source) {
 							sourceReformatted = [];
@@ -793,22 +845,22 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							if (newObject.validation) {
 								newObject.validation.type = formData.type;
-								if(formData.validation && formData.validation.properties){ // for objects
+								if (formData.validation && formData.validation.properties) { // for objects
 									newObject.validation.properties = formData.validation.properties;
 								}
-								if(formData.validation && formData.validation.items){ // for arrays
+								if (formData.validation && formData.validation.items) { // for arrays
 									newObject.validation.items = formData.validation.items;
 								}
 							} else {
 								newObject.type = formData.type;
-								if(formData.properties){
+								if (formData.properties) {
 									newObject.properties = formData.properties;
 								}
 							}
 							
 							// applicable for arrays only
 							if (onRoot) {
-								if(formData.items){
+								if (formData.items) {
 									newObject.validation.items = formData.items;
 								}
 							} else {
@@ -993,6 +1045,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'label': 'Add',
 					'btn': 'primary',
 					'action': function (formData) {
+						$scope.tempo.isPublishEnabled[endpoint._id] = false;
 						endpoint.schema[formData.schemaKey] = {};
 						$scope.setActiveTab(formData.schemaKey);
 						currentScope.modalInstance.dismiss('cancel');
@@ -1097,6 +1150,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.onDeleteRoute = function (endpoint, schemaKey, routeKey) {
 		
+		$scope.tempo.isPublishEnabled[endpoint._id] = false;
+		
 		// check if common fields delete are not used anymore, delete them!
 		let commonFieldsUsedWithinRoute = [];
 		let apiData = endpoint.schema[schemaKey][routeKey];
@@ -1166,6 +1221,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 				$scope.envs = response.envs; // ???
 				
 				response.records.forEach(function (endpoint) {
+					$scope.tempo.isPublishEnabled[endpoint._id] = true;
 					if (endpoint.authentications) {
 						$scope.tempo.selectedResources[endpoint.serviceName] = endpoint.authentications;
 					} else {

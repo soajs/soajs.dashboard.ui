@@ -396,7 +396,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					
 					formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
 					
-					if (!formData.remoteCertificates.ca || !formData.remoteCertificates.cert || !formData.remoteCertificates.key) {
+					if (!formData.remoteCertificates || !formData.remoteCertificates.ca || !formData.remoteCertificates.cert || !formData.remoteCertificates.key) {
 						$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");
 						return false;
 					}

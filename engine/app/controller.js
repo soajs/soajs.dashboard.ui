@@ -732,18 +732,22 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.isUserNameLoggedIn = function () {
 			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
 				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
-				if (!$cookies.get("soajs_dashboard_login", { 'domain': interfaceDomain }) || !$localStorage.acl_access) {
+				if (!$cookies.get("soajs_dashboard_login", { 'domain': interfaceDomain })) {
 					overlayLoading.show();
 					myAccountAccess.getUser($scope, username, function (result) {
 						if (result) {
 							myAccountAccess.getKeyPermissions($scope, function (success) {
 								overlayLoading.show();
 								if (success) {
-									$timeout(function () {
+									if ($localStorage.acl_access) {
+										$timeout(function () {
+											overlayLoading.hide();
+											$scope.enableInterface = true;
+											window.location.reload();
+										}, 400);
+									} else {
 										overlayLoading.hide();
-										$scope.enableInterface = true;
-										window.location.reload();
-									}, 300);
+									}
 								} else {
 									overlayLoading.hide();
 								}

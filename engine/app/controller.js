@@ -322,7 +322,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 								$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 							}
 							else {
-								if (response.acl) {
+								if (response.acl && response.acl[envRecord.code.toLowerCase()]) {
 									$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl[envRecord.code.toLowerCase()];
 								}
 								doEnvPerNav();
@@ -741,6 +741,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 										$scope.enableInterface = true;
 										window.location.reload();
 									}, 300);
+								} else {
+									overlayLoading.hide();
 								}
 							});
 						} else {

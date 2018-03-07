@@ -830,12 +830,10 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 			if (error) {
 				return cb(false);
 			}
-			else {
-				if (!$localStorage.soajs_user) {
-					$localStorage.soajs_user = response;
-				}
-				return cb(true);
+			if (!$localStorage.soajs_user) {
+				$localStorage.soajs_user = response;
 			}
+			return cb(true);
 		});
 	}
 	

@@ -810,7 +810,7 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 });
 
-soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
+soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '$timeout', function ($cookies, $localStorage, ngDataApi, $timeout) {
 	
 	function getUser(currentScope, username, cb) {
 		if ($localStorage.soajs_user && $localStorage.soajs_user.username !== username) {
@@ -843,7 +843,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 		
 		$localStorage.environments = null;
 		$localStorage.acl_access = null;
-		
+
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/key/permission/get"
@@ -854,7 +854,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 				return cb(false);
 			}
 			else {
-				$localStorage.soajs_user.locked = response.locked || false;
 				$cookies.put("soajs_dashboard_key", response.extKey, { 'domain': interfaceDomain });
 				
 				getSendDataFromServer(currentScope, ngDataApi, {
@@ -871,23 +870,30 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 							$localStorage.soajs_user.locked = response.locked;
 						}
 					}
-					
-					$localStorage.acl_access = response.acl;
-					$localStorage.environments = response.environments;
+
+					if (response.acl) {
+						$localStorage.acl_access = response.acl;
+					} else {
+						console.log('Missing ACL');
+					}
+					if (response.environments) {
+						$localStorage.environments = response.environments;
+					}
 					var options = {
 						"method": "get",
 						"routeName": "/dashboard/environment/list",
 						"params": {}
 					};
 					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
-						overlayLoading.hide();
 						if (error) {
+							overlayLoading.hide();
 							if (error.code === 600) {
 								ngDataApi.logoutUser(currentScope);
 								currentScope.displayAlert('danger', "Login Failed !");
 								return cb(false);
 							}
 							else {
+								console.log('Failed to get environments');
 								$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
 								return cb(true);
 							}
@@ -895,7 +901,10 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', f
 						else {
 							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
 							$localStorage.environments = angular.copy(envs);
-							return cb(true);
+							$timeout(function () {
+								overlayLoading.hide();
+								return cb(true);
+							}, 150);
 						}
 					});
 				});
@@ -1131,7 +1140,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 	 * Send API explorer request
 	 */
 	this.send = function (swagger, operation, values) {
-		if( ['/swaggerEditor', '/endpoints'].indexOf($location.path()) !== -1){
+		if (['/swaggerEditor', '/endpoints'].indexOf($location.path()) !== -1) {
 			var oldParams = angular.copy(operation.parameters);
 			var oldValues = angular.copy(values);
 			
@@ -1289,7 +1298,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				query.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 			}
 			
-			if(Object.hasOwnProperty.call(swagger, 'tenant_access_token')){
+			if (Object.hasOwnProperty.call(swagger, 'tenant_access_token')) {
 				query.access_token = swagger.tenant_access_token;
 			}
 			

@@ -14,7 +14,9 @@ function constructModulePermissions(scope, access, permissionsObj, forceEnv) {
 			else {
 				env = 'dashboard';
 				if (exclude.indexOf(permissionsObj[permission][0]) === -1) {
-					env = scope.$parent.currentSelectedEnvironment.toLowerCase();
+					if (scope.$parent.currentSelectedEnvironment) {
+						env = scope.$parent.currentSelectedEnvironment.toLowerCase();
+					}
 				}
 			}
 			
@@ -239,7 +241,7 @@ function getTimeAgo(date) {
  * creates a blob out of buffer data, and opens a dialog download box
  */
 function openSaveAsDialog(filename, content, mediaType) {
-	var blob = new Blob([content], {type: mediaType});
+	var blob = new Blob([content], { type: mediaType });
 	var URL = window.URL || window.webkitURL;
 	var objectUrl = URL.createObjectURL(blob);
 	

@@ -622,6 +622,20 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							overlayLoading.hide();
 							if (error) {
 								$scope.displayAlert('danger', error.message);
+								if ($scope.newResource && $scope.newResource._id){
+									getSendDataFromServer($scope, ngDataApi, {
+										method: 'delete',
+										routeName: '/dashboard/resources/delete',
+										params: {
+											env: currentScope.envCode.toUpperCase(),
+											id: $scope.newResource._id
+										}
+									}, function (error) {
+										if (error) {
+											$scope.displayAlert('danger', error.message);
+										}
+									});
+								}
 							}
 							else {
 								$scope.displayAlert('success', 'Resource deployed successfully. Check the High Availability - Cloud section to see it running');

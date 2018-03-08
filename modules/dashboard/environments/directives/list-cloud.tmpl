@@ -158,19 +158,26 @@
 				</alert>
 				<br><br>
 			</div>
-			<div ng-if="!myController && !myNginx">
+			<div ng-if="!hosts || hosts.length === 0">
 				<alert type="warning">
-					<div class="w100 c-both table" style="margin-bottom:0;">
-						<p class="f-left" style="padding-top:8px;">
-							Click to deploy SOAJS Nginx and Controller in this Environment
-						</p>
-						<button ng-if="access.hacloud.services.add" class="btn btn-warning f-right" ng-click="deployNewEnv()">
-							Deploy
-						</button>
-					</div>
+					<table width="100%">
+						<tr>
+							<td width="100%" ng-if="!access.hacloud.services.add">
+								No deployed services or components found in this environment!
+							</td>
+							<td width="50%" ng-if="access.hacloud.services.add">
+								No deployed services or components found in this environment, you can
+							</td>
+							<td width="22%" align="center">
+								<a href="#/deploy-repositories" ng-if="access.hacloud.services.add" class="btn btn-warning">Deploy from Source Code</a>
+							</td>
+							<td align="center" width="6%">OR</td>
+							<td width="22%" align="center">
+								<a href="#/resources" ng-if="access.hacloud.services.add" class="btn btn-warning">Create &amp; Deploy Resources</a>
+							</td>
+						</tr>
+					</table>
 				</alert>
-				<br/>
-				<hr>
 			</div>
 			<div class="c-both w100 table" ng-if="envPlatform === 'kubernetes'">
 				<span class="f-left">
@@ -181,12 +188,6 @@
 						<button class="btn btn-info" ng-click="deployMetricsServer()">Enable Metrics</button>&nbsp;&nbsp;
 					</span>
 				</span>
-				<!--<div class="f-right w30">-->
-					<!-- <span ng-if="isAutoScalable && envDeployed">
-						<button class="btn btn-info" ng-click="envAutoScale()">Configure Autoscaling</button>&nbsp;&nbsp;
-					</span> -->
-				<!--</div>-->
-				<!--<br /><br />-->
 			</div>
 			<div class="c-both w100 table" ng-if="envPlatform !=='kubernetes'">
 			</div>

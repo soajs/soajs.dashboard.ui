@@ -164,7 +164,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.message = {};
 				$scope.recipes = [];
 				$scope.recipeUserInput = { image: {}, envs: {} };
-
+				
+				$scope.configRepos = [];
+				$scope.configReposBranches = {};
+				
 				$scope.resourceDeployed = false;
 				if (resource && resource.instance && resource.instance.id) {
 					$scope.resourceDeployed = true;
@@ -249,6 +252,29 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					setTimeout(function () {
 						$scope.message = {};
 					}, 5000);
+				};
+				
+				$scope.getConfigurationRepos = function () {
+					// todo: call api and fill configRepos
+					$scope.configRepos.push({
+						name : 'test'
+					});
+				};
+				
+				$scope.fetchBranches = function () {
+					// todo: call api and get branches
+					// $scope.formData.deployOptions.customConfiguration.repository
+					
+					$scope.configReposBranches.test = [
+						{
+							name : 'branch1',
+							path : '//branch 1'
+						},
+						{
+							name : 'branch2',
+							path : '//branch 2'
+						}
+					];
 				};
 
 				$scope.getEnvs = function () {
@@ -707,6 +733,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 
 				$scope.fillForm();
 				$scope.getCatalogRecipes();
+				$scope.getConfigurationRepos();
 			}
 		});
 	};

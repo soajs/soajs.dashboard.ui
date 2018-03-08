@@ -526,7 +526,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								$scope.myRecipes = [];
 								for (var type in $scope.recipes) {
 									$scope.recipes[type].forEach(function (oneRecipe) {
-										if (oneRecipe.recipe && oneRecipe.recipe.deployOptions && oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
+										if (oneRecipe.recipe && ['service', 'daemon','other'].indexOf(oneRecipe.type) !== -1) {
 											$scope.myRecipes.push(oneRecipe);
 										}
 									});

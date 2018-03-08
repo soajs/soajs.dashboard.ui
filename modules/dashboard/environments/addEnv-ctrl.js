@@ -1517,10 +1517,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		recipes.forEach(function (oneRecipe) {
 			if (oneRecipe._id === chosenRecipe) {
 				
-				delete entries.branches;
-				if (oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
-					entries.branches = serviceBranches.branches;
-				}
+				entries.branches = serviceBranches.branches;
 				
 				delete entries.imagePrefix;
 				delete entries.imageName;

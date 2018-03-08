@@ -249,6 +249,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				currentScope.accounts.forEach(function (oneAccount) {
 					if (oneAccount.repos && oneAccount.repos.length > 0) {
 						oneAccount.repos.forEach(function (oneRepo) {
+							//compare deployed service with api catalog or daemon catalog entries
 							if (oneRepo.servicesList && oneRepo.servicesList.length > 0) {
 								oneRepo.servicesList.forEach(function (oneService) {
 									oneService.deployedVersionsCounter = 0;
@@ -311,9 +312,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									});
 								});
 							}
+							//compare deployed service with repo
 							else {
 								response.forEach(function (oneDeployedEntry) {
-									if (oneDeployedEntry.labels && oneDeployedEntry.labels['service.repo'] && oneDeployedEntry.labels['service.repo'] === oneRepo.name) {
+									if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === currentScope.envCode.toLowerCase() + "-" + oneRepo.name.toLowerCase() ) {
 										oneRepo.deployed = true;
 										oneRepo.serviceId = oneDeployedEntry.id;
 										if(!oneRepo.deploySettings){
@@ -650,14 +652,12 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										}
 
 										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
-										if (catalogRecipe.recipe.deployOptions.specifyGitConfiguration) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv.toLowerCase();
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
-											if(version !== 'Default'){
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
-											}
-											$scope.allowGitOverride = true;
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv.toLowerCase();
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
+										if(version !== 'Default'){
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
 										}
+										$scope.allowGitOverride = true;
 									}
 								});
 							}

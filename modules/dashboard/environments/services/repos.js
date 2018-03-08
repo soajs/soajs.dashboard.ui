@@ -83,7 +83,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					        else if (oneRepo.type === 'multi') {
 						        repoServices = oneRepo.multi;
 					        }
-					        else if (oneRepo.type === 'component'){
+					        else if (oneRepo.type === 'component' || oneRepo.type === 'config' || oneRepo.type === 'static'){
 						        if(repoComponentsNames.indexOf(oneRepo.name) === -1){
 							        repoComponentsNames.push(oneRepo.name);
 							        repoComponents.push(oneRepo);
@@ -651,7 +651,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 
 										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
 										if (catalogRecipe.recipe.deployOptions.specifyGitConfiguration) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv;
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv.toLowerCase();
 											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
 											if(version !== 'Default'){
 												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
@@ -1130,7 +1130,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			}
 			if(oneDeployedEntry.labels['soajs.service.name']){
-				deploySettings.options.custom.name = oneDeployedEntry.labels['soajs.service.name'];
+				deploySettings.options.custom.name = oneDeployedEntry.labels['soajs.service.name'].toLowerCase();
 			}
 			if(oneDeployedEntry.labels['soajs.service.type']){
 				deploySettings.options.custom.type = oneDeployedEntry.labels['soajs.service.type'];

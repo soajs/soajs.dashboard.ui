@@ -43,6 +43,7 @@
 					                <span ng-if="repo.status === 'deleted'" class="f-right mr11"><span class="icon icon-warning"></span>{{translation.repoHasBeenDeleted[LANG]}}</span>
 					                <span ng-if="repo.status === 'active'" class="f-right mr11"><span class="icon icon-checkmark"></span>{{translation.activeRepo[LANG]}}</span>
 					                <span ng-if="repo.status === 'outOfSync'" class="f-right mr11"><span class="icon icon-warning"></span>{{translation.repoOutOfSync[LANG]}}</span>
+					                <span ng-if="repo.type && repo.status === 'active'" class="f-right mr11"><span class="icon icon-price-tag"></span>{{repo.type}}</span>
 					                <div class="rightActions">
 						                <a href="" ng-if="access.activateRepo && !repo.status" ng-click="activateRepo(account, repo)" ng-style="{'margin-top': '-19px'}">
 							                <span class="icon icon-switch" tooltip="{{translation.activate[LANG]}}"></span>

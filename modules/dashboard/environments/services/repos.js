@@ -652,14 +652,12 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										}
 
 										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
-										if (catalogRecipe.recipe.deployOptions.specifyGitConfiguration) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv.toLowerCase();
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
-											if(version !== 'Default'){
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
-											}
-											$scope.allowGitOverride = true;
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv.toLowerCase();
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
+										if(version !== 'Default'){
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
 										}
+										$scope.allowGitOverride = true;
 									}
 								});
 							}

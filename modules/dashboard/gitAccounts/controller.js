@@ -332,7 +332,7 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                         if(response.type){
                                         	repo.type = response.type;
                                         }
-                                        if (Array.isArray(response) || (typeof (response) === 'object' && response.repo && response.type !=='custom' && response.type !== 'component')) {
+                                        if (Array.isArray(response) || (typeof (response) === 'object' && response.repo && ['custom','config','component','static'].indexOf(response.type) == -1)) {
                                             var repoAddSuccess = $modal.open({
                                                 templateUrl: 'repoAddSuccess.tmpl',
                                                 backdrop: true,

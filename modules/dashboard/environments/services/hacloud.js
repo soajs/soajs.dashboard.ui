@@ -527,7 +527,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					}
 				}
 				
-				if (catalogRecipe.recipe.deployOptions.specifyGitConfiguration) {
+				if (['service','daemon','other'].indexOf(catalogRecipe.type) !== -1) {
 					var newInput = {
 						'name': 'branch',
 						'label': 'Branch',

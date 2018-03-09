@@ -254,11 +254,92 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}, 5000);
 				};
 				
+				// -=-=-=--=-=-=-=-=-=-=-=-=-=
+				$scope.listAccounts = function () {
+					getSendDataFromServer($scope, ngDataApi, {
+						'method': 'get',
+						'routeName': '/dashboard/gitAccounts/accounts/list'
+					}, function (error, response) {
+						if (error) {
+							$scope.displayAlert('danger', error.message);
+						} else {
+							$scope.accounts = response;
+							
+							$scope.accounts.forEach(function(oneAccount){
+								oneAccount.hide = true;
+							});
+							
+							if ($scope.accounts.length > 0) {
+								$scope.listRepos($scope.accounts, 0, 'getRepos');
+							}
+							if($scope.accounts.length === 1){
+								$scope.accounts[0].hide = false;
+								$scope.accounts[0].icon = 'minus';
+							}
+						}
+					});
+				};
+				
+				$scope.listRepos = function (accounts, counter, action) {
+					if (!Array.isArray(accounts)) {
+						accounts = [accounts];
+					}
+					
+					//get repos of all accounts in parallel
+					accounts.forEach(function (oneAccount) {
+						var id = oneAccount._id;
+						oneAccount.loading = true;
+						if (!oneAccount.nextPageNumber) {
+							oneAccount.nextPageNumber = $scope.defaultPageNumber;
+						}
+						
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "get",
+							"routeName": "/dashboard/gitAccounts/getRepos",
+							"params": {
+								id: id,
+								provider: oneAccount.provider,
+								per_page: 100, // $scope.defaultPerPage,
+								page: 1 //(action === 'loadMore') ? oneAccount.nextPageNumber : $scope.defaultPageNumber
+							}
+						}, function (error, response) {
+							oneAccount.loading = false;
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							} else {
+								
+								if (action === 'loadMore') {
+									$scope.appendNewRepos(oneAccount, response);
+								}
+								else if (action === 'getRepos') {
+									
+									// if (oneAccount.owner === 'soajs') {
+									// 	oneAccount.repos = [];
+									// 	response.forEach (function (oneRepo) {
+									// 		if ($scope.whitelistedRepos.indexOf(oneRepo.full_name) !== -1) {
+									// 			oneAccount.repos.push(oneRepo);
+									// 		}
+									// 	});
+									// }
+									// else {
+									// 	oneAccount.repos = response;
+									// }
+									//
+									// oneAccount.nextPageNumber = 2;
+									// oneAccount.allowLoadMore = (response.length === $scope.defaultPerPage);
+								}
+							}
+						});
+					});
+				};
+				
 				$scope.getConfigurationRepos = function () {
 					// todo: call api and fill configRepos
 					$scope.configRepos.push({
 						name : 'test'
 					});
+					
+					$scope.listAccounts();
 				};
 				
 				$scope.fetchBranches = function () {

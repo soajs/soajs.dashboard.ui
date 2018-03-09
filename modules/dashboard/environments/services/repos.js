@@ -10,7 +10,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	function listGitAccounts(currentScope) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
-			'routeName': '/dashboard/gitAccounts/accounts/list'
+			'routeName': '/dashboard/gitAccounts/accounts/list',
+			params: {
+				fullList: true
+			}
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
@@ -22,7 +25,31 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				});
 
 				if (currentScope.accounts.length > 0) {
-					listRepos(currentScope, 'getRepos');
+					
+					//fix repo and owner values
+					currentScope.accounts.forEach((oneAccount) => {
+						oneAccount.repos.forEach((oneRepo) => {
+							if(oneRepo.name.indexOf("/")!== -1){
+								oneRepo.full_name = oneRepo.name;
+								let tempName = oneRepo.name.split("/");
+								oneRepo.owner = tempName[0];
+								oneRepo.name = tempName[1];
+							}
+							
+							if(oneRepo.type === 'multi'){
+								oneRepo.multi = angular.copy(oneRepo.configSHA);
+								delete oneRepo.configSHA;
+								oneRepo.multi.forEach((oneSub) => {
+									oneSub.name = oneSub.contentName;
+									oneSub.type = oneSub.contentType;
+									delete oneSub.contentName;
+									delete oneSub.contentType;
+								});
+							}
+						});
+					});
+					
+					listRepos(currentScope);
 				}
 				if(currentScope.accounts.length === 1){
 					currentScope.accounts[0].hide = false;
@@ -32,74 +59,48 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		});
 	}
 
-	function listRepos(currentScope, action) {
+	function listRepos(currentScope) {
 		if (!Array.isArray(currentScope.accounts)) {
 			currentScope.accounts = [currentScope.accounts];
 		}
-
-		currentScope.accounts.forEach(function (oneAccount) {
-			var id = oneAccount._id;
-			oneAccount.loading = true;
-			if (!oneAccount.nextPageNumber) {
-				oneAccount.nextPageNumber = currentScope.defaultPageNumber;
-			}
-
-			getSendDataFromServer(currentScope, ngDataApi, {
-			    "method": "get",
-			    "routeName": "/dashboard/gitAccounts/getRepos",
-			    "params": {
-			        id: id,
-			        provider: oneAccount.provider,
-			        per_page: currentScope.defaultPerPage,
-			        page: (action === 'loadMore') ? oneAccount.nextPageNumber : currentScope.defaultPageNumber,
-					activeOnly: true
-			    }
-			}, function (error, response) {
-				oneAccount.loading = false;
-			    if (error) {
-			        currentScope.displayAlert('danger', error.message);
-			    } else {
-			        if (action === 'loadMore') {
-			            appendNewRepos(oneAccount, response);
-			        }
-			        else if (action === 'getRepos') {
-						if (oneAccount.owner === 'soajs') {
-							for (var i = response.length - 1; i >= 0; i--) {
-								if (['soajs.dashboard'].indexOf(response[i].name) !== -1) {
-									response.splice(i, 1);
+		
+		getServices(currentScope, function () {
+			getDaemons(currentScope, function () {
+				getCdData(currentScope, function () {
+					getCatalogRecipes(currentScope, function () {
+						getDeployedServices(currentScope, function() {
+							
+							currentScope.accounts.forEach(function (oneAccount) {
+								oneAccount.loading = false;
+								if (oneAccount.owner === 'soajs') {
+									for (let i = oneAccount.repos.length - 1; i >= 0; i--) {
+										if (['soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
+											oneAccount.repos.splice(i, 1);
+										}
+									}
 								}
-							}
-						}
-
-						var repoComponents = [];
-						var repoComponentsNames =[];
-			            oneAccount.repos = response;
-				        for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
-				        	var oneRepo = oneAccount.repos[inverse];
-					        var repoServices = [];
-					        if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
-						        repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
-					        }
-					        else if (oneRepo.type === 'multi') {
-						        repoServices = oneRepo.multi;
-					        }
-					        else if (oneRepo.type === 'component' || oneRepo.type === 'config' || oneRepo.type === 'static'){
-						        if(repoComponentsNames.indexOf(oneRepo.name) === -1){
-							        repoComponentsNames.push(oneRepo.name);
-							        repoComponents.push(oneRepo);
-						        }
-						        oneAccount.repos.splice(inverse, 1);
-					        }
-					
-					        oneRepo.servicesList = repoServices;
-				        }
-
-			            oneAccount.nextPageNumber = 2;
-			            oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
-
-						getServices(currentScope, function () {
-							getDaemons(currentScope, function () {
-
+								
+								var repoComponents = [];
+								var repoComponentsNames =[];
+								for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
+									var oneRepo = oneAccount.repos[inverse];
+									var repoServices = [];
+									
+									if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
+										repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
+									}
+									else if (oneRepo.type === 'multi') {
+										repoServices = oneRepo.multi;
+									}
+									else if (oneRepo.type === 'component' || oneRepo.type === 'config' || oneRepo.type === 'static'){
+										if(repoComponentsNames.indexOf(oneRepo.name) === -1){
+											repoComponentsNames.push(oneRepo.name);
+											repoComponents.push(oneRepo);
+										}
+										oneAccount.repos.splice(inverse, 1);
+									}
+									oneRepo.servicesList = repoServices;
+								}
 								repoComponents.forEach(function(oneRepoComponent){
 									currentScope.originalServices.forEach(function (oneService) {
 										if (oneService.src && oneService.src.repo === oneRepoComponent.name) {
@@ -111,76 +112,167 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										oneAccount.repos.push(oneRepoComponent);
 									}
 								});
-
+								
 								oneAccount.repos.forEach(function (oneRepo, index) {
-									oneRepo.servicesList.forEach(function (oneRepoService) {
-										var type = (oneRepoService.type === 'service') ? 'services': 'daemons';
-										currentScope[type].forEach(function (oneService) {
-											if (oneService.name === oneRepoService.name) {
-												oneRepoService.versions = [];
-												if (oneService.versions) {
-													Object.keys(oneService.versions).forEach(function (oneVersion) {
-														if(type === 'daemons' && oneService.grpConf){
-															oneService.versions[oneVersion] = {};
-															oneService.versions[oneVersion].grpConf = oneService.grpConf;
-															oneService.grpConf.forEach(function(oneGroup){
-																if(!oneService.versions[oneVersion][oneGroup.daemonConfigGroup]){
-																	oneService.versions[oneVersion][oneGroup.daemonConfigGroup] = {};
+									
+									if (oneRepo.servicesList && oneRepo.servicesList.length > 0) {
+										oneRepo.servicesList.forEach(function (oneRepoService) {
+											var type = (oneRepoService.type === 'service') ? 'services' : 'daemons';
+											
+											currentScope[type].forEach(function (oneService) {
+												
+												if (oneService.name === oneRepoService.name) {
+													oneRepoService.versions = [];
+													if (oneService.versions) {
+														Object.keys(oneService.versions).forEach(function (oneVersion) {
+															if (type === 'daemons' && oneService.grpConf) {
+																oneService.versions[oneVersion] = {};
+																oneService.versions[oneVersion].grpConf = oneService.grpConf;
+																oneService.grpConf.forEach(function (oneGroup) {
+																	if (!oneService.versions[oneVersion][oneGroup.daemonConfigGroup]) {
+																		oneService.versions[oneVersion][oneGroup.daemonConfigGroup] = {};
+																	}
+																});
+															}
+															if (oneService.prerequisites) {
+																oneService.versions[oneVersion].prerequisites = oneService.prerequisites;
+															}
+															if (oneService.gcId) {
+																oneService.versions[oneVersion].gcId = oneService.gcId;
+															}
+															oneService.versions[oneVersion].v = oneVersion;
+															oneRepoService.versions.push(oneService.versions[oneVersion]);
+														});
+													}
+													
+													if (currentScope.cdSettings[oneRepoService.name]) {
+														oneRepoService.deploySettings = currentScope.cdSettings[oneRepoService.name];
+														
+														if (oneRepoService.versions && oneRepoService.versions.length > 0) {
+															oneRepoService.versions.forEach(function (oneVersion) {
+																if (currentScope.cdSettings[oneRepoService.name]['v' + oneVersion.v]) {
+																	if (currentScope.daemonGrpConf) {
+																		if (currentScope.cdSettings[oneRepoService.name]['v' + oneVersion.v][currentScope.daemonGrpConf]) {
+																			if (!oneVersion.deploySettings) {
+																				oneVersion.deploySettings = {};
+																			}
+																			oneVersion.deploySettings[currentScope.daemonGrpConf] = currentScope.cdSettings[oneRepoService.name]['v' + oneVersion.v][currentScope.daemonGrpConf];
+																		}
+																	} else {
+																		oneVersion.deploySettings = currentScope.cdSettings[oneRepoService.name]['v' + oneVersion.v];
+																	}
 																}
 															});
 														}
-														if(oneService.prerequisites){
-															oneService.versions[oneVersion].prerequisites = oneService.prerequisites;
+													}
+													
+													oneRepoService.deployedVersionsCounter = 0;
+													oneRepoService.deployedConfigCounter = {};
+													currentScope.deployedServices.forEach(function (oneDeployedEntry) {
+														if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === oneRepoService.name) {
+															oneRepoService.deployed = true;
+															if (oneRepoService.versions && oneRepoService.versions.length > 0) {
+																oneRepoService.versions.forEach(function (oneVersion) {
+																	if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.version'] && oneDeployedEntry.labels['soajs.service.version'] === oneVersion.v) {
+																		if(oneDeployedEntry.env && oneDeployedEntry.labels['soajs.service.type'] === 'daemon'){
+																			oneDeployedEntry.env.forEach(function (oneEnv) {
+																				if(oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1){
+																					oneVersion.deployed = true;
+																					if(!oneRepoService.deployedConfigCounter[oneVersion.v]){
+																						oneRepoService.deployedConfigCounter[oneVersion.v] = 0;
+																					}
+																					oneRepoService.deployedConfigCounter[oneVersion.v]++;
+																					oneVersion[oneEnv.split("=")[1]].deployed = true;
+																					oneVersion[oneEnv.split("=")[1]].serviceId = oneDeployedEntry.id;
+																					if(!oneVersion.deploySettings || !oneVersion.deploySettings[oneEnv.split("=")[1]]){
+																						getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
+																							if(Object.keys(deploySettings).length > 0){
+																								if(!oneVersion.deploySettings){
+																									oneVersion.deploySettings = {};
+																								}
+																								oneVersion.deploySettings[oneEnv.split("=")[1]] = deploySettings;
+																							}
+																						});
+																					}
+																				}
+																			});
+																		}else{
+																			oneVersion.deployed = true;
+																			oneVersion.serviceId = oneDeployedEntry.id;
+																			oneRepoService.deployedVersionsCounter++;
+																			if(!oneVersion.deploySettings){
+																				getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
+																					if(Object.keys(deploySettings).length > 0){
+																						oneVersion.deploySettings = deploySettings;
+																					}
+																				});
+																			}
+																		}
+																	}
+																});
+															}
+															else {
+																oneRepoService.serviceId = oneDeployedEntry.id;
+																if(!oneRepoService.deploySettings){
+																	getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
+																		if(Object.keys(deploySettings).length > 0){
+																			oneRepoService.deploySettings = deploySettings;
+																		}
+																	});
+																}
+															}
 														}
-														if(oneService.gcId){
-															oneService.versions[oneVersion].gcId = oneService.gcId;
+													});
+												}
+											});
+										});
+									}
+									//compare deployed service with repo
+									else {
+										currentScope.deployedServices.forEach(function (oneDeployedEntry) {
+											if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === currentScope.envCode.toLowerCase() + "-" + oneRepo.name.toLowerCase() ) {
+												oneRepo.deployed = true;
+												oneRepo.serviceId = oneDeployedEntry.id;
+												
+												if (currentScope.cdSettings[oneRepo.name]) {
+													oneRepo.deploySettings = currentScope.cdSettings[oneRepo.name];
+													
+													if (oneRepo.versions && oneRepo.versions.length > 0) {
+														oneRepo.versions.forEach(function (oneVersion) {
+															if (currentScope.cdSettings[oneRepo.name]['v' + oneVersion.v]) {
+																if (currentScope.daemonGrpConf) {
+																	if (currentScope.cdSettings[oneRepo.name]['v' + oneVersion.v][currentScope.daemonGrpConf]) {
+																		if (!oneVersion.deploySettings) {
+																			oneVersion.deploySettings = {};
+																		}
+																		oneVersion.deploySettings[currentScope.daemonGrpConf] = currentScope.cdSettings[oneRepo.name]['v' + oneVersion.v][currentScope.daemonGrpConf];
+																	}
+																} else {
+																	oneVersion.deploySettings = currentScope.cdSettings[oneRepoService.name]['v' + oneVersion.v];
+																}
+															}
+														});
+													}
+												}
+												
+												if(!oneRepo.deploySettings){
+													getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
+														if(Object.keys(deploySettings).length > 0){
+															oneRepo.deploySettings = deploySettings;
 														}
-														oneService.versions[oneVersion].v = oneVersion;
-														oneRepoService.versions.push(oneService.versions[oneVersion]);
 													});
 												}
 											}
 										});
-									});
-								});
-
-								getCdData(currentScope, function () {
-									getCatalogRecipes(currentScope, function (error) {
-										getDeployedServices(currentScope);
-									});
+									}
 								});
 							});
+						
 						});
-			        }
-			    }
+					});
+				});
 			});
 		});
-	}
-
-	function appendNewRepos (currentScope, account, repos) {
-		account.nextPageNumber++;
-		account.allowLoadMore = (repos.length === currentScope.defaultPerPage);
-
-		if (!account.repos) {
-			account.repos = [];
-		}
-
-		if (account.owner === 'soajs') {
-			repos.forEach (function (oneRepo) {
-				if (currentScope.excludedSOAJSRepos.indexOf(oneRepo.full_name) === -1) {
-					account.repos.push(oneRepo);
-				}
-			});
-			setTimeout(function(){
-				jQuery('#reposList').animate({scrollTop: jQuery('#reposList').prop("scrollHeight")}, 1500);
-			},500);
-		}
-		else {
-			account.repos = account.repos.concat(repos);
-			setTimeout(function(){
-				jQuery('#reposList').animate({scrollTop: jQuery('#reposList').prop("scrollHeight")}, 1500);
-			},500);
-		}
 	}
 
 	function getCdData (currentScope, cb) {
@@ -195,47 +287,13 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					currentScope.cdSettings = {};
 					return cb();
 				}
-
 				currentScope.cdSettings = response[currentScope.envCode.toUpperCase()];
-				currentScope.accounts.forEach(function(oneAccount) {
-					if (oneAccount.repos && oneAccount.repos.length > 0) {
-						oneAccount.repos.forEach(function (oneRepo) {
-							if (currentScope.cdSettings[oneRepo.name]) {
-								oneRepo.deploySettings = currentScope.cdSettings[oneRepo.name];
-							}
-
-							oneRepo.servicesList.forEach(function (oneService) {
-								if (currentScope.cdSettings[oneService.name]) {
-									oneService.deploySettings = currentScope.cdSettings[oneService.name];
-
-									if (oneService.versions && oneService.versions.length > 0) {
-										oneService.versions.forEach(function (oneVersion) {
-											if (currentScope.cdSettings[oneService.name]['v' + oneVersion.v]) {
-												if (currentScope.daemonGrpConf) {
-													if(currentScope.cdSettings[oneService.name]['v' + oneVersion.v][currentScope.daemonGrpConf]){
-														if(!oneVersion.deploySettings){
-															oneVersion.deploySettings = {};
-														}
-														oneVersion.deploySettings[currentScope.daemonGrpConf] = currentScope.cdSettings[oneService.name]['v' + oneVersion.v][currentScope.daemonGrpConf];
-													}
-												} else {
-													oneVersion.deploySettings = currentScope.cdSettings[oneService.name]['v' + oneVersion.v];
-												}
-											}
-										});
-									}
-								}
-							});
-						});
-					}
-				});
-
 				return cb();
 			}
 		});
 	}
 
-	function getDeployedServices(currentScope) {
+	function getDeployedServices(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/services/list",
@@ -246,98 +304,18 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
-				currentScope.accounts.forEach(function (oneAccount) {
-					if (oneAccount.repos && oneAccount.repos.length > 0) {
-						oneAccount.repos.forEach(function (oneRepo) {
-							//compare deployed service with api catalog or daemon catalog entries
-							if (oneRepo.servicesList && oneRepo.servicesList.length > 0) {
-								oneRepo.servicesList.forEach(function (oneService) {
-									oneService.deployedVersionsCounter = 0;
-									oneService.deployedConfigCounter = {};
-									response.forEach(function (oneDeployedEntry) {
-										if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === oneService.name) {
-											oneService.deployed = true;
-											if (oneService.versions && oneService.versions.length > 0) {
-												oneService.versions.forEach(function (oneVersion) {
-													if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.version'] && oneDeployedEntry.labels['soajs.service.version'] === oneVersion.v) {
-														if(oneDeployedEntry.env && oneDeployedEntry.labels['soajs.service.type'] === 'daemon'){
-																oneDeployedEntry.env.forEach(function (oneEnv) {
-																	if(oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1){
-																		oneVersion.deployed = true;
-																		if(!oneService.deployedConfigCounter[oneVersion.v]){
-																			oneService.deployedConfigCounter[oneVersion.v] = 0;
-																		}
-																		oneService.deployedConfigCounter[oneVersion.v]++;
-																		oneVersion[oneEnv.split("=")[1]].deployed = true;
-																		oneVersion[oneEnv.split("=")[1]].serviceId = oneDeployedEntry.id;
-																		if(!oneVersion.deploySettings || !oneVersion.deploySettings[oneEnv.split("=")[1]]){
-																			getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
-																				if(Object.keys(deploySettings).length > 0){
-																					if(!oneVersion.deploySettings){
-																						oneVersion.deploySettings = {};
-																					}
-																					oneVersion.deploySettings[oneEnv.split("=")[1]] = deploySettings;
-																				}
-																			});
-																		}
-																	}
-																});
-														}else{
-															oneVersion.deployed = true;
-															oneVersion.serviceId = oneDeployedEntry.id;
-															oneService.deployedVersionsCounter++;
-															if(!oneVersion.deploySettings){
-																getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
-																	if(Object.keys(deploySettings).length > 0){
-																		oneVersion.deploySettings = deploySettings;
-																	}
-																});
-															}
-														}
-													}
-												});
-											}
-											else {
-												oneService.deployed = true;
-												oneService.serviceId = oneDeployedEntry.id;
-												if(!oneService.deploySettings){
-													getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
-														if(Object.keys(deploySettings).length > 0){
-															oneService.deploySettings = deploySettings;
-														}
-													});
-												}
-											}
-										}
-									});
-								});
-							}
-							//compare deployed service with repo
-							else {
-								response.forEach(function (oneDeployedEntry) {
-									if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === currentScope.envCode.toLowerCase() + "-" + oneRepo.name.toLowerCase() ) {
-										oneRepo.deployed = true;
-										oneRepo.serviceId = oneDeployedEntry.id;
-										if(!oneRepo.deploySettings){
-											getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
-												if(Object.keys(deploySettings).length > 0){
-													oneRepo.deploySettings = deploySettings;
-												}
-											});
-										}
-									}
-								});
-							}
-						});
-					}
-				});
+				currentScope.deployedServices = response;
+				
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
 			}
 		});
 	}
 
 	function checkHeapster(currentScope, cb) {
 		let envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-		let envPlatform = envDeployer.selected.split('.')[1];
+		let envPlatform = envDeployer.selected;
 		if(envPlatform !== 'kubernetes') {
 			if(cb) return cb();
 		}
@@ -408,48 +386,16 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					keyboard: true,
 					controller: function ($scope) {
 						fixBackDrop();
-						$scope.controllerScope = currentScope;
-						$scope.isKubernetes = isKubernetes;
-						$scope.deployNewService = true;
-						$scope.version = version.v || 'Default';
-						$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
-						$scope.cdEnvs = [$scope.oneEnv];
-						$scope.deployed = false;
-						$scope.oneSrv = (service && service.name) ? service.name : oneRepo.name;
-						$scope.serviceType = (service && service.type) ? service.type : 'other';
-						$scope.showCD = true;
-						$scope.isAutoScalable = currentScope.isAutoScalable || false;
-						$scope.autoScale = false;
-						if(daemonGrpConf){
-							$scope.daemonGrpConf = daemonGrpConf;
-						}
-						if(SOAJSRMS.indexOf(oneRepo.name) !== -1){
-							$scope.showCD = false;
-						}
-						$scope.services = {};
-						if($scope.version === 'Default'){
-							$scope.services[$scope.oneSrv] = service || oneRepo;
-						}else{
-							$scope.services[$scope.oneSrv] = version;
-						}
-						if (($scope.services[$scope.oneSrv].deployed && $scope.serviceType !== 'daemon')|| (daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf] && $scope.services[$scope.oneSrv][daemonGrpConf].deployed)) {
-							$scope.serviceId = ($scope.serviceType === 'daemon' && daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf]) ? $scope.services[$scope.oneSrv][daemonGrpConf].serviceId : $scope.services[$scope.oneSrv].serviceId;
-							$scope.deployed = true;
-						}
-						$scope.default = false;
-						$scope.gitAccount = gitAccount;
+						let showCD = (SOAJSRMS.indexOf(oneRepo.name) === -1);
+						
 						$scope.alerts = [];
-						$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
-						getCDRecipe($scope, oneRepo, function () {
-							$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
-						});
-
+						$scope.autoScale = false;
+						
 						$scope.cancel = function () {
 							deployService.close();
 						};
 
 						$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {
-							$scope.alerts = [];
 							if (isCode) {
 								var msgT = getCodeMessage(msg, service, orgMesg);
 								if (msgT) {
@@ -462,8 +408,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						$scope.closeAlert = function (index) {
 							$scope.alerts.splice(index, 1);
 						};
-
-
+						
 						$scope.showHide = function (oneService, name) {
 							if (oneService.icon === 'minus') {
 								oneService.icon = 'plus';
@@ -485,18 +430,23 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								jQuery('#cdc_' + name).slideDown()
 							}
 						};
-
-						$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
-							$scope.branches.forEach(function (oneBranch) {
-								if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
-									if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
-									}
-								}
-							});
-
+						
+						$scope.saveRecipe = function (type) {
+							saveRecipe(currentScope, type, showCD);
 						};
+						
+						$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
+							console.log("kabsa bel branches ....")
+							// $scope.branches.forEach(function (oneBranch) {
+							// 	if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
+							// 		if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
+							// 			$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
+							// 			$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
+							// 		}
+							// 	}
+							// });
+						};
+						
 						$scope.activateAutoScale = function () {
 							$scope.autoScale = !$scope.autoScale;
 						};
@@ -522,7 +472,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							else {
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active = true;
 							}
-							getCatalogRecipes($scope, function () {
+							getCatalogRecipes(currentScope, function () {
 								$scope.myRecipes = [];
 								for (var type in $scope.recipes) {
 									$scope.recipes[type].forEach(function (oneRecipe) {
@@ -554,7 +504,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource = {};
 								}
 
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = oneRepo.owner.login;
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = oneRepo.owner;
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.repo = oneRepo.name;
 								if (isKubernetes) {
 									$scope.deploymentModes = ['deployment', 'daemonset'];
@@ -662,11 +612,117 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								});
 							}
 						};
-
-						$scope.saveRecipe = function (type) {
-							saveRecipe($scope, type)
-						};
-
+						
+						getCDRecipe(function () {
+							$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+						});
+						
+						function getCDRecipe(cb) {
+							let defaultCD = {
+								"branch": "master",
+								"strategy": "notify",
+								"default": true
+							};
+							
+							let cdData = {};
+							cdData[currentScope.oneEnv] = {};
+							
+							let serviceName = (service) ? service.serviceName : oneRepo.name;
+							
+							console.log(gitAccount);
+							console.log(daemonGrpConf);
+							console.log(oneRepo);
+							console.log(service);
+							console.log(version);
+							
+							cdData[currentScope.oneEnv][serviceName] = {};
+							if(version === 'Default'){
+								if(service){
+									cdData[currentScope.oneEnv][serviceName] = service.deploySettings;
+								}
+								else{
+									cdData[currentScope.oneEnv][serviceName] = oneRepo.deploySettings;
+								}
+							}
+							else {
+								if(service.type === 'daemon'){
+									// cdData[currentScope.oneEnv][serviceName][currentScope.version] = (currentScope.services[serviceName].deploySettings && currentScope.services[serviceName].deploySettings[daemonGrpConf] ) ? currentScope.services[serviceName].deploySettings[daemonGrpConf] : {};
+									console.log(service);
+									console.log(version);
+								}else{
+									cdData[currentScope.oneEnv][serviceName][version.v] = version.deploySettings;
+								}
+							}
+							
+							getServiceBranches(currentScope, {
+								gitAccount: gitAccount,
+								repo: oneRepo,
+								cd: true
+							}, function () {
+								buildFormData(currentScope, currentScope.envCode, serviceName, () => {});
+							});
+						}
+						
+						function buildFormData(currentScope, env, serviceName, cb) {
+							var dashboardServices = ['dashboard', 'proxy'];
+							if (dashboardServices.indexOf(serviceName) !== -1) {
+								return cb();
+							}
+							if (!currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj) {
+								currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj = {
+									branches: [],
+									ha: {}
+								};
+							}
+							//cdData was saved before, fill entries from arriving db of cdData
+							if ($scope.cdData[env.toUpperCase()][serviceName]) {
+								currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData = angular.copy($scope.cdData[env.toUpperCase()][serviceName]);
+								var cdData = currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData;
+								if (!cdData.versions) {
+									cdData.versions = {};
+								}
+								if (cdData.branch || cdData.strategy || cdData.options) {
+									cdData.versions['Default'] = {'active': true};
+								}
+								if (cdData.branch) {
+									cdData.versions['Default'].branch = cdData.branch;
+									delete cdData.branch;
+								}
+								if (cdData.strategy) {
+									cdData.versions['Default'].strategy = cdData.strategy;
+									delete cdData.strategy;
+								}
+								if (cdData.options) {
+									cdData.versions['Default'].options = cdData.options;
+									delete cdData.options;
+								}
+								if (cdData.deploy) {
+									cdData.versions['Default'].deploy = cdData.deploy;
+									// currentScope.setDeploy(env.toUpperCase(), 'Default', serviceName);
+									delete cdData.deploy;
+								}
+								var cdDataClone = angular.copy($scope.cdData[env.toUpperCase()][serviceName]);
+								delete cdDataClone.branch;
+								delete cdDataClone.strategy;
+								delete cdDataClone.options;
+								delete cdDataClone.deploy;
+								delete cdDataClone.type;
+								if (Object.keys(cdDataClone).length > 0) {
+									for (var version in cdDataClone) {
+										var v = version.replace('v', '');
+										cdData.versions[v] = cdDataClone[version];
+										cdData.versions[v].active = true;
+									}
+								}
+								if (cdData.versions && Object.keys(cdData.versions).length === 0) {
+									delete cdData.versions;
+								}
+							}
+							currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj.ha[version] = currentScope.services[serviceName];
+							currentScope.cdConfiguration[serviceName].display = true;
+							currentScope.cdConfiguration[serviceName][env.toUpperCase()].display = true;
+							return cb();
+						}
 					}
 				});
 			}
@@ -676,10 +732,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	function getCatalogRecipes(currentScope, cb) {
 		//several calls to list recipes are being made to check if oldStyle
 		//check if recipes already retrieved and return them instead of repeating the api call
-		if(currentScope.recipes && Object.keys(currentScope.recipes).length > 0) {
-			return cb(null);
-		}
-
 		currentScope.loadingRecipes = true;
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
@@ -711,7 +763,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		});
 	}
 
-	function saveRecipe(currentScope, type) {
+	function saveRecipe(currentScope, type, showCD) {
 		var configuration = {};
 		var modes = ['deployment', 'replicated'];
 		var oneEnv = currentScope.oneEnv;
@@ -722,13 +774,14 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		currentScope.updateGitBranch(oneRepo, oneEnv, version);
 		if (version === 'Default') {
 			configuration.default = {};
-			if (currentScope.showCD) {
+			if (showCD) {
 				configuration.default = {
 					branch: currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.gitSource.branch,
 					strategy: currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].strategy,
 					deploy: false
 				};
 			}
+			
 			if (currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options) {
 				if (currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.custom && currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.custom.version) {
 					delete currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.custom.version;
@@ -754,7 +807,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				v: 'v' + version,
 				deploy: false
 			};
-			if (currentScope.showCD) {
+			if (showCD) {
 				configuration.version = {
 					v: 'v' + version,
 					branch: currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.gitSource.branch,
@@ -810,99 +863,19 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				}
 				switch (type) {
 					case 'deploy':
-						doDeploy(currentScope, options, false, currentScope.controllerScope);
+						doDeploy(currentScope, options, false);
 						break;
 					case 'rebuild':
 						doRebuild(currentScope, options);
 						break;
 					default :
-						if(currentScope.daemonGrpConf){
-							currentScope.controllerScope.daemonGrpConf = currentScope.daemonGrpConf;
-						}
-						currentScope.controllerScope.getCdData(function () {
-							currentScope.cancel();
-							overlayLoading.hide();
-							currentScope.controllerScope.displayAlert('success', 'Recipe Saved successfully');
-						});
+						currentScope.cancel();
+						overlayLoading.hide();
+						currentScope.displayAlert('success', 'Recipe Saved successfully');
+						break;
 				}
 			}
 		});
-	}
-
-	function getCDRecipe(currentScope, oneRepo, cb) {
-		currentScope.cdConfiguration = null;
-				var defaultCD = {
-					"branch": "master",
-					"strategy": "notify",
-					"default": true
-				};
-				currentScope.cdData = {};
-				currentScope.cdData[currentScope.oneEnv] = {};
-				if(currentScope.version === 'Default'){
-					currentScope.cdData[currentScope.oneEnv][currentScope.oneSrv] = (currentScope.services[currentScope.oneSrv].deploySettings) ? currentScope.services[currentScope.oneSrv].deploySettings : {};
-				}
-				else {
-					currentScope.cdData[currentScope.oneEnv][currentScope.oneSrv] = {};
-					if(currentScope.serviceType === 'daemon'){
-						currentScope.cdData[currentScope.oneEnv][currentScope.oneSrv][currentScope.version] = (currentScope.services[currentScope.oneSrv].deploySettings && currentScope.services[currentScope.oneSrv].deploySettings[currentScope.daemonGrpConf] ) ? currentScope.services[currentScope.oneSrv].deploySettings[currentScope.daemonGrpConf] : {};
-					}else{
-						currentScope.cdData[currentScope.oneEnv][currentScope.oneSrv][currentScope.version] = (currentScope.services[currentScope.oneSrv].deploySettings) ? currentScope.services[currentScope.oneSrv].deploySettings : {};
-					}
-				}
-				currentScope.cdConfiguration = {};
-				currentScope.cdConfiguration[currentScope.oneSrv] = {
-					type: currentScope.serviceType,
-					icon: 'minus'
-				};
-
-				var max = Object.keys(currentScope.cdConfiguration).length;
-				currentScope.maxEntries = 0;
-				var repoCount = 0;
-				populateServiceInEnvironments(currentScope.oneSrv, defaultCD, function () {
-					repoCount++;
-					if (repoCount === max) {
-						for (var oneService in currentScope.cdConfiguration) {
-							if (currentScope.cdConfiguration[oneService].display) {
-								currentScope.maxEntries++;
-							}
-						}
-						getServiceBranches(currentScope, {
-							gitAccount: currentScope.gitAccount,
-							repo: oneRepo,
-							cd: true
-						}, function () {
-							return cb();
-						});
-					}
-				});
-
-		function populateServiceInEnvironments(serviceName, defaultCD, mCb) {
-			var oneCDEnv = currentScope.oneEnv;
-			var types = ['service', 'daemon', 'other'];
-			if (serviceName && currentScope.cdConfiguration[serviceName] && currentScope.cdConfiguration[serviceName].type && types.indexOf(currentScope.cdConfiguration[serviceName].type) !== -1) {
-					if (!currentScope.cdData[oneCDEnv.toUpperCase()]) {
-						currentScope.cdData[oneCDEnv.toUpperCase()] = defaultCD;
-					}
-					currentScope.cdConfiguration[serviceName].name = serviceName;
-					if (!Object.hasOwnProperty.call(currentScope.cdConfiguration[serviceName], 'display')) {
-						currentScope.cdConfiguration[serviceName].display = false;
-					}
-					currentScope.cdConfiguration[serviceName][oneCDEnv.toUpperCase()] = {
-						"cdData": {},
-						"display": false
-					};
-					currentScope.cdConfiguration[serviceName][oneCDEnv.toUpperCase()].cdData.versions = {};
-					getEnvServices(oneCDEnv, serviceName, function () {
-						return mCb();
-					});
-			} else {
-				mCb();
-			}
-		}
-
-		function getEnvServices(envCode, serviceName, mCb) {
-			getServiceInEnv(currentScope, envCode, serviceName, mCb);
-		}
 	}
 
 	function getServiceBranches(currentScope, opts, cb) {
@@ -918,7 +891,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		}, function (error, response) {
 			if (error) {
-				currentScope.form.displayAlert('danger', error.message);
+				currentScope.displayAlert('danger', error.message);
 			} else {
 				if (opts.cd) {
 					currentScope.branches = response.branches;
@@ -934,82 +907,13 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		});
 	}
 
-	function getServiceInEnv(currentScope, env, serviceName, cb) {
-		buildFormData(currentScope, env, serviceName, cb)
-	}
-
-	function buildFormData(currentScope, env, serviceName, cb) {
-		var dashboardServices = ['dashboard', 'proxy'];
-		if (dashboardServices.indexOf(serviceName) !== -1) {
-			return cb();
-		}
-		if (!currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj) {
-			currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj = {
-				branches: [],
-				ha: {}
-			};
-		}
-		//cdData was saved before, fill entries from arriving db of cdData
-		if (currentScope.cdData[env.toUpperCase()][serviceName]) {
-			currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData = angular.copy(currentScope.cdData[env.toUpperCase()][serviceName]);
-			var cdData = currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData;
-			if (!cdData.versions) {
-				cdData.versions = {};
-			}
-			if (cdData.branch || cdData.strategy || cdData.options) {
-				cdData.versions['Default'] = {'active': true};
-			}
-			if (cdData.branch) {
-				cdData.versions['Default'].branch = cdData.branch;
-				delete cdData.branch;
-			}
-			if (cdData.strategy) {
-				cdData.versions['Default'].strategy = cdData.strategy;
-				delete cdData.strategy;
-			}
-			if (cdData.options) {
-				cdData.versions['Default'].options = cdData.options;
-				delete cdData.options;
-			}
-			if (cdData.deploy) {
-				cdData.versions['Default'].deploy = cdData.deploy;
-				// currentScope.setDeploy(env.toUpperCase(), 'Default', serviceName);
-				delete cdData.deploy;
-			}
-			var cdDataClone = angular.copy(currentScope.cdData[env.toUpperCase()][serviceName]);
-			delete cdDataClone.branch;
-			delete cdDataClone.strategy;
-			delete cdDataClone.options;
-			delete cdDataClone.deploy;
-			delete cdDataClone.type;
-			if (Object.keys(cdDataClone).length > 0) {
-				for (var version in cdDataClone) {
-					var v = version.replace('v', '');
-					cdData.versions[v] = cdDataClone[version];
-					cdData.versions[v].active = true;
-				}
-			}
-			if (cdData.versions && Object.keys(cdData.versions).length === 0) {
-				delete cdData.versions;
-			}
-		}
-		currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj.ha[version] = currentScope.services[serviceName];
-		currentScope.cdConfiguration[serviceName].display = true;
-		currentScope.cdConfiguration[serviceName][env.toUpperCase()].display = true;
-		return cb();
-
-	}
-
-	function doDeploy(currentScope, params, external , controllerScope) {
+	function doDeploy(currentScope, params, external) {
 		getCatalogRecipes(currentScope, function() {
 			if (currentScope.oldStyle) {
 				openUpgradeModal(currentScope);
 			}
 			else {
 				overlayLoading.show();
-				if(external || !controllerScope) {
-					controllerScope = currentScope
-				}
 				if (params.custom && params.custom.version) {
 					params.custom.version = parseInt(params.custom.version);
 				}
@@ -1019,21 +923,16 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					"data": params
 				};
 				getSendDataFromServer(currentScope, ngDataApi, config, function (error) {
+						overlayLoading.hide();
 					if (error) {
 						currentScope.displayAlert('danger', error.message);
-						overlayLoading.hide();
 					} else {
 						if(!external){
 							currentScope.cancel();
 						}
-						if(currentScope.daemonGrpConf){
-							controllerScope.daemonGrpConf = currentScope.daemonGrpConf;
-						}
-						controllerScope.getCdData(function () {
-							controllerScope.getDeployedServices();
-							controllerScope.displayAlert('success', 'Service deployed successfully');
-							overlayLoading.hide();
-						});
+						
+						currentScope.displayAlert('success', 'Service deployed successfully');
+						listRepos(currentScope, () => {});
 					}
 				});
 			}
@@ -1068,14 +967,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				if(currentScope.daemonGrpConf){
-					currentScope.controllerScope.daemonGrpConf = currentScope.daemonGrpConf;
-				}
-				currentScope.controllerScope.getCdData(function () {
-					currentScope.controllerScope.getDeployedServices();
-					currentScope.cancel();
-					currentScope.controllerScope.displayAlert('success', 'Service rebuilt successfully');
-				});
+				currentScope.displayAlert('success', 'Service rebuilt successfully');
+				currentScope.cancel();
+				listRepos(currentScope, () => {});
 			}
 		});
 	}
@@ -1156,30 +1050,30 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		}
 		if(oneDeployedEntry.env) {
 			oneDeployedEntry.env.forEach(function (oneEnv) {
-				if(!deploySettings.options.deployConfig.memoryLimit && oneEnv.indexOf("SOAJS_SRV_MEMORY") !== -1){
+				if (!deploySettings.options.deployConfig.memoryLimit && oneEnv.indexOf("SOAJS_SRV_MEMORY") !== -1) {
 					deploySettings.options.deployConfig.memoryLimit = oneEnv.split("=")[1] * 1048576;
 				}
-				if(oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1){
+				if (oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1) {
 					deploySettings.options.custom.daemonGroup = oneEnv.split("=")[1];
 				}
-				if(!deploySettings.options.gitSource.branch && oneEnv.indexOf("SOAJS_GIT_BRANCH") !== -1 ){
+				if (!deploySettings.options.gitSource.branch && oneEnv.indexOf("SOAJS_GIT_BRANCH") !== -1) {
 					deploySettings.options.gitSource.branch = oneEnv.split("=")[1];
-					if(!deploySettings.options.gitSource.commit && oneEnv.indexOf("SOAJS_GIT_COMMIT") !== -1){
+					if (!deploySettings.options.gitSource.commit && oneEnv.indexOf("SOAJS_GIT_COMMIT") !== -1) {
 						deploySettings.options.gitSource.commit = oneEnv.split("=")[1];
 					}
-					if(!deploySettings.options.gitSource.repo && oneEnv.indexOf("SOAJS_GIT_REPO") !== -1){
+					if (!deploySettings.options.gitSource.repo && oneEnv.indexOf("SOAJS_GIT_REPO") !== -1) {
 						deploySettings.options.gitSource.repo = oneEnv.split("=")[1];
 					}
-					if(!deploySettings.options.gitSource.owner && oneEnv.indexOf("SOAJS_GIT_OWNER") !== -1){
+					if (!deploySettings.options.gitSource.owner && oneEnv.indexOf("SOAJS_GIT_OWNER") !== -1) {
 						deploySettings.options.gitSource.owner = oneEnv.split("=")[1];
 					}
 				}
-
-				if(currentScope.recipes && oneDeployedEntry.labels['soajs.catalog.id']){
+				
+				if (currentScope.recipes && oneDeployedEntry.labels['soajs.catalog.id']) {
 					for (var type in currentScope.recipes) {
 						currentScope.recipes[type].forEach(function (catalogRecipe) {
 							if (catalogRecipe._id === oneDeployedEntry.labels['soajs.catalog.id']) {
-								if(catalogRecipe.recipe.buildOptions && catalogRecipe.recipe.buildOptions.env){
+								if (catalogRecipe.recipe.buildOptions && catalogRecipe.recipe.buildOptions.env) {
 									for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
 										if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput' && oneEnv.indexOf(envVariable) !== -1) {
 											deploySettings.options.custom.env[envVariable] = oneEnv.split("=")[1];
@@ -1191,13 +1085,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						});
 					}
 				}
-				return cb(deploySettings)
 			});
 		}
-		else {
-			return cb(deploySettings)
-		}
-
+		return cb(deploySettings)
 	}
 
 	function openUpgradeModal(currentScope){

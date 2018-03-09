@@ -164,10 +164,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.message = {};
 				$scope.recipes = [];
 				$scope.recipeUserInput = { image: {}, envs: {} };
-				
-				$scope.configRepos = [];
-				$scope.configReposBranches = {};
-				
+
 				$scope.resourceDeployed = false;
 				if (resource && resource.instance && resource.instance.id) {
 					$scope.resourceDeployed = true;

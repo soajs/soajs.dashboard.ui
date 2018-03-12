@@ -83,7 +83,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					        else if (oneRepo.type === 'multi') {
 						        repoServices = oneRepo.multi;
 					        }
-					        else if (oneRepo.type === 'component' || oneRepo.type === 'config' || oneRepo.type === 'static'){
+					        else if (oneRepo.type === 'component'){
 						        if(repoComponentsNames.indexOf(oneRepo.name) === -1){
 							        repoComponentsNames.push(oneRepo.name);
 							        repoComponents.push(oneRepo);
@@ -249,7 +249,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				currentScope.accounts.forEach(function (oneAccount) {
 					if (oneAccount.repos && oneAccount.repos.length > 0) {
 						oneAccount.repos.forEach(function (oneRepo) {
-							//compare deployed service with api catalog or daemon catalog entries
 							if (oneRepo.servicesList && oneRepo.servicesList.length > 0) {
 								oneRepo.servicesList.forEach(function (oneService) {
 									oneService.deployedVersionsCounter = 0;
@@ -312,10 +311,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									});
 								});
 							}
-							//compare deployed service with repo
 							else {
 								response.forEach(function (oneDeployedEntry) {
-									if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === currentScope.envCode.toLowerCase() + "-" + oneRepo.name.toLowerCase() ) {
+									if (oneDeployedEntry.labels && oneDeployedEntry.labels['service.repo'] && oneDeployedEntry.labels['service.repo'] === oneRepo.name) {
 										oneRepo.deployed = true;
 										oneRepo.serviceId = oneDeployedEntry.id;
 										if(!oneRepo.deploySettings){
@@ -526,7 +524,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								$scope.myRecipes = [];
 								for (var type in $scope.recipes) {
 									$scope.recipes[type].forEach(function (oneRecipe) {
-										if (oneRecipe.recipe && ['service', 'daemon','other'].indexOf(oneRecipe.type) !== -1) {
+										if (oneRecipe.recipe && oneRecipe.recipe.deployOptions && oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
 											$scope.myRecipes.push(oneRecipe);
 										}
 									});
@@ -652,12 +650,14 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										}
 
 										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv.toLowerCase();
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
-										if(version !== 'Default'){
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
+										if (catalogRecipe.recipe.deployOptions.specifyGitConfiguration) {
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv;
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
+											if(version !== 'Default'){
+												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
+											}
+											$scope.allowGitOverride = true;
 										}
-										$scope.allowGitOverride = true;
 									}
 								});
 							}
@@ -1130,7 +1130,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			}
 			if(oneDeployedEntry.labels['soajs.service.name']){
-				deploySettings.options.custom.name = oneDeployedEntry.labels['soajs.service.name'].toLowerCase();
+				deploySettings.options.custom.name = oneDeployedEntry.labels['soajs.service.name'];
 			}
 			if(oneDeployedEntry.labels['soajs.service.type']){
 				deploySettings.options.custom.type = oneDeployedEntry.labels['soajs.service.type'];

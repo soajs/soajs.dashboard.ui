@@ -63,20 +63,14 @@
 			<td>{{(config.namespace.perService ? 'Per Service' : 'Global')}}</td>
 		</tr>
 		<tr class="even">
-			<td>
-				<b>Nginx Deployment Type</b>
-			</td>
-			<td>{{config.nginxDeployType}}</td>
-		</tr>
-		<tr class="odd">
 			<td colspan="2">
 				<b>Kubernetes Token</b>
 			</td>
 		</tr>
-		<tr class="even last">
+		<tr class="odd last">
 			<td colspan="2">
 				<div style="overflow: auto;">
-					{{config.auth.token | trimmed}}
+					{{config.auth.token}}
 				</div>
 			</td>
 		</tr>

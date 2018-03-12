@@ -164,6 +164,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.message = {};
 				$scope.recipes = [];
 				$scope.recipeUserInput = { image: {}, envs: {} };
+				
+				$scope.configRepos = [];
+				$scope.configReposBranches = {};
 
 				$scope.resourceDeployed = false;
 				if (resource && resource.instance && resource.instance.id) {
@@ -192,7 +195,40 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						$scope.notsupported = true;
 					}
 				});
-
+				
+				$scope.fetchBranches = function (confOrCustom) {
+					let selectedRepo;
+					if (confOrCustom === 'conf') {
+						selectedRepo = $scope.formData.deployOptions.sourceCode.configuration.repository;
+					} else { // cust
+						selectedRepo = $scope.formData.deployOptions.sourceCode.custom.repository;
+					}
+					
+					let accountData = {};
+					$scope.configRepos.forEach(function (eachAcc) {
+						if(eachAcc.name === selectedRepo){
+							accountData = eachAcc;
+						}
+					});
+					
+					getSendDataFromServer($scope, ngDataApi, {
+						'method': 'get',
+						'routeName': '/dashboard/gitAccounts/getBranches',
+						params: {
+							id: accountData.accountId,
+							name: selectedRepo,
+							type: 'repo',
+							provider : accountData.provider
+						}
+					}, function (error, response) {
+						if (error) {
+							$scope.displayAlert('danger', error.message);
+						} else {
+							$scope.configReposBranches[selectedRepo] = response.branches;
+						}
+					});
+				};
+				
 				$scope.options = {
 					deploymentModes: [],
 					envCode: currentScope.envCode,
@@ -251,110 +287,45 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}, 5000);
 				};
 				
-				// -=-=-=--=-=-=-=-=-=-=-=-=-=
 				$scope.listAccounts = function () {
 					getSendDataFromServer($scope, ngDataApi, {
 						'method': 'get',
-						'routeName': '/dashboard/gitAccounts/accounts/list'
+						'routeName': '/dashboard/gitAccounts/accounts/list',
+						params : {
+							fullList : true,
+							type : 'config' // todo: accommodate for dynamic types
+						}
 					}, function (error, response) {
 						if (error) {
 							$scope.displayAlert('danger', error.message);
 						} else {
-							$scope.accounts = response;
-							
-							$scope.accounts.forEach(function(oneAccount){
-								oneAccount.hide = true;
-							});
-							
-							if ($scope.accounts.length > 0) {
-								$scope.listRepos($scope.accounts, 0, 'getRepos');
-							}
-							if($scope.accounts.length === 1){
-								$scope.accounts[0].hide = false;
-								$scope.accounts[0].icon = 'minus';
-							}
-						}
-					});
-				};
-				
-				$scope.listRepos = function (accounts, counter, action) {
-					if (!Array.isArray(accounts)) {
-						accounts = [accounts];
-					}
-					
-					//get repos of all accounts in parallel
-					accounts.forEach(function (oneAccount) {
-						var id = oneAccount._id;
-						oneAccount.loading = true;
-						if (!oneAccount.nextPageNumber) {
-							oneAccount.nextPageNumber = $scope.defaultPageNumber;
-						}
-						
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "get",
-							"routeName": "/dashboard/gitAccounts/getRepos",
-							"params": {
-								id: id,
-								provider: oneAccount.provider,
-								per_page: 100, // $scope.defaultPerPage,
-								page: 1 //(action === 'loadMore') ? oneAccount.nextPageNumber : $scope.defaultPageNumber
-							}
-						}, function (error, response) {
-							oneAccount.loading = false;
-							if (error) {
-								$scope.displayAlert('danger', error.message);
-							} else {
-								
-								if (action === 'loadMore') {
-									$scope.appendNewRepos(oneAccount, response);
-								}
-								else if (action === 'getRepos') {
+							let accounts = [];
+							if(response){
+								response.forEach(function (eachAccount) {
 									
-									// if (oneAccount.owner === 'soajs') {
-									// 	oneAccount.repos = [];
-									// 	response.forEach (function (oneRepo) {
-									// 		if ($scope.whitelistedRepos.indexOf(oneRepo.full_name) !== -1) {
-									// 			oneAccount.repos.push(oneRepo);
-									// 		}
-									// 	});
-									// }
-									// else {
-									// 	oneAccount.repos = response;
-									// }
-									//
-									// oneAccount.nextPageNumber = 2;
-									// oneAccount.allowLoadMore = (response.length === $scope.defaultPerPage);
-								}
+									if(eachAccount.repos){
+										eachAccount.repos.forEach(function (eachRepo) {
+											// eachRepo : name, serviceName, type
+											accounts.push({
+												owner : eachAccount.owner,
+												provider : eachAccount.provider,
+												accountId : eachAccount._id.toString(),
+												name : eachRepo.name
+											});
+										});
+									}
+								});
 							}
-						});
+							
+							$scope.configRepos = accounts;
+						}
 					});
 				};
 				
 				$scope.getConfigurationRepos = function () {
-					// todo: call api and fill configRepos
-					$scope.configRepos.push({
-						name : 'test'
-					});
-					
 					$scope.listAccounts();
 				};
 				
-				$scope.fetchBranches = function () {
-					// todo: call api and get branches
-					// $scope.formData.deployOptions.customConfiguration.repository
-					
-					$scope.configReposBranches.test = [
-						{
-							name : 'branch1',
-							path : '//branch 1'
-						},
-						{
-							name : 'branch2',
-							path : '//branch 2'
-						}
-					];
-				};
-
 				$scope.getEnvs = function () {
 					if ($scope.envs && $scope.envs.list && $scope.envs.list.length > 0) {
 						return;
@@ -425,7 +396,98 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 
 						$scope.buildComputedHostname();
+						
+						// load source code stuff on configure
+						if ($scope.formData.deployOptions && $scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.configuration && $scope.formData.deployOptions.sourceCode.configuration.repository) {
+							$scope.fetchBranches('conf');
+						}
+						if ($scope.formData.deployOptions && $scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.custom && $scope.formData.deployOptions.sourceCode.custom.repository) {
+							$scope.fetchBranches('cust');
+						}
 					}
+				};
+				
+				$scope.setSourceCodeData = function () {
+					let recipes = $scope.recipes;
+					let selectedRecipe;
+					
+					$scope.sourceCodeConfig = {
+						configuration : {
+							isEnabled : false,
+							repoAndBranch : {
+								disabled : false,
+								required : false
+							}
+						},
+						custom : {
+							isEnabled : false,
+							repoAndBranch : {
+								disabled : false,
+								required : false
+							}
+						}
+					};
+					
+					if ($scope.formData.deployOptions && $scope.formData.deployOptions.recipe && recipes) {
+						recipes.forEach(function (eachRecipe) {
+							if (eachRecipe._id === $scope.formData.deployOptions.recipe) {
+								selectedRecipe = eachRecipe;
+							}
+						});
+					}
+					
+					if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+						let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+						
+						let conf = sourceCode.configuration;
+						let cust = sourceCode.custom;
+						
+						$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+						
+						if(!$scope.formData.deployOptions.sourceCode){
+							$scope.formData.deployOptions.sourceCode = {};
+						}
+						
+						if (conf) {
+							$scope.sourceCodeConfig.configuration.isEnabled = true;
+							$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+							$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+							
+							if(conf.repo && conf.repo !== ''){
+								if(!$scope.formData.deployOptions.sourceCode.configuration){
+									$scope.formData.deployOptions.sourceCode.configuration = {};
+								}
+								
+								$scope.formData.deployOptions.sourceCode.configuration.repository = conf.repo;
+								$scope.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
+								
+								if(!$scope.configReposBranches[conf.repo]){
+									$scope.fetchBranches('conf');
+								}
+							}
+						}
+						
+						if (cust && $scope.formData.type === 'server') {
+							$scope.sourceCodeConfig.custom.isEnabled = true;
+							$scope.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
+							$scope.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
+							
+							if(cust.repo && cust.repo !== ''){
+								if(!$scope.formData.deployOptions.sourceCode.custom){
+									$scope.formData.deployOptions.sourceCode.custom = {};
+								}
+								
+								$scope.formData.deployOptions.sourceCode.custom.repository = cust.repo;
+								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
+								
+								if(!$scope.configReposBranches[cust.repo]){
+									$scope.fetchBranches('cust');
+								}
+							}
+						}
+						
+					}
+					
 				};
 
 				$scope.getCatalogRecipes = function (cb) {
@@ -491,6 +553,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							}
 						}
 					}
+					
+					$scope.setSourceCodeData();
 				};
 
 				$scope.updateDeploymentName = function () {
@@ -571,7 +635,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							locked: $scope.formData.locked || false,
 							plugged: $scope.formData.plugged || false,
 							shared: $scope.formData.shared || false,
-							config: $scope.formData.config
+							config: $scope.formData.config,
+							// sourceCode : {}
 						};
 						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
 							saveOptions.sharedEnv = {};
@@ -581,7 +646,19 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								}
 							});
 						}
-
+						
+						// -=-=-=-=-= if u need to update the resource, update here
+						// // source code
+						// let sourceCode = $scope.formData.deployOptions.sourceCode;
+						// let configuration = sourceCode.configuration;
+						// if (configuration.isEnabled) {
+						// 	saveOptions.sourceCode.configuration = {
+						// 		label: configuration.label,
+						// 		repo: configuration.repo,
+						// 		branch: configuration.branch
+						// 	};
+						// }
+						
 						var options = {};
 						if ($scope.options.formAction === 'add') {
 							options = {

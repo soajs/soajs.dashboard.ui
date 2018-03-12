@@ -524,7 +524,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								$scope.myRecipes = [];
 								for (var type in $scope.recipes) {
 									$scope.recipes[type].forEach(function (oneRecipe) {
-										if (oneRecipe.recipe && oneRecipe.recipe.deployOptions && oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
+										if (oneRecipe.recipe && ['service','daemon','other'].indexOf(oneRecipe.type)!== -1)  {
 											$scope.myRecipes.push(oneRecipe);
 										}
 									});
@@ -650,7 +650,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										}
 
 										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
-										if (catalogRecipe.recipe.deployOptions.specifyGitConfiguration) {
+										if (['service','daemon','other'].indexOf(catalogRecipe.type)!== -1) {
 											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv;
 											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
 											if(version !== 'Default'){
@@ -683,10 +683,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		currentScope.loadingRecipes = true;
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/catalog/recipes/list',
-			params: {
-				specifyGit : true
-			}
+			routeName: '/dashboard/catalog/recipes/list'
 		}, function (error, response) {
 			currentScope.loadingRecipes = false;
 			if (error) {

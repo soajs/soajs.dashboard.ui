@@ -250,8 +250,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 				$scope.title = 'Update Driver Configuration';
 				$scope.driver = {
 					nodes: currentConfig.nodes,
-					token: currentConfig.auth.token,
-					nginxDeployType: currentConfig.nginxDeployType
+					token: currentConfig.auth.token
 				};
 				
 				$scope.onSubmit2 = function () {

@@ -354,7 +354,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								formData.deployment.kubernetes = {
 									kubernetesremote: oneEnv.deployer.selected !== 'container.kubernetes.local',
 									port: oneEnv.deployer.container.kubernetes[localRemote].apiPort,
-									nginxDeployType: oneEnv.deployer.container.kubernetes[localRemote].nginxDeployType,
 									NS: oneEnv.deployer.container.kubernetes[localRemote].namespace.default,
 									perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
 									token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
@@ -406,7 +405,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					delete formData.deployment.docker;
 					formData.selectedDriver = 'kubernetes';
 					formData.deployment.kubernetes.kubernetesremote = true;
-					if (!formData.deployment.kubernetes.nginxDeployType || !formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
+					if (!formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
 						$window.alert("Provide the information on how to connect to kubernetes on your remote machine.");
 						return false;
 					}

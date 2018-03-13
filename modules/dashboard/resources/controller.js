@@ -148,6 +148,23 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 
 		buildFormWithModal(currentScope, $modal, options);
 	};
+	
+	function decodeRepoNameAndSubName(name) {
+		let splits = name.split('***');
+		
+		let output = {
+			name : splits[0]
+		};
+		
+		if(splits.length > 0){
+			let subName = splits[1];
+			if(subName){
+				output.subName = splits[1];
+			}
+		}
+		
+		return output;
+	}
 
 	$scope.manageResource = function (resource, action, settings) {
 		var currentScope = $scope;
@@ -199,17 +216,31 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.fetchBranches = function (confOrCustom) {
 					let selectedRepo;
 					if (confOrCustom === 'conf') {
-						selectedRepo = $scope.formData.deployOptions.sourceCode.configuration.repository;
+						selectedRepo = $scope.formData.deployOptions.sourceCode.configuration.repo;
 					} else { // cust
-						selectedRepo = $scope.formData.deployOptions.sourceCode.custom.repository;
+						let decoded = $scope.formData.deployOptions.sourceCode.custom.repo;
+						selectedRepo = decodeRepoNameAndSubName(decoded).name;
+						$scope.selectedCustomClear = selectedRepo;
+					}
+					
+					if (!selectedRepo || selectedRepo === '') {
+						return;
 					}
 					
 					let accountData = {};
-					$scope.configRepos.forEach(function (eachAcc) {
-						if(eachAcc.name === selectedRepo){
+					$scope.configRepos.config.forEach(function (eachAcc) {
+						if (eachAcc.name === selectedRepo) {
 							accountData = eachAcc;
 						}
 					});
+					
+					if(Object.keys(accountData).length === 0){
+						$scope.configRepos.customType.forEach(function (eachAcc) {
+							if (eachAcc.name === selectedRepo) {
+								accountData = eachAcc;
+							}
+						});
+					}
 					
 					getSendDataFromServer($scope, ngDataApi, {
 						'method': 'get',
@@ -287,43 +318,80 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}, 5000);
 				};
 				
-				$scope.listAccounts = function () {
+				$scope.listAccounts = function (customType, callback) {
 					getSendDataFromServer($scope, ngDataApi, {
 						'method': 'get',
 						'routeName': '/dashboard/gitAccounts/accounts/list',
 						params : {
-							fullList : true,
-							type : 'config' // todo: accommodate for dynamic types
+							fullList : true
 						}
 					}, function (error, response) {
 						if (error) {
 							$scope.displayAlert('danger', error.message);
 						} else {
-							let accounts = [];
+							let configRecords = [];
+							let customRecords = [];
+							
 							if(response){
 								response.forEach(function (eachAccount) {
-									
 									if(eachAccount.repos){
 										eachAccount.repos.forEach(function (eachRepo) {
 											// eachRepo : name, serviceName, type
-											accounts.push({
-												owner : eachAccount.owner,
-												provider : eachAccount.provider,
-												accountId : eachAccount._id.toString(),
-												name : eachRepo.name
-											});
+											if(eachRepo.type === 'config'){
+												configRecords.push({
+													owner : eachAccount.owner,
+													provider : eachAccount.provider,
+													accountId : eachAccount._id.toString(),
+													name : eachRepo.name,
+													type : eachRepo.type,
+													configSHA : eachRepo.configSHA
+												});
+											}
+											
+											if(customType && eachRepo.type === customType){
+												
+												let acceptableTypes = ['custom','static','service','daemon']; // and multi
+												if(customType === 'multi'){
+													if(eachRepo.configSHA){
+														eachRepo.configSHA.forEach(function (sub) {
+															if(acceptableTypes.indexOf(sub.contentType) !== -1 ) {
+																customRecords.push({
+																	owner: eachAccount.owner,
+																	provider: eachAccount.provider,
+																	accountId: eachAccount._id.toString(),
+																	name: eachRepo.name,
+																	subName: sub.contentName,
+																	type: eachRepo.type,
+																	configSHA: eachRepo.configSHA
+																});
+															}
+														});
+													}
+												}else{
+													if(acceptableTypes.indexOf(customType) !== -1 ){
+														customRecords.push({
+															owner : eachAccount.owner,
+															provider : eachAccount.provider,
+															accountId : eachAccount._id.toString(),
+															name : eachRepo.name,
+															type : eachRepo.type,
+															configSHA : eachRepo.configSHA
+														});
+													}
+												}
+											}
+											
 										});
 									}
 								});
 							}
 							
-							$scope.configRepos = accounts;
+							$scope.configRepos.customType = customRecords;
+							$scope.configRepos.config = configRecords;
+							
+							callback();
 						}
 					});
-				};
-				
-				$scope.getConfigurationRepos = function () {
-					$scope.listAccounts();
 				};
 				
 				$scope.getEnvs = function () {
@@ -394,22 +462,30 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						if ($scope.formData && $scope.formData.deployOptions && $scope.formData.deployOptions.deployConfig && $scope.formData.deployOptions.deployConfig.memoryLimit) {
 							$scope.formData.deployOptions.deployConfig.memoryLimit /= 1048576; //convert memory limit from bytes to megabytes
 						}
-
+						
+						// take source code configuration from cicd on edit
+						if($scope.formData.deployOptions && $scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.sourceCode){
+							$scope.formData.deployOptions.sourceCode = $scope.formData.deployOptions.custom.sourceCode;
+							
+							// reconstruct complex repo on load
+							if($scope.formData.deployOptions.sourceCode.custom && $scope.formData.deployOptions.sourceCode.custom.repo){
+								let subName = "";
+								if($scope.formData.deployOptions.sourceCode.custom.subName){
+									subName = $scope.formData.deployOptions.sourceCode.custom.subName;
+								}
+								$scope.formData.deployOptions.sourceCode.custom.repo = $scope.formData.deployOptions.sourceCode.custom.repo + "***" + subName;
+							}
+						}
+						
 						$scope.buildComputedHostname();
 						
-						// load source code stuff on configure
-						if ($scope.formData.deployOptions && $scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.configuration && $scope.formData.deployOptions.sourceCode.configuration.repository) {
-							$scope.fetchBranches('conf');
-						}
-						if ($scope.formData.deployOptions && $scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.custom && $scope.formData.deployOptions.sourceCode.custom.repository) {
-							$scope.fetchBranches('cust');
-						}
 					}
 				};
 				
 				$scope.setSourceCodeData = function () {
 					let recipes = $scope.recipes;
 					let selectedRecipe;
+					let customType;
 					
 					$scope.sourceCodeConfig = {
 						configuration : {
@@ -458,16 +534,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 									$scope.formData.deployOptions.sourceCode.configuration = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.configuration.repository = conf.repo;
+								$scope.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
 								$scope.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
-								
-								if(!$scope.configReposBranches[conf.repo]){
-									$scope.fetchBranches('conf');
-								}
 							}
 						}
 						
 						if (cust && $scope.formData.type === 'server') {
+							customType = cust.type;
+							
 							$scope.sourceCodeConfig.custom.isEnabled = true;
 							$scope.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
 							$scope.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
@@ -477,17 +551,34 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 									$scope.formData.deployOptions.sourceCode.custom = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.custom.repository = cust.repo;
+								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "***" + cust.subName;
 								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
-								
-								if(!$scope.configReposBranches[cust.repo]){
-									$scope.fetchBranches('cust');
-								}
 							}
 						}
 						
+						if(conf || ((cust && $scope.formData.type === 'server'))){
+							$scope.listAccounts(customType, function () {
+								// special case: if the form was overwritten from cicd we have to load the branch
+								if($scope.formData.deployOptions.sourceCode){
+									if($scope.formData.deployOptions.sourceCode.configuration && $scope.formData.deployOptions.sourceCode.configuration.repo){
+										if(!$scope.configReposBranches[$scope.formData.deployOptions.sourceCode.configuration.repo]){
+											$scope.fetchBranches('conf');
+										}
+									}
+									if($scope.formData.deployOptions.sourceCode.custom && $scope.formData.deployOptions.sourceCode.custom.repo){
+										if(!$scope.configReposBranches[$scope.formData.deployOptions.sourceCode.custom.repo]){
+											$scope.fetchBranches('cust');
+										}
+									}
+								}
+							});
+						}
+					}else{
+						if(!$scope.formData.deployOptions){
+							$scope.formData.deployOptions = {};
+						}
+						$scope.formData.deployOptions.sourceCode = {}; // clear
 					}
-					
 				};
 
 				$scope.getCatalogRecipes = function (cb) {
@@ -699,6 +790,50 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}
 
 					function saveResourceDeployConfig(cb) {
+						
+						function reformatSourceCodeForCicd(record) {
+							if(record.configuration && record.configuration.repo){
+								let selectedRepo = record.configuration.repo;
+								$scope.configRepos.config.forEach(function (eachConf) {
+									if(eachConf.name === selectedRepo){
+										record.configuration.commit = eachConf.configSHA;
+										record.configuration.owner = eachConf.owner;
+									}
+								});
+							}
+							
+							if(record.custom && record.custom.repo){
+								let selectedRepoComposed = record.custom.repo;
+								let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
+								
+								let selectedRepo = decoded.name;
+								let subName = decoded.subName;
+								
+								record.custom.repo = selectedRepo; // save clear value
+								
+								$scope.configRepos.customType.forEach(function (eachConf) {
+									if(eachConf.name === selectedRepo){
+										
+										record.custom.owner = eachConf.owner;
+										record.custom.subName = subName; // for multi
+										
+										if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
+											eachConf.configSHA.forEach(function (eachConfig) {
+												if(eachConfig.contentName === subName){
+													record.custom.commit = eachConfig.sha;
+												}
+											});
+										}else{
+											record.custom.commit = eachConf.configSHA;
+										}
+										
+									}
+								});
+							}
+							
+							return record;
+						}
+						
 						if (!$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0) {
 							if (cb) return cb();
 							else return;
@@ -709,7 +844,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							deployOptions.custom = {};
 						}
 						deployOptions.custom.type = 'resource';
-
+						
+						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						delete deployOptions.sourceCode;
+						
 						if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 							deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 						}
@@ -888,7 +1026,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 
 				$scope.fillForm();
 				$scope.getCatalogRecipes();
-				$scope.getConfigurationRepos();
 			}
 		});
 	};

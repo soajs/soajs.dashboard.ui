@@ -726,8 +726,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							locked: $scope.formData.locked || false,
 							plugged: $scope.formData.plugged || false,
 							shared: $scope.formData.shared || false,
-							config: $scope.formData.config,
-							// sourceCode : {}
+							config: $scope.formData.config
 						};
 						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
 							saveOptions.sharedEnv = {};
@@ -737,18 +736,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								}
 							});
 						}
-						
-						// -=-=-=-=-= if u need to update the resource, update here
-						// // source code
-						// let sourceCode = $scope.formData.deployOptions.sourceCode;
-						// let configuration = sourceCode.configuration;
-						// if (configuration.isEnabled) {
-						// 	saveOptions.sourceCode.configuration = {
-						// 		label: configuration.label,
-						// 		repo: configuration.repo,
-						// 		branch: configuration.branch
-						// 	};
-						// }
 						
 						var options = {};
 						if ($scope.options.formAction === 'add') {

@@ -6,7 +6,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		var envPlatform = envDeployer.selected.split('.')[1];
 		var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
 	}
-
+	
 	function listGitAccounts(currentScope) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
@@ -37,32 +37,35 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			currentScope.accounts = [currentScope.accounts];
 		}
 
-		currentScope.accounts.forEach(function (oneAccount) {
+		for(let account = currentScope.accounts.length -1; account >=0; account --){
+			let oneAccount = currentScope.accounts[account];
+			
 			var id = oneAccount._id;
 			oneAccount.loading = true;
 			if (!oneAccount.nextPageNumber) {
 				oneAccount.nextPageNumber = currentScope.defaultPageNumber;
 			}
-
+			
 			getSendDataFromServer(currentScope, ngDataApi, {
-			    "method": "get",
-			    "routeName": "/dashboard/gitAccounts/getRepos",
-			    "params": {
-			        id: id,
-			        provider: oneAccount.provider,
-			        per_page: currentScope.defaultPerPage,
-			        page: (action === 'loadMore') ? oneAccount.nextPageNumber : currentScope.defaultPageNumber,
+				"method": "get",
+				"routeName": "/dashboard/gitAccounts/getRepos",
+				"params": {
+					id: id,
+					provider: oneAccount.provider,
+					per_page: currentScope.defaultPerPage,
+					page: (action === 'loadMore') ? oneAccount.nextPageNumber : currentScope.defaultPageNumber,
 					activeOnly: true
-			    }
+				}
 			}, function (error, response) {
+				
 				oneAccount.loading = false;
-			    if (error) {
-			        currentScope.displayAlert('danger', error.message);
-			    } else {
-			        if (action === 'loadMore') {
-			            appendNewRepos(oneAccount, response);
-			        }
-			        else if (action === 'getRepos') {
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+				} else {
+					if (action === 'loadMore') {
+						appendNewRepos(oneAccount, response);
+					}
+					else if (action === 'getRepos') {
 						if (oneAccount.owner === 'soajs') {
 							for (var i = response.length - 1; i >= 0; i--) {
 								if (['soajs.dashboard'].indexOf(response[i].name) !== -1) {
@@ -70,91 +73,118 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								}
 							}
 						}
-
+						
 						var repoComponents = [];
 						var repoComponentsNames =[];
-			            oneAccount.repos = response;
-				        for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
-				        	var oneRepo = oneAccount.repos[inverse];
-					        var repoServices = [];
-					        if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
-						        repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
-					        }
-					        else if (oneRepo.type === 'multi') {
-						        repoServices = oneRepo.multi;
-					        }
-					        else if (oneRepo.type === 'component'){
-						        if(repoComponentsNames.indexOf(oneRepo.name) === -1){
-							        repoComponentsNames.push(oneRepo.name);
-							        repoComponents.push(oneRepo);
-						        }
-						        oneAccount.repos.splice(inverse, 1);
-					        }
-					
-					        oneRepo.servicesList = repoServices;
-				        }
-
-			            oneAccount.nextPageNumber = 2;
-			            oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
-
-						getServices(currentScope, function () {
-							getDaemons(currentScope, function () {
-
-								repoComponents.forEach(function(oneRepoComponent){
-									currentScope.originalServices.forEach(function (oneService) {
-										if (oneService.src && oneService.src.repo === oneRepoComponent.name) {
-											oneService.type = 'service';
-											oneRepoComponent.servicesList.push(oneService);
+						oneAccount.repos = response;
+						
+						for(let i = oneAccount.repos.length -1; i >=0; i--){
+							if(oneAccount.repos[i].type === 'multi'){
+								if(oneAccount.repos[i].multi.length === 0){
+									oneAccount.repos.splice(i, 1);
+								}
+								else{
+									for(let multiCount = oneAccount.repos[i].multi.length -1; multiCount >=0; multiCount--){
+										if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].multi[multiCount].type) === -1){
+											oneAccount.repos[i].multi.splice(multiCount, 1);
+										}
+									}
+									if(oneAccount.repos[i].multi.length === 0){
+										oneAccount.repos.splice(i, 1);
+									}
+								}
+							}
+							else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
+								oneAccount.repos.splice(i, 1);
+							}
+						}
+						
+						if(oneAccount.repos.length === 0){
+							currentScope.accounts.splice(account, 1);
+						}
+						else{
+							for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
+								var oneRepo = oneAccount.repos[inverse];
+								var repoServices = [];
+								if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
+									repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
+								}
+								else if (oneRepo.type === 'multi') {
+									repoServices = oneRepo.multi;
+								}
+								else if (oneRepo.type === 'component'){
+									if(repoComponentsNames.indexOf(oneRepo.name) === -1){
+										repoComponentsNames.push(oneRepo.name);
+										repoComponents.push(oneRepo);
+									}
+									oneAccount.repos.splice(inverse, 1);
+								}
+								
+								oneRepo.servicesList = repoServices;
+							}
+							
+							oneAccount.nextPageNumber = 2;
+							oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
+							
+							getServices(currentScope, function () {
+								getDaemons(currentScope, function () {
+									
+									repoComponents.forEach(function(oneRepoComponent){
+										currentScope.originalServices.forEach(function (oneService) {
+											if (oneService.src && oneService.src.repo === oneRepoComponent.name) {
+												oneService.type = 'service';
+												oneRepoComponent.servicesList.push(oneService);
+											}
+										});
+										if (oneRepoComponent.servicesList.length > 0) {
+											oneAccount.repos.push(oneRepoComponent);
 										}
 									});
-									if (oneRepoComponent.servicesList.length > 0) {
-										oneAccount.repos.push(oneRepoComponent);
-									}
-								});
-
-								oneAccount.repos.forEach(function (oneRepo, index) {
-									oneRepo.servicesList.forEach(function (oneRepoService) {
-										var type = (oneRepoService.type === 'service') ? 'services': 'daemons';
-										currentScope[type].forEach(function (oneService) {
-											if (oneService.name === oneRepoService.name) {
-												oneRepoService.versions = [];
-												if (oneService.versions) {
-													Object.keys(oneService.versions).forEach(function (oneVersion) {
-														if(type === 'daemons' && oneService.grpConf){
-															oneService.versions[oneVersion] = {};
-															oneService.versions[oneVersion].grpConf = oneService.grpConf;
-															oneService.grpConf.forEach(function(oneGroup){
-																if(!oneService.versions[oneVersion][oneGroup.daemonConfigGroup]){
-																	oneService.versions[oneVersion][oneGroup.daemonConfigGroup] = {};
-																}
-															});
-														}
-														if(oneService.prerequisites){
-															oneService.versions[oneVersion].prerequisites = oneService.prerequisites;
-														}
-														if(oneService.gcId){
-															oneService.versions[oneVersion].gcId = oneService.gcId;
-														}
-														oneService.versions[oneVersion].v = oneVersion;
-														oneRepoService.versions.push(oneService.versions[oneVersion]);
-													});
+									
+									oneAccount.repos.forEach(function (oneRepo, index) {
+										oneRepo.servicesList.forEach(function (oneRepoService) {
+											var type = (oneRepoService.type === 'service') ? 'services': 'daemons';
+											currentScope[type].forEach(function (oneService) {
+												if (oneService.name === oneRepoService.name) {
+													oneRepoService.versions = [];
+													if (oneService.versions) {
+														Object.keys(oneService.versions).forEach(function (oneVersion) {
+															if(type === 'daemons' && oneService.grpConf){
+																oneService.versions[oneVersion] = {};
+																oneService.versions[oneVersion].grpConf = oneService.grpConf;
+																oneService.grpConf.forEach(function(oneGroup){
+																	if(!oneService.versions[oneVersion][oneGroup.daemonConfigGroup]){
+																		oneService.versions[oneVersion][oneGroup.daemonConfigGroup] = {};
+																	}
+																});
+															}
+															if(oneService.prerequisites){
+																oneService.versions[oneVersion].prerequisites = oneService.prerequisites;
+															}
+															if(oneService.gcId){
+																oneService.versions[oneVersion].gcId = oneService.gcId;
+															}
+															oneService.versions[oneVersion].v = oneVersion;
+															oneRepoService.versions.push(oneService.versions[oneVersion]);
+														});
+													}
 												}
-											}
+											});
+										});
+									});
+									
+									getCdData(currentScope, function () {
+										getCatalogRecipes(currentScope, function (error) {
+											getDeployedServices(currentScope);
 										});
 									});
 								});
-
-								getCdData(currentScope, function () {
-									getCatalogRecipes(currentScope, function (error) {
-										getDeployedServices(currentScope);
-									});
-								});
 							});
-						});
-			        }
-			    }
+						}
+					}
+				}
 			});
-		});
+		}
 	}
 
 	function appendNewRepos (currentScope, account, repos) {
@@ -392,7 +422,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		});
 	}
-
+	
 	function deployService(currentScope, oneRepo, service, version, gitAccount, daemonGrpConf) {
 		getCatalogRecipes(currentScope, function(){
 			if(currentScope.oldStyle){
@@ -460,7 +490,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						$scope.closeAlert = function (index) {
 							$scope.alerts.splice(index, 1);
 						};
-
 
 						$scope.showHide = function (oneService, name) {
 							if (oneService.icon === 'minus') {
@@ -593,7 +622,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								if (service && $scope.serviceType === 'daemon' && service.grpConf) {
 									$scope.groupConfigs = service.grpConf;
 								}
-
+								
+								// on load if u need edit cicd
+								
 								$scope.injectCatalogEntries(oneEnv, version, oneSrv);
 							});
 						};
@@ -660,11 +691,163 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										}
 									}
 								});
+								
+								$scope.setSourceCodeData(oneEnv, version, oneSrv);
 							}
 						};
 
 						$scope.saveRecipe = function (type) {
 							saveRecipe($scope, type)
+						};
+						
+						// source code updates
+						$scope.configRepos = [];
+						$scope.configReposBranches = {};
+						
+						$scope.setSourceCodeData = function(oneEnv, version, oneSrv) {
+							let recipes = $scope.recipes;
+							let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+							let formData = formDataRoot.custom;
+							
+							let selectedRecipe;
+							
+							$scope.sourceCodeConfig = {
+								configuration : {
+									isEnabled : false,
+									repoAndBranch : {
+										disabled : false,
+										required : false
+									}
+								}
+							};
+							
+							for (let type in $scope.recipes) {
+								recipes[type].forEach(function (catalogRecipe) {
+									if(catalogRecipe._id ===  formDataRoot.recipe ){
+										selectedRecipe = catalogRecipe;
+									}
+								});
+							}
+							
+							if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+								let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+								
+								let conf = sourceCode.configuration;
+								
+								$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+								
+								if(!formData.sourceCode){
+									formData.sourceCode = {};
+								}
+								
+								if (conf) {
+									$scope.sourceCodeConfig.configuration.isEnabled = true;
+									$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+									$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+									
+									if(conf.repo && conf.repo !== ''){
+										if(!formData.sourceCode.configuration){
+											formData.sourceCode.configuration = {};
+										}
+										
+										formData.sourceCode.configuration.repo = conf.repo;
+										formData.sourceCode.configuration.branch = conf.branch;
+									}
+								}
+								
+								if(conf){
+									$scope.listAccounts(oneEnv, version, oneSrv, function () {
+										// special case: if the form was overwritten from cicd we have to load the branch
+										if(formData.sourceCode){
+											if(formData.sourceCode.configuration && formData.sourceCode.configuration.repo){
+												if(!$scope.configReposBranches[formData.sourceCode.configuration.repo]){
+													$scope.fetchBranches(oneEnv, version, oneSrv, 'conf');
+												}
+											}
+										}
+									});
+								}
+							}else{
+								if(!formData){
+									formData = {};
+								}
+								formData.sourceCode = {}; // clear
+							}
+						};
+						
+						$scope.listAccounts = function (oneEnv, version, oneSrv, callback) {
+							getSendDataFromServer($scope, ngDataApi, {
+								'method': 'get',
+								'routeName': '/dashboard/gitAccounts/accounts/list',
+								params : {
+									fullList : true
+								}
+							}, function (error, response) {
+								if (error) {
+									$scope.displayAlert('danger', error.message);
+								} else {
+									let configRecords = [];
+									
+									if(response){
+										response.forEach(function (eachAccount) {
+											if(eachAccount.repos){
+												eachAccount.repos.forEach(function (eachRepo) {
+													// eachRepo : name, serviceName, type
+													if(eachRepo.type === 'config'){
+														configRecords.push({
+															owner : eachAccount.owner,
+															provider : eachAccount.provider,
+															accountId : eachAccount._id.toString(),
+															name : eachRepo.name,
+															type : eachRepo.type,
+															configSHA : eachRepo.configSHA
+														});
+													}
+												});
+											}
+										});
+									}
+									
+									$scope.configRepos.config = configRecords;
+									
+									callback();
+								}
+							});
+						};
+						
+						$scope.fetchBranches = function (oneEnv, version, oneSrv) {
+							let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+							let formData = formDataRoot.custom;
+							
+							let selectedRepo = formData.sourceCode.configuration.repo;
+							
+							if (!selectedRepo || selectedRepo === '') {
+								return;
+							}
+							
+							let accountData = {};
+							$scope.configRepos.config.forEach(function (eachAcc) {
+								if (eachAcc.name === selectedRepo) {
+									accountData = eachAcc;
+								}
+							});
+							
+							getSendDataFromServer($scope, ngDataApi, {
+								'method': 'get',
+								'routeName': '/dashboard/gitAccounts/getBranches',
+								params: {
+									id: accountData.accountId,
+									name: selectedRepo,
+									type: 'repo',
+									provider : accountData.provider
+								}
+							}, function (error, response) {
+								if (error) {
+									$scope.displayAlert('danger', error.message);
+								} else {
+									$scope.configReposBranches[selectedRepo] = response.branches;
+								}
+							});
 						};
 
 					}
@@ -717,6 +900,23 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		configuration.serviceName = oneRepo;
 		configuration.env = oneEnv;
 		currentScope.updateGitBranch(oneRepo, oneEnv, version);
+		
+		function reformatSourceCodeForCicd(record) {
+			if(record.configuration && record.configuration.repo){
+				let selectedRepo = record.configuration.repo;
+				currentScope.configRepos.config.forEach(function (eachConf) {
+					if(eachConf.name === selectedRepo){
+						record.configuration.commit = eachConf.configSHA;
+						record.configuration.owner = eachConf.owner;
+					}
+				});
+			}
+			
+			return record;
+		}
+		
+		currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.custom.sourceCode = reformatSourceCodeForCicd(currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.custom.sourceCode);
+		
 		if (version === 'Default') {
 			configuration.default = {};
 			if (currentScope.showCD) {

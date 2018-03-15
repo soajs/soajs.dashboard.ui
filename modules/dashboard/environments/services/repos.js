@@ -10,124 +10,96 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	function listGitAccounts(currentScope) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
-			'routeName': '/dashboard/gitAccounts/accounts/list'
+			'routeName': '/dashboard/gitAccounts/accounts/list',
+			"params": {
+				"fullList": true
+			}
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
 				currentScope.accounts = response;
-
-				currentScope.accounts.forEach(function(oneAccount){
-					oneAccount.hide = true;
-				});
-
-				if (currentScope.accounts.length > 0) {
-					listRepos(currentScope, 'getRepos');
-				}
-				if(currentScope.accounts.length === 1){
-					currentScope.accounts[0].hide = false;
-					currentScope.accounts[0].icon = 'minus';
-				}
-			}
-		});
-	}
-
-	function listRepos(currentScope, action) {
-		if (!Array.isArray(currentScope.accounts)) {
-			currentScope.accounts = [currentScope.accounts];
-		}
-
-		for(let account = currentScope.accounts.length -1; account >=0; account --){
-			let oneAccount = currentScope.accounts[account];
-			
-			var id = oneAccount._id;
-			oneAccount.loading = true;
-			if (!oneAccount.nextPageNumber) {
-				oneAccount.nextPageNumber = currentScope.defaultPageNumber;
-			}
-			
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/gitAccounts/getRepos",
-				"params": {
-					id: id,
-					provider: oneAccount.provider,
-					per_page: currentScope.defaultPerPage,
-					page: (action === 'loadMore') ? oneAccount.nextPageNumber : currentScope.defaultPageNumber,
-					activeOnly: true
-				}
-			}, function (error, response) {
 				
-				oneAccount.loading = false;
-				if (error) {
-					currentScope.displayAlert('danger', error.message);
-				} else {
-					if (action === 'loadMore') {
-						appendNewRepos(oneAccount, response);
-					}
-					else if (action === 'getRepos') {
-						if (oneAccount.owner === 'soajs') {
-							for (var i = response.length - 1; i >= 0; i--) {
-								if (['soajs.dashboard'].indexOf(response[i].name) !== -1) {
-									response.splice(i, 1);
-								}
-							}
-						}
-						
-						var repoComponents = [];
-						var repoComponentsNames =[];
-						oneAccount.repos = response;
-						
-						for(let i = oneAccount.repos.length -1; i >=0; i--){
-							if(oneAccount.repos[i].type === 'multi'){
-								if(oneAccount.repos[i].multi.length === 0){
-									oneAccount.repos.splice(i, 1);
-								}
-								else{
-									for(let multiCount = oneAccount.repos[i].multi.length -1; multiCount >=0; multiCount--){
-										if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].multi[multiCount].type) === -1){
-											oneAccount.repos[i].multi.splice(multiCount, 1);
+				if (!Array.isArray(currentScope.accounts)) {
+					currentScope.accounts = [currentScope.accounts];
+				}
+				
+				if (currentScope.accounts.length > 0) {
+					
+					getServices(currentScope, function () {
+						getDaemons(currentScope, function () {
+							
+							for (let account = currentScope.accounts.length -1; account >=0; account--){
+								let oneAccount = currentScope.accounts[account];
+								oneAccount.hide = true;
+								
+								if (oneAccount.owner === 'soajs') {
+									for (var i = oneAccount.repos.length - 1; i >= 0; i--) {
+										if (['soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
+											oneAccount.repos.splice(i, 1);
 										}
 									}
-									if(oneAccount.repos[i].multi.length === 0){
+								}
+								
+								var repoComponents = [];
+								var repoComponentsNames =[];
+								
+								for(let i = oneAccount.repos.length -1; i >=0; i--){
+									
+									oneAccount.repos[i].full_name = oneAccount.repos[i].name;
+									oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
+									if(!oneAccount.repos[i].owner){
+										oneAccount.repos[i].owner = {
+											login: oneAccount.owner
+										};
+									}
+									
+									if(oneAccount.repos[i].type === 'multi'){
+										if(oneAccount.repos[i].configSHA.length === 0){
+											oneAccount.repos.splice(i, 1);
+										}
+										else{
+											for(let multiCount = oneAccount.repos[i].configSHA.length -1; multiCount >=0; multiCount--){
+												if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].type) === -1){
+													oneAccount.repos[i].configSHA.splice(multiCount, 1);
+												}
+											}
+											if(oneAccount.repos[i].configSHA.length === 0){
+												oneAccount.repos.splice(i, 1);
+											}
+										}
+									}
+									else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
 										oneAccount.repos.splice(i, 1);
 									}
 								}
-							}
-							else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
-								oneAccount.repos.splice(i, 1);
-							}
-						}
-						
-						if(oneAccount.repos.length === 0){
-							currentScope.accounts.splice(account, 1);
-						}
-						else{
-							for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
-								var oneRepo = oneAccount.repos[inverse];
-								var repoServices = [];
-								if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
-									repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
-								}
-								else if (oneRepo.type === 'multi') {
-									repoServices = oneRepo.multi;
-								}
-								else if (oneRepo.type === 'component'){
-									if(repoComponentsNames.indexOf(oneRepo.name) === -1){
-										repoComponentsNames.push(oneRepo.name);
-										repoComponents.push(oneRepo);
-									}
-									oneAccount.repos.splice(inverse, 1);
-								}
 								
-								oneRepo.servicesList = repoServices;
-							}
-							
-							oneAccount.nextPageNumber = 2;
-							oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
-							
-							getServices(currentScope, function () {
-								getDaemons(currentScope, function () {
+								if(oneAccount.repos.length === 0){
+									currentScope.accounts.splice(account, 1);
+								}
+								else{
+									for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
+										var oneRepo = oneAccount.repos[inverse];
+										var repoServices = [];
+										if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
+											repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
+										}
+										else if (oneRepo.type === 'multi') {
+											repoServices = oneRepo.multi;
+										}
+										else if (oneRepo.type === 'component'){
+											if(repoComponentsNames.indexOf(oneRepo.name) === -1){
+												repoComponentsNames.push(oneRepo.name);
+												repoComponents.push(oneRepo);
+											}
+											oneAccount.repos.splice(inverse, 1);
+										}
+										
+										oneRepo.servicesList = repoServices;
+									}
+									
+									oneAccount.nextPageNumber = 2;
+									oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
 									
 									repoComponents.forEach(function(oneRepoComponent){
 										currentScope.originalServices.forEach(function (oneService) {
@@ -178,39 +150,22 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 											getDeployedServices(currentScope);
 										});
 									});
-								});
-							});
-						}
-					}
+									
+									
+								}
+							}
+							
+						});
+					});
 				}
-			});
-		}
-	}
-
-	function appendNewRepos (currentScope, account, repos) {
-		account.nextPageNumber++;
-		account.allowLoadMore = (repos.length === currentScope.defaultPerPage);
-
-		if (!account.repos) {
-			account.repos = [];
-		}
-
-		if (account.owner === 'soajs') {
-			repos.forEach (function (oneRepo) {
-				if (currentScope.excludedSOAJSRepos.indexOf(oneRepo.full_name) === -1) {
-					account.repos.push(oneRepo);
+				
+				
+				if(currentScope.accounts.length === 1){
+					currentScope.accounts[0].hide = false;
+					currentScope.accounts[0].icon = 'minus';
 				}
-			});
-			setTimeout(function(){
-				jQuery('#reposList').animate({scrollTop: jQuery('#reposList').prop("scrollHeight")}, 1500);
-			},500);
-		}
-		else {
-			account.repos = account.repos.concat(repos);
-			setTimeout(function(){
-				jQuery('#reposList').animate({scrollTop: jQuery('#reposList').prop("scrollHeight")}, 1500);
-			},500);
-		}
+			}
+		});
 	}
 
 	function getCdData (currentScope, cb) {
@@ -580,7 +535,8 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource){
 									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource = {};
 								}
-
+								
+								console.log(oneRepo);
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = oneRepo.owner.login;
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.repo = oneRepo.name;
 								if (isKubernetes) {
@@ -1115,7 +1071,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		}, function (error, response) {
 			if (error) {
-				currentScope.form.displayAlert('danger', error.message);
+				currentScope.displayAlert('danger', error.message);
 			} else {
 				if (opts.cd) {
 					currentScope.branches = response.branches;
@@ -1414,7 +1370,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 
 	return {
 		'listGitAccounts': listGitAccounts,
-		'listRepos': listRepos,
 		'getCdData': getCdData,
 		'getDeployedServices': getDeployedServices,
 		'deployService': deployService,

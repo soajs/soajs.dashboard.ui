@@ -473,7 +473,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								if($scope.formData.deployOptions.sourceCode.custom.subName){
 									subName = $scope.formData.deployOptions.sourceCode.custom.subName;
 								}
-								$scope.formData.deployOptions.sourceCode.custom.repo = $scope.formData.deployOptions.sourceCode.custom.repo + "***" + subName;
+								if(subName && subName !== ""){
+									$scope.formData.deployOptions.sourceCode.custom.repo = $scope.formData.deployOptions.sourceCode.custom.repo + "***" + subName;
+								}
 							}
 						}
 						
@@ -551,7 +553,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 									$scope.formData.deployOptions.sourceCode.custom = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repository + "***" + cust.subName;
+								if(cust.subName && cust.subName !== ''){
+									$scope.formData.deployOptions.sourceCode.custom.repo = cust.repository + "***" + cust.subName;
+								}
 								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
 							}
 						}

@@ -169,7 +169,85 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 		});
 	};
 	
+	function updateSourceCodesInWizard($scope) {
+		
+		// the same used in addEnv-ctrl
+		function decodeRepoNameAndSubName(name) {
+			let splits = name.split('***');
+			
+			let output = {
+				name : splits[0]
+			};
+			
+			if(splits.length > 0){
+				let subName = splits[1];
+				if(subName){
+					output.subName = splits[1];
+				}
+			}
+			
+			return output;
+		}
+		
+		function reformatSourceCodeForCicd(record) {
+			if(record.configuration && record.configuration.repo){
+				let selectedRepo = record.configuration.repo;
+				$scope.configRepos.config.forEach(function (eachConf) {
+					if(eachConf.name === selectedRepo){
+						record.configuration.commit = eachConf.configSHA;
+						record.configuration.owner = eachConf.owner;
+					}
+				});
+			}
+			
+			if(record.custom && record.custom.repo){ // applicable for nginx
+				let selectedRepoComposed = record.custom.repo;
+				let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
+				
+				let selectedRepo = decoded.name;
+				let subName = decoded.subName;
+				
+				record.custom.repo = selectedRepo; // save clear value
+				
+				$scope.configRepos.customType.forEach(function (eachConf) {
+					if(eachConf.name === selectedRepo){
+						
+						record.custom.owner = eachConf.owner;
+						record.custom.subName = subName; // for multi
+						
+						if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
+							eachConf.configSHA.forEach(function (eachConfig) {
+								if(eachConfig.contentName === subName){
+									record.custom.commit = eachConfig.sha;
+								}
+							});
+						}else{
+							record.custom.commit = eachConf.configSHA;
+						}
+						
+					}
+				});
+			}
+			
+			return record;
+		}
+		
+		let wizard = $scope.wizard;
+		
+		let fieldsToUpdate = ['controller','urac','oauth','nginx'];
+		
+		fieldsToUpdate.forEach(function (eachField) {
+			if(wizard[eachField] && wizard[eachField].custom && wizard[eachField].custom.sourceCode){
+				let sourceCode = wizard[eachField].custom.sourceCode;
+				reformatSourceCodeForCicd(sourceCode);
+			}
+		});
+		
+	}
+	
 	function addEnvironment($scope) {
+		updateSourceCodesInWizard($scope);
+		
 		$scope.statusType = "info";
 		$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		$scope.showProgress = false;

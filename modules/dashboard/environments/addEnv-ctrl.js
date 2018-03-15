@@ -41,6 +41,283 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 	
+	// source code updates starts
+	$scope.configRepos = [];
+	$scope.configReposBranches = {};
+	
+	$scope.setSourceCodeData = function() {
+		
+		let recipes = $scope.serviceRecipes;
+		let formData = $scope.form.formData;
+		let customType;
+		
+		let selectedRecipe;
+		
+		let steps = ['controller','urac','oauth','nginx'];
+		$scope.sourceCodeConfig = {};
+		steps.forEach(function (eachStep) {
+			if(!$scope.sourceCodeConfig[eachStep]){
+				$scope.sourceCodeConfig[eachStep] = {
+					configuration : {
+						isEnabled : false,
+						repoAndBranch : {
+							disabled : false,
+							required : false
+						}
+					}
+				};
+				
+				if(eachStep ==='nginx'){
+					$scope.sourceCodeConfig['nginx'].custom = {
+						isEnabled: false,
+						repoAndBranch: {
+							disabled: false,
+							required: false
+						}
+					};
+				}
+			}
+		});
+		
+		recipes.forEach(function (catalogRecipe) {
+			if (catalogRecipe._id === formData.catalog) {
+				selectedRecipe = catalogRecipe;
+			}
+		});
+		
+		if(!selectedRecipe){ // it will be certainly from the 4th call : nginx
+			recipes = $scope.nginxRecipes;
+			recipes.forEach(function (catalogRecipe) {
+				if (catalogRecipe._id === formData.catalog) {
+					selectedRecipe = catalogRecipe;
+				}
+			});
+		}
+		
+		if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+			let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+			
+			let conf = sourceCode.configuration;
+			let cust = sourceCode.custom; // applicable for nginx only
+			
+			$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+			
+			if(!formData.custom){
+				formData.custom = {};
+			}
+			
+			if(!formData.custom.sourceCode){
+				formData.custom.sourceCode = {};
+			}
+			
+			if (conf) {
+				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.isEnabled = true;
+				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.repoAndBranch.required = conf.required;
+				
+				if(conf.repo && conf.repo !== ''){
+					if(!formData.custom.sourceCode.configuration){
+						formData.custom.sourceCode.configuration = {};
+					}
+					
+					formData.custom.sourceCode.configuration.repo = conf.repo;
+					formData.custom.sourceCode.configuration.branch = conf.branch;
+				}
+			}
+			
+			if (cust && $scope.currentServiceName ==='nginx') {
+				customType = cust.type;
+				
+				$scope.sourceCodeConfig[$scope.currentServiceName].custom.isEnabled = true;
+				$scope.sourceCodeConfig[$scope.currentServiceName].custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
+				$scope.sourceCodeConfig[$scope.currentServiceName].custom.repoAndBranch.required = cust.required;
+				
+				if(cust.repo && cust.repo !== ''){
+					if(!formData.custom.sourceCode.custom){
+						formData.custom.sourceCode.custom = {};
+					}
+					
+					formData.custom.sourceCode.custom.repo = cust.repo;
+					formData.custom.sourceCode.custom.branch = cust.branch;
+				}
+			}
+			
+			if(conf || (cust && $scope.currentServiceName ==='nginx')){
+				$scope.listAccounts(customType, function () {
+					// special case: if the form was overwritten from cicd we have to load the branch
+					if(formData.custom && formData.custom.sourceCode){
+						if(formData.custom.sourceCode.configuration && formData.custom.sourceCode.configuration.repo){
+							if(!$scope.configReposBranches[formData.custom.sourceCode.configuration.repo]){
+								$scope.fetchBranches('conf');
+							}
+						}
+						
+						if(formData.custom.sourceCode.custom && formData.custom.sourceCode.custom.repo){
+							if(!$scope.configReposBranches[formData.custom.sourceCode.custom.repo]){
+								$scope.fetchBranches('cust');
+							}
+						}
+					}
+				});
+			}
+		}else{
+			if(!formData){
+				formData = {};
+			}
+			
+			if(!formData.custom){
+				formData.custom = {};
+			}
+			
+			formData.custom.sourceCode = {}; // clear
+		}
+	};
+	
+	$scope.listAccounts = function (customType, callback) {
+		getSendDataFromServer($scope, ngDataApi, {
+			'method': 'get',
+			'routeName': '/dashboard/gitAccounts/accounts/list',
+			params : {
+				fullList : true
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				let configRecords = [];
+				let customRecords = [];
+				
+				if(response){
+					response.forEach(function (eachAccount) {
+						if(eachAccount.repos){
+							eachAccount.repos.forEach(function (eachRepo) {
+								// eachRepo : name, serviceName, type
+								if(eachRepo.type === 'config'){
+									configRecords.push({
+										owner : eachAccount.owner,
+										provider : eachAccount.provider,
+										accountId : eachAccount._id.toString(),
+										name : eachRepo.name,
+										type : eachRepo.type,
+										configSHA : eachRepo.configSHA
+									});
+								}
+								
+								if(customType && eachRepo.type === customType){
+									
+									let acceptableTypes = ['custom','static','service','daemon']; // and multi
+									if(customType === 'multi'){
+										if(eachRepo.configSHA){
+											eachRepo.configSHA.forEach(function (sub) {
+												if(acceptableTypes.indexOf(sub.contentType) !== -1 ) {
+													customRecords.push({
+														owner: eachAccount.owner,
+														provider: eachAccount.provider,
+														accountId: eachAccount._id.toString(),
+														name: eachRepo.name,
+														subName: sub.contentName,
+														type: eachRepo.type,
+														configSHA: eachRepo.configSHA
+													});
+												}
+											});
+										}
+									}else{
+										if(acceptableTypes.indexOf(customType) !== -1 ){
+											customRecords.push({
+												owner : eachAccount.owner,
+												provider : eachAccount.provider,
+												accountId : eachAccount._id.toString(),
+												name : eachRepo.name,
+												type : eachRepo.type,
+												configSHA : eachRepo.configSHA
+											});
+										}
+									}
+								}
+								
+							});
+						}
+					});
+				}
+				
+				$scope.configRepos.customType = customRecords;
+				$scope.configRepos.config = configRecords;
+				
+				callback();
+			}
+		});
+	};
+	
+	// the same used in overview
+	function decodeRepoNameAndSubName(name) {
+		let splits = name.split('***');
+		
+		let output = {
+			name : splits[0]
+		};
+		
+		if(splits.length > 0){
+			let subName = splits[1];
+			if(subName){
+				output.subName = splits[1];
+			}
+		}
+		
+		return output;
+	}
+	
+	$scope.fetchBranches = function (confOrCustom) {
+		let formData = $scope.form.formData;
+		
+		let selectedRepo;
+		
+		if (confOrCustom === 'conf') {
+			selectedRepo = formData.custom.sourceCode.configuration.repo;
+		} else { // cust
+			let decoded = formData.custom.sourceCode.custom.repo;
+			selectedRepo = decodeRepoNameAndSubName(decoded).name;
+			$scope.selectedCustomClear = selectedRepo;
+		}
+		
+		if (!selectedRepo || selectedRepo === '') {
+			return;
+		}
+		
+		let accountData = {};
+		$scope.configRepos.config.forEach(function (eachAcc) {
+			if (eachAcc.name === selectedRepo) {
+				accountData = eachAcc;
+			}
+		});
+		
+		if(Object.keys(accountData).length === 0){
+			$scope.configRepos.customType.forEach(function (eachAcc) {
+				if (eachAcc.name === selectedRepo) {
+					accountData = eachAcc;
+				}
+			});
+		}
+		
+		getSendDataFromServer($scope, ngDataApi, {
+			'method': 'get',
+			'routeName': '/dashboard/gitAccounts/getBranches',
+			params: {
+				id: accountData.accountId,
+				name: selectedRepo,
+				type: 'repo',
+				provider : accountData.provider
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.configReposBranches[selectedRepo] = response.branches;
+			}
+		});
+	};
+	// source code updates ends
+	
 	$scope.iwantenvironment = function(flag){
 		switch(flag){
 			case 1:
@@ -960,6 +1237,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						delete $scope.form.formData.imageTag;
 						delete $scope.form.formData.custom;
 						
+						$scope.setSourceCodeData();
+						
 						injectCatalogInputs($scope.serviceRecipes, controllerBranches);
 					};
 					
@@ -972,6 +1251,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						if($scope.wizard.deploy && $scope.wizard.deploy.selectedDriver === 'manual'){
 							$scope.wizard.controller.deploy = false;
 							$scope.form.formData.deploy = false;
+						}
+						
+						if($localStorage.addEnv.step3.catalog){
+							$scope.setSourceCodeData();
 						}
 					}
 					
@@ -1160,6 +1443,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					serviceBranches = repoBranches;
 					$scope.tempFormEntries.catalog.onAction = function () {
 						//reset form entries
+						
+						$scope.setSourceCodeData();
+						
 						delete $scope.form.formData.branch;
 						delete $scope.form.formData.imagePrefix;
 						delete $scope.form.formData.imageName;
@@ -1172,6 +1458,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					if ($localStorage.addEnv && $localStorage.addEnv[$scope.currentStep]) {
 						$scope.wizard[$scope.currentServiceName] = angular.copy($localStorage.addEnv[$scope.currentStep]);
 						$scope.form.formData = $scope.wizard[$scope.currentServiceName];
+						
+						if($localStorage.addEnv[$scope.currentStep].catalog){
+							$scope.setSourceCodeData();
+						}
 					}
 					
 					$scope.form.formData.deploy = true;
@@ -1218,6 +1508,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.Step4 = function () {
 		overlayLoading.show();
 		$scope.nginxRecipes = [];
+		$scope.currentServiceName = 'nginx';
 		
 		getCatalogRecipes((recipes) => {
 			recipes.forEach((oneRecipe) => {
@@ -1285,6 +1576,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						delete $scope.form.formData.imageName;
 						delete $scope.form.formData.imageTag;
 						delete $scope.form.formData.custom;
+						
+						$scope.setSourceCodeData();
 						
 						injectCatalogInputs(recipes);
 					}
@@ -1430,6 +1723,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				if ($localStorage.addEnv && $localStorage.addEnv.step4) {
 					$scope.wizard.nginx = angular.copy($localStorage.addEnv.step4);
 					$scope.form.formData = $scope.wizard.nginx;
+					
+					if($localStorage.addEnv.step4.catalog){
+						$scope.setSourceCodeData();
+					}
 				}
 				$scope.form.formData.sitePrefix = $scope.wizard.gi.sitePrefix;
 				$scope.form.formData.apiPrefix = $scope.wizard.gi.apiPrefix;
@@ -1516,7 +1813,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		recipes.forEach(function (oneRecipe) {
 			if (oneRecipe._id === chosenRecipe) {
 				
-				entries.branches = serviceBranches.branches;
+				if(serviceBranches){
+					entries.branches = serviceBranches.branches;
+				}
 				
 				delete entries.imagePrefix;
 				delete entries.imageName;

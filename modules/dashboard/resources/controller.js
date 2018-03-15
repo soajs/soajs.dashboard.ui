@@ -526,15 +526,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						
 						if (conf) {
 							$scope.sourceCodeConfig.configuration.isEnabled = true;
-							$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+							$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repository && conf.repository !== '');
 							$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
 							
-							if(conf.repo && conf.repo !== ''){
+							if(conf.repository && conf.repository !== ''){
 								if(!$scope.formData.deployOptions.sourceCode.configuration){
 									$scope.formData.deployOptions.sourceCode.configuration = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
+								$scope.formData.deployOptions.sourceCode.configuration.repo = conf.repository;
 								$scope.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
 							}
 						}
@@ -543,15 +543,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							customType = cust.type;
 							
 							$scope.sourceCodeConfig.custom.isEnabled = true;
-							$scope.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
+							$scope.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repository && cust.repository !== '');
 							$scope.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
 							
-							if(cust.repo && cust.repo !== ''){
+							if(cust.repository && cust.repository !== ''){
 								if(!$scope.formData.deployOptions.sourceCode.custom){
 									$scope.formData.deployOptions.sourceCode.custom = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "***" + cust.subName;
+								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repository + "***" + cust.subName;
 								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
 							}
 						}

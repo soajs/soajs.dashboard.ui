@@ -25,136 +25,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				}
 				
 				if (currentScope.accounts.length > 0) {
-					
-					getServices(currentScope, function () {
-						getDaemons(currentScope, function () {
-							
-							for (let account = currentScope.accounts.length -1; account >=0; account--){
-								let oneAccount = currentScope.accounts[account];
-								oneAccount.hide = true;
-								
-								if (oneAccount.owner === 'soajs') {
-									for (var i = oneAccount.repos.length - 1; i >= 0; i--) {
-										if (['soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
-											oneAccount.repos.splice(i, 1);
-										}
-									}
-								}
-								
-								var repoComponents = [];
-								var repoComponentsNames =[];
-								
-								for(let i = oneAccount.repos.length -1; i >=0; i--){
-									
-									oneAccount.repos[i].full_name = oneAccount.repos[i].name;
-									oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
-									if(!oneAccount.repos[i].owner){
-										oneAccount.repos[i].owner = {
-											login: oneAccount.owner
-										};
-									}
-									
-									if(oneAccount.repos[i].type === 'multi'){
-										if(oneAccount.repos[i].configSHA.length === 0){
-											oneAccount.repos.splice(i, 1);
-										}
-										else{
-											for(let multiCount = oneAccount.repos[i].configSHA.length -1; multiCount >=0; multiCount--){
-												if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].type) === -1){
-													oneAccount.repos[i].configSHA.splice(multiCount, 1);
-												}
-											}
-											if(oneAccount.repos[i].configSHA.length === 0){
-												oneAccount.repos.splice(i, 1);
-											}
-										}
-									}
-									else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
-										oneAccount.repos.splice(i, 1);
-									}
-								}
-								
-								if(oneAccount.repos.length === 0){
-									currentScope.accounts.splice(account, 1);
-								}
-								else{
-									for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
-										var oneRepo = oneAccount.repos[inverse];
-										var repoServices = [];
-										if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
-											repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
-										}
-										else if (oneRepo.type === 'multi') {
-											repoServices = oneRepo.multi;
-										}
-										else if (oneRepo.type === 'component'){
-											if(repoComponentsNames.indexOf(oneRepo.name) === -1){
-												repoComponentsNames.push(oneRepo.name);
-												repoComponents.push(oneRepo);
-											}
-											oneAccount.repos.splice(inverse, 1);
-										}
-										
-										oneRepo.servicesList = repoServices;
-									}
-									
-									oneAccount.nextPageNumber = 2;
-									oneAccount.allowLoadMore = (response.length === currentScope.defaultPerPage);
-									
-									repoComponents.forEach(function(oneRepoComponent){
-										currentScope.originalServices.forEach(function (oneService) {
-											if (oneService.src && oneService.src.repo === oneRepoComponent.name) {
-												oneService.type = 'service';
-												oneRepoComponent.servicesList.push(oneService);
-											}
-										});
-										if (oneRepoComponent.servicesList.length > 0) {
-											oneAccount.repos.push(oneRepoComponent);
-										}
-									});
-									
-									oneAccount.repos.forEach(function (oneRepo, index) {
-										oneRepo.servicesList.forEach(function (oneRepoService) {
-											var type = (oneRepoService.type === 'service') ? 'services': 'daemons';
-											currentScope[type].forEach(function (oneService) {
-												if (oneService.name === oneRepoService.name) {
-													oneRepoService.versions = [];
-													if (oneService.versions) {
-														Object.keys(oneService.versions).forEach(function (oneVersion) {
-															if(type === 'daemons' && oneService.grpConf){
-																oneService.versions[oneVersion] = {};
-																oneService.versions[oneVersion].grpConf = oneService.grpConf;
-																oneService.grpConf.forEach(function(oneGroup){
-																	if(!oneService.versions[oneVersion][oneGroup.daemonConfigGroup]){
-																		oneService.versions[oneVersion][oneGroup.daemonConfigGroup] = {};
-																	}
-																});
-															}
-															if(oneService.prerequisites){
-																oneService.versions[oneVersion].prerequisites = oneService.prerequisites;
-															}
-															if(oneService.gcId){
-																oneService.versions[oneVersion].gcId = oneService.gcId;
-															}
-															oneService.versions[oneVersion].v = oneVersion;
-															oneRepoService.versions.push(oneService.versions[oneVersion]);
-														});
-													}
-												}
-											});
-										});
-									});
-									
+					getCatalogRecipes(currentScope, function () {
+						getServices(currentScope, function () {
+							getDaemons(currentScope, function () {
+								processGitAccountsRepos(function() {
 									getCdData(currentScope, function () {
-										getCatalogRecipes(currentScope, function (error) {
-											getDeployedServices(currentScope);
-										});
+										getDeployedServices(currentScope);
 									});
-									
-									
-								}
-							}
-							
+								});
+							});
 						});
 					});
 				}
@@ -166,6 +45,127 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			}
 		});
+		
+		function processGitAccountsRepos(cb){
+			for (let account = currentScope.accounts.length -1; account >=0; account--){
+				let oneAccount = currentScope.accounts[account];
+				oneAccount.hide = true;
+				
+				if (oneAccount.owner === 'soajs') {
+					for (var i = oneAccount.repos.length - 1; i >= 0; i--) {
+						oneAccount.repos[i].full_name = oneAccount.repos[i].name;
+						oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
+						if (['soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
+							oneAccount.repos.splice(i, 1);
+						}
+					}
+				}
+				
+				var repoComponents = [];
+				var repoComponentsNames =[];
+				
+				for(let i = oneAccount.repos.length -1; i >=0; i--){
+					
+					oneAccount.repos[i].full_name = oneAccount.repos[i].name;
+					oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
+					if(!oneAccount.repos[i].owner){
+						oneAccount.repos[i].owner = {
+							login: oneAccount.owner
+						};
+					}
+					
+					if(oneAccount.repos[i].type === 'multi'){
+						if(oneAccount.repos[i].configSHA.length === 0){
+							oneAccount.repos.splice(i, 1);
+						}
+						else{
+							for(let multiCount = oneAccount.repos[i].configSHA.length -1; multiCount >=0; multiCount--){
+								if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].type) === -1){
+									oneAccount.repos[i].configSHA.splice(multiCount, 1);
+								}
+							}
+							if(oneAccount.repos[i].configSHA.length === 0){
+								oneAccount.repos.splice(i, 1);
+							}
+						}
+					}
+					else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
+						oneAccount.repos.splice(i, 1);
+					}
+				}
+				
+				if(oneAccount.repos.length === 0){
+					currentScope.accounts.splice(account, 1);
+				}
+				else{
+					for(var inverse = oneAccount.repos.length -1; inverse >=0; inverse --){
+						var oneRepo = oneAccount.repos[inverse];
+						var repoServices = [];
+						if (oneRepo.type === 'service' || oneRepo.type === 'daemon') {
+							repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
+						}
+						else if (oneRepo.type === 'multi') {
+							repoServices = oneRepo.multi;
+						}
+						else if (oneRepo.type === 'component'){
+							if(repoComponentsNames.indexOf(oneRepo.name) === -1){
+								repoComponentsNames.push(oneRepo.name);
+								repoComponents.push(oneRepo);
+							}
+							oneAccount.repos.splice(inverse, 1);
+						}
+						
+						oneRepo.servicesList = repoServices;
+					}
+					
+					repoComponents.forEach(function(oneRepoComponent){
+						currentScope.originalServices.forEach(function (oneService) {
+							if (oneService.src && oneService.src.repo === oneRepoComponent.name) {
+								oneService.type = 'service';
+								oneRepoComponent.servicesList.push(oneService);
+							}
+						});
+						if (oneRepoComponent.servicesList.length > 0) {
+							oneAccount.repos.push(oneRepoComponent);
+						}
+					});
+					
+					oneAccount.repos.forEach(function (oneRepo, index) {
+						oneRepo.servicesList.forEach(function (oneRepoService) {
+							var type = (oneRepoService.type === 'service') ? 'services': 'daemons';
+							currentScope[type].forEach(function (oneService) {
+								if (oneService.name === oneRepoService.name) {
+									oneRepoService.versions = [];
+									if (oneService.versions) {
+										Object.keys(oneService.versions).forEach(function (oneVersion) {
+											if(type === 'daemons' && oneService.grpConf){
+												oneService.versions[oneVersion] = {};
+												oneService.versions[oneVersion].grpConf = oneService.grpConf;
+												oneService.grpConf.forEach(function(oneGroup){
+													if(!oneService.versions[oneVersion][oneGroup.daemonConfigGroup]){
+														oneService.versions[oneVersion][oneGroup.daemonConfigGroup] = {};
+													}
+												});
+											}
+											if(oneService.prerequisites){
+												oneService.versions[oneVersion].prerequisites = oneService.prerequisites;
+											}
+											if(oneService.gcId){
+												oneService.versions[oneVersion].gcId = oneService.gcId;
+											}
+											oneService.versions[oneVersion].v = oneVersion;
+											oneRepoService.versions.push(oneService.versions[oneVersion]);
+										});
+									}
+								}
+							});
+						});
+					});
+				}
+			}
+			
+			return cb();
+		}
 	}
 
 	function getCdData (currentScope, cb) {
@@ -379,446 +379,436 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	}
 	
 	function deployService(currentScope, oneRepo, service, version, gitAccount, daemonGrpConf) {
-		getCatalogRecipes(currentScope, function(){
-			if(currentScope.oldStyle){
-				openUpgradeModal(currentScope);
-			}
-			else{
-				var deployService = $modal.open({
-					templateUrl: 'deployService.tmpl',
-					size: 'lg',
-					backdrop: true,
-					keyboard: true,
-					controller: function ($scope) {
-						fixBackDrop();
-						$scope.controllerScope = currentScope;
-						$scope.isKubernetes = isKubernetes;
-						$scope.deployNewService = true;
-						$scope.version = version.v || 'Default';
-						$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
-						$scope.cdEnvs = [$scope.oneEnv];
-						$scope.deployed = false;
-						$scope.oneSrv = (service && service.name) ? service.name : oneRepo.name;
-						$scope.serviceType = (service && service.type) ? service.type : 'other';
-						$scope.showCD = true;
-						$scope.isAutoScalable = currentScope.isAutoScalable || false;
-						$scope.autoScale = false;
-						if(daemonGrpConf){
-							$scope.daemonGrpConf = daemonGrpConf;
-						}
-						if(SOAJSRMS.indexOf(oneRepo.name) !== -1){
-							$scope.showCD = false;
-						}
-						$scope.services = {};
-						if($scope.version === 'Default'){
-							$scope.services[$scope.oneSrv] = service || oneRepo;
-						}else{
-							$scope.services[$scope.oneSrv] = version;
-						}
-						if (($scope.services[$scope.oneSrv].deployed && $scope.serviceType !== 'daemon')|| (daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf] && $scope.services[$scope.oneSrv][daemonGrpConf].deployed)) {
-							$scope.serviceId = ($scope.serviceType === 'daemon' && daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf]) ? $scope.services[$scope.oneSrv][daemonGrpConf].serviceId : $scope.services[$scope.oneSrv].serviceId;
-							$scope.deployed = true;
-						}
-						$scope.default = false;
-						$scope.gitAccount = gitAccount;
+		if(currentScope.oldStyle){
+			openUpgradeModal(currentScope);
+		}
+		else{
+			var deployService = $modal.open({
+				templateUrl: 'deployService.tmpl',
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope) {
+					fixBackDrop();
+					$scope.controllerScope = currentScope;
+					$scope.isKubernetes = isKubernetes;
+					$scope.deployNewService = true;
+					$scope.version = version.v || 'Default';
+					$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
+					$scope.cdEnvs = [$scope.oneEnv];
+					$scope.deployed = false;
+					$scope.recipes = angular.copy(currentScope.recipes);
+					$scope.oneSrv = (service && service.name) ? service.name : oneRepo.name;
+					$scope.serviceType = (service && service.type) ? service.type : 'other';
+					$scope.showCD = true;
+					$scope.isAutoScalable = currentScope.isAutoScalable || false;
+					$scope.autoScale = false;
+					if(daemonGrpConf){
+						$scope.daemonGrpConf = daemonGrpConf;
+					}
+					if(SOAJSRMS.indexOf(oneRepo.name) !== -1){
+						$scope.showCD = false;
+					}
+					$scope.services = {};
+					if($scope.version === 'Default'){
+						$scope.services[$scope.oneSrv] = service || oneRepo;
+					}else{
+						$scope.services[$scope.oneSrv] = version;
+					}
+					if (($scope.services[$scope.oneSrv].deployed && $scope.serviceType !== 'daemon')|| (daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf] && $scope.services[$scope.oneSrv][daemonGrpConf].deployed)) {
+						$scope.serviceId = ($scope.serviceType === 'daemon' && daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf]) ? $scope.services[$scope.oneSrv][daemonGrpConf].serviceId : $scope.services[$scope.oneSrv].serviceId;
+						$scope.deployed = true;
+					}
+					$scope.default = false;
+					$scope.gitAccount = gitAccount;
+					$scope.alerts = [];
+					$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
+					getCDRecipe($scope, oneRepo, function () {
+						$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+					});
+
+					$scope.cancel = function () {
+						deployService.close();
+					};
+
+					$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {
 						$scope.alerts = [];
-						$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
-						getCDRecipe($scope, oneRepo, function () {
-							$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+						if (isCode) {
+							var msgT = getCodeMessage(msg, service, orgMesg);
+							if (msgT) {
+								msg = msgT;
+							}
+						}
+						$scope.alerts.push({'type': type, 'msg': msg});
+					};
+
+					$scope.closeAlert = function (index) {
+						$scope.alerts.splice(index, 1);
+					};
+
+					$scope.showHide = function (oneService, name) {
+						if (oneService.icon === 'minus') {
+							oneService.icon = 'plus';
+							jQuery('#cd_' + name).slideUp();
+						}
+						else {
+							oneService.icon = 'minus';
+							jQuery('#cd_' + name).slideDown()
+						}
+					};
+
+					$scope.cdShowHide = function (oneSrv, name) {
+						if ($scope.cdConfiguration[oneSrv].icon === 'minus') {
+							$scope.cdConfiguration[oneSrv].icon = 'plus';
+							jQuery('#cdc_' + name).slideUp();
+						}
+						else {
+							$scope.cdConfiguration[oneSrv].icon = 'minus';
+							jQuery('#cdc_' + name).slideDown()
+						}
+					};
+
+					$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
+						$scope.branches.forEach(function (oneBranch) {
+							if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
+								if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
+								}
+							}
 						});
 
-						$scope.cancel = function () {
-							deployService.close();
-						};
+					};
+					$scope.activateAutoScale = function () {
+						$scope.autoScale = !$scope.autoScale;
+					};
 
-						$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {
-							$scope.alerts = [];
-							if (isCode) {
-								var msgT = getCodeMessage(msg, service, orgMesg);
-								if (msgT) {
-									msg = msgT;
-								}
-							}
-							$scope.alerts.push({'type': type, 'msg': msg});
-						};
-
-						$scope.closeAlert = function (index) {
-							$scope.alerts.splice(index, 1);
-						};
-
-						$scope.showHide = function (oneService, name) {
-							if (oneService.icon === 'minus') {
-								oneService.icon = 'plus';
-								jQuery('#cd_' + name).slideUp();
-							}
-							else {
-								oneService.icon = 'minus';
-								jQuery('#cd_' + name).slideDown()
-							}
-						};
-
-						$scope.cdShowHide = function (oneSrv, name) {
-							if ($scope.cdConfiguration[oneSrv].icon === 'minus') {
-								$scope.cdConfiguration[oneSrv].icon = 'plus';
-								jQuery('#cdc_' + name).slideUp();
-							}
-							else {
-								$scope.cdConfiguration[oneSrv].icon = 'minus';
-								jQuery('#cdc_' + name).slideDown()
-							}
-						};
-
-						$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
-							$scope.branches.forEach(function (oneBranch) {
-								if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
-									if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
-									}
-								}
-							});
-
-						};
-						$scope.activateAutoScale = function () {
-							$scope.autoScale = !$scope.autoScale;
-						};
-
-						$scope.setDeploy = function (oneEnv, version, oneSrv) {
-							var deployedBranch = '';
-							if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch) {
-								deployedBranch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
-							}
-							if ($scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version] && $scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version].labels && $scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version].labels['service.branch']) {
-								deployedBranch = $scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version].labels['service.branch'];
-							}
-							if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active) {
-								delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active;
-							}
-							else if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions || !$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version]) {
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions = {};
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] = {
-									branch: deployedBranch,
-									active: true
-								};
-							}
-							else {
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active = true;
-							}
-							getCatalogRecipes($scope, function () {
-								$scope.myRecipes = [];
-								for (var type in $scope.recipes) {
-									$scope.recipes[type].forEach(function (oneRecipe) {
-										if (oneRecipe.recipe && ['service','daemon','other'].indexOf(oneRecipe.type)!== -1)  {
-											$scope.myRecipes.push(oneRecipe);
-										}
-									});
-								}
-								if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options = {'deployConfig': {'replication': {}}};
-								}
-								if ($scope.isAutoScalable && !$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.autoScale) {
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.autoScale = {
-										"replicas": {},
-										"metrics": {
-											"cpu": {}
-										}
-									}
-								}
-								else if ($scope.isAutoScalable
-									&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig
-									&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication
-									&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode
-									&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode === 'deployment'
-								) {
-									$scope.autoScale = true;
-								}
-								if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource){
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource = {};
-								}
-								
-								console.log(oneRepo);
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = oneRepo.owner.login;
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.repo = oneRepo.name;
-								if (isKubernetes) {
-									$scope.deploymentModes = ['deployment', 'daemonset'];
-									if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode) {
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode = 'deployment';
-									}
-								}
-								else {
-									$scope.deploymentModes = ['replicated', 'global'];
-									if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode) {
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode = 'replicated';
-									}
-								}
-								var service = $scope.services[oneSrv];
-								$scope.groupConfigs = '';
-								if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit) {
-									if (service && service.prerequisites) {
-										if (service.prerequisites.memory && service.prerequisites.memory.trim().length > 0) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = parseFloat(service.prerequisites.memory);
-										}
-										else {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
-										}
-										if (service.prerequisites.cpu && service.prerequisites.cpu.trim().length > 0 && isKubernetes) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.cpuLimit = service.prerequisites.cpu;
-										}
-									} else {
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
-									}
-								}
-								else {
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit /= 1048576;
-									if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit < 1) {
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
-									}
-
-								}
-								if (service && $scope.serviceType === 'daemon' && service.grpConf) {
-									$scope.groupConfigs = service.grpConf;
-								}
-								
-								// on load if u need edit cicd
-								
-								$scope.injectCatalogEntries(oneEnv, version, oneSrv);
-							});
-						};
-
-						$scope.injectCatalogEntries = function (oneEnv, version, oneSrv) {
-							$scope.allowGitOverride = false;
-							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom) {
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom = {};
-							}
-							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env) {
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env = {};
-							}
-							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom = {};
-							if($scope.serviceType === 'daemon' && $scope.daemonGrpConf){
-								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.daemonGroup = $scope.daemonGrpConf;
-							}
-							for (var type in $scope.recipes) {
-								$scope.recipes[type].forEach(function (catalogRecipe) {
-									if (catalogRecipe._id === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe) {
-										if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image && catalogRecipe.recipe.deployOptions.image.override) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
-										}
-										if (catalogRecipe.recipe.deployOptions.image.override) {
-											if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix)
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix = catalogRecipe.recipe.deployOptions.image.prefix;
-
-											if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.name)
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.name = catalogRecipe.recipe.deployOptions.image.name;
-
-											if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag)
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag = catalogRecipe.recipe.deployOptions.image.tag;
-										}
-										else if(!catalogRecipe.recipe.deployOptions.image.override){
-											delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image;
-										}
-										//append inputs whose type is userInput
-										for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
-											if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
-												var newCatalogInput = {
-													label: catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
-													name: envVariable,
-													value: catalogRecipe.recipe.buildOptions.env[envVariable].default || "",
-													fieldMsg: catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
-													required: (catalogRecipe.recipe.buildOptions.env[envVariable].default && catalogRecipe.recipe.buildOptions.env[envVariable].default !== '') ? false : true
-												};
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
-												if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
-													$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";
-												}
-											}
-										}
-										if (Object.keys($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env).length === 0) {
-											delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env;
-										}
-
-										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
-										if (['service','daemon','other'].indexOf(catalogRecipe.type)!== -1) {
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv;
-											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
-											if(version !== 'Default'){
-												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
-											}
-											$scope.allowGitOverride = true;
-										}
-									}
-								});
-								
-								$scope.setSourceCodeData(oneEnv, version, oneSrv);
-							}
-						};
-
-						$scope.saveRecipe = function (type) {
-							saveRecipe($scope, type)
-						};
-						
-						// source code updates
-						$scope.configRepos = [];
-						$scope.configReposBranches = {};
-						
-						$scope.setSourceCodeData = function(oneEnv, version, oneSrv) {
-							let recipes = $scope.recipes;
-							let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
-							let formData = formDataRoot.custom;
-							
-							let selectedRecipe;
-							
-							$scope.sourceCodeConfig = {
-								configuration : {
-									isEnabled : false,
-									repoAndBranch : {
-										disabled : false,
-										required : false
-									}
-								}
+					$scope.setDeploy = function (oneEnv, version, oneSrv) {
+						var deployedBranch = '';
+						if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch) {
+							deployedBranch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
+						}
+						if ($scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version] && $scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version].labels && $scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version].labels['service.branch']) {
+							deployedBranch = $scope.cdConfiguration[oneSrv][oneEnv].obj.ha[version].labels['service.branch'];
+						}
+						if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active) {
+							delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active;
+						}
+						else if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions || !$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version]) {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions = {};
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] = {
+								branch: deployedBranch,
+								active: true
 							};
+						}
+						else {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active = true;
+						}
+						$scope.myRecipes = [];
+						for (var type in $scope.recipes) {
+							$scope.recipes[type].forEach(function (oneRecipe) {
+								if (oneRecipe.recipe && ['service','daemon','other'].indexOf(oneRecipe.type)!== -1)  {
+									$scope.myRecipes.push(oneRecipe);
+								}
+							});
+						}
+						if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options = {'deployConfig': {'replication': {}}};
+						}
+						if ($scope.isAutoScalable && !$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.autoScale) {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.autoScale = {
+								"replicas": {},
+								"metrics": {
+									"cpu": {}
+								}
+							}
+						}
+						else if ($scope.isAutoScalable
+							&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig
+							&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication
+							&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode
+							&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode === 'deployment'
+						) {
+							$scope.autoScale = true;
+						}
+						if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource){
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource = {};
+						}
+						
+						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = oneRepo.owner.login;
+						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.repo = oneRepo.name;
+						if (isKubernetes) {
+							$scope.deploymentModes = ['deployment', 'daemonset'];
+							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode) {
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode = 'deployment';
+							}
+						}
+						else {
+							$scope.deploymentModes = ['replicated', 'global'];
+							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode) {
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode = 'replicated';
+							}
+						}
+						var service = $scope.services[oneSrv];
+						$scope.groupConfigs = '';
+						if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit) {
+							if (service && service.prerequisites) {
+								if (service.prerequisites.memory && service.prerequisites.memory.trim().length > 0) {
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = parseFloat(service.prerequisites.memory);
+								}
+								else {
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
+								}
+								if (service.prerequisites.cpu && service.prerequisites.cpu.trim().length > 0 && isKubernetes) {
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.cpuLimit = service.prerequisites.cpu;
+								}
+							} else {
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
+							}
+						}
+						else {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit /= 1048576;
+							if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit < 1) {
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
+							}
+
+						}
+						if (service && $scope.serviceType === 'daemon' && service.grpConf) {
+							$scope.groupConfigs = service.grpConf;
+						}
+						
+						// on load if u need edit cicd
+						
+						$scope.injectCatalogEntries(oneEnv, version, oneSrv);
+					};
+
+					$scope.injectCatalogEntries = function (oneEnv, version, oneSrv) {
+						$scope.allowGitOverride = false;
+						if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom) {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom = {};
+						}
+						if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env) {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env = {};
+						}
+						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom = {};
+						if($scope.serviceType === 'daemon' && $scope.daemonGrpConf){
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.daemonGroup = $scope.daemonGrpConf;
+						}
+						for (var type in $scope.recipes) {
+							$scope.recipes[type].forEach(function (catalogRecipe) {
+								if (catalogRecipe._id === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe) {
+									if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image && catalogRecipe.recipe.deployOptions.image.override) {
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
+									}
+									if (catalogRecipe.recipe.deployOptions.image.override) {
+										if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix)
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix = catalogRecipe.recipe.deployOptions.image.prefix;
+
+										if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.name)
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.name = catalogRecipe.recipe.deployOptions.image.name;
+
+										if(!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag)
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag = catalogRecipe.recipe.deployOptions.image.tag;
+									}
+									else if(!catalogRecipe.recipe.deployOptions.image.override){
+										delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image;
+									}
+									//append inputs whose type is userInput
+									for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
+										if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
+											var newCatalogInput = {
+												label: catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
+												name: envVariable,
+												value: catalogRecipe.recipe.buildOptions.env[envVariable].default || "",
+												fieldMsg: catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
+												required: (catalogRecipe.recipe.buildOptions.env[envVariable].default && catalogRecipe.recipe.buildOptions.env[envVariable].default !== '') ? false : true
+											};
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
+											if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
+												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";
+											}
+										}
+									}
+									if (Object.keys($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env).length === 0) {
+										delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env;
+									}
+
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
+									if (['service','daemon','other'].indexOf(catalogRecipe.type)!== -1) {
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv;
+										$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type = $scope.cdConfiguration[oneSrv].type;
+										if(version !== 'Default'){
+											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.version = version;
+										}
+										$scope.allowGitOverride = true;
+									}
+								}
+							});
 							
-							for (let type in $scope.recipes) {
-								recipes[type].forEach(function (catalogRecipe) {
-									if(catalogRecipe._id ===  formDataRoot.recipe ){
-										selectedRecipe = catalogRecipe;
+							$scope.setSourceCodeData(oneEnv, version, oneSrv);
+						}
+					};
+
+					$scope.saveRecipe = function (type) {
+						saveRecipe($scope, type)
+					};
+					
+					// source code updates
+					$scope.configRepos = [];
+					$scope.configReposBranches = {};
+					
+					$scope.setSourceCodeData = function(oneEnv, version, oneSrv) {
+						let recipes = $scope.recipes;
+						let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+						let formData = formDataRoot.custom;
+						
+						let selectedRecipe;
+						
+						$scope.sourceCodeConfig = {
+							configuration : {
+								isEnabled : false,
+								repoAndBranch : {
+									disabled : false,
+									required : false
+								}
+							}
+						};
+						
+						for (let type in $scope.recipes) {
+							recipes[type].forEach(function (catalogRecipe) {
+								if(catalogRecipe._id ===  formDataRoot.recipe ){
+									selectedRecipe = catalogRecipe;
+								}
+							});
+						}
+						
+						if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+							let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+							
+							let conf = sourceCode.configuration;
+							
+							$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+							
+							if(!formData.sourceCode){
+								formData.sourceCode = {};
+							}
+							
+							if (conf) {
+								$scope.sourceCodeConfig.configuration.isEnabled = true;
+								$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+								$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+								
+								if(conf.repo && conf.repo !== ''){
+									if(!formData.sourceCode.configuration){
+										formData.sourceCode.configuration = {};
+									}
+									
+									formData.sourceCode.configuration.repo = conf.repo;
+									formData.sourceCode.configuration.branch = conf.branch;
+								}
+							}
+							
+							if(conf){
+								$scope.listAccounts(oneEnv, version, oneSrv, function () {
+									// special case: if the form was overwritten from cicd we have to load the branch
+									if(formData.sourceCode){
+										if(formData.sourceCode.configuration && formData.sourceCode.configuration.repo){
+											if(!$scope.configReposBranches[formData.sourceCode.configuration.repo]){
+												$scope.fetchBranches(oneEnv, version, oneSrv, 'conf');
+											}
+										}
 									}
 								});
 							}
-							
-							if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
-								let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+						}else{
+							if(!formData){
+								formData = {};
+							}
+							formData.sourceCode = {}; // clear
+						}
+					};
+					
+					$scope.listAccounts = function (oneEnv, version, oneSrv, callback) {
+						getSendDataFromServer($scope, ngDataApi, {
+							'method': 'get',
+							'routeName': '/dashboard/gitAccounts/accounts/list',
+							params : {
+								fullList : true
+							}
+						}, function (error, response) {
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							} else {
+								let configRecords = [];
 								
-								let conf = sourceCode.configuration;
-								
-								$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
-								
-								if(!formData.sourceCode){
-									formData.sourceCode = {};
-								}
-								
-								if (conf) {
-									$scope.sourceCodeConfig.configuration.isEnabled = true;
-									$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
-									$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
-									
-									if(conf.repo && conf.repo !== ''){
-										if(!formData.sourceCode.configuration){
-											formData.sourceCode.configuration = {};
-										}
-										
-										formData.sourceCode.configuration.repo = conf.repo;
-										formData.sourceCode.configuration.branch = conf.branch;
-									}
-								}
-								
-								if(conf){
-									$scope.listAccounts(oneEnv, version, oneSrv, function () {
-										// special case: if the form was overwritten from cicd we have to load the branch
-										if(formData.sourceCode){
-											if(formData.sourceCode.configuration && formData.sourceCode.configuration.repo){
-												if(!$scope.configReposBranches[formData.sourceCode.configuration.repo]){
-													$scope.fetchBranches(oneEnv, version, oneSrv, 'conf');
+								if(response){
+									response.forEach(function (eachAccount) {
+										if(eachAccount.repos){
+											eachAccount.repos.forEach(function (eachRepo) {
+												// eachRepo : name, serviceName, type
+												if(eachRepo.type === 'config'){
+													configRecords.push({
+														owner : eachAccount.owner,
+														provider : eachAccount.provider,
+														accountId : eachAccount._id.toString(),
+														name : eachRepo.name,
+														type : eachRepo.type,
+														configSHA : eachRepo.configSHA
+													});
 												}
-											}
+											});
 										}
 									});
 								}
-							}else{
-								if(!formData){
-									formData = {};
-								}
-								formData.sourceCode = {}; // clear
+								
+								$scope.configRepos.config = configRecords;
+								
+								callback();
 							}
-						};
+						});
+					};
+					
+					$scope.fetchBranches = function (oneEnv, version, oneSrv) {
+						let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+						let formData = formDataRoot.custom;
 						
-						$scope.listAccounts = function (oneEnv, version, oneSrv, callback) {
-							getSendDataFromServer($scope, ngDataApi, {
-								'method': 'get',
-								'routeName': '/dashboard/gitAccounts/accounts/list',
-								params : {
-									fullList : true
-								}
-							}, function (error, response) {
-								if (error) {
-									$scope.displayAlert('danger', error.message);
-								} else {
-									let configRecords = [];
-									
-									if(response){
-										response.forEach(function (eachAccount) {
-											if(eachAccount.repos){
-												eachAccount.repos.forEach(function (eachRepo) {
-													// eachRepo : name, serviceName, type
-													if(eachRepo.type === 'config'){
-														configRecords.push({
-															owner : eachAccount.owner,
-															provider : eachAccount.provider,
-															accountId : eachAccount._id.toString(),
-															name : eachRepo.name,
-															type : eachRepo.type,
-															configSHA : eachRepo.configSHA
-														});
-													}
-												});
-											}
-										});
-									}
-									
-									$scope.configRepos.config = configRecords;
-									
-									callback();
-								}
-							});
-						};
+						let selectedRepo = formData.sourceCode.configuration.repo;
 						
-						$scope.fetchBranches = function (oneEnv, version, oneSrv) {
-							let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
-							let formData = formDataRoot.custom;
-							
-							let selectedRepo = formData.sourceCode.configuration.repo;
-							
-							if (!selectedRepo || selectedRepo === '') {
-								return;
+						if (!selectedRepo || selectedRepo === '') {
+							return;
+						}
+						
+						let accountData = {};
+						$scope.configRepos.config.forEach(function (eachAcc) {
+							if (eachAcc.name === selectedRepo) {
+								accountData = eachAcc;
 							}
-							
-							let accountData = {};
-							$scope.configRepos.config.forEach(function (eachAcc) {
-								if (eachAcc.name === selectedRepo) {
-									accountData = eachAcc;
-								}
-							});
-							
-							getSendDataFromServer($scope, ngDataApi, {
-								'method': 'get',
-								'routeName': '/dashboard/gitAccounts/getBranches',
-								params: {
-									id: accountData.accountId,
-									name: selectedRepo,
-									type: 'repo',
-									provider : accountData.provider
-								}
-							}, function (error, response) {
-								if (error) {
-									$scope.displayAlert('danger', error.message);
-								} else {
-									$scope.configReposBranches[selectedRepo] = response.branches;
-								}
-							});
-						};
+						});
+						
+						getSendDataFromServer($scope, ngDataApi, {
+							'method': 'get',
+							'routeName': '/dashboard/gitAccounts/getBranches',
+							params: {
+								id: accountData.accountId,
+								name: selectedRepo,
+								type: 'repo',
+								provider : accountData.provider
+							}
+						}, function (error, response) {
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							} else {
+								$scope.configReposBranches[selectedRepo] = response.branches;
+							}
+						});
+					};
 
-					}
-				});
-			}
-		});
+				}
+			});
+		}
 	}
 
 	function getCatalogRecipes(currentScope, cb) {
-		//several calls to list recipes are being made to check if oldStyle
-		//check if recipes already retrieved and return them instead of repeating the api call
-		if(currentScope.recipes && Object.keys(currentScope.recipes).length > 0) {
-			return cb(null);
-		}
-
 		currentScope.loadingRecipes = true;
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
@@ -1154,43 +1144,41 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	}
 
 	function doDeploy(currentScope, params, external , controllerScope) {
-		getCatalogRecipes(currentScope, function() {
-			if (currentScope.oldStyle) {
-				openUpgradeModal(currentScope);
+		if (currentScope.oldStyle) {
+			openUpgradeModal(currentScope);
+		}
+		else {
+			overlayLoading.show();
+			if(external || !controllerScope) {
+				controllerScope = currentScope
 			}
-			else {
-				overlayLoading.show();
-				if(external || !controllerScope) {
-					controllerScope = currentScope
-				}
-				if (params.custom && params.custom.version) {
-					params.custom.version = parseInt(params.custom.version);
-				}
-				var config = {
-					"method": "post",
-					"routeName": "/dashboard/cloud/services/soajs/deploy",
-					"data": params
-				};
-				getSendDataFromServer(currentScope, ngDataApi, config, function (error) {
-					if (error) {
-						currentScope.displayAlert('danger', error.message);
-						overlayLoading.hide();
-					} else {
-						if(!external){
-							currentScope.cancel();
-						}
-						if(currentScope.daemonGrpConf){
-							controllerScope.daemonGrpConf = currentScope.daemonGrpConf;
-						}
-						controllerScope.getCdData(function () {
-							controllerScope.getDeployedServices();
-							controllerScope.displayAlert('success', 'Service deployed successfully');
-							overlayLoading.hide();
-						});
+			if (params.custom && params.custom.version) {
+				params.custom.version = parseInt(params.custom.version);
+			}
+			var config = {
+				"method": "post",
+				"routeName": "/dashboard/cloud/services/soajs/deploy",
+				"data": params
+			};
+			getSendDataFromServer(currentScope, ngDataApi, config, function (error) {
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+					overlayLoading.hide();
+				} else {
+					if(!external){
+						currentScope.cancel();
 					}
-				});
-			}
-		});
+					if(currentScope.daemonGrpConf){
+						controllerScope.daemonGrpConf = currentScope.daemonGrpConf;
+					}
+					controllerScope.getCdData(function () {
+						controllerScope.getDeployedServices();
+						controllerScope.displayAlert('success', 'Service deployed successfully');
+						overlayLoading.hide();
+					});
+				}
+			});
+		}
 	}
 
 	function doRebuild(currentScope, formData) {

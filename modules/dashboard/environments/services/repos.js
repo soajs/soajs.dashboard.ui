@@ -53,11 +53,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				
 				if (oneAccount.owner === 'soajs') {
 					for (var i = oneAccount.repos.length - 1; i >= 0; i--) {
-						oneAccount.repos[i].full_name = oneAccount.repos[i].name;
-						if(oneAccount.repos[i].name.indexOf("/") !== -1){
-							oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
-						}
-						if (['soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
+						if (['soajs/soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
 							oneAccount.repos.splice(i, 1);
 						}
 					}

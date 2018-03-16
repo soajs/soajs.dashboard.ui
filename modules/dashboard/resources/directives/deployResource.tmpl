@@ -34,6 +34,7 @@
 		<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs()"></select>
 		<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
 		<br>
+		<br>
 	</div>
 	
 	<div ng-if="sourceCodeConfig.configuration.isEnabled">

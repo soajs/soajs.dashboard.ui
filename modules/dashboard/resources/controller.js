@@ -696,6 +696,49 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					return;
 				};
 				
+				function reformatSourceCodeForCicd(record) {
+					if(record.configuration && record.configuration.repo){
+						let selectedRepo = record.configuration.repo;
+						$scope.configRepos.config.forEach(function (eachConf) {
+							if(eachConf.name === selectedRepo){
+								record.configuration.commit = eachConf.configSHA;
+								record.configuration.owner = eachConf.owner;
+							}
+						});
+					}
+					
+					if(record.custom && record.custom.repo){
+						let selectedRepoComposed = record.custom.repo;
+						let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
+						
+						let selectedRepo = decoded.name;
+						let subName = decoded.subName;
+						
+						record.custom.repo = selectedRepo; // save clear value
+						
+						$scope.configRepos.customType.forEach(function (eachConf) {
+							if(eachConf.name === selectedRepo){
+								
+								record.custom.owner = eachConf.owner;
+								record.custom.subName = subName; // for multi
+								
+								if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
+									eachConf.configSHA.forEach(function (eachConfig) {
+										if(eachConfig.contentName === subName){
+											record.custom.commit = eachConfig.sha;
+										}
+									});
+								}else{
+									record.custom.commit = eachConf.configSHA;
+								}
+								
+							}
+						});
+					}
+					
+					return record;
+				}
+				
 				$scope.save = function (cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
@@ -778,49 +821,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					
 					function saveResourceDeployConfig(cb) {
 						
-						function reformatSourceCodeForCicd(record) {
-							if(record.configuration && record.configuration.repo){
-								let selectedRepo = record.configuration.repo;
-								$scope.configRepos.config.forEach(function (eachConf) {
-									if(eachConf.name === selectedRepo){
-										record.configuration.commit = eachConf.configSHA;
-										record.configuration.owner = eachConf.owner;
-									}
-								});
-							}
-							
-							if(record.custom && record.custom.repo){
-								let selectedRepoComposed = record.custom.repo;
-								let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
-								
-								let selectedRepo = decoded.name;
-								let subName = decoded.subName;
-								
-								record.custom.repo = selectedRepo; // save clear value
-								
-								$scope.configRepos.customType.forEach(function (eachConf) {
-									if(eachConf.name === selectedRepo){
-										
-										record.custom.owner = eachConf.owner;
-										record.custom.subName = subName; // for multi
-										
-										if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
-											eachConf.configSHA.forEach(function (eachConfig) {
-												if(eachConfig.contentName === subName){
-													record.custom.commit = eachConfig.sha;
-												}
-											});
-										}else{
-											record.custom.commit = eachConf.configSHA;
-										}
-										
-									}
-								});
-							}
-							
-							return record;
-						}
-						
 						if (!$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0) {
 							if (cb) return cb();
 							else return;
@@ -899,6 +899,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						if (!deployOptions.custom) {
 							deployOptions.custom = {};
 						}
+						
+						deployOptions.custom.type = 'resource';
+						
+						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						delete deployOptions.sourceCode;
 						
 						if ($scope.options.formAction === 'add') {
 							if ($scope.newResource && Object.keys($scope.newResource).length > 0) {

@@ -64,7 +64,7 @@
 		<fieldset class="custom-fieldset">
 			<legend>{{selectedSourceCode.custom.label}}</legend>
 			<label>Repository</label>
-			<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="(repo.name + '***' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="formData.deployOptions.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled">
+			<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="formData.deployOptions.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled">
 			</select>
 			<label class="fieldMsg">Choose your configuration repository</label>
 			<br>

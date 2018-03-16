@@ -150,7 +150,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	};
 	
 	function decodeRepoNameAndSubName(name) {
-		let splits = name.split('***');
+		let splits = name.split('__SOAJS_DELIMITER__');
 		
 		let output = {
 			name : splits[0]
@@ -473,7 +473,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								if($scope.formData.deployOptions.sourceCode.custom.subName){
 									subName = $scope.formData.deployOptions.sourceCode.custom.subName;
 								}
-								$scope.formData.deployOptions.sourceCode.custom.repo = $scope.formData.deployOptions.sourceCode.custom.repo + "***" + subName;
+								$scope.formData.deployOptions.sourceCode.custom.repo = $scope.formData.deployOptions.sourceCode.custom.repo + "__SOAJS_DELIMITER__" + subName;
 							}
 						}
 						
@@ -551,7 +551,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 									$scope.formData.deployOptions.sourceCode.custom = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "***" + cust.subName;
+								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + cust.subName;
 								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
 							}
 						}

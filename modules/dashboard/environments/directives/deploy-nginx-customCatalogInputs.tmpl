@@ -27,7 +27,7 @@
 		<fieldset class="custom-fieldset">
 			<legend>{{selectedSourceCode.custom.label}}</legend>
 			<label>Repository</label>
-			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].custom.repoAndBranch.required" ng-options="(repo.name + '***' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="form.formData.custom.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoAndBranch.disabled"></select>
+			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="form.formData.custom.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoAndBranch.disabled"></select>
 			<label class="fieldMsg">Choose your custom repository</label>
 			<br>
 			
@@ -135,55 +135,7 @@
 			</div>
 			
 			<div ng-show="form.formData.certs">
-				<table width="100%" cellspacing="0" cellpadding="0" border="0">
-					<tbody>
-						<tr>
-							<td>
-								<label>Provider</label>
-								<select class="form-control" ng-model="form.formData.certsGit.provider" ng-required="form.formData.certs">
-									<option value="github">Github</option>
-									<option value="bitbucket">Bitbucket</option>
-								</select>
-								<div class="fieldMsg hint">Select the Source of your Repo.</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label>Git Domain</label>
-								<input type="text" class="form-control" ng-model="form.formData.certsGit.domain" placeholder="github.com" ng-required="form.formData.certs"/>
-								<div class="fieldMsg hint">Specify the domain of the repo.</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label>Git Owner</label>
-								<input type="text" class="form-control" ng-model="form.formData.certsGit.owner" placeholder="soajs" ng-required="form.formData.certs"/>
-								<div class="fieldMsg hint">Specify the owner of the git repo.</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label>Git Repository</label>
-								<input type="text" class="form-control" ng-model="form.formData.certsGit.repo" placeholder="customUI" ng-required="form.formData.certs"/>
-								<div class="fieldMsg hint">Specify the name of the git repo.</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label>Git Branch</label>
-								<input type="text" class="form-control" ng-model="form.formData.certsGit.branch" placeholder="master" ng-required="form.formData.certs"/>
-								<div class="fieldMsg hint">Specify the branch to use.</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label>Git Token</label>
-								<input type="text" class="form-control" ng-model="form.formData.certsGit.token" placeholder="Token ID" ng-required="form.formData.certs"/>
-								<div class="fieldMsg hint">Specify the token of the git repo.</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				
 			</div>
 		</div>
 	</accordion-group>

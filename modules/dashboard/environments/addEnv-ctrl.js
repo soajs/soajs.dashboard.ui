@@ -251,7 +251,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	
 	// the same used in overview
 	function decodeRepoNameAndSubName(name) {
-		let splits = name.split('***');
+		let splits = name.split('__SOAJS_DELIMITER__');
 		
 		let output = {
 			name : splits[0]

@@ -64,7 +64,7 @@ var catalogAppConfig = {
 					{'v': 'amazons3', 'l': "Amazon S3", "group": "cdn"},
 					{'v': 'rackspace', 'l': "Rackspace", "cluster": "cdn"},
 					{'v': 'other', 'l': "Other", "group": "cdn"},
-					
+
 					{'v': 'other', 'l': "Other", "group": "system"}
 				],
 				'required': true
@@ -177,21 +177,12 @@ var catalogAppConfig = {
 						]
 					},
 					{
-						'label': 'Repositories',
-						'entries': [
-							{
-								'name': 'specifyGitConfiguration',
-								'label': 'Specify Git Configuration',
-								'type': 'select',
-								'value': [
-									{'v': 'true', 'l': "Yes", 'selected': true},
-									{'v': 'false', 'l': "No"}
-								],
-								'required': true,
-								'tooltip': 'Specify if this recipe can be used to deploy content from Repositories or not.',
-								'fieldMsg': 'Specify if this recipe can be used to deploy content from Repositories or not.'
-							}
-						]
+                        'label': 'Source Code',
+                        'name': 'Repositories',
+                        "type": "group",
+                        'entries': [
+
+         			   ],
 					},
 					{
 						'label': 'Readiness Probe',
@@ -288,7 +279,7 @@ var catalogAppConfig = {
 							}
 						]
 					}
-				]
+				],
 			},
 			{
 				'type': 'html',

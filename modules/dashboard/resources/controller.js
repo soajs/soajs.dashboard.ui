@@ -551,7 +551,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 									$scope.formData.deployOptions.sourceCode.custom = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + cust.subName;
+								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName?cust.subName:"");
 								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
 							}
 						}

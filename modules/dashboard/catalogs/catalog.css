@@ -72,7 +72,47 @@ fieldset pre{
     float:left;
     width:33%;
 }
+.catalogRecipeForm .tr-Label-wrapper{
+  float:left;
+  width:25%;
+}
+.catalogRecipeForm .tr-repo-wrapper{
+   float:left;
+   width:25%;
+ }
+.catalogRecipeForm .tr-branch-wrapper{
+  float:left;
+  width:25%;
+}
+.catalogRecipeForm .tr-required-wrapper{
+  float:left;
+  width:25%;
+}
 
+.catalogRecipeForm .tr-customLabel-wrapper{
+  float:left;
+  width:20%;
+}
+
+.catalogRecipeForm .tr-customRepo-wrapper{
+  float:left;
+  width:20%;
+}
+
+.catalogRecipeForm .tr-customType-wrapper{
+  float:left;
+  width:20%;
+}
+
+.catalogRecipeForm .tr-customBranch-wrapper{
+  float:left;
+  width:20%;
+}
+
+.catalogRecipeForm .tr-customRequired-wrapper{
+  float:left;
+  width:20%;
+}
 .catalogRecipeForm tr[class^="form-group tr-labelGroup"],
 .catalogRecipeForm tr[class^="form-group tr-volumeGroup"]{
     position:relative;

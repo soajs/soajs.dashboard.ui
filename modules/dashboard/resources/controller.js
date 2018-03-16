@@ -980,6 +980,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							$scope.formData.deployOptions.custom = {};
 						}
 						
+						$scope.formData.deployOptions.custom.type = 'resource';
+						
+						$scope.formData.deployOptions.custom.sourceCode = reformatSourceCodeForCicd($scope.formData.deployOptions.sourceCode);
+						delete $scope.formData.deployOptions.sourceCode;
+						
 						var rebuildOptions = angular.copy($scope.formData.deployOptions.custom);
 						rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
 						rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;

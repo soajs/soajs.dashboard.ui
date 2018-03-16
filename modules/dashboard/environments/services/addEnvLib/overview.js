@@ -192,12 +192,22 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 		function reformatSourceCodeForCicd(record) {
 			if(record.configuration && record.configuration.repo){
 				let selectedRepo = record.configuration.repo;
-				$scope.configRepos.config.forEach(function (eachConf) {
-					if(eachConf.name === selectedRepo){
-						record.configuration.commit = eachConf.configSHA;
-						record.configuration.owner = eachConf.owner;
-					}
-				});
+				
+				if(selectedRepo === '-- User Specify --'){
+					record = {
+						configuration : {
+							repo : "",
+							branch : ""
+						}
+					};
+				}else {
+					$scope.configRepos.config.forEach(function (eachConf) {
+						if(eachConf.name === selectedRepo){
+							record.configuration.commit = eachConf.configSHA;
+							record.configuration.owner = eachConf.owner;
+						}
+					});
+				}
 			}
 			
 			if(record.custom && record.custom.repo){ // applicable for nginx
@@ -209,24 +219,51 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 				
 				record.custom.repo = selectedRepo; // save clear value
 				
-				$scope.configRepos.customType.forEach(function (eachConf) {
-					if(eachConf.name === selectedRepo){
-						
-						record.custom.owner = eachConf.owner;
-						record.custom.subName = subName; // for multi
-						
-						if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
-							eachConf.configSHA.forEach(function (eachConfig) {
-								if(eachConfig.contentName === subName){
-									record.custom.commit = eachConfig.sha;
-								}
-							});
-						}else{
-							record.custom.commit = eachConf.configSHA;
+				if(selectedRepo === '-- User Specify --') {
+					record.custom = {
+						repo: "",
+						branch: ""
+					};
+				} else {
+					let found = false;
+					$scope.configRepos.customType.forEach(function (eachConf) {
+						if(eachConf.name === selectedRepo){
+							found = true;
+							record.custom.owner = eachConf.owner;
+							record.custom.subName = subName; // for multi
+							
+							if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
+								eachConf.configSHA.forEach(function (eachConfig) {
+									if(eachConfig.contentName === subName){
+										record.custom.commit = eachConfig.sha;
+									}
+								});
+							}else{
+								record.custom.commit = eachConf.configSHA;
+							}
 						}
-						
+					});
+					
+					if(!found){ // gotta be an nginx custom repo
+						$scope.configRepos.nginxCustom.forEach(function (eachConf) {
+							if(eachConf.name === selectedRepo){
+								
+								record.custom.owner = eachConf.owner;
+								record.custom.subName = subName; // for multi
+								
+								if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
+									eachConf.configSHA.forEach(function (eachConfig) {
+										if(eachConfig.contentName === subName){
+											record.custom.commit = eachConfig.sha;
+										}
+									});
+								}else{
+									record.custom.commit = eachConf.configSHA;
+								}
+							}
+						});
 					}
-				});
+				}
 			}
 			
 			return record;

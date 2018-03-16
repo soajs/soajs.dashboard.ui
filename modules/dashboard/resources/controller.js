@@ -257,8 +257,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							$scope.configReposBranchesStatus[selectedRepo] = 'failed';
 							$scope.displayAlert('danger', error.message);
 						} else {
-							$scope.configReposBranches[selectedRepo] = response.branches;
 							$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
+							$scope.configReposBranches[selectedRepo] = response.branches;
 						}
 					});
 				};

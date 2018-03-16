@@ -134,8 +134,12 @@
 						<tr ng-repeat="(k,v) in wizard.controller ">
 
 							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label></td>
-							<td ng-if="k!='deploy'"> {{v}}</td>
-
+							<td ng-if="k!='deploy' && k!='custom'"> {{v}}</td>
+							<td ng-if="k==='custom'">
+							<span ng-if="v.sourceCode.configuration">
+								Configuration repo: {{v.sourceCode.configuration.repo}} / Branch: {{v.sourceCode.configuration.branch}}
+							</span>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -243,8 +247,12 @@
 
 							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
 							</td>
-							<td ng-if="k!='deploy'"> {{v}}</td>
-
+							<td ng-if="k!='deploy' && k!='custom'"> {{v}}</td>
+							<td ng-if="k==='custom'">
+							<span ng-if="v.sourceCode.configuration">
+								Configuration repo: {{v.sourceCode.configuration.repo}} / Branch: {{v.sourceCode.configuration.branch}}
+							</span>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -266,8 +274,12 @@
 
 							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k}} <span ng-if="k=='memory'">(in MBytes)</span></label>
 							</td>
-							<td ng-if="k!='deploy'"> {{v}}</td>
-
+							<td ng-if="k!='deploy' && k!='custom'"> {{v}}</td>
+							<td ng-if="k==='custom'">
+							<span ng-if="v.sourceCode.configuration">
+								Configuration repo: {{v.sourceCode.configuration.repo}} / Branch: {{v.sourceCode.configuration.branch}}
+							</span>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -289,7 +301,16 @@
 							<label class="text-capitalize">{{k}}
 								<span ng-if="k=='memory'">(in MBytes)</span></label>
 						</td>
-						<td ng-if="k!='norecipe' && k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'"> {{v}}</td>
+						<td ng-if="k!='norecipe' && k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe' && k!=='custom'"> {{v}}</td>
+						<td ng-if="k==='custom'">
+							<span ng-if="v.sourceCode.configuration">
+								Configuration repo: {{v.sourceCode.configuration.repo}} / Branch: {{v.sourceCode.configuration.branch}}
+							</span>
+							<br><br>
+							<span ng-if="v.sourceCode.custom">
+								Custom repo: {{v.sourceCode.custom.repo}} / Branch: {{v.sourceCode.custom.branch}}
+							</span>
+						</td>
 					</tr>
 				</tbody>
 			</table>

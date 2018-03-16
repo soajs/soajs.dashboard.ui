@@ -1,6 +1,6 @@
 "use strict";
 var hacloudServices = soajsApp.components;
-hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce', function (ngDataApi, $timeout, $modal, $sce) {
+hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce', function (  ngDataApi, $timeout, $modal, $sce) {
 	/**
 	 * Service Functions
 	 * @param currentScope
@@ -421,13 +421,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 	}
 	
 	function redeployService(currentScope, service) {
+
 		var params = {
 			env: currentScope.envCode,
 			serviceId: service.id,
 			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : ''),
 			action: 'redeploy'
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'put',
@@ -447,9 +448,158 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 		});
 	}
+
+
 	
 	function rebuildService(currentScope, service) {
-		getSendDataFromServer(currentScope, ngDataApi, {
+
+
+    console.log(JSON.stringify("rebuildService", null, 2)); // #ja #2del
+    // source code updates
+    currentScope.configRepos = [];
+    currentScope.configReposBranches = {};
+
+    currentScope.setSourceCodeData = function(formData) {
+      let recipes = currentScope.recipes;
+      let selectedRecipe;
+      currentScope.sourceCodeConfig = {
+        configuration : {
+          isEnabled : false,
+          repoAndBranch : {
+            disabled : false,
+            required : false
+          }
+        }
+      };
+      for (let type in currentScope.recipes) {
+        recipes[type].forEach(function (catalogRecipe) {
+          if(catalogRecipe._id ===  service.labels["soajs.catalog.id"]){
+            selectedRecipe = catalogRecipe;
+          }
+        });
+      }
+      if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+        let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+
+        let conf = sourceCode.configuration;
+
+        currentScope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+
+        if(!formData.sourceCode){
+          formData.sourceCode = {};
+        }
+
+        if (conf) {
+          currentScope.sourceCodeConfig.configuration.isEnabled = true;
+          currentScope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+          currentScope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+
+          if(conf.repo && conf.repo !== ''){
+            if(!formData.sourceCode.configuration){
+              formData.sourceCode.configuration = {};
+            }
+
+            formData.sourceCode.configuration.repo = conf.repo;
+            formData.sourceCode.configuration.branch = conf.branch;
+          }
+        }
+
+        if(conf){
+          currentScope.listAccounts(oneEnv, version, oneSrv, function () {
+            // special case: if the form was overwritten from cicd we have to load the branch
+            if(formData.sourceCode){
+              if(formData.sourceCode.configuration && formData.sourceCode.configuration.repo){
+                if(!currentScope.configReposBranches[formData.sourceCode.configuration.repo]){
+                  currentScope.fetchBranches(oneEnv, version, oneSrv, 'conf');
+                }
+              }
+            }
+          });
+        }
+      }else{
+        if(!formData){
+          formData = {};
+        }
+        formData.sourceCode = {}; // clear
+      }
+    };
+
+    currentScope.listAccounts = function (oneEnv, version, oneSrv, callback) {
+      getSendDataFromServer(currentScope, ngDataApi, {
+        'method': 'get',
+        'routeName': '/dashboard/gitAccounts/accounts/list',
+        params : {
+          fullList : true
+        }
+      }, function (error, response) {
+        if (error) {
+          currentScope.displayAlert('danger', error.message);
+        } else {
+          let configRecords = [];
+
+          if(response){
+            response.forEach(function (eachAccount) {
+              if(eachAccount.repos){
+                eachAccount.repos.forEach(function (eachRepo) {
+                  // eachRepo : name, serviceName, type
+                  if(eachRepo.type === 'config'){
+                    configRecords.push({
+                      owner : eachAccount.owner,
+                      provider : eachAccount.provider,
+                      accountId : eachAccount._id.toString(),
+                      name : eachRepo.name,
+                      type : eachRepo.type,
+                      configSHA : eachRepo.configSHA
+                    });
+                  }
+                });
+              }
+            });
+          }
+
+          currentScope.configRepos.config = configRecords;
+
+          callback();
+        }
+      });
+    };
+
+    currentScope.fetchBranches = function (oneEnv, version, oneSrv) {
+      let formDataRoot = currentScope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+      let formData = formDataRoot.custom;
+
+      let selectedRepo = formData.sourceCode.configuration.repo;
+
+      if (!selectedRepo || selectedRepo === '') {
+        return;
+      }
+
+      let accountData = {};
+      currentScope.configRepos.config.forEach(function (eachAcc) {
+        if (eachAcc.name === selectedRepo) {
+          accountData = eachAcc;
+        }
+      });
+
+      getSendDataFromServer(currentScope, ngDataApi, {
+        'method': 'get',
+        'routeName': '/dashboard/gitAccounts/getBranches',
+        params: {
+          id: accountData.accountId,
+          name: selectedRepo,
+          type: 'repo',
+          provider : accountData.provider
+        }
+      }, function (error, response) {
+        if (error) {
+          currentScope.displayAlert('danger', error.message);
+        } else {
+          currentScope.configReposBranches[selectedRepo] = response.branches;
+        }
+      });
+    };
+
+    getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/catalog/recipes/get',
 			params: {
@@ -460,7 +610,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				var formConfig = {
+        currentScope.setSourceCodeData(catalogRecipe);// do api callback before oopening modal
+
+        var formConfig = {
 					entries: []
 				};
 				
@@ -489,6 +641,10 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						'value': catalogRecipe.recipe.deployOptions.image.tag,
 						'fieldMsg': "Override the image tag if you want"
 					});
+
+
+
+
 				}
 				
 				//append inputs whose type is userInput
@@ -526,7 +682,50 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						formConfig.entries.push(newInput);
 					}
 				}
-				
+
+
+				if(  catalogRecipe.recipe.deployOptions.sourceCode)
+        {
+          if(  catalogRecipe.recipe.deployOptions.sourceCode.configuration && catalogRecipe.recipe.deployOptions.sourceCode.configuration.label )
+          {
+            // if the repo is forced. no need to check it.
+            // if the repo not selected . we
+            // allow him to select.
+
+            if( catalogRecipe.recipe.deployOptions.sourceCode.configuration.repository == ""  )
+            {
+              var repo = {
+                'name': 'repository',
+                'label': 'Repository',
+                'type': 'select',
+                'value': [],
+                'fieldMsg': 'Select a repository to deploy from',
+                'required': true
+              };
+            }
+            var branch = {
+            'name': 'branch',
+            'label': 'Branch',
+            'type': 'select',
+            'value': [],
+            'fieldMsg': 'Select a branch to deploy from',
+            'required': true
+          };
+
+
+           // formConfig.entries.push(repo);
+            // formConfig.entries.push(branch);
+
+          }
+          if(  catalogRecipe.recipe.deployOptions.sourceCode.custom)
+          {
+
+          }
+
+        }
+
+
+
 				if (['service','daemon','other'].indexOf(catalogRecipe.type) !== -1) {
 					var newInput = {
 						'name': 'branch',
@@ -536,8 +735,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						'fieldMsg': 'Select a branch to deploy from',
 						'required': true
 					};
-					
-					if (service.labels['service.owner']) {
+
+					if (service.labels['service.owner'] ) {
 						getServiceBranches({
 							repo_owner: service.labels['service.owner'],
 							repo_name: service.labels['service.repo']
@@ -586,6 +785,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						doRebuild(null);
 					}
 				}
+
 				else {
 					if (formConfig.entries.length === 0) {
 						doRebuild(null);
@@ -619,6 +819,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						buildFormWithModal(currentScope, $modal, options);
 					}
 				}
+
 			}
 		});
 		

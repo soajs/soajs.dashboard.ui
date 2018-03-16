@@ -858,17 +858,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		currentScope.updateGitBranch(oneRepo, oneEnv, version);
 		
 		function reformatSourceCodeForCicd(record) {
-			if(record.configuration && record.configuration.repo){
+			if (record.configuration && record.configuration.repo) {
 				let selectedRepo = record.configuration.repo;
 				
-				if(selectedRepo === '-- User Specify --'){
-					record = {
-						configuration : {
-							repo : "",
-							branch : ""
-						}
+				if (selectedRepo === '-- User Specify --') {
+					record.configuration = {
+						repo: "",
+						branch: ""
 					};
-				}else {
+				} else {
 					currentScope.configRepos.config.forEach(function (eachConf) {
 						if (eachConf.name === selectedRepo) {
 							record.configuration.commit = eachConf.configSHA;

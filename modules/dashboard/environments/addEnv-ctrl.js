@@ -46,6 +46,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	// source code updates starts
 	$scope.configRepos = [];
 	$scope.configReposBranches = {};
+	$scope.configReposBranchesStatus = {};
 	
 	$scope.setSourceCodeData = function() {
 		
@@ -124,6 +125,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					
 					formData.custom.sourceCode.configuration.repo = conf.repo;
 					formData.custom.sourceCode.configuration.branch = conf.branch;
+				}else{
+					if (formData.custom.sourceCode.configuration && (!formData.custom.sourceCode.configuration.repo || formData.custom.sourceCode.configuration.repo === '')) {
+						formData.custom.sourceCode.configuration.repo = '-- User Specify --';
+					}
 				}
 			}
 			
@@ -141,6 +146,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					
 					formData.custom.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
 					formData.custom.sourceCode.custom.branch = cust.branch;
+				}else{
+					if (formData.custom.sourceCode.custom && (!formData.custom.sourceCode.custom.repo || formData.custom.sourceCode.custom.repo === '')) {
+						formData.custom.sourceCode.custom.repo = '-- User Specify --';
+					}
 				}
 			}
 			
@@ -182,6 +191,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			let configRecords = [];
 			let customRecords = [];
 			let nginxRecords = [];
+			
+			configRecords.push({name: "-- User Specify --"});
+			customRecords.push({name: "-- User Specify --"});
+			nginxRecords.push({name: "-- User Specify --"});
 			
 			if(listOfAccounts){
 				listOfAccounts.forEach(function (eachAccount) {
@@ -308,7 +321,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			$scope.selectedCustomClear = selectedRepo;
 		}
 		
-		if (!selectedRepo || selectedRepo === '') {
+		if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- User Specify --') {
 			return;
 		}
 		
@@ -335,6 +348,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			});
 		}
 		
+		$scope.configReposBranchesStatus[selectedRepo] = 'loading';
 		getSendDataFromServer($scope, ngDataApi, {
 			'method': 'get',
 			'routeName': '/dashboard/gitAccounts/getBranches',
@@ -346,8 +360,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			}
 		}, function (error, response) {
 			if (error) {
+				$scope.configReposBranchesStatus[selectedRepo] = 'failed';
 				$scope.displayAlert('danger', error.message);
 			} else {
+				$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
 				$scope.configReposBranches[selectedRepo] = response.branches;
 			}
 		});

@@ -453,7 +453,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
 
 	function rebuildService(currentScope, service) {
     // source code updates
-    currentScope.configRepos = [];
+    currentScope.configRepos = {};
     currentScope.configReposBranches = {};
 
     currentScope.setSourceCodeData = function(selectedRecipe , cb) {
@@ -484,8 +484,11 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
                 if(!currentScope.configReposBranches[sourceCode.configuration.repo]){
                   currentScope.fetchBranches(selectedRecipe.recipe.deployOptions , cb);
                 }
+                else cb();
               }
+              else cb();
             }
+            else cb();
           });
         }
       }else{
@@ -494,6 +497,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
     };
 
     currentScope.listAccounts = function (  callback) {
+
       getSendDataFromServer(currentScope, ngDataApi, {
         'method': 'get',
         'routeName': '/dashboard/gitAccounts/accounts/list',
@@ -525,15 +529,13 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
               }
             });
           }
-
           currentScope.configRepos.config = configRecords;
           callback();
         }
       });
     };
 
-    currentScope.fetchBranches = function (data  , callback) {
-
+    currentScope.fetchBranches = function (data  , cb2) {
       let selectedRepo = data.sourceCode.configuration.repo;
 
       if (!selectedRepo || selectedRepo === '') {
@@ -562,7 +564,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
         } else {
           currentScope.configReposBranches[selectedRepo] = response.branches;
         }
-        callback();
+        cb2();
       });
     };
 
@@ -579,8 +581,6 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
 			else {
         currentScope.setSourceCodeData(catalogRecipe ,
          function () {
-
-
 
            var formConfig = {
              entries: []
@@ -690,100 +690,36 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
 
            }
 
-
-
-           if (['service','daemon','other'].indexOf(catalogRecipe.type) !== -1) {
-             var newInput = {
-               'name': 'branch',
-               'label': 'Branch',
-               'type': 'select',
-               'value': [],
-               'fieldMsg': 'Select a branch to deploy from',
-               'required': true
-             };
-
-             if (service.labels['service.owner'] ) {
-               getServiceBranches({
-                 repo_owner: service.labels['service.owner'],
-                 repo_name: service.labels['service.repo']
-               }, function (response) {
-
-                 response.branches.forEach(function (oneBranch) {
-                   delete oneBranch.commit.url;
-                   newInput.value.push({'v': oneBranch, 'l': oneBranch.name});
-                 });
-                 formConfig.entries.push(newInput);
-
-                 if (formConfig.entries.length === 0) {
-                   doRebuild(null);
-                 }
-                 else {
-                   var options = {
-                     timeout: $timeout,
-                     form: formConfig,
-                     name: 'rebuildService',
-                     label: 'Rebuild Service',
-                     actions: [
-                       {
-                         'type': 'submit',
-                         'label': translation.submit[LANG],
-                         'btn': 'primary',
-                         'action': function (formData) {
-                           doRebuild(formData);
-                         }
-                       },
-                       {
-                         'type': 'reset',
-                         'label': translation.cancel[LANG],
-                         'btn': 'danger',
-                         'action': function () {
-                           currentScope.modalInstance.dismiss('cancel');
-                           currentScope.form.formData = {};
-                         }
-                       }
-                     ]
-                   };
-                   buildFormWithModal(currentScope, $modal, options);
-                 }
-               });
-             }
-             else {
-               doRebuild(null);
-             }
+           if (formConfig.entries.length === 0) {
+             doRebuild(null);
            }
-
            else {
-             if (formConfig.entries.length === 0) {
-               doRebuild(null);
-             }
-             else {
-               var options = {
-                 timeout: $timeout,
-                 form: formConfig,
-                 name: 'rebuildService',
-                 label: 'Rebuild Service',
-                 actions: [
-                   {
-                     'type': 'submit',
-                     'label': translation.submit[LANG],
-                     'btn': 'primary',
-                     'action': function (formData) {
-                       doRebuild(formData);
-                     }
-                   },
-                   {
-                     'type': 'reset',
-                     'label': translation.cancel[LANG],
-                     'btn': 'danger',
-                     'action': function () {
-                       currentScope.modalInstance.dismiss('cancel');
-                       currentScope.form.formData = {};
-                     }
+             var options = {
+               timeout: $timeout,
+               form: formConfig,
+               name: 'rebuildService',
+               label: 'Rebuild Service',
+               actions: [
+                 {
+                   'type': 'submit',
+                   'label': translation.submit[LANG],
+                   'btn': 'primary',
+                   'action': function (formData) {
+                     doRebuild(formData);
                    }
-                 ]
-               };
-               buildFormWithModal(currentScope, $modal, options);
-             }
+                 },
+                 {
+                   'type': 'reset',
+                   'label': translation.cancel[LANG],
+                   'btn': 'danger',
+                   'action': function () {
+                     currentScope.modalInstance.dismiss('cancel');
+                     currentScope.form.formData = {};
+                   }
+                 }
+               ]
+             };
+             buildFormWithModal(currentScope, $modal, options);
            }
 
          }

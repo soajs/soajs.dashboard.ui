@@ -575,10 +575,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
               "type": "group",
               'description' : {
                   'type': "default",
-                  'content':"<div class='fieldMsg'>You can attach an extra repo to <b>server</b>" +
-                  " recipes by filling the inputs below. The content of this repo" +
-                  " will be pulled and" +
-                  " interpreted whenever you deploy a new component using this recipe.</div>"
+                  'content':"<div class='fieldMsg'>You can attach a config repo recipes by filling the inputs below. The content of this repo will be pulled and interpreted whenever you deploy using this recipe.</div>"
               },
               "label": "Config Repository",
               "entries": [

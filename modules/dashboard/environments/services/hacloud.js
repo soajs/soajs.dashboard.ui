@@ -452,9 +452,6 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
 
 	
 	function rebuildService(currentScope, service) {
-
-
-    console.log(JSON.stringify("rebuildService", null, 2)); // #ja #2del
     // source code updates
     currentScope.configRepos = [];
     currentScope.configReposBranches = {};
@@ -505,12 +502,12 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
         }
 
         if(conf){
-          currentScope.listAccounts(oneEnv, version, oneSrv, function () {
+          currentScope.listAccounts(  function () {
             // special case: if the form was overwritten from cicd we have to load the branch
             if(formData.sourceCode){
               if(formData.sourceCode.configuration && formData.sourceCode.configuration.repo){
                 if(!currentScope.configReposBranches[formData.sourceCode.configuration.repo]){
-                  currentScope.fetchBranches(oneEnv, version, oneSrv, 'conf');
+                  currentScope.fetchBranches(formData, 'conf');
                 }
               }
             }
@@ -524,7 +521,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
       }
     };
 
-    currentScope.listAccounts = function (oneEnv, version, oneSrv, callback) {
+    currentScope.listAccounts = function (  callback) {
       getSendDataFromServer(currentScope, ngDataApi, {
         'method': 'get',
         'routeName': '/dashboard/gitAccounts/accounts/list',
@@ -564,9 +561,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
       });
     };
 
-    currentScope.fetchBranches = function (oneEnv, version, oneSrv) {
-      let formDataRoot = currentScope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
-      let formData = formDataRoot.custom;
+    currentScope.fetchBranches = function (formData, oneSrv) {
 
       let selectedRepo = formData.sourceCode.configuration.repo;
 
@@ -610,7 +605,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-        currentScope.setSourceCodeData(catalogRecipe);// do api callback before oopening modal
+        currentScope.setSourceCodeData(catalogRecipe);// do api callback to ensure it ran before  proceeding.
 
         var formConfig = {
 					entries: []

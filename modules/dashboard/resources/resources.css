@@ -164,3 +164,10 @@ fieldset.autoScale legend {
 .grey{
     color: #cccccc;
 }
+
+.loadingImage {
+    height: 18px !important;
+    margin-left: 5px !important;
+    margin-top: -3px !important;
+    width: 18px !important;
+}

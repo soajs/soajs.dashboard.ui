@@ -182,3 +182,11 @@ fieldset pre{
 }
 
 .ace_text-input {position:absolute!important}
+
+#configButton-wrapper .toggleSwitch {
+    margin-left : 7px;
+}
+
+#customButton-wrapper .toggleSwitch {
+
+}

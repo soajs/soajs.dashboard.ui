@@ -231,6 +231,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
     if (mainFormConfig[5].tabs[1].entries.length > 1) {
           mainFormConfig[5].tabs[1].entries = [];
       }
+
       mainFormConfig[5].tabs[1].entries.push(
           {
                   'name': 'configButton',
@@ -302,8 +303,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                                                                       'type': 'select',
                                                                       'value': [],
                                                                       'required': false,
-                                                                      'tooltip': 'Specify which repository to use',
-                                                                      'fieldMsg': 'Specify which repository to use'
+                                                                      'tooltip': 'Specify which branch to use',
+                                                                      'fieldMsg': 'Specify which branch to use'
                                                                   },
                                                                   {
                                                                       'name': 'required',
@@ -341,8 +342,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                                                       'name': 'required',
                                                       'label': 'Required',
                                                       'type': 'select',
-                                                      'value': [{'v': false, 'l': 'False', 'selected': true},
-                                                          {'v': true, 'l': 'True'}],
+                                                      'value': [{'v': false, 'l': 'No', 'selected': true},
+                                                          {'v': true, 'l': 'Yes'}],
                                                       'required': false,
                                                       'tooltip': 'Specify if required or not.',
                                                       'fieldMsg': 'Specify if required or not.'
@@ -409,9 +410,113 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                                   {'v': 'static', 'l': 'Static'},
                                   {'v': 'multi', 'l': 'Multi'}],
                               'required': false,
-                              'tooltip': 'Enter a Label to use in deployment forms',
-                              'fieldMsg': 'Enter a Label to use in deployment forms',
+                              'tooltip': 'Specify wich type to use',
+                              'fieldMsg': 'Specify wich type to use',
                               onAction(id, data, form) {
+                                  if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
+                                      form.entries[5].tabs[1].entries[3].entries.pop();
+                                  }
+                                  if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                      form.entries[5].tabs[1].entries[3].entries.pop();
+                                  }
+                                  if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                      form.entries[5].tabs[1].entries[3].entries.pop();
+                                  }
+                                  if (form.entries[5].tabs[1].entries[3].entries.length === 2) {
+                                      form.entries[5].tabs[1].entries[3].entries.push({
+                                          'name': 'customRepo',
+                                          'label': 'Repo',
+                                          'type': 'select',
+                                          'value':[],
+                                          'required': false,
+                                          'tooltip': 'Specify which repository to use',
+                                          'fieldMsg': 'Specify which repository to use',
+                                          onAction(id, data, form) {
+                                              if (form.formData.customRepo !== 'user specify') {
+                                                  if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                                      form.entries[5].tabs[1].entries[3].entries.pop();
+                                                  }
+                                                  
+                                                  if ($scope.accountInfo[data]) {
+                                                      let multi = '';
+                                                      let params = {
+                                                          name: data,
+                                                          type: 'repo',
+                                                          id: $scope.accountInfo[data]['_id'],
+                                                          provider: $scope.accountInfo[data]['provider']
+                                                      };
+                                                      if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
+                                                          multi = $scope.accountInfo[data].name + '/' + data;
+                                                          params.name = multi
+                                                      }
+                                                      getSendDataFromServer($scope, ngDataApi, {
+                                                          method: 'get',
+                                                          routeName: '/dashboard/gitAccounts/getBranches',
+                                                          params: params
+                                                      }, function (error, result) {
+                                                          if (error) {
+                                                              $scope.displayAlert('danger', error.message);
+                                                          }
+                                                          else {
+                                                              if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                                                  form.entries[5].tabs[1].entries[3].entries.push({
+                                                                          'name': 'customBranch',
+                                                                          'label': 'Branch',
+                                                                          'type': 'select',
+                                                                          'value': [],
+                                                                          'required': false,
+                                                                          'tooltip': 'Specify wich branch to use',
+                                                                          'fieldMsg': 'Specify wich branch to use'
+                                                                      },
+                                                                      {
+                                                                          'name': 'customRequired',
+                                                                          'label': 'Required',
+                                                                          'type': 'readonly',
+                                                                          'value': true,
+                                                                          'required': false,
+                                                                          'tooltip': 'This field is required.',
+                                                                          'fieldMsg': 'This field is required.'
+                                                                      }
+                                                                  );
+                                                              }
+
+                                                              form.entries[5].tabs[1].entries[3].entries[3].value = [];
+                                                              if (result) {
+                                                                  result.branches.forEach((oneBranch) => {
+                                                                      form.entries[5].tabs[1].entries[3].entries[3].value.push({
+                                                                          'v': oneBranch.name,
+                                                                          'l': oneBranch.name
+                                                                      });
+                                                                  });
+                                                              }
+                                                          }
+                                                      });
+                                                  }
+                                              }
+                                              else {
+                                                  if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
+                                                      form.entries[5].tabs[1].entries[3].entries.pop();
+                                                  }
+                                                  if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                                      form.entries[5].tabs[1].entries[3].entries.pop();
+                                                  }
+                                                  if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+
+                                                      form.entries[5].tabs[1].entries[3].entries.push({
+                                                          'name': 'customRequired',
+                                                          'label': 'Required',
+                                                          'type': 'select',
+                                                          'value': [{'v': false, 'l': 'No', 'selected': true},
+                                                              {'v': true, 'l': 'Yes'}],
+                                                          'required': false,
+                                                          'tooltip': 'Specify if required or not.',
+                                                          'fieldMsg': 'Specify if required or not.'
+                                                      });
+                                                  }
+                                              }
+                                          }
+                                      },)
+                                  }
                                   form.entries[5].tabs[1].entries[3].entries[2].value = [];
                                   form.entries[5].tabs[1].entries[3].entries[2].value.push({
                                       'v': 'user specify',
@@ -446,99 +551,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                                   }
                                   if (form.entries[5].tabs[1].entries[3].entries[3] && form.entries[5].tabs[1].entries[3].entries[2].value.length === 1) {
                                       form.entries[5].tabs[1].entries[3].entries[3].value = []
-                                  }
-                              }
-                          },
-                          {
-                              'name': 'customRepo',
-                              'label': 'Repo',
-                              'type': 'select',
-                              'value':[],
-                              'required': false,
-                              'tooltip': 'Specify which repository to use',
-                              'fieldMsg': 'Specify which repository to use',
-                              onAction(id, data, form) {
-                                  if (form.formData.customRepo !== 'user specify') {
-                                      if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
-                                          form.entries[5].tabs[1].entries[3].entries.pop();
-                                      }
-
-                                      if ($scope.accountInfo[data]) {
-                                          let multi = '';
-                                          let params = {
-                                              name: data,
-                                              type: 'repo',
-                                              id: $scope.accountInfo[data]['_id'],
-                                              provider: $scope.accountInfo[data]['provider']
-                                          };
-                                          if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
-                                              multi = $scope.accountInfo[data].name + '/' + data;
-                                              params.name = multi
-                                          }
-                                          getSendDataFromServer($scope, ngDataApi, {
-                                              method: 'get',
-                                              routeName: '/dashboard/gitAccounts/getBranches',
-                                              params: params
-                                          }, function (error, result) {
-                                              if (error) {
-                                                  $scope.displayAlert('danger', error.message);
-                                              }
-                                              else {
-                                                  if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
-                                                      form.entries[5].tabs[1].entries[3].entries.push({
-                                                              'name': 'customBranch',
-                                                              'label': 'Branch',
-                                                              'type': 'select',
-                                                              'value': [],
-                                                              'required': false,
-                                                              'tooltip': 'Specify the branch.',
-                                                              'fieldMsg': 'Specify the branch.'
-                                                          },
-                                                          {
-                                                              'name': 'customRequired',
-                                                              'label': 'Required',
-                                                              'type': 'readonly',
-                                                              'value': true,
-                                                              'required': false,
-                                                              'tooltip': 'This field is required.',
-                                                              'fieldMsg': 'This field is required.'
-                                                          }
-                                                      );
-                                                  }
-
-                                                  form.entries[5].tabs[1].entries[3].entries[3].value = [];
-                                                  if (result) {
-                                                      result.branches.forEach((oneBranch) => {
-                                                          form.entries[5].tabs[1].entries[3].entries[3].value.push({
-                                                              'v': oneBranch.name,
-                                                              'l': oneBranch.name
-                                                          });
-                                                      });
-                                                  }
-                                              }
-                                          });
-                                      }
-                                  }
-                                  else {
-                                      if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
-                                          form.entries[5].tabs[1].entries[3].entries.pop();
-                                      }
-                                      if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
-                                          form.entries[5].tabs[1].entries[3].entries.pop();
-                                      }
-                                      if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
-
-                                          form.entries[5].tabs[1].entries[3].entries.push({
-                                              'name': 'customRequired',
-                                              'label': 'Required',
-                                              'type': 'select',
-                                              'value': [{'v': false, 'l': 'No', 'selected': true},
-                                                  {'v': true, 'l': 'Yes'}],
-                                              'required': false,
-                                              'tooltip': 'Specify if required or not.',
-                                              'fieldMsg': 'Specify if required or not.'
-                                          });
-                                      }
                                   }
                               }
                           },
@@ -622,8 +634,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                                                       'type': 'select',
                                                       'value': [],
                                                       'required': false,
-                                                      'tooltip': 'Specify which repository to use',
-                                                      'fieldMsg': 'Specify which repository to use'
+                                                      'tooltip': 'Specify which branch to use',
+                                                      'fieldMsg': 'Specify which branch to use'
                                                   },
                                                   {
                                                       'name': 'required',
@@ -687,8 +699,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                       'type': 'select',
                       'value': $scope.array,
                       'required': false,
-                      'tooltip': 'Specify the branch.',
-                      'fieldMsg': 'Specify the branch.'
+                      'tooltip': 'Specify wich branch to use',
+                      'fieldMsg': 'Specify wich branch to use'
                   },
                   {
                       'name': 'required',
@@ -727,10 +739,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
       }
 
     if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom) {
-          if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom &&  data.recipe.deployOptions.sourceCode.custom.repo !== '' ) {
+
               $scope.customRepos = [];
-        //      $scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
-              for (let i = $scope.repos.length - 1; i--; i > 0) {
+              $scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
+                console.log( $scope.repos ); // ToDelete #2del
+              for (let i = $scope.repos.length ; i--; i >  0) {
                   if ($scope.repos[i].type === data.recipe.deployOptions.sourceCode.custom.type) {
                       // case multi
                       if ($scope.repos[i].type === 'multi') {
@@ -752,11 +765,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                       }
                   }
               }
-
-              if ($scope.customRepos.length === 1) {
-                  $scope.customRepos = [];
-              }
-          }
+        
           mainFormConfig[5].tabs[1].entries.push(
               {
                   'name': 'custom',
@@ -789,9 +798,112 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                               {'v': 'static', 'l': 'Static'},
                               {'v': 'multi', 'l': 'Multi'}],
                           'required': true,
-                          'tooltip': '',
-                          'fieldMsg': '',
+                          'tooltip': 'Specify wich type to use',
+                          'fieldMsg': 'Specify wich type to use',
                           onAction(id, data, form) {
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
+                                  form.entries[5].tabs[1].entries[3].entries.pop();
+                              }
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                  form.entries[5].tabs[1].entries[3].entries.pop();
+                              }
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                  form.entries[5].tabs[1].entries[3].entries.pop();
+                              }
+                              form.entries[5].tabs[1].entries[3].entries.push({
+                                  'name': 'customRepo',
+                                  'label': 'Repo',
+                                  'type': 'select',
+                                  'value': $scope.customRepos,
+                                  'required': false,
+                                  'tooltip': 'Specify which repository to use',
+                                  'fieldMsg': 'Specify which repository to use',
+                                  onAction(id, data, form) {
+                                      if (form.formData.customRepo !== 'user specify') {
+                                          if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                              form.entries[5].tabs[1].entries[3].entries.pop();
+                                          }
+
+                                          if ($scope.accountInfo[data]) {
+                                              let multi = '';
+                                              let params = {
+                                                  name: data,
+                                                  type: 'repo',
+                                                  id: $scope.accountInfo[data]['_id'],
+                                                  provider: $scope.accountInfo[data]['provider']
+                                              };
+                                              if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
+                                                  multi = $scope.accountInfo[data].name + '/' + data;
+                                                  params.name = multi
+                                              }
+                                              getSendDataFromServer($scope, ngDataApi, {
+                                                  method: 'get',
+                                                  routeName: '/dashboard/gitAccounts/getBranches',
+                                                  params: params
+                                              }, function (error, result) {
+                                                  if (error) {
+                                                      $scope.displayAlert('danger', error.message);
+                                                  }
+                                                  else {
+                                                      if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                                          form.entries[5].tabs[1].entries[3].entries.push({
+                                                                  'name': 'customBranch',
+                                                                  'label': 'Branch',
+                                                                  'type': 'select',
+                                                                  'value': [],
+                                                                  'required': false,
+                                                                  'tooltip': 'Specify wich branch to use',
+                                                                  'fieldMsg': 'Specify wich branch to use'
+                                                              },
+                                                              {
+                                                                  'name': 'customRequired',
+                                                                  'label': 'Required',
+                                                                  'type': 'readonly',
+                                                                  'value': true,
+                                                                  'required': false,
+                                                                  'tooltip': 'This field is required.',
+                                                                  'fieldMsg': 'This field is required.'
+                                                              }
+                                                          );
+                                                      }
+
+                                                      form.entries[5].tabs[1].entries[3].entries[3].value = [];
+                                                      if (result) {
+                                                          result.branches.forEach((oneBranch) => {
+                                                              form.entries[5].tabs[1].entries[3].entries[3].value.push({
+                                                                  'v': oneBranch.name,
+                                                                  'l': oneBranch.name
+                                                              });
+                                                          });
+                                                      }
+                                                  }
+                                              });
+                                          }
+                                      }
+                                      else {
+                                          if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
+                                              form.entries[5].tabs[1].entries[3].entries.pop();
+                                          }
+                                          if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                              form.entries[5].tabs[1].entries[3].entries.pop();
+                                          }
+                                          if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                              form.entries[5].tabs[1].entries[3].entries.push(
+                                                  {
+                                                  'name': 'customRequired',
+                                                  'label': 'Required',
+                                                  'type': 'select',
+                                                  'value': [{'v': false, 'l': 'No', 'selected': true},
+                                                      {'v': true, 'l': 'Yes'}],
+                                                  'required': false,
+                                                  'tooltip': 'Specify if required or not.',
+                                                  'fieldMsg': 'Specify if required or not.'
+                                              });
+                                          }
+                                      }
+                                  }
+                              });
+                              
                               form.entries[5].tabs[1].entries[3].entries[2].value = [];
                               form.entries[5].tabs[1].entries[3].entries[2].value.push({
                                   'v': 'user specify',
@@ -829,129 +941,134 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                               }
                           }
                       },
-                      {
-                          'name': 'customRepo',
-                          'label': 'Repo',
-                          'type': 'select',
-                          'value': $scope.customRepos,
-                          'required': false,
-                          'tooltip': 'Specify which repository to use',
-                          'fieldMsg': 'Specify which repository to use',
-                          onAction(id, data, form) {
-                              if (form.formData.customRepo !== 'user specify') {
-                                  if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
-                                      form.entries[5].tabs[1].entries[3].entries.pop();
-                                  }
-
-                                  if ($scope.accountInfo[data]) {
-                                      let multi = '';
-                                      let params = {
-                                          name: data,
-                                          type: 'repo',
-                                          id: $scope.accountInfo[data]['_id'],
-                                          provider: $scope.accountInfo[data]['provider']
-                                      };
-                                      if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
-                                          multi = $scope.accountInfo[data].name + '/' + data;
-                                          params.name = multi
-                                      }
-                                      getSendDataFromServer($scope, ngDataApi, {
-                                          method: 'get',
-                                          routeName: '/dashboard/gitAccounts/getBranches',
-                                          params: params
-                                      }, function (error, result) {
-                                          if (error) {
-                                              $scope.displayAlert('danger', error.message);
-                                          }
-                                          else {
-                                              if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
-                                                  form.entries[5].tabs[1].entries[3].entries.push({
-                                                          'name': 'customBranch',
-                                                          'label': 'Branch',
-                                                          'type': 'select',
-                                                          'value': [],
-                                                          'required': false,
-                                                          'tooltip': 'Specify the branch.',
-                                                          'fieldMsg': 'Specify the branch.'
-                                                      },
-                                                      {
-                                                          'name': 'customRequired',
-                                                          'label': 'Required',
-                                                          'type': 'readonly',
-                                                          'value': true,
-                                                          'required': false,
-                                                          'tooltip': 'This field is required.',
-                                                          'fieldMsg': 'This field is required.'
-                                                      }
-                                                  );
-                                              }
-
-                                              form.entries[5].tabs[1].entries[3].entries[3].value = [];
-                                              if (result) {
-                                                  result.branches.forEach((oneBranch) => {
-                                                      form.entries[5].tabs[1].entries[3].entries[3].value.push({
-                                                          'v': oneBranch.name,
-                                                          'l': oneBranch.name
-                                                      });
-                                                  });
-                                              }
-                                          }
-                                      });
-                                  }
-                              }
-                              else {
-                                  if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
-                                      form.entries[5].tabs[1].entries[3].entries.pop();
-                                  }
-                                  if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
-                                      form.entries[5].tabs[1].entries[3].entries.pop();
-                                  }
-                                  if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
-                                      form.entries[5].tabs[1].entries[3].entries.push({
-                                          'name': 'customRequired',
-                                          'label': 'Required',
-                                          'type': 'select',
-                                          'value': [{'v': false, 'l': 'No', 'selected': true},
-                                              {'v': true, 'l': 'Yes'}],
-                                          'required': false,
-                                          'tooltip': 'Specify if required or not.',
-                                          'fieldMsg': 'Specify if required or not.'
-                                      });
-                                  }
-                              }
-                          }
-                      },
                   ]
               },
           );
 
-          if (data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.repo !== '') {
+
               if (mainFormConfig[5].tabs[1].entries[3].entries.length === 5) {
                   mainFormConfig[5].tabs[1].entries[3].entries.pop();
               }
               if (mainFormConfig[5].tabs[1].entries[3].entries.length === 4) {
                   mainFormConfig[5].tabs[1].entries[3].entries.pop();
               }
-              mainFormConfig[5].tabs[1].entries[3].entries.push({
-                      'name': 'customBranch',
-                      'label': 'Branch',
-                      'type': 'select',
-                      'value': $scope.custom,
-                      'required': false,
-                      'tooltip': '',
-                      'fieldMsg': ''
-                  },
+              if (mainFormConfig[5].tabs[1].entries[3].entries.length === 3) {
+                  mainFormConfig[5].tabs[1].entries[3].entries.pop();
+              }
+              mainFormConfig[5].tabs[1].entries[3].entries.push(
                   {
-                      'name': 'customRequired',
-                      'label': 'Required',
-                      'type': 'readonly',
-                      'value': true,
+                      'name': 'customRepo',
+                      'label': 'Repo',
+                      'type': 'select',
+                      'value': $scope.customRepos,
                       'required': false,
-                      'tooltip': 'This field is required.',
-                      'fieldMsg': 'This field is required.'
-                  }
-              );
+                      'tooltip': 'Specify which repository to use',
+                      'fieldMsg': 'Specify which repository to use',
+                      onAction(id, data, form) {
+                          if (form.formData.customRepo !== 'user specify') {
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                  form.entries[5].tabs[1].entries[3].entries.pop();
+                              }
 
+                              if ($scope.accountInfo[data]) {
+                                  let multi = '';
+                                  let params = {
+                                      name: data,
+                                      type: 'repo',
+                                      id: $scope.accountInfo[data]['_id'],
+                                      provider: $scope.accountInfo[data]['provider']
+                                  };
+                                  if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
+                                      multi = $scope.accountInfo[data].name + '/' + data;
+                                      params.name = multi
+                                  }
+                                  getSendDataFromServer($scope, ngDataApi, {
+                                      method: 'get',
+                                      routeName: '/dashboard/gitAccounts/getBranches',
+                                      params: params
+                                  }, function (error, result) {
+                                      if (error) {
+                                          $scope.displayAlert('danger', error.message);
+                                      }
+                                      else {
+                                          if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                              form.entries[5].tabs[1].entries[3].entries.push({
+                                                      'name': 'customBranch',
+                                                      'label': 'Branch',
+                                                      'type': 'select',
+                                                      'value': [],
+                                                      'required': false,
+                                                      'tooltip': 'Specify wich branch to use',
+                                                      'fieldMsg': 'Specify wich branch to use'
+                                                  },
+                                                  {
+                                                      'name': 'customRequired',
+                                                      'label': 'Required',
+                                                      'type': 'readonly',
+                                                      'value': true,
+                                                      'required': false,
+                                                      'tooltip': 'This field is required.',
+                                                      'fieldMsg': 'This field is required.'
+                                                  }
+                                              );
+                                          }
+
+                                          form.entries[5].tabs[1].entries[3].entries[3].value = [];
+                                          if (result) {
+                                              result.branches.forEach((oneBranch) => {
+                                                  form.entries[5].tabs[1].entries[3].entries[3].value.push({
+                                                      'v': oneBranch.name,
+                                                      'l': oneBranch.name
+                                                  });
+                                              });
+                                          }
+                                      }
+                                  });
+                              }
+                          }
+                          else {
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
+                                  form.entries[5].tabs[1].entries[3].entries.pop();
+                              }
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
+                                  form.entries[5].tabs[1].entries[3].entries.pop();
+                              }
+                              if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
+                                  form.entries[5].tabs[1].entries[3].entries.push({
+                                      'name': 'customRequired',
+                                      'label': 'Required',
+                                      'type': 'select',
+                                      'value': [{'v': false, 'l': 'No', 'selected': true},
+                                          {'v': true, 'l': 'Yes'}],
+                                      'required': false,
+                                      'tooltip': 'Specify if required or not.',
+                                      'fieldMsg': 'Specify if required or not.'
+                                  });
+                              }
+                          }
+                      }
+                  },
+              );
+        if (data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.repo !== '') {
+            mainFormConfig[5].tabs[1].entries[3].entries.push(    {
+                    'name': 'customBranch',
+                    'label': 'Branch',
+                    'type': 'select',
+                    'value': $scope.custom,
+                    'required': false,
+                    'tooltip': 'Specify wich branch to use',
+                    'fieldMsg': 'Specify wich branch to use'
+                },
+                {
+                    'name': 'customRequired',
+                    'label': 'Required',
+                    'type': 'readonly',
+                    'value': true,
+                    'required': false,
+                    'tooltip': 'This field is required.',
+                    'fieldMsg': 'This field is required.'
+                }
+            )
           } else {
               if (mainFormConfig[5].tabs[1].entries[3].entries.length === 5) {
                   mainFormConfig[5].tabs[1].entries[3].entries.pop();
@@ -959,15 +1076,17 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
               if (mainFormConfig[5].tabs[1].entries[3].entries.length === 4) {
                   mainFormConfig[5].tabs[1].entries[3].entries.pop();
               }
-              mainFormConfig[5].tabs[1].entries[3].entries.push({
+
+              mainFormConfig[5].tabs[1].entries[3].entries.push(
+                  {
                   'name': 'customRequired',
                   'label': 'Required',
                   'type': 'select',
                   'value': [{'v': false, 'l': 'No', 'selected': true},
                       {'v': true, 'l': 'Yes'}],
                   'required': false,
-                  'tooltip': '',
-                  'fieldMsg': ''
+                  'tooltip': 'Specify if requires or not',
+                  'fieldMsg': 'Specify if requires or not'
               })
           }
       }
@@ -1227,11 +1346,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
             btn: 'primary',
             action: function (fData) {
               var formData = fromToAPI(fData, envCounter, volumeCounter, portCounter, labelCounter);
-              if (formData.recipe.deployOptions.sourceCode.configuration && formData.recipe.deployOptions.sourceCode.configuration.label === undefined) {
+              if (formData.recipe.deployOptions.sourceCode.configuration && (formData.recipe.deployOptions.sourceCode.configuration.label === undefined || formData.recipe.deployOptions.sourceCode.configuration.label === '')) {
                 $scope.form.displayAlert('danger', 'Must add label for configuration repository');
               }
               else {
-                if (formData.recipe.deployOptions.sourceCode.custom && formData.recipe.deployOptions.sourceCode.custom.label === undefined) {
+                if (formData.recipe.deployOptions.sourceCode.custom && (formData.recipe.deployOptions.sourceCode.custom.label === undefined || formData.recipe.deployOptions.sourceCode.custom.label === '')) {
                   $scope.form.displayAlert('danger', 'Must add label for custom repository');
                 } else {
                   if (formData.recipe.deployOptions.sourceCode.custom && (formData.recipe.deployOptions.sourceCode.custom.type === undefined || formData.recipe.deployOptions.sourceCode.custom.type === '')) {
@@ -1329,8 +1448,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
         output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.repo
       } else {
         output['customRepo'] = 'user specify';
-        output['customBranch'] = ''
+        output['customBranch'] = '';
       }
+
+
 
       if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.type) {
         output['customType'] = data.recipe.deployOptions.sourceCode.custom.type
@@ -1340,7 +1461,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
         output['customBranch'] = data.recipe.deployOptions.sourceCode.custom.branch
       }
 
-      if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.required) {
+      if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom) {
         output['customRequired'] = data.recipe.deployOptions.sourceCode.custom.required
       }
 
@@ -1563,26 +1684,47 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
         }
       }
     };
+    
    if (formData.configButton && formData.configButton === true) {
        apiData.recipe.deployOptions.sourceCode.configuration =  {
            'label': formData.Label,
            'repo': formData.repo,
            'branch': (formData.branch || ''),
-           'required': (formData.required)
+           'required': (formData.required),
        };
-       if (apiData.recipe.deployOptions.sourceCode.configuration.repo === 'user specify') {
+
+       if (formData.required === false !== apiData.recipe.deployOptions.sourceCode.configuration.required) {
+           apiData.recipe.deployOptions.sourceCode.configuration.required = formData.required;
+       }
+       if (apiData.recipe.deployOptions.sourceCode.configuration && apiData.recipe.deployOptions.sourceCode.configuration.repo === 'user specify') {
            apiData.recipe.deployOptions.sourceCode.configuration.repo = '';
        }
-   }
 
+       if (apiData.recipe.deployOptions.sourceCode.configuration && apiData.recipe.deployOptions.sourceCode.configuration.repo !== ''){
+           apiData.recipe.deployOptions.sourceCode.configuration.required = true;
+       }
+   }
+    
     if (apiData.type === 'server' && formData.customButton && formData.customButton === true) {
         apiData.recipe.deployOptions.sourceCode.custom = {
             "label": formData.customLabel,
             "type": formData.customType,
             "repo": (formData.customRepo || ''),
             "branch": (formData.customBranch || ''),
-            "required": (formData.customRequired || true)
+            "required": (formData.customRequired)
         };
+        if (formData.customRequired  && formData.customRequired !== apiData.recipe.deployOptions.sourceCode.custom.required) {
+            apiData.recipe.deployOptions.sourceCode.custom.required = formData.customRequired;
+        }
+
+        if (apiData.recipe.deployOptions.sourceCode.custom && apiData.recipe.deployOptions.sourceCode.custom.repo === 'user specify') {
+            apiData.recipe.deployOptions.sourceCode.custom.repo = '';
+        }
+
+        if (apiData.recipe.deployOptions.sourceCode.custom && apiData.recipe.deployOptions.sourceCode.custom.repo !== ''){
+            apiData.recipe.deployOptions.sourceCode.custom.required = true;
+        }
+        
         if (formData.customType && formData.customType === 'multi') {
             $scope.repos.forEach((oneRepo) => {
                 if (oneRepo.type === 'multi') {

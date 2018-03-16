@@ -575,10 +575,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
               "type": "group",
               'description' : {
                   'type': "default",
-                  'content':"<div class='fieldMsg'>You can attach an extra repo to <b>server</b>" +
-                  " recipes by filling the inputs below. The content of this repo" +
-                  " will be pulled and" +
-                  " interpreted whenever you deploy a new component using this recipe.</div>"
+                  'content':"<div class='fieldMsg'>You can attach a config repo recipes by filling the inputs below. The content of this repo will be pulled and interpreted whenever you deploy using this recipe.</div>"
               },
               "label": "Config Repository",
               "entries": [
@@ -742,7 +739,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
               $scope.customRepos = [];
               $scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
-                console.log( $scope.repos ); // ToDelete #2del
               for (let i = $scope.repos.length ; i--; i >  0) {
                   if ($scope.repos[i].type === data.recipe.deployOptions.sourceCode.custom.type) {
                       // case multi
@@ -1696,8 +1692,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
        if (formData.required === false !== apiData.recipe.deployOptions.sourceCode.configuration.required) {
            apiData.recipe.deployOptions.sourceCode.configuration.required = formData.required;
        }
-       if (apiData.recipe.deployOptions.sourceCode.configuration && apiData.recipe.deployOptions.sourceCode.configuration.repo === 'user specify') {
+       if (apiData.recipe.deployOptions.sourceCode.configuration && (apiData.recipe.deployOptions.sourceCode.configuration.repo === 'user specify' || apiData.recipe.deployOptions.sourceCode.configuration.repo === '')) {
            apiData.recipe.deployOptions.sourceCode.configuration.repo = '';
+           apiData.recipe.deployOptions.sourceCode.configuration.branch = '';
+
        }
 
        if (apiData.recipe.deployOptions.sourceCode.configuration && apiData.recipe.deployOptions.sourceCode.configuration.repo !== ''){
@@ -1717,8 +1715,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
             apiData.recipe.deployOptions.sourceCode.custom.required = formData.customRequired;
         }
 
-        if (apiData.recipe.deployOptions.sourceCode.custom && apiData.recipe.deployOptions.sourceCode.custom.repo === 'user specify') {
+        if (apiData.recipe.deployOptions.sourceCode.custom && (apiData.recipe.deployOptions.sourceCode.custom.repo === 'user specify' || apiData.recipe.deployOptions.sourceCode.custom.repo === '')) {
             apiData.recipe.deployOptions.sourceCode.custom.repo = '';
+            apiData.recipe.deployOptions.sourceCode.custom.branch = '';
         }
 
         if (apiData.recipe.deployOptions.sourceCode.custom && apiData.recipe.deployOptions.sourceCode.custom.repo !== ''){

@@ -121,81 +121,52 @@
 				</div>
 				<br/>
 			</div>
-			
-			<div>
-				<label>I have an nginx certificate in a repository, here's its location</label>
-				<label class="toggleSwitch">
-					<input type="checkbox" ng-model="form.formData.certs" ng-required="tempFormEntries.certs.required"/><span class="buttonSlider round"></span>
-				</label>
-				<div class="fieldMsg hint">
-					Turn this on if you already purchased a certificate and placed in a git repo. The deployer will pull
-					it and use it.<br/>
-					Otherwise the deployer will generate self-signed certificates and use when when deploying the nginx.
-				</div>
-			</div>
-			
-			<div ng-show="form.formData.certs">
-				
-			</div>
 		</div>
 	</accordion-group>
+	
+	<accordion-group>
+		<accordion-heading>I have a Custom configuration in a repo and i want to associate with my Nginx</accordion-heading>
+		<div>
+			<label>Repository</label>
+			<select class="form-control" ng-required="false" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="form.formData.custom.sourceCode.configuration.repo" ng-change="fetchBranches('conf')"></select>
+			<label class="fieldMsg">Choose your configuration repository</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo">
+			<label>Branch</label>
+			<select class="form-control" ng-required="false" ng-options="branch.name as branch.name for branch in configReposBranches[form.formData.custom.sourceCode.configuration.repo]" ng-model="form.formData.custom.sourceCode.configuration.branch"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.configuration.path" ng-required="false"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
+	</accordion-group>
+	
 	<accordion-group>
 		<accordion-heading>I have a Custom UI i want to associate with my Nginx</accordion-heading>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tbody>
-				<tr>
-					<td>
-						<label>Provider</label>
-						<select class="form-control" ng-model="form.formData.customUi.source">
-							<option value="github">Github</option>
-							<option value="bitbucket">Bitbucket</option>
-						</select>
-						<div class="fieldMsg hint">Select the custom UI Source.</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Git Domain</label>
-						<input type="text" ng-required="false" class="form-control" ng-model="form.formData.customUi.provider" placeholder="github.com"/>
-						<div class="fieldMsg hint">Specify the domain of the custom UI repo.</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Git Owner</label>
-						<input type="text" ng-required="false" class="form-control" ng-model="form.formData.customUi.owner" placeholder="soajs"/>
-						<div class="fieldMsg hint">Specify the owner of the git repository.</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Git Repository</label>
-						<input type="text" ng-required="false" class="form-control" ng-model="form.formData.customUi.repo" placeholder="customUI"/>
-						<div class="fieldMsg hint">Specify the name of the git repository.</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Git Branch</label>
-						<input type="text" ng-required="false" class="form-control" ng-model="form.formData.customUi.branch" placeholder="master"/>
-						<div class="fieldMsg hint">Specify the branch to use.</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Git Token</label>
-						<input type="text" ng-required="false" class="form-control" ng-model="form.formData.customUi.token" placeholder="Token ID"/>
-						<div class="fieldMsg hint">Specify the token of the git repository.</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label>Git Path</label>
-						<input type="text" ng-required="false" class="form-control" ng-model="form.formData.customUi.path" placeholder="/"/>
-						<div class="fieldMsg hint">Specify the path of the git repository.</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div>
+			<label>Repository</label>
+			<select class="form-control" ng-required="false" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.nginxCustom" ng-model="form.formData.custom.sourceCode.custom.repo" ng-change="fetchBranches('nginxCustom')"></select>
+			<label class="fieldMsg">Choose your configuration repository</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.custom.repo">
+			<label>Branch</label>
+			<select class="form-control" ng-required="false" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="form.formData.custom.sourceCode.custom.branch"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.custom.repo">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
 	</accordion-group>
 </accordion>

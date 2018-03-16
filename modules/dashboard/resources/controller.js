@@ -184,6 +184,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				
 				$scope.configRepos = [];
 				$scope.configReposBranches = {};
+				$scope.configReposBranchesStatus = {};
 				
 				$scope.resourceDeployed = false;
 				if (resource && resource.instance && resource.instance.id) {
@@ -223,7 +224,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						$scope.selectedCustomClear = selectedRepo;
 					}
 					
-					if (!selectedRepo || selectedRepo === '') {
+					if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- User Specify --') {
 						return;
 					}
 					
@@ -241,7 +242,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							}
 						});
 					}
-					
+					$scope.configReposBranchesStatus[selectedRepo] = 'loading';
 					getSendDataFromServer($scope, ngDataApi, {
 						'method': 'get',
 						'routeName': '/dashboard/gitAccounts/getBranches',
@@ -253,9 +254,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 					}, function (error, response) {
 						if (error) {
+							$scope.configReposBranchesStatus[selectedRepo] = 'failed';
 							$scope.displayAlert('danger', error.message);
 						} else {
 							$scope.configReposBranches[selectedRepo] = response.branches;
+							$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
 						}
 					});
 				};
@@ -332,29 +335,32 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							let configRecords = [];
 							let customRecords = [];
 							
-							if(response){
+							configRecords.push({name: "-- User Specify --"});
+							customRecords.push({name: "-- User Specify --"});
+							
+							if (response) {
 								response.forEach(function (eachAccount) {
-									if(eachAccount.repos){
+									if (eachAccount.repos) {
 										eachAccount.repos.forEach(function (eachRepo) {
 											// eachRepo : name, serviceName, type
-											if(eachRepo.type === 'config'){
+											if (eachRepo.type === 'config') {
 												configRecords.push({
-													owner : eachAccount.owner,
-													provider : eachAccount.provider,
-													accountId : eachAccount._id.toString(),
-													name : eachRepo.name,
-													type : eachRepo.type,
-													configSHA : eachRepo.configSHA
+													owner: eachAccount.owner,
+													provider: eachAccount.provider,
+													accountId: eachAccount._id.toString(),
+													name: eachRepo.name,
+													type: eachRepo.type,
+													configSHA: eachRepo.configSHA
 												});
 											}
 											
-											if(customType && eachRepo.type === customType){
+											if (customType && eachRepo.type === customType) {
 												
-												let acceptableTypes = ['custom','static','service','daemon']; // and multi
-												if(customType === 'multi'){
-													if(eachRepo.configSHA){
+												let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
+												if (customType === 'multi') {
+													if (eachRepo.configSHA) {
 														eachRepo.configSHA.forEach(function (sub) {
-															if(acceptableTypes.indexOf(sub.contentType) !== -1 ) {
+															if (acceptableTypes.indexOf(sub.contentType) !== -1) {
 																customRecords.push({
 																	owner: eachAccount.owner,
 																	provider: eachAccount.provider,
@@ -367,15 +373,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 															}
 														});
 													}
-												}else{
-													if(acceptableTypes.indexOf(customType) !== -1 ){
+												} else {
+													if (acceptableTypes.indexOf(customType) !== -1) {
 														customRecords.push({
-															owner : eachAccount.owner,
-															provider : eachAccount.provider,
-															accountId : eachAccount._id.toString(),
-															name : eachRepo.name,
-															type : eachRepo.type,
-															configSHA : eachRepo.configSHA
+															owner: eachAccount.owner,
+															provider: eachAccount.provider,
+															accountId: eachAccount._id.toString(),
+															name: eachRepo.name,
+															type: eachRepo.type,
+															configSHA: eachRepo.configSHA
 														});
 													}
 												}
@@ -536,6 +542,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								
 								$scope.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
 								$scope.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
+							} else {
+								if(!$scope.formData.deployOptions.custom || !$scope.formData.deployOptions.custom.sourceCode ||
+									!$scope.formData.deployOptions.custom.sourceCode.configuration  || !$scope.formData.deployOptions.custom.sourceCode.configuration.repo ){ // if not filled from cicd
+									if($scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.configuration){
+										$scope.formData.deployOptions.sourceCode.configuration.repo = '-- User Specify --';
+									}
+								}
 							}
 						}
 						
@@ -546,13 +559,20 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							$scope.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
 							$scope.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
 							
-							if(cust.repo && cust.repo !== ''){
-								if(!$scope.formData.deployOptions.sourceCode.custom){
+							if (cust.repo && cust.repo !== '') {
+								if (!$scope.formData.deployOptions.sourceCode.custom) {
 									$scope.formData.deployOptions.sourceCode.custom = {};
 								}
 								
-								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + cust.subName;
+								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
 								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
+							} else {
+								if(!$scope.formData.deployOptions.custom || !$scope.formData.deployOptions.custom.sourceCode ||
+									!$scope.formData.deployOptions.custom.sourceCode.custom  || !$scope.formData.deployOptions.custom.sourceCode.custom.repo ){ // if not filled from cicd
+									if($scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.custom){
+										$scope.formData.deployOptions.sourceCode.custom.repo = '-- User Specify --' + '__SOAJS_DELIMITER__';
+									}
+								}
 							}
 						}
 						
@@ -699,12 +719,17 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				function reformatSourceCodeForCicd(record) {
 					if(record.configuration && record.configuration.repo){
 						let selectedRepo = record.configuration.repo;
-						$scope.configRepos.config.forEach(function (eachConf) {
-							if(eachConf.name === selectedRepo){
-								record.configuration.commit = eachConf.configSHA;
-								record.configuration.owner = eachConf.owner;
-							}
-						});
+						if(selectedRepo === '-- User Specify --'){
+							record.configuration.repo = "";
+							record.configuration.branch = "";
+						}else{
+							$scope.configRepos.config.forEach(function (eachConf) {
+								if(eachConf.name === selectedRepo){
+									record.configuration.commit = eachConf.configSHA;
+									record.configuration.owner = eachConf.owner;
+								}
+							});
+						}
 					}
 					
 					if(record.custom && record.custom.repo){
@@ -716,24 +741,27 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						
 						record.custom.repo = selectedRepo; // save clear value
 						
-						$scope.configRepos.customType.forEach(function (eachConf) {
-							if(eachConf.name === selectedRepo){
-								
-								record.custom.owner = eachConf.owner;
-								record.custom.subName = subName; // for multi
-								
-								if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
-									eachConf.configSHA.forEach(function (eachConfig) {
-										if(eachConfig.contentName === subName){
-											record.custom.commit = eachConfig.sha;
-										}
-									});
-								}else{
-									record.custom.commit = eachConf.configSHA;
+						if(selectedRepo === '-- User Specify --'){
+							record.custom.repo = "";
+							record.custom.branch = "";
+						}else {
+							$scope.configRepos.customType.forEach(function (eachConf) {
+								if (eachConf.name === selectedRepo) {
+									record.custom.owner = eachConf.owner;
+									record.custom.subName = subName; // for multi
+									
+									if (eachConf.configSHA && typeof eachConf.configSHA === 'object') { // for multi
+										eachConf.configSHA.forEach(function (eachConfig) {
+											if (eachConfig.contentName === subName) {
+												record.custom.commit = eachConfig.sha;
+											}
+										});
+									} else {
+										record.custom.commit = eachConf.configSHA;
+									}
 								}
-								
-							}
-						});
+							});
+						}
 					}
 					
 					return record;

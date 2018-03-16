@@ -42,14 +42,14 @@
 				<label class="fieldMsg">Choose your repository</label>
 				<br>
 				
-				<div ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo">
-					<label>Branch</label>
+				<div ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo !== '-- User Specify --'">
+					<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo]==='loading'"></label>
 					<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo]" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
 					<label class="fieldMsg">Choose your branch</label>
 					<br>
 				</div>
 				
-				<div ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo">
+				<div ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo !== '-- User Specify --'">
 					<label>Path</label>
 					<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.path" ng-required="false"/>
 					<label class="fieldMsg">Unless specified, the root will be used</label>

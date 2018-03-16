@@ -656,6 +656,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					// source code updates
 					$scope.configRepos = [];
 					$scope.configReposBranches = {};
+					$scope.configReposBranchesStatus = {};
 					
 					$scope.setSourceCodeData = function(oneEnv, version, oneSrv) {
 						let recipes = $scope.recipes;
@@ -705,6 +706,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									
 									formData.sourceCode.configuration.repo = conf.repo;
 									formData.sourceCode.configuration.branch = conf.branch;
+								}else{
+									if (formData.sourceCode.configuration && (!formData.sourceCode.configuration.repo || formData.sourceCode.configuration.repo === '')) {
+										formData.sourceCode.configuration.repo = '-- User Specify --';
+									}
 								}
 							}
 							
@@ -741,6 +746,8 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							} else {
 								let configRecords = [];
 								
+								configRecords.push({name: "-- User Specify --"});
+								
 								if(response){
 									response.forEach(function (eachAccount) {
 										if(eachAccount.repos){
@@ -774,7 +781,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						
 						let selectedRepo = formData.sourceCode.configuration.repo;
 						
-						if (!selectedRepo || selectedRepo === '') {
+						if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- User Specify --') {
 							return;
 						}
 						
@@ -785,6 +792,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							}
 						});
 						
+						$scope.configReposBranchesStatus[selectedRepo] = 'loading';
 						getSendDataFromServer($scope, ngDataApi, {
 							'method': 'get',
 							'routeName': '/dashboard/gitAccounts/getBranches',
@@ -796,8 +804,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							}
 						}, function (error, response) {
 							if (error) {
+								$scope.configReposBranchesStatus[selectedRepo] = 'failed';
 								$scope.displayAlert('danger', error.message);
 							} else {
+								$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
 								$scope.configReposBranches[selectedRepo] = response.branches;
 							}
 						});
@@ -850,12 +860,22 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		function reformatSourceCodeForCicd(record) {
 			if(record.configuration && record.configuration.repo){
 				let selectedRepo = record.configuration.repo;
-				currentScope.configRepos.config.forEach(function (eachConf) {
-					if(eachConf.name === selectedRepo){
-						record.configuration.commit = eachConf.configSHA;
-						record.configuration.owner = eachConf.owner;
-					}
-				});
+				
+				if(selectedRepo === '-- User Specify --'){
+					record = {
+						configuration : {
+							repo : "",
+							branch : ""
+						}
+					};
+				}else {
+					currentScope.configRepos.config.forEach(function (eachConf) {
+						if (eachConf.name === selectedRepo) {
+							record.configuration.commit = eachConf.configSHA;
+							record.configuration.owner = eachConf.owner;
+						}
+					});
+				}
 			}
 			
 			return record;

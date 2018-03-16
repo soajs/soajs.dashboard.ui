@@ -1,6 +1,6 @@
 "use strict";
 var hacloudServices = soajsApp.components;
-hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce', function (ngDataApi, $timeout, $modal, $sce) {
+hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce', function (  ngDataApi, $timeout, $modal, $sce) {
 	/**
 	 * Service Functions
 	 * @param currentScope
@@ -14,9 +14,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		currentScope.soajsServices = false;
 		currentScope.controllers = [];
 		currentScope.recipeTypes = environmentsConfig.recipeTypes;
-		
+
 		if (currentScope.access.hacloud.services.list && !currentScope.pauseRefresh) {
-			
+
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
 				"routeName": "/dashboard/cloud/services/list",
@@ -37,9 +37,9 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						currentScope.oldStyle = false;
 						if (response && response.length > 0) {
 							currentScope.rawServicesResponse = angular.copy(response);
-							
+
 							currentScope.deployedInEnv = [];
-							
+
 							//migrate dashboard-soajsdata if available and using old tags
 							for (let j = 0; j < response.length; j++) {
 								let oneService = response[j];
@@ -49,14 +49,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									break;
 								}
 							}
-							
+
 							for (var j = 0; j < response.length; j++) {
 								if (!hosts) {
 									hosts = {};
 								}
-								
+
 								response[j].expanded = true;
-								
+
 								for (var u = 0; u < currentScope.updatesNotifications.length; u++) {
 									if (response[j].id === currentScope.updatesNotifications[u].id) {
 										switch (currentScope.updatesNotifications[u].mode) {
@@ -75,7 +75,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										}
 									}
 								}
-								
+
 								var failures = 0;
 								response[j].tasks.forEach(function (oneTask) {
 									if (['running', 'preparing', 'pending', 'starting', 'complete','assigned'].indexOf(oneTask.status.state.toLowerCase()) === -1) {
@@ -83,54 +83,54 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 										oneTask.hideIt = true;
 									}
 								});
-								
+
 								if (failures === response[j].tasks.length) {
 									response[j].hideIt = true;
 								}
-								
+
 								response[j].failures = failures;
-								
+
 								let serviceType = response[j].labels['soajs.service.type'] || 'other';
 								let serviceSubType = response[j].labels['soajs.service.subtype'] || 'other';
-								
+
 								if (serviceType === 'nginx' || serviceType === 'database') {
 									currentScope.oldStyle = true;
 								}
-								
+
 								if (!hosts[serviceType]) {
 									hosts[serviceType] = {};
 								}
-								
+
 								if (!hosts[serviceType][serviceSubType]) {
 									hosts[serviceType][serviceSubType] = {};
 								}
-								
+
 								if (!response[j].labels['soajs.service.version'] || response[j].labels['soajs.service.version'] === '') {
 									response[j].labels['soajs.service.version'] = '1';
 								}
-								
+
 								if (!response[j].labels['soajs.service.name'] || response[j].labels['soajs.service.name'] === '') {
 									response[j].labels['soajs.service.name'] = response[j].name;
 								}
-								
+
 								if (serviceSubType && serviceSubType === 'soajs') {
 									currentScope.soajsServices = true;
-									
+
 									let serviceGroup = response[j].labels['soajs.service.group'];
-									
+
 									//add group value to controller service entry
 									if (response[j].labels['soajs.service.name'] === 'controller') {
 										currentScope.myController = true;
 										response[j].labels['soajs.service.group'] = "SOAJS Core Services";
 										response[j].labels['soajs.service.group'] = response[j].labels['soajs.service.group'].toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
 										serviceGroup = response[j].labels['soajs.service.group'];
-										
+
 										currentScope.controllers.push(response[j]);
 										if (currentScope.deployedInEnv.indexOf('controller') === -1) {
 											currentScope.deployedInEnv.push('controller');
 										}
 									}
-									
+
 									//check if daemon and get group config name from env variables
 									if (serviceType === 'daemon' && response[j].labels['soajs.daemon.group']) {
 										response[j].daemonGroup = '';
@@ -141,27 +141,27 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 											}
 										}
 									}
-									
+
 									response[j]['color'] = 'green';
 									response[j]['healthy'] = true;
-									
+
 									if (!hosts[serviceType][serviceSubType][serviceGroup]) {
 										hosts[serviceType][serviceSubType][serviceGroup] = {
 											expanded: true,
 											list: []
 										};
 									}
-									
+
 									hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
 								}
 								else {
-									
+
 									//service is not SOAJS
 									let serviceGroup = 'other';
 									if (response[j].labels && response[j].labels['soajs.service.group']) {
 										serviceGroup = response[j].labels['soajs.service.group'];
 									}
-									
+
 									//check if nginx is deployed
 									if (['soajs-nginx'].indexOf(serviceGroup) !== -1) {
 										if (currentScope.deployedInEnv.indexOf('nginx') === -1) {
@@ -169,20 +169,20 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 											currentScope.myNginx = true;
 										}
 									}
-									
+
 									if (!hosts[serviceType][serviceSubType][serviceGroup]) {
 										hosts[serviceType][serviceSubType][serviceGroup] = {
 											expanded: true,
 											list: []
 										};
 									}
-									
+
 									hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
 								}
 							}
-							
+
 							currentScope.envDeployed = (currentScope.deployedInEnv.length === 2);
-							
+
 							if (currentScope.oldStyle) {
 								currentScope.myController = currentScope.myNginx = true;
 							}
@@ -195,12 +195,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				}
 			});
 		}
-		
+
 		function getUpdatesNotifications(envServices, cb) {
 			if(!envServices || envServices.length === 0){
 				return cb();
 			}
-			
+
 			//check for code updates
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
@@ -221,7 +221,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							})
 						}
 					});
-					
+
 					//check for image or catalog recipe updates
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
@@ -247,7 +247,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			});
 		}
 	}
-	
+
 	function checkHeapster(currentScope, cb) {
 		if (currentScope.envPlatform !== 'kubernetes') {
 			if (cb) return cb();
@@ -273,7 +273,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			});
 		}
 	}
-	
+
 	/**
 	 * List all namespaces for kubernetes deployments and add values to scope
 	 *
@@ -287,7 +287,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			currentScope.namespaceConfig.namespace = currentScope.namespaceConfig.defaultValue.id;
 			return cb();
 		}
-		
+
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/cloud/namespaces/list',
@@ -301,28 +301,28 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			else {
 				currentScope.namespaces = [currentScope.namespaceConfig.defaultValue];
 				currentScope.namespaces = currentScope.namespaces.concat(response);
-				
+
 				currentScope.namespaceConfig.namespace = currentScope.namespaceConfig.defaultValue.id; //setting current selected to 'All Namespaces'
-				
+
 				if (cb && typeof(cb) === 'function') {
 					return cb();
 				}
 			}
 		});
 	}
-	
+
 	function deleteService(currentScope, service, groupName) {
 		if (groupName && (groupName === 'soajs' || groupName === 'nginx') && currentScope.envCode.toLowerCase() === 'dashboard') {
 			return;
 		}
-		
+
 		var params = {
 			env: currentScope.envCode,
 			namespace: service.namespace,
 			serviceId: service.id,
 			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : '')
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'delete',
@@ -339,7 +339,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 		});
 	}
-	
+
 	function scaleService(currentScope, service, groupName) {
 		$modal.open({
 			templateUrl: "scaleService.tmpl",
@@ -348,13 +348,13 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
-				
+
 				$scope.currentScale = service.tasks.length;
 				$scope.title = service.name + ' | Scale Service';
-				
+
 				$scope.onSubmit = function () {
 					overlayLoading.show();
-					
+
 					if (groupName && (groupName === 'soajs' || groupName === 'nginx') && currentScope.envCode.toLowerCase() === 'dashboard') {
 						if ($scope.newScale < 1) {
 							overlayLoading.hide();
@@ -389,14 +389,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				};
-				
+
 				$scope.closeModal = function () {
 					$modalInstance.close();
 				};
 			}
 		});
 	}
-	
+
 	function inspectService(currentScope, service) {
 		var formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = service;
@@ -419,15 +419,16 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		};
 		buildFormWithModal(currentScope, $modal, options);
 	}
-	
+
 	function redeployService(currentScope, service) {
+
 		var params = {
 			env: currentScope.envCode,
 			serviceId: service.id,
 			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : ''),
 			action: 'redeploy'
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'put',
@@ -447,9 +448,125 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 		});
 	}
-	
+
+
+
 	function rebuildService(currentScope, service) {
-		getSendDataFromServer(currentScope, ngDataApi, {
+    // source code updates
+    currentScope.configRepos = [];
+    currentScope.configReposBranches = {};
+
+    currentScope.setSourceCodeData = function(selectedRecipe , cb) {
+      currentScope.sourceCodeConfig = {
+        configuration : {
+          isEnabled : false,
+          repoAndBranch : {
+            disabled : false,
+            required : false
+          }
+        }
+      };
+      if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+        let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+        let conf = sourceCode.configuration;
+        currentScope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+
+        if (conf) {
+          currentScope.sourceCodeConfig.configuration.isEnabled = true;
+          currentScope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+          currentScope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+
+
+          currentScope.listAccounts(  function () {
+            // special case: if the form was overwritten from cicd we have to load the branch
+            if(sourceCode){
+              if(sourceCode.configuration && sourceCode.configuration.repo){
+                if(!currentScope.configReposBranches[sourceCode.configuration.repo]){
+                  currentScope.fetchBranches(selectedRecipe.recipe.deployOptions , cb);
+                }
+              }
+            }
+          });
+        }
+      }else{
+        cb();
+      }
+    };
+
+    currentScope.listAccounts = function (  callback) {
+      getSendDataFromServer(currentScope, ngDataApi, {
+        'method': 'get',
+        'routeName': '/dashboard/gitAccounts/accounts/list',
+        params : {
+          fullList : true
+        }
+      }, function (error, response) {
+        if (error) {
+          currentScope.displayAlert('danger', error.message);
+        } else {
+          let configRecords = [];
+
+          if(response){
+            response.forEach(function (eachAccount) {
+              if(eachAccount.repos){
+                eachAccount.repos.forEach(function (eachRepo) {
+                  // eachRepo : name, serviceName, type
+                  if(eachRepo.type === 'config'){
+                    configRecords.push({
+                      owner : eachAccount.owner,
+                      provider : eachAccount.provider,
+                      accountId : eachAccount._id.toString(),
+                      name : eachRepo.name,
+                      type : eachRepo.type,
+                      configSHA : eachRepo.configSHA
+                    });
+                  }
+                });
+              }
+            });
+          }
+
+          currentScope.configRepos.config = configRecords;
+          callback();
+        }
+      });
+    };
+
+    currentScope.fetchBranches = function (data  , callback) {
+
+      let selectedRepo = data.sourceCode.configuration.repo;
+
+      if (!selectedRepo || selectedRepo === '') {
+        return;
+      }
+
+      let accountData = {};
+      currentScope.configRepos.config.forEach(function (eachAcc) {
+        if (eachAcc.name === selectedRepo) {
+          accountData = eachAcc;
+        }
+      });
+
+      getSendDataFromServer(currentScope, ngDataApi, {
+        'method': 'get',
+        'routeName': '/dashboard/gitAccounts/getBranches',
+        params: {
+          id: accountData.accountId,
+          name: selectedRepo,
+          type: 'repo',
+          provider : accountData.provider
+        }
+      }, function (error, response) {
+        if (error) {
+          currentScope.displayAlert('danger', error.message);
+        } else {
+          currentScope.configReposBranches[selectedRepo] = response.branches;
+        }
+        callback();
+      });
+    };
+
+    getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/catalog/recipes/get',
 			params: {
@@ -460,168 +577,222 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				var formConfig = {
-					entries: []
-				};
-				
-				if (catalogRecipe.recipe.deployOptions.image.override) {
-					//append images
-					formConfig.entries.push({
-						'name': "ImagePrefix",
-						'label': "Image Prefix",
-						'type': 'text',
-						'value': catalogRecipe.recipe.deployOptions.image.prefix,
-						'fieldMsg': "Override the image prefix if you want"
-					});
-					
-					formConfig.entries.push({
-						'name': "ImageName",
-						'label': "Image Name",
-						'type': 'text',
-						'value': catalogRecipe.recipe.deployOptions.image.name,
-						'fieldMsg': "Override the image name if you want"
-					});
-					
-					formConfig.entries.push({
-						'name': "ImageTag",
-						'label': "Image Tag",
-						'type': 'text',
-						'value': catalogRecipe.recipe.deployOptions.image.tag,
-						'fieldMsg': "Override the image tag if you want"
-					});
-				}
-				
-				//append inputs whose type is userInput
-				for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
-					if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
-						
-						var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
-						//todo: get value from service.env
-						service.env.forEach(function (oneEnv) {
-							if (oneEnv.indexOf(envVariable) !== -1) {
-								defaultValue = oneEnv.split("=")[1];
-							}
-						});
-						//push a new input for this variable
-						var newInput = {
-							'name': '_ci_' + envVariable,
-							'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
-							'type': 'text',
-							'value': defaultValue,
-							'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg
-						};
-						
-						//if no default value is set, the user input field is required
-						if (!defaultValue || defaultValue === '') {
-							newInput.required = true;
-						}
-						
-						//if the default value is ***, clear the value and set the field as required
-						//this is applicable for tokens whose values are masked by *
-						if (newInput.value.match(/^\*+$/g)) {
-							newInput.value = '';
-							newInput.required = true;
-						}
-						
-						formConfig.entries.push(newInput);
-					}
-				}
-				
-				if (['service','daemon','other'].indexOf(catalogRecipe.type) !== -1) {
-					var newInput = {
-						'name': 'branch',
-						'label': 'Branch',
-						'type': 'select',
-						'value': [],
-						'fieldMsg': 'Select a branch to deploy from',
-						'required': true
-					};
-					
-					if (service.labels['service.owner']) {
-						getServiceBranches({
-							repo_owner: service.labels['service.owner'],
-							repo_name: service.labels['service.repo']
-						}, function (response) {
-							
-							response.branches.forEach(function (oneBranch) {
-								delete oneBranch.commit.url;
-								newInput.value.push({'v': oneBranch, 'l': oneBranch.name});
-							});
-							formConfig.entries.push(newInput);
-							
-							if (formConfig.entries.length === 0) {
-								doRebuild(null);
-							}
-							else {
-								var options = {
-									timeout: $timeout,
-									form: formConfig,
-									name: 'rebuildService',
-									label: 'Rebuild Service',
-									actions: [
-										{
-											'type': 'submit',
-											'label': translation.submit[LANG],
-											'btn': 'primary',
-											'action': function (formData) {
-												doRebuild(formData);
-											}
-										},
-										{
-											'type': 'reset',
-											'label': translation.cancel[LANG],
-											'btn': 'danger',
-											'action': function () {
-												currentScope.modalInstance.dismiss('cancel');
-												currentScope.form.formData = {};
-											}
-										}
-									]
-								};
-								buildFormWithModal(currentScope, $modal, options);
-							}
-						});
-					}
-					else {
-						doRebuild(null);
-					}
-				}
-				else {
-					if (formConfig.entries.length === 0) {
-						doRebuild(null);
-					}
-					else {
-						var options = {
-							timeout: $timeout,
-							form: formConfig,
-							name: 'rebuildService',
-							label: 'Rebuild Service',
-							actions: [
-								{
-									'type': 'submit',
-									'label': translation.submit[LANG],
-									'btn': 'primary',
-									'action': function (formData) {
-										doRebuild(formData);
-									}
-								},
-								{
-									'type': 'reset',
-									'label': translation.cancel[LANG],
-									'btn': 'danger',
-									'action': function () {
-										currentScope.modalInstance.dismiss('cancel');
-										currentScope.form.formData = {};
-									}
-								}
-							]
-						};
-						buildFormWithModal(currentScope, $modal, options);
-					}
-				}
+        currentScope.setSourceCodeData(catalogRecipe ,
+         function () {
+
+
+
+           var formConfig = {
+             entries: []
+           };
+
+           if (catalogRecipe.recipe.deployOptions.image.override) {
+             //append images
+             formConfig.entries.push({
+               'name': "ImagePrefix",
+               'label': "Image Prefix",
+               'type': 'text',
+               'value': catalogRecipe.recipe.deployOptions.image.prefix,
+               'fieldMsg': "Override the image prefix if you want"
+             });
+
+             formConfig.entries.push({
+               'name': "ImageName",
+               'label': "Image Name",
+               'type': 'text',
+               'value': catalogRecipe.recipe.deployOptions.image.name,
+               'fieldMsg': "Override the image name if you want"
+             });
+
+             formConfig.entries.push({
+               'name': "ImageTag",
+               'label': "Image Tag",
+               'type': 'text',
+               'value': catalogRecipe.recipe.deployOptions.image.tag,
+               'fieldMsg': "Override the image tag if you want"
+             });
+           }
+
+           //append inputs whose type is userInput
+           for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
+             if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
+
+               var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
+               //todo: get value from service.env
+               service.env.forEach(function (oneEnv) {
+                 if (oneEnv.indexOf(envVariable) !== -1) {
+                   defaultValue = oneEnv.split("=")[1];
+                 }
+               });
+               //push a new input for this variable
+               var newInput = {
+                 'name': '_ci_' + envVariable,
+                 'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
+                 'type': 'text',
+                 'value': defaultValue,
+                 'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg
+               };
+
+               //if no default value is set, the user input field is required
+               if (!defaultValue || defaultValue === '') {
+                 newInput.required = true;
+               }
+
+               //if the default value is ***, clear the value and set the field as required
+               //this is applicable for tokens whose values are masked by *
+               if (newInput.value.match(/^\*+$/g)) {
+                 newInput.value = '';
+                 newInput.required = true;
+               }
+
+               formConfig.entries.push(newInput);
+             }
+           }
+
+
+           if(  catalogRecipe.recipe.deployOptions.sourceCode)
+           {
+             if(  catalogRecipe.recipe.deployOptions.sourceCode.configuration && catalogRecipe.recipe.deployOptions.sourceCode.configuration.label )
+             {
+               // if the repo is forced. no need to check it.
+               // if the repo not selected . we
+               // allow him to select.
+
+               if( catalogRecipe.recipe.deployOptions.sourceCode.configuration.repository == ""  )
+               {
+                 var repo = {
+                   'name': 'repository',
+                   'label': 'Repository',
+                   'type': 'select',
+                   'value': [],
+                   'fieldMsg': 'Select a repository to deploy from',
+                   'required': true
+                 };
+               }
+               var branch = {
+                 'name': 'branch',
+                 'label': 'Branch',
+                 'type': 'select',
+                 'value': [],
+                 'fieldMsg': 'Select a branch to deploy from',
+                 'required': true
+               };
+
+
+               // formConfig.entries.push(repo);
+               // formConfig.entries.push(branch);
+
+             }
+             if(  catalogRecipe.recipe.deployOptions.sourceCode.custom)
+             {
+
+             }
+
+           }
+
+
+
+           if (['service','daemon','other'].indexOf(catalogRecipe.type) !== -1) {
+             var newInput = {
+               'name': 'branch',
+               'label': 'Branch',
+               'type': 'select',
+               'value': [],
+               'fieldMsg': 'Select a branch to deploy from',
+               'required': true
+             };
+
+             if (service.labels['service.owner'] ) {
+               getServiceBranches({
+                 repo_owner: service.labels['service.owner'],
+                 repo_name: service.labels['service.repo']
+               }, function (response) {
+
+                 response.branches.forEach(function (oneBranch) {
+                   delete oneBranch.commit.url;
+                   newInput.value.push({'v': oneBranch, 'l': oneBranch.name});
+                 });
+                 formConfig.entries.push(newInput);
+
+                 if (formConfig.entries.length === 0) {
+                   doRebuild(null);
+                 }
+                 else {
+                   var options = {
+                     timeout: $timeout,
+                     form: formConfig,
+                     name: 'rebuildService',
+                     label: 'Rebuild Service',
+                     actions: [
+                       {
+                         'type': 'submit',
+                         'label': translation.submit[LANG],
+                         'btn': 'primary',
+                         'action': function (formData) {
+                           doRebuild(formData);
+                         }
+                       },
+                       {
+                         'type': 'reset',
+                         'label': translation.cancel[LANG],
+                         'btn': 'danger',
+                         'action': function () {
+                           currentScope.modalInstance.dismiss('cancel');
+                           currentScope.form.formData = {};
+                         }
+                       }
+                     ]
+                   };
+                   buildFormWithModal(currentScope, $modal, options);
+                 }
+               });
+             }
+             else {
+               doRebuild(null);
+             }
+           }
+
+           else {
+             if (formConfig.entries.length === 0) {
+               doRebuild(null);
+             }
+             else {
+               var options = {
+                 timeout: $timeout,
+                 form: formConfig,
+                 name: 'rebuildService',
+                 label: 'Rebuild Service',
+                 actions: [
+                   {
+                     'type': 'submit',
+                     'label': translation.submit[LANG],
+                     'btn': 'primary',
+                     'action': function (formData) {
+                       doRebuild(formData);
+                     }
+                   },
+                   {
+                     'type': 'reset',
+                     'label': translation.cancel[LANG],
+                     'btn': 'danger',
+                     'action': function () {
+                       currentScope.modalInstance.dismiss('cancel');
+                       currentScope.form.formData = {};
+                     }
+                   }
+                 ]
+               };
+               buildFormWithModal(currentScope, $modal, options);
+             }
+           }
+
+         }
+
+        );// do api callback to ensure it ran before  proceeding.
+
 			}
 		});
-		
+
 		function getServiceBranches(opts, cb) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
@@ -633,10 +804,10 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				if (error) {
 					currentScope.displayAlert('danger', error.message);
 				} else {
-					
+
 					let nextOpts = {};
 					gitAccounts.forEach((oneGitAccount) => {
-						
+
 						for (let i = 0; i < oneGitAccount.repos.length; i++) {
 							let oneRepo = oneGitAccount.repos[i];
 							if (oneRepo.name === opts.repo_owner + "/" + opts.repo_name) {
@@ -646,7 +817,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 							}
 						}
 					});
-					
+
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
 						routeName: '/dashboard/gitAccounts/getBranches',
@@ -666,7 +837,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				}
 			});
 		}
-		
+
 		function doRebuild(formData) {
 			var params = {
 				env: currentScope.envCode,
@@ -674,7 +845,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : ''),
 				action: 'rebuild'
 			};
-			
+
 			if (formData && Object.keys(formData).length > 0) {
 				//inject user input catalog entry and image override
 				params.custom = {
@@ -684,23 +855,23 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						tag: formData['ImageTag']
 					}
 				};
-				
+
 				if (formData.branch) {
 					if (!params.custom) {
 						params.custom = {};
 					}
-					
+
 					var t = formData.branch;
 					if (typeof t === 'string') {
 						t = JSON.parse(angular.copy(formData.branch));
 					}
-					
+
 					params.custom.branch = t.name;
 					if (t.commit && t.commit.sha) {
 						params.custom.commit = t.commit.sha;
 					}
 				}
-				
+
 				for (var input in formData) {
 					if (input.indexOf('_ci_') !== -1) {
 						if (!params.custom.env) {
@@ -710,7 +881,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 					}
 				}
 			}
-			
+
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'put',
@@ -735,8 +906,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			});
 		}
 	}
-	
-	
+
+
 	/**
 	 * Troubleshooting and Maintenance Operations
 	 * @param currentScope
@@ -782,7 +953,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				});
-				
+
 				var options = {
 					timeout: $timeout,
 					form: formConfig,
@@ -801,12 +972,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					]
 				};
-				
+
 				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
 	}
-	
+
 	function loadServiceProvision(currentScope, service) {
 		//reload provision for all service instances in parallel
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -827,7 +998,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				currentScope.generateNewMsg(currentScope.envCode, 'danger', "Error Executing Load Provision for: " + service.name + " @ " + new Date().toISOString());
 			}
 			else {
-				
+
 				var formConfig = angular.copy(environmentsConfig.form.multiServiceInfo);
 				response.forEach(function (oneRegistry) {
 					service.tasks.forEach(function (oneTask) {
@@ -846,7 +1017,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				});
-				
+
 				var options = {
 					timeout: $timeout,
 					form: formConfig,
@@ -865,12 +1036,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					]
 				};
-				
+
 				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
 	}
-	
+
 	function loadDaemonStats(currentScope, service) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
@@ -890,7 +1061,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				currentScope.generateNewMsg(currentScope.envCode, 'danger', "Error Executing Reload Daemon Stat for: " + service.name + " @ " + new Date().toISOString());
 			}
 			else {
-				
+
 				var formConfig = angular.copy(environmentsConfig.form.multiServiceInfo);
 				response.forEach(function (oneRegistry) {
 					service.tasks.forEach(function (oneTask) {
@@ -909,7 +1080,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				});
-				
+
 				var options = {
 					timeout: $timeout,
 					form: formConfig,
@@ -928,12 +1099,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					]
 				};
-				
+
 				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
 	}
-	
+
 	function loadDaemonGroupConfig(currentScope, service) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
@@ -953,7 +1124,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				currentScope.generateNewMsg(currentScope.envCode, 'danger', "Error Executing Reload Daemon Group Configuration for: " + service.name + " @ " + new Date().toISOString());
 			}
 			else {
-				
+
 				var formConfig = angular.copy(environmentsConfig.form.multiServiceInfo);
 				response.forEach(function (oneRegistry) {
 					service.tasks.forEach(function (oneTask) {
@@ -972,7 +1143,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				});
-				
+
 				var options = {
 					timeout: $timeout,
 					form: formConfig,
@@ -991,12 +1162,12 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					]
 				};
-				
+
 				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
 	}
-	
+
 	function executeHeartbeatTest(currentScope, service) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
@@ -1023,16 +1194,16 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						if (oneServiceTask.id === oneHeartBeat.id) {
 							if (!oneHeartBeat.response.result) {
 								oneServiceTask.status.state = 'Unreachable';
-								
+
 								var tooltip = "<b>Code:</b> " + oneHeartBeat.response.error.code + "<br>";
 								tooltip += "<b>Errno:</b> " + oneHeartBeat.response.error.errno + "<br>";
 								tooltip += "<b>Syscall:</b> " + oneHeartBeat.response.error.syscall + "<br>";
 								tooltip += "<b>Address:</b> " + oneHeartBeat.response.error.address + "<br>";
 								tooltip += "<b>Port:</b> " + oneHeartBeat.response.error.port + "<br>";
-								
+
 								oneServiceTask.status.error = tooltip;
 								failCount++;
-								
+
 								if (service.labels['soajs.service.name'] === 'controller') {
 									currentScope.controllers.forEach(function (oneController) {
 										if (oneController.id === oneServiceTask.id) {
@@ -1048,7 +1219,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				});
-				
+
 				if (failCount === heartbeatResponse.length) {
 					service.color = 'red';
 				}
@@ -1058,7 +1229,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 		});
 	}
-	
+
 	function executeAwarenessTest(currentScope, service) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
@@ -1082,7 +1253,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 		});
 	}
-	
+
 	function hostLogs(currentScope, service, task) {
 		overlayLoading.show();
 		currentScope.pauseRefresh = true;
@@ -1102,7 +1273,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 			else {
 				var autoRefreshPromise;
-				
+
 				var mInstance = $modal.open({
 					templateUrl: "logBox.html",
 					size: 'lg',
@@ -1116,7 +1287,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						$timeout(function () {
 							highlightMyCode()
 						}, 500);
-						
+
 						$scope.refreshLogs = function () {
 							getSendDataFromServer(currentScope, ngDataApi, {
 								method: "get",
@@ -1136,27 +1307,27 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 									if (!$scope.$$phase) {
 										$scope.$apply();
 									}
-									
+
 									fixBackDrop();
 									$timeout(function () {
 										highlightMyCode()
 									}, 500);
-									
+
 									autoRefreshPromise = $timeout(function () {
 										$scope.refreshLogs();
 									}, 5000);
 								}
 							});
 						};
-						
+
 						$scope.ok = function () {
 							$modalInstance.dismiss('ok');
 						};
-						
+
 						$scope.refreshLogs();
 					}
 				});
-				
+
 				mInstance.result.then(function () {
 					//Get triggers when modal is closed
 					currentScope.pauseRefresh = false;
@@ -1168,7 +1339,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				});
 			}
 		});
-		
+
 		function remove_special(str) {
 			if (!str) {
 				return 'No logs found for this instance'; //in case container has no logs, return message to display
@@ -1199,7 +1370,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			return str;
 		}
 	}
-	
+
 	function autoScale(currentScope, service) {
 		$modal.open({
 			templateUrl: "autoScale.tmpl",
@@ -1275,14 +1446,14 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					});
 				};
-				
+
 				$scope.closeModal = function () {
 					$modalInstance.close();
 				};
 			}
 		});
 	}
-	
+
 	function envAutoScale(currentScope) {
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -1312,7 +1483,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 				}
 				currentScope.defaultServicesList = [];
 				currentScope.customServicesList = [];
-				
+
 				currentScope.rawServicesResponse.forEach(function (oneService) {
 					if (oneService.labels && oneService.labels['soajs.service.mode'] && oneService.labels['soajs.service.mode'] === "deployment" && oneService.resources && oneService.resources.limits && oneService.resources.limits.cpu) {
 						var service = {
@@ -1338,7 +1509,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 						}
 					}
 				});
-				
+
 				$modal.open({
 					templateUrl: "envAutoScale.tmpl",
 					size: 'm',
@@ -1410,18 +1581,18 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 								}
 							});
 						};
-						
+
 						$scope.closeModal = function () {
 							$modalInstance.close();
 						};
-						
+
 						$scope.selectAllCustom = function (selectBoolean) {
 							$scope.selectCustom = selectBoolean;
 							currentScope.customServicesList.forEach(function (oneCustom) {
 								oneCustom.selected = $scope.selectCustom;
 							});
 						};
-						
+
 						$scope.selectAllDefault = function (selectBoolean) {
 							$scope.selectDefault = selectBoolean;
 							currentScope.defaultServicesList.forEach(function (oneDefault) {
@@ -1433,7 +1604,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 			}
 		});
 	}
-	
+
 	return {
 		'listServices': listServices,
 		'deleteService': deleteService,
@@ -1444,7 +1615,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$timeout', '$modal', '$sce'
 		'autoScale': autoScale,
 		'envAutoScale': envAutoScale,
 		'checkHeapster': checkHeapster,
-		
+
 		'executeHeartbeatTest': executeHeartbeatTest,
 		'hostLogs': hostLogs,
 		'reloadServiceRegistry': reloadServiceRegistry,

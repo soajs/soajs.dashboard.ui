@@ -300,212 +300,35 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 	};
 
 	$scope.updateEntry = function (oneEntry, operation) {
-		var formConfig = {
-			entries: []
-		};
-
 		if (operation === 'redeploy') {
-			doRebuild(null);
+			doRebuild();
 		}
 		else {
-			//testing/////////
-			oneEntry.catalog = {
-				"image": {},
-				"envs": {}
-			};
-			//testing/////////
-			if (oneEntry.catalog.image && oneEntry.catalog.image.override) {
-				//append images
-				formConfig.entries.push({
-					'name': "ImagePrefix",
-					'label': "Image Prefix",
-					'type': 'text',
-					'value': oneEntry.catalog.image.prefix,
-					'fieldMsg': "Override the image prefix if you want"
-				});
-
-				formConfig.entries.push({
-					'name': "ImageName",
-					'label': "Image Name",
-					'type': 'text',
-					'value': oneEntry.catalog.image.name,
-					'fieldMsg': "Override the image name if you want"
-				});
-
-				formConfig.entries.push({
-					'name': "ImageTag",
-					'label': "Image Tag",
-					'type': 'text',
-					'value': oneEntry.catalog.image.tag,
-					'fieldMsg': "Override the image tag if you want"
-				});
-			}
-
-			//append inputs whose type is userInput
-			if (oneEntry.catalog.envs) {
-				for (var envVariable in oneEntry.catalog.envs) {
-					if (oneEntry.catalog.envs[envVariable].type === 'userInput') {
-
-						var defaultValue = oneEntry.catalog.envs[envVariable].default || '';
-						//todo: get value from service.env
-						oneEntry.service.env.forEach(function (oneEnv) {
-							if (oneEnv.indexOf(envVariable) !== -1) {
-								defaultValue = oneEnv.split("=")[1];
-							}
-						});
-
-						//push a new input for this variable
-						var newInput = {
-							'name': '_ci_' + envVariable,
-							'label': oneEntry.catalog.envs[envVariable].label || envVariable,
-							'type': 'text',
-							'value': defaultValue,
-							'fieldMsg': oneEntry.catalog.envs[envVariable].fieldMsg
-						};
-
-						if (!defaultValue || defaultValue === '') {
-							newInput.required = true;
-						}
-
-						formConfig.entries.push(newInput);
-					}
-				}
-			}
-
-			if (formConfig.entries.length === 0) {
-				doRebuild(null);
-			}
-			else {
-				var options = {
-					timeout: $timeout,
-					form: formConfig,
-					name: 'rebuildService',
-					label: 'Rebuild Service',
-					actions: [
-						{
-							'type': 'submit',
-							'label': translation.submit[LANG],
-							'btn': 'primary',
-							'action': function (formData) {
-								doRebuild(formData);
-							}
-						},
-						{
-							'type': 'reset',
-							'label': translation.cancel[LANG],
-							'btn': 'danger',
-							'action': function () {
-								$scope.modalInstance.dismiss('cancel');
-								$scope.form.formData = {};
-							}
-						}
-					]
-				};
-				buildFormWithModal($scope, $modal, options);
-			}
+			$scope.$parent.go('#/deploy-repositories');
 		}
 
-		function doRebuild(formData) {
-			var params;
-			if (operation === 'redeploy') {
-				params = {
-					data: {
-						id: oneEntry._id.toString(),
-						action: operation
-					}
-				}
-			}
-			else if (operation === 'rebuild') {
-				params = {
-					data: {
-						env: $scope.myEnv.toUpperCase(),
-						serviceId: oneEntry.id || oneEntry.serviceId,
-						serviceName: oneEntry.labels['soajs.service.name'],
-						serviceVersion: oneEntry.labels['soajs.service.version'] || null,
-						mode: (oneEntry.labels && oneEntry.labels['soajs.service.mode']) ? oneEntry.labels['soajs.service.mode'] : oneEntry.mode,
-						action: operation
-					}
-				};
-
-				if (formData && Object.keys(formData).length > 0) {
-					//inject user input catalog entry and image override
-					params.custom = {
-						image: {
-							name: formData['ImageName'],
-							prefix: formData['ImagePrefix'],
-							tag: formData['ImageTag']
-						}
-					};
-
-					for (var input in formData) {
-						if (input.indexOf('_ci_') !== -1) {
-							if (!params.custom.env) {
-								params.custom.env = {};
-							}
-							params.custom.env[input.replace('_ci_', '')] = formData[input];
-						}
-					}
-				}
-			}
-			else if (operation === 'deploy') {
-				params = {
-					data: {
-						env: $scope.myEnv.toUpperCase(),
-						serviceName: oneEntry.serviceName,
-						id: oneEntry._id.toString(),
-						action: operation
-					},
-					deployOptions: oneEntry.deployOptions
-				};
-
-				if (oneEntry.serviceVersion) {
-					params.data.serviceVersion = oneEntry.serviceVersion;
-				}
-
-				if (formData && Object.keys(formData).length > 0) {
-					//inject user input catalog entry and image override
-					if (!params.deployOptions.custom) {
-						params.deployOptions.custom = {};
-					}
-
-					params.deployOptions.custom.image = {
-						name: formData['ImageName'],
-						prefix: formData['ImagePrefix'],
-						tag: formData['ImageTag']
-					};
-
-					for (var input in formData) {
-						if (input.indexOf('_ci_') !== -1) {
-							if (!params.deployOptions.custom.env) {
-								params.deployOptions.custom.env = {};
-							}
-							params.deployOptions.custom.env[input.replace('_ci_', '')] = formData[input];
-						}
-					}
-				}
-			}
+		function doRebuild() {
+			let params = {
+				data: {
+					id: oneEntry._id.toString(),
+					action: operation
+				},
+				env: $scope.myEnv.toLowerCase()
+			};
 			
-			params.env = $scope.myEnv.toLowerCase(); //NOTE: this is required at the root level to get the registry of the environment
-
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
 				method: 'put',
 				routeName: '/dashboard/cd/action',
 				data: params
-			}, function (error, response) {
+			}, function (error) {
 				overlayLoading.hide();
 				if (error) {
 					$scope.displayAlert('danger', error.message);
 				}
 				else {
 					$scope.displayAlert('success', 'Service operation [' + operation + '] was successful');
-
-					if (operation === 'redeploy' || operation === 'deploy') {
-						$scope.getLedger();
-					}
-					else {
-						$scope.getUpdates();
-					}
+					$scope.getLedger();
 					overlayLoading.hide();
 					if ($scope.modalInstance) {
 						$scope.modalInstance.dismiss();

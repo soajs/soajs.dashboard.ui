@@ -5,6 +5,30 @@
 	</select>
 	<div class="fieldMsg hint">Choose which branch to deploy the {{currentServiceName}} from.</div>
 </div>
+
+<div ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled">
+	<fieldset class="custom-fieldset">
+		<legend>{{selectedSourceCode.configuration.label}}</legend>
+		<label>Repository</label>
+		<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="form.formData.custom.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.disabled"></select>
+		<label class="fieldMsg">Choose your configuration repository</label>
+		<br>
+		
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo">
+			<label>Branch</label>
+			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[form.formData.custom.sourceCode.configuration.repo]" ng-model="form.formData.custom.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.disabled"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.configuration.path" ng-required="false"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
+	</fieldset>
+</div>
+
 <br />
 <accordion close-others="false">
 	<accordion-group ng-show="tempFormEntries.imagePrefix" is-open="true">

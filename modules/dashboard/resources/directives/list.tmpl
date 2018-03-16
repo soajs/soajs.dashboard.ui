@@ -1,7 +1,7 @@
 <section ng-controller="resourcesAppCtrl">
     <div ng-if="access.list">
         <button class="btn btn-primary f-left" ng-if="access.add" ng-click="addResource()">Add New Resource</button>
-        <button class="btn btn-primary f-right" ng-if="access.list" ng-click="listResources()"><span class="icon icon-loop2"></span>Refresh</button>
+        <button class="btn btn-primary f-right" ng-if="access.list" ng-click="load()"><span class="icon icon-loop2"></span>Refresh</button>
         <br /><br />
 	    <div ng-show="oldStyle">
 		    <alert type="danger">

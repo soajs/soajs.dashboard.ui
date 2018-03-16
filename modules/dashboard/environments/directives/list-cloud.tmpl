@@ -213,7 +213,7 @@
 											<span class="serviceLabelBox">
 												{{service.labels['soajs.service.name']}} /
 												<span style="margin-left: 0;" ng-if="service.labels['soajs.service.type'] === 'daemon' && service.daemonGroup">Group: {{service.daemonGroup}} /</span>
-												Version: {{service.labels['soajs.service.version']}}
+												Version: {{service.labels['soajs.service.version']}} <span style="margin-left: 0;" ng-if="service.ip && service.ip !== ''"> / IP Address: {{service.ip}}</span>
 											</span>
 
 											<span ng-show="service.imageUpdate || service.catalogUpdate">

@@ -5,7 +5,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
-
+	
 	$scope.listResources = function (cb) {
 		$scope.oldStyle = false;
 		getEnvironment(function () {
@@ -24,19 +24,19 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				else {
 					$scope.resources = { list: response };
 					$scope.resources.original = angular.copy($scope.resources.list); //keep a copy of the original resources records
-
+					
 					if ($scope.deployConfig && $scope.deployedServices) {
 						markDeployed();
 					}
-
+					
 					groupByType();
-
+					
 					if (cb) return cb();
 				}
 			});
-
+			
 		});
-
+		
 		function groupByType() {
 			$scope.resources.types = {};
 			$scope.resources.list.forEach(function (oneResource) {
@@ -46,19 +46,19 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				if (!$scope.resources.types[oneResource.type][oneResource.category]) {
 					$scope.resources.types[oneResource.type][oneResource.category] = [];
 				}
-
+				
 				if (oneResource.created === $scope.envCode.toUpperCase()) {
 					oneResource.allowEdit = true;
 				}
-
+				
 				if (oneResource.name === 'dash_cluster') {
 					oneResource.sensitive = true;
 				}
-
+				
 				$scope.resources.types[oneResource.type][oneResource.category].push(oneResource);
 			});
 		}
-
+		
 		function getEnvironment(cb) {
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
@@ -78,21 +78,21 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				}
 			});
 		}
-
+		
 		function markDeployed() {
 			$scope.resources.list.forEach(function (oneResource) {
 				if ($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()]) {
 					if ($scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]) {
 						var resourceConfig = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name];
-
+						
 						if (!resourceConfig.deploy) return;
 						if (!resourceConfig.options || !resourceConfig.options.recipe) return;
-
+						
 						oneResource.canBeDeployed = true;
 						oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
 					}
 				}
-
+				
 				for (var i = 0; i < $scope.deployedServices.length; i++) {
 					if ($scope.deployedServices[i].labels && $scope.deployedServices[i].labels['soajs.resource.id'] === oneResource._id.toString()) {
 						oneResource.isDeployed = true;
@@ -103,7 +103,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			});
 		}
 	};
-
+	
 	$scope.addResource = function () {
 		var formConfig = angular.copy(resourcesAppConfig.form.addResource);
 		formConfig.entries[0].value = formConfig.data.types;
@@ -116,7 +116,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			});
 			form.entries[1].hidden = false;
 		};
-
+		
 		var currentScope = $scope;
 		var options = {
 			timeout: $timeout,
@@ -145,10 +145,27 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				}
 			]
 		};
-
+		
 		buildFormWithModal(currentScope, $modal, options);
 	};
-
+	
+	function decodeRepoNameAndSubName(name) {
+		let splits = name.split('***');
+		
+		let output = {
+			name : splits[0]
+		};
+		
+		if(splits.length > 0){
+			let subName = splits[1];
+			if(subName){
+				output.subName = splits[1];
+			}
+		}
+		
+		return output;
+	}
+	
 	$scope.manageResource = function (resource, action, settings) {
 		var currentScope = $scope;
 		$modal.open({
@@ -158,13 +175,16 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
-
+				
 				$scope.formData = {};
 				$scope.envs = [];
 				$scope.message = {};
 				$scope.recipes = [];
 				$scope.recipeUserInput = { image: {}, envs: {} };
-
+				
+				$scope.configRepos = [];
+				$scope.configReposBranches = {};
+				
 				$scope.resourceDeployed = false;
 				if (resource && resource.instance && resource.instance.id) {
 					$scope.resourceDeployed = true;
@@ -172,27 +192,74 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.access = currentScope.access;
 				$scope.envPlatform = currentScope.envPlatform;
 				$scope.envDeployer = currentScope.envDeployer;
-
+				
 				let category = (resource && Object.keys(resource).length > 0) ? resource.category : settings.category;
 				resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory)=> {
 					if (oneCategory.v === category) {
 						$scope.categoryLabel = oneCategory.l;
 					}
 				});
-
+				
 				let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.envCode.toUpperCase()));
 				$scope.allowEdit = allowEdit;
-
+				
 				if (resource.name === 'dash_cluster') {
 					$scope.sensitive = true;
 				}
-
+				
 				resourceConfiguration.loadDriverSchema($scope, resource, settings, allowEdit, function (error) {
 					if (error) {
 						$scope.notsupported = true;
 					}
 				});
-
+				
+				$scope.fetchBranches = function (confOrCustom) {
+					let selectedRepo;
+					if (confOrCustom === 'conf') {
+						selectedRepo = $scope.formData.deployOptions.sourceCode.configuration.repo;
+					} else { // cust
+						let decoded = $scope.formData.deployOptions.sourceCode.custom.repo;
+						selectedRepo = decodeRepoNameAndSubName(decoded).name;
+						$scope.selectedCustomClear = selectedRepo;
+					}
+					
+					if (!selectedRepo || selectedRepo === '') {
+						return;
+					}
+					
+					let accountData = {};
+					$scope.configRepos.config.forEach(function (eachAcc) {
+						if (eachAcc.name === selectedRepo) {
+							accountData = eachAcc;
+						}
+					});
+					
+					if(Object.keys(accountData).length === 0){
+						$scope.configRepos.customType.forEach(function (eachAcc) {
+							if (eachAcc.name === selectedRepo) {
+								accountData = eachAcc;
+							}
+						});
+					}
+					
+					getSendDataFromServer($scope, ngDataApi, {
+						'method': 'get',
+						'routeName': '/dashboard/gitAccounts/getBranches',
+						params: {
+							id: accountData.accountId,
+							name: selectedRepo,
+							type: 'repo',
+							provider : accountData.provider
+						}
+					}, function (error, response) {
+						if (error) {
+							$scope.displayAlert('danger', error.message);
+						} else {
+							$scope.configReposBranches[selectedRepo] = response.branches;
+						}
+					});
+				};
+				
 				$scope.options = {
 					deploymentModes: [],
 					envCode: currentScope.envCode,
@@ -210,7 +277,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					allowEdit: allowEdit,
 					computedHostname: ''
 				};
-
+				
 				$scope.title = 'Add New Resource';
 				if (action === 'update' && $scope.options.allowEdit) {
 					$scope.title = 'Update ' + resource.name;
@@ -218,7 +285,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				else if (!allowEdit) {
 					$scope.title = 'View ' + resource.name;
 				}
-
+				
 				if (currentScope.envPlatform === 'kubernetes') {
 					$scope.options.deploymentModes = [
 						{
@@ -243,7 +310,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 					];
 				}
-
+				
 				$scope.displayAlert = function (type, message) {
 					$scope.message[type] = message;
 					setTimeout(function () {
@@ -251,115 +318,87 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}, 5000);
 				};
 				
-				// -=-=-=--=-=-=-=-=-=-=-=-=-=
-				$scope.listAccounts = function () {
+				$scope.listAccounts = function (customType, callback) {
 					getSendDataFromServer($scope, ngDataApi, {
 						'method': 'get',
-						'routeName': '/dashboard/gitAccounts/accounts/list'
+						'routeName': '/dashboard/gitAccounts/accounts/list',
+						params : {
+							fullList : true
+						}
 					}, function (error, response) {
 						if (error) {
 							$scope.displayAlert('danger', error.message);
 						} else {
-							$scope.accounts = response;
+							let configRecords = [];
+							let customRecords = [];
 							
-							$scope.accounts.forEach(function(oneAccount){
-								oneAccount.hide = true;
-							});
+							if(response){
+								response.forEach(function (eachAccount) {
+									if(eachAccount.repos){
+										eachAccount.repos.forEach(function (eachRepo) {
+											// eachRepo : name, serviceName, type
+											if(eachRepo.type === 'config'){
+												configRecords.push({
+													owner : eachAccount.owner,
+													provider : eachAccount.provider,
+													accountId : eachAccount._id.toString(),
+													name : eachRepo.name,
+													type : eachRepo.type,
+													configSHA : eachRepo.configSHA
+												});
+											}
+											
+											if(customType && eachRepo.type === customType){
+												
+												let acceptableTypes = ['custom','static','service','daemon']; // and multi
+												if(customType === 'multi'){
+													if(eachRepo.configSHA){
+														eachRepo.configSHA.forEach(function (sub) {
+															if(acceptableTypes.indexOf(sub.contentType) !== -1 ) {
+																customRecords.push({
+																	owner: eachAccount.owner,
+																	provider: eachAccount.provider,
+																	accountId: eachAccount._id.toString(),
+																	name: eachRepo.name,
+																	subName: sub.contentName,
+																	type: eachRepo.type,
+																	configSHA: eachRepo.configSHA
+																});
+															}
+														});
+													}
+												}else{
+													if(acceptableTypes.indexOf(customType) !== -1 ){
+														customRecords.push({
+															owner : eachAccount.owner,
+															provider : eachAccount.provider,
+															accountId : eachAccount._id.toString(),
+															name : eachRepo.name,
+															type : eachRepo.type,
+															configSHA : eachRepo.configSHA
+														});
+													}
+												}
+											}
+											
+										});
+									}
+								});
+							}
 							
-							if ($scope.accounts.length > 0) {
-								$scope.listRepos($scope.accounts, 0, 'getRepos');
-							}
-							if($scope.accounts.length === 1){
-								$scope.accounts[0].hide = false;
-								$scope.accounts[0].icon = 'minus';
-							}
+							$scope.configRepos.customType = customRecords;
+							$scope.configRepos.config = configRecords;
+							
+							callback();
 						}
 					});
 				};
 				
-				$scope.listRepos = function (accounts, counter, action) {
-					if (!Array.isArray(accounts)) {
-						accounts = [accounts];
-					}
-					
-					//get repos of all accounts in parallel
-					accounts.forEach(function (oneAccount) {
-						var id = oneAccount._id;
-						oneAccount.loading = true;
-						if (!oneAccount.nextPageNumber) {
-							oneAccount.nextPageNumber = $scope.defaultPageNumber;
-						}
-						
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "get",
-							"routeName": "/dashboard/gitAccounts/getRepos",
-							"params": {
-								id: id,
-								provider: oneAccount.provider,
-								per_page: 100, // $scope.defaultPerPage,
-								page: 1 //(action === 'loadMore') ? oneAccount.nextPageNumber : $scope.defaultPageNumber
-							}
-						}, function (error, response) {
-							oneAccount.loading = false;
-							if (error) {
-								$scope.displayAlert('danger', error.message);
-							} else {
-								
-								if (action === 'loadMore') {
-									$scope.appendNewRepos(oneAccount, response);
-								}
-								else if (action === 'getRepos') {
-									
-									// if (oneAccount.owner === 'soajs') {
-									// 	oneAccount.repos = [];
-									// 	response.forEach (function (oneRepo) {
-									// 		if ($scope.whitelistedRepos.indexOf(oneRepo.full_name) !== -1) {
-									// 			oneAccount.repos.push(oneRepo);
-									// 		}
-									// 	});
-									// }
-									// else {
-									// 	oneAccount.repos = response;
-									// }
-									//
-									// oneAccount.nextPageNumber = 2;
-									// oneAccount.allowLoadMore = (response.length === $scope.defaultPerPage);
-								}
-							}
-						});
-					});
-				};
-				
-				$scope.getConfigurationRepos = function () {
-					// todo: call api and fill configRepos
-					$scope.configRepos.push({
-						name : 'test'
-					});
-					
-					$scope.listAccounts();
-				};
-				
-				$scope.fetchBranches = function () {
-					// todo: call api and get branches
-					// $scope.formData.deployOptions.customConfiguration.repository
-					
-					$scope.configReposBranches.test = [
-						{
-							name : 'branch1',
-							path : '//branch 1'
-						},
-						{
-							name : 'branch2',
-							path : '//branch 2'
-						}
-					];
-				};
-
 				$scope.getEnvs = function () {
 					if ($scope.envs && $scope.envs.list && $scope.envs.list.length > 0) {
 						return;
 					}
-
+					
 					overlayLoading.show();
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
@@ -380,13 +419,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								else if (currentScope.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
 									return;
 								}
-
+								
 								var envEntry = {
 									code: oneEnv.code,
 									description: oneEnv.description,
 									selected: (resource && resource.sharedEnv && resource.sharedEnv[oneEnv.code.toUpperCase()])
 								};
-
+								
 								if (resource && resource.shared && action === 'update') {
 									if (resource.sharedEnv) {
 										envEntry.selected = (resource.sharedEnv[oneEnv.code.toUpperCase()]);
@@ -397,13 +436,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 										$scope.envs.sharedWithAll = true;
 									}
 								}
-
+								
 								$scope.envs.list.push(envEntry);
 							});
 						}
 					});
 				};
-
+				
 				$scope.fillForm = function () {
 					if (action === 'add') {
 						$scope.formData.type = settings.type;
@@ -412,22 +451,136 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					else {
 						$scope.formData = angular.copy(resource);
 						$scope.getEnvs();
-
+						
 						//ace editor cannot take an object or array as model
 						$scope.formData.config = JSON.stringify($scope.formData.config, null, 2);
-
+						
 						if ($scope.formData && $scope.formData.deployOptions && $scope.formData.deployOptions.autoScale && $scope.formData.deployOptions.autoScale.replicas && $scope.formData.deployOptions.autoScale.metrics) {
 							$scope.options.enableAutoScale = true;
 						}
-
+						
 						if ($scope.formData && $scope.formData.deployOptions && $scope.formData.deployOptions.deployConfig && $scope.formData.deployOptions.deployConfig.memoryLimit) {
 							$scope.formData.deployOptions.deployConfig.memoryLimit /= 1048576; //convert memory limit from bytes to megabytes
 						}
-
+						
+						// take source code configuration from cicd on edit
+						if($scope.formData.deployOptions && $scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.sourceCode){
+							$scope.formData.deployOptions.sourceCode = $scope.formData.deployOptions.custom.sourceCode;
+							
+							// reconstruct complex repo on load
+							if($scope.formData.deployOptions.sourceCode.custom && $scope.formData.deployOptions.sourceCode.custom.repo){
+								let subName = "";
+								if($scope.formData.deployOptions.sourceCode.custom.subName){
+									subName = $scope.formData.deployOptions.sourceCode.custom.subName;
+								}
+								$scope.formData.deployOptions.sourceCode.custom.repo = $scope.formData.deployOptions.sourceCode.custom.repo + "***" + subName;
+							}
+						}
+						
 						$scope.buildComputedHostname();
+						
 					}
 				};
-
+				
+				$scope.setSourceCodeData = function () {
+					let recipes = $scope.recipes;
+					let selectedRecipe;
+					let customType;
+					
+					$scope.sourceCodeConfig = {
+						configuration : {
+							isEnabled : false,
+							repoAndBranch : {
+								disabled : false,
+								required : false
+							}
+						},
+						custom : {
+							isEnabled : false,
+							repoAndBranch : {
+								disabled : false,
+								required : false
+							}
+						}
+					};
+					
+					if ($scope.formData.deployOptions && $scope.formData.deployOptions.recipe && recipes) {
+						recipes.forEach(function (eachRecipe) {
+							if (eachRecipe._id === $scope.formData.deployOptions.recipe) {
+								selectedRecipe = eachRecipe;
+							}
+						});
+					}
+					
+					if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
+						let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+						
+						let conf = sourceCode.configuration;
+						let cust = sourceCode.custom;
+						
+						$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
+						
+						if(!$scope.formData.deployOptions.sourceCode){
+							$scope.formData.deployOptions.sourceCode = {};
+						}
+						
+						if (conf) {
+							$scope.sourceCodeConfig.configuration.isEnabled = true;
+							$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+							$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+							
+							if(conf.repo && conf.repo !== ''){
+								if(!$scope.formData.deployOptions.sourceCode.configuration){
+									$scope.formData.deployOptions.sourceCode.configuration = {};
+								}
+								
+								$scope.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
+								$scope.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
+							}
+						}
+						
+						if (cust && $scope.formData.type === 'server') {
+							customType = cust.type;
+							
+							$scope.sourceCodeConfig.custom.isEnabled = true;
+							$scope.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
+							$scope.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
+							
+							if(cust.repo && cust.repo !== ''){
+								if(!$scope.formData.deployOptions.sourceCode.custom){
+									$scope.formData.deployOptions.sourceCode.custom = {};
+								}
+								
+								$scope.formData.deployOptions.sourceCode.custom.repo = cust.repo + "***" + cust.subName;
+								$scope.formData.deployOptions.sourceCode.custom.branch = cust.branch;
+							}
+						}
+						
+						if(conf || ((cust && $scope.formData.type === 'server'))){
+							$scope.listAccounts(customType, function () {
+								// special case: if the form was overwritten from cicd we have to load the branch
+								if($scope.formData.deployOptions.sourceCode){
+									if($scope.formData.deployOptions.sourceCode.configuration && $scope.formData.deployOptions.sourceCode.configuration.repo){
+										if(!$scope.configReposBranches[$scope.formData.deployOptions.sourceCode.configuration.repo]){
+											$scope.fetchBranches('conf');
+										}
+									}
+									if($scope.formData.deployOptions.sourceCode.custom && $scope.formData.deployOptions.sourceCode.custom.repo){
+										if(!$scope.configReposBranches[$scope.formData.deployOptions.sourceCode.custom.repo]){
+											$scope.fetchBranches('cust');
+										}
+									}
+								}
+							});
+						}
+					}else{
+						if(!$scope.formData.deployOptions){
+							$scope.formData.deployOptions = {};
+						}
+						$scope.formData.deployOptions.sourceCode = {}; // clear
+					}
+				};
+				
 				$scope.getCatalogRecipes = function (cb) {
 					overlayLoading.show();
 					getSendDataFromServer(currentScope, ngDataApi, {
@@ -445,15 +598,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 										$scope.recipes.push(oneRecipe);
 									}
 								});
-
+								
 								$scope.displayRecipeInputs();
 							}
-
+							
 							if (cb) return cb();
 						}
 					});
 				};
-
+				
 				$scope.displayRecipeInputs = function () {
 					$scope.recipeUserInput.envs = {};
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.recipe) {
@@ -463,14 +616,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 									for (var env in $scope.recipes[i].recipe.buildOptions.env) {
 										if ($scope.recipes[i].recipe.buildOptions.env[env].type === 'userInput') {
 											$scope.recipeUserInput.envs[env] = $scope.recipes[i].recipe.buildOptions.env[env];
-
+											
 											if ($scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.env && $scope.formData.deployOptions.custom.env[env]) {
 												$scope.recipeUserInput.envs[env].default = $scope.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
 											}
 										}
 									}
 								}
-
+								
 								if ($scope.recipes[i].recipe.deployOptions && $scope.recipes[i].recipe.deployOptions.image && $scope.recipes[i].recipe.deployOptions.image.override) {
 									$scope.recipeUserInput.image = {
 										override: true,
@@ -478,7 +631,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 										name: $scope.recipes[i].recipe.deployOptions.image.name || '',
 										tag: $scope.recipes[i].recipe.deployOptions.image.tag || ''
 									};
-
+									
 									if ($scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.image && Object.keys($scope.formData.deployOptions.custom.image).length > 0) {
 										$scope.recipeUserInput.image = {
 											override: true,
@@ -491,8 +644,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							}
 						}
 					}
+					
+					$scope.setSourceCodeData();
 				};
-
+				
 				$scope.updateDeploymentName = function () {
 					if ($scope.formData.canBeDeployed) {
 						if (!$scope.formData.deployOptions) {
@@ -501,12 +656,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						if (!$scope.formData.deployOptions.custom) {
 							$scope.formData.deployOptions.custom = {}
 						}
-
+						
 						$scope.formData.deployOptions.custom.name = $scope.formData.name;
 						$scope.buildComputedHostname();
 					}
 				};
-
+				
 				$scope.buildComputedHostname = function () {
 					if ($scope.formData && $scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
 						if ($scope.envPlatform === 'docker') {
@@ -514,14 +669,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 						else if ($scope.envPlatform === 'kubernetes') {
 							$scope.options.computedHostname = $scope.formData.deployOptions.custom.name + '-service';
-
+							
 							var selected = $scope.envDeployer.selected.split('.');
 							if ($scope.envDeployer && $scope.envDeployer[selected[0]] && $scope.envDeployer[selected[0]][selected[1]] && $scope.envDeployer[selected[0]][selected[1]][selected[2]]) {
 								var platformConfig = $scope.envDeployer[selected[0]][selected[1]][selected[2]];
-
+								
 								if (platformConfig && platformConfig.namespace && platformConfig.namespace.default) {
 									$scope.options.computedHostname += '.' + platformConfig.namespace.default;
-
+									
 									if (platformConfig.namespace.perService) {
 										$scope.options.computedHostname += '-' + $scope.formData.deployOptions.custom.name;
 									}
@@ -530,39 +685,39 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 					}
 				};
-
+				
 				$scope.toggleShareWithAllEnvs = function () {
 					if ($scope.envs.sharedWithAll) {
 						$scope.envs.list.forEach(function (oneEnv) {
 							oneEnv.selected = true;
 						});
 					}
-
+					
 					return;
 				};
-
+				
 				$scope.save = function (cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
 					}
-
+					
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
 						$scope.formData.deployOptions.custom.type = 'resource';
 					}
-
+					
 					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
 						saveResource(function () {
 							saveResourceDeployConfig(function () {
 								if (cb) return cb();
-
+								
 								$scope.formData = {};
 								$modalInstance.close();
 								currentScope.load();
 							});
 						});
 					});
-
+					
 					function saveResource(cb) {
 						var saveOptions = {
 							name: $scope.formData.name,
@@ -581,7 +736,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								}
 							});
 						}
-
+						
 						var options = {};
 						if ($scope.options.formAction === 'add') {
 							options = {
@@ -606,7 +761,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								}
 							};
 						}
-
+						
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
 							overlayLoading.hide();
@@ -620,23 +775,70 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							}
 						});
 					}
-
+					
 					function saveResourceDeployConfig(cb) {
+						
+						function reformatSourceCodeForCicd(record) {
+							if(record.configuration && record.configuration.repo){
+								let selectedRepo = record.configuration.repo;
+								$scope.configRepos.config.forEach(function (eachConf) {
+									if(eachConf.name === selectedRepo){
+										record.configuration.commit = eachConf.configSHA;
+										record.configuration.owner = eachConf.owner;
+									}
+								});
+							}
+							
+							if(record.custom && record.custom.repo){
+								let selectedRepoComposed = record.custom.repo;
+								let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
+								
+								let selectedRepo = decoded.name;
+								let subName = decoded.subName;
+								
+								record.custom.repo = selectedRepo; // save clear value
+								
+								$scope.configRepos.customType.forEach(function (eachConf) {
+									if(eachConf.name === selectedRepo){
+										
+										record.custom.owner = eachConf.owner;
+										record.custom.subName = subName; // for multi
+										
+										if(eachConf.configSHA && typeof eachConf.configSHA === 'object'){ // for multi
+											eachConf.configSHA.forEach(function (eachConfig) {
+												if(eachConfig.contentName === subName){
+													record.custom.commit = eachConfig.sha;
+												}
+											});
+										}else{
+											record.custom.commit = eachConf.configSHA;
+										}
+										
+									}
+								});
+							}
+							
+							return record;
+						}
+						
 						if (!$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0) {
 							if (cb) return cb();
 							else return;
 						}
-
+						
 						var deployOptions = angular.copy($scope.formData.deployOptions);
 						if (!deployOptions.custom) {
 							deployOptions.custom = {};
 						}
 						deployOptions.custom.type = 'resource';
-
+						
+						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						delete deployOptions.sourceCode;
+						
 						if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 							deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 						}
-
+						
 						var options = {
 							method: 'put',
 							routeName: '/dashboard/resources/config/update',
@@ -665,13 +867,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						});
 					}
 				};
-
+				
 				$scope.saveAndDeploy = function (deployOnly) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Deploying this resource is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
 					}
-
+					
 					if (deployOnly) {
 						deployResource(function () {
 							currentScope.load();
@@ -686,23 +888,23 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							});
 						});
 					}
-
+					
 					function deployResource(cb) {
 						if (!$scope.formData.canBeDeployed || !$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0) {
 							if (cb) return cb();
 							else return;
 						}
-
+						
 						var deployOptions = angular.copy($scope.formData.deployOptions);
 						if (!deployOptions.custom) {
 							deployOptions.custom = {};
 						}
-
+						
 						if ($scope.options.formAction === 'add') {
 							if ($scope.newResource && Object.keys($scope.newResource).length > 0) {
 								deployOptions.custom.resourceId = $scope.newResource._id;
 							}
-
+							
 							deployOptions.env = $scope.options.envCode;
 							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
@@ -711,12 +913,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						else {
 							deployOptions.custom.resourceId = $scope.formData._id;
 							deployOptions.env = $scope.formData.created;
-
+							
 							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 							}
 						}
-
+						
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, {
 							method: 'post',
@@ -748,13 +950,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						});
 					}
 				};
-
+				
 				$scope.saveAndRebuild = function () {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Rebuilding this resource is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
 					}
-
+					
 					$scope.save(function () {
 						rebuildService(function () {
 							$scope.formData = {};
@@ -762,21 +964,21 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							currentScope.load();
 						});
 					});
-
+					
 					function rebuildService(cb) {
 						if (!$scope.formData.isDeployed || !$scope.formData.canBeDeployed || (!$scope.formData.instance && !$scope.formData.instance.id)) {
 							if (cb) return cb();
 							else return;
 						}
-
+						
 						if (!$scope.formData.deployOptions.custom) {
 							$scope.formData.deployOptions.custom = {};
 						}
-
+						
 						var rebuildOptions = angular.copy($scope.formData.deployOptions.custom);
 						rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
 						rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;
-
+						
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, {
 							method: 'put',
@@ -800,7 +1002,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						});
 					}
 				};
-
+				
 				$scope.cancel = function () {
 					$modalInstance.close();
 					if ($scope.form && $scope.form.formData) {
@@ -808,14 +1010,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						delete $scope.resourceDriverCounter;
 					}
 				};
-
+				
 				$scope.fillForm();
 				$scope.getCatalogRecipes();
-				$scope.getConfigurationRepos();
 			}
 		});
 	};
-
+	
 	$scope.deleteResource = function (resource) {
 		deleteInstance(function () {
 			deleteDeployConfig(function () {
@@ -839,7 +1040,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				});
 			});
 		});
-
+		
 		function deleteInstance(cb) {
 			if (resource.isDeployed && resource.instance && resource.instance.id) {
 				overlayLoading.show();
@@ -866,7 +1067,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				return cb();
 			}
 		}
-
+		
 		function deleteDeployConfig(cb) {
 			if (resource.canBeDeployed && resource.deployOptions) {
 				overlayLoading.show();
@@ -896,7 +1097,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 		}
 	};
-
+	
 	$scope.togglePlugResource = function (resource, plug) {
 		var resourceRecord = {};
 		//get the original resource record
@@ -906,14 +1107,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				break;
 			}
 		}
-
+		
 		var resourceId = resourceRecord._id;
 		delete resourceRecord._id;
 		delete resourceRecord.created;
 		delete resourceRecord.author;
 		delete resourceRecord.permission;
 		resourceRecord.plugged = plug;
-
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'put',
@@ -934,19 +1135,19 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 		});
 	};
-
+	
 	$scope.deployResource = function (resource) {
 		if (!resource.canBeDeployed || !resource.deployOptions || Object.keys(resource.deployOptions).length === 0) {
 			$scope.displayAlert('danger', 'This resource is missing deployment configuration');
 		}
-
+		
 		var deployOptions = angular.copy(resource.deployOptions);
 		if (!deployOptions.custom) {
 			deployOptions.custom = {};
 		}
 		deployOptions.custom.resourceId = resource._id;
 		deployOptions.env = resource.created;
-
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'post',
@@ -963,7 +1164,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 		});
 	};
-
+	
 	$scope.upgradeAll = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -983,13 +1184,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 		});
 	};
-
+	
 	$scope.listDeployedServices = function (cb) {
 		if ($scope.envType === 'manual') {
 			if (cb) return cb();
 			else return;
 		}
-
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -1006,13 +1207,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 		});
 	};
-
+	
 	$scope.getDeployConfig = function (cb) {
 		if ($scope.envType === 'manual') {
 			if (cb) return cb();
 			else return;
 		}
-
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -1024,24 +1225,24 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 			else {
 				$scope.deployConfig = response;
-
+				
 				if (cb) return cb();
 			}
 		});
 	};
-
+	
 	$scope.load = function (cb) {
 		$scope.listDeployedServices(function () {
 			$scope.getDeployConfig(function () {
 				$scope.listResources(function () {
 					if (cb) return cb;
-
+					
 					return;
 				});
 			});
 		});
 	};
-
+	
 	//start here
 	if ($scope.access.list) {
 		injectFiles.injectCss("modules/dashboard/resources/resources.css");
@@ -1053,7 +1254,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			if($scope.envType !== 'manual') {
 				$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
 			}
-
+			
 			$scope.load();
 		}
 	}

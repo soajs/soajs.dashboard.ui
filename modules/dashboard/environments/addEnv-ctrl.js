@@ -125,7 +125,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				}
 			}
 			
-			if (cust && $scope.currentServiceName ==='nginx') {
+			if (cust && selectedRecipe.type === 'server') {
 				customType = cust.type;
 				
 				$scope.sourceCodeConfig[$scope.currentServiceName].custom.isEnabled = true;

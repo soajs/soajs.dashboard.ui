@@ -742,7 +742,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
               $scope.customRepos = [];
               $scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
-                console.log( $scope.repos ); // ToDelete #2del
               for (let i = $scope.repos.length ; i--; i >  0) {
                   if ($scope.repos[i].type === data.recipe.deployOptions.sourceCode.custom.type) {
                       // case multi

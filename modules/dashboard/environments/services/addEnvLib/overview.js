@@ -173,7 +173,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 		
 		// the same used in addEnv-ctrl
 		function decodeRepoNameAndSubName(name) {
-			let splits = name.split('***');
+			let splits = name.split('__SOAJS_DELIMITER__');
 			
 			let output = {
 				name : splits[0]

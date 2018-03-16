@@ -16,6 +16,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.emptyEnvironment = false;
 	$scope.nonginxEnvironment = false;
 	
+	$scope.fullGitAccountsList; // filled once in listAccounts
+	
 	$scope.wizard = {};
 	$scope.removeCert = function(certName){
 		delete $scope.form.formData.remoteCertificates[certName];
@@ -125,7 +127,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				}
 			}
 			
-			if (cust && $scope.currentServiceName ==='nginx') {
+			if (cust && selectedRecipe.type === 'server') {
 				customType = cust.type;
 				
 				$scope.sourceCodeConfig[$scope.currentServiceName].custom.isEnabled = true;
@@ -137,7 +139,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						formData.custom.sourceCode.custom = {};
 					}
 					
-					formData.custom.sourceCode.custom.repo = cust.repo;
+					formData.custom.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
 					formData.custom.sourceCode.custom.branch = cust.branch;
 				}
 			}
@@ -174,84 +176,104 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	};
 	
 	$scope.listAccounts = function (customType, callback) {
-		getSendDataFromServer($scope, ngDataApi, {
-			'method': 'get',
-			'routeName': '/dashboard/gitAccounts/accounts/list',
-			params : {
-				fullList : true
-			}
-		}, function (error, response) {
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				let configRecords = [];
-				let customRecords = [];
-				
-				if(response){
-					response.forEach(function (eachAccount) {
-						if(eachAccount.repos){
-							eachAccount.repos.forEach(function (eachRepo) {
-								// eachRepo : name, serviceName, type
-								if(eachRepo.type === 'config'){
-									configRecords.push({
-										owner : eachAccount.owner,
-										provider : eachAccount.provider,
-										accountId : eachAccount._id.toString(),
-										name : eachRepo.name,
-										type : eachRepo.type,
-										configSHA : eachRepo.configSHA
+		
+		// fill or refill based on customType
+		function fillConfigRepos(listOfAccounts) {
+			let configRecords = [];
+			let customRecords = [];
+			let nginxRecords = [];
+			
+			if(listOfAccounts){
+				listOfAccounts.forEach(function (eachAccount) {
+					if(eachAccount.repos){
+						eachAccount.repos.forEach(function (eachRepo) {
+							// eachRepo : name, serviceName, type
+							if (eachRepo.type === 'config') {
+								configRecords.push({
+									owner: eachAccount.owner,
+									provider: eachAccount.provider,
+									accountId: eachAccount._id.toString(),
+									name: eachRepo.name,
+									type: eachRepo.type,
+									configSHA: eachRepo.configSHA
+								});
+							}
+							
+							let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
+							if (eachRepo.type === 'multi') {
+								if (eachRepo.configSHA) {
+									eachRepo.configSHA.forEach(function (sub) {
+										if (acceptableTypes.indexOf(sub.contentType) !== -1) {
+											let tempo = {
+												owner: eachAccount.owner,
+												provider: eachAccount.provider,
+												accountId: eachAccount._id.toString(),
+												name: eachRepo.name,
+												subName: sub.contentName,
+												type: eachRepo.type,
+												configSHA: eachRepo.configSHA
+											};
+											if (customType && eachRepo.type === customType) {
+												customRecords.push(tempo);
+											}
+											nginxRecords.push(tempo);
+										}
 									});
 								}
-								
-								if(customType && eachRepo.type === customType){
+							} else {
+								if (acceptableTypes.indexOf(eachRepo.type) !== -1) {
+									let tempo = {
+										owner: eachAccount.owner,
+										provider: eachAccount.provider,
+										accountId: eachAccount._id.toString(),
+										name: eachRepo.name,
+										type: eachRepo.type,
+										configSHA: eachRepo.configSHA
+									};
 									
-									let acceptableTypes = ['custom','static','service','daemon']; // and multi
-									if(customType === 'multi'){
-										if(eachRepo.configSHA){
-											eachRepo.configSHA.forEach(function (sub) {
-												if(acceptableTypes.indexOf(sub.contentType) !== -1 ) {
-													customRecords.push({
-														owner: eachAccount.owner,
-														provider: eachAccount.provider,
-														accountId: eachAccount._id.toString(),
-														name: eachRepo.name,
-														subName: sub.contentName,
-														type: eachRepo.type,
-														configSHA: eachRepo.configSHA
-													});
-												}
-											});
-										}
-									}else{
-										if(acceptableTypes.indexOf(customType) !== -1 ){
-											customRecords.push({
-												owner : eachAccount.owner,
-												provider : eachAccount.provider,
-												accountId : eachAccount._id.toString(),
-												name : eachRepo.name,
-												type : eachRepo.type,
-												configSHA : eachRepo.configSHA
-											});
-										}
+									if (customType && eachRepo.type === customType) {
+										customRecords.push(tempo);
 									}
+									nginxRecords.push(tempo);
 								}
-								
-							});
-						}
-					});
-				}
-				
-				$scope.configRepos.customType = customRecords;
-				$scope.configRepos.config = configRecords;
-				
+							}
+						});
+					}
+				});
+			}
+			
+			$scope.configRepos.customType = customRecords;
+			$scope.configRepos.config = configRecords;
+			$scope.configRepos.nginxCustom = nginxRecords;
+			
+			if(callback){
 				callback();
 			}
-		});
+		}
+		
+		if($scope.fullGitAccountsList){
+			fillConfigRepos($scope.fullGitAccountsList);
+		}else{
+			getSendDataFromServer($scope, ngDataApi, {
+				'method': 'get',
+				'routeName': '/dashboard/gitAccounts/accounts/list',
+				params : {
+					fullList : true
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.displayAlert('danger', error.message);
+				} else {
+					$scope.fullGitAccountsList = response;
+					fillConfigRepos(response);
+				}
+			});
+		}
 	};
 	
 	// the same used in overview
 	function decodeRepoNameAndSubName(name) {
-		let splits = name.split('***');
+		let splits = name.split('__SOAJS_DELIMITER__');
 		
 		let output = {
 			name : splits[0]
@@ -267,14 +289,20 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		return output;
 	}
 	
-	$scope.fetchBranches = function (confOrCustom) {
+	/**
+	 *
+	 * @param repoType:
+	 *      cust for custom.sourceCode.custom
+	 *      conf for custom.sourceCode.configuration
+	 */
+	$scope.fetchBranches = function (repoType) {
 		let formData = $scope.form.formData;
 		
 		let selectedRepo;
 		
-		if (confOrCustom === 'conf') {
+		if (repoType === 'conf') {
 			selectedRepo = formData.custom.sourceCode.configuration.repo;
-		} else { // cust
+		} else if(repoType === 'cust' || repoType === 'nginxCustom') {
 			let decoded = formData.custom.sourceCode.custom.repo;
 			selectedRepo = decodeRepoNameAndSubName(decoded).name;
 			$scope.selectedCustomClear = selectedRepo;
@@ -285,14 +313,22 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		}
 		
 		let accountData = {};
-		$scope.configRepos.config.forEach(function (eachAcc) {
+		$scope.configRepos.config.forEach(function (eachAcc) { // conf
 			if (eachAcc.name === selectedRepo) {
 				accountData = eachAcc;
 			}
 		});
 		
-		if(Object.keys(accountData).length === 0){
+		if(Object.keys(accountData).length === 0){ // cust
 			$scope.configRepos.customType.forEach(function (eachAcc) {
+				if (eachAcc.name === selectedRepo) {
+					accountData = eachAcc;
+				}
+			});
+		}
+		
+		if(Object.keys(accountData).length === 0){ // nginxCustom
+			$scope.configRepos.nginxCustom.forEach(function (eachAcc) {
 				if (eachAcc.name === selectedRepo) {
 					accountData = eachAcc;
 				}
@@ -1029,7 +1065,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			
 			let entries = {
 				tKeyPass: {
-					required: false
+					required: !($scope.emptyEnvironment && $scope.nonginxEnvironment) // only for empty env
 				},
 				soajsFrmwrk: {
 					required: false,
@@ -1921,6 +1957,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.$parent.collapseExpandMainMenu();
 	$scope.reRenderMenu('empty');
 	if ($scope.access.addEnvironment) {
+		$scope.listAccounts();
 		checkEnvironment(() => {
 			if($routeParams.portal){
 				$scope.showIntro = false;

@@ -73,16 +73,33 @@
 			<br/>
 			<fieldset ng-show="imageLedger && imageLedger.length > 0">
 				<legend>New Image Updates ({{imageLedger.length}})</legend>
+				<div>
+					<p>
+						New <b>Image</b> update(s) detected that affect application(s) running in the following service(s).
+					</p>
+					<p>These update(s) impact the application that runs inside a service since every service is created from an image,
+						<a href="https://docs.docker.com/v17.09/engine/userguide/storagedriver/imagesandcontainers/" target="_blank"> Learn More about Images</a>.</p>
+					<p><b>Redeploying</b> a service will pull these updates and modify the deployment of all the instances of this service.</p>
+					<p>Go to <b>Cloud & Deployments</b>, lookup your service and from the <b>Service Operations</b> menu click on <b>Redeploy Service</b></p>
+					<br>
+					<alert type='info'>
+						<a href='#/environments-clouds-deployments' class='f-right btn btn-sm btn-default'>Apply Updates</a>
+						<p>
+							If you are not sure how to treat these updates, visit the official online documentation,
+							<a href='{{upgradeSpaceLink}}' target='_blank'>Learn More</a>
+						</p>
+					</alert>
+					<br />
+				</div>
 				<div class="grid">
 					<table width="100%">
 						<thead>
 							<tr>
-								<th width="14%">ID</th>
-								<th width="16%">Name</th>
-								<th width="20%">Image</th>
+								<th width="14%">Service ID</th>
+								<th width="16%">Service Name</th>
+								<th width="20%">Image Info</th>
 								<th width="16%">Update Type</th>
 								<th width="20%">Available Last Update</th>
-								<th width="14%">Take Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -99,14 +116,6 @@
 								<td>
 									{{oneEntry.image.ts|fulldate}}
 								</td>
-								<td>
-									<div ng-show="oneEntry.image.prefix === 'soajsorg'">
-										<a class="btn btn-default" href="{{upgradeSpaceLink}}" target="_blank">Learn More</a>
-									</div>
-									<div ng-show="oneEntry.image.prefix !== 'soajsorg'" class="dropdown serviceOpsDropdown">
-										<a class="btn btn-default" href="" ng-click="updateEntry(oneEntry, 'rebuild');"><span class="icon icon-loop2"></span>&nbsp;Redeploy Service</a>
-									</div>
-								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -115,17 +124,33 @@
 			</fieldset>
 			<fieldset ng-show="catalogLedger && catalogLedger.length > 0">
 				<legend>New Catalog Updates ({{catalogLedger.length}})</legend>
+				<div>
+					<p>
+						New <b>Catalog</b> update(s) detected that affect the deployment of the following service(s).
+					</p>
+					<p>These update(s) affect how this this service is deployed: image - volumes - exposed ports - environment variables - command & arguments ... etc</p>
+					<p><b>Redeploying</b> a service will pull these updates and modify the deployment of all the instances of this service.</p>
+					<p>Go to <b>Cloud & Deployments</b>, lookup your service and from the <b>Service Operations</b> menu click on <b>Redeploy Service</b></p>
+					<br>
+					<alert type='info'>
+						<a href='#/environments-clouds-deployments' class='f-right btn btn-sm btn-default'>Apply Updates</a>
+						<p>
+							If you are not sure how to treat these updates, visit the official online documentation,
+							<a href='{{upgradeSpaceLink}}' target='_blank'>Learn More</a>
+						</p>
+					</alert>
+					<br />
+				</div>
 				<div class="grid">
 					<table width="100%">
 						<thead>
 							<tr>
-								<th width="14%">ID</th>
-								<th width="16%">Name</th>
-								<th width="20%">Catalog</th>
+								<th width="14%">Service ID</th>
+								<th width="16%">Service Name</th>
+								<th width="20%">Catalog Recipe</th>
 								<th width="10%">Current Version</th>
 								<th width="10%">New Version</th>
 								<th width="16%">Catalog Last Update</th>
-								<th width="14%">Take Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -141,20 +166,6 @@
 								</td>
 								<td>{{oneEntry.catalog.v}}</td>
 								<td>{{oneEntry.catalog.ts|fulldate}}</td>
-								<td>
-									<div ng-show="oneEntry.image.prefix === 'soajsorg'">
-										<div ng-show="oneEntry.rms">
-											<a class="btn btn-default" href="{{upgradeSpaceLink}}" target="_blank">Learn More</a>
-										</div>
-										<div ng-show="!oneEntry.rms">
-											<a class="btn btn-default" href="" ng-click="updateEntry(oneEntry, 'rebuild');"><span class="icon icon-loop2"></span>&nbsp;Redeploy Service</a>
-										</div>
-									</div>
-									<div ng-show="oneEntry.image.prefix !== 'soajsorg'" class="dropdown serviceOpsDropdown">
-										<a class="btn btn-default" href="" ng-click="updateEntry(oneEntry, 'rebuild');"><span class="icon icon-loop2"></span>&nbsp;Redeploy Service</a>
-									</div>
-
-								</td>
 							</tr>
 						</tbody>
 					</table>

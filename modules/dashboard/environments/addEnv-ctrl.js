@@ -226,7 +226,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 												type: eachRepo.type,
 												configSHA: eachRepo.configSHA
 											};
-											if (!customType || sub.contentType === customType) {
+											if (customType && eachRepo.type === customType) {
 												customRecords.push(tempo);
 											}
 											nginxRecords.push(tempo);
@@ -244,7 +244,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 										configSHA: eachRepo.configSHA
 									};
 									
-									if (!customType || eachRepo.type === customType) {
+									if (customType && eachRepo.type === customType) {
 										customRecords.push(tempo);
 									}
 									nginxRecords.push(tempo);

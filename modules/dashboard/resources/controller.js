@@ -359,12 +359,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 												});
 											}
 											
-											let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
-											if (eachRepo.type === 'multi') {
-												if (eachRepo.configSHA) {
-													eachRepo.configSHA.forEach(function (sub) {
-														if (acceptableTypes.indexOf(sub.contentType) !== -1) {
-															if(!customType || sub.contentType === customType){
+											if (customType && eachRepo.type === customType) {
+												
+												let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
+												if (customType=== 'multi') {
+													if (eachRepo.configSHA) {
+														eachRepo.configSHA.forEach(function (sub) {
+															if (acceptableTypes.indexOf(sub.contentType) !== -1) {
 																customRecords.push({
 																	owner: eachAccount.owner,
 																	provider: eachAccount.provider,
@@ -375,12 +376,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 																	configSHA: eachRepo.configSHA
 																});
 															}
-														}
-													});
+														});
+													}
 												}
-											} else {
-												if (acceptableTypes.indexOf(customType) !== -1) {
-													if(!customType || customType === eachRepo.type){
+												else {
+													if (acceptableTypes.indexOf(customType) !== -1) {
 														customRecords.push({
 															owner: eachAccount.owner,
 															provider: eachAccount.provider,

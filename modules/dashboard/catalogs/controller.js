@@ -720,7 +720,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				if (mainFormConfig[5].tabs[1].entries[1].type === 'html') {
 					mainFormConfig[5].tabs[1].entries.splice(1, 1)
 				}
-				mainFormConfig[5].tabs[1].entries[1].entries[1].value[0].selected = true;
+				if(mainFormConfig[5].tabs[1].entries[1].entries[1].value){
+					mainFormConfig[5].tabs[1].entries[1].entries[1].value[0].selected = true;
+				}
 				
 				mainFormConfig[5].tabs[1].entries[1].entries.push({
 					'name': 'required',
@@ -738,25 +740,27 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			
 			$scope.customRepos = [];
 			$scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
-			for (let i = $scope.repos.length; i--; i > 0) {
-				if ($scope.repos[i].type === data.recipe.deployOptions.sourceCode.custom.type) {
-					// case multi
-					if ($scope.repos[i].type === 'multi') {
-						if ($scope.repos[i].configSHA) {
-							$scope.repos[i].configSHA.forEach(function (sub) {
-								$scope.customRepos.push({
-									'v': sub.contentName,
-									'l': sub.contentName,
-									'group': $scope.repos[i].v
-								})
-							});
+			if($scope.repos){
+				for (let i = $scope.repos.length; i--; i > 0) {
+					if ($scope.repos[i].type === data.recipe.deployOptions.sourceCode.custom.type) {
+						// case multi
+						if ($scope.repos[i].type === 'multi') {
+							if ($scope.repos[i].configSHA) {
+								$scope.repos[i].configSHA.forEach(function (sub) {
+									$scope.customRepos.push({
+										'v': sub.contentName,
+										'l': sub.contentName,
+										'group': $scope.repos[i].v
+									})
+								});
+							}
+						} else {
+							$scope.customRepos.push({
+								'v': $scope.repos[i].v,
+								'l': $scope.repos[i].v,
+								'group': $scope.repos[i].group
+							})
 						}
-					} else {
-						$scope.customRepos.push({
-							'v': $scope.repos[i].v,
-							'l': $scope.repos[i].v,
-							'group': $scope.repos[i].group
-						})
 					}
 				}
 			}

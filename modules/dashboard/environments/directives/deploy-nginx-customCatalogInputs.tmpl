@@ -1,6 +1,6 @@
 <br />
 <accordion close-others="false" ng-show="!form.formData.norecipe">
-	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled">
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled" is-open="sourceCodeConfig[currentServiceName].configuration.isEnabled">
 		<accordion-heading>{{selectedSourceCode.configuration.label}}</accordion-heading>
 		<div>
 			<label>Repository</label>
@@ -23,7 +23,7 @@
 		</div>
 	</accordion-group>
 	
-	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].custom.isEnabled">
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].custom.isEnabled" is-open="sourceCodeConfig[currentServiceName].custom.isEnabled">
 		<accordion-heading>{{selectedSourceCode.custom.label}}</accordion-heading>
 		<div>
 			<label>Repository</label>

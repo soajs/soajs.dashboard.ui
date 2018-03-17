@@ -547,38 +547,46 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			function prefilForm(sourceCodeConfig){
 				//fill the first element repositories with allowed values and highlight the one that has an env variable if any
 				if (accounts) {
+					let lockedType;
+					if(catalogRecipe.recipe.deployOptions.sourceCode && catalogRecipe.recipe.deployOptions.sourceCode.custom && catalogRecipe.recipe.deployOptions.sourceCode.custom.type){
+						lockedType = catalogRecipe.recipe.deployOptions.sourceCode.custom.type;
+					}
 					accounts.forEach(function (eachAccount) {
 						if (eachAccount.repos) {
 							eachAccount.repos.forEach(function (eachRepo) {
 								if (['custom','service','daemon','static'].indexOf(eachRepo.type) !== -1) {
-									sourceCodeConfig.entries[0].value.push({
-										l: eachRepo.name,
-										v: {
-											id: eachAccount._id,
-											owner: eachAccount.owner,
-											repo: eachRepo.name,
-											provider: eachAccount.provider,
-											type: eachRepo.type
-										},
-										selected: (sourceCode.custom['repo'] === eachRepo.name)
-									});
+									if(!lockedType || (lockedType && lockedType === eachRepo.type)){
+										sourceCodeConfig.entries[0].value.push({
+											l: eachRepo.name,
+											v: {
+												id: eachAccount._id,
+												owner: eachAccount.owner,
+												repo: eachRepo.name,
+												provider: eachAccount.provider,
+												type: eachRepo.type
+											},
+											selected: (sourceCode.custom['repo'] === eachRepo.name)
+										});
+									}
 								}
 								else if (eachRepo.type === 'multi'){
 									eachRepo.configSHA.forEach((subRepo) => {
 										if (['custom','service','daemon','static'].indexOf(subRepo.contentType) !== -1) {
-											sourceCodeConfig.entries[0].value.push({
-												l: eachRepo.name + "/" + subRepo.contentName,
-												v: {
-													id: eachAccount._id,
-													owner: eachAccount.owner,
-													repo: eachRepo.name,
-													provider: eachAccount.provider,
-													subRepo: subRepo.path,
-													subName: subRepo.contentName,
-													type: eachRepo.type
-												},
-												selected: (sourceCode.custom['repo'] === eachRepo.name)
-											});
+											if(!lockedType || lockedType === subRepo.contentType){
+												sourceCodeConfig.entries[0].value.push({
+													l: eachRepo.name + "/" + subRepo.contentName,
+													v: {
+														id: eachAccount._id,
+														owner: eachAccount.owner,
+														repo: eachRepo.name,
+														provider: eachAccount.provider,
+														subRepo: subRepo.path,
+														subName: subRepo.contentName,
+														type: eachRepo.type
+													},
+													selected: (sourceCode.custom['repo'] === eachRepo.name)
+												});
+											}
 										}
 									});
 								}

@@ -8,8 +8,8 @@
 
 <br />
 <accordion close-others="false">
-	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled">
-		<accordion-heading>{{selectedSourceCode.configuration.label}}</accordion-heading>
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled" is-open="sourceCodeConfig[currentServiceName].configuration.isEnabled">
+		<accordion-heading>{{selectedSourceCode.configuration.label}} {{sourceCodeConfig[currentServiceName].configuration.isEnabled}}</accordion-heading>
 		<div>
 			<label>Repository</label>
 			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="form.formData.custom.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.disabled"></select>

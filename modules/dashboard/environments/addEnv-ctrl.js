@@ -226,7 +226,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 												type: eachRepo.type,
 												configSHA: eachRepo.configSHA
 											};
-											if (customType && eachRepo.type === customType) {
+											if (!customType || sub.contentType === customType) {
 												customRecords.push(tempo);
 											}
 											nginxRecords.push(tempo);
@@ -244,7 +244,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 										configSHA: eachRepo.configSHA
 									};
 									
-									if (customType && eachRepo.type === customType) {
+									if (!customType || eachRepo.type === customType) {
 										customRecords.push(tempo);
 									}
 									nginxRecords.push(tempo);
@@ -326,18 +326,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		}
 		
 		let accountData = {};
-		$scope.configRepos.config.forEach(function (eachAcc) { // conf
-			if (eachAcc.name === selectedRepo) {
-				accountData = eachAcc;
-			}
-		});
-		
-		if(Object.keys(accountData).length === 0){ // cust
-			$scope.configRepos.customType.forEach(function (eachAcc) {
+		if(repoType === 'conf') {
+			$scope.configRepos.config.forEach(function (eachAcc) { // conf
 				if (eachAcc.name === selectedRepo) {
 					accountData = eachAcc;
 				}
 			});
+		}
+		else{
+			if(Object.keys(accountData).length === 0){ // cust
+				$scope.configRepos.customType.forEach(function (eachAcc) {
+					if (eachAcc.name === selectedRepo) {
+						accountData = eachAcc;
+					}
+				});
+			}
 		}
 		
 		if(Object.keys(accountData).length === 0){ // nginxCustom
@@ -348,25 +351,27 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			});
 		}
 		
-		$scope.configReposBranchesStatus[selectedRepo] = 'loading';
-		getSendDataFromServer($scope, ngDataApi, {
-			'method': 'get',
-			'routeName': '/dashboard/gitAccounts/getBranches',
-			params: {
-				id: accountData.accountId,
-				name: selectedRepo,
-				type: 'repo',
-				provider : accountData.provider
-			}
-		}, function (error, response) {
-			if (error) {
-				$scope.configReposBranchesStatus[selectedRepo] = 'failed';
-				$scope.displayAlert('danger', error.message);
-			} else {
-				$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
-				$scope.configReposBranches[selectedRepo] = response.branches;
-			}
-		});
+		if(accountData){
+			$scope.configReposBranchesStatus[selectedRepo] = 'loading';
+			getSendDataFromServer($scope, ngDataApi, {
+				'method': 'get',
+				'routeName': '/dashboard/gitAccounts/getBranches',
+				params: {
+					id: accountData.accountId,
+					name: selectedRepo,
+					type: 'repo',
+					provider : accountData.provider
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.configReposBranchesStatus[selectedRepo] = 'failed';
+					$scope.displayAlert('danger', error.message);
+				} else {
+					$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
+					$scope.configReposBranches[selectedRepo] = response.branches;
+				}
+			});
+		}
 	};
 	// source code updates ends
 	

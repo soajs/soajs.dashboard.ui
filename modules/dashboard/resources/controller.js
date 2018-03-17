@@ -229,38 +229,43 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}
 					
 					let accountData = {};
-					$scope.configRepos.config.forEach(function (eachAcc) {
-						if (eachAcc.name === selectedRepo) {
-							accountData = eachAcc;
-						}
-					});
-					
-					if(Object.keys(accountData).length === 0){
-						$scope.configRepos.customType.forEach(function (eachAcc) {
+					if(confOrCustom === 'conf'){
+						$scope.configRepos.config.forEach(function (eachAcc) {
 							if (eachAcc.name === selectedRepo) {
 								accountData = eachAcc;
 							}
 						});
 					}
-					$scope.configReposBranchesStatus[selectedRepo] = 'loading';
-					getSendDataFromServer($scope, ngDataApi, {
-						'method': 'get',
-						'routeName': '/dashboard/gitAccounts/getBranches',
-						params: {
-							id: accountData.accountId,
-							name: selectedRepo,
-							type: 'repo',
-							provider : accountData.provider
+					else{
+						if(Object.keys(accountData).length === 0){
+							$scope.configRepos.customType.forEach(function (eachAcc) {
+								if (eachAcc.name === selectedRepo) {
+									accountData = eachAcc;
+								}
+							});
 						}
-					}, function (error, response) {
-						if (error) {
-							$scope.configReposBranchesStatus[selectedRepo] = 'failed';
-							$scope.displayAlert('danger', error.message);
-						} else {
-							$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
-							$scope.configReposBranches[selectedRepo] = response.branches;
-						}
-					});
+					}
+					if(accountData && Object.keys(accountData).length > 0){
+						$scope.configReposBranchesStatus[selectedRepo] = 'loading';
+						getSendDataFromServer($scope, ngDataApi, {
+							'method': 'get',
+							'routeName': '/dashboard/gitAccounts/getBranches',
+							params: {
+								id: accountData.accountId,
+								name: selectedRepo,
+								type: 'repo',
+								provider : accountData.provider
+							}
+						}, function (error, response) {
+							if (error) {
+								$scope.configReposBranchesStatus[selectedRepo] = 'failed';
+								$scope.displayAlert('danger', error.message);
+							} else {
+								$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
+								$scope.configReposBranches[selectedRepo] = response.branches;
+							}
+						});
+					}
 				};
 				
 				$scope.options = {
@@ -354,13 +359,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 												});
 											}
 											
-											if (customType && eachRepo.type === customType) {
-												
-												let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
-												if (customType === 'multi') {
-													if (eachRepo.configSHA) {
-														eachRepo.configSHA.forEach(function (sub) {
-															if (acceptableTypes.indexOf(sub.contentType) !== -1) {
+											let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
+											if (eachRepo.type === 'multi') {
+												if (eachRepo.configSHA) {
+													eachRepo.configSHA.forEach(function (sub) {
+														if (acceptableTypes.indexOf(sub.contentType) !== -1) {
+															if(!customType || sub.contentType === customType){
 																customRecords.push({
 																	owner: eachAccount.owner,
 																	provider: eachAccount.provider,
@@ -371,10 +375,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 																	configSHA: eachRepo.configSHA
 																});
 															}
-														});
-													}
-												} else {
-													if (acceptableTypes.indexOf(customType) !== -1) {
+														}
+													});
+												}
+											} else {
+												if (acceptableTypes.indexOf(customType) !== -1) {
+													if(!customType || customType === eachRepo.type){
 														customRecords.push({
 															owner: eachAccount.owner,
 															provider: eachAccount.provider,
@@ -386,7 +392,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 													}
 												}
 											}
-											
 										});
 									}
 								});

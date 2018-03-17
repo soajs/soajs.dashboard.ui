@@ -1,50 +1,50 @@
 <br />
 <accordion close-others="false" ng-show="!form.formData.norecipe">
-	<div ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled">
-		<fieldset class="custom-fieldset">
-			<legend>{{selectedSourceCode.configuration.label}}</legend>
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled">
+		<accordion-heading>{{selectedSourceCode.configuration.label}}</accordion-heading>
+		<div>
 			<label>Repository</label>
 			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="form.formData.custom.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.disabled"></select>
 			<label class="fieldMsg">Choose your configuration repository</label>
 			<br>
-			
-			<div ng-if="form.formData.custom.sourceCode.configuration.repo && form.formData.custom.sourceCode.configuration.repo !== '-- User Specify --'">
-				<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[form.formData.custom.sourceCode.configuration.repo]==='loading'"></label>
-				<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[form.formData.custom.sourceCode.configuration.repo]" ng-model="form.formData.custom.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.disabled"></select>
-				<label class="fieldMsg">Choose your branch</label>
-				<br>
-			</div>
-			
-			<div ng-if="form.formData.custom.sourceCode.configuration.repo && form.formData.custom.sourceCode.configuration.repo !== '-- User Specify --'">
-				<label>Path</label>
-				<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.configuration.path" ng-required="false"/>
-				<label class="fieldMsg">Unless specified, the root will be used</label>
-			</div>
-		</fieldset>
-	</div>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo && form.formData.custom.sourceCode.configuration.repo !== '-- Leave Empty --'">
+			<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[form.formData.custom.sourceCode.configuration.repo]==='loading'"></label>
+			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[form.formData.custom.sourceCode.configuration.repo]" ng-model="form.formData.custom.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig[currentServiceName].configuration.repoAndBranch.disabled"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo && form.formData.custom.sourceCode.configuration.repo !== '-- Leave Empty --'">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.configuration.path" ng-required="false"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
+	</accordion-group>
 	
-	<div ng-if="sourceCodeConfig[currentServiceName].custom.isEnabled">
-		<fieldset class="custom-fieldset">
-			<legend>{{selectedSourceCode.custom.label}}</legend>
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].custom.isEnabled">
+		<accordion-heading>{{selectedSourceCode.custom.label}}</accordion-heading>
+		<div>
 			<label>Repository</label>
 			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="form.formData.custom.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoAndBranch.disabled"></select>
 			<label class="fieldMsg">Choose your custom repository</label>
 			<br>
-			
-			<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- User Specify --'">
-				<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
-				<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].custom.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="form.formData.custom.sourceCode.custom.branch" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoAndBranch.disabled"></select>
-				<label class="fieldMsg">Choose your branch</label>
-				<br>
-			</div>
-			
-			<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- User Specify --'">
-				<label>Path</label>
-				<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false"/>
-				<label class="fieldMsg">Unless specified, the root will be used</label>
-			</div>
-		</fieldset>
-	</div>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
+			<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
+			<select class="form-control" ng-required="sourceCodeConfig[currentServiceName].custom.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="form.formData.custom.sourceCode.custom.branch" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoAndBranch.disabled"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
+	</accordion-group>
 	
 	<accordion-group ng-show="tempFormEntries.imagePrefix">
 		<accordion-heading>Image Properties</accordion-heading>

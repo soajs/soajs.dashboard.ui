@@ -708,7 +708,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									formData.sourceCode.configuration.branch = conf.branch;
 								}else{
 									if (formData.sourceCode.configuration && (!formData.sourceCode.configuration.repo || formData.sourceCode.configuration.repo === '')) {
-										formData.sourceCode.configuration.repo = '-- User Specify --';
+										formData.sourceCode.configuration.repo = '-- Leave Empty --';
 									}
 								}
 							}
@@ -746,7 +746,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							} else {
 								let configRecords = [];
 								
-								configRecords.push({name: "-- User Specify --"});
+								configRecords.push({name: "-- Leave Empty --"});
 								
 								if(response){
 									response.forEach(function (eachAccount) {
@@ -781,7 +781,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						
 						let selectedRepo = formData.sourceCode.configuration.repo;
 						
-						if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- User Specify --') {
+						if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- Leave Empty --') {
 							return;
 						}
 						
@@ -861,7 +861,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if (record.configuration && record.configuration.repo) {
 				let selectedRepo = record.configuration.repo;
 				
-				if (selectedRepo === '-- User Specify --') {
+				if (selectedRepo === '-- Leave Empty --') {
 					record.configuration = {
 						repo: "",
 						branch: ""

@@ -127,7 +127,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					formData.custom.sourceCode.configuration.branch = conf.branch;
 				}else{
 					if (formData.custom.sourceCode.configuration && (!formData.custom.sourceCode.configuration.repo || formData.custom.sourceCode.configuration.repo === '')) {
-						formData.custom.sourceCode.configuration.repo = '-- User Specify --';
+						formData.custom.sourceCode.configuration.repo = '-- Leave Empty --';
 					}
 				}
 			}
@@ -148,7 +148,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					formData.custom.sourceCode.custom.branch = cust.branch;
 				}else{
 					if (formData.custom.sourceCode.custom && (!formData.custom.sourceCode.custom.repo || formData.custom.sourceCode.custom.repo === '')) {
-						formData.custom.sourceCode.custom.repo = '-- User Specify --';
+						formData.custom.sourceCode.custom.repo = '-- Leave Empty --';
 					}
 				}
 			}
@@ -192,9 +192,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			let customRecords = [];
 			let nginxRecords = [];
 			
-			configRecords.push({name: "-- User Specify --"});
-			customRecords.push({name: "-- User Specify --"});
-			nginxRecords.push({name: "-- User Specify --"});
+			configRecords.push({name: "-- Leave Empty --"});
+			customRecords.push({name: "-- Leave Empty --"});
+			nginxRecords.push({name: "-- Leave Empty --"});
 			
 			if(listOfAccounts){
 				listOfAccounts.forEach(function (eachAccount) {
@@ -321,7 +321,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			$scope.selectedCustomClear = selectedRepo;
 		}
 		
-		if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- User Specify --') {
+		if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- Leave Empty --') {
 			return;
 		}
 		

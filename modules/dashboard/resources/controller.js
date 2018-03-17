@@ -224,7 +224,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						$scope.selectedCustomClear = selectedRepo;
 					}
 					
-					if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- User Specify --') {
+					if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- Leave Empty --') {
 						return;
 					}
 					
@@ -335,8 +335,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							let configRecords = [];
 							let customRecords = [];
 							
-							configRecords.push({name: "-- User Specify --"});
-							customRecords.push({name: "-- User Specify --"});
+							configRecords.push({name: "-- Leave Empty --"});
+							customRecords.push({name: "-- Leave Empty --"});
 							
 							if (response) {
 								response.forEach(function (eachAccount) {
@@ -546,7 +546,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								if(!$scope.formData.deployOptions.custom || !$scope.formData.deployOptions.custom.sourceCode ||
 									!$scope.formData.deployOptions.custom.sourceCode.configuration  || !$scope.formData.deployOptions.custom.sourceCode.configuration.repo ){ // if not filled from cicd
 									if($scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.configuration){
-										$scope.formData.deployOptions.sourceCode.configuration.repo = '-- User Specify --';
+										$scope.formData.deployOptions.sourceCode.configuration.repo = '-- Leave Empty --';
 									}
 								}
 							}
@@ -570,7 +570,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								if(!$scope.formData.deployOptions.custom || !$scope.formData.deployOptions.custom.sourceCode ||
 									!$scope.formData.deployOptions.custom.sourceCode.custom  || !$scope.formData.deployOptions.custom.sourceCode.custom.repo ){ // if not filled from cicd
 									if($scope.formData.deployOptions.sourceCode && $scope.formData.deployOptions.sourceCode.custom){
-										$scope.formData.deployOptions.sourceCode.custom.repo = '-- User Specify --' + '__SOAJS_DELIMITER__';
+										$scope.formData.deployOptions.sourceCode.custom.repo = '-- Leave Empty --' + '__SOAJS_DELIMITER__';
 									}
 								}
 							}
@@ -719,7 +719,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				function reformatSourceCodeForCicd(record) {
 					if(record.configuration && record.configuration.repo){
 						let selectedRepo = record.configuration.repo;
-						if(selectedRepo === '-- User Specify --'){
+						if(selectedRepo === '-- Leave Empty --'){
 							record.configuration.repo = "";
 							record.configuration.branch = "";
 						}else{
@@ -741,7 +741,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						
 						record.custom.repo = selectedRepo; // save clear value
 						
-						if(selectedRepo === '-- User Specify --'){
+						if(selectedRepo === '-- Leave Empty --'){
 							record.custom.repo = "";
 							record.custom.branch = "";
 						}else {

@@ -1341,14 +1341,14 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						btn: 'primary',
 						action: function (fData) {
 							var formData = fromToAPI(fData, envCounter, volumeCounter, portCounter, labelCounter);
-							if (formData.recipe.deployOptions.sourceCode.configuration && (formData.recipe.deployOptions.sourceCode.configuration.label === undefined || formData.recipe.deployOptions.sourceCode.configuration.label === '')) {
+							if (formData.recipe.deployOptions.sourceCode.configuration && (!formData.recipe.deployOptions.sourceCode.configuration.label || formData.recipe.deployOptions.sourceCode.configuration.label === '')) {
 								$scope.form.displayAlert('danger', 'Must add label for configuration repository');
 							}
 							else {
-								if (formData.recipe.deployOptions.sourceCode.custom && (formData.recipe.deployOptions.sourceCode.custom.label === undefined || formData.recipe.deployOptions.sourceCode.custom.label === '')) {
+								if (formData.recipe.deployOptions.sourceCode.custom && (!formData.recipe.deployOptions.sourceCode.custom.label || formData.recipe.deployOptions.sourceCode.custom.label === '')) {
 									$scope.form.displayAlert('danger', 'Must add label for custom repository');
 								} else {
-									if (formData.recipe.deployOptions.sourceCode.custom && (formData.recipe.deployOptions.sourceCode.custom.type === undefined || formData.recipe.deployOptions.sourceCode.custom.type === '')) {
+									if (formData.recipe.deployOptions.sourceCode.custom && (!formData.recipe.deployOptions.sourceCode.custom.type || formData.recipe.deployOptions.sourceCode.custom.type === '')) {
 										$scope.form.displayAlert('danger', 'Must add type for custom repository');
 									} else {
 										if (formData.recipe.deployOptions.sourceCode.configuration && formData.recipe.deployOptions.sourceCode.configuration.repo !== '' && formData.recipe.deployOptions.sourceCode.configuration.branch === '') {

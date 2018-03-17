@@ -650,6 +650,8 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
            }
 
 
+
+
            if(  catalogRecipe.recipe.deployOptions.sourceCode)
            {
              if(  catalogRecipe.recipe.deployOptions.sourceCode.configuration && catalogRecipe.recipe.deployOptions.sourceCode.configuration.label )
@@ -658,31 +660,78 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', '$timeout', '$modal', '$sce
                // if the repo not selected . we
                // allow him to select.
 
-               if( catalogRecipe.recipe.deployOptions.sourceCode.configuration.repository == ""  )
+               if( catalogRecipe.recipe.deployOptions.sourceCode.configuration.repo == ""  )
                {
-                 var repo = {
-                   'name': 'repository',
-                   'label': 'Repository',
-                   'type': 'select',
-                   'value': [],
-                   'fieldMsg': 'Select a repository to deploy from',
-                   'required': true
+
+                 let sourceCodeConfig = {
+                   "type": "group",
+                   "label": catalogRecipe.recipe.deployOptions.sourceCode.configuration.label,
+                   "entries": [{
+                     'name': 'repository',
+                     'label': 'Repository',
+                     'type': 'readonly',
+                     'value': currentScope.configRepos ,
+                     'fieldMsg': 'Choose your repository',
+                     'required': true
+                   }, {
+                     'name': 'branch',
+                     'label': 'Branch',
+                     'type': 'readonly',
+                     'value':  currentScope.configReposBranches,
+                     'fieldMsg': 'Choose your branch',
+                     'required': true
+                   }, {
+                     'name': 'path',
+                     'label': 'Path',
+                     'type': 'text',
+                     'value': "",
+                     'fieldMsg': 'Unless specified, the root will be used',
+                     'required': false
+                   }]
                  };
+                 formConfig.entries.push(sourceCodeConfig);
+
                }
-               var branch = {
-                 'name': 'branch',
-                 'label': 'Branch',
-                 'type': 'select',
-                 'value': [],
-                 'fieldMsg': 'Select a branch to deploy from',
-                 'required': true
-               };
+               else
+               {
+
+                 let sourceCodeConfig = {
+                   "type": "group",
+                   "label": catalogRecipe.recipe.deployOptions.sourceCode.configuration.label,
+                   "entries": [{
+                     'name': 'repository',
+                     'label': 'Repository',
+                     'type': 'readonly',
+                     'value': catalogRecipe.recipe.deployOptions.sourceCode.configuration.repo,
+                     'fieldMsg': 'Choose your repository',
+                     'required': true
+                   }, {
+                     'name': 'branch',
+                     'label': 'Branch',
+                     'type': 'readonly',
+                     'value': catalogRecipe.recipe.deployOptions.sourceCode.configuration.branch,
+                     'fieldMsg': 'Choose your branch',
+                     'required': true
+                   }, {
+                     'name': 'path',
+                     'label': 'Path',
+                     'type': 'text',
+                     'value': "",
+                     'fieldMsg': 'Unless specified, the root will be used',
+                     'required': false
+                   }]
+                 };
+                 formConfig.entries.push(sourceCodeConfig);
+
+               }
 
 
                // formConfig.entries.push(repo);
                // formConfig.entries.push(branch);
 
              }
+
+
              if(  catalogRecipe.recipe.deployOptions.sourceCode.custom)
              {
 

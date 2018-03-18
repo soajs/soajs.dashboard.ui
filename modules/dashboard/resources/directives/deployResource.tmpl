@@ -108,7 +108,7 @@
 	
 	<div ng-if="formData.deployOptions.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
 		<label>Path</label>
-		<input type="text" class="form-control" ng-model="formData.deployOptions.sourceCode.custom.path" ng-required="false"/>
+		<input type="text" class="form-control" ng-model="formData.deployOptions.sourceCode.custom.path" ng-required="false" ng-disabled="sourceCodeConfig.custom.repoPath.disabled"/>
 		<label class="fieldMsg">Unless specified, the root will be used</label>
 	</div>
 </fieldset>

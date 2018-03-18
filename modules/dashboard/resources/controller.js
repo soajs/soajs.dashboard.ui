@@ -263,6 +263,23 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							} else {
 								$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
 								$scope.configReposBranches[selectedRepo] = response.branches;
+								
+								//if multi auto generate path
+								if(confOrCustom === 'cust'){
+									$scope.sourceCodeConfig.custom.repoPath.disabled = false;
+									if(accountData.type === 'multi' && accountData.subName){
+										accountData.configSHA.forEach((oneSubRepo) => {
+											if(oneSubRepo.contentName === accountData.subName){
+												$scope.formData.deployOptions.sourceCode.custom.repo = accountData.name + '__SOAJS_DELIMITER__' + accountData.subName;
+												$scope.formData.deployOptions.sourceCode.custom.path = oneSubRepo.path.replace("/config.js", "/");
+												$scope.sourceCodeConfig.custom.repoPath.disabled = true;
+											}
+										});
+									}
+									else{
+										$scope.formData.deployOptions.sourceCode.custom.path = "";
+									}
+								}
 							}
 						});
 					}
@@ -326,7 +343,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}, 5000);
 				};
 				
-				$scope.listAccounts = function (customType, callback) {
+				$scope.listAccounts = function (customType, customRepoInfo, callback) {
 					getSendDataFromServer($scope, ngDataApi, {
 						'method': 'get',
 						'routeName': '/dashboard/gitAccounts/accounts/list',
@@ -359,38 +376,56 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 												});
 											}
 											
-											if (customType && eachRepo.type === customType) {
-												
-												let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
-												if (customType=== 'multi') {
-													if (eachRepo.configSHA) {
-														eachRepo.configSHA.forEach(function (sub) {
-															if (acceptableTypes.indexOf(sub.contentType) !== -1) {
+											if(['custom','service','daemon','static'].indexOf(eachRepo.type) !== -1){
+												if (!customType || eachRepo.type === customType) {
+													customRecords.push({
+														owner: eachAccount.owner,
+														provider: eachAccount.provider,
+														accountId: eachAccount._id.toString(),
+														name: eachRepo.name,
+														type: eachRepo.type,
+														configSHA: eachRepo.configSHA
+													});
+												}
+											}
+											else if (eachRepo.type === 'multi'){
+												eachRepo.configSHA.forEach((subRepo) => {
+													
+													//if not locked or locked from catalog and the value is multi
+													if (!customType || customType === 'multi') {
+														if(!customRepoInfo.subName || customRepoInfo.subName === subRepo.contentName) {
+															if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
 																customRecords.push({
 																	owner: eachAccount.owner,
 																	provider: eachAccount.provider,
 																	accountId: eachAccount._id.toString(),
 																	name: eachRepo.name,
-																	subName: sub.contentName,
+																	subName: subRepo.contentName,
 																	type: eachRepo.type,
 																	configSHA: eachRepo.configSHA
 																});
 															}
-														});
+														}
 													}
-												}
-												else {
-													if (acceptableTypes.indexOf(customType) !== -1) {
-														customRecords.push({
-															owner: eachAccount.owner,
-															provider: eachAccount.provider,
-															accountId: eachAccount._id.toString(),
-															name: eachRepo.name,
-															type: eachRepo.type,
-															configSHA: eachRepo.configSHA
-														});
+													
+													//if not locked or locked from catalog and value not multi
+													if(!customType || customType !== 'multi') {
+														
+														//one of the sub repo types should match locked type or no locked type and acceptable type
+														if ((!customType && ['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) || (customType === subRepo.contentType)) {
+															customRecords.push({
+																owner: eachAccount.owner,
+																provider: eachAccount.provider,
+																accountId: eachAccount._id.toString(),
+																name: eachRepo.name,
+																subName: subRepo.contentName,
+																type: eachRepo.type,
+																configSHA: eachRepo.configSHA
+															});
+														}
 													}
-												}
+													
+												});
 											}
 										});
 									}
@@ -511,6 +546,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							repoAndBranch : {
 								disabled : false,
 								required : false
+							},
+							repoPath: {
+								disabled: false
 							}
 						}
 					};
@@ -582,7 +620,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 						
 						if(conf || ((cust && $scope.formData.type === 'server'))){
-							$scope.listAccounts(customType, function () {
+							$scope.listAccounts(customType, cust, function () {
 								// special case: if the form was overwritten from cicd we have to load the branch
 								if($scope.formData.deployOptions.sourceCode){
 									if($scope.formData.deployOptions.sourceCode.configuration && $scope.formData.deployOptions.sourceCode.configuration.repo){

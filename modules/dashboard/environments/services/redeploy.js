@@ -829,30 +829,28 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			}
 			
-			console.log(JSON.stringify(params, null, 2));
-			
-			// overlayLoading.show();
-			// getSendDataFromServer(currentScope, ngDataApi, {
-			// 	method: 'put',
-			// 	routeName: '/dashboard/cloud/services/redeploy',
-			// 	params: {
-			// 		namespace: service.namespace || ''
-			// 	},
-			// 	data: params
-			// }, function (error, response) {
-			// 	overlayLoading.hide();
-			// 	if (error) {
-			// 		currentScope.displayAlert('danger', error.message);
-			// 	}
-			// 	else {
-			// 		currentScope.displayAlert('success', 'Service rebuilt successfully');
-			// 		currentScope.listServices();
-			// 		overlayLoading.hide();
-			// 		if (currentScope.modalInstance) {
-			// 			currentScope.modalInstance.dismiss();
-			// 		}
-			// 	}
-			// });
+			overlayLoading.show();
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'put',
+				routeName: '/dashboard/cloud/services/redeploy',
+				params: {
+					namespace: service.namespace || ''
+				},
+				data: params
+			}, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+				}
+				else {
+					currentScope.displayAlert('success', 'Service rebuilt successfully');
+					currentScope.listServices();
+					overlayLoading.hide();
+					if (currentScope.modalInstance) {
+						currentScope.modalInstance.dismiss();
+					}
+				}
+			});
 		}
 	}
 	

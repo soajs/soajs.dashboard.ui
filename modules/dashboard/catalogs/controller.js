@@ -1440,7 +1440,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 			
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.repo && data.recipe.deployOptions.sourceCode.custom.repo !== '') {
-				output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.repo
+				output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.repo;
+				if(data.recipe.deployOptions.sourceCode.custom.type === 'multi' && data.recipe.deployOptions.sourceCode.custom.subName){
+					output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.subName;
+				}
 			} else {
 				output['customRepo'] = 'user specify';
 				output['customBranch'] = '';
@@ -1991,10 +1994,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						};
 						let array = 'custom';
 						
-						if (recipe.recipe.deployOptions.sourceCode.custom.subName) {
-							customOptions.name = recipe.recipe.deployOptions.sourceCode.custom.subName + "/" + recipe.recipe.deployOptions.sourceCode.custom.repo
-						}
-						
 						$scope.getBranches(customOptions, array, recipe, function (err, branches) {
 							proceedWithForm($scope, catalogAppConfig.form.entries, recipe, submitAction);
 						});
@@ -2013,10 +2012,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'selected': recipe.recipe.deployOptions.sourceCode.custom.branch
 					};
 					let array = 'custom';
-					
-					if (recipe.recipe.deployOptions.sourceCode.custom.subName) {
-						customOptions.name = recipe.recipe.deployOptions.sourceCode.custom.subName + "/" + recipe.recipe.deployOptions.sourceCode.custom.repo
-					}
 					
 					$scope.getBranches(customOptions, array, recipe, function (err, branches) {
 						proceedWithForm($scope, catalogAppConfig.form.entries, recipe, submitAction);

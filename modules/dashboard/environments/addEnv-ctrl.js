@@ -63,6 +63,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.sourceCodeConfig[eachStep] = {
 					configuration : {
 						isEnabled : false,
+						isOpened: false,
 						repoAndBranch : {
 							disabled : false,
 							required : false
@@ -73,9 +74,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				if(eachStep ==='nginx'){
 					$scope.sourceCodeConfig['nginx'].custom = {
 						isEnabled: false,
+						isOpened: false,
 						repoAndBranch: {
 							disabled: false,
 							required: false
+						},
+						repoPath: {
+							disabled: false
 						}
 					};
 				}
@@ -154,7 +159,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			}
 			
 			if(conf || (cust && $scope.currentServiceName ==='nginx')){
-				$scope.listAccounts(customType, function () {
+				$scope.listAccounts(customType, cust, function () {
 					// special case: if the form was overwritten from cicd we have to load the branch
 					if(formData.custom && formData.custom.sourceCode){
 						if(formData.custom.sourceCode.configuration && formData.custom.sourceCode.configuration.repo){
@@ -184,7 +189,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		}
 	};
 	
-	$scope.listAccounts = function (customType, callback) {
+	$scope.listAccounts = function (customType, customRepoConfig, callback) {
 		
 		// fill or refill based on customType
 		function fillConfigRepos(listOfAccounts) {
@@ -212,29 +217,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								});
 							}
 							
-							let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
-							if (eachRepo.type === 'multi') {
-								if (eachRepo.configSHA) {
-									eachRepo.configSHA.forEach(function (sub) {
-										if (acceptableTypes.indexOf(sub.contentType) !== -1) {
-											let tempo = {
-												owner: eachAccount.owner,
-												provider: eachAccount.provider,
-												accountId: eachAccount._id.toString(),
-												name: eachRepo.name,
-												subName: sub.contentName,
-												type: eachRepo.type,
-												configSHA: eachRepo.configSHA
-											};
-											if (customType && eachRepo.type === customType) {
-												customRecords.push(tempo);
-											}
-											nginxRecords.push(tempo);
-										}
-									});
-								}
-							} else {
-								if (acceptableTypes.indexOf(eachRepo.type) !== -1) {
+							if(['custom','service','daemon','static'].indexOf(eachRepo.type) !== -1){
+								if (!customType || eachRepo.type === customType) {
 									let tempo = {
 										owner: eachAccount.owner,
 										provider: eachAccount.provider,
@@ -249,6 +233,49 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									}
 									nginxRecords.push(tempo);
 								}
+							}
+							else if (eachRepo.type === 'multi'){
+								eachRepo.configSHA.forEach((subRepo) => {
+									
+									//if not locked or locked from catalog and the value is multi
+									if (!customType || customType === 'multi') {
+										if((!customRepoConfig || !customRepoConfig.subName) || (customRepoConfig && customRepoConfig.subName === subRepo.contentName)) {
+											if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
+												let tempo = {
+													owner: eachAccount.owner,
+													provider: eachAccount.provider,
+													accountId: eachAccount._id.toString(),
+													name: eachRepo.name,
+													subName: subRepo.contentName,
+													type: eachRepo.type,
+													configSHA: eachRepo.configSHA
+												};
+												customRecords.push(tempo);
+												nginxRecords.push(tempo);
+											}
+										}
+									}
+									
+									//if not locked or locked from catalog and value not multi
+									if(!customType || customType !== 'multi') {
+										
+										//one of the sub repo types should match locked type or no locked type and acceptable type
+										if ((!customType && ['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) || (customType === subRepo.contentType)) {
+											let tempo = {
+												owner: eachAccount.owner,
+												provider: eachAccount.provider,
+												accountId: eachAccount._id.toString(),
+												name: eachRepo.name,
+												subName: subRepo.contentName,
+												type: eachRepo.type,
+												configSHA: eachRepo.configSHA
+											};
+											customRecords.push(tempo);
+											nginxRecords.push(tempo);
+										}
+									}
+									
+								});
 							}
 						});
 					}
@@ -369,6 +396,23 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				} else {
 					$scope.configReposBranchesStatus[selectedRepo] = 'loaded';
 					$scope.configReposBranches[selectedRepo] = response.branches;
+					
+					//if multi auto generate path
+					if(repoType === 'cust'){
+						$scope.sourceCodeConfig['nginx'].custom.repoPath.disabled = false;
+						if(accountData.type === 'multi' && accountData.subName){
+							accountData.configSHA.forEach((oneSubRepo) => {
+								if(oneSubRepo.contentName === accountData.subName){
+									$scope.form.formData.custom.sourceCode.custom.repo = accountData.name + '__SOAJS_DELIMITER__' + accountData.subName;
+									$scope.form.formData.custom.sourceCode.custom.path = oneSubRepo.path.replace("/config.js", "/");
+									$scope.sourceCodeConfig['nginx'].custom.repoPath.disabled = true;
+								}
+							});
+						}
+						else{
+							$scope.form.formData.custom.sourceCode.custom.path = "";
+						}
+					}
 				}
 			});
 		}

@@ -1,6 +1,6 @@
 <br />
 <accordion close-others="false" ng-show="!form.formData.norecipe">
-	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled" is-open="sourceCodeConfig[currentServiceName].configuration.isEnabled">
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].configuration.isEnabled" is-open="sourceCodeConfig[currentServiceName].configuration.isOpened">
 		<accordion-heading>{{selectedSourceCode.configuration.label}}</accordion-heading>
 		<div>
 			<label>Repository</label>
@@ -23,7 +23,7 @@
 		</div>
 	</accordion-group>
 	
-	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].custom.isEnabled" is-open="sourceCodeConfig[currentServiceName].custom.isEnabled">
+	<accordion-group class="custom-fieldset" ng-if="sourceCodeConfig[currentServiceName].custom.isEnabled" is-open="sourceCodeConfig[currentServiceName].custom.isOpened">
 		<accordion-heading>{{selectedSourceCode.custom.label}}</accordion-heading>
 		<div>
 			<label>Repository</label>
@@ -41,7 +41,7 @@
 		
 		<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
 			<label>Path</label>
-			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false"/>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoPath.disabled"/>
 			<label class="fieldMsg">Unless specified, the root will be used</label>
 		</div>
 	</accordion-group>
@@ -124,7 +124,7 @@
 		</div>
 	</accordion-group>
 	
-	<accordion-group>
+	<accordion-group is-open="sourceCodeConfig[currentServiceName].configuration.isOpened">
 		<accordion-heading>I have a Custom configuration in a repo and i want to associate with my Nginx</accordion-heading>
 		<div>
 			<label>Repository</label>
@@ -147,7 +147,7 @@
 		</div>
 	</accordion-group>
 	
-	<accordion-group>
+	<accordion-group is-open="sourceCodeConfig[currentServiceName].custom.isOpened">
 		<accordion-heading>I have a Custom UI i want to associate with my Nginx</accordion-heading>
 		<div>
 			<label>Repository</label>
@@ -165,7 +165,7 @@
 		
 		<div ng-if="form.formData.custom.sourceCode.custom.repo">
 			<label>Path</label>
-			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false"/>
+			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoPath.disabled"/>
 			<label class="fieldMsg">Unless specified, the root will be used</label>
 		</div>
 	</accordion-group>

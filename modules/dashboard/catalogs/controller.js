@@ -1727,7 +1727,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					if (oneRepo.type === 'multi') {
 						oneRepo.configSHA.forEach((oneConfig) => {
 							if (oneConfig.contentName === formData.customRepo) {
-								apiData.recipe.deployOptions.sourceCode.custom['subName'] = oneRepo.l
+								apiData.recipe.deployOptions.sourceCode.custom['repo'] = oneRepo.v;
+								apiData.recipe.deployOptions.sourceCode.custom['subName'] = oneConfig.contentName;
 							}
 						});
 					}
@@ -1980,7 +1981,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				let array = 'array';
 				$scope.getBranches(options, array, recipe, function (err, branches) {
 					
-					if (recipe.recipe.deployOptions.sourceCode && recipe.recipe.deployOptions.sourceCode.custom && recipe.recipe.deployOptions.sourceCode.custom.repo !== '') {
+					if (recipe.recipe.deployOptions.sourceCode && recipe.recipe.deployOptions.sourceCode.custom && recipe.recipe.deployOptions.sourceCode.custom.repo && recipe.recipe.deployOptions.sourceCode.custom.repo !== '') {
 						
 						let customOptions = {
 							'name': recipe.recipe.deployOptions.sourceCode.custom.repo,

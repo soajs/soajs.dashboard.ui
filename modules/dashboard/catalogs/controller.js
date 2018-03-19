@@ -411,6 +411,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									'tooltip': 'Specify wich type to use',
 									'fieldMsg': 'Specify wich type to use',
 									onAction(id, data, form) {
+										if (form.formData['customRepo']) {
+                                        form.formData['customRepo'] = '';
+                                    }
 										if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
 											form.entries[5].tabs[1].entries[3].entries.pop();
 										}
@@ -434,7 +437,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 														if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
 															form.entries[5].tabs[1].entries[3].entries.pop();
 														}
-														
 														if ($scope.accountInfo[data]) {
 															let multi = '';
 															let params = {
@@ -444,7 +446,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 																provider: $scope.accountInfo[data]['provider']
 															};
 															if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
-																multi = $scope.accountInfo[data].name + '/' + data;
+																multi = $scope.accountInfo[data].name;
 																params.name = multi
 															}
 															getSendDataFromServer($scope, ngDataApi, {
@@ -543,6 +545,20 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 																})
 															}
 														});
+													}
+												}
+												if (form.formData['customType'] !== 'multi') {
+                                                    let acceptableTypes = ['custom', 'static', 'service', 'daemon'];
+													if ($scope.repos[i].type === 'multi') {
+                                                        $scope.repos[i].configSHA.forEach(function (sub) {
+                                                            if (acceptableTypes.indexOf(sub.contentType) !== -1 && sub.contentType === form.formData['customType']) {
+                                                                form.entries[5].tabs[1].entries[3].entries[2].value.push({
+                                                                    'v': sub['contentName'],
+                                                                    'l': sub['contentName'],
+                                                                    'group': $scope.repos[i].v
+                                                                })
+                                                            }
+                                                        });
 													}
 												}
 											}
@@ -737,11 +753,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		}
 		
 		if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom) {
-			
 			$scope.customRepos = [];
 			$scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
 			if($scope.repos){
 				for (let i = $scope.repos.length; i--; i > 0) {
+
 					if ($scope.repos[i].type === data.recipe.deployOptions.sourceCode.custom.type) {
 						// case multi
 						if ($scope.repos[i].type === 'multi') {
@@ -762,7 +778,32 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							})
 						}
 					}
-				}
+					if ($scope.repos[i].type === 'multi') {
+                        let acceptableTypes = ['custom', 'static', 'service', 'daemon']; // and multi
+                        if ($scope.repos[i].configSHA) {
+                            $scope.repos[i].configSHA.forEach(function (sub) {
+                                if (acceptableTypes.indexOf(sub.contentType) !== -1 && data.recipe.deployOptions.sourceCode.custom.type === sub.contentType) {
+                                    $scope.customRepos.push({
+                                        'v': sub.contentName,
+                                        'l': sub.contentName,
+                                        'group': $scope.repos[i].v
+                                    })
+								}
+                            });
+                        }
+					}
+
+                    if (data.recipe.deployOptions.sourceCode.custom.subName) {
+                        if ($scope.repos[i].configSHA && $scope.repos[i].type === 'multi') {
+                            $scope.repos[i].configSHA.forEach(function(sub) {
+                                if ( data.recipe.deployOptions.sourceCode.custom.subName === sub.contentName) {
+                                    data.recipe.deployOptions.sourceCode.custom.type = sub.contentType
+                                }
+                            });
+                        }
+                    }
+
+                }
 			}
 			
 			mainFormConfig[5].tabs[1].entries.push({
@@ -799,6 +840,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'tooltip': 'Specify wich type to use',
 						'fieldMsg': 'Specify wich type to use',
 						onAction(id, data, form) {
+							if (form.formData['customRepo']) {
+                                form.formData['customRepo'] = '';
+							}
 							if (form.entries[5].tabs[1].entries[3].entries.length === 5) {
 								form.entries[5].tabs[1].entries[3].entries.pop();
 							}
@@ -831,7 +875,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 												provider: $scope.accountInfo[data]['provider']
 											};
 											if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
-												multi = $scope.accountInfo[data].name + '/' + data;
+												multi = $scope.accountInfo[data].name
 												params.name = multi
 											}
 											getSendDataFromServer($scope, ngDataApi, {
@@ -932,6 +976,20 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 											});
 										}
 									}
+                                    if (form.formData['customType'] !== 'multi') {
+                                        let acceptableTypes = ['custom', 'static', 'service', 'daemon'];
+                                        if ($scope.repos[i].type === 'multi') {
+                                            $scope.repos[i].configSHA.forEach(function (sub) {
+                                                if (acceptableTypes.indexOf(sub.contentType) !== -1 && sub.contentType === form.formData['customType']) {
+                                                    form.entries[5].tabs[1].entries[3].entries[2].value.push({
+                                                        'v': sub['contentName'],
+                                                        'l': sub['contentName'],
+                                                        'group': $scope.repos[i].v
+                                                    })
+                                                }
+                                            });
+                                        }
+                                    }
 								}
 							}
 							if (form.entries[5].tabs[1].entries[3].entries[3] && form.entries[5].tabs[1].entries[3].entries[2].value.length === 1) {
@@ -965,7 +1023,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
 							form.entries[5].tabs[1].entries[3].entries.pop();
 						}
-						
 						if ($scope.accountInfo[data]) {
 							let multi = '';
 							let params = {
@@ -975,7 +1032,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								provider: $scope.accountInfo[data]['provider']
 							};
 							if ($scope.accountInfo[data].type && $scope.accountInfo[data].type === 'multi') {
-								multi = $scope.accountInfo[data].name + '/' + data;
+								multi = $scope.accountInfo[data].name;
 								params.name = multi
 							}
 							getSendDataFromServer($scope, ngDataApi, {
@@ -1441,7 +1498,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.repo && data.recipe.deployOptions.sourceCode.custom.repo !== '') {
 				output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.repo;
-				if(data.recipe.deployOptions.sourceCode.custom.type === 'multi' && data.recipe.deployOptions.sourceCode.custom.subName){
+				if( data.recipe.deployOptions.sourceCode.custom.subName){
 					output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.subName;
 				}
 			} else {
@@ -1712,6 +1769,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				"branch": (formData.customBranch || ''),
 				"required": (formData.customRequired)
 			};
+
+
 			if (formData.customRequired && formData.customRequired !== apiData.recipe.deployOptions.sourceCode.custom.required) {
 				apiData.recipe.deployOptions.sourceCode.custom.required = formData.customRequired;
 			}
@@ -1737,6 +1796,20 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 				})
 			}
+			if (formData.customType && formData.customType !== 'multi') {
+                $scope.repos.forEach((oneRepo) => {
+                    if (oneRepo.type === 'multi') {
+                        oneRepo.configSHA.forEach((oneConfig) => {
+                            if (oneConfig.contentName === formData.customRepo) {
+                                apiData.recipe.deployOptions.sourceCode.custom['repo'] = oneRepo.v;
+                                apiData.recipe.deployOptions.sourceCode.custom['subName'] = oneConfig.contentName;
+                                apiData.recipe.deployOptions.sourceCode.custom['type'] = 'multi';
+                            }
+                        });
+                    }
+                })
+			}
+			
 		}
 		
 		if (formData.accelerateDeployment) {
@@ -1993,7 +2066,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							'selected': recipe.recipe.deployOptions.sourceCode.custom.branch
 						};
 						let array = 'custom';
-						
 						$scope.getBranches(customOptions, array, recipe, function (err, branches) {
 							proceedWithForm($scope, catalogAppConfig.form.entries, recipe, submitAction);
 						});
@@ -2004,7 +2076,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			} else {
 				
 				if (recipe.recipe.deployOptions.sourceCode && recipe.recipe.deployOptions.sourceCode.custom && recipe.recipe.deployOptions.sourceCode.custom.repo && recipe.recipe.deployOptions.sourceCode.custom.repo !== '') {
-					
 					let customOptions = {
 						'name': recipe.recipe.deployOptions.sourceCode.custom.repo,
 						'id': $scope.accountInfo[recipe.recipe.deployOptions.sourceCode.custom.repo]['_id'],

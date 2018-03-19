@@ -1224,6 +1224,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					{
 						'type': 'submit',
 						'label': submitLabel,
+						'id' : 'abrakadabra',
+						'style' : 'color:red',
 						'btn': 'primary',
 						'action': function (formData) {
 							for (let fieldName in $scope.tempFormEntries) {
@@ -1335,6 +1337,37 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				getServiceBranches($scope.currentServiceName, (controllerBranches) => {
 					serviceBranches = controllerBranches;
 					$scope.tempFormEntries.catalog.onAction = function () {
+						
+						if($scope.currentServiceName === 'controller'){
+							$scope.serviceRecipes.forEach(function (eachRecipe) {
+								if(eachRecipe._id === $scope.form.formData.catalog){ // selected catalog
+									if(eachRecipe.type ==='soajs' || (eachRecipe.recipe && eachRecipe.recipe.deployOptions && eachRecipe.recipe.deployOptions.specifyGitConfiguration)){
+										let currentScope = $scope;
+										$modal.open({
+											templateUrl: "modules/dashboard/environments/directives/oldResources.tmpl",
+											size: 'lg',
+											backdrop: true,
+											keyboard: true,
+											controller: function ($scope, $modalInstance) {
+												$scope.upgradeResources = function(){
+													currentScope.$parent.go("#/resources");
+													$modalInstance.close();
+												}
+											}
+										});
+										
+										let index = 0;
+										$scope.form.actions.forEach(function (eachButton) {
+											if (eachButton.label === 'Next') {
+												$scope.form.actions.splice(index, 1);
+											}
+											index++;
+										});
+									}
+								}
+							});
+						}
+						
 						//reset form entries
 						delete $scope.form.formData.branch;
 						delete $scope.form.formData.imagePrefix;

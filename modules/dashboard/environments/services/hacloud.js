@@ -320,7 +320,8 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			env: currentScope.envCode,
 			namespace: service.namespace,
 			serviceId: service.id,
-			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : '')
+			mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : ''),
+			name: service.name
 		};
 		
 		overlayLoading.show();

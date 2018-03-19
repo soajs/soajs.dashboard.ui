@@ -10,7 +10,8 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			action: 'redeploy',
 			custom: {
 				name: service.name
-			}
+			},
+			recipe: service.labels["soajs.catalog.id"]
 		};
 		
 		overlayLoading.show();

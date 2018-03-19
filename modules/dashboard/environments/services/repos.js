@@ -832,7 +832,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			else {
 				currentScope.recipes = {};
 				response.forEach(function (oneRecipe) {
-					if(oneRecipe.type ==='soajs'){
+					if(oneRecipe.type ==='soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration){
 						currentScope.oldStyle = true;
 					}
 					else{

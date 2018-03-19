@@ -78,25 +78,40 @@
 </section>
 
 <script type="text/ng-template" id="addEditResource.tmpl">
-    <div class="modal-header custom-modal-header">
-		<h3 class="modal-title">{{title}}
-			<span ng-if="driverLogo" class="f-right">
-				<img ng-src='{{driverLogo}}' alt='' style='max-height:46px'/>
-			</span>
-		</h3>
+	<div ng-if="oldStyle" class="form">
+		<div class="modal-header">
+			<h3 class="modal-title">Old Catalog Schemas Detected</h3>
+		</div>
+		<div class="modal-body">
+			<alert type="danger">
+				<h3 style="margin-top:5px;">Warning</h3>
+				<hr>
+				Some catalog recipes have not been upgraded yet, they still use a schema compatible with previous SOAJS version(s).<br />
+				This prevents you from configuring or deploying any repository. Please upgrade these recipes to the latest version <a href="" ng-click="upgradeRecipes()">[ Upgrade ]</a>
+			</alert>
+		</div>
 	</div>
-    <div class="modal-body">
-	    <div ng-if="notsupported">
-		    <alert type="danger">The selected Driver is not supported, please choose another.</alert>
+	<div ng-if="!oldStyle">
+		<div class="modal-header custom-modal-header">
+			<h3 class="modal-title">{{title}}
+				<span ng-if="driverLogo" class="f-right">
+					<img ng-src='{{driverLogo}}' alt='' style='max-height:46px'/>
+				</span>
+			</h3>
+		</div>
+	    <div class="modal-body">
+		    <div ng-if="notsupported">
+			    <alert type="danger">The selected Driver is not supported, please choose another.</alert>
+		    </div>
+	        <div ng-if="!notsupported" class="form" ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>
 	    </div>
-        <div ng-if="!notsupported" class="form" ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>
-    </div>
-    <div class="modal-footer">
-	    <span ng-if="options.allowEdit">
-            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save()">Save</button>
-    		<button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="saveAndDeploy()">Save & Deploy</button>
-            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id" ng-disabled="!valid" ng-click="saveAndRebuild()">Save & Rebuild</button>
-        </span>
-        <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+	    <div class="modal-footer">
+		    <span ng-if="options.allowEdit">
+	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save()">Save</button>
+	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="saveAndDeploy()">Save & Deploy</button>
+	            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id" ng-disabled="!valid" ng-click="saveAndRebuild()">Save & Rebuild</button>
+	        </span>
+	        <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+		</div>
 	</div>
 </script>

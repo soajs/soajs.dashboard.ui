@@ -657,8 +657,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						else {
 							if (recipes && Array.isArray(recipes)) {
 								recipes.forEach(function (oneRecipe) {
-									if (oneRecipe.type === $scope.formData.type && oneRecipe.subtype === $scope.formData.category) {
-										$scope.recipes.push(oneRecipe);
+									
+									if(oneRecipe.type ==='soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration){
+										$scope.oldStyle = true;
+									}
+									else{
+										if (oneRecipe.type === $scope.formData.type && oneRecipe.subtype === $scope.formData.category) {
+											$scope.recipes.push(oneRecipe);
+										}
 									}
 								});
 								
@@ -668,6 +674,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							if (cb) return cb();
 						}
 					});
+				};
+				
+				$scope.upgradeRecipes = function(){
+					currentScope.$parent.go("#/catalog-recipes");
+					$modalInstance.close();
 				};
 				
 				$scope.displayRecipeInputs = function () {

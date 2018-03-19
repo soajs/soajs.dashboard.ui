@@ -1142,7 +1142,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					params: {
 						env: $scope.envCode,
 						serviceId: resource.instance.id,
-						mode: resource.instance.labels['soajs.service.mode']
+						mode: resource.instance.labels['soajs.service.mode'],
+						name: resource.instance.name,
 					}
 				}, function (error) {
 					overlayLoading.hide();

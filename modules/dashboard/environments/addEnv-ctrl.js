@@ -63,7 +63,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.sourceCodeConfig[eachStep] = {
 					configuration : {
 						isEnabled : false,
-						isOpened: false,
+						isOpened: false, // will be set to true: if repo and branch are filled (either from catalog or from user) or if required is true
 						repoAndBranch : {
 							disabled : false,
 							required : false
@@ -93,13 +93,13 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			}
 		});
 		
-		if(!selectedRecipe){ // it will be certainly from the 4th call : nginx
+		if(!selectedRecipe && $scope.nginxRecipes){ // it will be certainly from the 4th call : nginx
 			recipes = $scope.nginxRecipes;
-			recipes.forEach(function (catalogRecipe) {
-				if (catalogRecipe._id === formData.catalog) {
-					selectedRecipe = catalogRecipe;
-				}
-			});
+				recipes.forEach(function (catalogRecipe) {
+					if (catalogRecipe._id === formData.catalog) {
+						selectedRecipe = catalogRecipe;
+					}
+				});
 		}
 		
 		if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
@@ -122,9 +122,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.isEnabled = true;
 				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
 				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.repoAndBranch.required = conf.required;
+				$scope.sourceCodeConfig[$scope.currentServiceName].configuration.isOpened = conf.required || (conf.repo && conf.repo !== '') ||
+					(formData.custom.sourceCode && formData.custom.sourceCode.configuration && formData.custom.sourceCode.configuration.repo && formData.custom.sourceCode.configuration.repo !== '' && formData.custom.sourceCode.configuration.repo !== '-- Leave Empty --' );
 				
-				if(conf.repo && conf.repo !== ''){
-					if(!formData.custom.sourceCode.configuration){
+				if (conf.repo && conf.repo !== '') {
+					if (!formData.custom.sourceCode.configuration) {
 						formData.custom.sourceCode.configuration = {};
 					}
 					
@@ -143,9 +145,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.sourceCodeConfig[$scope.currentServiceName].custom.isEnabled = true;
 				$scope.sourceCodeConfig[$scope.currentServiceName].custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
 				$scope.sourceCodeConfig[$scope.currentServiceName].custom.repoAndBranch.required = cust.required;
+				$scope.sourceCodeConfig[$scope.currentServiceName].custom.isOpened = cust.required || (cust.repo && cust.repo !== '') ||
+					(formData.custom.sourceCode && formData.custom.sourceCode.custom && formData.custom.sourceCode.custom.repo && formData.custom.sourceCode.custom.repo !== '' && formData.custom.sourceCode.custom.repo !== '-- Leave Empty --');
 				
-				if(cust.repo && cust.repo !== ''){
-					if(!formData.custom.sourceCode.custom){
+				if (cust.repo && cust.repo !== '') {
+					if (!formData.custom.sourceCode.custom) {
 						formData.custom.sourceCode.custom = {};
 					}
 					
@@ -398,7 +402,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.configReposBranches[selectedRepo] = response.branches;
 					
 					//if multi auto generate path
-					if(repoType === 'cust'){
+					if(repoType === 'cust' || repoType === 'nginxCustom'){
 						$scope.sourceCodeConfig['nginx'].custom.repoPath.disabled = false;
 						if(accountData.type === 'multi' && accountData.subName){
 							accountData.configSHA.forEach((oneSubRepo) => {
@@ -1765,7 +1769,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									delete formData.imageName;
 									delete formData.imagePrefix;
 									delete formData.imageTag;
-									delete formData.custom;
 									delete formData.catalog;
 									
 									//get the port and protocol from inputs

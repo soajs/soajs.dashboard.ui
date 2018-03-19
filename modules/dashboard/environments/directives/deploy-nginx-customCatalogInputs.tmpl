@@ -114,6 +114,7 @@
 				<input ng-if = "wizard.deploy.selectedDriver === 'kubernetes'" type="number" class="form-control" ng-model="form.formData.https" placeholder="443" ng-required="tempFormEntries.https.required"  min="1" max="2767"/>
 				<div class="fieldMsg hint">Enter the secured port value to which the Nginx should be exposed to</div>
 				<div ng-if = "wizard.deploy.selectedDriver === 'kubernetes'">
+					<br>
 					<alert type="info">
 						The deployer will automatically add a value of 30000 to the port value you enter because you have selected Kubernetes as a deployment platform.<br>
 						The allowed port values you can use in this case are restricted between 1 and 2767.
@@ -133,14 +134,14 @@
 			<br>
 		</div>
 		
-		<div ng-if="form.formData.custom.sourceCode.configuration.repo">
-			<label>Branch</label>
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo && form.formData.custom.sourceCode.configuration.repo !== '-- Leave Empty --'">
+			<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[form.formData.custom.sourceCode.configuration.repo]==='loading'"></label>
 			<select class="form-control" ng-required="false" ng-options="branch.name as branch.name for branch in configReposBranches[form.formData.custom.sourceCode.configuration.repo]" ng-model="form.formData.custom.sourceCode.configuration.branch"></select>
 			<label class="fieldMsg">Choose your branch</label>
 			<br>
 		</div>
 		
-		<div ng-if="form.formData.custom.sourceCode.configuration.repo">
+		<div ng-if="form.formData.custom.sourceCode.configuration.repo && form.formData.custom.sourceCode.configuration.repo !== '-- Leave Empty --'">
 			<label>Path</label>
 			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.configuration.path" ng-required="false"/>
 			<label class="fieldMsg">Unless specified, the root will be used</label>
@@ -156,14 +157,14 @@
 			<br>
 		</div>
 		
-		<div ng-if="form.formData.custom.sourceCode.custom.repo">
-			<label>Branch</label>
+		<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
+			<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
 			<select class="form-control" ng-required="false" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="form.formData.custom.sourceCode.custom.branch"></select>
 			<label class="fieldMsg">Choose your branch</label>
 			<br>
 		</div>
 		
-		<div ng-if="form.formData.custom.sourceCode.custom.repo">
+		<div ng-if="form.formData.custom.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
 			<label>Path</label>
 			<input type="text" class="form-control" ng-model="form.formData.custom.sourceCode.custom.path" ng-required="false" ng-disabled="sourceCodeConfig[currentServiceName].custom.repoPath.disabled"/>
 			<label class="fieldMsg">Unless specified, the root will be used</label>

@@ -1224,8 +1224,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					{
 						'type': 'submit',
 						'label': submitLabel,
-						'id' : 'abrakadabra',
-						'style' : 'color:red',
 						'btn': 'primary',
 						'action': function (formData) {
 							for (let fieldName in $scope.tempFormEntries) {

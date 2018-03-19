@@ -1769,7 +1769,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									delete formData.imageName;
 									delete formData.imagePrefix;
 									delete formData.imageTag;
-									delete formData.custom;
 									delete formData.catalog;
 									
 									//get the port and protocol from inputs

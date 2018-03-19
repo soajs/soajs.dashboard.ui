@@ -133,7 +133,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				
 				$scope.oldStyle = false;
 				$scope.originalRecipes.forEach(function (oneRecipe) {
-					if (oneRecipe.type === 'soajs') {
+					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
 						$scope.oldStyle = true;
 					}
 				});

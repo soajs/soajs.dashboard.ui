@@ -342,13 +342,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.fetchBranches = function (repoType) {
 		let formData = $scope.form.formData;
 		
-		let selectedRepo;
+		let selectedRepo,subNameInCaseMulti;
 		
 		if (repoType === 'conf') {
 			selectedRepo = formData.custom.sourceCode.configuration.repo;
 		} else if(repoType === 'cust' || repoType === 'nginxCustom') {
-			let decoded = formData.custom.sourceCode.custom.repo;
-			selectedRepo = decodeRepoNameAndSubName(decoded).name;
+			let decoded = decodeRepoNameAndSubName(formData.custom.sourceCode.custom.repo);
+			selectedRepo = decoded.name;
+			subNameInCaseMulti = decoded.subName;
+			
 			$scope.selectedCustomClear = selectedRepo;
 		}
 		
@@ -404,10 +406,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					//if multi auto generate path
 					if(repoType === 'cust' || repoType === 'nginxCustom'){
 						$scope.sourceCodeConfig['nginx'].custom.repoPath.disabled = false;
-						if(accountData.type === 'multi' && accountData.subName){
+						if(accountData.type === 'multi' && subNameInCaseMulti){
 							accountData.configSHA.forEach((oneSubRepo) => {
-								if(oneSubRepo.contentName === accountData.subName){
-									$scope.form.formData.custom.sourceCode.custom.repo = accountData.name + '__SOAJS_DELIMITER__' + accountData.subName;
+								if(oneSubRepo.contentName === subNameInCaseMulti){
 									$scope.form.formData.custom.sourceCode.custom.path = oneSubRepo.path.replace("/config.js", "/");
 									$scope.sourceCodeConfig['nginx'].custom.repoPath.disabled = true;
 								}
@@ -1240,6 +1241,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								}
 							}
 							
+							// if source code repo was selected, branch will be required
+							if (formData.custom && formData.custom.sourceCode && formData.custom.sourceCode.configuration && formData.custom.sourceCode.configuration.repo && formData.custom.sourceCode.configuration.repo != '' && formData.custom.sourceCode.configuration.repo != '-- Leave Empty --') {
+								if (!formData.custom.sourceCode.configuration.branch || formData.custom.sourceCode.configuration.branch === '') {
+									$window.alert('Some fields are still missing: Please choose a branch for your repository');
+									return false;
+								}
+							}
+							
 							$scope.wizard.gi.sensitive = formData.sensitive || false;
 							$scope.wizard.gi.tKeyPass = formData.tKeyPass;
 							
@@ -1541,6 +1550,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								}
 							}
 							
+							// if source code repo was selected, branch will be required
+							if (formData.custom && formData.custom.sourceCode && formData.custom.sourceCode.configuration && formData.custom.sourceCode.configuration.repo && formData.custom.sourceCode.configuration.repo != '' && formData.custom.sourceCode.configuration.repo != '-- Leave Empty --') {
+								if (!formData.custom.sourceCode.configuration.branch || formData.custom.sourceCode.configuration.branch === '') {
+									$window.alert('Some fields are still missing: Please choose a branch for your repository');
+									return false;
+								}
+							}
+							
 							serviceBranches.branches.forEach((oneBranch) => {
 								if (oneBranch.name === formData.branch && oneBranch.commit && oneBranch.commit.sha) {
 									formData.commit = oneBranch.commit.sha;
@@ -1793,6 +1810,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 											$window.alert('Some of the fields are still missing.');
 											return false;
 										}
+									}
+								}
+								
+								// if source code repo was selected, branch will be required
+								if (formData.custom && formData.custom.sourceCode && formData.custom.sourceCode.configuration && formData.custom.sourceCode.configuration.repo && formData.custom.sourceCode.configuration.repo != '' && formData.custom.sourceCode.configuration.repo != '-- Leave Empty --') {
+									if (!formData.custom.sourceCode.configuration.branch || formData.custom.sourceCode.configuration.branch === '') {
+										$window.alert('Some fields are still missing: Please choose a branch for your repository');
+										return false;
+									}
+								}
+								
+								if (formData.custom && formData.custom.sourceCode && formData.custom.sourceCode.custom && formData.custom.sourceCode.custom.repo && formData.custom.sourceCode.custom.repo != '' && formData.custom.sourceCode.custom.repo != '-- Leave Empty --') {
+									if (!formData.custom.sourceCode.custom.branch || formData.custom.sourceCode.custom.branch === '') {
+										$window.alert('Some fields are still missing: Please choose a branch for your repository');
+										return false;
 									}
 								}
 								

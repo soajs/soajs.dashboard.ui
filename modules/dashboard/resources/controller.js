@@ -215,12 +215,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				});
 				
 				$scope.fetchBranches = function (confOrCustom) {
-					let selectedRepo;
+					let selectedRepo, subNameInCaseMulti;
 					if (confOrCustom === 'conf') {
 						selectedRepo = $scope.formData.deployOptions.sourceCode.configuration.repo;
 					} else { // cust
-						let decoded = $scope.formData.deployOptions.sourceCode.custom.repo;
-						selectedRepo = decodeRepoNameAndSubName(decoded).name;
+						let decoded = decodeRepoNameAndSubName($scope.formData.deployOptions.sourceCode.custom.repo);
+						selectedRepo = decoded.name;
+						subNameInCaseMulti = decoded.subName;
+						
 						$scope.selectedCustomClear = selectedRepo;
 					}
 					
@@ -265,12 +267,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								$scope.configReposBranches[selectedRepo] = response.branches;
 								
 								//if multi auto generate path
-								if(confOrCustom === 'cust'){
+								if (confOrCustom === 'cust') {
 									$scope.sourceCodeConfig.custom.repoPath.disabled = false;
-									if(accountData.type === 'multi' && accountData.subName){
+									if (accountData.type === 'multi' && subNameInCaseMulti) {
 										accountData.configSHA.forEach((oneSubRepo) => {
-											if(oneSubRepo.contentName === accountData.subName){
-												$scope.formData.deployOptions.sourceCode.custom.repo = accountData.name + '__SOAJS_DELIMITER__' + accountData.subName;
+											if (oneSubRepo.contentName === subNameInCaseMulti) {
 												$scope.formData.deployOptions.sourceCode.custom.path = oneSubRepo.path.replace("/config.js", "/");
 												$scope.sourceCodeConfig.custom.repoPath.disabled = true;
 											}

@@ -702,7 +702,8 @@ var environmentsConfig = {
 		system: {
 			'l': "System",
 			'categories': {
-				other: {"l": "Other"}
+				other: {"l": "Other"},
+				heapster: {"l": "Heapster"}
 			}
 		},
 		other: {

@@ -177,6 +177,13 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 										};
 									}
 									
+									if(!response[j].labels){
+										response[j].labels = {};
+									}
+									if(!response[j].labels['soajs.service.group']){
+										response[j].labels['soajs.service.group'] = "Other";
+									}
+									
 									hosts[serviceType][serviceSubType][serviceGroup].list.push(response[j]);
 								}
 							}

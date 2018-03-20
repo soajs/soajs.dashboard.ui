@@ -278,7 +278,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 											nginxRecords.push(tempo);
 										}
 									}
-									
 								});
 							}
 						});
@@ -1821,7 +1820,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 									}
 								}
 								
-								if (formData.custom && formData.custom.sourceCode && formData.custom.sourceCode.custom && formData.custom.sourceCode.custom.repo && formData.custom.sourceCode.custom.repo != '' && formData.custom.sourceCode.custom.repo != '-- Leave Empty --') {
+								if (formData.custom && formData.custom.sourceCode && formData.custom.sourceCode.custom && formData.custom.sourceCode.custom.repo && formData.custom.sourceCode.custom.repo != '' && formData.custom.sourceCode.custom.repo != '-- Leave Empty --__SOAJS_DELIMITER__') {
 									if (!formData.custom.sourceCode.custom.branch || formData.custom.sourceCode.custom.branch === '') {
 										$window.alert('Some fields are still missing: Please choose a branch for your repository');
 										return false;

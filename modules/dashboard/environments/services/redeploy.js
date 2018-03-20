@@ -128,9 +128,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 				
 				checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
+					for (let i = formConfig.entries.length - 1; i >= 0; i--) {
+						if (formConfig.entries[i].entries.length === 0) {
+							formConfig.entries.splice(i, 1);
+						}
+					}
 					checkifRepoBranch(accounts, catalogRecipe, formConfig);
 				});
-				
 			}
 		});
 		

@@ -1,5 +1,32 @@
 "use strict";
 
+function updateFormDataWithSourceCodesData(formData, sourceCodeData) {
+	// delete custom object if no source code selected
+	let noSourceCode = false;
+	if(!sourceCodeData || Object.keys(sourceCodeData).length === 0){
+		noSourceCode = true;
+	}
+	
+	if(formData.custom && (Object.keys(formData.custom).length === 0 || Object.keys(formData.custom.sourceCode).length === 0)){
+		noSourceCode = true;
+	}
+	
+	if(noSourceCode){
+		delete formData.custom;
+		return;
+	}
+	
+	// add label
+	if(formData && formData.custom && formData.custom.sourceCode){
+		if(formData.custom.sourceCode.configuration){
+			formData.custom.sourceCode.configuration.label = sourceCodeData.configuration.label;
+		}
+		if(formData.custom.sourceCode.custom){
+			formData.custom.sourceCode.custom.label = sourceCodeData.custom.label;
+		}
+	}
+}
+
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', '$routeParams', function ($scope,overview, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window, $routeParams) {
 	
@@ -1274,6 +1301,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							delete formData.sessionName;
 							delete formData.sessionSecret;
 							
+							updateFormDataWithSourceCodesData(formData, $scope.selectedSourceCode);
+							
 							$scope.lastStep = 3;
 							if (formData.deploy) {
 								//check mandatory fields
@@ -1563,6 +1592,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								}
 							});
 							
+							updateFormDataWithSourceCodesData(formData, $scope.selectedSourceCode);
+							
 							$localStorage.addEnv[$scope.currentStep] = angular.copy(formData);
 							$scope.wizard[$scope.currentServiceName] = angular.copy(formData);
 							
@@ -1826,6 +1857,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 										return false;
 									}
 								}
+								
+								updateFormDataWithSourceCodesData(formData, $scope.selectedSourceCode);
 								
 								if (formData.norecipe) {
 									delete formData.imageName;

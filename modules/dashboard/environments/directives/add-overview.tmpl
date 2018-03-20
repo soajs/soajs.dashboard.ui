@@ -133,7 +133,7 @@
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.controller ">
 
-							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k.toLowerCase()==='custom'?'Source Code':k}}
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k.toLowerCase()==='custom'?v.sourceCode.configuration.label:k}}
 								<span ng-if="k=='memory'">(in MBytes)</span></label></td>
 							<td ng-if="k!='deploy' && k!='custom'"> {{v}}</td>
 							<td ng-if="k==='custom'">
@@ -246,7 +246,7 @@
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.urac ">
 
-							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k.toLowerCase()==='custom'?'Source Code':k}}
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k.toLowerCase()==='custom'?v.sourceCode.configuration.label:k}}
 								<span ng-if="k=='memory'">(in MBytes)</span></label>
 							</td>
 							<td ng-if="k!='deploy' && k!='custom'"> {{v}}</td>
@@ -274,7 +274,7 @@
 					<tbody>
 						<tr ng-repeat="(k,v) in wizard.oauth ">
 
-							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k.toLowerCase()==='custom'?'Source Code':k}}
+							<td ng-if="k!='deploy'"><label class="text-capitalize">{{k.toLowerCase()==='custom'?v.sourceCode.configuration.label:k}}
 								<span ng-if="k=='memory'">(in MBytes)</span></label>
 							</td>
 							<td ng-if="k!='deploy' && k!='custom'"> {{v}}</td>
@@ -301,7 +301,7 @@
 				<tbody>
 					<tr ng-repeat="(k,v) in wizard.nginx">
 						<td ng-if="k!='norecipe' && k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe'">
-							<label class="text-capitalize">{{k.toLowerCase()==='custom'?'Source Code':k}}
+							<label class="text-capitalize">{{k.toLowerCase()==='custom'?v.sourceCode.configuration.label+' *** '+v.sourceCode.custom.label:k}}
 								<span ng-if="k=='memory'">(in MBytes)</span></label>
 						</td>
 						<td ng-if="k!='norecipe' && k!='deploy' && k!='customUi' && k!='certsGit' && k!='recipe' && k!=='custom'"> {{v}}</td>

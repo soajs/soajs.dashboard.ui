@@ -51,7 +51,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				let oneAccount = currentScope.accounts[account];
 				oneAccount.hide = true;
 				
-				if (oneAccount.owner === 'soajs') {
+				if (oneAccount.owner === 'soajs' && oneAccount.repos) {
 					for (var i = oneAccount.repos.length - 1; i >= 0; i--) {
 						if (['soajs/soajs.dashboard'].indexOf(oneAccount.repos[i].name) !== -1) {
 							oneAccount.repos.splice(i, 1);
@@ -62,39 +62,44 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				var repoComponents = [];
 				var repoComponentsNames =[];
 				
-				for(let i = oneAccount.repos.length -1; i >=0; i--){
-					
-					oneAccount.repos[i].full_name = oneAccount.repos[i].name;
-					if(oneAccount.repos[i].name.indexOf("/") !== -1){
-						oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
-					}
-					if(!oneAccount.repos[i].owner){
-						oneAccount.repos[i].owner = {
-							login: oneAccount.owner
-						};
-					}
-					
-					if(oneAccount.repos[i].type === 'multi'){
-						if(oneAccount.repos[i].configSHA.length === 0){
-							oneAccount.repos.splice(i, 1);
+				if(!oneAccount.repos || oneAccount.repos.length === 0){
+					currentScope.accounts.splice(account, 1);
+					continue;
+				}else{
+					for(let i = oneAccount.repos.length -1; i >=0; i--){
+						
+						oneAccount.repos[i].full_name = oneAccount.repos[i].name;
+						if(oneAccount.repos[i].name.indexOf("/") !== -1){
+							oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
 						}
-						else{
-							for(let multiCount = oneAccount.repos[i].configSHA.length -1; multiCount >=0; multiCount--){
-								if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].type) === -1){
-									oneAccount.repos[i].configSHA.splice(multiCount, 1);
-								}
-							}
+						if(!oneAccount.repos[i].owner){
+							oneAccount.repos[i].owner = {
+								login: oneAccount.owner
+							};
+						}
+						
+						if(oneAccount.repos[i].type === 'multi'){
 							if(oneAccount.repos[i].configSHA.length === 0){
 								oneAccount.repos.splice(i, 1);
 							}
+							else{
+								for(let multiCount = oneAccount.repos[i].configSHA.length -1; multiCount >=0; multiCount--){
+									if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].type) === -1){
+										oneAccount.repos[i].configSHA.splice(multiCount, 1);
+									}
+								}
+								if(oneAccount.repos[i].configSHA.length === 0){
+									oneAccount.repos.splice(i, 1);
+								}
+							}
 						}
-					}
-					else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
-						oneAccount.repos.splice(i, 1);
+						else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
+							oneAccount.repos.splice(i, 1);
+						}
 					}
 				}
 				
-				if(oneAccount.repos.length === 0){
+				if(!oneAccount.repos || oneAccount.repos.length === 0){
 					currentScope.accounts.splice(account, 1);
 				}
 				else{
@@ -644,9 +649,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									}
 								}
 							});
-							
-							$scope.setSourceCodeData(oneEnv, version, oneSrv);
 						}
+						
+						$scope.setSourceCodeData(oneEnv, version, oneSrv);
 					};
 
 					$scope.saveRecipe = function (type) {
@@ -659,6 +664,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					$scope.configReposBranchesStatus = {};
 					
 					$scope.setSourceCodeData = function(oneEnv, version, oneSrv) {
+						
 						let recipes = $scope.recipes;
 						let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 						let formData = formDataRoot.custom;
@@ -867,12 +873,14 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						branch: ""
 					};
 				} else {
-					currentScope.configRepos.config.forEach(function (eachConf) {
-						if (eachConf.name === selectedRepo) {
-							record.configuration.commit = eachConf.configSHA;
-							record.configuration.owner = eachConf.owner;
-						}
-					});
+					if(currentScope.configRepos && currentScope.configRepos.config){
+						currentScope.configRepos.config.forEach(function (eachConf) {
+							if (eachConf.name === selectedRepo) {
+								record.configuration.commit = eachConf.configSHA;
+								record.configuration.owner = eachConf.owner;
+							}
+						});
+					}
 				}
 			}
 			

@@ -494,22 +494,22 @@ var catalogAppConfig = {
 			"entries": [
 				{
 					'name': 'volume',
-					'label': 'Volume',
+					'label': 'Docker Volume',
 					'type': 'jsoneditor',
 					'value': '',
 					'required': true,
-					'tooltip': 'Enter the volume configuration.',
-					'fieldMsg': 'Enter the volume configuration.',
+					'tooltip': 'Enter the docker configuration.',
+					'fieldMsg': 'Enter the docker configuration.',
 					'height': 100
 				},
 				{
 					'name': 'volumeMount',
-					'label': 'Volume Mount',
+					'label': 'Kubernetes Volume',
 					'type': 'jsoneditor',
 					'value': '',
 					'required': true,
-					'tooltip': 'Enter the volume mount configuration; Kubernetes Only.',
-					'fieldMsg': 'Enter the volume mount configuration; Kubernetes Only.',
+					'tooltip': 'Enter the Kubernetes configuration; Volume and Volume mount.',
+					'fieldMsg': 'Enter the Kubernetes configuration; Volume and Volume mount.',
 					'height': 100
 				},
 				{
@@ -603,10 +603,7 @@ var catalogAppConfig = {
 						"failureThreshold": 0
 					},
 					"ports": [],
-					"voluming": {
-						"volumes": [],
-						"volumeMounts": []
-					},
+					"voluming": [],
 					"restartPolicy": {
 						"condition": "",
 						"maxAttempts": 0

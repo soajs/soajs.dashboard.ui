@@ -1202,6 +1202,15 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					tmp.name += volumeCounter;
 					tmp.entries[0].name += volumeCounter;
 					tmp.entries[1].name += volumeCounter;
+					
+					let defaultDockerVolume = {
+						volume : {}
+					};
+					let defaultKubernetesVolume = {
+						volume : {},
+						volumeMount : {}
+					};
+					
 					if (!submitAction) {
 						tmp.entries.pop()
 					}
@@ -1234,12 +1243,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								setEditorContent('volumeMount' + volumeCounter, mountValue, tmp.entries[1].height, $scope);
 							}
 							else {
-								setEditorContent('volumeMount' + volumeCounter, {}, tmp.entries[1].height, $scope);
+								setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 							}
 						}
 						else {
-							setEditorContent('volume' + volumeCounter, {}, tmp.entries[0].height, $scope);
-							setEditorContent('volumeMount' + volumeCounter, {}, tmp.entries[1].height, $scope);
+							setEditorContent('volume' + volumeCounter, defaultDockerVolume, tmp.entries[0].height, $scope);
+							setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 						}
 					}
 					else {
@@ -1250,12 +1259,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								setEditorContent('volumeMount' + volumeCounter, mountValue, tmp.entries[1].height, $scope);
 							}
 							else {
-								setEditorContent('volumeMount' + volumeCounter, {}, tmp.entries[1].height, $scope);
+								setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 							}
 						}
 						else {
-							setEditorContent('volume' + volumeCounter, {}, tmp.entries[0].height, $scope);
-							setEditorContent('volumeMount' + volumeCounter, {}, tmp.entries[1].height, $scope);
+							setEditorContent('volume' + volumeCounter, defaultDockerVolume, tmp.entries[0].height, $scope);
+							setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 						}
 					}
 					volumeCounter++;
@@ -1549,20 +1558,31 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				output["readinessProbe"] = data.recipe.deployOptions.readinessProbe;
 				setEditorContent("readinessProbe", output['readinessProbe'], mainFormConfig[5].tabs[2].entries[0].height, modalScope);
 				
+				// console.log("on load ...");
+				// console.log(data.recipe.deployOptions.voluming);
+				
 				//volumes
-				if (data.recipe.deployOptions.voluming && ((data.recipe.deployOptions.voluming.volumes && data.recipe.deployOptions.voluming.volumes.length > 0) || (data.recipe.deployOptions.voluming.volumeMounts && data.recipe.deployOptions.voluming.volumeMounts.length > 0))) {
-					data.recipe.deployOptions.voluming.volumes.forEach(function (oneVolume) {
-						output['volume' + volumeCounter] = oneVolume;
-						var mountVolume;
-						if (data.recipe.deployOptions.voluming.volumeMounts && data.recipe.deployOptions.voluming.volumeMounts[volumeCounter]) {
-							output['volumeMount' + volumeCounter] = data.recipe.deployOptions.voluming.volumeMounts[volumeCounter];
-							mountVolume = data.recipe.deployOptions.voluming.volumeMounts[volumeCounter];
+				if (data.recipe.deployOptions.voluming && (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.length > 0)) {
+					data.recipe.deployOptions.voluming.forEach(function (oneVolume) {
+						
+						let dockerVolume = {};
+						if(oneVolume.docker && oneVolume.docker.volume){
+							dockerVolume = oneVolume.docker;
+							output['volume' + volumeCounter] = dockerVolume;
+						}else{
+							output['volume' + volumeCounter] = {};
 						}
-						else {
+						
+						let mountVolume;
+						if(oneVolume.kubernetes && oneVolume.kubernetes.volume){
+							output['volumeMount' + volumeCounter] = oneVolume.kubernetes; // will have both volume & mount
+							mountVolume = oneVolume.kubernetes;
+						}else{
 							output['volumeMount' + volumeCounter] = {};
 							mountVolume = {};
 						}
-						modalScope.addNewVolume(oneVolume, mountVolume);
+						
+						modalScope.addNewVolume(dockerVolume, mountVolume);
 					});
 				}
 				else if (!data.recipe.deployOptions.voluming || (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.volumes.length === 0 && data.recipe.deployOptions.voluming.volumeMounts.length === 0)) {
@@ -1703,6 +1723,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	}
 	
 	function fromToAPI(formData, envCounter, volumeCounter, portCounter, labelCounter) {
+		
+		// console.log("on save ");
+		// console.log(formData);
+		
 		var apiData = {
 			name: formData.name,
 			type: formData.type,
@@ -1720,10 +1744,17 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					'sourceCode': {},
 					"readinessProbe": formData.readinessProbe,
 					"ports": [],
-					"voluming": {
-						"volumes": [],
-						"volumeMounts": []
-					},
+					"voluming": [
+						// {
+						// 	"docker" : {
+						// 		"volume" : {}
+						// 	},
+						// 	"kubernetes" : {
+						// 		"volume" : {},
+						// 		"volumeMount" : {}
+						// 	},
+						// }
+					],
 					"restartPolicy": {
 						"condition": formData.condition,
 						"maxAttempts": formData.maxAttempts
@@ -1843,15 +1874,21 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		
 		if (volumeCounter > 0) {
 			for (let i = 0; i < volumeCounter; i++) {
+				let currentVolume = {
+					docker : {},
+					kubernetes : {}
+				};
 				let volume = formData['volume' + i];
 				if (volume && Object.keys(volume).length > 0) {
-					apiData.recipe.deployOptions.voluming.volumes.push(volume);
+					currentVolume.docker = volume; // will probably have volume
 				}
 				
 				let volumeMount = formData['volumeMount' + i];
 				if (volumeMount && Object.keys(volumeMount).length > 0) {
-					apiData.recipe.deployOptions.voluming.volumeMounts.push(volumeMount);
+					currentVolume.kubernetes = volumeMount; // will probably have volume and volumeMount
 				}
+				
+				apiData.recipe.deployOptions.voluming.push(currentVolume);
 			}
 		}
 		

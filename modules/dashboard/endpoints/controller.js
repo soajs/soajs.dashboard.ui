@@ -981,7 +981,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 		config.entries.push({
 			'name': 'schemaKey',
-			'label': 'Schema Key',
+			'label': 'Method',
 			"type": "select",
 			'required': true,
 			"value": selectValues
@@ -995,7 +995,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			timeout: $timeout,
 			form: config,
 			'name': 'addSchema',
-			'label': 'Add Schema',
+			'label': 'Add Method',
 			'data': data,
 			'actions': [
 				{

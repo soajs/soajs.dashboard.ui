@@ -198,15 +198,15 @@ var catalogAppConfig = {
 						]
 					},
 					{
-						'label': 'Certificate',
+						'label': 'Certificates',
 						'entries': [
                             {
-                                'name': 'Certificate',
-                                'label': 'Require Certificate',
+                                'name': 'certificates',
+                                'label': 'Require Certificates',
                                 'type': 'select',
                                 'tooltip': "",
-                                'fieldMsg': "Specify if this recipe requires a certificate when deploying",
-                                'value': [{"l":"No" , "v": false, "selected" : true}, {"l":"Yes" , "v": true},{"l":"Maybe" , "v": "optional"}],
+                                'fieldMsg': "Specify if this recipe requires a certificates when deploying",
+                                'value': [{"l":"No" , "v": "none"}, {"l":"Yes" , "v": "required"},{"l":"Maybe" , "v": "optional"}],
                                 'required': false
                             },
 						]

@@ -1199,7 +1199,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				
 				$scope.addNewVolume = function (value, mountValue) {
 					var tmp = angular.copy(catalogAppConfig.form.volumeInput);
-					$scope.form.entries[5].tabs[5].entries[0].value = '';
+                    if ($scope.form.entries[5].tabs[5].entries.length >= 2) {
+                        $scope.form.entries[5].tabs[5].entries[0].value = '';
+                    }
 					tmp.name += volumeCounter;
 					tmp.entries[0].name += volumeCounter;
 					tmp.entries[1].name += volumeCounter;
@@ -1547,11 +1549,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.required) {
 				output['required'] = data.recipe.deployOptions.sourceCode.configuration.required
 			}
-
-			if (data.recipe.deployOptions.certificate) {
-                output['certificate'] = data.recipe.deployOptions.certificate
+			if (data.recipe.deployOptions.certificates) {
+                output['certificates'] = data.recipe.deployOptions.certificates
+			} else {
+                output['certificates'] = "none"
 			}
-			
+
 			if (data.recipe.buildOptions.settings && Object.hasOwnProperty.call(data.recipe.buildOptions.settings, 'accelerateDeployment')) {
 				output.accelerateDeployment = data.recipe.buildOptions.settings.accelerateDeployment.toString();
 			}
@@ -1740,8 +1743,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						"override": (formData.imageOverride === 'true')
 					},
 					'sourceCode': {},
+					"certificates" : "none",
 					"readinessProbe": formData.readinessProbe,
-					"certificate" : formData.certificate,
 					"ports": [],
 					"voluming": [],
 					"restartPolicy": {
@@ -1935,6 +1938,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		}
+
+		if (formData.certificates) {
+            apiData.recipe.deployOptions.certificates = formData.certificates
+        }
 		return apiData;
 	}
 	

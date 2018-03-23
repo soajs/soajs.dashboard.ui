@@ -50,54 +50,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 		getSendDataFromServer(currentScope, ngDataApi, opts, cb);
 	}
 	
-	function prepareCertificates(currentScope, cb) {
-		if (currentScope.wizard.deploy.selectedDriver === 'docker') {
-			if (currentScope.wizard.deploy.deployment.docker.certificates) {
-				return cb();
-			}
-			else if (currentScope.wizard.deploy.remoteCertificates) {
-				let certificatesNames = Object.keys(currentScope.wizard.deploy.remoteCertificates);
-				if (currentScope.wizard.deploy.previousEnvironment) {
-					return cb();
-				}
-				else {
-					currentScope.wizard.deploy.deployment.docker.certificates = {};
-					prepareFiles(certificatesNames, 0, cb);
-				}
-			}
-			else return cb();
-		}
-		else {
-			return cb();
-		}
-		
-		function prepareFiles(certificatesNames, counter, uCb) {
-			let oneCertificate = certificatesNames[counter];
-			if (!currentScope.wizard.deploy.remoteCertificates[oneCertificate]) {
-				//to avoid incompatibility issues when using safari browsers
-				return uCb();
-			}
-			
-			currentScope.wizard.deploy.deployment.docker.certificates[oneCertificate] = {
-				metadata: {
-					platform: "docker",
-					driver: "remote",
-					certType: oneCertificate,
-					envCode: currentScope.wizard.gi.code.toUpperCase()
-				},
-				data: currentScope.wizard.deploy.remoteCertificates[oneCertificate]
-			};
-			
-			counter++;
-			if (counter === certificatesNames.length) {
-				delete currentScope.wizard.deploy.remoteCertificates;
-				return uCb();
-			} else {
-				prepareFiles(certificatesNames, counter, uCb);
-			}
-		}
-	}
-	
 	function getPermissions(currentScope, cb) {
 		var options = {
 			"method": "get",
@@ -179,8 +131,6 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 	}
 	
 	return {
-		'prepareCertificates': prepareCertificates,
-		
 		'createEnvironment': createEnvironment,
 		
 		'checkDeploymentStatus': checkDeploymentStatus,

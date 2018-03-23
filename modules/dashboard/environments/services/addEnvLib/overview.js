@@ -289,25 +289,23 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 		$scope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		$scope.showProgress = false;
 		$scope.form.actions = [];
-		addEnv.prepareCertificates($scope, () => {
-			addEnv.createEnvironment($scope, (error) => {
-				if (error) {
-					$scope.form.actions = getFormActions($scope);
-					$scope.displayAlert('danger', error.message);
-				}
-				else {
-					//call check status
-					checkEnvDeploymentStatus($scope, (error) => {
-						if (error) {
-							addEnv.removeEnvironment($scope, () => {
-								$scope.displayAlert('danger', error);
-								$scope.form.actions = getFormActions($scope);
-								overviewFunction($scope);
-							});
-						}
-					});
-				}
-			});
+		addEnv.createEnvironment($scope, (error) => {
+			if (error) {
+				$scope.form.actions = getFormActions($scope);
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				//call check status
+				checkEnvDeploymentStatus($scope, (error) => {
+					if (error) {
+						addEnv.removeEnvironment($scope, () => {
+							$scope.displayAlert('danger', error);
+							$scope.form.actions = getFormActions($scope);
+							overviewFunction($scope);
+						});
+					}
+				});
+			}
 		});
 	}
 	

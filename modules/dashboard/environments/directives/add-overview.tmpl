@@ -365,15 +365,6 @@
 		<span ng-if="status.createEnvironment">
 			<span class="icon icon-checkmark green"></span> Environment Created ...<br>
 		</span>
-		<span ng-if="status.certificates">
-			<span ng-if="!status.certificates.done">
-				<span class="icon icon-loop2 yellow"></span> Storing Deployer Certificates ...<br>
-			</span>
-			<span ng-if="status.certificates.done">
-				<span class="icon icon-checkmark green"></span> Deployer Certificates Stored ...<br>
-				<alert type="warning" ng-if="status.certificates.exception">{{status.certificates.exception}}</alert>
-			</span>
-		</span>
 		<span ng-if="status.productize">
 			<span ng-if="!status.productize.done">
 				<span class="icon icon-loop2 yellow"></span> Creating Portal Product & Tenant ...<br>

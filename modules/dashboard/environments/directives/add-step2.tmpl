@@ -95,52 +95,11 @@
 				</tr>
 				<tr class="form-group tr-code-wrapper">
 					<td class="form-select">
-						<fieldset>
-							<legend>
-								Docker Certificates:
-							</legend>
-							<div id="CA-wrapper" class="w30 f-left">
-								<label>CA</label>
-								<span ng-show="form.formData.remoteCertificates && form.formData.remoteCertificates.ca" class="green">
-									<span class="icon icon-checkmark"></span> Already Selected
-									<br /><a class="red" href="" ng-click="removeCert('ca');">
-										<span class="icon icon-cross"></span> Remove
-									</a>
-								</span>
-								<span ng-show="!form.formData.remoteCertificates || !form.formData.remoteCertificates.ca" class="green">
-									<input class="form-control" id="dockercacert" name="dockercacert" type="file" on-read-file="showContent('ca' , $fileContent, form)" ng-required="platforms.docker"/>
-									<div class="fieldMsg hint">Specify the location of the certificate of type CA.</div>
-								</span>
-							</div>
-							<div id="Cert-wrapper"  class="w30 f-left">
-								<label>Cert</label>
-								<span ng-show="form.formData.remoteCertificates && form.formData.remoteCertificates.cert" class="green">
-									<span class="icon icon-checkmark"></span> Already Selected
-									
-									<br /><a class="red" href="" ng-click="removeCert('cert');">
-										<span class="icon icon-cross"></span> Remove
-									</a>
-								</span>
-								<span ng-show="!form.formData.remoteCertificates || !form.formData.remoteCertificates.cert" class="green">
-									<input class="form-control" id="dockercertcert" name="dockercertcert" type="file" on-read-file="showContent('cert' , $fileContent, form)" ng-required="platforms.docker"/>
-									<div class="fieldMsg hint">Specify the location of the certificate of type Cert.</div>
-								</span>
-							</div>
-							<div id="Key-wrapper"  class="w30 f-left">
-								<label>Key</label>
-								<span ng-show="form.formData.remoteCertificates && form.formData.remoteCertificates.key" class="green">
-									<span class="icon icon-checkmark"></span> Already Selected
-									
-									<br /><a class="red" href="" ng-click="removeCert('key');">
-										<span class="icon icon-cross"></span> Remove
-									</a>
-								</span>
-								<span ng-show="!form.formData.remoteCertificates || !form.formData.remoteCertificates.key" class="green">
-									<input class="form-control" id="dockerkeycert" name="dockerkeycert" type="file" on-read-file="showContent('key' , $fileContent, form)" ng-required="platforms.docker"/>
-									<div class="fieldMsg hint">Specify the location of the certificate of type Key.</div>
-								</span>
-							</div>
-						</fieldset>
+						<div id="dtoken-wrapper">
+							<label class="f-left">Docker Secret Token</label>
+							<textarea ng-required="platforms.docker" class="form-control" rows="4" placeholder="My Docker Secret Token" ng-model="form.formData.deployment.docker.token"></textarea>
+							<div class="fieldMsg hint">Provide the Docker Secret Token so that the Dashboard can connect to your machine(s).</div>
+						</div>
 					</td>
 				</tr>
 			</tbody>

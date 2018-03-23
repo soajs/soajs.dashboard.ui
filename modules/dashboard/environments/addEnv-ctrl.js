@@ -47,10 +47,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.fullGitAccountsList; // filled once in listAccounts
 	
 	$scope.wizard = {};
-	$scope.removeCert = function(certName){
-		delete $scope.form.formData.remoteCertificates[certName];
-		document.getElementById('docker' + certName + 'cert').value = '';
-	};
 	
 	//Check whether each part of the domain is not longer than 63 characters,
 	//Allow internationalized domain names
@@ -492,7 +488,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		}
 		
 		if($scope.platform === 'docker' && $scope.driver === 'remote'){
-			$scope.hideDeleteCert = true;
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
 				"routeName": "/dashboard/environment/platforms/list",
@@ -504,18 +499,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else {
-					if(response&& response.certs){
-						let certs = [];
-						response.certs.forEach((oneCert)=>{
-							if(oneCert.metadata.env[$scope.previousEnvironment.toUpperCase()]){
-								certs.push({
-									_id: oneCert._id,
-									filename: oneCert.filename,
-									certType: oneCert.metadata.certType
-								});
-							}
-						});
-						$scope.config.certs = certs;
+					if(response){
+						console.log(response);
 					}
 				}
 			});
@@ -586,7 +571,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					'action': function () {
 						delete $localStorage.addEnv;
 						$scope.form.formData = {};
-						$scope.remoteCertificates = {};
 						delete $scope.wizard;
 						$scope.$parent.go("/environments")
 					}
@@ -686,13 +670,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		
 		return status;
 	}
-	
-	$scope.showContent = function(id, value, form){
-		if(!form.formData.remoteCertificates){
-			form.formData.remoteCertificates = {};
-		}
-		form.formData.remoteCertificates[id] = value;
-	};
 	
 	$scope.Step2 = function () {
 		overlayLoading.show();
@@ -798,17 +775,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					delete formData.deployment.kubernetes;
 					formData.selectedDriver = 'docker';
 					formData.deployment.docker.dockerremote = true;
-					if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network) {
+					if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network || !formData.deployment.docker.token) {
 						$window.alert("Provide the information on how to connect to docker on your remote machine.");
 						return false;
 					}
 					
 					formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
-					
-					if (!formData.remoteCertificates || !formData.remoteCertificates.ca || !formData.remoteCertificates.cert || !formData.remoteCertificates.key) {
-						$window.alert("Docker requires you provide certificates so that the dashboard can connect to it securely. Please fill in the docker certificates.");
-						return false;
-					}
 				}
 				if ($scope.platforms.kubernetes) {
 					delete formData.docker;
@@ -897,7 +869,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 			'action': function () {
 				delete $localStorage.addEnv;
 				$scope.form.formData = {};
-				$scope.remoteCertificates = {};
 				delete $scope.wizard;
 				$scope.$parent.go("/environments")
 			}
@@ -1078,7 +1049,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 					'action': function () {
 						delete $localStorage.addEnv;
 						$scope.form.formData = {};
-						$scope.remoteCertificates = {};
 						delete $scope.wizard;
 						$scope.$parent.go("/environments")
 					}

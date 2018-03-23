@@ -146,10 +146,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		group.expanded = !group.expanded;
 	};
 
-	$scope.checkCerts = function(env) {
-		nodeSrv.checkCerts($scope, env);
-	};
-
 	$scope.getEnvironment = function(){
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -300,8 +296,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
 		$scope.getEnvironment();
 		$scope.listNodes($scope);
-		$scope.certsExist = true;
-		$scope.checkCerts($scope.envCode);
 	}
 	if ($scope.access.listHosts && $scope.envCode) {
 		$scope.listServices(function () {

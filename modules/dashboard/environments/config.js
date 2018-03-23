@@ -555,12 +555,7 @@ var environmentsConfig = {
 			"updatePrefix": ['dashboard', '/environment/dbs/updatePrefix', 'put']
 		},
 		"platforms": {
-			"getEnvironment": ['dashboard', '/environment', 'get'],
-			"certs": {
-				"upload": ['dashboard', '/environment/platforms/cert/upload', 'post'],
-				"choose": ['dashboard', '/environment/platforms/cert/choose', 'put'],
-				"delete": ['dashboard', '/environment/platforms/cert/delete', 'delete']
-			}
+			"getEnvironment": ['dashboard', '/environment', 'get']
 		},
 		"hacloud": {
 			"nodes": {

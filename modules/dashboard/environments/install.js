@@ -14,8 +14,8 @@ var envTranslation ={
 		"FRA": "Repositories"
 	},
 	"platformsAndCertificates": {
-		"ENG": "Platforms & Certificates",
-		"FRA": "Platforms & Certificates"
+		"ENG": "Platforms",
+		"FRA": "Platforms"
 	},
 	"hosts": {
 		"ENG": "Hosts",

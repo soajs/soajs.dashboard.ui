@@ -474,36 +474,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	};
 	
 	function renderPreviousDeployInfo(){
-		for(let i = $scope.availableEnvironments.length -1; i >=0; i--){
-			if($scope.availableEnvironments[i].code === $scope.previousEnvironment){
-				// console.log($scope.availableEnvironments[i]);
-				// console.log("------");
+		for(let i = $scope.availableEnvironments.length -1; i >=0; i--) {
+			if ($scope.availableEnvironments[i].code === $scope.previousEnvironment) {
 				$scope.platform = $scope.availableEnvironments[i].deployer.selected.split(".")[1];
 				$scope.driver = $scope.availableEnvironments[i].deployer.selected.split(".")[2];
-				if($scope.platform  !== 'manual'){
+				if ($scope.platform !== 'manual') {
 					$scope.config = $scope.availableEnvironments[i].deployer.container[$scope.platform][$scope.driver];
 				}
-				
 			}
-		}
-		
-		if($scope.platform === 'docker' && $scope.driver === 'remote'){
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/environment/platforms/list",
-				"params": {
-					"env": $scope.previousEnvironment
-				}
-			}, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				else {
-					if(response){
-						console.log(response);
-					}
-				}
-			});
 		}
 	}
 	
@@ -726,11 +704,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							
 							if (formData.selectedDriver === 'docker') {
 								delete formData.kubernetes;
-								formData.deployment.docker = {};
-								let localRemote = (formData.deployment.docker.dockerremote) ? 'remote' : 'local';
-								
-								formData.deployment.docker = oneEnv.deployer.container.docker[localRemote];
-								formData.deployment.docker.dockerremote = oneEnv.deployer.selected !== 'container.docker.local';
+								let localRemote = (oneEnv.deployer.selected.indexOf("remote") !== -1) ? 'remote' : 'local';
+								formData.deployment.docker = oneEnv.deployer.container[formData.selectedDriver][localRemote];
+								formData.deployment.docker.token = formData.deployment.docker.auth.token;
+								delete formData.deployment.docker.auth.token;
+								formData.deployment.docker.dockerremote = formData.deployment.docker.selected !== 'container.docker.local';
+								console.log(formData);
 							}
 							
 							if (formData.selectedDriver === 'kubernetes') {

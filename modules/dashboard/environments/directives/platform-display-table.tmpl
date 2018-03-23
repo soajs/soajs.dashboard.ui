@@ -10,6 +10,18 @@
 		</table>
 	</div>
 	<div class="grid" ng-if="!config.socketPath">
+		<alert type="warning" ng-if="oldDocker">
+			<h4>Docker Deployment has been Upgraded</h4>
+			<p>
+				SOAJS Deployment has been upgraded to use the new <b>Docker Token</b> strategy instead of relying on certificates.<br />
+				Your current deployment will remain functional, however it is strongly advised that you update to the latest strategy.
+			</p>
+			<a href="https://soajsorg.atlassian.net/wiki/spaces/IN/overview" target='_blank' class="f-right btn btn-warning">Download SOAJS Installer</a>
+			<p>
+				Download the SOAJS installer and run the <b>docker-api</b> script as instructed on the first page of the installer wizard.<br />
+				The script will generate the <b>Docker Token</b> for you, copy it, then click on configure icon <span class="icon icon-cog"></span> and add the token there.<br />
+			</p>
+		</alert>
 		<table width="100%" cellspacing="10">
 			<tr class="odd first">
 				<td width="50%">
@@ -23,21 +35,29 @@
 				</td>
 				<td>{{config.apiPort}}</td>
 			</tr>
-			<tr class="odd">
+			<tr class="odd first" ng-if="!oldDocker">
+				<td width="50%">
+					<b>Protocol</b>
+				</td>
+				<td>{{config.apiProtocol}}</td>
+			</tr>
+			<tr class="odd" ng-if="!oldDocker">
+				<td colspan="2"><b>Token</b></td>
+			</tr>
+			<tr class="even last" ng-if="!oldDocker">
+				<td colspan="2">{{config.auth.token}}</td>
+			</tr>
+			<tr class="odd" ng-if="oldDocker">
 				<td colspan="2"><b>Certificates</b></td>
 			</tr>
-			<tr class="even last">
+			<tr class="even last" ng-if="oldDocker">
 				<td colspan="2">
 					<div class="staticDiv">
 						<div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
 							<div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in config.certs" style="width:32% !important;">
 								<b>{{cert.filename}} [{{cert.certType}}]</b>
-								<a href="" ng-if="access.platforms.certs.delete && !hideDeleteCert" ng-click="removeCert(cert._id, platform, driver)" tooltip="{{translation.removeCertificate[LANG]}}">
-									<span class="icon icon-bin pull-right"></span>
-								</a>
 							</div>
 						</div>
-						<alert type="warning" ng-if="!config.certs || config.certs.length === 0">{{translation.noCertificatesUploadedYet[LANG]}}</alert>
 					</div>
 				</td>
 			</tr>

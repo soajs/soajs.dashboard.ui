@@ -108,13 +108,9 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
 							'type': 'text',
 							'value': defaultValue,
-							'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg
+							'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
+							'required': false
 						};
-						
-						//if no default value is set, the user input field is required
-						if (!defaultValue || defaultValue === '') {
-							newInput.required = true;
-						}
 						
 						//if the default value is ***, clear the value and set the field as required
 						//this is applicable for tokens whose values are masked by *

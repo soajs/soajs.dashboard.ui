@@ -706,10 +706,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 								delete formData.kubernetes;
 								let localRemote = (oneEnv.deployer.selected.indexOf("remote") !== -1) ? 'remote' : 'local';
 								formData.deployment.docker = oneEnv.deployer.container[formData.selectedDriver][localRemote];
-								formData.deployment.docker.token = formData.deployment.docker.auth.token;
-								delete formData.deployment.docker.auth.token;
+								if(formData.deployment.docker.auth && formData.deployment.docker.auth.token){
+									formData.deployment.docker.token = formData.deployment.docker.auth.token;
+									delete formData.deployment.docker.auth.token;
+								}
 								formData.deployment.docker.dockerremote = formData.deployment.docker.selected !== 'container.docker.local';
-								console.log(formData);
 							}
 							
 							if (formData.selectedDriver === 'kubernetes') {

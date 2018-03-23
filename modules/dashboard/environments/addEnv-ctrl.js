@@ -31,6 +31,7 @@ var environmentsApp = soajsApp.components;
 environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', '$routeParams', function ($scope,overview, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window, $routeParams) {
 	
 	$scope.showIntro = true;
+	$scope.oldStyle = false;
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
@@ -1376,7 +1377,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 						if($scope.currentServiceName === 'controller'){
 							$scope.serviceRecipes.forEach(function (eachRecipe) {
 								if(eachRecipe._id === $scope.form.formData.catalog){ // selected catalog
-									if(eachRecipe.type ==='soajs' || (eachRecipe.recipe && eachRecipe.recipe.deployOptions && eachRecipe.recipe.deployOptions.specifyGitConfiguration)){
+									if($scope.oldStyle){
 										let currentScope = $scope;
 										$modal.open({
 											templateUrl: "modules/dashboard/environments/directives/oldResources.tmpl",
@@ -1385,7 +1386,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 											keyboard: true,
 											controller: function ($scope, $modalInstance) {
 												$scope.upgradeResources = function(){
-													currentScope.$parent.go("#/resources");
+													currentScope.$parent.go("#/catalog-recipes");
 													$modalInstance.close();
 												}
 											}
@@ -1981,6 +1982,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
+				recipes.forEach(function (oneRecipe) {
+					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
+						$scope.oldStyle = true;
+					}
+				});
 				return cb(recipes);
 			}
 		});

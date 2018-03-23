@@ -133,7 +133,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				
 				$scope.oldStyle = false;
 				$scope.originalRecipes.forEach(function (oneRecipe) {
-					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration) {
+					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
 						$scope.oldStyle = true;
 					}
 				});
@@ -185,7 +185,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				
 				if ($scope.oldStyle === false) {
 					$scope.originalArchives.forEach(function (oneRecipe) {
-						if (oneRecipe.type === 'soajs') {
+						if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
 							$scope.oldStyle = true;
 						}
 					});

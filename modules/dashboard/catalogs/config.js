@@ -180,9 +180,7 @@ var catalogAppConfig = {
                         'label': 'Source Code',
                         'name': 'Repositories',
                         "type": "group",
-                        'entries': [
-
-         			   ],
+                        'entries': [],
 					},
 					{
 						'label': 'Readiness Probe',
@@ -200,28 +198,17 @@ var catalogAppConfig = {
 						]
 					},
 					{
-						'label': 'Restart Policy',
+						'label': 'Certificate',
 						'entries': [
-							{
-								'type': 'text',
-								'value': '',
-								'label': 'Condition',
-								'name': 'condition',
-								'placeholder': 'any',
-								'tooltip': "Define the condition that docker base the restart container policy upon",
-								'fieldMsg': "Define the condition that docker base the restart container policy upon",
-								'required': false
-							},
-							{
-								'type': 'number',
-								'value': '',
-								'label': 'Maximum Attempts',
-								'name': 'maxAttempts',
-								'placeholder': '5',
-								'tooltip': "Define how many times docker should restart the container after failure",
-								'fieldMsg': "Define how many times docker should restart the container after failure",
-								'required': false
-							}
+                            {
+                                'name': 'Certificate',
+                                'label': 'Require Certificate',
+                                'type': 'select',
+                                'tooltip': "",
+                                'fieldMsg': "Specify if this recipe requires a certificate when deploying",
+                                'value': [{"l":"No" , "v": false, "selected" : true}, {"l":"Yes" , "v": true},{"l":"Maybe" , "v": "optional"}],
+                                'required': false
+                            },
 						]
 					},
 					{
@@ -246,7 +233,27 @@ var catalogAppConfig = {
 								'tooltip': "Enter a default working directory to use connected to the container via SSH",
 								'fieldMsg': "Enter a default working directory to use connected to the container via SSH",
 								'required': false
-							}
+							},
+                            {
+                                'type': 'text',
+                                'value': '',
+                                'label': 'Restart Condition',
+                                'name': 'condition',
+                                'placeholder': 'any',
+                                'tooltip': "Define the condition that docker base the restart container policy upon",
+                                'fieldMsg': "Define the condition that docker base the restart container policy upon",
+                                'required': false
+                            },
+                            {
+                                'type': 'number',
+                                'value': '',
+                                'label': 'Maximum Restart Attempts',
+                                'name': 'maxAttempts',
+                                'placeholder': '5',
+                                'tooltip': "Define how many times docker should restart the container after failure",
+                                'fieldMsg': "Define how many times docker should restart the container after failure",
+                                'required': false
+                            }
 						]
 					},
 					{
@@ -261,6 +268,13 @@ var catalogAppConfig = {
 					},
 					{
 						'label': 'Exposed Ports',
+                        'description': {
+                            'type': "info",
+                            'content': 	"<p>Expose ports to access deployments created from this recipe directly using either <b>Load Balancer</b> or <b>Specific Port</b> strategies.<br />" +
+                            "<b>Load Balancer</b> &raquo; { name: 'http', target: 80, isPublished: true, preserveClientIP: true }<br />" +
+                            "<b>Specific Port</b> &raquo; { name: 'http', target: 80, isPublished: true, published: 2080, preserveClientIP: true }" +
+                            "</p>"
+                        },
 						'entries': [
 							{
 								'type': 'html',
@@ -493,23 +507,23 @@ var catalogAppConfig = {
 			"label": "New Volume",
 			"entries": [
 				{
-					'name': 'volume',
+					'name': 'docker',
 					'label': 'Docker Volume',
 					'type': 'jsoneditor',
 					'value': '',
 					'required': true,
 					'tooltip': 'Enter the docker configuration.',
-					'fieldMsg': 'Enter the docker configuration.',
+					'fieldMsg': "<div class='fieldMsg'>For more info about Docker volumes click <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes#CatalogRecipes-dockerVoluming'>Here</a></div>",
 					'height': 100
 				},
 				{
-					'name': 'volumeMount',
+					'name': 'kubernetes',
 					'label': 'Kubernetes Volume',
 					'type': 'jsoneditor',
 					'value': '',
 					'required': true,
 					'tooltip': 'Enter the Kubernetes configuration; Volume and Volume mount.',
-					'fieldMsg': 'Enter the Kubernetes configuration; Volume and Volume mount.',
+					'fieldMsg': "<div class='fieldMsg'>For more info about Kubernetes volumes click <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes#CatalogRecipes-kubernetesVoluming'>Here</a></div>",
 					'height': 100
 				},
 				{
@@ -532,7 +546,7 @@ var catalogAppConfig = {
 					'value': '',
 					'required': true,
 					'tooltip': 'Enter the port configuration.',
-					'fieldMsg': 'Enter the port configuration.',
+					'fieldMsg': 'External port values are limited to a range between 0 and 2767.',
 					'height': 100
 				},
 				{

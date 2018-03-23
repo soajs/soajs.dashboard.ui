@@ -1199,6 +1199,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				
 				$scope.addNewVolume = function (value, mountValue) {
 					var tmp = angular.copy(catalogAppConfig.form.volumeInput);
+					$scope.form.entries[5].tabs[5].entries[0].value = '';
 					tmp.name += volumeCounter;
 					tmp.entries[0].name += volumeCounter;
 					tmp.entries[1].name += volumeCounter;
@@ -1223,7 +1224,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								if (form.entries[5].tabs[5].entries[i].name === 'volumeGroup' + count) {
 									//remove from formData
 									for (var fieldname in form.formData) {
-										if (['volume' + count, 'volumeMount' + count].indexOf(fieldname) !== -1) {
+										if (['docker' + count, 'kubernetes' + count].indexOf(fieldname) !== -1) {
 											delete form.formData[fieldname];
 										}
 									}
@@ -1238,33 +1239,33 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					if ($scope.form && $scope.form.entries) {
 						$scope.form.entries[5].tabs[5].entries.splice($scope.form.entries[5].tabs[5].entries.length - 1, 0, tmp);
 						if (value) {
-							setEditorContent('volume' + volumeCounter, value, tmp.entries[0].height, $scope);
+							setEditorContent('docker' + volumeCounter, value, tmp.entries[0].height, $scope);
 							if (mountValue) {
-								setEditorContent('volumeMount' + volumeCounter, mountValue, tmp.entries[1].height, $scope);
+								setEditorContent('kubernetes' + volumeCounter, mountValue, tmp.entries[1].height, $scope);
 							}
 							else {
-								setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
+								setEditorContent('kubernetes' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 							}
 						}
 						else {
-							setEditorContent('volume' + volumeCounter, defaultDockerVolume, tmp.entries[0].height, $scope);
-							setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
+							setEditorContent('docker' + volumeCounter, defaultDockerVolume, tmp.entries[0].height, $scope);
+							setEditorContent('kubernetes' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 						}
 					}
 					else {
 						formConfig[5].tabs[5].entries.splice($scope.form.entries[5].tabs[5].entries.length - 1, 0, tmp);
 						if (value) {
-							setEditorContent('volume' + volumeCounter, value, tmp.entries[0].height, $scope);
+							setEditorContent('docker' + volumeCounter, value, tmp.entries[0].height, $scope);
 							if (mountValue) {
-								setEditorContent('volumeMount' + volumeCounter, mountValue, tmp.entries[1].height, $scope);
+								setEditorContent('kubernetes' + volumeCounter, mountValue, tmp.entries[1].height, $scope);
 							}
 							else {
-								setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
+								setEditorContent('kubernetes' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 							}
 						}
 						else {
-							setEditorContent('volume' + volumeCounter, defaultDockerVolume, tmp.entries[0].height, $scope);
-							setEditorContent('volumeMount' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
+							setEditorContent('docker' + volumeCounter, defaultDockerVolume, tmp.entries[0].height, $scope);
+							setEditorContent('kubernetes' + volumeCounter, defaultKubernetesVolume, tmp.entries[1].height, $scope);
 						}
 					}
 					volumeCounter++;
@@ -1546,6 +1547,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.required) {
 				output['required'] = data.recipe.deployOptions.sourceCode.configuration.required
 			}
+
+			if (data.recipe.deployOptions.certificate) {
+                output['certificate'] = data.recipe.deployOptions.certificate
+			}
 			
 			if (data.recipe.buildOptions.settings && Object.hasOwnProperty.call(data.recipe.buildOptions.settings, 'accelerateDeployment')) {
 				output.accelerateDeployment = data.recipe.buildOptions.settings.accelerateDeployment.toString();
@@ -1557,10 +1562,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (postForm) {
 				output["readinessProbe"] = data.recipe.deployOptions.readinessProbe;
 				setEditorContent("readinessProbe", output['readinessProbe'], mainFormConfig[5].tabs[2].entries[0].height, modalScope);
-				
-				// console.log("on load ...");
-				// console.log(data.recipe.deployOptions.voluming);
-				
+
 				//volumes
 				if (data.recipe.deployOptions.voluming && (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.length > 0)) {
 					data.recipe.deployOptions.voluming.forEach(function (oneVolume) {
@@ -1575,23 +1577,23 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						
 						let mountVolume;
 						if(oneVolume.kubernetes && oneVolume.kubernetes.volume){
-							output['volumeMount' + volumeCounter] = oneVolume.kubernetes; // will have both volume & mount
+							output['kubernetes' + volumeCounter] = oneVolume.kubernetes; // will have both volume & mount
 							mountVolume = oneVolume.kubernetes;
 						}else{
-							output['volumeMount' + volumeCounter] = {};
+							output['kubernetes' + volumeCounter] = {};
 							mountVolume = {};
 						}
 						
 						modalScope.addNewVolume(dockerVolume, mountVolume);
 					});
 				}
-				else if (!data.recipe.deployOptions.voluming || (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.volumes.length === 0 && data.recipe.deployOptions.voluming.volumeMounts.length === 0)) {
+				else if (!data.recipe.deployOptions.voluming || (data.recipe.deployOptions.voluming || data.recipe.deployOptions.voluming.length === 0 )) {
 					modalScope.form.entries[5].tabs[5].entries.splice(modalScope.form.entries[5].tabs[5].entries.length - 1, 0, {
 						'type': 'html',
 						'value': "<br /><div class='alert alert-warning'>No Volumes Configured for this Recipe.</div><br />"
 					});
 				}
-				
+
 				//ports
 				if (data.recipe.deployOptions.ports && data.recipe.deployOptions.ports.length > 0) {
 					data.recipe.deployOptions.ports.forEach(function (onePort) {
@@ -1601,11 +1603,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 				else if (!data.recipe.deployOptions.ports || data.recipe.deployOptions.ports.length === 0) {
 					modalScope.form.entries[5].tabs[6].entries.splice(modalScope.form.entries[5].tabs[6].entries.length - 1, 0, {
-						'type': 'html',
-						'value': "<br /><div class='alert alert-warning'>No Ports Configured for this Recipe.</div><br />"
-					});
+                        'type': 'html',
+                        'value': "<br /><div class='alert alert-warning'>No Ports Configured for this Recipe.</div><br />"
+                    });
 				}
-				
+
 				//env variables
 				if (data.recipe.buildOptions.env && Object.keys(data.recipe.buildOptions.env).length > 0) {
 					for (var oneVar in data.recipe.buildOptions.env) {
@@ -1723,10 +1725,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	}
 	
 	function fromToAPI(formData, envCounter, volumeCounter, portCounter, labelCounter) {
-		
-		// console.log("on save ");
-		// console.log(formData);
-		
 		var apiData = {
 			name: formData.name,
 			type: formData.type,
@@ -1743,18 +1741,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					},
 					'sourceCode': {},
 					"readinessProbe": formData.readinessProbe,
+					"certificate" : formData.certificate,
 					"ports": [],
-					"voluming": [
-						// {
-						// 	"docker" : {
-						// 		"volume" : {}
-						// 	},
-						// 	"kubernetes" : {
-						// 		"volume" : {},
-						// 		"volumeMount" : {}
-						// 	},
-						// }
-					],
+					"voluming": [],
 					"restartPolicy": {
 						"condition": formData.condition,
 						"maxAttempts": formData.maxAttempts
@@ -1878,17 +1867,20 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					docker : {},
 					kubernetes : {}
 				};
-				let volume = formData['volume' + i];
+				let volume = formData['docker' + i];
+
 				if (volume && Object.keys(volume).length > 0) {
 					currentVolume.docker = volume; // will probably have volume
 				}
 				
-				let volumeMount = formData['volumeMount' + i];
+				let volumeMount = formData['kubernetes' + i];
 				if (volumeMount && Object.keys(volumeMount).length > 0) {
 					currentVolume.kubernetes = volumeMount; // will probably have volume and volumeMount
 				}
-				
-				apiData.recipe.deployOptions.voluming.push(currentVolume);
+
+				if ( formData['docker' + i] !==  undefined ||  formData['kubernetes' + i] !== undefined) {
+                    apiData.recipe.deployOptions.voluming.push(currentVolume);
+				}
 			}
 		}
 		

@@ -390,6 +390,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 					'btn': 'primary',
 					'action': function (formData) {
 						
+						if(formData.api.includes('{') || formData.api.includes('}')){
+							alert("Invalid Route: Your path params must be defined as follows /:param");
+							return;
+						}
+						
 						$scope.tempo.isPublishEnabled[endpoint._id] = false;
 						
 						function generateApi(apiInfo, apiGroup) {
@@ -981,7 +986,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 		config.entries.push({
 			'name': 'schemaKey',
-			'label': 'Schema Key',
+			'label': 'Method',
 			"type": "select",
 			'required': true,
 			"value": selectValues
@@ -995,7 +1000,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			timeout: $timeout,
 			form: config,
 			'name': 'addSchema',
-			'label': 'Add Schema',
+			'label': 'Add Method',
 			'data': data,
 			'actions': [
 				{
@@ -1262,7 +1267,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							$scope.recursiveInitImfv(custom[each], 1);
 						});
 						
-						
 						let commonFields = imfv.commonFields;
 						imfv.tempoCommonFields = {}; // object // similar to custom // will hold common fields complete objects
 						if (commonFields) {
@@ -1292,6 +1296,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onRemoveEndpoint = function (mainType, id) {
+		let description = mainType === 'services' ? 'Service' : 'Endpoint';
+		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/apiBuilder/delete",
@@ -1303,7 +1309,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			} else {
-				$scope.$parent.displayAlert('success', "Endpoint deleted successfully");
+				$scope.$parent.displayAlert('success', `${description} deleted successfully`);
 				$scope.listEndpoints(mainType);
 			}
 		});

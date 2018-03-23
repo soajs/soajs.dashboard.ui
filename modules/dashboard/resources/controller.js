@@ -659,7 +659,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							if (recipes && Array.isArray(recipes)) {
 								recipes.forEach(function (oneRecipe) {
 									
-									if(oneRecipe.type ==='soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration){
+									if(oneRecipe.type ==='soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes){
 										$scope.oldStyle = true;
 									}
 									else{

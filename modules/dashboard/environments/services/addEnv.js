@@ -126,6 +126,13 @@ dbServices.service('addEnv', ['ngDataApi', '$timeout', '$cookies', '$localStorag
 							"description": oneEnv.description,
 							"deployer": oneEnv.deployer
 						};
+						for(let container in data.deployer.container){
+							for(let driver in data.deployer.container[container]){
+								if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
+									delete data.deployer.container[container][driver].auth.token;
+								}
+							}
+						}
 						$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 					}
 				});

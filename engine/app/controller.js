@@ -116,6 +116,14 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				$scope.currentDeployer = { type: '' };
 			}
 			$scope.currentDeployer.type = record.deployer.type;
+			
+			for(let container in data.deployer.container){
+				for(let driver in data.deployer.container[container]){
+					if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
+						delete data.deployer.container[container][driver].auth.token;
+					}
+				}
+			}
 			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 		}
 		

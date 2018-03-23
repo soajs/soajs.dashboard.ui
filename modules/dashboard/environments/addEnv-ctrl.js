@@ -2008,12 +2008,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							'label': oneRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
 							'type': 'text',
 							'value': oneRecipe.recipe.buildOptions.env[envVariable].default || '',
-							'fieldMsg': oneRecipe.recipe.buildOptions.env[envVariable].fieldMsg
+							'fieldMsg': oneRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
+							'required': false
 						};
-						
-						if (!oneRecipe.recipe.buildOptions.env[envVariable].default || oneRecipe.recipe.buildOptions.env[envVariable].default === '') {
-							newInput.required = true;
-						}
 						
 						if (!$scope.form.formData.custom) {
 							$scope.form.formData.custom = {};

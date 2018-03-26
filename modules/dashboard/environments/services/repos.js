@@ -626,8 +626,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 												name: envVariable,
 												value: catalogRecipe.recipe.buildOptions.env[envVariable].default || "",
 												fieldMsg: catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
-												required: (catalogRecipe.recipe.buildOptions.env[envVariable].default && catalogRecipe.recipe.buildOptions.env[envVariable].default !== '') ? false : true
+												required:  false,
 											};
+											console.log( newCatalogInput ); // ToDelete #2del
 											$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
 											if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
 												$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";

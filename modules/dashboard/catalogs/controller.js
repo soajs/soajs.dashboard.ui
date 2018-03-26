@@ -1170,7 +1170,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					else {
 						envVars.entries[envVars.entries.length - 1].name += envCounter;
 						envVars.entries[envVars.entries.length - 1].onAction = function (id, value, form) {
-							
 							var count = parseInt(id.replace('envVarRemove', ''));
 							for (let i = form.entries[7].tabs[1].entries.length - 1; i >= 0; i--) {
 								if (form.entries[7].tabs[1].entries[i].name === 'envVarGroup' + count) {

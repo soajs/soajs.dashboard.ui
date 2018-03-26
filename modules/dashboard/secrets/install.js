@@ -13,8 +13,8 @@ var secretsNav = [
         'tplPath': 'modules/dashboard/secrets/directives/list.tmpl',
         'icon': 'eye-blocked',
         'pillar': {
-            'name': 'deploy',
-            'label': translation.deploy[LANG],
+            'name': 'deployment',
+            'label': translation.secrets[LANG],
             'position': 1
         },
         'mainMenu': true,

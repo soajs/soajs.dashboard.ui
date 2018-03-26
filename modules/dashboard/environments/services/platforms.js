@@ -157,7 +157,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 						else {
 							$scope.closeModal();
 							currentScope.displayAlert('success', 'Namespace configuration updated successfully');
-							currentScope.listPlatforms(currentScope.envCode);
+							currentScope.getEnvPlatform();
 						}
 					});
 				};

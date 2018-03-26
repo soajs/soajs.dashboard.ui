@@ -12,7 +12,10 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/secrets/list'
+			routeName: '/dashboard/secrets/list',
+			params: {
+				env: "DASHBOARD" //get actual environment code
+			}
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -67,7 +70,6 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			routeName: '/dashboard/secrets/add',
 			params: {}
 		};
-		var currentScope = $scope;
 
 		$modal.open({
 			templateUrl: "newSecret.tmpl",
@@ -77,7 +79,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			controller: function ($scope, $modalInstance) {
 				//TODO: get deployer if docker -> use addDockerSecret
 				// if kubernetes use addKubernetesSecret
-				
+
 				var formConfig = angular.copy(secretsAppConfig.form.addDockerSecret);
 
 				var options = {
@@ -113,14 +115,11 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
 	};
 
-	$scope.deleteSecret = function (secret) {
-
-	}
-
-	$scope.getSecret = function (secretName) {
+	$scope.deleteSecret = function (secretName) {
+		//TODO: display delete confirmation
 		getSendDataFromServer($scope, ngDataApi, {
-			method: 'get',
-			routeName: '/dashboard/secrets/get',
+			method: 'delete',
+			routeName: '/dashboard/secrets/delete',
 			params: {
 				name: secretName
 			}
@@ -129,74 +128,72 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
-				$scope.secrets = response;
-
-
+				$scope.displayAlert('success', 'Secret deleted successfully.');
 			}
 		});
-	}
-
+	};
 
 	// Start here
 	if ($scope.access.list) {
 		// $scope.listSecrets();
 		console.log($scope);
-		$scope.secrets = [
-			{
-				name: 'secret1',
-				uid: '1111'
-			},
-			{
-				name: 'secret2',
-				uid: '2222'
-			},
-			{
-				name: 'secret3',
-				uid: '3333'
-			},
-			{
-				name: 'secret4',
-				uid: '4444'
-			},
-			{
-				name: 'secret5',
-				uid: '5555'
-			},
-			{
-				name: 'secret6',
-				uid: '6666'
-			}
-		]
+		// $scope.secrets = [
+		// 	{
+		// 		name: 'secret1',
+		// 		uid: '1111'
+		// 	},
+		// 	{
+		// 		name: 'secret2',
+		// 		uid: '2222'
+		// 	},
+		// 	{
+		// 		name: 'secret3',
+		// 		uid: '3333'
+		// 	},
+		// 	{
+		// 		name: 'secret4',
+		// 		uid: '4444'
+		// 	},
+		// 	{
+		// 		name: 'secret5',
+		// 		uid: '5555'
+		// 	},
+		// 	{
+		// 		name: 'secret6',
+		// 		uid: '6666'
+		// 	}
+		// ]
 
-		var options = {
-			grid: secretsAppConfig.grid,
-			data: $scope.secrets,
-			left: [],
-			top: []
-		};
-
-		// if ($scope.access.get) {
+		// var options = {
+		// 	grid: secretsAppConfig.dockerSecretsGrid,
+		// 	data: $scope.secrets,
+		// 	// defaultSortField: 'name',
+		// 	left: [],
+		// 	top: []
+		// };
+		//
+		// // if ($scope.access.get) {
+		// // 	options.left.push({
+		// // 		'label': 'Inspect Secret', //TODO: translation
+		// // 		'icon': 'eye',
+		// // 		'handler': 'getSecret'
+		// // 	});
+		// // }
+		//
+		// if ($scope.access.delete) {
 		// 	options.left.push({
-		// 		'label': 'Inspect Secret', //TODO: translation
-		// 		'icon': 'eye',
-		// 		'handler': 'getSecret'
+		// 		'label': 'Delete Secret', //TODO: translation
+		// 		'icon': 'bin',
+		// 		'handler': 'deleteSecret'
 		// 	});
-		// }
-
-		if ($scope.access.delete) {
-			options.left.push({
-				'label': 'Delete Secret', //TODO: translation
-				'icon': 'bin',
-				'handler': 'deleteSecret'
-			});
-			// options.top.push({
-			// 	'label': 'Delete Secrets', //TODO: translation
-			// 	'icon': 'bin',
-			// 	'handler': 'deleteSecrets'
-			// });
-		};
-
-		buildGrid($scope,options);
-	}
+		// 	// options.top.push({
+		// 	// 	'label': 'Delete Secrets', //TODO: translation
+		// 	// 	'icon': 'bin',
+		// 	// 	'handler': 'deleteSecrets'
+		// 	// });
+		// };
+		//
+		// buildGrid($scope,options);
+	};
 
 }]);

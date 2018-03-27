@@ -94,7 +94,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									name: formData.secretName,
 									env: currentScope.selectedEnvironment.code,
 									type: 'Opaque',
-									namespace: currentScope.selectedNamespace
+									namespace: currentScope.namespaceConfig.namespace
 								};
 
 								if(!input.data && formData.file){
@@ -110,12 +110,6 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
 								if(!input.data && $scope.editor){
 									input.data = $scope.editor.ngModel;
-									try{
-										input.data = JSON.parse(input.data);
-									}
-									catch(e){
-										$window.alert("Invalid JSON content provided in editor!");
-									}
 									delete formData.file;
 								}
 
@@ -123,25 +117,19 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									$scope.form.displayAlert("danger", "Provide a value for your secret to proceed!");
 									return false;
 								}
-
-
-								console.log(JSON.stringify({
+								
+								getSendDataFromServer(currentScope, ngDataApi, {
 									method: 'post',
 									routeName: '/dashboard/secrets/add',
-									params: input
-								},null, 2));
-								return false;
-								getSendDataFromServer($scope, ngDataApi, {
-									method: 'post',
-									routeName: '/dashboard/secrets/add',
-									params: input
+									data: input
 								}, function (error, response) {
 									if (error) {
-										$scope.displayAlert('danger', error.message);
+										$scope.form.displayAlert('danger', error.message);
 									}
 									else {
-										$scope.displayAlert('success', 'Secret created successfully.')
-										$scope.listSecrets();
+										currentScope.displayAlert('success', 'Secret created successfully.');
+										currentScope.listSecrets();
+										$modalInstance.close();
 									}
 								});
 							}
@@ -212,7 +200,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			params: {
 				name: secret.name,
 				env: $scope.selectedEnvironment.code,
-				namespace: $scope.selectedNamespace
+				namespace: $scope.namespaceConfig.namespace
 			}
 		}, function (error, response) {
 			if (error) {

@@ -1,10 +1,16 @@
 'use strict';
 var secretsApp = soajsApp.components;
 
-secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles) {
+secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', '$cookies', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage, $cookies) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
+
+	//get selected environment record
+	$scope.selectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
+
+	//set selected deployer
+	$scope.envDeployer = $scope.selectedEnvironment.deployer.selected.split('.')[1];
 
 	constructModulePermissions($scope, $scope.access, secretsAppConfig.permissions);
 
@@ -14,7 +20,8 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			method: 'get',
 			routeName: '/dashboard/secrets/list',
 			params: {
-				env: "DASHBOARD" //get actual environment code
+				env: $scope.selectedEnvironment.code
+				// namespace: $scope.selectedNamespace
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -24,23 +31,12 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			else {
 				$scope.secrets = response;
 
-				//TODO: get deployer -> if docker use docker grid
-				// if kubernetes get kubernetes grid
-
 				var options = {
-					grid: secretsAppConfig.dockerSecretsGrid,
+					grid: secretsAppConfig.secretsGrid,
 					data: $scope.secrets,
 					left: [],
 					top: []
 				};
-
-				// if ($scope.access.get) {
-				// 	options.left.push({
-				// 		'label': 'Inspect Secret', //TODO: translation
-				// 		'icon': 'eye',
-				// 		'handler': 'getSecret'
-				// 	});
-				// }
 
 				if ($scope.access.delete) {
 					options.left.push({
@@ -77,10 +73,8 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			backdrop: true,
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
-				//TODO: get deployer if docker -> use addDockerSecret
-				// if kubernetes use addKubernetesSecret
 
-				var formConfig = angular.copy(secretsAppConfig.form.addDockerSecret);
+				var formConfig = angular.copy(secretsAppConfig.form.addSecret);
 
 				var options = {
 					timeout: $timeout,
@@ -92,7 +86,32 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							'label': "Create Secret",
 							'btn': 'primary',
 							action: function (formData) {
-								//TODO: create secret
+								var input = {
+									name: formData.name,
+									env: $scope.selectedEnvironment,
+									type: 'Opaque',
+									namespace: $scope.selectedNamespace
+								}
+
+								if(formData.content) {
+									input.data = formData.content
+								}
+								else {
+									input.data = formData.file
+								}
+
+								getSendDataFromServer($scope, ngDataApi, {
+									method: 'post',
+									routeName: '/dashboard/secrets/add',
+									params: input
+								}, function (error, response) {
+									if (error) {
+										$scope.displayAlert('danger', error.message);
+									}
+									else {
+										$scope.displayAlert('success', 'Secret created successfully.')
+									}
+								});
 							}
 						},
 						{
@@ -135,7 +154,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
 	// Start here
 	if ($scope.access.list) {
-		// $scope.listSecrets();
+		$scope.listSecrets();
 		console.log($scope);
 		// $scope.secrets = [
 		// 	{
@@ -164,36 +183,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		// 	}
 		// ]
 
-		// var options = {
-		// 	grid: secretsAppConfig.dockerSecretsGrid,
-		// 	data: $scope.secrets,
-		// 	// defaultSortField: 'name',
-		// 	left: [],
-		// 	top: []
-		// };
-		//
-		// // if ($scope.access.get) {
-		// // 	options.left.push({
-		// // 		'label': 'Inspect Secret', //TODO: translation
-		// // 		'icon': 'eye',
-		// // 		'handler': 'getSecret'
-		// // 	});
-		// // }
-		//
-		// if ($scope.access.delete) {
-		// 	options.left.push({
-		// 		'label': 'Delete Secret', //TODO: translation
-		// 		'icon': 'bin',
-		// 		'handler': 'deleteSecret'
-		// 	});
-		// 	// options.top.push({
-		// 	// 	'label': 'Delete Secrets', //TODO: translation
-		// 	// 	'icon': 'bin',
-		// 	// 	'handler': 'deleteSecrets'
-		// 	// });
-		// };
-		//
-		// buildGrid($scope,options);
+		/
 	};
 
 }]);

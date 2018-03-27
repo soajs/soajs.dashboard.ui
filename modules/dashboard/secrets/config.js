@@ -26,10 +26,12 @@ var secretsAppConfig = {
 							},
 							{
 								'name': 'secretData',
+								'value': '',
 								'label': 'Secret Content Data',
 								'type': 'jsoneditor',
 								'required': true,
-								'fieldMsg': "Provide the content of the secret as text/json"
+								'fieldMsg': "Provide the content of the secret as text/json",
+								'height': 100
 							}
 						]
 

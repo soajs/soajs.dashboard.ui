@@ -119,7 +119,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									$scope.form.displayAlert("danger", "Provide a value for your secret to proceed!");
 									return false;
 								}
-								
+
 								getSendDataFromServer(currentScope, ngDataApi, {
 									method: 'post',
 									routeName: '/dashboard/secrets/add',
@@ -215,7 +215,27 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		});
 	};
 
-	$scope.deleteSecrets = function(){};
+	$scope.deleteSecrets = function($scope) {
+			overlayLoading.show();
+			var config = {
+				"headers": {
+					"key": $scope.key
+				},
+				'method': 'delete',
+				'routeName': "/dashboard/secrets/delete",
+				"params": {'name': '%name%'},
+				'msg': {
+					'error': translation.errorMessageDeactivateMembers[LANG],
+					'success': translation.successMessageDeactivateMembers[LANG]
+				}
+			};
+
+			multiRecordUpdate(ngDataApi, currentScope, config, function () {
+				overlayLoading.hide();
+				currentScope.listSecrets();
+			});
+
+	};
 
 	$scope.listNamespaces = function (currentScope, cb) {
 		if (currentScope.envPlatform !== 'kubernetes') {

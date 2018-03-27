@@ -43,7 +43,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			else {
 				$scope.secrets = response;
 
-				var options = {
+				let options = {
 					grid: secretsAppConfig.secretsGrid,
 					data: $scope.secrets,
 					left: [],
@@ -80,9 +80,9 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			controller: function ($scope, $modalInstance) {
 				$scope.textMode = false;
 
-				var formConfig = angular.copy(secretsAppConfig.form.addSecret);
+				let formConfig = angular.copy(secretsAppConfig.form.addSecret);
 
-				var options = {
+				let options = {
 					timeout: $timeout,
 					entries: formConfig,
 					name: 'newSecret',
@@ -92,7 +92,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							'label': "Create Secret",
 							'btn': 'primary',
 							action: function (formData) {
-								var input = {
+								let input = {
 									name: formData.secretName,
 									env: currentScope.selectedEnvironment.code,
 									type: 'Opaque',
@@ -124,7 +124,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									method: 'post',
 									routeName: '/dashboard/secrets/add',
 									data: input
-								}, function (error, response) {
+								}, function (error) {
 									if (error) {
 										$scope.form.displayAlert('danger', error.message);
 									}
@@ -204,7 +204,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				env: $scope.selectedEnvironment.code,
 				namespace: $scope.namespaceConfig.namespace
 			}
-		}, function (error, response) {
+		}, function (error) {
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			}
@@ -246,7 +246,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		});
-	}
+	};
 
 	// Start here
 	if ($scope.access.list && $scope.envType !== 'manual') {

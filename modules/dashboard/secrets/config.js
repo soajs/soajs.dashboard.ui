@@ -26,9 +26,10 @@ var secretsAppConfig = {
 							},
 							{
 								'name': 'secretData',
-								'label': 'Data',
+								'label': 'Secret Content Data',
 								'type': 'jsoneditor',
-								'required': true
+								'required': true,
+								'fieldMsg': "Provide the content of the secret as text/json"
 							}
 						]
 
@@ -38,14 +39,8 @@ var secretsAppConfig = {
 						"description": "",
 						"entries":[
 							{
-								'name': 'secretData',
-								'label': 'Data',
-								'type': 'jsoneditor',
-								'required': true
-							},
-							{
 								"label": "File Upload",
-								"fieldMsg": "",
+								"fieldMsg": "Select a file to create the secret content from it",
 								'name': 'secretFile',
 								"directive": "modules/dashboard/secrets/directives/file.tmpl",
 								"required": false

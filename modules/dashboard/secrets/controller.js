@@ -62,16 +62,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	};
 
 	$scope.addSecret = function () {
-		$scope.add = true;
-		var formConfig;
-		var data;
-
-		var submitAction = {
-			method: 'post',
-			routeName: '/dashboard/secrets/add',
-			params: {}
-		};
-
+		let currentScope = $scope;
 		$modal.open({
 			templateUrl: "newSecret.tmpl",
 			size: 'lg',
@@ -94,18 +85,21 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							action: function (formData) {
 								
 								console.log(formData);
+								return false;
 								
 								var input = {
 									name: formData.secretName,
-									env: $scope.selectedEnvironment,
+									env: currentScope.selectedEnvironment.code,
 									type: 'Opaque',
-									namespace: $scope.selectedNamespace
+									namespace: currentScope.selectedNamespace
 								};
 
 								if(formData.secretData) {
 									input.data = formData.secretData;
+									delete formData.file;
 								}
 								else {
+									delete formData.secretData;
 									input.data = formData.file;
 								}
 
@@ -142,10 +136,9 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					]
 				};
 				
-				formConfig[1].onAction = function(id, value, form){
-					enableTextMode(value, form.entries[2]);
+				formConfig[1].tabs[0].entries[1].onAction = function(id, value, form){
+					enableTextMode(value, form.entries[1].tabs[0].entries[1]);
 				};
-				
 				function enableTextMode (textMode, editor) {
 					$scope.textMode = textMode;
 					if (textMode) {
@@ -154,6 +147,18 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						editor.type ='jsoneditor';
 					}
 				}
+				
+				$scope.showContent = function(id, value, form){
+					if(!form.formData.file){
+						form.formData.file = value;
+					}
+				};
+				
+				$scope.removFile = function(form){
+					if(form && form.formData){
+						delete form.formData.file
+					}
+				};
 				
 				buildForm($scope, $modalInstance, options, function () {
 

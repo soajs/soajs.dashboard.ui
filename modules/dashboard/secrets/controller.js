@@ -16,7 +16,14 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	if($scope.envType !== 'manual') {
 		$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
 	}
-	
+
+	$scope.namespaceConfig = {
+		defaultValue: {
+			id: undefined, //setting id to undefined in order to force angular to display all fields, => All Namespaces
+			name: '--- All Namespaces ---'
+		}
+	};
+
 	constructModulePermissions($scope, $scope.access, secretsAppConfig.permissions);
 
 	$scope.listSecrets = function () {
@@ -26,7 +33,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			routeName: '/dashboard/secrets/list',
 			params: {
 				env: $scope.selectedEnvironment.code,
-				namespace: $scope.selectedNamespace
+				namespace: $scope.namespaceConfig.namespace
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -70,7 +77,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				$scope.textMode = false;
-				
+
 				var formConfig = angular.copy(secretsAppConfig.form.addSecret);
 
 				var options = {
@@ -83,10 +90,10 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							'label': "Create Secret",
 							'btn': 'primary',
 							action: function (formData) {
-								
+
 								console.log(formData);
 								return false;
-								
+
 								var input = {
 									name: formData.secretName,
 									env: currentScope.selectedEnvironment.code,
@@ -135,7 +142,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						}
 					]
 				};
-				
+
 				formConfig[1].tabs[0].entries[1].onAction = function(id, value, form){
 					enableTextMode(value, form.entries[1].tabs[0].entries[1]);
 				};
@@ -147,19 +154,19 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						editor.type ='jsoneditor';
 					}
 				}
-				
+
 				$scope.showContent = function(id, value, form){
 					if(!form.formData.file){
 						form.formData.file = value;
 					}
 				};
-				
+
 				$scope.removFile = function(form){
 					if(form && form.formData){
 						delete form.formData.file
 					}
 				};
-				
+
 				buildForm($scope, $modalInstance, options, function () {
 
 				});
@@ -189,9 +196,41 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	};
 
 	$scope.deleteSecrets = function(){};
-	
+
+	$scope.listNamespaces = function (currentScope, cb) {
+		if (currentScope.envPlatform !== 'kubernetes') {
+			//in case of swarm deployment, set namespace value to All Namespaces and set filter value to null in order to always display all fields
+			currentScope.namespaces = [currentScope.namespaceConfig.defaultValue];
+			currentScope.namespaceConfig.namespace = currentScope.namespaceConfig.defaultValue.id;
+			return cb();
+		}
+
+		getSendDataFromServer(currentScope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/cloud/namespaces/list',
+			params: {
+				env: currentScope.selectedEnvironment.code.toLowerCase()
+			}
+		}, function (error, response) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				currentScope.namespaces = [currentScope.namespaceConfig.defaultValue];
+				currentScope.namespaces = currentScope.namespaces.concat(response);
+
+				currentScope.namespaceConfig.namespace = currentScope.namespaceConfig.defaultValue.id; //setting current selected to 'All Namespaces'
+
+				if (cb && typeof(cb) === 'function') {
+					return cb();
+				}
+			}
+		});
+	}
+
 	// Start here
 	if ($scope.access.list && $scope.envType !== 'manual') {
+		$scope.listNamespaces($scope, () => {});
 		$scope.listSecrets();
 	}
 

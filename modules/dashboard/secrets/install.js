@@ -9,6 +9,7 @@ var secretsNav = [
             'route': '/secrets',
             'method': 'get'
         },
+	    "fallbackLocation": "#/environments",
         'url': '#/secrets',
         'tplPath': 'modules/dashboard/secrets/directives/list.tmpl',
         'icon': 'eye-blocked',

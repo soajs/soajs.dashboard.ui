@@ -10,8 +10,13 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	$scope.selectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
 
 	//set selected deployer
-	$scope.envDeployer = $scope.selectedEnvironment.deployer.selected.split('.')[1];
-
+	$scope.envDeployer = $scope.selectedEnvironment.deployer;
+	$scope.envType = $scope.envDeployer.type;
+	$scope.envPlatform = '';
+	if($scope.envType !== 'manual') {
+		$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+	}
+	
 	constructModulePermissions($scope, $scope.access, secretsAppConfig.permissions);
 
 	$scope.listSecrets = function () {
@@ -20,8 +25,8 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			method: 'get',
 			routeName: '/dashboard/secrets/list',
 			params: {
-				env: $scope.selectedEnvironment.code
-				// namespace: $scope.selectedNamespace
+				env: $scope.selectedEnvironment.code,
+				namespace: $scope.selectedNamespace
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -44,12 +49,12 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'icon': 'bin',
 						'handler': 'deleteSecret'
 					});
-					// options.top.push({
-					// 	'label': 'Delete Secrets', //TODO: translation
-					// 	'icon': 'bin',
-					// 	'handler': 'deleteSecrets'
-					// });
-				};
+					options.top.push({
+						'label': 'Delete Secrets', //TODO: translation
+						'icon': 'bin',
+						'handler': 'deleteSecrets'
+					});
+				}
 
 				buildGrid($scope,options);
 			}
@@ -73,7 +78,8 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			backdrop: true,
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
-
+				$scope.textMode = false;
+				
 				var formConfig = angular.copy(secretsAppConfig.form.addSecret);
 
 				var options = {
@@ -86,20 +92,29 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							'label': "Create Secret",
 							'btn': 'primary',
 							action: function (formData) {
+								
+								console.log(formData);
+								
 								var input = {
-									name: formData.name,
+									name: formData.secretName,
 									env: $scope.selectedEnvironment,
 									type: 'Opaque',
 									namespace: $scope.selectedNamespace
-								}
+								};
 
-								if(formData.content) {
-									input.data = formData.content
+								if(formData.secretData) {
+									input.data = formData.secretData;
 								}
 								else {
-									input.data = formData.file
+									input.data = formData.file;
 								}
 
+								console.log({
+									method: 'post',
+									routeName: '/dashboard/secrets/add',
+									params: input
+								});
+								return false;
 								getSendDataFromServer($scope, ngDataApi, {
 									method: 'post',
 									routeName: '/dashboard/secrets/add',
@@ -110,6 +125,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									}
 									else {
 										$scope.displayAlert('success', 'Secret created successfully.')
+										$scope.listSecrets();
 									}
 								});
 							}
@@ -125,7 +141,20 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						}
 					]
 				};
-
+				
+				formConfig[1].onAction = function(id, value, form){
+					enableTextMode(value, form.entries[2]);
+				};
+				
+				function enableTextMode (textMode, editor) {
+					$scope.textMode = textMode;
+					if (textMode) {
+						editor.type ='textarea';
+					} else {
+						editor.type ='jsoneditor';
+					}
+				}
+				
 				buildForm($scope, $modalInstance, options, function () {
 
 				});
@@ -134,13 +163,14 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
 	};
 
-	$scope.deleteSecret = function (secretName) {
-		//TODO: display delete confirmation
+	$scope.deleteSecret = function (secret) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
 			routeName: '/dashboard/secrets/delete',
 			params: {
-				name: secretName
+				name: secret.name,
+				env: $scope.selectedEnvironment.code,
+				namespace: $scope.selectedNamespace
 			}
 		}, function (error, response) {
 			if (error) {
@@ -148,42 +178,16 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 			else {
 				$scope.displayAlert('success', 'Secret deleted successfully.');
+				$scope.listSecrets();
 			}
 		});
 	};
 
+	$scope.deleteSecrets = function(){};
+	
 	// Start here
-	if ($scope.access.list) {
+	if ($scope.access.list && $scope.envType !== 'manual') {
 		$scope.listSecrets();
-		console.log($scope);
-		// $scope.secrets = [
-		// 	{
-		// 		name: 'secret1',
-		// 		uid: '1111'
-		// 	},
-		// 	{
-		// 		name: 'secret2',
-		// 		uid: '2222'
-		// 	},
-		// 	{
-		// 		name: 'secret3',
-		// 		uid: '3333'
-		// 	},
-		// 	{
-		// 		name: 'secret4',
-		// 		uid: '4444'
-		// 	},
-		// 	{
-		// 		name: 'secret5',
-		// 		uid: '5555'
-		// 	},
-		// 	{
-		// 		name: 'secret6',
-		// 		uid: '6666'
-		// 	}
-		// ]
-
-		/
-	};
+	}
 
 }]);

@@ -64,7 +64,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'msg': "Are you sure you want to delete the selected secret(s) ?"
 					});
 				}
-
+				
 				buildGrid($scope,options);
 			}
 		});
@@ -215,26 +215,29 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		});
 	};
 
-	$scope.deleteSecrets = function($scope) {
-			overlayLoading.show();
-			var config = {
-				"headers": {
-					"key": $scope.key
-				},
-				'method': 'delete',
-				'routeName': "/dashboard/secrets/delete",
-				"params": {'name': '%name%'},
-				'msg': {
-					'error': translation.errorMessageDeactivateMembers[LANG],
-					'success': translation.successMessageDeactivateMembers[LANG]
-				}
-			};
+	$scope.deleteSecrets = function() {
+		overlayLoading.show();
+		let config = {
+			'method': 'delete',
+			'routeName': "/dashboard/secrets/delete",
+			"params": {
+				'name': '%name%',
+				'env': $scope.selectedEnvironment.code,
+				'namespace': $scope.namespaceConfig.namespace
+			},
+			'override':{
+				'fieldName': 'name',
+			},
+			'msg': {
+				'error': "Error Removing the selected secret(s)",
+				'success': "Selected Secret(s) have been removed"
+			}
+		};
 
-			multiRecordUpdate(ngDataApi, currentScope, config, function () {
-				overlayLoading.hide();
-				currentScope.listSecrets();
-			});
-
+		multiRecordUpdate(ngDataApi, $scope, config, function () {
+			overlayLoading.hide();
+			$scope.listSecrets();
+		});
 	};
 
 	$scope.listNamespaces = function (currentScope, cb) {

@@ -31,7 +31,7 @@ var secretsAppConfig = {
 								'required': true
 							}
 						]
-						
+
 					},
 					{
 						"label": "File Content",
@@ -42,9 +42,16 @@ var secretsAppConfig = {
 								'label': 'Data',
 								'type': 'jsoneditor',
 								'required': true
+							},
+							{
+								"label": "File Upload",
+								"fieldMsg": "",
+								'name': 'secretFile',
+								"directive": "modules/dashboard/secrets/directives/file.tmpl",
+								"required": false
 							}
 						]
-						
+
 					}
 				]
 			}

@@ -266,8 +266,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.deployMetricsServer = function(){
 		deploySrv.deployMetricsServer($scope);
 	};
-
-
+	
 	$scope.autoScale = function (service) {
 		hacloudSrv.autoScale($scope, service);
 	};

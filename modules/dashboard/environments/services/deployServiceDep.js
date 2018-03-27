@@ -393,7 +393,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 									fieldMsg: catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
 									required: false,
 								};
-								console.log(newCatalogInput); // ToDelete #2del
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
 								if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
 									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";

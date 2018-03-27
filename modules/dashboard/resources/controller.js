@@ -645,6 +645,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		}
 		deployOptions.custom.resourceId = resource._id;
 		deployOptions.env = resource.created;
+		deployOptions.custom.type = "resource";
 		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {

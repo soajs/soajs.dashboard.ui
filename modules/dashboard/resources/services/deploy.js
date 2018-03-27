@@ -1,14 +1,13 @@
-
 "use strict";
 var resourceDeployService = soajsApp.components;
 resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDataApi', function (resourceConfiguration, ngDataApi) {
 	
-	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb){
+	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
 		context.formData = {};
 		context.envs = [];
 		context.message = {};
 		context.recipes = [];
-		context.recipeUserInput = { image: {}, envs: {} };
+		context.recipeUserInput = {image: {}, envs: {}};
 		
 		context.configRepos = [];
 		context.configReposBranches = {};
@@ -23,7 +22,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		context.envDeployer = currentScope.envDeployer;
 		
 		let category = (resource && Object.keys(resource).length > 0) ? resource.category : settings.category;
-		resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory)=> {
+		resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory) => {
 			if (oneCategory.v === category) {
 				context.categoryLabel = oneCategory.l;
 			}
@@ -59,15 +58,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 			
 			let accountData = {};
-			if(confOrCustom === 'conf'){
+			if (confOrCustom === 'conf') {
 				context.configRepos.config.forEach(function (eachAcc) {
 					if (eachAcc.name === selectedRepo) {
 						accountData = eachAcc;
 					}
 				});
 			}
-			else{
-				if(Object.keys(accountData).length === 0){
+			else {
+				if (Object.keys(accountData).length === 0) {
 					context.configRepos.customType.forEach(function (eachAcc) {
 						if (eachAcc.name === selectedRepo) {
 							accountData = eachAcc;
@@ -75,7 +74,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					});
 				}
 			}
-			if(accountData && Object.keys(accountData).length > 0){
+			if (accountData && Object.keys(accountData).length > 0) {
 				context.configReposBranchesStatus[selectedRepo] = 'loading';
 				getSendDataFromServer(context, ngDataApi, {
 					'method': 'get',
@@ -84,7 +83,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 						id: accountData.accountId,
 						name: selectedRepo,
 						type: 'repo',
-						provider : accountData.provider
+						provider: accountData.provider
 					}
 				}, function (error, response) {
 					if (error) {
@@ -105,7 +104,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 									}
 								});
 							}
-							else{
+							else {
 								context.formData.deployOptions.sourceCode.custom.path = "";
 							}
 						}
@@ -176,8 +175,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			getSendDataFromServer(context, ngDataApi, {
 				'method': 'get',
 				'routeName': '/dashboard/gitAccounts/accounts/list',
-				params : {
-					fullList : true
+				params: {
+					fullList: true
 				}
 			}, function (error, response) {
 				if (error) {
@@ -205,7 +204,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 										});
 									}
 									
-									if(['custom','service','daemon','static'].indexOf(eachRepo.type) !== -1){
+									if (['custom', 'service', 'daemon', 'static'].indexOf(eachRepo.type) !== -1) {
 										if (!customType || eachRepo.type === customType) {
 											customRecords.push({
 												owner: eachAccount.owner,
@@ -217,12 +216,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 											});
 										}
 									}
-									else if (eachRepo.type === 'multi'){
+									else if (eachRepo.type === 'multi') {
 										eachRepo.configSHA.forEach((subRepo) => {
 											
 											//if not locked or locked from catalog and the value is multi
 											if (!customType || customType === 'multi') {
-												if((!customRepoInfo || !customRepoInfo.subName)|| (customRepoInfo && customRepoInfo.subName === subRepo.contentName)) {
+												if ((!customRepoInfo || !customRepoInfo.subName) || (customRepoInfo && customRepoInfo.subName === subRepo.contentName)) {
 													if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
 														customRecords.push({
 															owner: eachAccount.owner,
@@ -238,7 +237,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 											}
 											
 											//if not locked or locked from catalog and value not multi
-											if(!customType || customType !== 'multi') {
+											if (!customType || customType !== 'multi') {
 												
 												//one of the sub repo types should match locked type or no locked type and acceptable type
 												if ((!customType && ['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) || (customType === subRepo.contentType)) {
@@ -339,13 +338,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				}
 				
 				// take source code configuration from cicd on edit
-				if(context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode){
+				if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
 					context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
 					
 					// reconstruct complex repo on load
-					if(context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo){
+					if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
 						let subName = "";
-						if(context.formData.deployOptions.sourceCode.custom.subName){
+						if (context.formData.deployOptions.sourceCode.custom.subName) {
 							subName = context.formData.deployOptions.sourceCode.custom.subName;
 						}
 						context.formData.deployOptions.sourceCode.custom.repo = context.formData.deployOptions.sourceCode.custom.repo + "__SOAJS_DELIMITER__" + subName;
@@ -363,18 +362,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			let customType;
 			
 			context.sourceCodeConfig = {
-				configuration : {
-					isEnabled : false,
-					repoAndBranch : {
-						disabled : false,
-						required : false
+				configuration: {
+					isEnabled: false,
+					repoAndBranch: {
+						disabled: false,
+						required: false
 					}
 				},
-				custom : {
-					isEnabled : false,
-					repoAndBranch : {
-						disabled : false,
-						required : false
+				custom: {
+					isEnabled: false,
+					repoAndBranch: {
+						disabled: false,
+						required: false
 					},
 					repoPath: {
 						disabled: false
@@ -398,7 +397,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				
 				context.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
 				
-				if(!context.formData.deployOptions.sourceCode){
+				if (!context.formData.deployOptions.sourceCode) {
 					context.formData.deployOptions.sourceCode = {};
 				}
 				
@@ -407,17 +406,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					context.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
 					context.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
 					
-					if(conf.repo && conf.repo !== ''){
-						if(!context.formData.deployOptions.sourceCode.configuration){
+					if (conf.repo && conf.repo !== '') {
+						if (!context.formData.deployOptions.sourceCode.configuration) {
 							context.formData.deployOptions.sourceCode.configuration = {};
 						}
 						
 						context.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
 						context.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
 					} else {
-						if(!context.formData.deployOptions.custom || !context.formData.deployOptions.custom.sourceCode ||
-							!context.formData.deployOptions.custom.sourceCode.configuration  || !context.formData.deployOptions.custom.sourceCode.configuration.repo ){ // if not filled from cicd
-							if(context.formData.deployOptions.sourceCode && context.formData.deployOptions.sourceCode.configuration){
+						if (!context.formData.deployOptions.custom || !context.formData.deployOptions.custom.sourceCode || !context.formData.deployOptions.custom.sourceCode.configuration || !context.formData.deployOptions.custom.sourceCode.configuration.repo) { // if not filled from cicd
+							if (context.formData.deployOptions.sourceCode && context.formData.deployOptions.sourceCode.configuration) {
 								context.formData.deployOptions.sourceCode.configuration.repo = '-- Leave Empty --';
 							}
 						}
@@ -439,34 +437,33 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 						context.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
 						context.formData.deployOptions.sourceCode.custom.branch = cust.branch;
 					} else {
-						if(!context.formData.deployOptions.custom || !context.formData.deployOptions.custom.sourceCode ||
-							!context.formData.deployOptions.custom.sourceCode.custom  || !context.formData.deployOptions.custom.sourceCode.custom.repo ){ // if not filled from cicd
-							if(context.formData.deployOptions.sourceCode && context.formData.deployOptions.sourceCode.custom){
+						if (!context.formData.deployOptions.custom || !context.formData.deployOptions.custom.sourceCode || !context.formData.deployOptions.custom.sourceCode.custom || !context.formData.deployOptions.custom.sourceCode.custom.repo) { // if not filled from cicd
+							if (context.formData.deployOptions.sourceCode && context.formData.deployOptions.sourceCode.custom) {
 								context.formData.deployOptions.sourceCode.custom.repo = '-- Leave Empty --' + '__SOAJS_DELIMITER__';
 							}
 						}
 					}
 				}
 				
-				if(conf || ((cust && context.formData.type === 'server'))){
+				if (conf || ((cust && context.formData.type === 'server'))) {
 					context.listAccounts(customType, cust, function () {
 						// special case: if the form was overwritten from cicd we have to load the branch
-						if(context.formData.deployOptions.sourceCode){
-							if(context.formData.deployOptions.sourceCode.configuration && context.formData.deployOptions.sourceCode.configuration.repo){
-								if(!context.configReposBranches[context.formData.deployOptions.sourceCode.configuration.repo]){
+						if (context.formData.deployOptions.sourceCode) {
+							if (context.formData.deployOptions.sourceCode.configuration && context.formData.deployOptions.sourceCode.configuration.repo) {
+								if (!context.configReposBranches[context.formData.deployOptions.sourceCode.configuration.repo]) {
 									context.fetchBranches('conf');
 								}
 							}
-							if(context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo){
-								if(!context.configReposBranches[context.formData.deployOptions.sourceCode.custom.repo]){
+							if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
+								if (!context.configReposBranches[context.formData.deployOptions.sourceCode.custom.repo]) {
 									context.fetchBranches('cust');
 								}
 							}
 						}
 					});
 				}
-			}else{
-				if(!context.formData.deployOptions){
+			} else {
+				if (!context.formData.deployOptions) {
 					context.formData.deployOptions = {};
 				}
 				context.formData.deployOptions.sourceCode = {}; // clear
@@ -487,10 +484,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					if (recipes && Array.isArray(recipes)) {
 						recipes.forEach(function (oneRecipe) {
 							
-							if(oneRecipe.type ==='soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes){
+							if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
 								context.oldStyle = true;
 							}
-							else{
+							else {
 								if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
 									context.recipes.push(oneRecipe);
 								}
@@ -505,9 +502,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			});
 		};
 		
-		context.upgradeRecipes = function(){
+		context.upgradeRecipes = function () {
 			currentScope.$parent.go("#/catalog-recipes");
-			if($modalInstance){
+			if ($modalInstance) {
 				$modalInstance.close();
 			}
 		};
@@ -604,7 +601,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		context.fillForm();
 		context.getCatalogRecipes();
 		
-		if(cb && typeof cb === 'function')
+		if (cb && typeof cb === 'function')
 			return cb();
 	}
 	

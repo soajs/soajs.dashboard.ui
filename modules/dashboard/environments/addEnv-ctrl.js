@@ -529,6 +529,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 							}
 						}
 						
+						formData.code = formData.code.toUpperCase();
+						
 						if (!$localStorage.addEnv) {
 							$localStorage.addEnv = {};
 						}

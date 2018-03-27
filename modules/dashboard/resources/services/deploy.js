@@ -222,7 +222,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 											
 											//if not locked or locked from catalog and the value is multi
 											if (!customType || customType === 'multi') {
-												if(!customRepoInfo.subName || customRepoInfo.subName === subRepo.contentName) {
+												if((!customRepoInfo || !customRepoInfo.subName)|| (customRepoInfo && customRepoInfo.subName === subRepo.contentName)) {
 													if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
 														customRecords.push({
 															owner: eachAccount.owner,

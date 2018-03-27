@@ -1456,7 +1456,7 @@ var environmentsNav = [
 		'order': 2,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js'],
+		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

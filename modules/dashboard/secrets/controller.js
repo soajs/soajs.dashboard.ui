@@ -54,12 +54,14 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					options.left.push({
 						'label': 'Delete Secret', //TODO: translation
 						'icon': 'bin',
-						'handler': 'deleteSecret'
+						'handler': 'deleteSecret',
+						'msg': "Are you sure you want to delete this secret ?"
 					});
 					options.top.push({
-						'label': 'Delete Secrets', //TODO: translation
+						'label': 'Delete Secret(s)', //TODO: translation
 						'icon': 'bin',
-						'handler': 'deleteSecrets'
+						'handler': 'deleteSecrets',
+						'msg': "Are you sure you want to delete the selected secret(s) ?"
 					});
 				}
 

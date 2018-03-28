@@ -18,7 +18,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
-				currentScope.accounts = response;
+				currentScope.accounts = angular.copy(response);
 				
 				if (!Array.isArray(currentScope.accounts)) {
 					currentScope.accounts = [currentScope.accounts];
@@ -37,7 +37,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						});
 					});
 				}
-				
 				
 				if(currentScope.accounts.length === 1){
 					currentScope.accounts[0].hide = false;
@@ -67,7 +66,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					continue;
 				}else{
 					for(let i = oneAccount.repos.length -1; i >=0; i--){
-						
 						oneAccount.repos[i].full_name = oneAccount.repos[i].name;
 						if(oneAccount.repos[i].name.indexOf("/") !== -1){
 							oneAccount.repos[i].name = oneAccount.repos[i].name.split("/")[1];
@@ -84,7 +82,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							}
 							else{
 								for(let multiCount = oneAccount.repos[i].configSHA.length -1; multiCount >=0; multiCount--){
-									if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].type) === -1){
+									if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].configSHA[multiCount].contentType) === -1){
 										oneAccount.repos[i].configSHA.splice(multiCount, 1);
 									}
 								}
@@ -110,7 +108,11 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							repoServices.push({ name: oneRepo.serviceName, type: oneRepo.type });
 						}
 						else if (oneRepo.type === 'multi') {
-							repoServices = oneRepo.multi;
+							oneRepo.configSHA.forEach((oneSub) => {
+								oneSub.type = oneSub.contentType;
+								oneSub.name = oneSub.contentName;
+								repoServices.push(oneSub);
+							});
 						}
 						else if (oneRepo.type === 'component'){
 							if(repoComponentsNames.indexOf(oneRepo.name) === -1){

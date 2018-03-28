@@ -70,7 +70,8 @@ var modules = {
 	"deploy": {
 		"dashboard": {
 			environments: 'modules/dashboard/environments/install.js',
-			resources: 'modules/dashboard/resources/install.js'
+			resources: 'modules/dashboard/resources/install.js',
+			secrets: 'modules/dashboard/secrets/install.js'
 		}
 	},
 	"common": {

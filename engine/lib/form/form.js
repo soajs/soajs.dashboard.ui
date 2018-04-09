@@ -598,6 +598,14 @@ soajsApp.directive('ngformInputs', function () {
 	};
 });
 
+
+soajsApp.directive('ngformActions', function () {
+	return {
+		restrict: 'E',
+		templateUrl: 'engine/lib/form/actions.tmpl'
+	};
+});
+
 soajsApp.directive('ngform', function () {
 	return {
 		restrict: 'E',

@@ -1,0 +1,118 @@
+<section ng-controller="templatesAppCtrl" class="templatesAppCtrl">
+	
+	<div ng-show="step === 0">
+		
+		<div ng-if="oldStyle">
+			<alert type="danger">
+				<h5>Upgrade Your Templates</h5>
+				<hr>
+				<input ng-if="access.upgrade" type="button" class="f-right btn btn-sm btn-danger" value="Upgrade" ng-click="upgradeTemplates()">
+				<p>
+					Detect the presence of Old Template Schemas, you need to upgrade your templates to the latest versions to proceed.
+				</p>
+			</alert>
+		</div>
+		
+		<div ng-if="!oldStyle && templates && templates.length > 0">
+			<input ng-if="access.import" type="button" class="btn btn-sm btn-success" value="Import" ng-click="importForm()" />&nbsp;
+			<input ng-if="access.export" type="button" class="btn btn-sm btn-primary" value="Export" ng-click="exportForm()" />&nbsp;
+			
+			<input type="button" class="btn btn-sm btn-success f-right" value="Refresh" ng-click="listTemplates()" />&nbsp;
+		</div>
+		
+		<div ng-if="!oldStyle && templates && templates.length > 0" class="entryBoxes">
+			<br />
+			<div ng-repeat="oneTmpl in templates" class="entryBox recipe-box" ng-class="{blueRecipeBox: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenRecipeBox: oneTmpl.type !== '_template'}">
+				<div class="header" ng-class="{blueBoxHeader: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenBoxHeader: oneTmpl.type !== '_template' }">
+					{{oneTmpl.name}}
+					<div class="rightActions" style="display:inline;">
+						<a href="" ng-if="access.delete && (oneTmpl.type !== '_template' || oneTmpl.deletable)" ng-click="deleteTmpl(oneTmpl)" ng-confirm-click="Are you sure you want to delete this template?">
+							<span class="icon icon-cross" tooltip="Delete Template"></span>
+						</a>
+					</div>
+				</div>
+				<div class="body">
+					<!--<img ng-src="{{catalogImage}}" width="32px" height="32px"/>-->
+					<p>{{oneTmpl.description}}</p>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	
+	<div ng-show="step === 1 || step === 2">
+		<div>
+			<input type="button" class="btn btn-sm btn-danger f-right" value="Back" ng-click="listTemplates()" />&nbsp;
+		</div>
+		<br />
+		<form name="importTemplate" >
+			<div ng-show="step === 1">
+				<alert type="info" ng-show="!alerts || alerts.length === 0">
+					<h5>Templates</h5>
+					<hr>
+					<p>
+						Templates offer the ability to import multiple data content in one shot via a Zipped JSON file.<br />
+						A template may contain entries that:
+					</p>
+					<ul>
+						<li>Should directly be inserted in the database once the template is imported</li>
+						<li>Generate an environment deployment template which are used when creating environment under the <b>deploy </b> pillar.</li>
+					</ul>
+					<p>
+						Provide your template in the form below, and the wizard will help you through the process.
+					</p>
+					<hr />
+					<p style="font-style:italic; font-size:12px;"><u>Note:</u><br />You can learn more about templates on the <a href="">official documentation site</a>.</p>
+				</alert>
+				
+				<alert type="danger" ng-show="alerts && alerts.length > 0">
+					<h5>Errors Detected</h5>
+					<hr>
+					<p>
+						Your template contains error(s) that cannot be rectified automatically, please fix them and re-upload your template.<br />
+					</p>
+					<p>
+						<u>Error Detail(s):</u>
+					</p>
+					<ul>
+						<li ng-repeat="oneAlert in alerts"><p>{{oneAlert.code}} => {{oneAlert.msg}}</p></li>
+					</ul>
+				</alert>
+				<br />
+				<ngform-inputs></ngform-inputs>
+				<hr>
+				<ngform-actions></ngform-actions>
+			</div>
+			<div ng-show="step === 2">
+				<ngform-inputs></ngform-inputs>
+				<hr>
+				<ngform-actions></ngform-actions>
+			</div>
+		</form>
+	</div>
+	
+	<div ng-show="step === 3">
+		<div>
+			<input type="button" class="btn btn-sm btn-danger f-right" value="Back" ng-click="listTemplates()" />&nbsp;
+		</div>
+		<br />
+		<form name="importTemplate" >
+			<alert type="info">
+				<h5>Exporting Templates</h5>
+				<hr>
+				<p>
+					You can export content from your database and create a template out of them.<br />
+					The wizard below will guide you through the available content sections that can be exported.<br />
+					Pick the entries you want to export in each section.
+				</p>
+			</alert>
+			<hr />
+			<br />
+			<div ng-show="isSafari">
+				<alert type="danger">The Downloader of this module is not compatible with safari. Please use another browser.</alert>
+				<br />
+			</div>
+			<div ng-include="'modules/dashboard/templates/directives/export.tmpl'"></div>
+		</form>
+	</div>
+</section>

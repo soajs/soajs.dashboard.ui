@@ -56,7 +56,8 @@ var modules = {
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',
 			catalogs: 'modules/dashboard/catalogs/install.js',
 			ci: 'modules/dashboard/ci/install.js',
-			cd: 'modules/dashboard/cd/install.js'
+			cd: 'modules/dashboard/cd/install.js',
+			templates: 'modules/dashboard/templates/install.js'
 		}
 	},
 	"manage": {

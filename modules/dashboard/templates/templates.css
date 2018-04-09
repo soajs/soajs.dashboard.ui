@@ -1,0 +1,41 @@
+.recipe-box {
+    width: 100% !important;
+    float: left !important;
+    margin-right: 1% !important;
+    text-align: left;
+    min-height: 60px;
+}
+
+.recipe-box label {
+    margin-bottom: 0;
+}
+
+.catalogIcon {
+    margin: 1% !important;
+    float: left;
+}
+
+.blueRecipeBox {
+    border: solid 1px #337ab7 !important;
+}
+
+.blueBoxHeader {
+    background-color: #DEF1F7 !important;
+    border-bottom-color: #337ab7 !important;
+}
+
+.greenRecipeBox {
+    border: solid 1px #3c763d !important;
+}
+
+.greenBoxHeader {
+    background-color: #dff0d8 !important;
+    border-bottom-color: #3c763d !important;
+}
+
+#exportTemplate{
+    max-height: 200px;
+    display:block;
+    overflow-x: hidden;
+    overflow-y: auto;
+}

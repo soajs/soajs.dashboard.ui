@@ -1,6 +1,6 @@
 "use strict";
 var templateService = soajsApp.components;
-templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies', '$window', 'detectBrowser', function (Upload, ngDataApi, $timeout, $cookies, $window, detectBrowser) {
+templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies', '$window', function (Upload, ngDataApi, $timeout, $cookies, $window) {
 	
 	function listTemplates(currentScope) {
 		overlayLoading.show();
@@ -123,13 +123,21 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 		
 		let unrecoverable = [];
 		issues.forEach((oneIssue) => {
-			if (oneIssue.msg.indexOf("=>") === -1 || !oneIssue.entry) {
+			if (oneIssue.msg.indexOf("=>") === -1 || (oneIssue.msg.indexOf("id ") === -1 && !oneIssue.entry)) {
 				unrecoverable.push(oneIssue);
 			}
 		});
 		
 		if (unrecoverable.length > 0) {
-			currentScope.alerts = unrecoverable;
+			if(!currentScope.alerts) {
+				currentScope.alerts = {};
+			}
+			unrecoverable.forEach((oneError) => {
+				if(!currentScope.alerts[oneError.group]){
+					currentScope.alerts[oneError.group] = [];
+				}
+				currentScope.alerts[oneError.group].push(oneError);
+			});
 			currentScope.importForm();
 		}
 		else {
@@ -139,19 +147,19 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			let data = {};
 			let formEntries = [
 				{
-					"type": "group",
+					"type": "accordion",
 					"name": "ci",
 					"label": "Continuous Integration Recipes",
 					"entries": []
 				},
 				{
-					"type": "group",
+					"type": "accordion",
 					"name": "catalogs",
 					"label": "Catalog Deployment Recipes",
 					"entries": []
 				},
 				{
-					"type": "group",
+					"type": "accordion",
 					"name": "endpoints",
 					"label": "Endpoints",
 					"entries": []
@@ -165,7 +173,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 						formEntries[0].entries.push({
 							"type": "text",
 							"name": oneIssue.entry.type + "_" + count,
-							"label": "Recipe: " + oneIssue.entry.name,
+							"label": oneIssue.entry.name,
 							"value": oneIssue.entry.name,
 							"fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
 							"tooltip": "Change the value of this entry to update your imported template",
@@ -196,7 +204,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 						formEntries[1].entries.push({
 							"type": "text",
 							"name": oneIssue.entry.type + "_" + count,
-							"label": "Catalog: " + oneIssue.entry.name,
+							"label": oneIssue.entry.name,
 							"value": oneIssue.entry.name,
 							"fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
 							"tooltip": "Change the value of this entry to update your imported template",
@@ -224,71 +232,68 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 						data [oneIssue.entry.type + "_" + count] = oneIssue.entry.name;
 						break;
 					case 'endpoints':
-						formEntries[2].entries.push({
-							"type": "text",
-							"name": oneIssue.entry.type + "_name_" + count,
-							"label": "Endpoint: " + oneIssue.entry.name,
-							"value": oneIssue.entry.name,
-							"fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
-							"tooltip": "Change the value of this entry to update your imported template",
-							"onAction": function (id, value, form) {
-								let fieldMsg;
-								if (value !== oneIssue.entry.name) {
-									fieldMsg = "<span class='green'>Fixed!</span>";
-								}
-								else {
-									fieldMsg = "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>";
-								}
-								
-								form.entries.forEach((oneGroup) => {
-									if (oneGroup.name === "endpoints") {
-										oneGroup.entries.forEach((oneInput) => {
-											if (oneInput.name === oneIssue.entry.type + "_name_" + count) {
-												oneInput.fieldMsg = fieldMsg;
-											}
-											
-											if (oneInput.name === oneIssue.entry.type + "_port_" + count) {
-												oneInput.fieldMsg = fieldMsg;
-											}
-										});
+						if(oneIssue.entry.conflict === 'name'){
+							formEntries[2].entries.push({
+								"type": "text",
+								"name": oneIssue.entry.type + "_name_" + count,
+								"label": oneIssue.entry.name,
+								"value": oneIssue.entry.name,
+								"fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
+								"tooltip": "Change the value of this entry to update your imported template",
+								"onAction": function (id, value, form) {
+									let fieldMsg;
+									if (value !== oneIssue.entry.name) {
+										fieldMsg = "<span class='green'>Fixed!</span>";
 									}
-								});
-							}
-						});
-						data [oneIssue.entry.type + "_name_" + count] = oneIssue.entry.name;
+									else {
+										fieldMsg = "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>";
+									}
+									
+									form.entries.forEach((oneGroup) => {
+										if (oneGroup.name === "endpoints") {
+											oneGroup.entries.forEach((oneInput) => {
+												if (oneInput.name === oneIssue.entry.type + "_name_" + count) {
+													oneInput.fieldMsg = fieldMsg;
+												}
+											});
+										}
+									});
+								}
+							});
+							data [oneIssue.entry.type + "_name_" + count] = oneIssue.entry.name;
+						}
+						if(oneIssue.entry.conflict === 'port'){
+							let epName = oneIssue.entry.name.toLowerCase().replace(/\s/g,"-");
+							formEntries[2].entries.push({
+								"type": "number",
+								"name": epName + "_port_" + count,
+								"label": oneIssue.entry.name,
+								"value": oneIssue.entry.port,
+								"fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
+								"tooltip": "Change the value of this entry to update your imported template",
+								"onAction": function (id, value, form) {
+									let fieldMsg;
+									if (value !== oneIssue.entry.name) {
+										fieldMsg = "<span class='green'>Fixed!</span>";
+									}
+									else {
+										fieldMsg = "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>";
+									}
+									
+									form.entries.forEach((oneGroup) => {
+										if (oneGroup.name === "endpoints") {
+											oneGroup.entries.forEach((oneInput) => {
+												if (oneInput.name === epName + "_port_" + count) {
+													oneInput.fieldMsg = fieldMsg;
+												}
+											});
+										}
+									});
+								}
+							});
+							data [epName + "_port_" + count] = oneIssue.entry.port;
+						}
 						
-						formEntries[2].entries.push({
-							"type": "number",
-							"name": oneIssue.entry.type + "_port_" + count,
-							"label": "Endpoint Port",
-							"value": oneIssue.entry.port,
-							"fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
-							"tooltip": "Change the value of this entry to update your imported template",
-							"onAction": function (id, value, form) {
-								let fieldMsg;
-								if (value !== oneIssue.entry.name) {
-									fieldMsg = "<span class='green'>Fixed!</span>";
-								}
-								else {
-									fieldMsg = "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>";
-								}
-								
-								form.entries.forEach((oneGroup) => {
-									if (oneGroup.name === "endpoints") {
-										oneGroup.entries.forEach((oneInput) => {
-											if (oneInput.name === oneIssue.entry.type + "_name_" + count) {
-												oneInput.fieldMsg = fieldMsg;
-											}
-											
-											if (oneInput.name === oneIssue.entry.type + "_port_" + count) {
-												oneInput.fieldMsg = fieldMsg;
-											}
-										});
-									}
-								});
-							}
-						});
-						data [oneIssue.entry.type + "_port_" + count] = oneIssue.entry.port;
 						break;
 				}
 			}
@@ -343,19 +348,46 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 										});
 										break;
 									case 'endpoints':
-										if (oneIssue.entry.name.trim() === formData['endpoints_name_' + count].trim() && oneIssue.entry.port === formData['endpoints_port_' + count]) {
-											$window.alert(`Change the name of Endpoint ${oneIssue.entry.name} or its port value to proceed.`);
+										if (oneIssue.entry.conflict === 'name' && oneIssue.entry.name.trim() === formData['endpoints_name_' + count].trim()) {
+											$window.alert(`Change the name of Endpoint ${oneIssue.entry.name} to proceed.`);
+											return false;
+										}
+										
+										if(oneIssue.entry.conflict === 'port' && oneIssue.entry.port === formData['endpoints_port_' + count]){
+											$window.alert(`Change the port value of Endpoint ${oneIssue.entry.name} to proceed.`);
 											return false;
 										}
 										
 										if (!inputs.endpoints) {
 											inputs.endpoints = [];
 										}
-										inputs.endpoints.push({
-											old: oneIssue.entry.name,
-											new: formData['endpoints_name_' + count],
-											port: formData['endpoints_port_' + count]
+										
+										let alreadyProcessed = false;
+										inputs.endpoints.forEach((oneEndpoint) => {
+											if(oneEndpoint.old === oneIssue.entry.name){
+												if(oneIssue.entry.conflict === 'name'){
+													oneEndpoint.new = formData['endpoints_name_' + count];
+												}
+												else if(oneIssue.entry.conflict === 'port'){
+													let epName = oneEndpoint.old.toLowerCase().replace(/\s/g,"-");
+													for(let oneV in formData){
+														if(oneV.indexOf(epName + '_port_') !== -1){
+															oneEndpoint.port = formData[oneV];
+														}
+													}
+												}
+												alreadyProcessed = true;
+											}
 										});
+										
+										if(!alreadyProcessed){
+											inputs.endpoints.push({
+												old: oneIssue.entry.name,
+												new: formData['endpoints_name_' + count],
+												port: formData['endpoints_port_' + count]
+											});
+										}
+										
 										break;
 								}
 							}
@@ -404,9 +436,6 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 	
 	function exportTemplate(currentScope) {
 		
-		let myBrowser = detectBrowser();
-		currentScope.isSafari = myBrowser === 'safari';
-		
 		currentScope.collectedExportedConent = {};
 		listUniqueProviders(currentScope, (ciRecipes) => {
 			listRecipes(currentScope, (catalogs) => {
@@ -415,6 +444,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 					currentScope.exportSections = [];
 					if (ciRecipes) {
 						currentScope.exportSections.push({
+							all: false,
 							section: 'ci',
 							label: "Continuous Integration Recipes",
 							data: ciRecipes
@@ -423,6 +453,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 					
 					if (catalogs) {
 						currentScope.exportSections.push({
+							all: false,
 							section: 'catalogs',
 							label: "Catalog Deployment Recipes",
 							data: catalogs
@@ -431,6 +462,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 					
 					if (endpoints) {
 						currentScope.exportSections.push({
+							all: false,
 							section: 'endpoints',
 							label: "Endpoints",
 							data: endpoints
@@ -476,12 +508,15 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			$window.alert("Selected at least on record from any section to generate the template.");
 			return false;
 		}
+		let postData = angular.copy(currentScope.collectedExportedConent);
+		postData.deployment = angular.copy(postData.catalogs);
+		delete postData.catalogs;
 		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'post',
 			'routeName': '/dashboard/templates/export',
-			'data': currentScope.collectedExportedConent,
+			'data': postData,
 			"headers": {
 				"Accept": "application/zip"
 			},
@@ -513,12 +548,10 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 						records = [];
 					}
 					response[provider].forEach((oneRecipe) => {
-						for(let i =0; i < 20; i++){
-							records.push({
-								'id': oneRecipe._id,
-								'info': {"provider": provider, "name": oneRecipe.name}
-							});
-						}
+						records.push({
+							'id': oneRecipe._id,
+							'info': {"provider": provider, "name": oneRecipe.name}
+						});
 					});
 				}
 				return cb(records);

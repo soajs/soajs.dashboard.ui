@@ -1,13 +1,18 @@
 'use strict';
 var templatesApp = soajsApp.components;
 
-templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles', 'templateSrv', function ($scope, $timeout, injectFiles, templateSrv) {
+templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles', 'templateSrv', 'detectBrowser', '$modal', '$window', 'ngDataApi', function ($scope, $timeout, injectFiles, templateSrv, detectBrowser, $modal, $window, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
+	
+	$scope.templatesDocumentationLink = templatesAppConfig.documentationLink;
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, templatesAppConfig.permissions);
 	
-	$scope.alerts = [];
+	$scope.alerts = null;
+	
+	let myBrowser = detectBrowser();
+	$scope.isSafari = myBrowser === 'safari';
 	
 	$scope.step = 0;
 	$scope.importForm = function(){
@@ -64,15 +69,14 @@ templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles'
 		}
 	};
 	
-	$scope.selectAll = function () {
-		angular.forEach($scope.exportSections[$scope.exportSectionCounter].data, function (item) {
-			item.selected = true;
-		});
+	$scope.goToExportSection = function(index){
+		$scope.exportSectionCounter = index;
 	};
 	
-	$scope.selectNone = function () {
+	$scope.AllorNone = function(){
+		$scope.exportSections[$scope.exportSectionCounter].all = !$scope.exportSections[$scope.exportSectionCounter].all
 		angular.forEach($scope.exportSections[$scope.exportSectionCounter].data, function (item) {
-			item.selected = false;
+			item.selected = $scope.exportSections[$scope.exportSectionCounter].all;
 		});
 	};
 	
@@ -86,10 +90,12 @@ templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles'
 	
 	$scope.exportForm = function(){
 		$scope.step = 3;
+		$scope.exportSectionCounter = 0;
 		templateSrv.exportTemplate($scope);
 	};
 	
 	$scope.listTemplates = function(){
+		$scope.alerts = null;
 		$scope.step = 0;
 		if($scope.form && $scope.form.formData){
 			$scope.form.formData = {};
@@ -103,6 +109,61 @@ templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles'
 	
 	$scope.upgradeTemplates = function(){
 		templateSrv.upgradeTemplates($scope);
+	};
+	
+	$scope.showTemplateContent = function(oneTmpl) {
+		let parentScope = $scope;
+		
+		$modal.open({
+			templateUrl: "templateInfoBox.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: false,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+				$scope.link = (oneTmpl.link) ? oneTmpl.link : null;
+				$scope.logo = (oneTmpl.logo) ? oneTmpl.logo : null;
+				
+				$scope.title = oneTmpl.name;
+				$scope.description = oneTmpl.description;
+				$scope.content = oneTmpl.content;
+				
+				$scope.close = function () {
+					$modalInstance.close();
+				};
+				
+				$scope.exportTemplateContent = function(){
+					parentScope.exportTemplateContent(oneTmpl);
+				};
+			}
+		});
+	};
+	
+	$scope.exportTemplateContent = function(oneTmpl){
+		if($scope.isSafari){
+			$window.alert("The Downloader of this module is not compatible with Safari. Please use another browser.");
+			return false;
+		}
+		
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			'method': 'post',
+			'routeName': '/dashboard/templates/export',
+			'data': {
+				"id": oneTmpl._id
+			},
+			"headers": {
+				"Accept": "application/zip"
+			},
+			"responseType": 'arraybuffer',
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				openSaveAsDialog("soajs_template_" + new Date().toISOString() + ".zip", response, "application/zip");
+			}
+		});
 	};
 	
 	injectFiles.injectCss("modules/dashboard/templates/templates.css");

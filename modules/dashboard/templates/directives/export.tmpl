@@ -1,15 +1,13 @@
 <div class="grid" ng-show="!isSafari">
-	<h4>{{exportSections[exportSectionCounter].label}}</h4>
+	<div class="w100 c-both table">
+		<span class="exportLabel" ng-repeat="section in exportSections" ng-class="{'active': exportSectionCounter === $index}" ng-click="goToExportSection($index)"><b>Section {{($index+1)}}:</b> {{section.label}}</span>
+	</div>
+	<br />
 	<div id='exportTemplate'>
-		<alert type="default">
-			{{translation.select[LANG]}}:
-			<a href="" ng-click="selectAll()">{{translation.All[LANG]}}</a> -
-			<a href="" ng-click="selectNone()">{{translation.None[LANG]}}</a>
-		</alert>
 		<table width="100%">
 			<thead>
 				<tr>
-					<th width="4%"></th>
+					<th width="4%"><input type="checkbox" ng-click="AllorNone()"></th>
 					<th ng-repeat="(k,v) in exportSections[exportSectionCounter].data[0].info" class="capitalize">{{k}}</th>
 				</tr>
 			</thead>

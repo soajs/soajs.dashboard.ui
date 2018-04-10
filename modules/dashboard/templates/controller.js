@@ -128,6 +128,16 @@ templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles'
 				$scope.description = oneTmpl.description;
 				$scope.content = oneTmpl.content;
 				
+				if($scope.content.deployments){
+					if($scope.content.deployments.repo){
+						$scope.content.deployments.repo.max = Object.keys($scope.content.deployments.repo).length;
+					}
+					
+					if($scope.content.deployments.resources){
+						$scope.content.deployments.resources.max = Object.keys($scope.content.deployments.resources).length;
+					}
+				}
+				
 				$scope.close = function () {
 					$modalInstance.close();
 				};

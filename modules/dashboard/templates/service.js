@@ -18,9 +18,12 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 				if (response) {
 					currentScope.templates = angular.copy(response);
 					currentScope.oldStyle = false;
-					currentScope.templates.forEach(function (oneRecipe) {
-						if (oneRecipe.type === '_BLANK') {
+					currentScope.templates.forEach(function (oneTemplate) {
+						if (oneTemplate.type === '_BLANK') {
 							currentScope.oldStyle = true;
+						}
+						else if(Object.keys(oneTemplate.content).length === 0){
+							delete oneTemplate.content;
 						}
 					});
 				}

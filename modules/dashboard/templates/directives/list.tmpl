@@ -7,53 +7,8 @@
 		<hr>
 		<p>{{description}}</p>
 	</div>
-	<div class="modal-body text-align-center">
-		<div ng-if="content.recipes.ci">
-			<label>Continuous Integration Recipes ({{content.recipes.ci.length}})</label>
-			<ul>
-				<li ng-repeat="oneCi in content.recipes.ci">{{oneCi.provider}} / {{oneCi.name}}</li>
-			</ul>
-		</div>
-		
-		<div ng-if="content.recipes.deployment">
-			<label>Catalog Deployment Recipes ({{content.recipes.deployment.length}})</label>
-			<ul>
-				<li ng-repeat="oneCatalog in content.recipes.deployment">{{oneCatalog.name}}</li>
-			</ul>
-		</div>
-		
-		<div ng-if="content.endpoints.data">
-			<label>Endpoints ({{content.endpoints.data.length}})</label>
-			<ul>
-				<li ng-repeat="oneEp in content.endpoints.data">{{oneEp.serviceGroup}} / {{oneEp.serviceName}} : {{oneEp.servicePort}}</li>
-			</ul>
-		</div>
-		
-		<div ng-if="content.productization.data">
-			<label>Productization ({{content.productization.data.length}})</label>
-			<ul>
-				<li ng-repeat="oneProd in content.productization.data">
-					<label>{{oneProd.name}} [ {{oneProd.code}} ]</label> <span ng-if="oneProd.packages.length > 0">/ Packages ({{oneProd.packages.length}})</span><br />
-					<p>{{oneProd.description}}</p>
-					<ul ng-if="oneProd.packages.length > 0">
-						<li ng-repeat="onePackage in oneProd.packages">
-							<label>{{onePackage.name}} [ {{onePackage.code}} ]</label><br />
-							<p>{{onePackage.description}}</p>
-						</li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		
-		<div ng-if="content.tenant.data">
-			<label>Multitenancy ({{content.tenant.data.length}})</label>
-			<ul>
-				<li ng-repeat="oneTenant in content.tenant.data">
-					<label>{{oneTenant.name}} [ {{oneTenant.code}} ]</label> <span ng-if="oneTenant.applications.length > 0">/ Applications ({{oneTenant.applications.length}})</span><br />
-					<p>{{oneProd.description}}</p>
-				</li>
-			</ul>
-		</div>
+	<div class="modal-body text-align-center grid">
+		<div ng-include="'modules/dashboard/templates/directives/preview.tmpl'"></div>
 	</div>
 	<div class="modal-footer">
 		<a ng-if="link" href="{{link}}" target="_blank" class="btn btn-sm btn-info">Documentation</a>
@@ -101,7 +56,7 @@
 							<span class="icon icon-info" tooltip="Open Template Documentation"></span>
 						</a>
 						
-						<a href="" ng-click="showTemplateContent(oneTmpl)">
+						<a ng-if="oneTmpl.content" href="" ng-click="showTemplateContent(oneTmpl)">
 							<span class="icon icon-search" tooltip="Browse Template Content"></span>
 						</a>
 					</div>

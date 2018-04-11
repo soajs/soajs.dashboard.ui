@@ -68,7 +68,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 			
 			currentScope.form.formData = angular.copy(currentScope.wizard.gi);
 
-			if(currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName){
+			if(currentScope.wizard.template && (currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName)){
 				if(!currentScope.form.formData){
 					currentScope.form.formData = {};
 				}

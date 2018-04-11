@@ -36,7 +36,7 @@ tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage
 						if (currentScope.templates[i].type === '_BLANK') {
 							currentScope.oldStyle = true;
 						}
-						else if(Object.keys(currentScope.templates[i].content).length === 0){
+						else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
 							delete currentScope.templates[i].content;
 						}
 						else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){

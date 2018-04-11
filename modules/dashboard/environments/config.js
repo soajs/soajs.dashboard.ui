@@ -84,16 +84,17 @@ var environmentsConfig = {
 			required: ['ca', 'cert', 'key']
 		}
 	},
-
+	predefinedPortalTemplateName : "SOAJS Portal Environment",
+	
 	customRegistryIncrement: 20,
-
+	
 	form: {
 		add: {
 			step1: {
 				'entries': [
 					{
 						"name": "generalInfo",
-						"directive": "modules/dashboard/environments/directives/add-step1.tmpl"
+						"directive": "modules/dashboard/environments/directives/add/gi.tmpl"
 					}
 				]
 			},
@@ -101,7 +102,7 @@ var environmentsConfig = {
 				"entries": [
 					{
 						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/add-step2.tmpl"
+						"directive": "modules/dashboard/environments/directives/add/deploy.tmpl"
 					}
 				]
 			},

@@ -1386,6 +1386,23 @@ var environmentsNav = [
 		},
 		'label': translation.addNewEnvironment[LANG],
 		'url': '#/environments-add',
+		'tplPath': 'modules/dashboard/environments/directives/add/index.tmpl',
+		'pillar':{
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/add/controller.js', 'modules/dashboard/environments/add/templateSrv.js', 'modules/dashboard/environments/add/giSrv.js', 'modules/dashboard/environments/add/deploySrv.js'],
+	},
+	{
+		'id': 'add-environments-old',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/environment/add',
+			'method': 'post'
+		},
+		'label': translation.addNewEnvironment[LANG],
+		'url': '#/environments-add-old',
 		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
 		'pillar':{
 			'name': 'deployment',

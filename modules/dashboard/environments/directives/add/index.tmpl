@@ -1,0 +1,8 @@
+<section ng-controller="addEnvironmentCtrl">
+	<div ng-show="!wizard.template">
+		<div ng-include="'modules/dashboard/environments/directives/add/template.tmpl'"></div>
+	</div>
+	<div ng-show="wizard.template">
+		<ngform></ngform>
+	</div>
+</section>

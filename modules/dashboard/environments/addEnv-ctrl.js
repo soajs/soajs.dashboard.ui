@@ -28,7 +28,7 @@ function updateFormDataWithSourceCodesData(formData, sourceCodeData) {
 }
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', '$routeParams', function ($scope,overview, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window, $routeParams) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeout', '$modal', '$cookies', 'ngDataApi', 'addEnv', 'injectFiles', '$localStorage', '$window', '$routeParams', 'resourceConfiguration', 'resourceDeploy', function ($scope, overview, $timeout, $modal, $cookies, ngDataApi, addEnv, injectFiles, $localStorage, $window, $routeParams, resourceConfiguration, resourceDeploy) {
 	
 	$scope.showIntro = true;
 	$scope.oldStyle = false;
@@ -43,6 +43,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 	$scope.portalDeployment = false;
 	$scope.emptyEnvironment = false;
 	$scope.nonginxEnvironment = false;
+	
+	$scope.templateData = {};
 	
 	$scope.fullGitAccountsList; // filled once in listAccounts
 	
@@ -463,6 +465,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				break;
 		}
 		
+		$scope.templateData.selectedTemplate = flag;
+		// todo templated env
+		// flag / _id
+		
 		$scope.showIntro = false;
 	};
 	
@@ -489,7 +495,266 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 		$scope.cloudProviderHelpLink[technology] = myCloudProvider.help[technology];
 	};
 	
+	$scope.dynamicStep = function () {
+		
+		function getTemplateFromId(id) {
+			let output = {};
+			$scope.templates.forEach(function (eachTemp) {
+				if(eachTemp._id === id){
+					output = eachTemp;
+				}
+			});
+			
+			return output;
+		}
+		
+		// todo:
+		$scope.templateData.selectedTemplate = "mongoId321321321";
+		
+		let template = getTemplateFromId($scope.templateData.selectedTemplate);
+		console.log("---- temp ----");
+		console.log(template);
+		console.log("---- temp ----");
+		
+		$scope.templateData.allSteps = [];
+		$scope.templateData.currentIndex = 0;
+		
+		if (template.deploy) {
+			let subDeployKeys  = ['database','deployments'];
+			subDeployKeys.forEach(function (subDeploy) {
+				if (template.deploy[subDeploy]) {
+					//todo:
+					if (template.deploy[subDeploy].pre) {
+						let stepsKeys = Object.keys(template.deploy[subDeploy].pre);
+						stepsKeys.forEach(function (eachStep) {
+							$scope.templateData.allSteps.push(eachStep);
+						});
+					}
+					if (template.deploy[subDeploy].steps) {
+						let stepsKeys = Object.keys(template.deploy[subDeploy].steps);
+						stepsKeys.forEach(function (eachStep) {
+							$scope.templateData.allSteps.push(eachStep);
+						});
+					}
+					if (template.deploy[subDeploy].post) {
+						let stepsKeys = Object.keys(template.deploy[subDeploy].post);
+						stepsKeys.forEach(function (eachStep) {
+							$scope.templateData.allSteps.push(eachStep);
+						});
+					}
+				}
+			});
+		}
+		
+		// todo: remove accepte...
+		let acceptableSteps = ['secrets','custom_registry','productization','tenant'];
+		
+		function isStepValid(step) {
+			if (!step) {
+				return false;
+			}
+			let splits = step.split(".");
+			let tempo = template.content;
+			splits.forEach(function (eachSplit) {
+				tempo = tempo[eachSplit];
+			});
+			
+			return tempo ? true : false;
+		}
+		
+		// validate steps
+		let invalidEntries = false;
+		$scope.templateData.allSteps.forEach(function (eachStep) {
+			if(acceptableSteps.indexOf(eachStep) === -1){
+				if(!isStepValid(eachStep)){
+					alert(`Invalid entry in deploy [${eachStep}]`);
+					invalidEntries = true;
+				}
+			}
+		});
+		
+		if (invalidEntries) {
+			return;
+		}
+		
+		// todo: re group steps by types // resources together ...
+		
+		let currentScope = $scope;
+		
+		function onNextStep() {
+			// todo: get data from template and deduce form
+			var configuration = angular.copy(environmentsConfig.form.add.dynamicStep.entries);
+			var options = {
+				timeout: $timeout,
+				entries: configuration,
+				name: 'dynamicStep',
+				label: 'todo',
+				actions: [
+					{
+						'type': 'submit',
+						'label': "Next",
+						'btn': 'primary',
+						'action': function (formData) {
+							
+							console.log("formData");
+							console.log(formData);
+							
+							// todo: save data in wizard
+							// and proceed
+							
+							// $scope.templateData.currentIndex++;
+							// onNextStep();
+						}
+					},
+					{
+						'type': 'reset',
+						'label': translation.cancel[LANG],
+						'btn': 'danger',
+						'action': function () {
+							//todo
+							// delete $localStorage.addEnv;
+							// $scope.form.formData = {};
+							// delete $scope.wizard;
+							// $scope.$parent.go("/environments")
+						}
+					}
+				]
+			};
+			
+			buildForm($scope, $modal, options, function () {
+				// $scope.envCode = "DEV";
+				// let $modalInstance = null; // for close modal
+				// let resource = {
+				// 	type : "cluster",
+				// 	category : "mongo"
+				// };
+				// let action = {};
+				// let settings = {};
+				//
+				// resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
+			});
+		}
+		
+		$scope.envCode = "DEV";
+		let $modalInstance = null; // for close modal
+		let resource = {
+			type : "cluster",
+			category : "mongo"
+		};
+		let action = {};
+		let settings = {};
+		let context = $scope;
+		let allowEdit = true;
+		
+		resourceConfiguration.loadDriverSchema(context, resource, settings, allowEdit, function (error) {
+			if (error) {
+				context.notsupported = true;
+			}
+			onNextStep();
+		});
+		
+		
+	};
+	
 	$scope.Step1 = function () {
+		
+		//todo: load templates from api
+		
+		$scope.templates = [
+			{
+				name : "Empty env",
+				description : "Specify your deployment platform technology using either Docker or Kubernetes."
+			},
+			{
+				name : "SOAJS Environment",
+				description : "Turn on API management, lifecycle, security, multi tenancy, multi version & awareness support."
+			},
+			{
+				name : "SOAJS & Nginx Environment",
+				description : "SOAJS environment & web server serving static UI content as well as forwarding requests to your APIs."
+			},
+			{
+				_id: "mongoId321321321",
+				name : "My Custom Registry Template",
+				description: "This template allows creating an environment with a specific custom registry entry.",
+				"link": "",
+				
+				"content": {
+					"custom_registry": {
+						"data": [
+							{
+								"name": "ciConfig1",
+								"value": {
+									"apiPrefix": "cloud-api",
+									"domain": "herrontech.com",
+									"protocol": "https",
+									"port": 443
+								}
+							},
+							{
+								"name": "ciConfig2",
+								"value": {
+									"apiPrefix": "cloud-api",
+									"domain": "herrontech.com",
+									"protocol": "https",
+									"port": 443
+								}
+							},
+							{
+								"name": "ciConfig3",
+								"value": {
+									"apiPrefix": "dashboard-api",
+									"domain": "soajs.org",
+									"protocol": "https",
+									"port": 443
+								}
+							}
+						]
+					},
+					
+					"deployments": {
+						"resources": {
+							"soap": {
+								"label": "SOAP Authorization",
+								"type": "authorization",
+								"category": "soapbasicauth",
+								"limit": 1,
+								"ui": "${REF:resources/drivers/authorization/soapbasicauth}",
+								"deploy": null
+							},
+							"basic": {
+								"label": "Basic Authorization",
+								"type": "authorization",
+								"category": "basicauth",
+								"limit": 1,
+								"ui": "${REF:resources/drivers/authorization/basicauth}",
+								"deploy": null
+							}
+						}
+					}
+				},
+				
+				"deploy": {
+					"database": {
+						"pre": {
+							"custom_registry": {
+								
+							},
+						},
+						"steps": {
+							"deployments.resources.soap": {
+								
+							},
+							"deployments.resources.basic": {
+								
+							}
+						},
+						"post": {}
+					}
+				}
+			}
+		];
+		
 		overlayLoading.show();
 		
 		let entries = {
@@ -739,16 +1004,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', 'overview', '$timeou
 				$localStorage.addEnv.step2 = angular.copy(formData);
 				$scope.wizard.deploy = angular.copy(formData);
 				
-				$scope.lastStep = 2;
-				if(advancedMode){
-					$scope.Step3();
-				}
-				else if($scope.portalDeployment){
-					$scope.Step21();
-				}
-				else{
-					overview.run($scope);
-				}
+				
+				$scope.dynamicStep();
+				// todo: ...
+				
+				
+				// $scope.lastStep = 2;
+				// if(advancedMode){
+				// 	$scope.Step3();
+				// }
+				// else if($scope.portalDeployment){
+				// 	$scope.Step21();
+				// }
+				// else{
+				// 	overview.run($scope);
+				// }
 			}
 			else {
 				delete formData.previousEnvironment;

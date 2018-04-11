@@ -144,6 +144,14 @@ var environmentsConfig = {
 						"directive": "modules/dashboard/environments/directives/add-overview.tmpl"
 					}
 				]
+			},
+			dynamicStep: {
+				'entries': [
+					{
+						"name": "dynamicStep",
+						"directive": "modules/dashboard/environments/directives/dynamicStep.tmpl"
+					}
+				]
 			}
 		},
 		database: {

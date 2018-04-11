@@ -1392,7 +1392,7 @@ var environmentsNav = [
 			'label': translation.deploy[LANG],
 			'position': 3
 		},
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js','modules/dashboard/resources/config.js', 'modules/dashboard/resources/services/configuration.js', 'modules/dashboard/resources/services/deploy.js'],
 	},
 	{
 		'id': 'environments',

@@ -39,11 +39,16 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 				data: resource.config,
 				"entries": dynamicEntries
 			};
-			buildForm(currentScope, null, formConfig, function(){
-				currentScope.form.refresh();
+			
+			// currentScope.form.refresh();
 				injectFiles.injectCss(cssFile);
 				return cb(null, true);
-			});
+			
+			// buildForm(currentScope, null, formConfig, function(){
+			// 	currentScope.form.refresh();
+			// 	injectFiles.injectCss(cssFile);
+			// 	return cb(null, true);
+			// });
 		}).catch(function(error){
 			return cb(null, true);
 		});

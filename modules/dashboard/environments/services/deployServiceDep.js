@@ -212,6 +212,18 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
 		});
 		
+		$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
+			$scope.branches.forEach(function (oneBranch) {
+				if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
+					if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
+						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
+						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
+					}
+				}
+			});
+			
+		};
+		
 		$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {
 			$scope.alerts = [];
 			if (isCode) {

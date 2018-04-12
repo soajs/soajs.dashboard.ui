@@ -1,8 +1,8 @@
-<div class="f-left form-g">
+<div class="form-g">
 	<fieldset>
 		<legend>Deployment Options</legend>
 		<div>
-			<label>{{translation.branch[LANG]}}:</label><img class="loadingImage" ng-src={{imagePath}} ng-if="loadingBranches">
+			<label>Branch:</label><img class="loadingImage" ng-src={{imagePath}} ng-if="loadingBranches">
 			<select class="form-control" ng-if="!loadingBranches" data-ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch" ng-change="updateGitBranch(oneSrv, oneEnv, version)" ng-required="true">
 				<option ng-repeat="myBranch in branches" value="{{myBranch.name}}">
 					{{myBranch.name}}

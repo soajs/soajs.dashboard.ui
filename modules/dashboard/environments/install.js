@@ -1409,6 +1409,7 @@ var environmentsNav = [
 			'modules/dashboard/secrets/config.js',
 			'modules/dashboard/secrets/services/secretsService.js',
 			
+			'modules/dashboard/environments/services/repos.js',
 			'modules/dashboard/environments/services/deployServiceDep.js'
 		],
 	},

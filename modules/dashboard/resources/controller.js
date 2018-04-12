@@ -263,8 +263,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						};
 						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
 							saveOptions.sharedEnv = {};
+							$scope.formData.sharedEnv = {};
 							$scope.envs.list.forEach(function (oneEnv) {
 								if (oneEnv.selected) {
+									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
 									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
 								}
 							});

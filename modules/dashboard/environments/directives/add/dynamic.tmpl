@@ -13,7 +13,7 @@
 		<h4>Configuring Resources</h4>
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
-				<accordion-heading>{{key}}</accordion-heading>
+				<accordion-heading>{{value.label}} {{$index + 1}}</accordion-heading>
 				<div id="resource_{{key}}"></div>
 			</accordion-group>
 		</accordion>
@@ -24,7 +24,7 @@
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>{{key}}</accordion-heading>
-				need to bind it here ....
+				<div id="secret_{{key}}"></div>
 			</accordion-group>
 		</accordion>
 	</div>
@@ -34,15 +34,15 @@
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>{{key}}</accordion-heading>
-				need to bind it here ....
+				<div id="repo_{{key}}"></div>
 			</accordion-group>
 		</accordion>
 	</div>
 	
 </div>
-<div class='footer'>
+<div class='modal-footer'>
 	<br/>
-	<input type="button" class="btn btn-sm btn-danger f-right" value="Reset" ng-click="reset()" />
-	<input type="button" class="btn btn-sm btn-primary f-right" value="Next" ng-click="saveData()" />
-	<input type="button" class="btn btn-sm btn-danger f-right" value="Back" ng-click="back()" />
+	<input type="button" class="btn btn-sm btn-success" value="Back" ng-click="back()" />
+	<input type="button" class="btn btn-sm btn-primary" value="Next" ng-click="saveData()" />
+	<input type="button" class="btn btn-sm btn-danger" value="Cancel" ng-click="reset()" />
 </div>

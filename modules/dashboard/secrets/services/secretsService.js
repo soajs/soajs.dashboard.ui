@@ -2,64 +2,20 @@
 var secretsApp = soajsApp.components;
 secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataApi, $timeout) {
 	
-	function addSecret($scope, $modalInstance, currentScope) {
+	function addSecret($scope, $modalInstance, currentScope, actions, cb) {
 		
 		$scope.textMode = false;
 		
 		let formConfig = angular.copy(secretsAppConfig.form.addSecret);
 		
-		let options = {
-			timeout: $timeout,
-			entries: formConfig,
-			name: 'newSecret',
-			actions: [
+		if(!actions){
+			actions = [
 				{
 					'type': 'submit',
 					'label': "Create Secret",
 					'btn': 'primary',
 					action: function (formData) {
-						let input = {
-							name: formData.secretName,
-							env: currentScope.selectedEnvironment.code,
-							type: 'Opaque',
-							namespace: currentScope.namespaceConfig.namespace
-						};
-						
-						if (!input.data && formData.file) {
-							delete $scope.editor;
-							delete formData.secretData;
-							input.data = formData.file;
-						}
-						
-						if (formData.secretData) {
-							input.data = formData.secretData;
-							delete formData.file;
-						}
-						
-						if (!input.data && $scope.editor) {
-							input.data = $scope.editor.ngModel;
-							delete formData.file;
-						}
-						
-						if (!input.data || input.data === "" || ((input.data === "{}" || (typeof input.data === 'object' && Object.keys(input.data).length === 0)) && !formData.secretData && !formData.file)) {
-							$scope.form.displayAlert("danger", "Provide a value for your secret to proceed!");
-							return false;
-						}
-						
-						getSendDataFromServer(currentScope, ngDataApi, {
-							method: 'post',
-							routeName: '/dashboard/secrets/add',
-							data: input
-						}, function (error) {
-							if (error) {
-								$scope.form.displayAlert('danger', error.message);
-							}
-							else {
-								currentScope.displayAlert('success', 'Secret created successfully.');
-								currentScope.listSecrets();
-								$modalInstance.close();
-							}
-						});
+						$scope.save(formData);
 					}
 				},
 				{
@@ -72,6 +28,64 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataA
 					}
 				}
 			]
+		}
+		
+		let options = {
+			timeout: $timeout,
+			entries: formConfig,
+			name: 'newSecret',
+			actions: actions
+		};
+		
+		$scope.save = function(formData, cb){
+			let input = {
+				name: formData.secretName,
+				env: currentScope.selectedEnvironment.code,
+				type: 'Opaque',
+				namespace: currentScope.namespaceConfig.namespace
+			};
+			
+			if (!input.data && formData.file) {
+				delete $scope.editor;
+				delete formData.secretData;
+				input.data = formData.file;
+			}
+			
+			if (formData.secretData) {
+				input.data = formData.secretData;
+				delete formData.file;
+			}
+			
+			if (!input.data && $scope.editor) {
+				input.data = $scope.editor.ngModel;
+				delete formData.file;
+			}
+			
+			if (!input.data || input.data === "" || ((input.data === "{}" || (typeof input.data === 'object' && Object.keys(input.data).length === 0)) && !formData.secretData && !formData.file)) {
+				$scope.form.displayAlert("danger", "Provide a value for your secret to proceed!");
+				return false;
+			}
+			
+			if($modalInstance){
+				getSendDataFromServer(currentScope, ngDataApi, {
+					method: 'post',
+					routeName: '/dashboard/secrets/add',
+					data: input
+				}, function (error) {
+					if (error) {
+						$scope.form.displayAlert('danger', error.message);
+					}
+					else {
+						currentScope.displayAlert('success', 'Secret created successfully.');
+						currentScope.listSecrets();
+						$modalInstance.close();
+					}
+				});
+			}
+			
+			if(cb && typeof cb === 'function'){
+				return cb(input);
+			}
 		};
 		
 		function enableTextMode(textMode, editor) {
@@ -115,6 +129,10 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataA
 		
 		buildForm($scope, $modalInstance, options, function () {
 			$scope.editor = $scope.form.entries[1].tabs[0].entries[1];
+			
+			if(cb && typeof cb === 'function'){
+				return cb();
+			}
 		});
 	}
 	

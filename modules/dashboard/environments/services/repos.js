@@ -7,7 +7,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
 	}
 	
-	function listGitAccounts(currentScope) {
+	function listGitAccounts(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
 			'routeName': '/dashboard/gitAccounts/accounts/list',
@@ -29,9 +29,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						getServices(currentScope, function () {
 							getDaemons(currentScope, function () {
 								processGitAccountsRepos(function() {
-									getCdData(currentScope, function () {
-										getDeployedServices(currentScope);
-									});
+									
+									if(cb && typeof cb === 'function'){
+										return cb();
+									}
+									else{
+										getCdData(currentScope, function () {
+											getDeployedServices(currentScope);
+										});
+									}
 								});
 							});
 						});
@@ -406,18 +412,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						deployService.close();
 					};
 					
-					$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
-						$scope.branches.forEach(function (oneBranch) {
-							if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
-								if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
-								}
-							}
-						});
-						
-					};
-					
 					$scope.saveRecipe = function (type) {
 						saveRecipe($scope, type)
 					};
@@ -455,7 +449,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		});
 	}
 
-	function saveRecipe(currentScope, type) {
+	function saveRecipe(currentScope, type, cb) {
 		var configuration = {};
 		var modes = ['deployment', 'replicated'];
 		var oneEnv = currentScope.oneEnv;
@@ -559,6 +553,11 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				configuration.version.deploy = true;
 			}
 		}
+		
+		if(cb && typeof cb === 'function'){
+			return cb(configuration);
+		}
+		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
@@ -819,7 +818,8 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		'getDeployedServices': getDeployedServices,
 		'deployService': deployService,
 		'doDeploy': doDeploy,
-		'checkHeapster': checkHeapster
+		'checkHeapster': checkHeapster,
+		'saveRecipe': saveRecipe
 	};
 
 }]);

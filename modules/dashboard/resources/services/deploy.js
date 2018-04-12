@@ -594,8 +594,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					oneEnv.selected = true;
 				});
 			}
-			
-			return;
 		};
 		
 		context.fillForm();

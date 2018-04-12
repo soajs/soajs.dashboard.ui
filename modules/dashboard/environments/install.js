@@ -1399,6 +1399,7 @@ var environmentsNav = [
 			'modules/dashboard/environments/add/giSrv.js',
 			'modules/dashboard/environments/add/deploySrv.js',
 			'modules/dashboard/environments/add/registrySrv.js',
+			'modules/dashboard/environments/add/overviewSrv.js',
 			'modules/dashboard/environments/add/dynamicSrv.js',
 			'modules/dashboard/environments/services/custom_registry.js',
 			

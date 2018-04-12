@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', 'registrySrv', 'dynamicSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv, registrySrv, dynamicSrv) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', 'registrySrv','overviewSrv', 'dynamicSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv, registrySrv,overviewSrv, dynamicSrv) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
@@ -58,7 +58,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	};
 	
 	$scope.displayOverview = function () {
-	
+		overviewSrv.go($scope);
 	};
 	
 	$scope.checkStatus = function () {

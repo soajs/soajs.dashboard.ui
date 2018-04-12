@@ -1,0 +1,4 @@
+<div ng-class="{'footer': !form.modal, 'modal-footer': form.modal}">
+	<br/>
+	<input ng-repeat="formAction in form.actions" type="{{formAction.type}}" value="{{formAction.label}}" ng-click="form.do(formAction)" class="btn btn-sm btn-{{formAction.btn}}"/>
+</div>

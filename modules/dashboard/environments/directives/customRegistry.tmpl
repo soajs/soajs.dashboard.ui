@@ -1,6 +1,6 @@
 <alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
 <br />
-<form name="addEditCustomRegistry" id="addEditCustomRegistry" ng-submit="addEditCustomRegistry.$valid && onSubmit()">
+<form name="addEditCustomRegistry" ng-submit="addEditCustomRegistry.$valid && onSubmit()">
 	<div class="form-group" ng-init="$root.valid = addEditCustomRegistry.$valid" ng-keyup="$root.valid = addEditCustomRegistry.$valid" ng-mousemove="$root.valid = addEditCustomRegistry.$valid">
 		<tabset>
 			<tab heading="General">
@@ -18,7 +18,7 @@
 					<label class="fieldMsg">Turn on this mode if the value you are about to enter is made up of text only (Default mode does not support text only)</label>
 					<br /><br />
 				</div>
-				<div id="customRegistry" class="customRegistryAceEditor" ui-ace="options.aceEditorConfig" ng-model="formData.value"></div>
+				<div class="customRegistryAceEditor" ui-ace="options.aceEditorConfig" ng-model="formData.value"></div>
 				<label class="fieldMsg">{{translation.customRegistryFieldMsg[LANG]}}</label>
 			</tab>
 			<tab heading="Settings">

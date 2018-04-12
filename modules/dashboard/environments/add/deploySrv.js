@@ -184,7 +184,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		
 		$localStorage.addEnv = angular.copy(currentScope.wizard);
-		// currentScope.nextStep();
+		currentScope.nextStep();
 	}
 	
 	function go(currentScope) {

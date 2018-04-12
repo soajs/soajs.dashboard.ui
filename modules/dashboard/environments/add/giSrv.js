@@ -5,8 +5,6 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 	function go(currentScope){
 		overlayLoading.show();
 		
-		console.log(currentScope.wizard);
-		
 		let entries = {
 			code: {
 				required: true,
@@ -18,10 +16,9 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 		};
 		currentScope.tempFormEntries = entries;
 		
-		let configuration = angular.copy(environmentsConfig.form.add.step1.entries);
 		let options = {
 			timeout: $timeout,
-			entries: configuration,
+			entries: [],
 			name: 'addEnvironment',
 			label: translation.addNewEnvironment[LANG],
 			actions: [

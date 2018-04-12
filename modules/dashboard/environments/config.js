@@ -106,54 +106,55 @@ var environmentsConfig = {
 					}
 				]
 			},
-			step21: {
-				"entries": [
-					{
-						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/add-step21.tmpl"
-					}
-				]
-			},
 			step3: {
 				"entries": [
 					{
 						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/add-step3.tmpl"
-					}
-				]
-			},
-			step31: {
-				"entries": [
-					{
-						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/deploy-service-details.tmpl"
-					}
-				]
-			},
-			step4: {
-				"entries": [
-					{
-						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/add-step4.tmpl"
-					}
-				]
-			},
-			overview: {
-				"entries": [
-					{
-						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/add-overview.tmpl"
-					}
-				]
-			},
-			dynamicStep: {
-				'entries': [
-					{
-						"name": "dynamicStep",
-						"directive": "modules/dashboard/environments/directives/dynamicStep.tmpl"
+						"directive": "modules/dashboard/environments/directives/add/dynamic.tmpl"
 					}
 				]
 			}
+			// },
+			// step3: {
+			// 	"entries": [
+			// 		{
+			// 			"name": "deployment",
+			// 			"directive": "modules/dashboard/environments/directives/add-step3.tmpl"
+			// 		}
+			// 	]
+			// },
+			// step31: {
+			// 	"entries": [
+			// 		{
+			// 			"name": "deployment",
+			// 			"directive": "modules/dashboard/environments/directives/deploy-service-details.tmpl"
+			// 		}
+			// 	]
+			// },
+			// step4: {
+			// 	"entries": [
+			// 		{
+			// 			"name": "deployment",
+			// 			"directive": "modules/dashboard/environments/directives/add-step4.tmpl"
+			// 		}
+			// 	]
+			// },
+			// overview: {
+			// 	"entries": [
+			// 		{
+			// 			"name": "deployment",
+			// 			"directive": "modules/dashboard/environments/directives/add-overview.tmpl"
+			// 		}
+			// 	]
+			// },
+			// dynamicStep: {
+			// 	'entries': [
+			// 		{
+			// 			"name": "dynamicStep",
+			// 			"directive": "modules/dashboard/environments/directives/dynamicStep.tmpl"
+			// 		}
+			// 	]
+			// }
 		},
 		database: {
 			'name': '',

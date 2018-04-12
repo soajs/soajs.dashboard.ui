@@ -40,15 +40,14 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 				"entries": dynamicEntries
 			};
 			
-			// currentScope.form.refresh();
+			currentScope.form.refresh();
+			injectFiles.injectCss(cssFile);
+			
+			buildForm(currentScope, null, formConfig, function(){
+				currentScope.form.refresh();
 				injectFiles.injectCss(cssFile);
 				return cb(null, true);
-			
-			// buildForm(currentScope, null, formConfig, function(){
-			// 	currentScope.form.refresh();
-			// 	injectFiles.injectCss(cssFile);
-			// 	return cb(null, true);
-			// });
+			});
 		}).catch(function(error){
 			return cb(null, true);
 		});

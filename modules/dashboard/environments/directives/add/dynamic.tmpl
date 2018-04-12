@@ -1,0 +1,49 @@
+<div ng-switch="dynamicStep.predefinedStepFunction">
+	
+	<div ng-switch-when="custom_registry">
+		<h4>Configuring Custom Registries</h4>
+		<accordion close-others="false">
+			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
+				<accordion-heading>{{key}}</accordion-heading>
+				<div id="ci_{{key}}"></div>
+			</accordion-group>
+		</accordion>
+	</div>
+	
+	<div ng-switch-when="resources">
+		<h4>Configuring Resources</h4>
+		<accordion close-others="false">
+			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
+				<accordion-heading>{{key}}</accordion-heading>
+				<!--<div ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>-->
+			</accordion-group>
+		</accordion>
+	</div>
+	
+	<div ng-switch-when="secrets">
+		<h4>Configuring Secrets</h4>
+		<accordion close-others="false">
+			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
+				<accordion-heading>{{key}}</accordion-heading>
+				need to bind it here ....
+			</accordion-group>
+		</accordion>
+	</div>
+	
+	<div ng-switch-when="repo">
+		<h4>Configuring Repositories</h4>
+		<accordion close-others="false">
+			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
+				<accordion-heading>{{key}}</accordion-heading>
+				need to bind it here ....
+			</accordion-group>
+		</accordion>
+	</div>
+	
+</div>
+<div class='footer'>
+	<br/>
+	<input type="button" class="btn btn-sm btn-danger f-right" value="Reset" ng-click="reset()" />
+	<input type="button" class="btn btn-sm btn-primary f-right" value="Next" ng-click="saveData()" />
+	<input type="button" class="btn btn-sm btn-danger f-right" value="Back" ng-click="back()" />
+</div>

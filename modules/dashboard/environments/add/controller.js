@@ -1,19 +1,18 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', 'registrySrv', 'dynamicSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv, registrySrv, dynamicSrv) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
 	$scope.wizard = {};
-	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'processDynamicSteps', 'displayOverview', 'checkStatus'];
-	$scope.addEnvCounter = 0;
+	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'displayOverview', 'checkStatus'];
+	$scope.addEnvCounter = 4;
 	
 	function triggerMethod(counter){
 		let method = $scope.steps[counter];
-		
 		console.log("calling method", method);
 		$scope[method]();
 	}
@@ -55,8 +54,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		deploymentSrv.go($scope);
 	};
 	
-	$scope.processDynamicSteps = function () {
+	$scope.chooseRegistry = function () {
+		registrySrv.go($scope);
+	};
 	
+	$scope.processDynamicSteps = function () {
+		dynamicSrv.go($scope);
 	};
 	
 	$scope.displayOverview = function () {
@@ -95,7 +98,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		}
 	}
 	
-	injectFiles.injectCss('modules/dashboard/environments/environments.css');
+	injectFiles.injectCss('modules/dashboard/environments/environments-add.css');
 	$scope.$parent.collapseExpandMainMenu();
 	$scope.reRenderMenu('empty');
 	

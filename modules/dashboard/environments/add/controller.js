@@ -9,7 +9,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	
 	$scope.wizard = {};
 	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'displayOverview', 'checkStatus'];
-	$scope.addEnvCounter = 4;
+	$scope.addEnvCounter = 0;
 	
 	function triggerMethod(counter){
 		let method = $scope.steps[counter];
@@ -34,12 +34,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	};
 	
 	$scope.listTemplate = function () {
-		if($scope.wizard && $scope.wizard.template){
-			$scope.nextStep();
-		}
-		else{
-			templateSrv.go($scope);
-		}
+		templateSrv.go($scope);
 	};
 	
 	$scope.chooseTemplate = function (template) {
@@ -70,6 +65,21 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	
 	};
 	
+	$scope.mapStorageToWizard = function(storage){
+		if(!$scope.wizard){
+			$scope.wizard = {};
+		}
+		let template;
+		if($scope.wizard.template){
+			template = angular.copy($scope.wizard.template);
+		}
+		if ($localStorage.addEnv) {
+			$scope.wizard = angular.copy($localStorage.addEnv);
+		}
+		if($scope.wizard.template && template){
+			$scope.wizard.template.content = template.content;
+		}
+	};
 	
 	function checkEnvironment(cb) {
 		if ($localStorage.addEnv && $localStorage.addEnv.gi && $localStorage.addEnv.gi.code) {

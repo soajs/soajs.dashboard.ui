@@ -184,6 +184,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		
 		$localStorage.addEnv = angular.copy(currentScope.wizard);
+		delete $localStorage.addEnv.template.content;
 		currentScope.nextStep();
 	}
 	
@@ -273,9 +274,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		buildForm(currentScope, $modal, options, function () {
 			
-			if ($localStorage.addEnv) {
-				currentScope.wizard = $localStorage.addEnv;
-			}
+			currentScope.mapStorageToWizard($localStorage.addEnv);
 			
 			if (currentScope.wizard.deployment) {
 				currentScope.form.formData = angular.copy(currentScope.wizard.deployment);

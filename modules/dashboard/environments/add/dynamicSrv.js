@@ -4,7 +4,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	
 	let predefinedSchemaSteps = {
 		custom_registry: {
-			deploy: function(currentScope, context, fCb) {
+			deploy: function(currentScope, context) {
 				function buildMyForms(counter, cb){
 					let ci = entriesNames[counter];
 					let customRegistry = ciEntries[ci];
@@ -46,14 +46,26 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					for (let ci in ciEntries) {
 						let customRegistry = ciEntries[ci];
 						customRegistry.scope.save();
-						console.log(customRegistry);
-						//map the values back to custom registry
 						
-						// currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
+						//map the values back to custom registry
+						let imfv = angular.copy(customRegistry.scope.formData);
+						imfv.name = ci; //force the name back as it was
+						if(!imfv.textMode){
+							try{
+								imfv.value = JSON.parse(imfv.value);
+							}
+							catch(e){
+								$window.alert("The content of the custom registry provided is invalid!");
+								return false;
+							}
+						}
+						customRegistry = imfv;
+						delete customRegistry.scope;
+						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
 					}
 					
 					//trigger next here
-					//currentScope.next();
+					currentScope.next();
 				};
 				
 				overlayLoading.show();
@@ -135,37 +147,45 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		},
 		resources: {
 			deploy: function(currentScope, context, fCb){
-				// create a copy just in case
-				// let resourceEntries = angular.copy(context.inputs);
-				//
-				// let actions = {
-				// 	'type': 'submit',
-				// 	'label': "Save & Continue",
-				// 	'btn': 'primary',
-				// 	'action': function (formData) {
-				//
-				// 		if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-				// 			currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
-				// 		}
-				// 		else{
-				// 			currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
-				// 		}
-				//
-				// 		return fCb();
-				// 	}
-				// };
-				//
-				// function postFormExecute(){
-				// 	let resourceName = context.section[context.section.length -1];
-				// 	resourceDeploy.buildDeployForm(currentScope, currentScope, null, context.inputs[resourceName], 'add', {
-				// 		"type": context.inputs[resourceName].type,
-				// 		category: context.inputs[resourceName].category
-				// 	}, () =>{
-				//
-				// 	});
-				// }
-				//
-				// buildDynamicForm(currentScope, context, actions, postFormExecute);
+				function buildMyForms(counter, cb){
+					let key = entriesNames[counter];
+					let resource = resourceEntries[key];
+					
+					console.log(resource);
+					let record = angular.copy(resource);
+					let settings = { "type": record.type, category: record.category };
+					resource.scope = currentScope.$new(true); //true means detached from main currentScope
+					resource.scope.envCode = currentScope.envCode;
+					
+					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () =>{
+						let entries = [
+						
+						];
+						buildDynamicForm(resource.scope, entries, () =>{
+							let element = angular.element(document.getElementById("resource_" + key));
+							element.append("<div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\">");
+							$compile(element.contents())(resource.scope);
+						
+							counter ++;
+							if(counter < entriesNames.length){
+								buildMyForms(counter, cb);
+							}
+							else{
+								return cb();
+							}
+						});
+					});
+				}
+				
+				let resourceEntries = angular.copy(context.inputs);
+				context.inputs.limit = 2;
+				currentScope.dynamicStep = context;
+				
+				overlayLoading.show();
+				let entriesNames = Object.keys(resourceEntries);
+				buildMyForms(0, () => {
+					overlayLoading.hide();
+				});
 			}
 		}
 	};
@@ -185,9 +205,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	function go(currentScope){
-		if($localStorage.addEnv){
-			currentScope.wizard = $localStorage.addEnv;
-		}
+		
+		currentScope.mapStorageToWizard($localStorage.addEnv);
 		
 		let stack = [];
 		if(currentScope.wizard){
@@ -202,7 +221,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				currentScope.nextStep();
 			}
 			else{
-				// currentScope.deploymentStackStep = 5;
 				currentScope.deploymentStackStep = 0;
 				processStack(currentScope, stack);
 			}
@@ -216,7 +234,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		};
 		
 		currentScope.back = function(){
-			currentScope.deploymentStackStep--;
+			currentScope.deploymentStackStep --;
 			if(currentScope.deploymentStackStep < 0){
 				if (currentScope.form && currentScope.form.formData) {
 					currentScope.form.formData = {};
@@ -283,8 +301,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									inputs[section] = dataArray;
 								}
 								opts['inputs'] = inputs;
+								stack.push(opts);
 							}
-							stack.push(opts);
 						}
 					}
 				});
@@ -293,6 +311,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	function processStack(currentScope, stack){
+		
+		console.log(currentScope.deploymentStackStep);
 		let stackStep = stack[currentScope.deploymentStackStep];
 		if(stackStep && stackStep.inputs){
 			let contentSection = stackStep.section;
@@ -308,12 +328,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				//works for both sections with sub or sections with main only
 				predefinedStepFunction = subSection || contentSection;
 			}
-			
+			console.log(predefinedStepFunction);
 			stackStep.predefinedStepFunction = predefinedStepFunction;
 			if(predefinedStepFunction){
-				predefinedSchemaSteps[predefinedStepFunction].deploy(currentScope, stackStep , () => {
-					nextStep();
-				});
+				predefinedSchemaSteps[predefinedStepFunction].deploy(currentScope, stackStep);
 			}
 			else{
 				nextStep();
@@ -325,12 +343,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		
 		function nextStep(){
 			//jump to next step or leave
-			currentScope.deploymentStackStep ++;
 			if(currentScope.deploymentStackStep === stack.length -1){
 				//stack has been processed in full, go to overview
 				currentScope.nextStep();
 			}
 			else{
+				currentScope.deploymentStackStep ++;
 				processStack(currentScope, stack);
 			}
 		}

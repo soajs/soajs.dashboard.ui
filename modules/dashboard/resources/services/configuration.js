@@ -40,7 +40,6 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 				"entries": dynamicEntries
 			};
 			
-			currentScope.form.refresh();
 			injectFiles.injectCss(cssFile);
 			
 			buildForm(currentScope, null, formConfig, function(){

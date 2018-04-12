@@ -1,5 +1,4 @@
 <div ng-switch="dynamicStep.predefinedStepFunction">
-	
 	<div ng-switch-when="custom_registry">
 		<h4>Configuring Custom Registries</h4>
 		<accordion close-others="false">
@@ -15,7 +14,7 @@
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>{{key}}</accordion-heading>
-				<!--<div ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>-->
+				<div id="resource_{{key}}"></div>
 			</accordion-group>
 		</accordion>
 	</div>

@@ -41,6 +41,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 						formData.code = formData.code.toUpperCase();
 						currentScope.wizard.gi = angular.copy(formData);
 						$localStorage.addEnv = angular.copy(currentScope.wizard);
+						delete $localStorage.addEnv.template.content;
 						currentScope.nextStep();
 					}
 				},
@@ -59,9 +60,8 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 		};
 		
 		buildForm(currentScope, $modal, options, function () {
-			if ($localStorage.addEnv) {
-				currentScope.wizard = $localStorage.addEnv;
-			}
+			
+			currentScope.mapStorageToWizard($localStorage.addEnv);
 			
 			currentScope.form.formData = angular.copy(currentScope.wizard.gi);
 

@@ -1,6 +1,6 @@
 "use strict";
-var giServices = soajsApp.components;
-giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
+var regServices = soajsApp.components;
+regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
 	
 	function go(currentScope){
 		

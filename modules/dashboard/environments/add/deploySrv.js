@@ -94,49 +94,35 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			formData.deployment = {};
 			currentScope.availableEnvironments.forEach((oneEnv) => {
 				if (oneEnv.code === currentScope.previousEnvironment) {
-					if (oneEnv.deployer.type === 'manual') {
-						formData.selectedDriver = oneEnv.deployer.type;
-						formData.deployment.manual = {
-							nodes: oneEnv.deployment.manual.nodes
-						};
+					formData.previousEnvironment = currentScope.previousEnvironment;
+					formData.selectedDriver = oneEnv.deployer.selected.split(".")[1]; //docker || kubernetes
+					
+					if (formData.selectedDriver === 'docker') {
 						delete formData.kubernetes;
-						delete formData.docker;
-						delete formData.previousEnvironment;
-						
-						delete currentScope.wizard.controller;
-						delete currentScope.wizard.nginx;
-					}
-					else {
-						formData.previousEnvironment = currentScope.previousEnvironment;
-						formData.selectedDriver = oneEnv.deployer.selected.split(".")[1]; //docker || kubernetes
-						
-						if (formData.selectedDriver === 'docker') {
-							delete formData.kubernetes;
-							let localRemote = (oneEnv.deployer.selected.indexOf("remote") !== -1) ? 'remote' : 'local';
-							formData.deployment.docker = oneEnv.deployer.container[formData.selectedDriver][localRemote];
-							if (formData.deployment.docker.auth && formData.deployment.docker.auth.token) {
-								formData.deployment.docker.token = formData.deployment.docker.auth.token;
-								delete formData.deployment.docker.auth.token;
-							}
-							formData.deployment.docker.dockerremote = formData.deployment.docker.selected !== 'container.docker.local';
+						let localRemote = (oneEnv.deployer.selected.indexOf("remote") !== -1) ? 'remote' : 'local';
+						formData.deployment.docker = oneEnv.deployer.container[formData.selectedDriver][localRemote];
+						if (formData.deployment.docker.auth && formData.deployment.docker.auth.token) {
+							formData.deployment.docker.token = formData.deployment.docker.auth.token;
+							delete formData.deployment.docker.auth.token;
 						}
+						formData.deployment.docker.dockerremote = formData.deployment.docker.selected !== 'container.docker.local';
+					}
+					
+					if (formData.selectedDriver === 'kubernetes') {
+						delete formData.docker;
+						formData.deployment.kubernetes = {};
+						formData.deployment.kubernetes.kubernetesremote = oneEnv.deployer.selected !== 'container.kubernetes.local';
+						let localRemote = (formData.deployment.kubernetes.kubernetesremote) ? 'remote' : 'local';
+						formData.deployment.kubernetes = {
+							kubernetesremote: oneEnv.deployer.selected !== 'container.kubernetes.local',
+							port: oneEnv.deployer.container.kubernetes[localRemote].apiPort,
+							NS: oneEnv.deployer.container.kubernetes[localRemote].namespace.default,
+							perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
+							token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
+						};
 						
-						if (formData.selectedDriver === 'kubernetes') {
-							delete formData.docker;
-							formData.deployment.kubernetes = {};
-							formData.deployment.kubernetes.kubernetesremote = oneEnv.deployer.selected !== 'container.kubernetes.local';
-							let localRemote = (formData.deployment.kubernetes.kubernetesremote) ? 'remote' : 'local';
-							formData.deployment.kubernetes = {
-								kubernetesremote: oneEnv.deployer.selected !== 'container.kubernetes.local',
-								port: oneEnv.deployer.container.kubernetes[localRemote].apiPort,
-								NS: oneEnv.deployer.container.kubernetes[localRemote].namespace.default,
-								perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
-								token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
-							};
-							
-							if (oneEnv.deployer.container.kubernetes[localRemote].nodes) {
-								formData.deployment.kubernetes.nodes = oneEnv.deployer.container.kubernetes[localRemote].nodes;
-							}
+						if (oneEnv.deployer.container.kubernetes[localRemote].nodes) {
+							formData.deployment.kubernetes.nodes = oneEnv.deployer.container.kubernetes[localRemote].nodes;
 						}
 					}
 				}

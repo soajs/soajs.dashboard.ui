@@ -21,7 +21,7 @@
 						<div>
 							<label>I Want the SOAJS Framework to persist my Session in this Environment</label>
 							<label class="toggleSwitch">
-								<input type="checkbox" ng-model="form.formData.soajsFrmwrk" ng-change="tempFormEntries.soajsFrmwrk.onAction()"/><span class="buttonSlider round"></span>
+								<input type="checkbox" ng-model="form.formData.soajsFrmwrk" ng-change="clearOnPersistMySession()"/><span class="buttonSlider round"></span>
 							</label>
 							<div class="fieldMsg hint">Turn On if you want the soajs framework to persist your session between the SOA services and provide security
 								phrases to encrypt cookies and sessions
@@ -65,7 +65,7 @@
 		</table>
 	</accordion-group>
 	
-	<accordion-group is-open="false">
+	<accordion-group is-open="true">
 		<accordion-heading>Testing & Simulation</accordion-heading>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 			<tbody>

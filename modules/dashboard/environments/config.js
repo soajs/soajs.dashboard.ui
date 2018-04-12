@@ -109,20 +109,19 @@ var environmentsConfig = {
 			step3: {
 				"entries": [
 					{
-						"name": "deployment",
-						"directive": "modules/dashboard/environments/directives/add/dynamic.tmpl"
+						"name": "registry",
+						"directive": "modules/dashboard/environments/directives/add/registry.tmpl"
 					}
 				]
-			}
-			// },
-			// step3: {
-			// 	"entries": [
-			// 		{
-			// 			"name": "deployment",
-			// 			"directive": "modules/dashboard/environments/directives/add-step3.tmpl"
-			// 		}
-			// 	]
-			// },
+			},
+			step4: {
+				"entries": [
+					{
+						"name": "dynamic",
+						"directive": "modules/dashboard/environments/directives/add-step3.tmpl"
+					}
+				]
+			},
 			// step31: {
 			// 	"entries": [
 			// 		{

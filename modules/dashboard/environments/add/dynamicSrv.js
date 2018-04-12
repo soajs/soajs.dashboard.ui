@@ -235,13 +235,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let settings = {"type": record.type, category: record.category};
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
 					resource.scope.envCode = currentScope.envCode;
+					
 					if(record.deploy && Object.keys(record.deploy).length > 0){
 						record.canBeDeployed = true;
+						resource.scope.envType = 'container';
+						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver;
+						resource.scope.access = {deploy: true};
 					}
 					
-					resource.scope.envType = 'container';
-					resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver;
-					resource.scope.access = {deploy: true};
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
@@ -276,26 +277,26 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							imfv.name = key; //force the name back as it was
 							
 							//todo: deployment
-							//console.log(resource.scope);
-							if (imfv.deployOptions) {
+							console.log(imfv);
+							if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
 								imfv.deploy = {
 									"options": {
 										"deployConfig": {
 											"replication": {
-												"mode": resource.scope.formData.deployOptions.deployConfig.replication.mode
+												"mode": imfv.deployOptions.deployConfig.replication.mode
 											},
-											"memoryLimit": resource.scope.formData.deployOptions.deployConfig.memoryLimit * 1048576
+											"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
 										},
-										"custom": resource.scope.formData.deployOptions,
-										"recipe": resource.scope.formData.deployOptions.recipe,
+										"custom": imfv.deployOptions,
+										"recipe": imfv.deployOptions.recipe,
 										"env": resource.scope.envCode
 									},
 									"deploy": true,
 									"type": "custom"
 								};
 								
-								if(resource.scope.formData.deployOptions.deployConfig.replication.replicas){
-									imfv.deploy.options.deployConfig.replication.replicas = resource.scope.formData.deployOptions.deployConfig.replication.replicas;
+								if(imfv.deployOptions.deployConfig.replication.replicas){
+									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
 								}
 							}
 							else {
@@ -345,6 +346,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		let stack = [];
 		if (currentScope.wizard) {
 			deployRepos.listGitAccounts(currentScope, () => {
+				console.log(currentScope.wizard);
 				getDeploymentWorkflow(stack, currentScope.wizard.template);
 				
 				currentScope.envCode = currentScope.wizard.gi.code.toUpperCase();

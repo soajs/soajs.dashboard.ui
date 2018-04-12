@@ -5,6 +5,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 	function handleFormData(currentScope, formData) {
 		currentScope.wizard.registry = angular.copy(formData);
 		$localStorage.addEnv = angular.copy(currentScope.wizard);
+		delete $localStorage.addEnv.template.content;
 		currentScope.nextStep();
 	}
 	
@@ -89,9 +90,8 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 			});
 			
 			buildForm(currentScope, $modal, options, function () {
-				if ($localStorage.addEnv) {
-					currentScope.wizard = $localStorage.addEnv;
-				}
+				
+				currentScope.mapStorageToWizard($localStorage.addEnv);
 				
 				if (currentScope.wizard.registry) {
 					currentScope.form.formData = angular.copy(currentScope.wizard.registry);

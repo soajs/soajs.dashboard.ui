@@ -61,3 +61,7 @@
     min-height: 18px;
     overflow-y: scroll;
 }
+
+#page div.entryBoxesGrid div.entryBox{
+    float:none;
+}

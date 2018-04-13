@@ -278,8 +278,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
-										if(available.indexOf(oneRecipe.name) !== -1){
+										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
 											oneRepo.scope.myRecipes.push(oneRecipe);
+										}
+										else if(available.length === 0){
+											if(oneRecipe.type === oneRepo.type && oneRecipe.subtype === oneRepo.category){
+												oneRepo.scope.myRecipes.push(oneRecipe);
+											}
 										}
 									});
 								}
@@ -489,8 +494,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
-										if(available.indexOf(oneRecipe.name) !== -1){
+										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
 											resource.scope.recipes.push(oneRecipe);
+										}
+										else if(available.length === 0){
+											if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
+												resource.scope.recipes.push(oneRecipe);
+											}
 										}
 									});
 								}

@@ -3,10 +3,12 @@ var resourceDeployService = soajsApp.components;
 resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDataApi', function (resourceConfiguration, ngDataApi) {
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		context.formData = {};
+		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
 		context.message = {};
-		context.recipes = [];
+		if(!context.noCDoverride){
+			context.recipes = [];
+		}
 		context.recipeUserInput = {image: {}, envs: {}};
 		
 		context.configRepos = [];
@@ -597,7 +599,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		};
 		
 		context.fillForm();
-		context.getCatalogRecipes();
+		
+		if(!context.noCDoverride){
+			context.getCatalogRecipes();
+		}
+		else{
+			context.displayRecipeInputs();
+		}
 		
 		if (cb && typeof cb === 'function')
 			return cb();

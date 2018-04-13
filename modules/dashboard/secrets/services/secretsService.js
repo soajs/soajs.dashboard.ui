@@ -2,11 +2,15 @@
 var secretsApp = soajsApp.components;
 secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataApi, $timeout) {
 	
-	function addSecret($scope, $modalInstance, currentScope, actions, cb) {
+	function addSecret($scope, $modalInstance, currentScope, actions, extraInputs, data, cb) {
 		
 		$scope.textMode = false;
 		
 		let formConfig = angular.copy(secretsAppConfig.form.addSecret);
+		
+		if(extraInputs && Array.isArray(extraInputs) && extraInputs.length > 0){
+			formConfig = formConfig.concat(extraInputs);
+		}
 		
 		if(!actions){
 			actions = [
@@ -33,6 +37,7 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataA
 		let options = {
 			timeout: $timeout,
 			entries: formConfig,
+			data: data,
 			name: 'newSecret',
 			actions: actions
 		};
@@ -49,15 +54,18 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataA
 				delete $scope.editor;
 				delete formData.secretData;
 				input.data = formData.file;
+				input.datatype = "file";
 			}
 			
 			if (formData.secretData) {
 				input.data = formData.secretData;
+				input.datatype = "text";
 				delete formData.file;
 			}
 			
 			if (!input.data && $scope.editor) {
 				input.data = $scope.editor.ngModel;
+				input.datatype = "editor";
 				delete formData.file;
 			}
 			

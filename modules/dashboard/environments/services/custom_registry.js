@@ -273,7 +273,7 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 							selected: (customRegistry && customRegistry.sharedEnv && customRegistry.sharedEnv[oneEnv.code.toUpperCase()])
 						};
 						
-						if (customRegistry && customRegistry.shared && action === 'update') {
+						if (customRegistry && customRegistry.shared) {
 							if (customRegistry.sharedEnv) {
 								envEntry.selected = (customRegistry.sharedEnv[oneEnv.code.toUpperCase()]);
 							}

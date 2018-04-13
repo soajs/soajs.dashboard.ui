@@ -67,8 +67,8 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				"cookiesecret": wizard.registry.cookiesecret || "",
 				"sessionName": wizard.registry.sessionName || "",
 				"sessionSecret": wizard.registry.sessionSecret || "",
-				"deployPortal": (currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName), // todo:
-				"deploy": wizard.deployment,
+				"deployPortal": (currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName),
+				"deployment": wizard.deployment,
 				"templateId": wizard.template._id // required
 			},
 			template: {
@@ -141,7 +141,6 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		buildForm(currentScope, $modal, options, function () {
 			overlayLoading.hide();
-			
 		});
 		
 		

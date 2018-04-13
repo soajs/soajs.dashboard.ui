@@ -48,67 +48,135 @@
 	{{cluster}}
 </script>
 
-<div>
-	<label>Code : {{overview.data.code}}</label><br>
-	<label>description : {{overview.data.description}}</label><br>
-	<label>domain : {{overview.data.domain}}</label><br>
-	<label>apiPrefix : {{overview.data.apiPrefix}}</label><br>
-	<label>sitePrefix : {{overview.data.sitePrefix}}</label><br>
-	<label>sensitive : {{overview.data.sensitive}}</label><br>
-	<label>soajsFrmwrk : {{overview.data.soajsFrmwrk}}</label><br>
-	<label>cookiesecret : {{overview.data.cookiesecret}}</label><br>
-	<label>sessionName : {{overview.data.sessionName}}</label><br>
-	<label>sessionSecret : {{overview.data.sessionSecret}}</label><br>
-	<label>deployPortal : {{overview.data.deployPortal}}</label><br>
-	<label>templateId : {{overview.data.templateId}}</label><br>
-</div>
-
-<div ng-repeat="deployMain in ['database','deployments']">
-	<h2>{{deployMain}}</h2>
-	----------------------------------
-	<div ng-repeat="(stepKey, stepData) in overview.template.deploy[deployMain]">
-		<h3>{{stepKey}}</h3>
-		<div ng-repeat="(stageKey, stageData) in overview.template.deploy[deployMain][stepKey]">
-			<h4>{{stageKey}}</h4>
-			-----
-			<div ng-if="stageKey ==='custom_registry' || stageKey ==='secrets'">
-				<ul>
-					<li ng-repeat="obj in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="stageKey+'.html'"></li>
-				</ul>
-			</div>
-			
-			<div ng-if="stageKey ==='productization'">
-				<ul>
-					<li ng-repeat="product in wizard.template.content.productization.data" ng-include="'productization.html'"></li>
-				</ul>
-			</div>
-			
-			<div ng-if="stageKey ==='tenant'">
-				<ul>
-					<li ng-repeat="tenant in wizard.template.content.tenant.data" ng-include="'tenant.html'"></li>
-				</ul>
-			</div>
-			
-			<div ng-if="stageKey.includes('.resources')">
-				<ul>
-					<li ng-repeat="resource in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'resources.html'"></li>
-				</ul>
-			</div>
-			
-			<div ng-if="stageKey.includes('.repo')">
-				<ul>
-					<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
-				</ul>
-			</div>
-			
-			<div ng-if="stageKey.includes('.cluster')">
-				<ul>
-					<li ng-repeat="cluster in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'cluster.html'"></li>
-				</ul>
-			</div>
-			
+<accordion close-others=false>
+	<accordion-group is-open="true">
+		<accordion-heading>Data</accordion-heading>
+		
+		<div class="addEnvTable">
+			<table>
+				<tbody>
+					<tr>
+						<td><label>Code</label></td>
+						<td><span>{{overview.data.code}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Description</label></td>
+						<td><span>{{overview.data.description}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Domain</label></td>
+						<td><span>{{overview.data.domain}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Api Prefix</label></td>
+						<td><span>{{overview.data.apiPrefix}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Site Prefix</label></td>
+						<td><span>{{overview.data.sitePrefix}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Sensitive</label></td>
+						<td><span>{{overview.data.sensitive}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Soajs Framework</label></td>
+						<td><span>{{overview.data.soajsFrmwrk}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Cookie Secret</label></td>
+						<td><span>{{overview.data.cookiesecret}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Session Name</label></td>
+						<td><span>{{overview.data.sessionName}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Session Secret</label></td>
+						<td><span>{{overview.data.sessionSecret}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Deployment</label></td>
+						<td><span>{{overview.data.deployment}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Deploy Portal</label></td>
+						<td><span>{{overview.data.deployPortal}}</span></td>
+					</tr>
+					<tr>
+						<td><label>Template ID</label></td>
+						<td><span>{{overview.data.templateId}}</span></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-	</div>
-</div>
+	</accordion-group>
+	
+	
+	<accordion-group is-open="true">
+		<accordion-heading>Template</accordion-heading>
+		
+		<!--<div class="addEnvTable">-->
+			<!--<table>-->
+				<!--<tbody>-->
+					<!--<tr>-->
+						<!--<td><label>xxxx</label></td>-->
+						<!--<td><span>uuuuu</span></td>-->
+					<!--</tr>-->
+				<!--</tbody>-->
+			<!--</table>-->
+		<!--</div>-->
+		
+		<div ng-repeat="deployMain in ['database','deployments']">
+			<h2>{{deployMain}}</h2>
+			----------------------------------
+			<div ng-repeat="(stepKey, stepData) in overview.template.deploy[deployMain]">
+				<h3>{{stepKey}}</h3>
+				<div ng-repeat="(stageKey, stageData) in overview.template.deploy[deployMain][stepKey]">
+					<h4>{{stageKey}}</h4>
+					-----
+					<div ng-if="stageKey ==='custom_registry' || stageKey ==='secrets'">
+						<ul>
+							<li ng-repeat="obj in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="stageKey+'.html'"></li>
+						</ul>
+					</div>
+					
+					<div ng-if="stageKey ==='productization'">
+						<ul>
+							<li ng-repeat="product in wizard.template.content.productization.data" ng-include="'productization.html'"></li>
+						</ul>
+					</div>
+					
+					<div ng-if="stageKey ==='tenant'">
+						<ul>
+							<li ng-repeat="tenant in wizard.template.content.tenant.data" ng-include="'tenant.html'"></li>
+						</ul>
+					</div>
+					
+					<div ng-if="stageKey.includes('.resources')">
+						<ul>
+							<li ng-repeat="resource in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'resources.html'"></li>
+						</ul>
+					</div>
+					
+					<div ng-if="stageKey.includes('.repo')">
+						<ul>
+							<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
+						</ul>
+					</div>
+					
+					<div ng-if="stageKey.includes('.cluster')">
+						<ul>
+							<li ng-repeat="cluster in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'cluster.html'"></li>
+						</ul>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+	
+	</accordion-group>
+
+</accordion>
 
 <div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>

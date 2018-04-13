@@ -103,8 +103,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				if (pendingEnvironment && (pendingEnvironment.pending || pendingEnvironment.error) && pendingEnvironment.template) {
 					$scope.environmentId = pendingEnvironment._id;
 					$scope.wizard.template = pendingEnvironment.template;
+					$scope.overview = {
+						data: {
+							code: $localStorage.addEnv.gi.code
+						}
+					};
+					$scope.checkStatus();
 				}
-				return cb();
+				else{
+					return cb();
+				}
 			});
 		}
 		else {

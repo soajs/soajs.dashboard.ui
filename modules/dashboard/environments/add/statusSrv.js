@@ -6,9 +6,6 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		currentScope.statusType = "info";
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = false;
-		currentScope.form.actions = [];
-		
-		currentScope.form.actions = renderButtonDisplay(currentScope, 1);
 		
 		let options = {
 			method: 'post',
@@ -18,11 +15,11 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				template: currentScope.overview.template
 			}
 		};
-		console.log(JSON.stringify(options, null, 2));
+		
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			if(error){
 				currentScope.displayAlert('danger', error.message);
-				currentScope.form.actions = renderButtonDisplay(currentScope, 3);
+				currentScope.previousStep();
 			}
 			else{
 				currentScope.envId = response.data;
@@ -30,10 +27,8 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				//call check status
 				checkEnvironmentStatus(currentScope, null, (error) => {
 					if (error) {
-						rollbackEnvironment(currentScope, () => {
-							currentScope.displayAlert('danger', error);
-							currentScope.form.actions = renderButtonDisplay(currentScope, 3);
-						});
+						currentScope.displayAlert('danger', error);
+						currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 					}
 				});
 			}
@@ -48,7 +43,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				method: 'get',
 				routeName: '/dashboard/environment/status',
 				params: {
-					code: currentScope.wizard.gi.code.toUpperCase()
+					code: currentScope.overview.data.code.toUpperCase()
 				}
 			};
 			if(params) {
@@ -314,7 +309,24 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		 *                  call check status again
 		 *
 		 */
-		addEnvironment(currentScope);
+		
+		//only available if an error or pending or refresh were triggered
+		if(currentScope.environmentId){
+			currentScope.envId = currentScope.environmentId;
+			
+			//call check status
+			checkEnvironmentStatus(currentScope, null, (error) => {
+				if (error) {
+					rollbackEnvironment(currentScope, () => {
+						currentScope.displayAlert('danger', error);
+						currentScope.form.actions = renderButtonDisplay(currentScope, 3);
+					});
+				}
+			});
+		}
+		else{
+			addEnvironment(currentScope);
+		}
 	}
 	
 	return {

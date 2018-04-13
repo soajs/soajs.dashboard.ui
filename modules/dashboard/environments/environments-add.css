@@ -1,3 +1,24 @@
+.environmentBox {
+    border-radius: 5px;
+    border:solid 1px #eeeeee;
+    padding:5px;
+    width:98%;
+    maring: 0 auto;
+    cursor:pointer;
+}
+
+.environmentBox:hover {
+    background-color:#DEF1F7;
+    border: solid 1px #337ab7;
+    /*-webkit-box-shadow: 0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+    /*-moz-box-shadow:    0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+    /*box-shadow:         0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+}
+
+.environmentBox:hover hr{
+    border-color:#333333;
+}
+
 #addEnvironment .modal-header span.closeButton{
     display:none;
 }

@@ -116,6 +116,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		if (dashboardServices.indexOf(serviceName) !== -1) {
 			return cb();
 		}
+		
 		if (!currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj) {
 			currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj = {
 				branches: [],
@@ -184,6 +185,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.cdEnvs = [$scope.oneEnv];
 		$scope.deployed = false;
 		$scope.recipes = angular.copy(currentScope.recipes);
+		
 		$scope.oneSrv = (service && service.name) ? service.name : oneRepo.name;
 		$scope.serviceType = (service && service.type) ? service.type : 'other';
 		$scope.showCD = true;
@@ -285,7 +287,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active = true;
 			}
 			
-			if(!$scope.noCDoverride && $scope.myRecipes && $scope.myRecipes.length > 0){
+			if(!$scope.noCDoverride){
 				$scope.myRecipes = [];
 				for (var type in $scope.recipes) {
 					$scope.recipes[type].forEach(function (oneRecipe) {
@@ -588,7 +590,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			});
 		};
 		
-		if(!$scope.noCDoverride && $scope.cdConfiguration && Object.keys($scope.cdConfiguration).length > 0){
+		if(!$scope.noCDoverride){
 			getCDRecipe($scope, oneRepo, function () {
 				$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
 			});

@@ -4,7 +4,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})){
 		var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
 		var envPlatform = envDeployer.selected.split('.')[1];
-		var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
+		var isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
 	}
 	
 	function listGitAccounts(currentScope, cb) {

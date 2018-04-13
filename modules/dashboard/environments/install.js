@@ -1402,7 +1402,7 @@ var environmentsNav = [
 			'modules/dashboard/environments/add/overviewSrv.js',
 			'modules/dashboard/environments/add/nginxSrv.js',
 			'modules/dashboard/environments/add/dynamicSrv.js',
-			'modules/dashboard/environments/add/statusSrvSrv.js',
+			'modules/dashboard/environments/add/statusSrv.js',
 			'modules/dashboard/environments/services/custom_registry.js',
 			
 			'modules/dashboard/resources/config.js',

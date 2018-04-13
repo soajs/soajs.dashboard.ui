@@ -14,9 +14,11 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 		
 		let controllerRepoExist = false;
 		if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.repo) {
-			let repo = currentScope.wizard.template.content.deployments.repo;
-			if (repo.controller && repo.controller.gitSource && repo.controller.gitSource.repo === "soajs.controller") {
-				controllerRepoExist = true;
+			let repos = currentScope.wizard.template.content.deployments.repo;
+			for(let oneRepo in repos){
+				if(repos[oneRepo].gitSource && repos[oneRepo].gitSource.owner === 'soajs' && repos[oneRepo].gitSource.repo === 'soajs.controller'){
+					controllerRepoExist = true;
+				}
 			}
 		}
 		

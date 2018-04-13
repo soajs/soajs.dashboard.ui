@@ -9,7 +9,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	
 	$scope.wizard = {};
 	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
-	$scope.addEnvCounter = 6;
+	$scope.addEnvCounter = 0;
 	
 	function triggerMethod(counter) {
 		let method = $scope.steps[counter];

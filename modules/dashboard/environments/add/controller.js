@@ -1,17 +1,17 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', 'registrySrv','overviewSrv', 'dynamicSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv, registrySrv,overviewSrv, dynamicSrv) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
 	$scope.wizard = {};
-	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'displayOverview', 'checkStatus'];
-	$scope.addEnvCounter = 0;
+	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
+	$scope.addEnvCounter = 6;
 	
-	function triggerMethod(counter){
+	function triggerMethod(counter) {
 		let method = $scope.steps[counter];
 		console.log("calling method", method);
 		$scope[method]();
@@ -57,26 +57,30 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		dynamicSrv.go($scope);
 	};
 	
+	$scope.chooseNginx = function () {
+		nginxSrv.go($scope);
+	};
+	
 	$scope.displayOverview = function () {
 		overviewSrv.go($scope);
 	};
 	
 	$scope.checkStatus = function () {
-	
+		statusSrv.go($scope);
 	};
 	
-	$scope.mapStorageToWizard = function(storage){
-		if(!$scope.wizard){
+	$scope.mapStorageToWizard = function (storage) {
+		if (!$scope.wizard) {
 			$scope.wizard = {};
 		}
 		let template;
-		if($scope.wizard.template){
+		if ($scope.wizard.template) {
 			template = angular.copy($scope.wizard.template);
 		}
 		if ($localStorage.addEnv) {
 			$scope.wizard = angular.copy($localStorage.addEnv);
 		}
-		if($scope.wizard.template && template){
+		if ($scope.wizard.template && template) {
 			$scope.wizard.template.content = template.content;
 		}
 	};

@@ -122,6 +122,14 @@ var environmentsConfig = {
 					}
 				]
 			},
+			step6: {
+				"entries": [
+					{
+						"name": "nginx",
+						"directive": "modules/dashboard/environments/directives/add/nginx.tmpl"
+					}
+				]
+			},
 			// step31: {
 			// 	"entries": [
 			// 		{

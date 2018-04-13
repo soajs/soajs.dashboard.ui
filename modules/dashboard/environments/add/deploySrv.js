@@ -181,6 +181,9 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		currentScope.cloudProviders = environmentsConfig.providers;
 		currentScope.cloudProviderHelpLink = {};
 		
+		currentScope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
+		currentScope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
+		
 		currentScope.availableEnvironments = angular.copy($localStorage.environments);
 		if (currentScope.availableEnvironments.length > 0) {
 			for (let i = currentScope.availableEnvironments.length - 1; i >= 0; i--) {

@@ -3,6 +3,8 @@ var dbServices = soajsApp.components;
 dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '$localStorage', '$window', function (addEnv, ngDataApi, $timeout, $cookies, $localStorage, $window) {
 	
 	let getFormActions = function ($scope, type) {
+		
+		//default
 		let actions = [
 			{
 				'type': 'button',
@@ -38,6 +40,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			}
 		];
 		
+		//if all ok
 		if (type === 2) {
 			actions = [
 				{
@@ -53,6 +56,7 @@ dbServices.service('overview', ['addEnv', 'ngDataApi', '$timeout', '$cookies', '
 			];
 		}
 		
+		// if error during deployment
 		if (type === 3) {
 			actions = [
 				{

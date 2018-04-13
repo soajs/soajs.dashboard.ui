@@ -221,7 +221,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let repoName = entriesNames[counter];
 					let oneRepo = repoEntries[repoName];
-					let templateDefaults = currentScope.wizard.template.content.deployments.repo[context.section[context.section.length -1]];
 					
 					oneRepo.type = templateDefaults.type; //enforce
 					oneRepo.category = templateDefaults.category; //enforce
@@ -436,6 +435,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					});
 				}
 				
+				let templateDefaults = currentScope.wizard.template.content.deployments.repo[context.section[context.section.length -1]];
 				//create a copy just in case
 				let repoEntries = angular.copy(context.inputs);
 				currentScope.dynamicStep = context;
@@ -452,6 +452,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						deployRepos.saveRecipe(oneRepo.scope, 'deploy', (imfv) => {
 							delete oneRepo.scope;
+							imfv.name = repoName;
+							imfv.type = templateDefaults.type;
+							
 							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(imfv);
 						});
 					}
@@ -624,7 +627,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 											},
 											"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
 										},
-										"custom": imfv.deployOptions,
+										"custom": imfv.deployOptions.custom,
 										"recipe": imfv.deployOptions.recipe,
 										"env": resource.scope.envCode
 									},
@@ -643,6 +646,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								
 								imfv.deploy.options.custom.name = key;
 								imfv.deployOptions.name = key;
+								imfv.deployOptions.custom.type = 'resource';
 							}
 							else {
 								delete imfv.deployOptions;

@@ -22,6 +22,39 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		updateWizardToStandards(wizard);
 		
+		let apiTemplateDeployInfo = angular.copy(wizard.template.deploy);
+		
+		for( let stage in apiTemplateDeployInfo ){
+			for( let group in apiTemplateDeployInfo[stage] ){
+				for( let stepName in apiTemplateDeployInfo[stage][group]){
+					if(stepName.indexOf(".repo.") !== -1){
+						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0){
+							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneRepoImfv) => {
+								if(oneRepoImfv.serviceName === 'controller'){
+									oneRepoImfv.name = oneRepoImfv.serviceName;
+									oneRepoImfv.type = "service";
+									oneRepoImfv.options = oneRepoImfv.default.options;
+									oneRepoImfv.deploy = true;
+									oneRepoImfv.options.custom.type = oneRepoImfv.type;
+									delete oneRepoImfv.serviceName;
+									delete oneRepoImfv.default;
+								}
+								else if(oneRepoImfv.version){
+									oneRepoImfv.name = oneRepoImfv.serviceName;
+									oneRepoImfv.options = oneRepoImfv.version.options;
+									oneRepoImfv.deploy = true;
+									oneRepoImfv.options.custom.type = oneRepoImfv.type;
+									oneRepoImfv.options.custom.version = parseInt(oneRepoImfv.options.custom.version);
+									delete oneRepoImfv.serviceName;
+									delete oneRepoImfv.version;
+								}
+							});
+						}
+					}
+				}
+			}
+		}
+		
 		let output = {
 			data: {
 				"code": wizard.gi.code, // required
@@ -39,7 +72,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				"templateId": wizard.template._id // required
 			},
 			template: {
-				deploy: wizard.template.deploy
+				deploy: apiTemplateDeployInfo
 			}
 		};
 		
@@ -47,7 +80,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function go(currentScope) {
-		
+		currentScope.mapStorageToWizard($localStorage.addEnv);
 		currentScope.overview = mapUserInputsToOverview(currentScope);
 		
 		overlayLoading.show();
@@ -114,7 +147,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	return {
-		go: go
+		"go": go
 	};
 	
 }]);

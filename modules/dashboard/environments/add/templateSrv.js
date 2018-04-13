@@ -33,14 +33,20 @@ tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage
 					currentScope.oldStyle = false;
 					
 					for(let i = currentScope.templates.length -1; i >=0; i--){
-						if (currentScope.templates[i].type === '_BLANK') {
-							currentScope.oldStyle = true;
-						}
-						else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
-							delete currentScope.templates[i].content;
-						}
-						else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){
+						if(!currentScope.templates[i].type){
 							currentScope.templates.splice(i, 1);
+						}
+						else{
+							
+							if (currentScope.templates[i].type === '_BLANK') {
+								currentScope.oldStyle = true;
+							}
+							else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
+								delete currentScope.templates[i].content;
+							}
+							else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){
+								currentScope.templates.splice(i, 1);
+							}
 						}
 					}
 					

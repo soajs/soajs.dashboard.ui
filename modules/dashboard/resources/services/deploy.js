@@ -2,6 +2,23 @@
 var resourceDeployService = soajsApp.components;
 resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDataApi', function (resourceConfiguration, ngDataApi) {
 	
+	function decodeRepoNameAndSubName(name) {
+		let splits = name.split('__SOAJS_DELIMITER__');
+		
+		let output = {
+			name : splits[0]
+		};
+		
+		if(splits.length > 0){
+			let subName = splits[1];
+			if(subName){
+				output.subName = splits[1];
+			}
+		}
+		
+		return output;
+	}
+	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];

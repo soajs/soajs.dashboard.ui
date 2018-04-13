@@ -221,6 +221,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let repoName = entriesNames[counter];
 					let oneRepo = repoEntries[repoName];
+					let templateDefaults = currentScope.wizard.template.content.deployments.repo[context.section[context.section.length -1]];
+					
+					oneRepo.type = templateDefaults.type; //enforce
+					oneRepo.category = templateDefaults.category; //enforce
 					
 					let service = {};
 					let record = {};
@@ -268,17 +272,27 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version] = { deploy: true };
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = {};
 					
+					oneRepo.scope.myRecipes = [];
+					for(let type in currentScope.recipes){
+						currentScope.recipes[type].forEach((oneRecipe) =>{
+							
+							if(oneRecipe.type === oneRepo.type && oneRecipe.subtype === oneRepo.category){
+								oneRepo.scope.myRecipes.push(oneRecipe);
+							}
+						});
+					}
+					
 					//if default values
 					if(currentScope.wizard.template.content.deployments.repo[repoName].deploy){
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.repo[repoName].deploy;
 						
 						if(deployFromTemplate.recipes){
-							if(deployFromTemplate.recipes.available){
+							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
 								oneRepo.scope.myRecipes = [];
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
-										if(available.indexOf(oneRecipe.name) !== -1){
+										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
 											oneRepo.scope.myRecipes.push(oneRecipe);
 										}
 									});
@@ -404,6 +418,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							});
 						}
 					});
+					
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
 					let entries = [];
 					buildDynamicForm(oneRepo.scope, entries, () => {
@@ -464,6 +479,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.envCode = currentScope.envCode;
 					resource.scope.recipes = [];
 					
+					for(let type in currentScope.recipes){
+						currentScope.recipes[type].forEach((oneRecipe) =>{
+							if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
+								resource.scope.recipes.push(oneRecipe);
+							}
+						});
+					}
+					
 					//if default values
 					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 						for(let type in currentScope.recipes){
@@ -484,12 +507,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.resources[key].deploy;
 						if(deployFromTemplate.recipes){
-							if(deployFromTemplate.recipes.available){
+							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
 								resource.scope.recipes = [];
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
-										if(available.indexOf(oneRecipe.name) !== -1){
+										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
 											resource.scope.recipes.push(oneRecipe);
 										}
 									});
@@ -668,7 +691,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		let stack = [];
 		if (currentScope.wizard) {
 			deployRepos.listGitAccounts(currentScope, () => {
-				getDeploymentWorkflow(stack, currentScope.wizard.template);
+				getDeploymentWorkflow(currentScope, stack, currentScope.wizard.template);
 				
 				currentScope.envCode = currentScope.wizard.gi.code.toUpperCase();
 				
@@ -729,7 +752,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		return stringPath.split('.').reduce(index, mainObj);
 	}
 	
-	function getDeploymentWorkflow(stack, template) {
+	function getDeploymentWorkflow(currentScope, stack, template) {
 		if (template.deploy && Object.keys(template.deploy).length > 0) {
 			let schemaOptions = Object.keys(template.deploy);
 			schemaOptions.forEach((stage) => {
@@ -744,59 +767,69 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								'section': (stepPath.indexOf(".") !== -1) ? stepPath.split(".") : stepPath
 							};
 							
-							//case of ui read only, loop in array and generate an inputs object then call utils
-							if (template.deploy[stage][oneGroup][stepPath].ui && template.deploy[stage][oneGroup][stepPath].ui.readOnly) {
-							
+							//if manual deployment, then process database entries only
+							if(currentScope.wizard.deployment.selectedDriver === 'manual' && stage === 'database'){
+								prepareInputs(stage, oneGroup, stepPath, opts);
 							}
-							else {
-								let inputs = {};
-								if(template.deploy[stage][oneGroup][stepPath].imfv && template.deploy[stage][oneGroup][stepPath].imfv.length > 0){
-									template.deploy[stage][oneGroup][stepPath].imfv.forEach((oneimfv) =>{
-										let tName = oneimfv.name || oneimfv.serviceName;
-										inputs[tName] = oneimfv;
-									})
-								}
-								if(Object.keys(inputs).length === 0){
-									let dataArray = returnObjectPathFromString("content." + stepPath, template);
-									if (dataArray.data && Array.isArray(dataArray.data)) {
-										dataArray.data.forEach((oneDataEntry) => {
-											let tName = oneDataEntry.name || oneDataEntry.serviceName;
-											inputs[tName] = oneDataEntry;
-										});
-									}
-									else {
-										let section = stepPath;
-										if (stepPath.indexOf(".") !== -1) {
-											stepPath = stepPath.split(".");
-											section = stepPath[stepPath.length - 1];
-										}
-										
-										if (dataArray.limit) {
-											if (dataArray.limit > 1) {
-												for (let i = 0; i < dataArray.limit; i++) {
-													inputs[section + i] = angular.copy(dataArray);
-													delete inputs[section + i].limit;
-												}
-											}
-											else {
-												delete dataArray.limit;
-												inputs[section] = dataArray;
-											}
-										}
-										else {
-											inputs[section] = dataArray;
-										}
-									}
-								}
-								
-								
-								opts['inputs'] = inputs;
-								stack.push(opts);
+							else if(currentScope.wizard.deployment.selectedDriver !== 'manual'){
+								prepareInputs(stage, oneGroup, stepPath, opts);
 							}
 						}
 					}
 				});
 			});
+		}
+		
+		function prepareInputs(stage, oneGroup, stepPath, opts){
+			//case of ui read only, loop in array and generate an inputs object then call utils
+			if (template.deploy[stage][oneGroup][stepPath].ui && template.deploy[stage][oneGroup][stepPath].ui.readOnly) {
+			
+			}
+			else {
+				let inputs = {};
+				if(template.deploy[stage][oneGroup][stepPath].imfv && template.deploy[stage][oneGroup][stepPath].imfv.length > 0){
+					template.deploy[stage][oneGroup][stepPath].imfv.forEach((oneimfv) =>{
+						let tName = oneimfv.name || oneimfv.serviceName;
+						inputs[tName] = oneimfv;
+					})
+				}
+				if(Object.keys(inputs).length === 0){
+					let dataArray = returnObjectPathFromString("content." + stepPath, template);
+					if (dataArray.data && Array.isArray(dataArray.data)) {
+						dataArray.data.forEach((oneDataEntry) => {
+							let tName = oneDataEntry.name || oneDataEntry.serviceName;
+							inputs[tName] = oneDataEntry;
+						});
+					}
+					else {
+						let section = stepPath;
+						if (stepPath.indexOf(".") !== -1) {
+							stepPath = stepPath.split(".");
+							section = stepPath[stepPath.length - 1];
+						}
+						
+						if (dataArray.limit) {
+							if (dataArray.limit > 1) {
+								for (let i = 0; i < dataArray.limit; i++) {
+									inputs[section + i] = angular.copy(dataArray);
+									delete inputs[section + i].limit;
+								}
+							}
+							else {
+								delete dataArray.limit;
+								inputs[section] = dataArray;
+							}
+						}
+						else {
+							inputs[section] = dataArray;
+						}
+					}
+				}
+				
+				
+				opts['inputs'] = inputs;
+				stack.push(opts);
+			}
 		}
 	}
 	

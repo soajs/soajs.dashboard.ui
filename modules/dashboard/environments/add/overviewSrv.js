@@ -35,7 +35,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				"sessionName": wizard.registry.sessionName || "",
 				"sessionSecret": wizard.registry.sessionSecret || "",
 				"deployPortal": (currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName), // todo:
-				"deploy": wizard.registry.deployment,
+				"deploy": wizard.deployment,
 				"templateId": wizard.template._id // required
 			},
 			template: {
@@ -47,7 +47,8 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function go(currentScope) {
-		
+		console.log($localStorage.addEnv);
+		currentScope.mapStorageToWizard($localStorage.addEnv);
 		currentScope.overview = mapUserInputsToOverview(currentScope);
 		
 		overlayLoading.show();
@@ -108,13 +109,14 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		buildForm(currentScope, $modal, options, function () {
 			overlayLoading.hide();
+			
 		});
 		
 		
 	}
 	
 	return {
-		go: go
+		"go": go
 	};
 	
 }]);

@@ -10,16 +10,17 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		
 		currentScope.form.actions = renderButtonDisplay(currentScope, 1);
 		
-		getSendDataFromServer(currentScope, ngDataApi, {
+		let options = {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
 			data: {
-				data: data,
-				template: template
+				data: currentScope.overview.data,
+				template: currentScope.overview.template
 			}
-		}, (error, response) => {
+		};
+		console.log(JSON.stringify(options, null, 2));
+		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			if(error){
-				currentScope.form.actions = getFormActions(currentScope);
 				currentScope.displayAlert('danger', error.message);
 				currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 			}

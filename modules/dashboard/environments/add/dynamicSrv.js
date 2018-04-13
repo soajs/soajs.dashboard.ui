@@ -452,6 +452,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						deployRepos.saveRecipe(oneRepo.scope, 'deploy', (imfv) => {
 							delete oneRepo.scope;
+							imfv.name = repoName;
 							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(imfv);
 						});
 					}
@@ -624,7 +625,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 											},
 											"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
 										},
-										"custom": imfv.deployOptions,
+										"custom": imfv.deployOptions.custom,
 										"recipe": imfv.deployOptions.recipe,
 										"env": resource.scope.envCode
 									},
@@ -643,6 +644,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								
 								imfv.deploy.options.custom.name = key;
 								imfv.deployOptions.name = key;
+								imfv.deployOptions.custom.type = 'resource';
 							}
 							else {
 								delete imfv.deployOptions;

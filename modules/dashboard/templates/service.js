@@ -166,6 +166,12 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 					"name": "endpoints",
 					"label": "Endpoints",
 					"entries": []
+				},
+				{
+					"type": "accordion",
+					"name": "daemon",
+					"label": "Daemon",
+					"entries": []
 				}
 			];
 			
@@ -296,17 +302,48 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 							});
 							data [epName + "_port_" + count] = oneIssue.entry.port;
 						}
-						
+						// add case for daem
 						break;
+                    case 'daemon':
+                        formEntries[3].entries.push({
+                            "type": "text",
+                            "name": oneIssue.entry.type + "_" + count,
+                            "label": oneIssue.entry.name,
+                            "value": oneIssue.entry.name,
+                            "fieldMsg": "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>",
+                            "tooltip": "Change the value of this entry to update your imported template",
+                            "onAction": function (id, value, form) {
+                                let fieldMsg;
+                                if (value !== oneIssue.entry.name) {
+                                    fieldMsg = "<span class='green'>Fixed!</span>";
+                                }
+                                else {
+                                    fieldMsg = "<span class='red'>Error " + oneIssue.code + ": " + oneIssue.msg.split("=>")[0] + "</span>";
+                                }
+
+                                form.entries.forEach((oneGroup) => {
+                                    if (oneGroup.name === "daemon") {
+                                        oneGroup.entries.forEach((oneInput) => {
+                                            if (oneInput.name === oneIssue.entry.type + "_" + count) {
+                                                oneInput.fieldMsg = fieldMsg;
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+
+                        data [oneIssue.entry.type + "_" + count] = oneIssue.entry.name;
+                        break;
 				}
 			}
-			
+
 			for (let i = formEntries.length - 1; i >= 0; i--) {
 				if (formEntries[i].entries.length === 0) {
 					formEntries.splice(i, 1);
 				}
 			}
-			
+
 			let options = {
 				timeout: $timeout,
 				entries: formEntries,
@@ -321,7 +358,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 							let inputs = {};
 							for (let count = 0; count < issues.length; count++) {
 								let oneIssue = issues[count];
-								
+
 								switch (oneIssue.entry.type) {
 									case 'ci':
 										if (oneIssue.entry.name.trim() === formData['ci_' + count].trim()) {
@@ -390,10 +427,23 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 												port: formData['endpoints_port_' + count]
 											});
 										}
-										
+
 										break;
-								}
-							}
+                                    case 'daemon':
+                                        if (oneIssue.entry.name.trim() === formData['Daemon_' + count].trim()) {
+                                            $window.alert(`Change the name of Daemon Groups ${oneIssue.entry.name} to proceed.`);
+                                            return false;
+                                        }
+                                        if (!inputs.daemon) {
+                                            inputs.daemon = [];
+                                        }
+                                        inputs.daemon.push({
+                                            old: oneIssue.entry.name,
+                                            new: formData['Daemon_' + count]
+                                        });
+                                        break;
+                                }
+                            }
 							
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, {

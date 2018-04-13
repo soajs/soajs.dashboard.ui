@@ -668,7 +668,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		let stack = [];
 		if (currentScope.wizard) {
 			deployRepos.listGitAccounts(currentScope, () => {
-				getDeploymentWorkflow(stack, currentScope.wizard.template);
+				getDeploymentWorkflow(currentScope, stack, currentScope.wizard.template);
 				
 				currentScope.envCode = currentScope.wizard.gi.code.toUpperCase();
 				
@@ -729,7 +729,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		return stringPath.split('.').reduce(index, mainObj);
 	}
 	
-	function getDeploymentWorkflow(stack, template) {
+	function getDeploymentWorkflow(currentScope, stack, template) {
 		if (template.deploy && Object.keys(template.deploy).length > 0) {
 			let schemaOptions = Object.keys(template.deploy);
 			schemaOptions.forEach((stage) => {
@@ -744,59 +744,69 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								'section': (stepPath.indexOf(".") !== -1) ? stepPath.split(".") : stepPath
 							};
 							
-							//case of ui read only, loop in array and generate an inputs object then call utils
-							if (template.deploy[stage][oneGroup][stepPath].ui && template.deploy[stage][oneGroup][stepPath].ui.readOnly) {
-							
+							//if manual deployment, then process database entries only
+							if(currentScope.wizard.deployment.selectedDriver === 'manual' && stage === 'database'){
+								prepareInputs(stage, oneGroup, stepPath, opts);
 							}
-							else {
-								let inputs = {};
-								if(template.deploy[stage][oneGroup][stepPath].imfv && template.deploy[stage][oneGroup][stepPath].imfv.length > 0){
-									template.deploy[stage][oneGroup][stepPath].imfv.forEach((oneimfv) =>{
-										let tName = oneimfv.name || oneimfv.serviceName;
-										inputs[tName] = oneimfv;
-									})
-								}
-								if(Object.keys(inputs).length === 0){
-									let dataArray = returnObjectPathFromString("content." + stepPath, template);
-									if (dataArray.data && Array.isArray(dataArray.data)) {
-										dataArray.data.forEach((oneDataEntry) => {
-											let tName = oneDataEntry.name || oneDataEntry.serviceName;
-											inputs[tName] = oneDataEntry;
-										});
-									}
-									else {
-										let section = stepPath;
-										if (stepPath.indexOf(".") !== -1) {
-											stepPath = stepPath.split(".");
-											section = stepPath[stepPath.length - 1];
-										}
-										
-										if (dataArray.limit) {
-											if (dataArray.limit > 1) {
-												for (let i = 0; i < dataArray.limit; i++) {
-													inputs[section + i] = angular.copy(dataArray);
-													delete inputs[section + i].limit;
-												}
-											}
-											else {
-												delete dataArray.limit;
-												inputs[section] = dataArray;
-											}
-										}
-										else {
-											inputs[section] = dataArray;
-										}
-									}
-								}
-								
-								
-								opts['inputs'] = inputs;
-								stack.push(opts);
+							else if(currentScope.wizard.deployment.selectedDriver !== 'manual'){
+								prepareInputs(stage, oneGroup, stepPath, opts);
 							}
 						}
 					}
 				});
 			});
+		}
+		
+		function prepareInputs(stage, oneGroup, stepPath, opts){
+			//case of ui read only, loop in array and generate an inputs object then call utils
+			if (template.deploy[stage][oneGroup][stepPath].ui && template.deploy[stage][oneGroup][stepPath].ui.readOnly) {
+			
+			}
+			else {
+				let inputs = {};
+				if(template.deploy[stage][oneGroup][stepPath].imfv && template.deploy[stage][oneGroup][stepPath].imfv.length > 0){
+					template.deploy[stage][oneGroup][stepPath].imfv.forEach((oneimfv) =>{
+						let tName = oneimfv.name || oneimfv.serviceName;
+						inputs[tName] = oneimfv;
+					})
+				}
+				if(Object.keys(inputs).length === 0){
+					let dataArray = returnObjectPathFromString("content." + stepPath, template);
+					if (dataArray.data && Array.isArray(dataArray.data)) {
+						dataArray.data.forEach((oneDataEntry) => {
+							let tName = oneDataEntry.name || oneDataEntry.serviceName;
+							inputs[tName] = oneDataEntry;
+						});
+					}
+					else {
+						let section = stepPath;
+						if (stepPath.indexOf(".") !== -1) {
+							stepPath = stepPath.split(".");
+							section = stepPath[stepPath.length - 1];
+						}
+						
+						if (dataArray.limit) {
+							if (dataArray.limit > 1) {
+								for (let i = 0; i < dataArray.limit; i++) {
+									inputs[section + i] = angular.copy(dataArray);
+									delete inputs[section + i].limit;
+								}
+							}
+							else {
+								delete dataArray.limit;
+								inputs[section] = dataArray;
+							}
+						}
+						else {
+							inputs[section] = dataArray;
+						}
+					}
+				}
+				
+				
+				opts['inputs'] = inputs;
+				stack.push(opts);
+			}
 		}
 	}
 	

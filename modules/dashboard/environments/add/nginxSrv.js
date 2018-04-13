@@ -12,12 +12,14 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 	function go(currentScope) {
 		
 		let nginxResourceExists = false;
-		if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.resources) {
-			let resources = currentScope.wizard.template.content.deployments.resources;
-			
-			for(let oneResource in resources){
-				if(resources[oneResource].type === 'server' && resources[oneResource].category === 'nginx'){
-					nginxResourceExists = true;
+		if(currentScope.wizard.deployment.selectedDriver !== 'manual'){
+			if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.resources) {
+				let resources = currentScope.wizard.template.content.deployments.resources;
+				
+				for(let oneResource in resources){
+					if(resources[oneResource].type === 'server' && resources[oneResource].category === 'nginx'){
+						nginxResourceExists = true;
+					}
 				}
 			}
 		}

@@ -58,7 +58,8 @@ tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage
 							}
 						});
 					}
-					else if($routeParams.portal){
+					
+					if($routeParams.portal){
 						currentScope.templates.forEach(function (oneTemplate) {
 							if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
 								currentScope.wizard.template = angular.copy(oneTemplate);

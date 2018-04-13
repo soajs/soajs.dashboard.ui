@@ -3,74 +3,24 @@
 		{{statusMsg}}
 	</alert>
 	<br/>
-	<progressbar ng-show="progressCounter >0" class="progress-striped active" value="progressCounter/maxCounter*100" type="info">
-		{{(progressCounter/maxCounter*100).toFixed(2)}}%
+	<progressbar ng-show="response && response.current > 0" class="progress-striped active" value="response.overall * 100" type="info">
+		{{(response.overall * 100).toFixed(2)}}%
 	</progressbar>
-	<span ng-if="status.createEnvironment">
-			<span class="icon icon-checkmark green"></span> Environment Created ...<br>
-		</span>
-	<span ng-if="status.productize">
-			<span ng-if="!status.productize.done">
-				<span class="icon icon-loop2 yellow"></span> Creating Portal Product & Tenant ...<br>
+	
+	<div ng-repeat="(key, oneResponse) in response">
+		
+		<div ng-if="oneResponse.multi" style="margin-bottom: 10px;">
+			<span ng-repeat="oneChild in oneResponse.children">
+				<div ng-if="oneChild.data && oneChild.data.done" style="margin-bottom: 10px;" class="capitalize">
+					<span class="icon icon-checkmark green"></span> {{oneChild.child}} Created ...<br>
+				</div>
 			</span>
-			<span ng-if="status.productize.done">
-				<span class="icon icon-checkmark green"></span> Portal Product & Tenant Created ...<br>
-				<alert type="warning" ng-if="status.productize.exception">{{status.productize.exception}}</alert>
-			</span>
-		</span>
-	<span ng-if="status.cluster">
-			<span ng-if="!status.cluster.done">
-				<span class="icon icon-loop2 yellow"></span> Creating MongoDB Server ...<br>
-			</span>
-			<span ng-if="status.cluster.done">
-				<span class="icon icon-checkmark green"></span> MongoDB Server Created ...<br>
-				<alert type="warning" ng-if="status.cluster.exception">{{status.cluster.exception}}</alert>
-			</span>
-		</span>
-	<span ng-if="status.controller">
-			<span ng-if="!status.controller.done">
-				<span class="icon icon-loop2 yellow"></span> Deploying Controller ...<br>
-			</span>
-			<span ng-if="status.controller.done">
-				<span class="icon icon-checkmark green"></span> Controller Deployed ...<br>
-				<alert type="warning" ng-if="status.controller.exception">{{status.controller.exception}}</alert>
-			</span>
-		</span>
-	<span ng-if="status.urac">
-			<span ng-if="!status.urac.done">
-				<span class="icon icon-loop2 yellow"></span> Deploying URAC ...<br>
-			</span>
-			<span ng-if="status.urac.done">
-				<span class="icon icon-checkmark green"></span> URAC Deployed ...<br>
-				<alert type="warning" ng-if="status.urac.exception">{{status.urac.exception}}</alert>
-			</span>
-		</span>
-	<span ng-if="status.oauth">
-			<span ng-if="!status.oauth.done">
-				<span class="icon icon-loop2 yellow"></span> Deploying oAuth ...<br>
-			</span>
-			<span ng-if="status.oauth.done">
-				<span class="icon icon-checkmark green"></span> oAuth Deployed ...<br>
-				<alert type="warning" ng-if="status.oauth.exception">{{status.oauth.exception}}</alert>
-			</span>
-		</span>
-	<span ng-if="status.nginx">
-			<span ng-if="!status.nginx.done">
-				<span class="icon icon-loop2 yellow"></span> Deploying Nginx ...<br>
-			</span>
-			<span ng-if="status.nginx.done">
-				<span class="icon icon-checkmark green"></span> Nginx Deployed ...<br>
-				<alert type="warning" ng-if="status.nginx.exception">{{status.nginx.exception}}</alert>
-			</span>
-		</span>
-	<span ng-if="status.user">
-			<span ng-if="!status.user.done">
-				<span class="icon icon-loop2 yellow"></span> Creating User Account for Portal ...<br>
-			</span>
-			<span ng-if="status.user.done">
-				<span class="icon icon-checkmark  green"></span> User Account for Portal Created ...<br>
-				<alert type="warning" ng-if="status.user.exception">{{status.user.exception}}</alert>
-			</span>
-		</span>
+		</div>
+		
+		<div ng-if="!oneResponse.multi && oneResponse.done" class="capitalize" style="margin-bottom: 10px;">
+			<span class="icon icon-checkmark green"></span> {{key}} Completed ...<br>
+		</div>
+	</div>
+
 </div>
 <div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>

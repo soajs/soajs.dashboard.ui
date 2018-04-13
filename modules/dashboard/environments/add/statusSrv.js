@@ -1,6 +1,6 @@
 "use strict";
 var statusServices = soajsApp.components;
-statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$cookies', function (ngDataApi, $timeout, $modal, $localStorage, $window, $cookies) {
+statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$compile', '$cookies', function (ngDataApi, $timeout, $modal, $localStorage, $compile, $cookies) {
 	
 	function addEnvironment(currentScope){
 		currentScope.statusType = "info";
@@ -19,11 +19,11 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			if(error){
 				currentScope.displayAlert('danger', error.message);
-				currentScope.previousStep();
+				currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 			}
 			else{
 				currentScope.envId = response.data;
-				
+				console.log(currentScope.envId);
 				//call check status
 				checkEnvironmentStatus(currentScope, null, (error) => {
 					if (error) {
@@ -35,27 +35,27 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		});
 	}
 	
+	function checkDeploymentStatus(currentScope, params, cb) {
+		let opts = {
+			method: 'get',
+			routeName: '/dashboard/environment/status',
+			params: {
+				code: currentScope.overview.data.code.toUpperCase()
+			}
+		};
+		if(params) {
+			for(let i in params){
+				opts.params[i] = params[i];
+			}
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, cb);
+	}
+	
 	function checkEnvironmentStatus(currentScope, params, cb){
 		currentScope.showProgress = true;
 		
-		function checkDeploymentStatus(params, cb) {
-			let opts = {
-				method: 'get',
-				routeName: '/dashboard/environment/status',
-				params: {
-					code: currentScope.overview.data.code.toUpperCase()
-				}
-			};
-			if(params) {
-				for(let i in params){
-					opts.params[i] = params[i];
-				}
-			}
-			getSendDataFromServer(currentScope, ngDataApi, opts, cb);
-		}
-		
 		let autoRefreshTimeoutProgress = $timeout(() => {
-			checkDeploymentStatus(params, (error, response) => {
+			checkDeploymentStatus(currentScope, params, (error, response) => {
 				if (error) {
 					currentScope.showProgress = false;
 					return cb(error);
@@ -63,29 +63,42 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				else {
 					delete response.soajsauth;
 					
-					currentScope.status = {};
-					currentScope.progressCounter = 0;
-					currentScope.overall = response.overall;
-					delete response.soajsauth;
-					currentScope.maxCounter = Object.keys(response).length;
-					
 					if (response.error) {
 						currentScope.progressCounter = 0;
 						return cb(response.error);
 					}
 					else {
-						for (let step in response) {
-							console.log(response[step]);
-							console.log("------------");
-							
-							currentScope.status[step] = {};
-							if (response[step] && response[step].status && response[step].status.done) {
-								currentScope.progressCounter++;
-								currentScope.status[step].done = true;
+						currentScope.response = response;
+						
+						for(let step in currentScope.response){
+							if(step.indexOf(".") !== -1){
+								let path = step.split(".");
+								
+								let child = path[path.length -1];
+								path.pop();
+								
+								let parent = path[path.length -1];
+								
+								if(!currentScope.response[parent]){
+									currentScope.response[parent] = {
+										multi: true,
+										children: []
+									};
+								}
+								
+								currentScope.response[parent].children.push({
+									child: child,
+									data: angular.copy(currentScope.response[step])
+								});
+								delete currentScope.response[step];
 							}
 						}
 						
-						if (currentScope.overall && currentScope.progressCounter === currentScope.maxCounter) {
+						//only triggered on refresh and if all is working
+						if(response.completed){
+							currentScope.showProgress = true;
+							currentScope.statusType = "success";
+							currentScope.statusMsg = "Your environment has been deployed.";
 							currentScope.form.actions = renderButtonDisplay(currentScope, 2);
 						}
 						else {
@@ -105,7 +118,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/environment/delete",
-			"params": {"id": currentScope.envId, "force": true}
+			"params": {"code": currentScope.overview.data.code.toUpperCase(), "force": true}
 		}, function (error) {
 			if (error) {
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -172,41 +185,39 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 	function renderButtonDisplay(currentScope, type){
 		//default
 		
-		// let actions = [
-		// 	{
-		// 		'type': 'button',
-		// 		'label': "Back",
-		// 		'btn': 'success',
-		// 		'action': function () {
-		// 			currentScope.form.formData = {};
-		// 			//got back to last step !
-		// 			currentScope.previousStep();
-		// 		}
-		// 	},
-		// 	// {
-		// 	// 	'type': 'submit',
-		// 	// 	'label': "Create Environment",
-		// 	// 	'btn': 'primary',
-		// 	// 	'action': function (formData) {
-		// 	// 		currentScope.showProgress = true;
-		// 	// 		addEnvironment(currentScope);
-		// 	// 	}
-		// 	// },
-		// 	{
-		// 		'type': 'reset',
-		// 		'label': translation.cancel[LANG],
-		// 		'btn': 'danger',
-		// 		'action': function () {
-		// 			delete $localStorage.addEnv;
-		// 			currentScope.form.formData = {};
-		// 			currentScope.remoteCertificates = {};
-		// 			delete currentScope.wizard;
-		// 			currentScope.$parent.go("/environments");
-		// 		}
-		// 	}
-		// ];
-		
-		let actions = [];
+		let actions = [
+			{
+				'type': 'button',
+				'label': "Back",
+				'btn': 'success',
+				'action': function () {
+					currentScope.form.formData = {};
+					//got back to last step !
+					currentScope.previousStep();
+				}
+			},
+			{
+				'type': 'submit',
+				'label': "Create Environment",
+				'btn': 'primary',
+				'action': function (formData) {
+					currentScope.showProgress = true;
+					addEnvironment(currentScope);
+				}
+			},
+			{
+				'type': 'reset',
+				'label': translation.cancel[LANG],
+				'btn': 'danger',
+				'action': function () {
+					delete $localStorage.addEnv;
+					currentScope.form.formData = {};
+					currentScope.remoteCertificates = {};
+					delete currentScope.wizard;
+					currentScope.$parent.go("/environments");
+				}
+			}
+		];
 		
 		//if all ok
 		if (type === 2) {
@@ -256,24 +267,24 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 					'btn': 'danger',
 					'action': function () {
 						overlayLoading.show();
-						checkEnvironmentStatus(currentScope, {rollback: 0}, (error, response) => {
+						checkDeploymentStatus(currentScope, {rollback: 0}, (error, response) => {
 							if (error) {
 								overlayLoading.hide();
 								currentScope.displayAlert("danger", error.message);
 							}
-							else {
-								rollbackEnvironment(currentScope, (error) => {
-									overlayLoading.hide();
-									if (error) {
-										currentScope.displayAlert("danger", error.message);
-									}
-									else {
-										currentScope.status = {};
-										currentScope.displayAlert("success", "Environment Deployment has been reverted.");
-										currentScope.previousStep();
-									}
-								});
-							}
+							
+							rollbackEnvironment(currentScope, (error) => {
+								overlayLoading.hide();
+								if (error) {
+									currentScope.displayAlert("danger", error.message);
+								}
+								else {
+									currentScope.status = {};
+									currentScope.displayAlert("success", "Environment Deployment has been reverted.");
+									currentScope.previousStep();
+								}
+							});
+							
 						});
 					}
 				}
@@ -281,6 +292,10 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		}
 		
 		return actions;
+	}
+	
+	function mapUserInputsToOverview(currentScope) {
+		return currentScope.mapUserInputsToOverview();
 	}
 	
 	function go(currentScope){
@@ -309,18 +324,49 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		 *                  call check status again
 		 *
 		 */
-		
+		if(!currentScope.form){
+			currentScope.form = {};
+			buildForm(currentScope, null, {
+				timeout: $timeout,
+				entries: [],
+				name: 'addEnvironment',
+				actions: []
+			});
+		}
+		currentScope.statusType = "info";
+		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
+		currentScope.showProgress = true;
+
+		console.log(currentScope.environmentId);
 		//only available if an error or pending or refresh were triggered
 		if(currentScope.environmentId){
-			currentScope.envId = currentScope.environmentId;
-			
-			//call check status
-			checkEnvironmentStatus(currentScope, null, (error) => {
-				if (error) {
-					rollbackEnvironment(currentScope, () => {
-						currentScope.displayAlert('danger', error);
-						currentScope.form.actions = renderButtonDisplay(currentScope, 3);
+			currentScope.overview = mapUserInputsToOverview(currentScope);
+			overlayLoading.show();
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/environment',
+				params: {
+					id: currentScope.environmentId
+				}
+			}, function (error, pendingEnvironment) {
+				overlayLoading.hide();
+				console.log(error, pendingEnvironment);
+				if(error){
+					addEnvironment(currentScope);
+				}
+				else if(pendingEnvironment){
+					currentScope.envId = currentScope.environmentId;
+
+					//call check status
+					checkEnvironmentStatus(currentScope, null, (error) => {
+						if (error) {
+							currentScope.displayAlert('danger', error);
+							currentScope.form.actions = renderButtonDisplay(currentScope, 3);
+						}
 					});
+				}
+				else{
+					delete currentScope.environmentId;
 				}
 			});
 		}

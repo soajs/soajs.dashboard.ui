@@ -79,7 +79,7 @@ secretsApp.controller('secretsAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				
-				secretsService.addSecret($scope,$modalInstance,currentScope);
+				secretsService.addSecret($scope, $modalInstance, currentScope);
 				
 			}
 		});

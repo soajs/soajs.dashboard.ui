@@ -6,9 +6,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		custom_registry: {
 			deploy: function (currentScope, context) {
 				function buildMyForms(counter, cb) {
+					
 					let ci = entriesNames[counter];
 					let customRegistry = ciEntries[ci];
+					
 					let record = angular.copy(customRegistry);
+					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+						record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
+					}
+					
 					customRegistry.scope = currentScope.$new(true); //true means detached from main currentScope
 					customRegistrySrv.internalCustomRegistryFormManagement(customRegistry.scope, currentScope.envCode, null, record, 'add');
 					let entries = [
@@ -80,12 +86,45 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let secretKey = entriesNames[counter];
 					let oneSecret = secretEntries[secretKey];
+					
+					let record = {
+						secretName: oneSecret.name,
+						secretData: oneSecret.data
+					};
+					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+						record = {
+							secretName: currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].name,
+							textMode: (currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'text'),
+						};
+						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'file'){
+							record['secretFile']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
+						}
+						else{
+							record['secretData']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
+						}
+					}
+					
 					oneSecret.scope = currentScope.$new(true); //true means detached from main currentScope
 					oneSecret.scope.selectedEnvironment = {code: currentScope.envCode};
 					currentScope.selectedEnvironment = {code: currentScope.envCode};
-					currentScope.namespaceConfig = {namespace: 'default'};
+					currentScope.namespaceConfig = namespaceConfig;
 					
-					secretsService.addSecret(oneSecret.scope, null, currentScope, [], () => {
+					let extraInputs = [];
+					if(namespaces && namespaces.length > 0){
+						extraInputs = [
+							{
+								"type": "select",
+								"label": "Select Namespace",
+								"name": "namespace",
+								"value": namespaces,
+								"onAction": function(id, value, form){
+									currentScope.namespaceConfig.namespace = value;
+								}
+							}
+						];
+					}
+					
+					secretsService.addSecret(oneSecret.scope, null, currentScope, [], extraInputs, record, () => {
 						let element = angular.element(document.getElementById("secret_" + secretKey));
 						element.html("<ngform></ngform>");
 						$compile(element.contents())(oneSecret.scope);
@@ -99,6 +138,43 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 				}
+				
+				function listNamespaces (kubernetes, cb) {
+					if (!kubernetes) {
+						//in case of swarm deployment, set namespace value to All Namespaces and set filter value to null in order to always display all fields
+						namespaces = [];
+						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
+						return cb();
+					}
+					
+					getSendDataFromServer(currentScope, ngDataApi, {
+						method: 'get',
+						routeName: '/dashboard/cloud/namespaces/list',
+						params: {
+							env: currentScope.envCode.toLowerCase()
+						}
+					}, function (error, response) {
+						if (error) {
+							currentScope.displayAlert('danger', error.message);
+						}
+						else {
+							namespaces = [ {"v": "", "l": namespaceConfig.defaultValue.name}];
+							response.forEach((oneNS) => {
+								namespaces.push({"v": oneNS.name, "l": oneNS.name});
+							});
+							namespaceConfig.namespace = namespaceConfig.defaultValue.id; //setting current selected to 'All Namespaces'
+							return cb();
+						}
+					});
+				}
+				
+				let namespaces = [];
+				let namespaceConfig = {
+					defaultValue: {
+						id: undefined, //setting id to undefined in order to force angular to display all fields, => All Namespaces
+						name: '--- All Namespaces ---'
+					}
+				};
 				
 				//create a copy just in case
 				let secretEntries = angular.copy(context.inputs);
@@ -133,8 +209,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				
 				overlayLoading.show();
 				let entriesNames = Object.keys(secretEntries);
-				buildMyForms(0, () => {
-					overlayLoading.hide();
+				listNamespaces ((currentScope.wizard.deployment.selectedDriver === 'kubernetes'), () => {
+					buildMyForms(0, () => {
+						overlayLoading.hide();
+					});
 				});
 			}
 		},
@@ -151,6 +229,153 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let daemonGrpConf = (oneRepo.type === 'daemon' && oneRepo.group) ? oneRepo.group : "";
 					let isKubernetes = (currentScope.wizard.deployment.selectedDriver === 'kubernetes');
 					
+					oneRepo.name = repoName;
+					oneRepo.scope = currentScope.$new(true); //true means detached from main currentScope
+					oneRepo.scope.oneEnv = currentScope.envCode;
+					
+					if(oneRepo.name === 'controller'){
+						version = 'Default';
+					}
+					else{
+						//todo: try a daemon to finalize this part before confirming it works in full
+						currentScope.services.forEach((oneService) => {
+							if (oneService.name === oneRepo.name && oneService.name !== 'controller') {
+								let tempV = 0;
+								for(let v in oneService.versions){
+									if (parseInt(v) > tempV) {
+										version = v;
+										tempV = parseInt(v);
+									}
+								}
+							}
+						})
+					}
+					
+					oneRepo.scope.cdData = {};
+					oneRepo.scope.cdData[oneRepo.scope.oneEnv.toUpperCase()] = {};
+					
+					oneRepo.scope.noCDoverride = true;
+					
+					oneRepo.scope.cdConfiguration = {};
+					oneRepo.scope.cdConfiguration[oneRepo.name] = {};
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv] = {};
+					
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj = { ha: {} };
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version] = {};
+					
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData = {};
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions = {};
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version] = { deploy: true };
+					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = {};
+					
+					//if default values
+					if(currentScope.wizard.template.content.deployments.repo[repoName].deploy){
+						let deployFromTemplate = currentScope.wizard.template.content.deployments.repo[repoName].deploy;
+						
+						if(deployFromTemplate.recipes){
+							if(deployFromTemplate.recipes.available){
+								oneRepo.scope.myRecipes = [];
+								let available = deployFromTemplate.recipes.available;
+								for(let type in currentScope.recipes){
+									currentScope.recipes[type].forEach((oneRecipe) =>{
+										if(available.indexOf(oneRecipe.name) !== -1){
+											oneRepo.scope.myRecipes.push(oneRecipe);
+										}
+									});
+								}
+							}
+							
+							if(deployFromTemplate.recipes.default){
+								let defaultFromTemplate = deployFromTemplate.recipes.default;
+								if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+									for(let type in currentScope.recipes){
+										currentScope.recipes[type].forEach((oneRecipe) =>{
+											if(defaultFromTemplate === oneRecipe.name){
+												oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.recipe = oneRecipe._id;
+											}
+										});
+									}
+								}
+							}
+							
+						}
+						
+						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig = {};
+						}
+						
+						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings = {};
+						}
+						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig = {};
+						}
+						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication = {};
+						}
+						
+						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication = {};
+						}
+						
+						if(deployFromTemplate.memoryLimit){
+							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = deployFromTemplate.memoryLimit * 1048576;
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.memoryLimit = deployFromTemplate.memoryLimit * 1048576;
+							}
+						}
+						
+						if(deployFromTemplate.mode){
+							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication.mode = deployFromTemplate.mode;
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication.mode = deployFromTemplate.mode;
+							}
+						}
+						
+						if(deployFromTemplate.replicas){
+							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication.replicas = deployFromTemplate.replicas;
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication.replicas = deployFromTemplate.replicas;
+							}
+						}
+					}
+					
+					//on update
+					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv && currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[0]){
+						let previousImfv = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[0];
+						let controller;
+						if(previousImfv.default){
+							controller = true;
+							previousImfv = previousImfv.default;
+						}
+						else{
+							controller = false;
+							previousImfv = previousImfv.version;
+						}
+						oneRepo.gitSource = previousImfv.options.gitSource;
+						
+						if(oneRepo.name === 'controller'){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.type = "custom";
+						}
+						else{
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.type = oneRepo.type;
+						}
+						
+						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = previousImfv.options;
+						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version] = {
+							name: oneRepo.name,
+							type: oneRepo.type,
+							deploySettings: previousImfv.options
+						};
+						
+						if(!controller){
+							if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
+							}
+						}
+					}
+					
+					//prepare to print the form
 					currentScope.accounts.forEach((oneGitAccount) => {
 						if (oneGitAccount.owner === oneRepo.gitSource.owner) {
 							gitAccount = oneGitAccount;
@@ -161,21 +386,24 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 										if (oneService.name === oneRepo.name) {
 											service = oneService;
 											
-											let tempV = 0;
-											service.versions.forEach((oneVersion) => {
-												if (parseInt(oneVersion.v) > tempV) {
-													version = oneVersion;
-													tempV = parseInt(oneVersion.v);
-												}
-											});
+											if(service.name === 'controller'){
+												version = 'Default';
+											}
+											else{
+												let tempV = 0;
+												service.versions.forEach((oneVersion) => {
+													if (parseInt(oneVersion.v) > tempV) {
+														version = oneVersion;
+														tempV = parseInt(oneVersion.v);
+													}
+												});
+											}
 										}
-									})
+									});
 								}
 							});
 						}
 					});
-					
-					oneRepo.scope = currentScope.$new(true); //true means detached from main currentScope
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
 					let entries = [];
 					buildDynamicForm(oneRepo.scope, entries, () => {
@@ -196,7 +424,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				//create a copy just in case
 				let repoEntries = angular.copy(context.inputs);
 				currentScope.dynamicStep = context;
-				
 				currentScope.saveData = function () {
 					if (!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv) {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
@@ -230,20 +457,109 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let key = entriesNames[counter];
 					let resource = resourceEntries[key];
-					
 					let record = angular.copy(resource);
+					record.name = key;
 					let settings = {"type": record.type, category: record.category};
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
 					resource.scope.envCode = currentScope.envCode;
+					resource.scope.recipes = [];
 					
-					if(record.deploy && Object.keys(record.deploy).length > 0){
+					//if default values
+					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+						for(let type in currentScope.recipes){
+							if(type === record.type){
+								currentScope.recipes[type].forEach((oneRecipe) => {
+									if(oneRecipe.subtype === record.category){
+										resource.scope.recipes.push(oneRecipe);
+									}
+								});
+							}
+						}
+						
 						record.canBeDeployed = true;
 						resource.scope.envType = 'container';
 						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver;
 						resource.scope.access = {deploy: true};
+						resource.scope.noCDoverride = true;
+						
+						let deployFromTemplate = currentScope.wizard.template.content.deployments.resources[key].deploy;
+						if(deployFromTemplate.recipes){
+							if(deployFromTemplate.recipes.available){
+								resource.scope.recipes = [];
+								let available = deployFromTemplate.recipes.available;
+								for(let type in currentScope.recipes){
+									currentScope.recipes[type].forEach((oneRecipe) =>{
+										if(available.indexOf(oneRecipe.name) !== -1){
+											resource.scope.recipes.push(oneRecipe);
+										}
+									});
+								}
+							}
+
+							if(deployFromTemplate.recipes.default){
+								let defaultFromTemplate = deployFromTemplate.recipes.default;
+								if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+									for(let type in currentScope.recipes){
+										currentScope.recipes[type].forEach((oneRecipe) =>{
+											if(defaultFromTemplate === oneRecipe.name){
+												if(!record.deployOptions){
+													record.deployOptions = {};
+												}
+												record.deployOptions.recipe = oneRecipe._id;
+											}
+										});
+									}
+								}
+							}
+
+						}
+
+						if(!record.deployOptions){
+							record.deployOptions = {};
+						}
+						
+						if(!record.deployOptions.custom){
+							record.deployOptions.custom = {};
+						}
+						
+						record.deployOptions.custom.name = key;
+						
+						if(!record.deployOptions.deployConfig){
+							record.deployOptions.deployConfig = {};
+						}
+
+						if(!record.deployOptions.deployConfig.replication){
+							record.deployOptions.deployConfig.replication = {};
+						}
+
+						if(deployFromTemplate.memoryLimit){
+							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+								record.deployOptions.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
+							}
+						}
+
+						if(deployFromTemplate.mode){
+							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+								record.deployOptions.deployConfig.replication.mode = deployFromTemplate.mode;
+							}
+						}
+
+						if(deployFromTemplate.replicas){
+							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+								record.deployOptions.deployConfig.replication.replicas = deployFromTemplate.replicas;
+							}
+						}
+					}
+					
+					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+						record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
+						record.label = resource.label;
 					}
 					
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
+						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+							resource.scope.buildComputedHostname();
+						}
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
 							let element = angular.element(document.getElementById("resource_" + key));
@@ -276,8 +592,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							let imfv = angular.copy(resource.scope.formData);
 							imfv.name = key; //force the name back as it was
 							
-							//todo: deployment
-							console.log(imfv);
 							if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
 								imfv.deploy = {
 									"options": {
@@ -298,6 +612,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								if(imfv.deployOptions.deployConfig.replication.replicas){
 									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
 								}
+								
+								//fix the name
+								if(imfv.deployOptions.custom){
+									imfv.deployOptions.custom.name = key;
+								}
+								
+								imfv.deploy.options.custom.name = key;
+								imfv.deployOptions.name = key;
 							}
 							else {
 								delete imfv.deployOptions;
@@ -346,12 +668,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		let stack = [];
 		if (currentScope.wizard) {
 			deployRepos.listGitAccounts(currentScope, () => {
-				console.log(currentScope.wizard);
 				getDeploymentWorkflow(stack, currentScope.wizard.template);
 				
 				currentScope.envCode = currentScope.wizard.gi.code.toUpperCase();
-				
-				console.log(stack);
 				
 				//this template has no deployment workflow go to overview
 				if (stack.length === 0) {
@@ -385,6 +704,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		};
 		
 		currentScope.next = function () {
+			//update template in local storage
+			$localStorage.addEnv = angular.copy(currentScope.wizard);
+			delete $localStorage.addEnv.template.content;
+			
 			currentScope.deploymentStackStep++;
 			if (currentScope.deploymentStackStep >= stack.length) {
 				if (currentScope.form && currentScope.form.formData) {
@@ -426,34 +749,43 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							
 							}
 							else {
-								let dataArray = returnObjectPathFromString("content." + stepPath, template);
 								let inputs = {};
-								if (dataArray.data && Array.isArray(dataArray.data)) {
-									dataArray.data.forEach((oneDataEntry) => {
-										inputs[oneDataEntry.name] = oneDataEntry;
-									});
+								if(template.deploy[stage][oneGroup][stepPath].imfv && template.deploy[stage][oneGroup][stepPath].imfv.length > 0){
+									template.deploy[stage][oneGroup][stepPath].imfv.forEach((oneimfv) =>{
+										let tName = oneimfv.name || oneimfv.serviceName;
+										inputs[tName] = oneimfv;
+									})
 								}
-								else {
-									let section = stepPath;
-									if (stepPath.indexOf(".") !== -1) {
-										stepPath = stepPath.split(".");
-										section = stepPath[stepPath.length - 1];
+								if(Object.keys(inputs).length === 0){
+									let dataArray = returnObjectPathFromString("content." + stepPath, template);
+									if (dataArray.data && Array.isArray(dataArray.data)) {
+										dataArray.data.forEach((oneDataEntry) => {
+											let tName = oneDataEntry.name || oneDataEntry.serviceName;
+											inputs[tName] = oneDataEntry;
+										});
 									}
-									
-									if (dataArray.limit) {
-										if (dataArray.limit > 1) {
-											for (let i = 0; i < dataArray.limit; i++) {
-												inputs[section + i] = angular.copy(dataArray);
-												delete inputs[section + i].limit;
+									else {
+										let section = stepPath;
+										if (stepPath.indexOf(".") !== -1) {
+											stepPath = stepPath.split(".");
+											section = stepPath[stepPath.length - 1];
+										}
+										
+										if (dataArray.limit) {
+											if (dataArray.limit > 1) {
+												for (let i = 0; i < dataArray.limit; i++) {
+													inputs[section + i] = angular.copy(dataArray);
+													delete inputs[section + i].limit;
+												}
+											}
+											else {
+												delete dataArray.limit;
+												inputs[section] = dataArray;
 											}
 										}
 										else {
-											delete dataArray.limit;
 											inputs[section] = dataArray;
 										}
-									}
-									else {
-										inputs[section] = dataArray;
 									}
 								}
 								

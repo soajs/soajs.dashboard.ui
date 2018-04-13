@@ -174,12 +174,13 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 	}
 	
 	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes) {
-		
 		$scope.controllerScope = currentScope;
 		$scope.isKubernetes = isKubernetes;
 		$scope.deployNewService = true;
 		$scope.version = version.v || 'Default';
-		$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
+		if(!$scope.oneEnv){
+			$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
+		}
 		$scope.cdEnvs = [$scope.oneEnv];
 		$scope.deployed = false;
 		$scope.recipes = angular.copy(currentScope.recipes);
@@ -208,9 +209,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.gitAccount = gitAccount;
 		$scope.alerts = [];
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
-		getCDRecipe($scope, oneRepo, function () {
-			$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
-		});
 		
 		$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
 			$scope.branches.forEach(function (oneBranch) {
@@ -286,14 +284,18 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			else {
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active = true;
 			}
-			$scope.myRecipes = [];
-			for (var type in $scope.recipes) {
-				$scope.recipes[type].forEach(function (oneRecipe) {
-					if (oneRecipe.recipe && ['service', 'daemon', 'other'].indexOf(oneRecipe.type) !== -1) {
-						$scope.myRecipes.push(oneRecipe);
-					}
-				});
+			
+			if(!$scope.noCDoverride && $scope.myRecipes && $scope.myRecipes.length > 0){
+				$scope.myRecipes = [];
+				for (var type in $scope.recipes) {
+					$scope.recipes[type].forEach(function (oneRecipe) {
+						if (oneRecipe.recipe && ['service', 'daemon', 'other'].indexOf(oneRecipe.type) !== -1) {
+							$scope.myRecipes.push(oneRecipe);
+						}
+					});
+				}
 			}
+			
 			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options = {'deployConfig': {'replication': {}}};
 			}
@@ -353,7 +355,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit < 1) {
 					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
 				}
-				
 			}
 			if (service && $scope.serviceType === 'daemon' && service.grpConf) {
 				$scope.groupConfigs = service.grpConf;
@@ -430,11 +431,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			
 			$scope.setSourceCodeData(oneEnv, version, oneSrv);
 		};
-		
-		// source code updates
-		$scope.configRepos = [];
-		$scope.configReposBranches = {};
-		$scope.configReposBranchesStatus = {};
 		
 		$scope.setSourceCodeData = function (oneEnv, version, oneSrv) {
 			
@@ -591,6 +587,24 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			});
 		};
+		
+		if(!$scope.noCDoverride && $scope.cdConfiguration && Object.keys($scope.cdConfiguration).length > 0){
+			getCDRecipe($scope, oneRepo, function () {
+				$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+			});
+		}
+		else{
+			getServiceBranches($scope, { gitAccount: $scope.gitAccount, repo: oneRepo, cd: true }, function () {
+				getServiceInEnv($scope, $scope.oneEnv, $scope.oneSrv, () =>{
+					$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+				});
+			});
+		}
+		
+		// source code updates
+		$scope.configRepos = [];
+		$scope.configReposBranches = {};
+		$scope.configReposBranchesStatus = {};
 		
 	}
 	

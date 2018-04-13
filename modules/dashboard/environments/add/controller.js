@@ -84,7 +84,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	function checkEnvironment(cb) {
 		if ($localStorage.addEnv && $localStorage.addEnv.gi && $localStorage.addEnv.gi.code) {
 			
-			$scope.wizard = $localStorage.addEnv;
+			$scope.wizard = angular.copy($localStorage.addEnv);
 			
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {

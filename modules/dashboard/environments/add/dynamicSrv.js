@@ -221,6 +221,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let repoName = entriesNames[counter];
 					let oneRepo = repoEntries[repoName];
+					let templateDefaults = currentScope.wizard.template.content.deployments.repo[context.section[context.section.length -1]];
+					
+					oneRepo.type = templateDefaults.type; //enforce
+					oneRepo.category = templateDefaults.category; //enforce
 					
 					let service = {};
 					let record = {};
@@ -268,23 +272,28 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version] = { deploy: true };
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = {};
 					
+					oneRepo.scope.myRecipes = [];
+					for(let type in currentScope.recipes){
+						currentScope.recipes[type].forEach((oneRecipe) =>{
+							
+							if(oneRecipe.type === oneRepo.type && oneRecipe.subtype === oneRepo.category){
+								oneRepo.scope.myRecipes.push(oneRecipe);
+							}
+						});
+					}
+					
 					//if default values
 					if(currentScope.wizard.template.content.deployments.repo[repoName].deploy){
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.repo[repoName].deploy;
 						
 						if(deployFromTemplate.recipes){
-							if(deployFromTemplate.recipes.available){
+							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
 								oneRepo.scope.myRecipes = [];
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
 										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
 											oneRepo.scope.myRecipes.push(oneRecipe);
-										}
-										else if(available.length === 0){
-											if(oneRecipe.type === oneRepo.type && oneRecipe.subtype === oneRepo.category){
-												oneRepo.scope.myRecipes.push(oneRecipe);
-											}
 										}
 									});
 								}
@@ -409,6 +418,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							});
 						}
 					});
+					
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
 					let entries = [];
 					buildDynamicForm(oneRepo.scope, entries, () => {
@@ -469,6 +479,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.envCode = currentScope.envCode;
 					resource.scope.recipes = [];
 					
+					for(let type in currentScope.recipes){
+						currentScope.recipes[type].forEach((oneRecipe) =>{
+							if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
+								resource.scope.recipes.push(oneRecipe);
+							}
+						});
+					}
+					
 					//if default values
 					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 						for(let type in currentScope.recipes){
@@ -489,18 +507,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.resources[key].deploy;
 						if(deployFromTemplate.recipes){
-							if(deployFromTemplate.recipes.available){
+							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
 								resource.scope.recipes = [];
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
 										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
 											resource.scope.recipes.push(oneRecipe);
-										}
-										else if(available.length === 0){
-											if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
-												resource.scope.recipes.push(oneRecipe);
-											}
 										}
 									});
 								}

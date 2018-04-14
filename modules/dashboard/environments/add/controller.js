@@ -213,7 +213,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				
 				if (pendingEnvironment && (pendingEnvironment.pending || pendingEnvironment.error) && pendingEnvironment.template) {
 					$scope.wizard.template = pendingEnvironment.template;
-					$scope.checkStatus();
+					delete $scope.wizard.template._id;
+					$scope.goToStep = 'status';
+					$scope.listTemplate();
 				}
 				else{
 					return cb();

@@ -23,7 +23,6 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 			}
 			else{
 				currentScope.envId = response.data;
-				console.log(currentScope.envId);
 				//call check status
 				checkEnvironmentStatus(currentScope, null, (error) => {
 					if (error) {
@@ -299,6 +298,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 	}
 	
 	function go(currentScope){
+		currentScope.addEnvCounter = currentScope.steps.length -1;
 		/**
 		 * automatically make call to environment/add
 		 *
@@ -337,36 +337,25 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = true;
 
-		console.log(currentScope.environmentId);
 		//only available if an error or pending or refresh were triggered
 		if(currentScope.environmentId){
 			currentScope.overview = mapUserInputsToOverview(currentScope);
-			overlayLoading.show();
-			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'get',
-				routeName: '/dashboard/environment',
-				params: {
-					id: currentScope.environmentId
+			currentScope.envId = currentScope.environmentId;
+			
+			//resume deployment
+			checkDeploymentStatus(currentScope, {'resume': true}, (error) => {
+				if (error) {
+					currentScope.displayAlert('danger', error);
+					currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 				}
-			}, function (error, pendingEnvironment) {
-				overlayLoading.hide();
-				console.log(error, pendingEnvironment);
-				if(error){
-					addEnvironment(currentScope);
-				}
-				else if(pendingEnvironment){
-					currentScope.envId = currentScope.environmentId;
-
-					//call check status
+				else{
+					//print status
 					checkEnvironmentStatus(currentScope, null, (error) => {
 						if (error) {
 							currentScope.displayAlert('danger', error);
 							currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 						}
 					});
-				}
-				else{
-					delete currentScope.environmentId;
 				}
 			});
 		}

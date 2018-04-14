@@ -49,9 +49,20 @@ tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage
 					
 					if(currentScope.wizard.template){
 						currentScope.templates.forEach(function (oneTemplate) {
-							if(oneTemplate._id === currentScope.wizard.template._id){
-								currentScope.wizard.template = angular.copy(oneTemplate);
+							if(currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id){
+								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.nextStep();
+							}
+							else if(currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name){
+								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
+								currentScope.wizard.template._id = oneTemplate._id;
+								
+								if(currentScope.goToStep === 'status'){
+									currentScope.checkStatus();
+								}
+								else{
+									currentScope.nextStep();
+								}
 							}
 						});
 					}
@@ -59,7 +70,7 @@ tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage
 					if($routeParams.portal){
 						currentScope.templates.forEach(function (oneTemplate) {
 							if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
-								currentScope.wizard.template = angular.copy(oneTemplate);
+								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.nextStep();
 							}
 						});

@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrv', 'giSrv', 'deploymentSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrv, giSrv, deploymentSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrvDeploy', 'giSrv', 'deploymentSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrvDeploy, giSrv, deploymentSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
@@ -34,7 +34,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	};
 	
 	$scope.listTemplate = function () {
-		templateSrv.go($scope);
+		templateSrvDeploy.go($scope);
 	};
 	
 	$scope.chooseTemplate = function (template) {

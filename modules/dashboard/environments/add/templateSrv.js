@@ -1,6 +1,6 @@
 "use strict";
 var tmplServices = soajsApp.components;
-tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage', function (ngDataApi, $routeParams, $localStorage) {
+tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localStorage', function (ngDataApi, $routeParams, $localStorage) {
 	
 	function isPortalDeployed() {
 		let hasPortal = false;

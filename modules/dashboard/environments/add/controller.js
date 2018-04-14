@@ -164,33 +164,34 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			}
 		};
 		
-		if(wizard.gi.domain){
-			output.data.domain = wizard.gi.domain;
+		if(wizard.nginx.domain){
+			output.data.domain = wizard.nginx.domain;
 		}
 		
-		if(wizard.gi.apiPrefix){
-			output.data.apiPrefix = wizard.gi.apiPrefix;
+		if(wizard.nginx.apiPrefix){
+			output.data.apiPrefix = wizard.nginx.apiPrefix;
 		}
 		
-		if(wizard.gi.sitePrefix){
-			output.data.sitePrefix = wizard.gi.sitePrefix;
+		if(wizard.nginx.sitePrefix){
+			output.data.sitePrefix = wizard.nginx.sitePrefix;
 		}
 		
-		if(wizard.gi.cookiesecret){
-			output.data.cookiesecret = wizard.gi.cookiesecret;
+		if(wizard.registry.cookiesecret){
+			output.data.cookiesecret = wizard.registry.cookiesecret;
 		}
 		
-		if(wizard.gi.sessionName){
-			output.data.sessionName = wizard.gi.sessionName;
+		if(wizard.registry.sessionName){
+			output.data.sessionName = wizard.registry.sessionName;
 		}
 		
-		if(wizard.gi.sessionSecret){
-			output.data.sessionSecret = wizard.gi.sessionSecret;
+		if(wizard.registry.sessionSecret){
+			output.data.sessionSecret = wizard.registry.sessionSecret;
 		}
 		
-		if(wizard.gi.tKeyPass){
-			output.data.tKeyPass = wizard.gi.tKeyPass;
+		if(wizard.registry.tKeyPass){
+			output.data.tKeyPass = wizard.registry.tKeyPass;
 		}
+		
 		return output;
 	};
 	

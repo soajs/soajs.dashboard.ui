@@ -170,7 +170,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 				{
 					"type": "accordion",
 					"name": "daemon",
-					"label": "Daemon",
+					"label": "Daemon Groups",
 					"entries": []
 				}
 			];
@@ -430,7 +430,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 
 										break;
                                     case 'daemon':
-                                        if (oneIssue.entry.name.trim() === formData['Daemon_' + count].trim()) {
+                                        if (oneIssue.entry.name.trim() === formData['daemon_' + count].trim()) {
                                             $window.alert(`Change the name of Daemon Groups ${oneIssue.entry.name} to proceed.`);
                                             return false;
                                         }
@@ -439,7 +439,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
                                         }
                                         inputs.daemon.push({
                                             old: oneIssue.entry.name,
-                                            new: formData['Daemon_' + count]
+                                            new: formData['daemon_' + count]
                                         });
                                         break;
                                 }

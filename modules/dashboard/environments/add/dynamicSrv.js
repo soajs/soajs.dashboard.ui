@@ -147,14 +147,35 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						return cb();
 					}
 					
+					//find if there is an environment that uses kubernetes
+					//if found, then make the api call else use the default namespace
+					let kubeEnv;
+					if(currentScope.wizard.deployment.previousEnvironment){
+						kubeEnv = currentScope.wizard.deployment.previousEnvironment;
+					}
+					else{
+						$localStorage.environments.forEach((oneEnv) => {
+							if(!kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
+								kubeEnv = oneEnv.code;
+							}
+						});
+					}
+					
+					if(!kubeEnv){
+						namespaces = [];
+						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
+						return cb();
+					}
+					
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
 						routeName: '/dashboard/cloud/namespaces/list',
 						params: {
-							env: currentScope.envCode.toLowerCase()
+							env: kubeEnv.toUpperCase()
 						}
 					}, function (error, response) {
 						if (error) {
+							overlayLoading.hide();
 							currentScope.displayAlert('danger', error.message);
 						}
 						else {
@@ -340,8 +361,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						if(deployFromTemplate.mode){
 							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication.mode = deployFromTemplate.mode;
-								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication.mode = deployFromTemplate.mode;
+								let mode = deployFromTemplate.mode;
+								if(isKubernetes){
+									if(mode === 'global'){ mode = 'daemonset'; }
+									if(mode === 'replicated'){ mode = 'deployment'; }
+								}
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication.mode = mode;
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication.mode = mode;
 							}
 						}
 						
@@ -418,6 +444,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 					
+					if(isKubernetes){
+						currentScope.isAutoScalable = true;
+					}
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
 					let entries = [];
 					buildDynamicForm(oneRepo.scope, entries, () => {
@@ -472,6 +501,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		},
 		resources: {
 			deploy: function (currentScope, context, fCb) {
+				let isKubernetes = (currentScope.wizard.deployment.selectedDriver === 'kubernetes');
+				
 				function buildMyForms(counter, cb) {
 					let key = entriesNames[counter];
 					let resource = resourceEntries[key];
@@ -565,8 +596,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 
 						if(deployFromTemplate.mode){
+							let mode = deployFromTemplate.mode;
+							if(isKubernetes){
+								if(mode === 'global'){ mode = 'daemonset'; }
+								if(mode === 'replicated'){ mode = 'deployment'; }
+							}
 							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-								record.deployOptions.deployConfig.replication.mode = deployFromTemplate.mode;
+								record.deployOptions.deployConfig.replication.mode = mode;
 							}
 						}
 
@@ -582,8 +618,38 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						record.label = resource.label;
 					}
 					
+					if(isKubernetes){
+						resource.scope.enableAutoScale = true;
+					}
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
 						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+							if(isKubernetes){
+								let remote = currentScope.wizard.deployment.deployment.kubernetes.kubernetesremote;
+								let deployment = currentScope.wizard.deployment.deployment.kubernetes;
+								let driverConfiguration = {
+									"nodes" : deployment.nodes,
+									"namespace" : {
+										"default": deployment.NS,
+										"perService": deployment.perService
+									},
+									"auth" : {
+										"token" : deployment.token
+									}
+								};
+								let envDeployer = {
+									"type": "container",
+									"kubernetes" : {}
+								};
+								if(remote){
+									envDeployer.selected = "container.kubernetes.remote";
+									envDeployer.kubernetes.remote = driverConfiguration;
+								}
+								else{
+									envDeployer.selected = "container.kubernetes.local";
+									envDeployer.kubernetes.local = driverConfiguration;
+								}
+								resource.scope.envDeployer = envDeployer;
+							}
 							resource.scope.buildComputedHostname();
 						}
 						let entries = [];
@@ -637,11 +703,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								
 								if(imfv.deployOptions.deployConfig.replication.replicas){
 									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
-								}
-								
-								//fix the name
-								if(imfv.deployOptions.custom){
-									imfv.deployOptions.custom.name = key;
 								}
 								
 								imfv.deploy.options.custom.name = key;
@@ -800,40 +861,55 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 				if(Object.keys(inputs).length === 0){
 					let dataArray = returnObjectPathFromString("content." + stepPath, template);
-					if (dataArray.data && Array.isArray(dataArray.data)) {
-						dataArray.data.forEach((oneDataEntry) => {
-							let tName = oneDataEntry.name || oneDataEntry.serviceName;
-							inputs[tName] = oneDataEntry;
-						});
-					}
-					else {
+					if(!dataArray){
 						let section = stepPath;
 						if (stepPath.indexOf(".") !== -1) {
 							stepPath = stepPath.split(".");
-							section = stepPath[stepPath.length - 1];
+							section = stepPath[0];
 						}
-						
-						if (dataArray.limit) {
-							if (dataArray.limit > 1) {
-								for (let i = 0; i < dataArray.limit; i++) {
-									inputs[section + i] = angular.copy(dataArray);
-									delete inputs[section + i].limit;
-								}
-							}
-							else {
-								delete dataArray.limit;
-								inputs[section] = dataArray;
-							}
-						}
-						else {
-							inputs[section] = dataArray;
-						}
+						let dataArray = returnObjectPathFromString("content." + section, template);
+						doDataArray(dataArray, inputs);
+					}
+					else{
+						doDataArray(dataArray, inputs);
 					}
 				}
 				
 				
 				opts['inputs'] = inputs;
 				stack.push(opts);
+			}
+			
+			function doDataArray(dataArray, inputs){
+				if (dataArray.data && Array.isArray(dataArray.data)) {
+					dataArray.data.forEach((oneDataEntry) => {
+						let tName = oneDataEntry.name || oneDataEntry.serviceName;
+						inputs[tName] = oneDataEntry;
+					});
+				}
+				else {
+					let section = stepPath;
+					if (stepPath.indexOf(".") !== -1) {
+						stepPath = stepPath.split(".");
+						section = stepPath[stepPath.length - 1];
+					}
+					
+					if (dataArray.limit) {
+						if (dataArray.limit > 1) {
+							for (let i = 0; i < dataArray.limit; i++) {
+								inputs[section + i] = angular.copy(dataArray);
+								delete inputs[section + i].limit;
+							}
+						}
+						else {
+							delete dataArray.limit;
+							inputs[section] = dataArray;
+						}
+					}
+					else {
+						inputs[section] = dataArray;
+					}
+				}
 			}
 		}
 	}
@@ -852,7 +928,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			//check if template has a content entry for level 0 of this section
 			if (currentScope.wizard.template.content[contentSection]) {
 				//works for both sections with sub or sections with main only
-				predefinedStepFunction = subSection || contentSection;
+				if(currentScope.wizard.template.content[contentSection][subSection]){
+					predefinedStepFunction = subSection;
+				}
+				else{
+					predefinedStepFunction = contentSection;
+				}
 			}
 			
 			stackStep.predefinedStepFunction = predefinedStepFunction;

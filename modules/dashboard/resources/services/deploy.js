@@ -137,7 +137,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			envCode: currentScope.envCode,
 			envType: currentScope.envType,
 			envPlatform: currentScope.envPlatform,
-			enableAutoScale: false,
+			enableAutoScale: currentScope.enableAutoScale || false,
 			formAction: action,
 			aceEditorConfig: {
 				maxLines: Infinity,

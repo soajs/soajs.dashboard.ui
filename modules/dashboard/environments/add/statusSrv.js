@@ -62,37 +62,35 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				else {
 					delete response.soajsauth;
 					
+					currentScope.response = response;
+					for(let step in currentScope.response){
+						if(step.indexOf(".") !== -1){
+							let path = step.split(".");
+							
+							let child = path[path.length -1];
+							path.pop();
+							
+							let parent = path[path.length -1];
+							
+							if(!currentScope.response[parent]){
+								currentScope.response[parent] = {
+									multi: true,
+									children: []
+								};
+							}
+							
+							currentScope.response[parent].children.push({
+								child: child,
+								data: angular.copy(currentScope.response[step])
+							});
+							delete currentScope.response[step];
+						}
+					}
+					
 					if (response.error) {
-						currentScope.progressCounter = 0;
 						return cb(response.error);
 					}
 					else {
-						currentScope.response = response;
-						
-						for(let step in currentScope.response){
-							if(step.indexOf(".") !== -1){
-								let path = step.split(".");
-								
-								let child = path[path.length -1];
-								path.pop();
-								
-								let parent = path[path.length -1];
-								
-								if(!currentScope.response[parent]){
-									currentScope.response[parent] = {
-										multi: true,
-										children: []
-									};
-								}
-								
-								currentScope.response[parent].children.push({
-									child: child,
-									data: angular.copy(currentScope.response[step])
-								});
-								delete currentScope.response[step];
-							}
-						}
-						
 						//only triggered on refresh and if all is working
 						if(response.completed){
 							currentScope.showProgress = true;
@@ -122,6 +120,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 			if (error) {
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
+			delete currentScope.environmentId;
 			return cb();
 		});
 	}
@@ -266,7 +265,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 					'btn': 'danger',
 					'action': function () {
 						overlayLoading.show();
-						checkDeploymentStatus(currentScope, {rollback: 0}, (error, response) => {
+						checkDeploymentStatus(currentScope, {rollback: true}, (error, response) => {
 							if (error) {
 								overlayLoading.hide();
 								currentScope.displayAlert("danger", error.message);

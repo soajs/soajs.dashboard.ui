@@ -19,10 +19,7 @@ tmplServices.service('templateSrv', ['ngDataApi', '$routeParams', '$localStorage
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
-			'routeName': '/dashboard/templates',
-			'params': {
-				'fullList': true,
-			},
+			'routeName': '/dashboard/templates'
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {

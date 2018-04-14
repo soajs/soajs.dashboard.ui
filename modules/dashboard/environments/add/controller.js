@@ -136,6 +136,12 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 								if(!oneCustomReg.shared){
 									oneCustomReg.shared = false;
 								}
+								if(!oneCustomReg.plugged){
+									oneCustomReg.plugged = false;
+								}
+								if(!oneCustomReg.shared){
+									oneCustomReg.shared = false;
+								}
 								delete oneCustomReg.textMode;
 							});
 						}

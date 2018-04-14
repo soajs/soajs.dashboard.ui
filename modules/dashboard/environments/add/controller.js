@@ -138,14 +138,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			data: {
 				"code": wizard.gi.code, // required
 				"description": wizard.gi.description, // required
-				"domain": wizard.nginx.domain || "",
-				"apiPrefix": wizard.nginx.apiPrefix || "",
-				"sitePrefix": wizard.nginx.sitePrefix || "",
 				"sensitive": wizard.registry.sensitive || false,
 				"soajsFrmwrk": wizard.registry.soajsFrmwrk || false,
-				"cookiesecret": wizard.registry.cookiesecret || "",
-				"sessionName": wizard.registry.sessionName || "",
-				"sessionSecret": wizard.registry.sessionSecret || "",
 				"deployPortal": ($scope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName),
 				"deploy": wizard.deployment,
 				"templateId": wizard.template._id // required
@@ -154,6 +148,30 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				deploy: apiTemplateDeployInfo
 			}
 		};
+		
+		if(wizard.gi.domain){
+			output.data.domain = wizard.gi.domain;
+		}
+		
+		if(wizard.gi.apiPrefix){
+			output.data.apiPrefix = wizard.gi.apiPrefix;
+		}
+		
+		if(wizard.gi.sitePrefix){
+			output.data.sitePrefix = wizard.gi.sitePrefix;
+		}
+		
+		if(wizard.gi.cookiesecret){
+			output.data.cookiesecret = wizard.gi.cookiesecret;
+		}
+		
+		if(wizard.gi.sessionName){
+			output.data.sessionName = wizard.gi.sessionName;
+		}
+		
+		if(wizard.gi.sessionSecret){
+			output.data.sessionSecret = wizard.gi.sessionSecret;
+		}
 		
 		return output;
 	};

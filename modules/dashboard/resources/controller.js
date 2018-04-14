@@ -86,7 +86,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						var resourceConfig = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name];
 						
 						if (!resourceConfig.deploy) return;
+						console.log(oneResource)
+						console.log(resourceConfig);
 						if (!resourceConfig.options || !resourceConfig.options.recipe) return;
+						
 						
 						oneResource.canBeDeployed = true;
 						oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;

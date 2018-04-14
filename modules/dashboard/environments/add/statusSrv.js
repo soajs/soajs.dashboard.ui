@@ -2,10 +2,16 @@
 var statusServices = soajsApp.components;
 statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$compile', '$cookies', function (ngDataApi, $timeout, $modal, $localStorage, $compile, $cookies) {
 	
+	function displayStickError(currentScope, error){
+		currentScope.statusType = "danger";
+		currentScope.statusMsg = error.message;
+	}
+	
 	function addEnvironment(currentScope){
 		currentScope.statusType = "info";
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
-		currentScope.showProgress = false;
+		currentScope.showProgress = true;
+		currentScope.response = {};
 		
 		let options = {
 			method: 'post',
@@ -18,7 +24,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			if(error){
-				currentScope.displayAlert('danger', error.message);
+				displayStickError(currentScope, error);
 				currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 			}
 			else{
@@ -26,7 +32,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				//call check status
 				checkEnvironmentStatus(currentScope, null, (error) => {
 					if (error) {
-						currentScope.displayAlert('danger', error);
+						displayStickError(currentScope, error);
 						currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 					}
 				});
@@ -56,7 +62,6 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 		let autoRefreshTimeoutProgress = $timeout(() => {
 			checkDeploymentStatus(currentScope, params, (error, response) => {
 				if (error) {
-					currentScope.showProgress = false;
 					return cb(error);
 				}
 				else {
@@ -135,7 +140,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 			getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
 				overlayLoading.hide();
 				if (error) {
-					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					displayStickError(currentScope, error);
 				}
 				else {
 					$localStorage.environments = response;
@@ -249,7 +254,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 						}, function (error) {
 							overlayLoading.hide();
 							if (error) {
-								currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								displayStickError(currentScope, error);
 							}
 							else {
 								currentScope.showProgress = true;
@@ -265,16 +270,16 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 					'btn': 'danger',
 					'action': function () {
 						overlayLoading.show();
-						checkDeploymentStatus(currentScope, {rollback: true}, (error, response) => {
+						checkDeploymentStatus(currentScope, {rollback: 1}, (error, response) => {
 							if (error) {
 								overlayLoading.hide();
-								currentScope.displayAlert("danger", error.message);
+								displayStickError(currentScope, error);
 							}
 							
 							rollbackEnvironment(currentScope, (error) => {
 								overlayLoading.hide();
 								if (error) {
-									currentScope.displayAlert("danger", error.message);
+									displayStickError(currentScope, error);
 								}
 								else {
 									currentScope.status = {};
@@ -344,14 +349,14 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 			//resume deployment
 			checkDeploymentStatus(currentScope, {'resume': true}, (error) => {
 				if (error) {
-					currentScope.displayAlert('danger', error);
+					displayStickError(currentScope, error);
 					currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 				}
 				else{
 					//print status
 					checkEnvironmentStatus(currentScope, null, (error) => {
 						if (error) {
-							currentScope.displayAlert('danger', error);
+							displayStickError(currentScope, error);
 							currentScope.form.actions = renderButtonDisplay(currentScope, 3);
 						}
 					});

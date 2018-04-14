@@ -38,7 +38,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	};
 	
 	$scope.chooseTemplate = function (template) {
-		templateSrv.chooseTemplate($scope, template);
+		templateSrvDeploy.chooseTemplate($scope, template);
 	};
 	
 	$scope.generalInfo = function () {
@@ -191,7 +191,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		if(wizard.gi.tKeyPass){
 			output.data.tKeyPass = wizard.gi.tKeyPass;
 		}
-		
 		return output;
 	};
 	

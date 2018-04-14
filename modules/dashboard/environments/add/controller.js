@@ -130,6 +130,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 							});
 						}
 					}
+					if(stepName === 'custom_registry'){
+						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0){
+							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneCustomReg) => {
+								if(!oneCustomReg.shared){
+									oneCustomReg.shared = false;
+								}
+								delete oneCustomReg.textMode;
+							});
+						}
+					}
 				}
 			}
 		}

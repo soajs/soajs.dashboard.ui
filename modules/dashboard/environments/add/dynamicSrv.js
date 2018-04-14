@@ -740,6 +740,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				if (currentScope.form && currentScope.form.formData) {
 					currentScope.form.formData = {};
 				}
+				currentScope.referringStep = 'dynamic';
 				currentScope.nextStep();
 			}
 			else {

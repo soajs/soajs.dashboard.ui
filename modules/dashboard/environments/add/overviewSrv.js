@@ -31,6 +31,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 						if (currentScope.form && currentScope.form.formData) {
 							currentScope.form.formData = {};
 						}
+						currentScope.referringStep = 'overview';
 						currentScope.previousStep();
 					}
 				}

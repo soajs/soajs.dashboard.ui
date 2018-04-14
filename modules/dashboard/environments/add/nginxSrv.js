@@ -25,8 +25,14 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		}
 		
 		if (!nginxResourceExists) {
-			currentScope.nextStep();
-		} else {
+			if(currentScope.referringStep === 'overview'){
+				currentScope.previousStep();
+			}
+			else{
+				currentScope.nextStep();
+			}
+		}
+		else {
 			
 			overlayLoading.show();
 			let configuration = angular.copy(environmentsConfig.form.add.step6.entries);

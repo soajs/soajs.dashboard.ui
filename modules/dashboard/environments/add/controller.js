@@ -154,7 +154,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			data: {
 				"code": wizard.gi.code, // required
 				"description": wizard.gi.description, // required
-				"sensitive": wizard.registry.sensitive || false,
+				"sensitive": (wizard.registry && wizard.registry.sensitive),
 				"deployPortal": ($scope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName),
 				"deploy": wizard.deployment,
 				"templateId": wizard.template._id // required
@@ -164,31 +164,31 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			}
 		};
 		
-		if(wizard.nginx.domain){
+		if(wizard.nginx && wizard.nginx && wizard.nginx.domain){
 			output.data.domain = wizard.nginx.domain;
 		}
 		
-		if(wizard.nginx.apiPrefix){
+		if(wizard.nginx && wizard.nginx.apiPrefix){
 			output.data.apiPrefix = wizard.nginx.apiPrefix;
 		}
 		
-		if(wizard.nginx.sitePrefix){
+		if(wizard.nginx && wizard.nginx.sitePrefix){
 			output.data.sitePrefix = wizard.nginx.sitePrefix;
 		}
 		
-		if(wizard.registry.cookiesecret){
+		if(wizard.registry && wizard.registry.cookiesecret){
 			output.data.cookiesecret = wizard.registry.cookiesecret;
 		}
 		
-		if(wizard.registry.sessionName){
+		if(wizard.registry && wizard.registry.sessionName){
 			output.data.sessionName = wizard.registry.sessionName;
 		}
 		
-		if(wizard.registry.sessionSecret){
+		if(wizard.registry && wizard.registry.sessionSecret){
 			output.data.sessionSecret = wizard.registry.sessionSecret;
 		}
 		
-		if(wizard.registry.tKeyPass){
+		if(wizard.registry && wizard.registry.tKeyPass){
 			output.data.tKeyPass = wizard.registry.tKeyPass;
 		}
 		

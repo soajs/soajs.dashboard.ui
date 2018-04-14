@@ -155,7 +155,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				"code": wizard.gi.code, // required
 				"description": wizard.gi.description, // required
 				"sensitive": wizard.registry.sensitive || false,
-				"soajsFrmwrk": wizard.registry.soajsFrmwrk || false,
 				"deployPortal": ($scope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName),
 				"deploy": wizard.deployment,
 				"templateId": wizard.template._id // required
@@ -187,6 +186,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		
 		if(wizard.gi.sessionSecret){
 			output.data.sessionSecret = wizard.gi.sessionSecret;
+		}
+		
+		if(wizard.gi.tKeyPass){
+			output.data.tKeyPass = wizard.gi.tKeyPass;
 		}
 		
 		return output;

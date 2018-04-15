@@ -178,57 +178,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 				
-				function reformatSourceCodeForCicd(record) {
-					if(record.configuration && record.configuration.repo){
-						let selectedRepo = record.configuration.repo;
-						if(selectedRepo === '-- Leave Empty --'){
-							record.configuration.repo = "";
-							record.configuration.branch = "";
-						}else{
-							$scope.configRepos.config.forEach(function (eachConf) {
-								if(eachConf.name === selectedRepo){
-									record.configuration.commit = eachConf.configSHA;
-									record.configuration.owner = eachConf.owner;
-								}
-							});
-						}
-					}
-					
-					if(record.custom && record.custom.repo){
-						let selectedRepoComposed = record.custom.repo;
-						let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
-						
-						let selectedRepo = decoded.name;
-						let subName = decoded.subName;
-						
-						record.custom.repo = selectedRepo; // save clear value
-						
-						if(selectedRepo === '-- Leave Empty --'){
-							record.custom.repo = "";
-							record.custom.branch = "";
-						}else {
-							$scope.configRepos.customType.forEach(function (eachConf) {
-								if (eachConf.name === selectedRepo) {
-									record.custom.owner = eachConf.owner;
-									record.custom.subName = subName; // for multi
-									
-									if (eachConf.configSHA && typeof eachConf.configSHA === 'object') { // for multi
-										eachConf.configSHA.forEach(function (eachConfig) {
-											if (eachConfig.contentName === subName) {
-												record.custom.commit = eachConfig.sha;
-											}
-										});
-									} else {
-										record.custom.commit = eachConf.configSHA;
-									}
-								}
-							});
-						}
-					}
-					
-					return record;
-				}
-				
 				$scope.save = function (cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
@@ -324,7 +273,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 						deployOptions.custom.type = 'resource';
 						
-						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						
 						if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
@@ -394,7 +343,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						
 						deployOptions.custom.type = 'resource';
 						
-						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						
 						if ($scope.options.formAction === 'add') {
@@ -474,7 +423,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						
 						$scope.formData.deployOptions.custom.type = 'resource';
 						
-						$scope.formData.deployOptions.custom.sourceCode = reformatSourceCodeForCicd($scope.formData.deployOptions.sourceCode);
+						$scope.formData.deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd($scope.formData.deployOptions.sourceCode);
 						delete $scope.formData.deployOptions.sourceCode;
 						
 						var rebuildOptions = angular.copy($scope.formData.deployOptions.custom);

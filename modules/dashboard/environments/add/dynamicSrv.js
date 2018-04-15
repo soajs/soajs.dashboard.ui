@@ -701,6 +701,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									"type": "custom"
 								};
 								
+								if(imfv.deployOptions.sourceCode){
+									imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
+								}
+								
 								if(imfv.deployOptions.deployConfig.replication.replicas){
 									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
 								}
@@ -708,6 +712,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								imfv.deploy.options.custom.name = key;
 								imfv.deployOptions.name = key;
 								imfv.deployOptions.custom.type = 'resource';
+								
+								//clean up any attached ui
+								if(imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo){
+									imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
+								}
 							}
 							else {
 								delete imfv.deployOptions;

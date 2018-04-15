@@ -60,6 +60,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 		});
 		
+		context.decodeRepoNameAndSubName = decodeRepoNameAndSubName;
+		
 		context.fetchBranches = function (confOrCustom) {
 			let selectedRepo, subNameInCaseMulti;
 			if (confOrCustom === 'conf') {
@@ -613,6 +615,57 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					oneEnv.selected = true;
 				});
 			}
+		};
+		
+		context.reformatSourceCodeForCicd = function(record) {
+			if(record.configuration && record.configuration.repo){
+				let selectedRepo = record.configuration.repo;
+				if(selectedRepo === '-- Leave Empty --'){
+					record.configuration.repo = "";
+					record.configuration.branch = "";
+				}else{
+					context.configRepos.config.forEach(function (eachConf) {
+						if(eachConf.name === selectedRepo){
+							record.configuration.commit = eachConf.configSHA;
+							record.configuration.owner = eachConf.owner;
+						}
+					});
+				}
+			}
+			
+			if(record.custom && record.custom.repo){
+				let selectedRepoComposed = record.custom.repo;
+				let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
+				
+				let selectedRepo = decoded.name;
+				let subName = decoded.subName;
+				
+				record.custom.repo = selectedRepo; // save clear value
+				
+				if(selectedRepo === '-- Leave Empty --'){
+					record.custom.repo = "";
+					record.custom.branch = "";
+				}else {
+					context.configRepos.customType.forEach(function (eachConf) {
+						if (eachConf.name === selectedRepo) {
+							record.custom.owner = eachConf.owner;
+							record.custom.subName = subName; // for multi
+							
+							if (eachConf.configSHA && typeof eachConf.configSHA === 'object') { // for multi
+								eachConf.configSHA.forEach(function (eachConfig) {
+									if (eachConfig.contentName === subName) {
+										record.custom.commit = eachConfig.sha;
+									}
+								});
+							} else {
+								record.custom.commit = eachConf.configSHA;
+							}
+						}
+					});
+				}
+			}
+			
+			return record;
 		};
 		
 		context.fillForm();

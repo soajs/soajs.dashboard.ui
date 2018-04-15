@@ -337,6 +337,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 				actions: []
 			});
 		}
+		currentScope.form.actions = [];
 		currentScope.statusType = "info";
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = true;

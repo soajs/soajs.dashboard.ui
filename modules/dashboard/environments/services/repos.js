@@ -397,6 +397,12 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			openUpgradeModal(currentScope);
 		}
 		else{
+			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})){
+				var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
+				var envPlatform = envDeployer.selected.split('.')[1];
+				var isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
+			}
+			
 			var deployService = $modal.open({
 				templateUrl: 'deployService.tmpl',
 				size: 'lg',

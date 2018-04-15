@@ -175,13 +175,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 	}
 	
 	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes) {
-		if(isKubernetes === undefined){
-			//re-calculate isKubernetes
-			var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-			var envPlatform = envDeployer.selected.split('.')[1];
-			isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
-		}
-		
 		$scope.controllerScope = currentScope;
 		$scope.isKubernetes = isKubernetes;
 		$scope.deployNewService = true;

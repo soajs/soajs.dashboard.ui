@@ -306,13 +306,14 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 		};
 		
 		$scope.save = function (cb) {
+			$scope.$valid = true;
 			if(!$scope.formData.name || $scope.formData.name.trim() === ''){
 				$window.alert('Provide a name for custom registry entry!');
 				$scope.$valid = false;
 				return;
 			}
 			
-			if($scope.textMode && (!$scope.formData.value || $scope.formData.value.trim() === '')){
+			if(!$scope.formData.value || ($scope.textMode && $scope.formData.value.trim() === '')){
 				$window.alert('Provide a value for custom registry entry:', $scope.formData.name);
 				$scope.$valid = false;
 				return;
@@ -378,8 +379,7 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 					});
 				}
 				
-				$scope.$valid = true;
-				if(saveMethod && typeof saveMethod === 'function'){
+				if($scope.$valid && saveMethod && typeof saveMethod === 'function'){
 					saveMethod(saveOptions, cb);
 				}
 			}

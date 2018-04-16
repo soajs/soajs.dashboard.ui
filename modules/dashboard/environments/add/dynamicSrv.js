@@ -215,23 +215,28 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					let entriesCount = 0;
 					for (let secretName in secretEntries) {
 						let oneSecret = secretEntries[secretName];
 						oneSecret.scope.form.do({
 							'type': 'submit',
 							'action': (formData) => {
 								oneSecret.scope.save(formData, (imfv) => {
-									imfv.name = secretName; //force the name back as it was
-									oneSecret = imfv;
-									delete oneSecret.scope;
-									currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
+									if(oneSecret.scope.$valid){
+										imfv.name = secretName; //force the name back as it was
+										oneSecret = imfv;
+										delete oneSecret.scope;
+										currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
+										entriesCount++;
+										if(entriesCount === Object.keys(secretEntries).length){
+											//trigger next here
+											currentScope.next();
+										}
+									}
 								});
 							}
 						});
 					}
-					
-					//trigger next here
-					currentScope.next();
 				};
 				
 				overlayLoading.show();

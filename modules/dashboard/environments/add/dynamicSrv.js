@@ -107,6 +107,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						else{
 							record['secretData']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
+							if(!record.textMode){
+								record['secretData'] = JSON.parse(record['secretData']);
+							}
 						}
 					}
 					

@@ -85,7 +85,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		}
 	};
 	
-	$scope.mapUserInputsToOverview = function () {
+	$scope.mapUserInputsToOverview = function (fromOverview) {
 		
 		let wizard = $scope.wizard;
 		
@@ -126,6 +126,17 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 									oneRepoImfv.options.custom.version = parseInt(oneRepoImfv.options.custom.version);
 									delete oneRepoImfv.serviceName;
 									delete oneRepoImfv.version;
+								}
+								
+								// add recipe name from id, only on overview
+								if(fromOverview && oneRepoImfv.options.recipe){
+									for(let type in $scope.recipes){
+										$scope.recipes[type].forEach((oneRecipe) =>{
+											if(oneRecipe._id === oneRepoImfv.options.recipe){
+												oneRepoImfv.options.recipeName = oneRecipe.name;
+											}
+										});
+									}
 								}
 							});
 						}

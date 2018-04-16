@@ -1,56 +1,234 @@
 <script type="text/ng-template" id="custom_registry.html">
-	<label>{{obj.name}}</label>
-	<label>{{obj.locked}}</label>
-	<label>{{obj.shared}}</label>
-	<label>{{obj.value}}</label>
+	<br>
+	<div class="addEnvTable">
+		<table>
+			<tbody>
+				<tr>
+					<td><label>Name</label></td>
+					<td><span>{{obj.name}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Locked</label></td>
+					<td><span>{{obj.locked}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Shared</label></td>
+					<td><span>{{obj.shared}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Value</label></td>
+					<td><span>{{obj.value}}</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div><br>
 </script>
 
 <script type="text/ng-template" id="secrets.html">
-	<label>{{obj.name}}</label>
-	<label>{{obj.namespace}}</label>
-	<label>{{obj.type}}</label>
-	<label>{{obj.data}}</label>
+	<br>
+	<div class="addEnvTable">
+		<table>
+			<tbody>
+				<tr>
+					<td><label>Name</label></td>
+					<td><span>{{obj.name}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Namespace</label></td>
+					<td><span>{{obj.namespace}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Type</label></td>
+					<td><span>{{obj.type}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Data</label></td>
+					<td><span>{{obj.data}}</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br>
 </script>
 
 <script type="text/ng-template" id="resources.html">
-	<label>{{resource.name}}</label>
-	<label>{{resource.type}}</label>
-	<label>{{resource.category}}</label>
-	<label>{{resource.locked}}</label>
-	<label>{{resource.shared}}</label>
-	<label>{{resource.plugged}}</label>
-	<label>{{resource.config}}</label>
+	<br>
+	<div class="addEnvTable">
+		<table>
+			<tbody>
+				<tr>
+					<td><label>Name</label></td>
+					<td><span>{{resource.name}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Type</label></td>
+					<td><span>{{resource.type}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Category</label></td>
+					<td><span>{{resource.category}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Locked</label></td>
+					<td><span>{{resource.locked}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Shared</label></td>
+					<td><span>{{resource.shared}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Plugged</label></td>
+					<td><span>{{resource.plugged}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Config</label></td>
+					<td><span>{{resource.config}}</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br>
 </script>
 
+
 <script type="text/ng-template" id="productization.html">
-	<label>{{product.code}}</label>
-	<label>{{product.name}}</label>
-	<label>{{product.description}}</label>
-	<label>{{product.packages}}</label>
+	<table width="100%">
+		<thead>
+			<tr>
+				<th width="50%">Name</th>
+				<th width="50%">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
+				<td colspan="2">
+					<table width="100%">
+						<tr>
+							<td width="50%">{{product.name}} [ {{product.code}} ]</td>
+							<td width="50%">{{product.description}}</td>
+						</tr>
+						<tr ng-if="product.packages.length > 0">
+							<td colspan="2">
+								<table width="100%">
+									<caption>Packages:</caption>
+									<tbody>
+										<tr ng-repeat="pack in product.packages">
+											<td width="50%">{{pack.name}} [ {{pack.code}} ]</td>
+											<td width="50%">{{pack.description}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </script>
 
 <script type="text/ng-template" id="tenant.html">
-	<label>{{tenant.code}}</label>
-	<label>{{tenant.name}}</label>
-	<label>{{tenant.description}}</label>
-	<label>{{tenant.applications}}</label>
+	<table width="100%">
+		<thead>
+			<tr>
+				<th width="50%">Name</th>
+				<th width="50%">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
+				<td colspan="2">
+					<table width="100%">
+						<tr>
+							<td width="50%">{{tenant.name}} [ {{tenant.code}} ]</td>
+							<td width="50%">{{tenant.description}}</td>
+						</tr>
+						<tr ng-if="tenant.applications.length > 0">
+							<td colspan="2">
+								<table width="100%">
+									<caption>Applications:</caption>
+									<tbody>
+										<tr ng-repeat="app in tenant.applications">
+											<td width="50%">{{app.package}}</td>
+											<td width="50%">{{app.description}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </script>
 
 <script type="text/ng-template" id="repo.html">
-	<label>{{repo.name}}</label>
-	<label>{{repo.options}}</label>
-	<label>{{repo.deploy}}</label>
-	<label>{{repo.type}}</label>
-	<!--THERES IS MORE-->
-</script>
-
-<script type="text/ng-template" id="cluster.html">
-	{{cluster}}
+	<br>
+	<div class="addEnvTable">
+		<table>
+			<tbody>
+				<tr>
+					<td><label>Deploy</label></td>
+					<td><span>{{repo.deploy}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Type</label></td>
+					<td><span>{{repo.type}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Recipe</label></td>
+					<td><span>{{repo.options.recipeName}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Replication Mode</label></td>
+					<td><span>{{repo.options.deployConfig.replication.mode}}</span></td>
+				</tr>
+				<tr ng-if="repo.options.deployConfig.replication.replicas">
+					<td><label>Replicas</label></td>
+					<td><span>{{repo.options.deployConfig.replication.replicas}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Memory Limit</label></td>
+					<td><span>{{repo.options.deployConfig.memoryLimit}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Owner</label></td>
+					<td><span>{{repo.options.gitSource.owner}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Repo</label></td>
+					<td><span>{{repo.options.gitSource.repo}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Branch</label></td>
+					<td><span>{{repo.options.gitSource.branch}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Commit</label></td>
+					<td><span>{{repo.options.gitSource.commit}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Custom Name</label></td>
+					<td><span>{{repo.options.custom.name}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Type</label></td>
+					<td><span>{{repo.options.custom.type}}</span></td>
+				</tr>
+				<tr>
+					<td><label>Source Code</label></td>
+					<td><span>{{repo.options.custom.sourceCode}}</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br>
 </script>
 
 <accordion close-others=false>
 	<accordion-group is-open="true">
-		<accordion-heading>Data</accordion-heading>
+		<accordion-heading>Environment Details</accordion-heading>
 		
 		<div class="addEnvTable">
 			<table>
@@ -63,114 +241,93 @@
 						<td><label>Description</label></td>
 						<td><span>{{overview.data.description}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="overview.data.domain">
 						<td><label>Domain</label></td>
 						<td><span>{{overview.data.domain}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="overview.data.apiPrefix">
 						<td><label>Api Prefix</label></td>
 						<td><span>{{overview.data.apiPrefix}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="overview.data.sitePrefix">
 						<td><label>Site Prefix</label></td>
 						<td><span>{{overview.data.sitePrefix}}</span></td>
 					</tr>
 					<tr>
 						<td><label>Sensitive</label></td>
-						<td><span>{{overview.data.sensitive}}</span></td>
+						<td><span>{{overview.data.sensitive?true:false}}</span></td>
 					</tr>
 					<tr>
 						<td><label>Soajs Framework</label></td>
-						<td><span>{{overview.data.soajsFrmwrk}}</span></td>
+						<td><span>{{overview.data.soajsFrmwrk?true:false}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="overview.data.cookiesecret">
 						<td><label>Cookie Secret</label></td>
 						<td><span>{{overview.data.cookiesecret}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="overview.data.sessionName">
 						<td><label>Session Name</label></td>
 						<td><span>{{overview.data.sessionName}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="overview.data.sessionSecret">
 						<td><label>Session Secret</label></td>
 						<td><span>{{overview.data.sessionSecret}}</span></td>
-					</tr>
-					<tr>
-						<td><label>Deployment</label></td>
-						<td><span>{{overview.data.deployment}}</span></td>
 					</tr>
 					<tr>
 						<td><label>Deploy Portal</label></td>
 						<td><span>{{overview.data.deployPortal}}</span></td>
 					</tr>
 					<tr>
-						<td><label>Template ID</label></td>
-						<td><span>{{overview.data.templateId}}</span></td>
+						<td><label>Template</label></td>
+						<td><span>{{wizard.template.name}}</span></td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 	</accordion-group>
 	
-	
 	<accordion-group is-open="true">
 		<accordion-heading>Template</accordion-heading>
 		
-		<!--<div class="addEnvTable">-->
-			<!--<table>-->
-				<!--<tbody>-->
-					<!--<tr>-->
-						<!--<td><label>xxxx</label></td>-->
-						<!--<td><span>uuuuu</span></td>-->
-					<!--</tr>-->
-				<!--</tbody>-->
-			<!--</table>-->
-		<!--</div>-->
-		
 		<div ng-repeat="deployMain in ['database','deployments']">
-			<h2>{{deployMain}}</h2>
-			----------------------------------
 			<div ng-repeat="(stepKey, stepData) in overview.template.deploy[deployMain]">
-				<h3>{{stepKey}}</h3>
 				<div ng-repeat="(stageKey, stageData) in overview.template.deploy[deployMain][stepKey]">
-					<h4>{{stageKey}}</h4>
-					-----
-					<div ng-if="stageKey ==='custom_registry' || stageKey ==='secrets'">
-						<ul>
-							<li ng-repeat="obj in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="stageKey+'.html'"></li>
-						</ul>
-					</div>
 					
-					<div ng-if="stageKey ==='productization'">
-						<ul>
-							<li ng-repeat="product in wizard.template.content.productization.data" ng-include="'productization.html'"></li>
-						</ul>
-					</div>
-					
-					<div ng-if="stageKey ==='tenant'">
-						<ul>
-							<li ng-repeat="tenant in wizard.template.content.tenant.data" ng-include="'tenant.html'"></li>
-						</ul>
-					</div>
-					
-					<div ng-if="stageKey.includes('.resources')">
-						<ul>
-							<li ng-repeat="resource in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'resources.html'"></li>
-						</ul>
-					</div>
-					
-					<div ng-if="stageKey.includes('.repo')">
-						<ul>
-							<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
-						</ul>
-					</div>
-					
-					<div ng-if="stageKey.includes('.cluster')">
-						<ul>
-							<li ng-repeat="cluster in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'cluster.html'"></li>
-						</ul>
-					</div>
-				
+					<accordion-group is-open="true">
+						<accordion-heading ng-if="!stageKey.includes('.repo')">{{stageKey}}</accordion-heading>
+						<accordion-heading ng-if="stageKey.includes('.repo')">{{overview.template.deploy[deployMain][stepKey][stageKey].imfv[0].name==='controller'?'SOAJS Api Gateway':overview.template.deploy[deployMain][stepKey][stageKey].imfv[0].name}}</accordion-heading>
+						
+						<div ng-if="stageKey ==='custom_registry' || stageKey ==='secrets'">
+							<ul class="nonBulletPoint">
+								<li ng-repeat="obj in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="stageKey+'.html'"></li>
+							</ul>
+						</div>
+						
+						<div ng-if="stageKey ==='productization'">
+							<ul class="nonBulletPoint">
+								<li ng-repeat="product in wizard.template.content.productization.data" ng-include="'productization.html'"></li>
+							</ul>
+						</div>
+						
+						<div ng-if="stageKey ==='tenant'">
+							<ul class="nonBulletPoint">
+								<li ng-repeat="tenant in wizard.template.content.tenant.data" ng-include="'tenant.html'"></li>
+							</ul>
+						</div>
+						
+						<div ng-if="stageKey.includes('.resources')">
+							<ul class="nonBulletPoint">
+								<li ng-repeat="resource in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'resources.html'"></li>
+							</ul>
+						</div>
+						
+						<div ng-if="stageKey.includes('.repo')">
+							<ul class="nonBulletPoint">
+								<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
+							</ul>
+						</div>
+					</accordion-group>
+					<br>
 				</div>
 			</div>
 		</div>

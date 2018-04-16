@@ -162,3 +162,7 @@ input:checked + .buttonSlider:before {
 .buttonSlider.round:before {
     border-radius: 50%;
 }
+
+.nonBulletPoint {
+    list-style-type: none;
+}

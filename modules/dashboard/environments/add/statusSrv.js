@@ -298,7 +298,7 @@ statusServices.service('statusSrv', ['ngDataApi', '$timeout', '$modal', '$localS
 	}
 	
 	function mapUserInputsToOverview(currentScope) {
-		return currentScope.mapUserInputsToOverview();
+		return currentScope.mapUserInputsToOverview(false);
 	}
 	
 	function go(currentScope){

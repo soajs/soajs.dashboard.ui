@@ -7,11 +7,12 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function mapUserInputsToOverview(currentScope) {
-		return currentScope.mapUserInputsToOverview();
+		return currentScope.mapUserInputsToOverview(true);
 	}
 	
 	function go(currentScope) {
 		currentScope.mapStorageToWizard($localStorage.addEnv);
+		
 		currentScope.overview = mapUserInputsToOverview(currentScope);
 		
 		overlayLoading.show();

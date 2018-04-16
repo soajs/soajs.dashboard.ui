@@ -82,7 +82,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				
 				overlayLoading.show();
 				let entriesNames = Object.keys(ciEntries);
+				currentScope.loadingDynamicSection = true;
 				buildMyForms(0, () => {
+					currentScope.loadingDynamicSection = false;
 					overlayLoading.hide();
 				});
 			}
@@ -243,9 +245,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				};
 				
 				overlayLoading.show();
+				currentScope.loadingDynamicSection = true;
 				let entriesNames = Object.keys(secretEntries);
 				listNamespaces ((currentScope.wizard.deployment.selectedDriver === 'kubernetes'), () => {
 					buildMyForms(0, () => {
+						currentScope.loadingDynamicSection = false;
 						overlayLoading.hide();
 					});
 				});
@@ -518,8 +522,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				};
 				
 				overlayLoading.show();
+				currentScope.loadingDynamicSection = true;
 				let entriesNames = Object.keys(repoEntries);
 				buildMyForms(0, () => {
+					currentScope.loadingDynamicSection = false;
 					overlayLoading.hide();
 				});
 			}
@@ -773,7 +779,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				let entriesNames = Object.keys(resourceEntries);
 				
 				overlayLoading.show();
+				currentScope.loadingDynamicSection = true;
 				buildMyForms(0, () => {
+					currentScope.loadingDynamicSection = false;
 					overlayLoading.hide();
 				});
 			}
@@ -795,7 +803,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	function go(currentScope) {
-		
+		currentScope.loadingDynamicSection = true;
 		currentScope.mapStorageToWizard($localStorage.addEnv);
 		
 		let stack = [];

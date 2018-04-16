@@ -103,7 +103,9 @@
 		    <div ng-if="notsupported">
 			    <alert type="danger">The selected Driver is not supported, please choose another.</alert>
 		    </div>
-	        <div ng-if="!notsupported" class="form" ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>
+		    <form ng-if="!notsupported" name="addEditResource" id="addEditResource" ng-submit="addEditResource.$valid && onSubmit()">
+	            <div class="form" ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>
+		    </form>
 	    </div>
 	    <div class="modal-footer">
 		    <span ng-if="options.allowEdit">

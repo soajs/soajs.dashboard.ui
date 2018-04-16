@@ -4,7 +4,10 @@
 			<td>
 				<a href="" ng-click="showHide(service)">
 					<span class="icon icon-{{service.icon || 'plus'}}"></span>
-				</a>{{service['name']|uppercase}}<span>[ {{service['port']}} ]</span>
+				</a>
+				<span ng-show="service['name'] !== 'controller'"><b style="margin:0;">{{service['name']|uppercase}}</b></span>
+				<span ng-show="service['name'] === 'controller'"><b style="margin:0;">SOAJS API GATEWAY</b></span>
+				<span>[ {{service['port']}} ]</span>
 			</td>
 			<td>
 				<span ng-if="service['group']"><b>{{translation.serviceGroup[LANG]}}</b>:<span>{{service['group'] || 'Misc.'}}</span></span>

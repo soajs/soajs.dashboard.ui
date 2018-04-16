@@ -49,29 +49,35 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					let entriesCount = 0;
 					for (let ci in ciEntries) {
 						let customRegistry = ciEntries[ci];
 						customRegistry.scope.save();
 						
-						//map the values back to custom registry
-						let imfv = angular.copy(customRegistry.scope.formData);
-						imfv.name = ci; //force the name back as it was
-						if (!imfv.textMode) {
-							try {
-								imfv.value = JSON.parse(imfv.value);
+						if(customRegistry.scope.$valid){
+							//map the values back to custom registry
+							let imfv = angular.copy(customRegistry.scope.formData);
+							imfv.name = ci; //force the name back as it was
+							if (!imfv.textMode) {
+								try {
+									imfv.value = JSON.parse(imfv.value);
+								}
+								catch (e) {
+									$window.alert("The content of the custom registry provided is invalid!");
+									return false;
+								}
 							}
-							catch (e) {
-								$window.alert("The content of the custom registry provided is invalid!");
-								return false;
+							customRegistry = imfv;
+							delete customRegistry.scope;
+							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
+							entriesCount++;
+							
+							//trigger next here
+							if(entriesCount === Object.keys(ciEntries).length){
+								currentScope.next();
 							}
 						}
-						customRegistry = imfv;
-						delete customRegistry.scope;
-						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
 					}
-					
-					//trigger next here
-					currentScope.next();
 				};
 				
 				overlayLoading.show();

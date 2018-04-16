@@ -11,11 +11,6 @@ function configureRouteNavigation(navigation, scope) {
 				load: ['$q', '$rootScope', function ($q, $rootScope) {
 					var deferred = $q.defer();
 					let scriptLocation = navigationEntry.scripts;
-					for(let i =0; i < scriptLocation.length; i++){
-						scriptLocation[i] += (scriptLocation[i].indexOf("?") !== -1) ? "&" : "?" ;
-						scriptLocation[i] += "ts=" + (new Date()).getTime();
-					}
-					
 					require(scriptLocation, function () {
 						$rootScope.$apply(function () {
 							deferred.resolve();

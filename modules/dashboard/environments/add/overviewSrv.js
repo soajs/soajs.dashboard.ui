@@ -17,14 +17,13 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		currentScope.isObjEmpty = function (obj) {
 			return (!obj || Object.keys(obj).length === 0);
-		}
+		};
 		
 		overlayLoading.show();
-		let configuration = angular.copy(environmentsConfig.form.add.step6.entries);
 		
 		let options = {
 			timeout: $timeout,
-			entries: configuration,
+			entries: [],
 			name: 'addEnvironment',
 			label: translation.addNewEnvironment[LANG],
 			actions: [

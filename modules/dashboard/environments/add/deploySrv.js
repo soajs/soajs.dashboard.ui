@@ -206,7 +206,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		overlayLoading.show();
 		currentScope.previousPlatformDeployment = false;
-		let configuration = angular.copy(environmentsConfig.form.add.step2.entries);
+		let configuration = angular.copy(environmentsConfig.form.add.deploy.entries);
 		
 		let options = {
 			timeout: $timeout,

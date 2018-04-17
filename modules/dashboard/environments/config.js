@@ -90,7 +90,7 @@ var environmentsConfig = {
 	
 	form: {
 		add: {
-			step2: {
+			deploy: {
 				"entries": [
 					{
 						"name": "deployment",
@@ -98,7 +98,7 @@ var environmentsConfig = {
 					}
 				]
 			},
-			step3: {
+			registry: {
 				"entries": [
 					{
 						"name": "registry",
@@ -106,7 +106,7 @@ var environmentsConfig = {
 					}
 				]
 			},
-			step6: {
+			nginx: {
 				"entries": [
 					{
 						"name": "nginx",

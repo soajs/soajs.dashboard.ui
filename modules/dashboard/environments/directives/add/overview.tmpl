@@ -13,7 +13,7 @@
 						<td><span>{{obj.shared?true:false}}</span></td>
 					</tr>
 					<tr>
-						<td><label>Value</label></td>
+						<td valign="top"><label>Value</label></td>
 						<td style="padding: 10px"><span><pre><code class="javascript">{{obj.value | json}}</code></pre></span></td>
 					</tr>
 				</tbody>
@@ -32,7 +32,7 @@
 					<td><label>Name</label></td>
 					<td><span>{{obj.name}}</span></td>
 				</tr>
-				<tr>
+				<tr ng-if="obj.namespace">
 					<td><label>Namespace</label></td>
 					<td><span>{{obj.namespace}}</span></td>
 				</tr>
@@ -42,7 +42,10 @@
 				</tr>
 				<tr>
 					<td><label>Data</label></td>
-					<td><span>{{obj.data}}</span></td>
+					<td>
+						<span ng-if="obj.datatype !=='file'">****************</span>
+						<span ng-if="obj.datatype ==='file'"><span class="icon icon-file-text"></span> Uploaded File</span>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -55,10 +58,6 @@
 	<div class="addEnvTable">
 		<table>
 			<tbody>
-				<tr>
-					<td><label>Name</label></td>
-					<td><span>{{resource.name}}</span></td>
-				</tr>
 				<tr>
 					<td><label>Type</label></td>
 					<td><span>{{resource.type}}</span></td>
@@ -80,7 +79,7 @@
 					<td><span>{{resource.plugged?true:false}}</span></td>
 				</tr>
 				<tr ng-if="resource.config">
-					<td><label>Config</label></td>
+					<td valign="top"><label>Config</label></td>
 					<td style="padding: 10px"><span><pre><code class="javascript">{{resource.config | json}}</code></pre></span></td>
 				</tr>
 			</tbody>
@@ -88,7 +87,6 @@
 	</div>
 	<br>
 </script>
-
 
 <script type="text/ng-template" id="productization.html">
 	<table width="100%">
@@ -212,7 +210,7 @@
 					<td><span>{{repo.options.custom.type}}</span></td>
 				</tr>
 				<tr ng-if="repo.options.custom.sourceCode">
-					<td><label>Source Code</label></td>
+					<td valign="top"><label>Source Code</label></td>
 					<td style="padding: 10px"><span><pre><code class="javascript">{{repo.options.custom.sourceCode | json}}</code></pre></span></td>
 				</tr>
 			</tbody>
@@ -288,10 +286,10 @@
 							</ul>
 						</div>
 						
-						<div ng-if="stageKey ==='secrets'">
+						<div ng-if="stageKey.includes('secrets.')">
 							<accordion-heading>Secrets</accordion-heading>
 							<ul class="nonBulletPoint">
-								<li ng-repeat="obj in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="stageKey+'.html'"></li>
+								<li ng-repeat="obj in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'secrets.html'"></li>
 							</ul>
 						</div>
 						
@@ -310,7 +308,9 @@
 						</div>
 						
 						<div ng-if="stageKey.includes('.resources')">
-							<accordion-heading>{{stageKey}}</accordion-heading>
+							<accordion-heading>
+								<span class="capitalize">Resource {{overview.template.deploy[deployMain][stepKey][stageKey].imfv[0].name}}</span>
+							</accordion-heading>
 							<ul class="nonBulletPoint">
 								<li ng-repeat="resource in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'resources.html'"></li>
 							</ul>

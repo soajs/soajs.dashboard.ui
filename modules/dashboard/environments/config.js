@@ -3,7 +3,7 @@ var serviceProviders = [
 	{
 		v: 'aws',
 		l: 'Amazon Web Services',
-		image: 'https://cloudzone.azurewebsites.net/wp-content/uploads/2015/12/amazon-aws-s3-storage-logo.png',
+		image: 'modules/dashboard/environments/images/aws.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213183/AWS+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344246/AWS+Kubernetes'
@@ -12,7 +12,7 @@ var serviceProviders = [
 	{
 		v: 'rackspace',
 		l: 'Rackspace',
-		image: 'https://cdn.saaspass.com/a52e2205866340ea/authenticators/rackspace_128.png',
+		image: 'modules/dashboard/environments/images/rackspace.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442528/Rackspace+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142147626/Rackspace+Kubernetes'
@@ -21,7 +21,7 @@ var serviceProviders = [
 	{
 		v: 'google',
 		l: 'Google Cloud',
-		image: 'https://cloud.google.com/_static/images/cloud/cloud_64dp.png',
+		image: 'modules/dashboard/environments/images/google.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142409762/Google+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344252/Google+Kubernetes'
@@ -30,7 +30,7 @@ var serviceProviders = [
 	{
 		v: 'azure',
 		l: 'Microsoft Azure',
-		image: 'https://dtb5pzswcit1e.cloudfront.net/assets/images/product_logos/icon_azure@2x.png',
+		image: 'modules/dashboard/environments/images/azure.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142147642/Microsoft+Azure+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213187/Microsoft+Azure+Kubernetes'
@@ -39,7 +39,7 @@ var serviceProviders = [
 	{
 		v: 'joyent',
 		l: 'Joyent',
-		image: 'https://cdn1.itcentralstation.com/vendors/logos/original/joyent_avatar_reasonably_small.png?1371107403',
+		image: 'modules/dashboard/environments/images/joyent.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442552/Joyent+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442556/Joyent+Kubernetes'
@@ -48,7 +48,7 @@ var serviceProviders = [
 	{
 		'v': 'liquidweb',
 		l: 'Liquid Web',
-		image: 'https://www.liquidweb.com/favicon-32x32.png',
+		image: 'modules/dashboard/environments/images/liquidweb.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213203/Liquid+Web+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142180385/Liquid+Web+Kubernetes'
@@ -57,7 +57,7 @@ var serviceProviders = [
 	{
 		'v': 'digitalocean',
 		l: 'Digital Ocean',
-		image: 'https://cdn.zapier.com/storage/developer/f1ce9f60f6740b7862d589a7f755ad19.128x128.png',
+		image: 'modules/dashboard/environments/images/digitalocean.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142376998/Digital+Ocean+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344256/Digital+Ocean+Kubernetes'
@@ -66,7 +66,7 @@ var serviceProviders = [
 	{
 		v: 'other',
 		l: 'Ubuntu',
-		image: 'https://assets.ubuntu.com/v1/cb22ba5d-favicon-16x16.png',
+		image: 'modules/dashboard/environments/images/ubuntu.png',
 		help: {
 			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442570/Other+with+Docker',
 			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142377002/Other+with+Kubernetes'

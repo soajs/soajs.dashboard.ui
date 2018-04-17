@@ -1417,23 +1417,6 @@ var environmentsNav = [
 		],
 	},
 	{
-		'id': 'add-environments-old',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environment/add',
-			'method': 'post'
-		},
-		'label': translation.addNewEnvironment[LANG],
-		'url': '#/environments-add-old',
-		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
-		'pillar': {
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js', 'modules/dashboard/resources/config.js', 'modules/dashboard/resources/services/configuration.js', 'modules/dashboard/resources/services/deploy.js'],
-	},
-	{
 		'id': 'environments',
 		'checkPermission': {
 			'service': 'dashboard',

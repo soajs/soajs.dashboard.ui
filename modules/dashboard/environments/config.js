@@ -90,14 +90,6 @@ var environmentsConfig = {
 	
 	form: {
 		add: {
-			step1: {
-				'entries': [
-					{
-						"name": "generalInfo",
-						"directive": "modules/dashboard/environments/directives/add/gi.tmpl"
-					}
-				]
-			},
 			step2: {
 				"entries": [
 					{
@@ -114,14 +106,6 @@ var environmentsConfig = {
 					}
 				]
 			},
-			step4: {
-				"entries": [
-					{
-						"name": "dynamic",
-						"directive": "modules/dashboard/environments/directives/add-step3.tmpl"
-					}
-				]
-			},
 			step6: {
 				"entries": [
 					{
@@ -129,39 +113,7 @@ var environmentsConfig = {
 						"directive": "modules/dashboard/environments/directives/add/nginx.tmpl"
 					}
 				]
-			},
-			// step31: {
-			// 	"entries": [
-			// 		{
-			// 			"name": "deployment",
-			// 			"directive": "modules/dashboard/environments/directives/deploy-service-details.tmpl"
-			// 		}
-			// 	]
-			// },
-			// step4: {
-			// 	"entries": [
-			// 		{
-			// 			"name": "deployment",
-			// 			"directive": "modules/dashboard/environments/directives/add-step4.tmpl"
-			// 		}
-			// 	]
-			// },
-			// overview: {
-			// 	"entries": [
-			// 		{
-			// 			"name": "deployment",
-			// 			"directive": "modules/dashboard/environments/directives/add-overview.tmpl"
-			// 		}
-			// 	]
-			// },
-			// dynamicStep: {
-			// 	'entries': [
-			// 		{
-			// 			"name": "dynamicStep",
-			// 			"directive": "modules/dashboard/environments/directives/dynamicStep.tmpl"
-			// 		}
-			// 	]
-			// }
+			}
 		},
 		database: {
 			'name': '',

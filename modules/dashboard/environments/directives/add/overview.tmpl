@@ -12,7 +12,7 @@
 						<td><label>Shared</label></td>
 						<td><span>{{obj.shared?true:false}}</span></td>
 					</tr>
-					<tr>
+					<tr ng-if="!isObjEmpty(obj.value)">
 						<td valign="top"><label>Value</label></td>
 						<td style="padding: 10px"><span><pre><code class="javascript">{{obj.value | json}}</code></pre></span></td>
 					</tr>
@@ -78,7 +78,7 @@
 					<td><label>Plugged</label></td>
 					<td><span>{{resource.plugged?true:false}}</span></td>
 				</tr>
-				<tr ng-if="resource.config">
+				<tr ng-if="!isObjEmpty(resource.config)">
 					<td valign="top"><label>Config</label></td>
 					<td style="padding: 10px"><span><pre><code class="javascript">{{resource.config | json}}</code></pre></span></td>
 				</tr>
@@ -209,7 +209,7 @@
 					<td><label>Type</label></td>
 					<td><span>{{repo.options.custom.type}}</span></td>
 				</tr>
-				<tr ng-if="repo.options.custom.sourceCode">
+				<tr ng-if="!isObjEmpty(repo.options.custom.sourceCode)">
 					<td valign="top"><label>Source Code</label></td>
 					<td style="padding: 10px"><span><pre><code class="javascript">{{repo.options.custom.sourceCode | json}}</code></pre></span></td>
 				</tr>

@@ -15,6 +15,10 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		currentScope.overview = mapUserInputsToOverview(currentScope);
 		
+		currentScope.isObjEmpty = function (obj) {
+			return (!obj || Object.keys(obj).length === 0);
+		}
+		
 		overlayLoading.show();
 		let configuration = angular.copy(environmentsConfig.form.add.step6.entries);
 		

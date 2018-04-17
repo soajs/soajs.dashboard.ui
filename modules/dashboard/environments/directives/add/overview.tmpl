@@ -279,6 +279,9 @@
 				<div ng-repeat="(stageKey, stageData) in overview.template.deploy[deployMain][stepKey]">
 					
 					<accordion-group is-open="true">
+						
+						<div ng-if="stageKey.include('infra.cluster.deploy')" ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>
+						
 						<div ng-if="stageKey ==='custom_registry'">
 							<accordion-heading>Custom Registry</accordion-heading>
 							<ul class="nonBulletPoint">
@@ -324,6 +327,9 @@
 								<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
 							</ul>
 						</div>
+						
+						<div ng-if="stageKey.include('infra.dns')" ng-include="'modules/dashboard/environments/directives/add/overviewDNS.tmpl'"></div>
+						
 					</accordion-group>
 					<br>
 				</div>

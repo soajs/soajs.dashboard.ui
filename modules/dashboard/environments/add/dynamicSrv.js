@@ -49,34 +49,42 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					let entriesCount = 0;
 					for (let ci in ciEntries) {
 						let customRegistry = ciEntries[ci];
 						customRegistry.scope.save();
 						
-						//map the values back to custom registry
-						let imfv = angular.copy(customRegistry.scope.formData);
-						imfv.name = ci; //force the name back as it was
-						if (!imfv.textMode) {
-							try {
-								imfv.value = JSON.parse(imfv.value);
+						if(customRegistry.scope.$valid){
+							//map the values back to custom registry
+							let imfv = angular.copy(customRegistry.scope.formData);
+							imfv.name = ci; //force the name back as it was
+							if (!imfv.textMode) {
+								try {
+									imfv.value = JSON.parse(imfv.value);
+								}
+								catch (e) {
+									$window.alert("The content of the custom registry provided is invalid!");
+									return false;
+								}
 							}
-							catch (e) {
-								$window.alert("The content of the custom registry provided is invalid!");
-								return false;
+							customRegistry = imfv;
+							delete customRegistry.scope;
+							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
+							entriesCount++;
+							
+							//trigger next here
+							if(entriesCount === Object.keys(ciEntries).length){
+								currentScope.next();
 							}
 						}
-						customRegistry = imfv;
-						delete customRegistry.scope;
-						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
 					}
-					
-					//trigger next here
-					currentScope.next();
 				};
 				
 				overlayLoading.show();
 				let entriesNames = Object.keys(ciEntries);
+				currentScope.loadingDynamicSection = true;
 				buildMyForms(0, () => {
+					currentScope.loadingDynamicSection = false;
 					overlayLoading.hide();
 				});
 			}
@@ -101,6 +109,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						else{
 							record['secretData']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
+							if(!record.textMode){
+								record['secretData'] = JSON.parse(record['secretData']);
+							}
 						}
 					}
 					
@@ -209,29 +220,36 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					let entriesCount = 0;
 					for (let secretName in secretEntries) {
 						let oneSecret = secretEntries[secretName];
 						oneSecret.scope.form.do({
 							'type': 'submit',
 							'action': (formData) => {
 								oneSecret.scope.save(formData, (imfv) => {
-									imfv.name = secretName; //force the name back as it was
-									oneSecret = imfv;
-									delete oneSecret.scope;
-									currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
+									if(oneSecret.scope.$valid){
+										imfv.name = secretName; //force the name back as it was
+										oneSecret = imfv;
+										delete oneSecret.scope;
+										currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
+										entriesCount++;
+										if(entriesCount === Object.keys(secretEntries).length){
+											//trigger next here
+											currentScope.next();
+										}
+									}
 								});
 							}
 						});
 					}
-					
-					//trigger next here
-					currentScope.next();
 				};
 				
 				overlayLoading.show();
+				currentScope.loadingDynamicSection = true;
 				let entriesNames = Object.keys(secretEntries);
 				listNamespaces ((currentScope.wizard.deployment.selectedDriver === 'kubernetes'), () => {
 					buildMyForms(0, () => {
+						currentScope.loadingDynamicSection = false;
 						overlayLoading.hide();
 					});
 				});
@@ -447,12 +465,17 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
 					}
+					
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
 					let entries = [];
 					buildDynamicForm(oneRepo.scope, entries, () => {
 						let element = angular.element(document.getElementById("repo_" + repoName));
-						element.append("<div ng-include=\"'modules/dashboard/environments/directives/cd.tmpl'\">");
+						element.append("<form name=\"deployRepo\" id=\"deployRepo\"><div ng-include=\"'modules/dashboard/environments/directives/cd.tmpl'\"></div></form>");
 						$compile(element.contents())(oneRepo.scope);
+						
+						oneRepo.scope.$watch("deployRepo.$invalid", function($invalid){
+							oneRepo.formIsInvalid = $invalid;
+						});
 						
 						counter++;
 						if (counter < entriesNames.length) {
@@ -476,25 +499,33 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					let entriesCount = 0;
 					for (let repoName in repoEntries) {
 						let oneRepo = repoEntries[repoName];
 						
 						deployRepos.saveRecipe(oneRepo.scope, 'deploy', (imfv) => {
-							delete oneRepo.scope;
-							imfv.name = repoName;
-							imfv.type = templateDefaults.type;
-							
-							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(imfv);
+							if(typeof(oneRepo.formIsInvalid) ==='boolean' && !oneRepo.formIsInvalid){
+								delete oneRepo.scope;
+								delete oneRepo.formIsInvalid;
+								imfv.name = repoName;
+								imfv.type = templateDefaults.type;
+								
+								currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(imfv);
+								entriesCount++;
+								if(entriesCount === Object.keys(repoEntries).length){
+									//trigger next here
+									currentScope.next();
+								}
+							}
 						});
 					}
-					
-					//trigger next here
-					currentScope.next();
 				};
 				
 				overlayLoading.show();
+				currentScope.loadingDynamicSection = true;
 				let entriesNames = Object.keys(repoEntries);
 				buildMyForms(0, () => {
+					currentScope.loadingDynamicSection = false;
 					overlayLoading.hide();
 				});
 			}
@@ -621,8 +652,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(isKubernetes){
 						resource.scope.enableAutoScale = true;
 					}
+					
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
 						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+							resource.scope.hideDeployButton = true;
 							if(isKubernetes){
 								let remote = currentScope.wizard.deployment.deployment.kubernetes.kubernetesremote;
 								let deployment = currentScope.wizard.deployment.deployment.kubernetes;
@@ -650,13 +683,22 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 								resource.scope.envDeployer = envDeployer;
 							}
-							resource.scope.buildComputedHostname();
 						}
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
 							let element = angular.element(document.getElementById("resource_" + key));
-							element.append("<div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\">");
+							element.append("<form name=\"addEditResource\" id=\"addEditResource\"><div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\"></div></form>");
 							$compile(element.contents())(resource.scope);
+							
+							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+								setTimeout(() => {
+									resource.scope.updateDeploymentName(record.name);
+								}, 200);
+							}
+							
+							resource.scope.$watch("addEditResource.$invalid", function($invalid){
+								resource.formIsInvalid = $invalid;
+							});
 							
 							counter++;
 							if (counter < entriesNames.length) {
@@ -677,59 +719,66 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					let entriesCount = 0;
 					for (let key in resourceEntries) {
 						let resource = resourceEntries[key];
 						resourceConfiguration.mapConfigurationFormDataToConfig(resource.scope, function () {
-							//map the values back to custom registry
-							let imfv = angular.copy(resource.scope.formData);
-							imfv.name = key; //force the name back as it was
 							
-							if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
-								imfv.deploy = {
-									"options": {
-										"deployConfig": {
-											"replication": {
-												"mode": imfv.deployOptions.deployConfig.replication.mode
+							if(typeof(resource.formIsInvalid) === 'boolean' && !resource.formIsInvalid){
+								//map the values back to custom registry
+								let imfv = angular.copy(resource.scope.formData);
+								imfv.name = key; //force the name back as it was
+
+								if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
+									imfv.deploy = {
+										"options": {
+											"deployConfig": {
+												"replication": {
+													"mode": imfv.deployOptions.deployConfig.replication.mode
+												},
+												"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
 											},
-											"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
+											"custom": imfv.deployOptions.custom,
+											"recipe": imfv.deployOptions.recipe,
+											"env": resource.scope.envCode
 										},
-										"custom": imfv.deployOptions.custom,
-										"recipe": imfv.deployOptions.recipe,
-										"env": resource.scope.envCode
-									},
-									"deploy": true,
-									"type": "custom"
-								};
-								
-								if(imfv.deployOptions.sourceCode){
-									imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
+										"deploy": true,
+										"type": "custom"
+									};
+
+									if(imfv.deployOptions.sourceCode){
+										imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
+									}
+
+									if(imfv.deployOptions.deployConfig.replication.replicas){
+										imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
+									}
+
+									imfv.deploy.options.custom.name = key;
+									imfv.deployOptions.name = key;
+									imfv.deployOptions.custom.type = 'resource';
+
+									//clean up any attached ui
+									if(imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo){
+										imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
+									}
 								}
-								
-								if(imfv.deployOptions.deployConfig.replication.replicas){
-									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
+								else {
+									delete imfv.deployOptions;
 								}
-								
-								imfv.deploy.options.custom.name = key;
-								imfv.deployOptions.name = key;
-								imfv.deployOptions.custom.type = 'resource';
-								
-								//clean up any attached ui
-								if(imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo){
-									imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
+
+								resource = imfv;
+								delete resource.scope;
+								delete resource.formIsInvalid;
+								currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(resource);
+								entriesCount++;
+								if(entriesCount === Object.keys(resourceEntries).length){
+									//trigger next here
+									currentScope.next();
 								}
 							}
-							else {
-								delete imfv.deployOptions;
-							}
-							
-							resource = imfv;
-							delete resource.scope;
-							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(resource);
 						});
 					}
-					
-					//trigger next here
-					currentScope.next();
 				};
 				
 				currentScope.dynamicStep = context;
@@ -737,7 +786,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				let entriesNames = Object.keys(resourceEntries);
 				
 				overlayLoading.show();
+				currentScope.loadingDynamicSection = true;
 				buildMyForms(0, () => {
+					currentScope.loadingDynamicSection = false;
 					overlayLoading.hide();
 				});
 			}
@@ -759,7 +810,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	function go(currentScope) {
-		
+		currentScope.loadingDynamicSection = true;
 		currentScope.mapStorageToWizard($localStorage.addEnv);
 		
 		let stack = [];

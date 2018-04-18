@@ -35,7 +35,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		else {
 			
 			overlayLoading.show();
-			let configuration = angular.copy(environmentsConfig.form.add.step6.entries);
+			let configuration = angular.copy(environmentsConfig.form.add.nginx.entries);
 			
 			let options = {
 				timeout: $timeout,

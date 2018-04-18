@@ -1,6 +1,7 @@
 <div class="serviceName">
 	<input type="checkbox" ng-model="aclFill[oneEnv.code][service.name].include" value="{{service.name}}" ng-click="selectService(oneEnv.code, service)"/>
-	<b> <a href="">{{service.name}} </a></b>
+	<b ng-show="service.name === 'controller'"><a href="">SOAJS API Gateway </a></b>
+	<b ng-show="service.name !== 'controller'"><a href="">{{service.name}} </a></b>
 </div>
 <div ng-show="aclFill[oneEnv.code][service.name].include" style="float: left;">
 	<div class="f-left">

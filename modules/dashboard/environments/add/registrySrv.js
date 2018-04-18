@@ -36,7 +36,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 			};
 			
 			overlayLoading.show();
-			let configuration = angular.copy(environmentsConfig.form.add.step3.entries);
+			let configuration = angular.copy(environmentsConfig.form.add.registry.entries);
 			
 			let options = {
 				timeout: $timeout,

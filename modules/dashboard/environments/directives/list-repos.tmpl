@@ -37,7 +37,10 @@
                                     <accordion close-others="true" ng-if="repo.servicesList && repo.servicesList.length > 0">
             							<accordion-group is-open="false" ng-repeat="service in repo.servicesList" class="blueAccordion" ng-class="{greenAccordion: service.deployed}">
             								<accordion-heading>
-                                                <span class="icon icon-cloud"></span>{{service.name}} [{{service.type}}]
+                                                <span class="icon icon-cloud"></span>
+									            <span ng-show="service.name === 'controller'">SOAJS API Gateway </span>
+									            <span ng-show="service.name !== 'controller'">{{service.name}} </span>
+									            [{{service.type}}]
                                                 <div style="float: right;" ng-if="service.deployed && service.type !== 'daemon'">
                                                     <span ng-if="service.versions.length > 0" style="margin-right: 30px;"><span class="icon icon-power-cord"></span>{{service.deployedVersionsCounter}} out of {{service.versions.length}} version(s) are plugged</span>
                                                     <span style="float: right; color: green;" ng-if="service.deployed"><span class="icon icon-checkmark"></span>Deployed</span>

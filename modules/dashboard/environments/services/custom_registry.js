@@ -1,6 +1,6 @@
 "use strict";
 var customRegistryServices = soajsApp.components;
-customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$modal', function (ngDataApi, $timeout, $modal) {
+customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$modal', '$window', function (ngDataApi, $timeout, $modal, $window) {
 	
 	function listCustomRegistry (currentScope, cb) {
 		currentScope.oldStyle = false;
@@ -306,8 +306,22 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 		};
 		
 		$scope.save = function (cb) {
+			$scope.$valid = true;
+			if(!$scope.formData.name || $scope.formData.name.trim() === ''){
+				$window.alert('Provide a name for custom registry entry!');
+				$scope.$valid = false;
+				return;
+			}
+			
+			if(!$scope.formData.value || ($scope.textMode && $scope.formData.value.trim() === '')){
+				$window.alert('Provide a value for custom registry entry:', $scope.formData.name);
+				$scope.$valid = false;
+				return;
+			}
+			
 			if (!$scope.options.allowEdit) {
-				$scope.displayAlert('warning', 'Configuring this Custom Registry is only allowed in the ' + $scope.formData.created + ' environment');
+				$window.alert('Configuring Custom Registry ' + $scope.formData.name + ' is only allowed in the ' + $scope.formData.created + ' environment');
+				$scope.$valid = false;
 				return;
 			}
 			
@@ -339,6 +353,7 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 					plugged: $scope.formData.plugged || false,
 					shared: $scope.formData.shared || false
 				};
+				
 				if (Object.hasOwnProperty.call($scope.formData, "value")) {
 					$scope.formData.textMode = $scope.textMode;
 					if ($scope.textMode) {
@@ -347,7 +362,9 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 						try {
 							saveOptions.value = JSON.parse($scope.formData.value);
 						} catch (e) {
-							return $scope.displayAlert('danger', 'Custom Registry: Invalid JSON Object');
+							$window.alert('Custom Registry: Invalid JSON Object');
+							$scope.$valid = false;
+							return;
 						}
 					}
 				}
@@ -362,7 +379,7 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 					});
 				}
 				
-				if(saveMethod && typeof saveMethod === 'function'){
+				if($scope.$valid && saveMethod && typeof saveMethod === 'function'){
 					saveMethod(saveOptions, cb);
 				}
 			}

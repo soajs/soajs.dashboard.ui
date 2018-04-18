@@ -1,6 +1,6 @@
 "use strict";
 var secretsApp = soajsApp.components;
-secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataApi, $timeout) {
+secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', function (ngDataApi, $timeout, $window) {
 	
 	function addSecret($scope, $modalInstance, currentScope, actions, extraInputs, data, cb) {
 		
@@ -43,6 +43,7 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataA
 		};
 		
 		$scope.save = function(formData, cb){
+			$scope.$valid = true;
 			let input = {
 				name: formData.secretName,
 				env: currentScope.selectedEnvironment.code,
@@ -69,12 +70,24 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', function (ngDataA
 				delete formData.file;
 			}
 			
+			if(input.datatype ==='editor'){
+				try{
+					let x = JSON.parse(input.data);
+				}
+				catch(e){
+					$window.alert("Invalid JSON Content Provided");
+					$scope.$valid = false;
+					return false;
+				}
+			}
+			
 			if (!input.data || input.data === "" || ((input.data === "{}" || (typeof input.data === 'object' && Object.keys(input.data).length === 0)) && !formData.secretData && !formData.file)) {
-				$scope.form.displayAlert("danger", "Provide a value for your secret to proceed!");
+				$window.alert("Provide a value for your secret to proceed!");
+				$scope.$valid = false;
 				return false;
 			}
 			
-			if($modalInstance){
+			if($scope.$valid && $modalInstance){
 				getSendDataFromServer(currentScope, ngDataApi, {
 					method: 'post',
 					routeName: '/dashboard/secrets/add',

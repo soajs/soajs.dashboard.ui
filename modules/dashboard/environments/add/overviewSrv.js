@@ -7,19 +7,23 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function mapUserInputsToOverview(currentScope) {
-		return currentScope.mapUserInputsToOverview();
+		return currentScope.mapUserInputsToOverview(true);
 	}
 	
 	function go(currentScope) {
 		currentScope.mapStorageToWizard($localStorage.addEnv);
+		
 		currentScope.overview = mapUserInputsToOverview(currentScope);
 		
+		currentScope.isObjEmpty = function (obj) {
+			return (!obj || Object.keys(obj).length === 0);
+		};
+		
 		overlayLoading.show();
-		let configuration = angular.copy(environmentsConfig.form.add.step6.entries);
 		
 		let options = {
 			timeout: $timeout,
-			entries: configuration,
+			entries: [],
 			name: 'addEnvironment',
 			label: translation.addNewEnvironment[LANG],
 			actions: [

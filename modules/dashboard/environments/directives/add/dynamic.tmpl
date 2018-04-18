@@ -33,7 +33,10 @@
 		<h4>Configuring Repositories</h4>
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
-				<accordion-heading>{{key}}</accordion-heading>
+				<accordion-heading>
+					<span ng-show="key !== 'controller'" class="capitalize">{{key}}</span>
+					<span ng-show="key === 'controller'">SOAJS API Gateway</span>
+				</accordion-heading>
 				<div id="repo_{{key}}"></div>
 			</accordion-group>
 		</accordion>
@@ -42,7 +45,9 @@
 </div>
 <div class='modal-footer'>
 	<br/>
-	<input type="button" class="btn btn-sm btn-success" value="Back" ng-click="back()" />
-	<input type="button" class="btn btn-sm btn-primary" value="Next" ng-click="saveData()" />
-	<input type="button" class="btn btn-sm btn-danger" value="Cancel" ng-click="reset()" />
+	<div ng-hide="loadingDynamicSection">
+		<input type="button" class="btn btn-sm btn-success" value="Back" ng-click="back()" />
+		<input type="button" class="btn btn-sm btn-primary" value="Next" ng-click="saveData()" />
+		<input type="button" class="btn btn-sm btn-danger" value="Cancel" ng-click="reset()" />
+	</div>
 </div>

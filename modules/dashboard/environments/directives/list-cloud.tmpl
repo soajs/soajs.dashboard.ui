@@ -211,9 +211,11 @@
 									<div class="entryBox mb20" ng-repeat="service in oneGroup.list | filter:namespaceConfig.namespace:true">
 										<div class="header table">
 											<span class="serviceLabelBox">
-												{{service.labels['soajs.service.name']}} /
+												<span ng-show="service.labels['soajs.service.name'] !== 'controller'">{{service.labels['soajs.service.name']}}</span>
+												<span ng-show="service.labels['soajs.service.name'] === 'controller'">SOAJS API Gateway</span>
+												/
 												<span style="margin-left: 0;" ng-if="service.labels['soajs.service.type'] === 'daemon' && service.daemonGroup">Group: {{service.daemonGroup}} /</span>
-												Version: {{service.labels['soajs.service.version']}} <span style="margin-left: 0;" ng-if="service.ip && service.ip !== ''"> / IP Address: {{service.ip}}</span>
+												Version: {{service.labels['soajs.service.version']}} <span style="margin-left: 0;" ng-if="service.ip && service.ip !== ''"> / IP Address: {{service.ip}}</span>&nbsp;
 											</span>
 
 											<span ng-show="service.imageUpdate || service.catalogUpdate">

@@ -14,7 +14,8 @@
 					</tr>
 					<tr ng-if="!isObjEmpty(obj.value)">
 						<td valign="top"><label>Value</label></td>
-						<td style="padding: 10px"><span><pre><code class="javascript">{{obj.value | json}}</code></pre></span></td>
+						<td style="padding: 10px"><span><pre><code class="javascript">{{obj.value | json}}</code></pre></span>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -80,7 +81,8 @@
 				</tr>
 				<tr ng-if="!isObjEmpty(resource.config)">
 					<td valign="top"><label>Config</label></td>
-					<td style="padding: 10px"><span><pre><code class="javascript">{{resource.config | json}}</code></pre></span></td>
+					<td style="padding: 10px"><span><pre><code class="javascript">{{resource.config | json}}</code></pre></span>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -211,7 +213,8 @@
 				</tr>
 				<tr ng-if="!isObjEmpty(repo.options.custom.sourceCode)">
 					<td valign="top"><label>Source Code</label></td>
-					<td style="padding: 10px"><span><pre><code class="javascript">{{repo.options.custom.sourceCode | json}}</code></pre></span></td>
+					<td style="padding: 10px"><span><pre><code class="javascript">{{repo.options.custom.sourceCode | json}}</code></pre></span>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -274,14 +277,79 @@
 	<accordion-group is-open="true">
 		<accordion-heading>Template</accordion-heading>
 		
+		<accordion-group is-open="true" ng-if="overview.selectedInfraProvider">
+			<div>
+				<accordion-heading>Deployment Strategy</accordion-heading>
+				<div ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>
+			</div>
+			<br>
+		</accordion-group>
+		
+		<div>
+			<accordion-group is-open="true" ng-if="!overview.selectedInfraProvider">
+				<accordion-heading>Deployment Strategy</accordion-heading>
+				
+				<fieldset>
+					<legend style="width:15%;">
+						<img ng-if="overview.data.deploy.selectedDriver === 'docker'" ng-src="themes/default/img/docker_logo.png" width="100%" alt="Docker Logo"/>
+						<img ng-if="overview.data.deploy.selectedDriver === 'kubernetes'" ng-src="themes/default/img/kubernetes_logo.png" width="100%" alt="Kubernetes Logo"/>
+					</legend>
+					<br />
+					<!--Docker-->
+					<div ng-if="overview.data.deploy.selectedDriver=='docker'">
+						<div ng-show="overview.data.deploy.previousEnvironment">
+							<div class="alert alert-info f-left">
+								<p> I am using the same machine(s) i configured for {{overview.data.deploy.previousEnvironment}} Environment</p>
+							</div>
+						</div>
+						<div>
+							<br />
+							<div class="entryBoxes entryBoxesGrid">
+								<div class="entryBox driverEntryBox" style="display:block;">
+									<div class="body">
+										<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Kuberenetes-->
+					<div ng-if="overview.data.deploy.selectedDriver=='kubernetes'">
+						<div ng-show="overview.data.deploy.previousEnvironment">
+							<div class="alert alert-info">
+								<p> I am using the same machine(s) i configured for {{overview.data.deploy.previousEnvironment}} Environment</p>
+							</div>
+						</div>
+						<div>
+							<br />
+							<div class="entryBoxes entryBoxesGrid">
+								<div class="entryBox driverEntryBox" style="display:block;">
+									<div class="body">
+										<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Manual-->
+					<div ng-if="overview.data.deploy.selectedDriver=='manual'">
+						<div class="alert alert-info">
+							<h4><span class="icon icon-info"></span> Info:</h4>
+							<p> I will not use any container technology to deploy my Service(s) and Daemon(s).
+								I will also handle pulling and applying updates on the machines of this Environment myself.
+							</p>
+						</div>
+					</div>
+				</fieldset>
+			</accordion-group>
+			<br>
+		</div>
+		
 		<div ng-repeat="deployMain in ['database','deployments']">
 			<div ng-repeat="(stepKey, stepData) in overview.template.deploy[deployMain]">
 				<div ng-repeat="(stageKey, stageData) in overview.template.deploy[deployMain][stepKey]">
 					
 					<accordion-group is-open="true">
-						
-						<div ng-if="stageKey.include('infra.cluster.deploy')" ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>
-						
 						<div ng-if="stageKey ==='custom_registry'">
 							<accordion-heading>Custom Registry</accordion-heading>
 							<ul class="nonBulletPoint">
@@ -327,7 +395,7 @@
 								<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
 							</ul>
 						</div>
-						
+					
 					</accordion-group>
 					<br>
 				</div>

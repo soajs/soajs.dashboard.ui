@@ -647,6 +647,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 						record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
 						record.label = resource.label;
+						
+						if(record.config && record.config.servers){
+							record.config.servers.forEach((oneServer) =>{
+								oneServer.port = oneServer.port.toString();
+							});
+						}
 					}
 					
 					if(isKubernetes){

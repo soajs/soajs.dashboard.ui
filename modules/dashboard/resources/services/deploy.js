@@ -610,10 +610,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				}
 			}
 			
-			if(context.form && context.form.entries){
+			if(context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0){
 				for(let $index = context.form.entries.length -1; $index >=0; $index--){
 					let oneEntry = context.form.entries[$index];
-					if(oneEntry.name === 'servers0'){
+					if(oneEntry.name && oneEntry.name === 'servers0'){
 						oneEntry.entries.forEach((oneSubEntry) => {
 							oneSubEntry.disabled = false;
 							delete oneSubEntry.disabled;
@@ -626,11 +626,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 						});
 					}
 					
-					if(context.formData.canBeDeployed && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0'){
+					if(context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0'){
 						context.form.entries.splice($index, 1);
 					}
 					
-					if(oneEntry.name === 'anotherservers'){
+					if(oneEntry.name && oneEntry.name === 'anotherservers'){
 						if(context.formData.canBeDeployed){
 							jQuery('#anotherservers').hide();
 						}

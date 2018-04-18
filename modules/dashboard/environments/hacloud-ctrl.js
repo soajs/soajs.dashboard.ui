@@ -20,6 +20,8 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.metricsRefreshInterval = 60000;
 	$scope.oldStyle = false;
 
+	$scope.kubernetesSystemDeployments = KUBERNETES_SYSTEM_DEPLOYMENTS;
+
 	$scope.namespaceConfig = {
 		defaultValue: {
 			id: undefined, //setting id to undefined in order to force angular to display all fields, => All Namespaces
@@ -266,7 +268,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.deployMetricsServer = function(){
 		deploySrv.deployMetricsServer($scope);
 	};
-	
+
 	$scope.autoScale = function (service) {
 		hacloudSrv.autoScale($scope, service);
 	};
@@ -291,7 +293,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
 		}
 	}
-	
+
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
 		$scope.getEnvironment();
 		$scope.listNodes($scope);
@@ -312,7 +314,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			});
 		});
 	}
-	
+
 	$scope.$on("$destroy", function () {
 		$scope.destroyed = true;
 		$timeout.cancel(autoRefreshTimeoutInstance);

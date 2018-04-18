@@ -589,6 +589,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		};
 		
 		context.buildComputedHostname = function (resourceName) {
+			
 			context.options.computedHostname = resourceName;
 			
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
@@ -610,6 +611,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				}
 			}
 			
+			
 			if(context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0){
 				for(let $index = context.form.entries.length -1; $index >=0; $index--){
 					let oneEntry = context.form.entries[$index];
@@ -622,6 +624,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
 								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+							}
+							if(oneSubEntry.name.includes("port")){
+								oneSubEntry.value = oneSubEntry.value.toString();
+								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
+							}
+							if(oneSubEntry.name.includes("removeserver")){
+								oneSubEntry.value = '<span class=\'icon icon-cross red\'></span>';
+								if(context.formData.canBeDeployed && resourceName && resourceName !== ''){
+									oneSubEntry.value = '';
+								}
 							}
 						});
 					}
@@ -705,6 +717,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		
 		if(!context.noCDoverride){
 			context.getCatalogRecipes();
+			
+			if(context.formData && context.formData.canBeDeployed && resource && resource.name){
+				setTimeout(() => {
+					context.updateDeploymentName(resource.name);
+				}, 200);
+			}
+			
 		}
 		else{
 			context.displayRecipeInputs();

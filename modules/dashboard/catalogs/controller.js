@@ -244,7 +244,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							'content': "<div class='fieldMsg'>You can attach a config repo" +
 							" recipes by filling the inputs below. The content of this repo" +
 							" will be pulled and" +
-							" interpreted whenever you deploy using this recipe.</div>"
+							" interpreted whenever you deploy using this recipe.</div>&nbsp;" +
+							"<div class='fieldMsg'>This section provide only activated repos of type config</div>"
 						},
 						"label": "Config Repository",
 						"entries": [
@@ -589,7 +590,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				"type": "group",
 				'description': {
 					'type': "default",
-					'content': "<div class='fieldMsg'>You can attach a config repo recipes by filling the inputs below. The content of this repo will be pulled and interpreted whenever you deploy using this recipe.</div>"
+					'content': "<div class='fieldMsg'>You can attach a config repo recipes by filling the inputs below. The content of this repo will be pulled and interpreted whenever you deploy using this recipe.</div>&nbsp;" +
+                    "<div class='fieldMsg'>This section provide only activated repos of type config</div>"
 				},
 				"label": "Config Repository",
 				"entries": [
@@ -1142,7 +1144,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					})
 			}
 		}
-		
+
 		$modal.open({
 			templateUrl: "editRecipe.tmpl",
 			size: 'lg',

@@ -652,8 +652,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(isKubernetes){
 						resource.scope.enableAutoScale = true;
 					}
+					
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
 						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+							resource.scope.hideDeployButton = true;
 							if(isKubernetes){
 								let remote = currentScope.wizard.deployment.deployment.kubernetes.kubernetesremote;
 								let deployment = currentScope.wizard.deployment.deployment.kubernetes;
@@ -681,13 +683,18 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 								resource.scope.envDeployer = envDeployer;
 							}
-							resource.scope.buildComputedHostname();
 						}
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
 							let element = angular.element(document.getElementById("resource_" + key));
 							element.append("<form name=\"addEditResource\" id=\"addEditResource\"><div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\"></div></form>");
 							$compile(element.contents())(resource.scope);
+							
+							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+								setTimeout(() => {
+									resource.scope.updateDeploymentName(record.name);
+								}, 200);
+							}
 							
 							resource.scope.$watch("addEditResource.$invalid", function($invalid){
 								resource.formIsInvalid = $invalid;

@@ -166,3 +166,15 @@ input:checked + .buttonSlider:before {
 .nonBulletPoint {
     list-style-type: none;
 }
+
+.tip-alert h3 {
+    background-color: inherit;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+.tip-alert p {
+    margin-bottom: 0;
+    margin-top: 3px;
+}

@@ -190,6 +190,9 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				if (currentScope.availableEnvironments[i].deployer.type === 'manual') {
 					currentScope.availableEnvironments.splice(i, 1);
 				}
+				else if(currentScope.availableEnvironments[i].code === currentScope.wizard.gi.code){
+					currentScope.availableEnvironments.splice(i, 1);
+				}
 			}
 		}
 		

@@ -292,9 +292,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				currentScope.form.formData.deployment.kubernetes = {
 					kubernetesremote: false
 				};
-			} else {
-				console.log(currentScope.form.formData.deployment.kubernetes.myCloudProvider);
-				//todo: ask etienne what this is ?
 			}
 			
 			currentScope.platforms = {

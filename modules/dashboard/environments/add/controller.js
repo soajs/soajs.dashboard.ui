@@ -175,6 +175,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			}
 		};
 		
+		if(wizard.selectedInfraProvider){
+			output.selectedInfraProvider = wizard.selectedInfraProvider;
+		}
+		
 		if(wizard.nginx && wizard.nginx && wizard.nginx.domain){
 			output.data.domain = wizard.nginx.domain;
 		}

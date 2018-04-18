@@ -175,6 +175,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			}
 		};
 		
+		if(wizard.selectedInfraProvider){
+			output.selectedInfraProvider = wizard.selectedInfraProvider;
+		}
+		
 		if(wizard.nginx && wizard.nginx && wizard.nginx.domain){
 			output.data.domain = wizard.nginx.domain;
 		}
@@ -220,6 +224,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				}
 			}, function (error, pendingEnvironment) {
 				overlayLoading.hide();
+				delete pendingEnvironment.soajsauth;
 				
 				if(pendingEnvironment){
 					$scope.environmentId = pendingEnvironment._id;
@@ -230,6 +235,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 					delete $scope.wizard.template._id;
 					$scope.goToStep = 'status';
 					$scope.listTemplate();
+				}
+				else if(pendingEnvironment && Object.keys(pendingEnvironment).length > 0){
+					delete $localStorage.addEnv;
+					delete $scope.wizard;
+					if($scope.form){
+						$scope.form.formData = {};
+					}
+					$scope.$parent.go("/environments");
 				}
 				else{
 					return cb();

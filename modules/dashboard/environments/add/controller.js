@@ -157,6 +157,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 							});
 						}
 					}
+					
+					// delete step if empty // dont show empty accordeon
+					if(fromOverview && (apiTemplateDeployInfo[stage][group][stepName] && Object.keys(apiTemplateDeployInfo[stage][group][stepName]).length === 0)){
+						delete apiTemplateDeployInfo[stage][group][stepName];
+					}
 				}
 			}
 		}

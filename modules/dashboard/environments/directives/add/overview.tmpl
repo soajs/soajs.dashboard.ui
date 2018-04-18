@@ -14,7 +14,8 @@
 					</tr>
 					<tr ng-if="!isObjEmpty(obj.value)">
 						<td valign="top"><label>Value</label></td>
-						<td style="padding: 10px"><span><pre><code class="javascript">{{obj.value | json}}</code></pre></span></td>
+						<td style="padding: 10px"><span><pre><code class="javascript">{{obj.value | json}}</code></pre></span>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -80,7 +81,8 @@
 				</tr>
 				<tr ng-if="!isObjEmpty(resource.config)">
 					<td valign="top"><label>Config</label></td>
-					<td style="padding: 10px"><span><pre><code class="javascript">{{resource.config | json}}</code></pre></span></td>
+					<td style="padding: 10px"><span><pre><code class="javascript">{{resource.config | json}}</code></pre></span>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -211,7 +213,8 @@
 				</tr>
 				<tr ng-if="!isObjEmpty(repo.options.custom.sourceCode)">
 					<td valign="top"><label>Source Code</label></td>
-					<td style="padding: 10px"><span><pre><code class="javascript">{{repo.options.custom.sourceCode | json}}</code></pre></span></td>
+					<td style="padding: 10px"><span><pre><code class="javascript">{{repo.options.custom.sourceCode | json}}</code></pre></span>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -274,14 +277,19 @@
 	<accordion-group is-open="true">
 		<accordion-heading>Template</accordion-heading>
 		
+		<accordion-group is-open="true" ng-if="overview.selectedInfraProvider">
+			<div>
+				<accordion-heading>Cluster</accordion-heading>
+				<div ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>
+			</div>
+			<br>
+		</accordion-group>
+		
 		<div ng-repeat="deployMain in ['database','deployments']">
 			<div ng-repeat="(stepKey, stepData) in overview.template.deploy[deployMain]">
 				<div ng-repeat="(stageKey, stageData) in overview.template.deploy[deployMain][stepKey]">
 					
 					<accordion-group is-open="true">
-						
-						<div ng-if="stageKey.include('infra.cluster.deploy')" ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>
-						
 						<div ng-if="stageKey ==='custom_registry'">
 							<accordion-heading>Custom Registry</accordion-heading>
 							<ul class="nonBulletPoint">
@@ -327,7 +335,7 @@
 								<li ng-repeat="repo in overview.template.deploy[deployMain][stepKey][stageKey].imfv" ng-include="'repo.html'"></li>
 							</ul>
 						</div>
-						
+					
 					</accordion-group>
 					<br>
 				</div>

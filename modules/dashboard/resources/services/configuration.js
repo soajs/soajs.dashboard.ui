@@ -43,7 +43,6 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 			injectFiles.injectCss(cssFile);
 			
 			buildForm(currentScope, null, formConfig, function(){
-				currentScope.form.refresh();
 				injectFiles.injectCss(cssFile);
 				return cb(null, true);
 			});
@@ -190,7 +189,14 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 				}
 				if(resource && resource.config && resource.config[parentName] && Array.isArray(resource.config[parentName])){
 					if(resource.config[parentName][countValue]){
-						oneEntry.value = resource.config[parentName][countValue][oneEntry.name];
+						if(oneEntry.type === 'text'){
+							oneEntry.value = resource.config[parentName][countValue][oneEntry.name];
+							oneEntry.value = oneEntry.value.toString();
+							
+							if(currentScope.form && currentScope.form.formData){
+								currentScope.form.formData[oneEntry.name + countValue] = oneEntry.value;
+							}
+						}
 					}
 				}
 				if(oneEntry.name){

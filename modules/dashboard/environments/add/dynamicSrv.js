@@ -650,7 +650,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					}
 					
 					if(isKubernetes){
-						resource.scope.enableAutoScale = true;
+						resource.scope.enableAutoScale = (Object.hasOwnProperty.call(record, 'enableAutoScale')) ? record.enableAutoScale : true;
 					}
 					
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
@@ -728,7 +728,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								//map the values back to custom registry
 								let imfv = angular.copy(resource.scope.formData);
 								imfv.name = key; //force the name back as it was
-
+								imfv.enableAutoScale = resource.scope.options.enableAutoScale;
 								if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
 									imfv.deploy = {
 										"options": {

@@ -106,7 +106,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		for( let stage in apiTemplateDeployInfo ){
 			for( let group in apiTemplateDeployInfo[stage] ){
 				for( let stepName in apiTemplateDeployInfo[stage][group]){
-					if(stepName.indexOf(".repo.") !== -1){
+					if(stepName.includes(".resources.")){
+						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0) {
+							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneResourceImfv) => {
+								delete oneResourceImfv.enableAutoScale;
+							});
+						}
+					}
+					
+					if(stepName.includes(".repo.")){
 						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0){
 							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneRepoImfv) => {
 								if(oneRepoImfv.serviceName === 'controller'){

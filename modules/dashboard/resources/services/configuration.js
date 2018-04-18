@@ -190,7 +190,14 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 				}
 				if(resource && resource.config && resource.config[parentName] && Array.isArray(resource.config[parentName])){
 					if(resource.config[parentName][countValue]){
-						oneEntry.value = resource.config[parentName][countValue][oneEntry.name];
+						if(oneEntry.type === 'text'){
+							resource.config[parentName][countValue][oneEntry.name] = resource.config[parentName][countValue][oneEntry.name].toString();
+							oneEntry.value = resource.config[parentName][countValue][oneEntry.name];
+							
+							if(currentScope.form && currentScope.form.formData){
+								currentScope.form.formData[oneEntry.name + countValue] = oneEntry.value;
+							}
+						}
 					}
 				}
 				if(oneEntry.name){

@@ -48,6 +48,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 						'label': "Back",
 						'btn': 'success',
 						'action': function () {
+							currentScope.referringStep = 'nginx';
 							if (currentScope.form && currentScope.form.formData) {
 								currentScope.form.formData = {};
 							}

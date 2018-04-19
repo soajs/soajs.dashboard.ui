@@ -877,6 +877,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 				else {
 					currentScope.deploymentStackStep = 0;
+					if(['registry', 'deploy'].indexOf(currentScope.referringStep) === -1){
+						currentScope.deploymentStackStep = stack.length -1;
+					}
 					processStack(currentScope, stack);
 				}
 			});

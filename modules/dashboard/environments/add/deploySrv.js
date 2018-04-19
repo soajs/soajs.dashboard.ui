@@ -267,6 +267,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				'label': "Next",
 				'btn': 'primary',
 				'action': function (formData) {
+					currentScope.referringStep = 'deploy';
 					handleFormData(currentScope, formData);
 				}
 			});

@@ -74,6 +74,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 					'label': "Next",
 					'btn': 'primary',
 					'action': function (formData) {
+						currentScope.referringStep = 'registry';
 						handleFormData(currentScope, formData);
 					}
 				});

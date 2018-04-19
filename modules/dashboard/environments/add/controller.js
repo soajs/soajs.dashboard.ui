@@ -13,7 +13,6 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	
 	function triggerMethod(counter) {
 		let method = $scope.steps[counter];
-		console.log("calling method", method);
 		$scope[method]();
 	}
 	

@@ -1,6 +1,7 @@
 "use strict";
 var dynamicServices = soajsApp.components;
 dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$compile', 'customRegistrySrv', 'resourceDeploy', 'resourceConfiguration', 'secretsService', 'deployRepos', 'deployServiceDep', function (ngDataApi, $timeout, $modal, $localStorage, $window, $compile, customRegistrySrv, resourceDeploy, resourceConfiguration, secretsService, deployRepos, deployServiceDep) {
+	let defaultWizardSecretValues = [];
 	
 	let predefinedSchemaSteps = {
 		custom_registry: {
@@ -95,29 +96,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let secretKey = entriesNames[counter];
 					let oneSecret = secretEntries[secretKey];
 					
-					let record = {
-						secretName: oneSecret.name,
-						secretData: oneSecret.data
-					};
-					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-						record = {
-							secretName: currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].name,
-							textMode: (currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'text'),
-						};
-						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'file'){
-							record['secretFile']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
-						}
-						else{
-							record['secretData']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
-							if(!record.textMode){
-								record['secretData'] = JSON.parse(record['secretData']);
-							}
-						}
-					}
-					
-					oneSecret.scope = currentScope.$new(true); //true means detached from main currentScope
-					oneSecret.scope.selectedEnvironment = {code: currentScope.envCode};
-					currentScope.selectedEnvironment = {code: currentScope.envCode};
 					currentScope.namespaceConfig = namespaceConfig;
 					
 					let extraInputs = [];
@@ -134,6 +112,35 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						];
 					}
+					
+					let record = {
+						secretName: oneSecret.name,
+						secretData: oneSecret.data
+					};
+					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
+						record = {
+							secretName: currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].name,
+							textMode: (currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'text'),
+						};
+						
+						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'file'){
+							record['secretFile']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
+						}
+						else{
+							record['secretData']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
+							if(!record.textMode){
+								record['secretData'] = JSON.parse(record['secretData']);
+							}
+						}
+						
+						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].namespace){
+							record.namespace = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].namespace;
+						}
+					}
+					
+					oneSecret.scope = currentScope.$new(true); //true means detached from main currentScope
+					oneSecret.scope.selectedEnvironment = {code: currentScope.envCode};
+					currentScope.selectedEnvironment = {code: currentScope.envCode};
 					
 					secretsService.addSecret(oneSecret.scope, null, currentScope, [], extraInputs, record, () => {
 						let element = angular.element(document.getElementById("secret_" + secretKey));
@@ -220,6 +227,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
 					
+					defaultWizardSecretValues = [];
 					let entriesCount = 0;
 					for (let secretName in secretEntries) {
 						let oneSecret = secretEntries[secretName];
@@ -232,6 +240,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 										oneSecret = imfv;
 										delete oneSecret.scope;
 										currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
+										defaultWizardSecretValues.push(oneSecret);
 										entriesCount++;
 										if(entriesCount === Object.keys(secretEntries).length){
 											//trigger next here
@@ -371,10 +380,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						
 						if(deployFromTemplate.memoryLimit){
-							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = deployFromTemplate.memoryLimit * 1048576;
-								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.memoryLimit = deployFromTemplate.memoryLimit * 1048576;
-							}
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 						}
 						
 						if(deployFromTemplate.mode){
@@ -462,8 +468,26 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 					
+					//todo: defaultWizardSecretValues
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
+						oneRepo.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
+						if(currentScope.wizard.deployment.previousEnvironment){
+							oneRepo.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
+						}
+						else{
+							$localStorage.environments.forEach((oneEnv) => {
+								if(!kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
+									oneRepo.scope.kubeEnv = oneEnv.code;
+								}
+							});
+						}
+					}
+					if(defaultWizardSecretValues && defaultWizardSecretValues.length > 0){
+						oneRepo.scope.defaultWizardSecretValues = angular.copy(defaultWizardSecretValues);
+						oneRepo.scope.defaultWizardSecretValues.forEach((oneTemplateSecret) =>{
+							oneTemplateSecret.uid = "from-template-" + oneTemplateSecret.name.toLowerCase();
+						});
 					}
 					
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
@@ -657,6 +681,24 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					
 					if(isKubernetes){
 						resource.scope.enableAutoScale = (Object.hasOwnProperty.call(record, 'enableAutoScale')) ? record.enableAutoScale : true;
+						resource.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
+						if(currentScope.wizard.deployment.previousEnvironment){
+							resource.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
+						}
+						else{
+							$localStorage.environments.forEach((oneEnv) => {
+								if(!kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
+									resource.scope.kubeEnv = oneEnv.code;
+								}
+							});
+						}
+					}
+					
+					if(defaultWizardSecretValues && defaultWizardSecretValues.length > 0){
+						resource.scope.defaultWizardSecretValues = angular.copy(defaultWizardSecretValues);
+						resource.scope.defaultWizardSecretValues.forEach((oneTemplateSecret) =>{
+							oneTemplateSecret.uid = "from-template-" + oneTemplateSecret.name.toLowerCase();
+						});
 					}
 					
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {

@@ -483,19 +483,26 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		
 		context.getSecrets = function(cb){
 			overlayLoading.show();
+			
+			let params = {
+				env: (context.kubeEnv)? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
+			};
+			
+			if(currentScope.envPlatform === 'kubernetes' && context.kubeNamespace){
+				params.namespace = context.kubeNamespace;
+			}
+			
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/secrets/list',
-				params: {
-					env: currentScope.envCode.toUpperCase(),
-				}
+				params: params
 			}, function (error, secrets) {
 				if (error) {
 					context.displayAlert('danger', error.message);
 				}
-				context.secrets = [];
+				context.secrets = context.defaultWizardSecretValues || [];
 				if (secrets && Array.isArray(secrets) && secrets.length > 0) {
-					context.secrets = secrets;
+					context.secrets = context.secrets.concat(secrets);
 				}
 				if (cb) return cb();
 			});

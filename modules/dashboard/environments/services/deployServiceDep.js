@@ -671,19 +671,27 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		};
 		
 		$scope.getSecrets = function (oneEnv, cb) {
+			
+			let params = {
+				env: ($scope.kubeEnv)? $scope.kubeEnv.toUpperCase() : oneEnv.toUpperCase()
+			};
+			
+			if(isKubernetes && $scope.kubeNamespace){
+				params.namespace = $scope.kubeNamespace;
+			}
+			
 			getSendDataFromServer($scope, ngDataApi, {
 				'method': 'get',
 				'routeName': '/dashboard/secrets/list',
-				params: {
-					env: oneEnv.toUpperCase(),
-				}
+				params: params
 			}, function (error, secrets) {
 				if (error) {
 					$scope.displayAlert('danger', error.message);
 				} else {
-					$scope.secrets = [];
+					delete secrets.soajsauth;
+					$scope.secrets = $scope.defaultWizardSecretValues || [];
 					if (secrets && Array.isArray(secrets) && secrets.length > 0) {
-						$scope.secrets = secrets;
+						$scope.secrets = $scope.secrets.concat(secrets);
 					}
 					return cb();
 				}

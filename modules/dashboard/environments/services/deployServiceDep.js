@@ -220,15 +220,16 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		
 		$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
-			$scope.branches.forEach(function (oneBranch) {
-				if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
-					if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
-						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
-						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
+			if($scope.branches){
+				$scope.branches.forEach(function (oneBranch) {
+					if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
+						if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
+						}
 					}
-				}
-			});
-			
+				});
+			}
 		};
 		
 		$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {

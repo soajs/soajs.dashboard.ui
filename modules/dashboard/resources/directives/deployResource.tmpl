@@ -10,7 +10,7 @@
 	<div>
 		<label>Deployment Name</label>
 		<input type="text" class="form-control" ng-model="formData.deployOptions.custom.name" ng-required="true" ng-disabled="true"/>
-		<label class="fieldMsg">Choose a name for the new deployment</label>
+		<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
 		<br/>
 	</div>
 	<div>
@@ -172,7 +172,7 @@
 		<br/><br/>
 	</div>
 	<fieldset ng-if="options.envPlatform === 'kubernetes' && formData.deployOptions.deployConfig.replication.mode === 'deployment'" ng-class="{'autoScale':!options.enableAutoScale}">
-		<legend>Auto Scale <input type="checkbox" ng-model="options.enableAutoScale"></legend>
+		<legend>Auto Scale <label class="switch"><input type="checkbox" ng-model="options.enableAutoScale"><span class="buttonSlider round"></span></label></legend>
 		<fieldset ng-if="options.enableAutoScale">
 			<legend>Metrics</legend>
 			<div>

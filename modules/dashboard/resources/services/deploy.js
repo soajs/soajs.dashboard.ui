@@ -593,7 +593,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			context.setExposedPorts(selectedRecipe, cb);
 		};
 		
-		context.updateDeploymentName = function () {
+		context.updateDeploymentName = function (resourceName) {
+			resourceName = (resourceName) ? resourceName.toLowerCase() : '';
+			context.formData.name = resourceName;
+			
 			if (context.formData.canBeDeployed) {
 				if (!context.formData.deployOptions) {
 					context.formData.deployOptions = {};
@@ -601,19 +604,19 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				if (!context.formData.deployOptions.custom) {
 					context.formData.deployOptions.custom = {}
 				}
-				
-				context.formData.deployOptions.custom.name = context.formData.name;
-				context.buildComputedHostname();
+				context.formData.deployOptions.custom.name = resourceName;
 			}
+			
+			context.buildComputedHostname(resourceName);
 		};
 		
-		context.buildComputedHostname = function () {
+		context.buildComputedHostname = function (resourceName) {
+			
+			context.options.computedHostname = resourceName;
+			
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
-				if (context.envPlatform === 'docker') {
-					context.options.computedHostname = context.formData.deployOptions.custom.name;
-				}
-				else if (context.envPlatform === 'kubernetes') {
-					context.options.computedHostname = context.formData.deployOptions.custom.name + '-service';
+				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
+					context.options.computedHostname = resourceName + '-service';
 					
 					var selected = context.envDeployer.selected.split('.');
 					if (context.envDeployer && context.envDeployer[selected[0]] && context.envDeployer[selected[0]][selected[1]] && context.envDeployer[selected[0]][selected[1]][selected[2]]) {
@@ -623,8 +626,50 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 							context.options.computedHostname += '.' + platformConfig.namespace.default;
 							
 							if (platformConfig.namespace.perService) {
-								context.options.computedHostname += '-' + context.formData.deployOptions.custom.name;
+								context.options.computedHostname += '-' + resourceName;
 							}
+						}
+					}
+				}
+			}
+			
+			
+			if(context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0){
+				for(let $index = context.form.entries.length -1; $index >=0; $index--){
+					let oneEntry = context.form.entries[$index];
+					if(oneEntry.name && oneEntry.name === 'servers0'){
+						oneEntry.entries.forEach((oneSubEntry) => {
+							oneSubEntry.disabled = false;
+							delete oneSubEntry.disabled;
+							context.form.formData[oneSubEntry.name] = '';
+							
+							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
+								oneSubEntry.disabled = true;
+								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+							}
+							if(oneSubEntry.name.includes("port")){
+								oneSubEntry.value = oneSubEntry.value.toString();
+								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
+							}
+							if(oneSubEntry.name.includes("removeserver")){
+								oneSubEntry.value = '<span class=\'icon icon-cross red\'></span>';
+								if(context.formData.canBeDeployed && resourceName && resourceName !== ''){
+									oneSubEntry.value = '';
+								}
+							}
+						});
+					}
+					
+					if(context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0'){
+						context.form.entries.splice($index, 1);
+					}
+					
+					if(oneEntry.name && oneEntry.name === 'anotherservers'){
+						if(context.formData.canBeDeployed){
+							jQuery('#anotherservers').hide();
+						}
+						else{
+							jQuery('#anotherservers').show();
 						}
 					}
 				}
@@ -773,6 +818,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			context.getSecrets(function(cb){
 				context.getCatalogRecipes(cb);
 			});
+			if(context.formData && context.formData.canBeDeployed && resource && resource.name){
+				setTimeout(() => {
+					context.updateDeploymentName(resource.name);
+				}, 200);
+			}
 		}
 		else{
 			context.getSecrets(function (cb) {

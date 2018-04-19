@@ -5,8 +5,8 @@
 			<br />
 			<div>
 				<label>Resource Name</label>
-				<input type="text" class="form-control" ng-model="formData.name" ng-required="true" ng-change="updateDeploymentName()" ng-disabled="options.formAction === 'update'" ng-pattern="/^[a-z0-9]{0,61}$/"/>
-				<label class="fieldMsg">Choose the name of the new resource</label>
+				<input type="text" class="form-control" ng-model="formData.name" ng-required="true" ng-change="updateDeploymentName(formData.name)" ng-disabled="options.formAction === 'update'" ng-pattern="/^[a-z0-9]{0,61}$/"/>
+				<label class="fieldMsg">Choose the name of the new resource, the name value should be small letters only</label>
 				<br />
 			</div>
 			<div>
@@ -87,9 +87,9 @@
 				In the case of this resource, please refer to the {{formData.created}} environment.
 			</alert>
 			<div ng-if="options.formAction !== 'update' || (options.formAction === 'update' && formData.created === options.envCode)">
-				<div>
+				<div ng-show="!hideDeployButton">
 					<label>Deploy this resource as part of this cloud</label>
-					<label class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.canBeDeployed" ng-change="updateDeploymentName()"><span class="buttonSlider round"></span></label>
+					<label class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.canBeDeployed" ng-change="updateDeploymentName(formData.name)"><span class="buttonSlider round"></span></label>
 					<label class="fieldMsg">Plugging a resource makes it accessible via the registry</label>
 					<br /><br />
 				</div>

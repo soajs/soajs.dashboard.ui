@@ -106,7 +106,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		for( let stage in apiTemplateDeployInfo ){
 			for( let group in apiTemplateDeployInfo[stage] ){
 				for( let stepName in apiTemplateDeployInfo[stage][group]){
-					if(stepName.indexOf(".repo.") !== -1){
+					if(stepName.includes(".resources.")){
+						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0) {
+							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneResourceImfv) => {
+								delete oneResourceImfv.enableAutoScale;
+							});
+						}
+					}
+					
+					if(stepName.includes(".repo.")){
 						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0){
 							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneRepoImfv) => {
 								if(oneRepoImfv.serviceName === 'controller'){
@@ -157,6 +165,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 							});
 						}
 					}
+					
+					// delete step if empty // dont show empty accordeon
+					if(fromOverview && (apiTemplateDeployInfo[stage][group][stepName] && Object.keys(apiTemplateDeployInfo[stage][group][stepName]).length === 0)){
+						delete apiTemplateDeployInfo[stage][group][stepName];
+					}
 				}
 			}
 		}
@@ -174,6 +187,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				deploy: apiTemplateDeployInfo
 			}
 		};
+		
+		if(wizard.selectedInfraProvider){
+			output.selectedInfraProvider = wizard.selectedInfraProvider;
+		}
 		
 		if(wizard.nginx && wizard.nginx && wizard.nginx.domain){
 			output.data.domain = wizard.nginx.domain;
@@ -220,6 +237,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				}
 			}, function (error, pendingEnvironment) {
 				overlayLoading.hide();
+				delete pendingEnvironment.soajsauth;
 				
 				if(pendingEnvironment){
 					$scope.environmentId = pendingEnvironment._id;
@@ -230,6 +248,14 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 					delete $scope.wizard.template._id;
 					$scope.goToStep = 'status';
 					$scope.listTemplate();
+				}
+				else if(pendingEnvironment && Object.keys(pendingEnvironment).length > 0){
+					delete $localStorage.addEnv;
+					delete $scope.wizard;
+					if($scope.form){
+						$scope.form.formData = {};
+					}
+					$scope.$parent.go("/environments");
 				}
 				else{
 					return cb();

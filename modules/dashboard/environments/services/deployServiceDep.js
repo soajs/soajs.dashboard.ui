@@ -438,6 +438,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						}
 						
 						//add check, if recipe does not support certificates, do not show the secrets input at all
+						$scope.secretsAllowed = 'none';
 						if(catalogRecipe.recipe.deployOptions.certificates && catalogRecipe.recipe.deployOptions.certificates !== 'none'){
 							$scope.secretsAllowed = catalogRecipe.recipe.deployOptions.certificates;
 						}
@@ -700,7 +701,18 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					delete secrets.soajsauth;
 					$scope.secrets = $scope.defaultWizardSecretValues || [];
 					if (secrets && Array.isArray(secrets) && secrets.length > 0) {
-						$scope.secrets = $scope.secrets.concat(secrets);
+						secrets.forEach((oneSecret) => {
+							let found = false;
+							$scope.secrets.forEach((oneExistingSecret) => {
+								if(oneExistingSecret.name === oneSecret.name){
+									found = true;
+								}
+							});
+							
+							if(!found){
+								$scope.secrets.push(oneSecret);
+							}
+						});
 					}
 					return cb();
 				}

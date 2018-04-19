@@ -136,6 +136,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].namespace){
 							record.namespace = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].namespace;
 						}
+						
+						if(!record.namespace && oneSecret.namespace){
+							record.namespace = oneSecret.namespace;
+						}
 					}
 					
 					oneSecret.scope = currentScope.$new(true); //true means detached from main currentScope
@@ -461,7 +465,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 					
-					//todo: defaultWizardSecretValues
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
 						oneRepo.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;

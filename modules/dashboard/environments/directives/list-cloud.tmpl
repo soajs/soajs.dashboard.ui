@@ -482,3 +482,15 @@
 		</tab>
 	</tabset>
 </section>
+
+<script type="text/ng-template" id="portConfiguration.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-body">
+		<alert type="danger">{{message}}</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="closeModal()">Cancel</button>
+	</div>
+</script>

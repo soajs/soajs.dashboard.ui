@@ -91,12 +91,23 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					});
 				}
 				
+				let nodePort =0, LoadBalancer=0;
+				
 				if (service.ports
 					&& Array.isArray(service.ports)
 					&& service.ports.length > 0){
 					//let ports = [];
+					
 					let inpsectService = angular.copy(service);
 					catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
+						if (oneCatalogPort.isPublished){
+							if (oneCatalogPort.published){
+								nodePort++;
+							}
+							else {
+								LoadBalancer++;
+							}
+						}
 						inpsectService.ports.forEach(function (oneServicePort) {
 							if (oneServicePort.published && oneServicePort.published > 30000){
 								oneServicePort.published -= 30000;
@@ -106,6 +117,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							}
 						});
 					});
+					
 					let publishedPortEntry = {
 						"type": "group",
 						"label": "Published Ports",
@@ -190,46 +202,65 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					
 					formConfig.entries[0].entries.push(publishedPortEntry);
 				}
-				
-				for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
-					if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
-						
-						var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
-						//todo: get value from service.env
-						service.env.forEach(function (oneEnv) {
-							if (oneEnv.indexOf(envVariable) !== -1) {
-								defaultValue = oneEnv.split("=")[1];
-							}
-						});
-						//push a new input for this variable
-						var newInput = {
-							'name': '_ci_' + envVariable,
-							'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
-							'type': 'text',
-							'value': defaultValue,
-							'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
-							'required': false
-						};
-						
-						//if the default value is ***, clear the value and set the field as required
-						//this is applicable for tokens whose values are masked by *
-						if (newInput.value.match(/^\*+$/g)) {
-							newInput.value = '';
-							newInput.required = true;
+				if (LoadBalancer !== 0 && nodePort !== 0){
+					console.log("currentScope.modalInstance.dismiss('cancel')");
+					$modal.open({
+						templateUrl: "portConfiguration.tmpl",
+						size: 'm',
+						backdrop: true,
+						keyboard: true,
+						controller: function ($scope, $modalInstance) {
+							fixBackDrop();
+							$scope.currentScope = currentScope;
+							$scope.title = 'Port Configuration';
+							$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + catalogRecipe.name;
+							$scope.closeModal = function () {
+								$modalInstance.close();
+							};
 						}
-						
-						formConfig.entries[0].entries.push(newInput);
-					}
+					});
 				}
-				
-				checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
-					for (let i = formConfig.entries.length - 1; i >= 0; i--) {
-						if (formConfig.entries[i].entries.length === 0) {
-							formConfig.entries.splice(i, 1);
+				else {
+					for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
+						if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
+							
+							var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
+							//todo: get value from service.env
+							service.env.forEach(function (oneEnv) {
+								if (oneEnv.indexOf(envVariable) !== -1) {
+									defaultValue = oneEnv.split("=")[1];
+								}
+							});
+							//push a new input for this variable
+							var newInput = {
+								'name': '_ci_' + envVariable,
+								'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
+								'type': 'text',
+								'value': defaultValue,
+								'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
+								'required': false
+							};
+							
+							//if the default value is ***, clear the value and set the field as required
+							//this is applicable for tokens whose values are masked by *
+							if (newInput.value.match(/^\*+$/g)) {
+								newInput.value = '';
+								newInput.required = true;
+							}
+							
+							formConfig.entries[0].entries.push(newInput);
 						}
 					}
-					checkifRepoBranch(accounts, catalogRecipe, formConfig);
-				});
+					
+					checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
+						for (let i = formConfig.entries.length - 1; i >= 0; i--) {
+							if (formConfig.entries[i].entries.length === 0) {
+								formConfig.entries.splice(i, 1);
+							}
+						}
+						checkifRepoBranch(accounts, catalogRecipe, formConfig);
+					});
+				}
 			}
 		});
 		

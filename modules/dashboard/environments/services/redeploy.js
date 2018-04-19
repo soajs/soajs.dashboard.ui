@@ -136,7 +136,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 																'type': 'number',
 																'label': 'Published Port',
 																'value': parseInt(oneServicePort.published),
-																'fieldMsg': "Detected Published Port: " + oneServicePort.name + " with internal value " + oneServicePort.target + ". Enter a value if you want to expose this resource to a specific port.",
+																'fieldMsg': "Detected Published Port: " + oneServicePort.name + " with internal value " + oneServicePort.target + ". Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.",
 																"min": 1,
 																"max": 2767
 															}]
@@ -177,11 +177,12 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 										'type': 'number',
 										'label': 'Published Port',
 										'value': parseInt(onePort.published),
-										'fieldMsg': "Detected Published Port: " + onePort.name + " with internal value " + onePort.target + ". Enter a value if you want to expose this resource to a specific port.",
+										'fieldMsg': "Detected Published Port: " + onePort.name + " with internal value " + onePort.target + ". Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.",
 										"min": 1,
 										"max": 2767
 									}]
 								});
+								formConfig.data[onePort.name+onePort.published] = parseInt(onePort.published);
 							}
 							
 						});

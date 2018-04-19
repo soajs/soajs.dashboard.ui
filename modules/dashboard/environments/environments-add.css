@@ -178,3 +178,42 @@ input:checked + .buttonSlider:before {
     margin-bottom: 0;
     margin-top: 3px;
 }
+
+.repos .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+
+}
+
+.repos .ui-select-multiple.ui-select-bootstrap {
+    display: block!important;
+    float: left;
+    height: auto;
+    min-height: 60px;
+    width: 95%!important;
+}
+
+label.secretMountPathRepo{
+    float: none!important;
+}
+input.secretMountPathRepo{
+    float: none!important;
+    width:96%!important;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap {
+    min-height: 60px;
+    height: auto!important;
+}
+
+label.secretMountPathResource{
+    float: none!important;
+}
+
+input.secretMountPathResource{
+    float: none!important;
+    width:100%!important;
+}

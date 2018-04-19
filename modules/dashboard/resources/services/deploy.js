@@ -361,23 +361,27 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				
 				// take source code configuration from cicd on edit
-				if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
-					context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
-					
-					// reconstruct complex repo on load
-					if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
-						let subName = "";
-						if (context.formData.deployOptions.sourceCode.custom.subName) {
-							subName = context.formData.deployOptions.sourceCode.custom.subName;
-						}
-						context.formData.deployOptions.sourceCode.custom.repo = context.formData.deployOptions.sourceCode.custom.repo + "__SOAJS_DELIMITER__" + subName;
-					}
-				}
+				updateCustomRepoName();
 				
 				context.buildComputedHostname();
 				
 			}
 		};
+		
+		function updateCustomRepoName(){
+			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
+				context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
+				
+				// reconstruct complex repo on load
+				if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
+					let subName = "";
+					if (context.formData.deployOptions.sourceCode.custom.subName) {
+						subName = context.formData.deployOptions.sourceCode.custom.subName;
+					}
+					context.formData.deployOptions.sourceCode.custom.repo = context.formData.deployOptions.sourceCode.custom.repo + "__SOAJS_DELIMITER__" + subName;
+				}
+			}
+		}
 		
 		context.setSourceCodeData = function (selectedRecipe) {
 			let customType;
@@ -876,6 +880,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		}
 		else{
+			//this is called by add env wizard.
+			updateCustomRepoName();
 			context.getSecrets(function (cb) {
 				context.displayRecipeInputs(cb);
 			});

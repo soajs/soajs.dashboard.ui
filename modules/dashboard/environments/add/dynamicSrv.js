@@ -171,13 +171,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(currentScope.wizard.deployment.previousEnvironment){
 						kubeEnv = currentScope.wizard.deployment.previousEnvironment;
 					}
-					else{
-						$localStorage.environments.forEach((oneEnv) => {
-							if(!kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
-								kubeEnv = oneEnv.code;
-							}
-						});
-					}
 					
 					if(!kubeEnv){
 						namespaces = [];
@@ -472,17 +465,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
 						oneRepo.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
-						if(currentScope.wizard.deployment.previousEnvironment){
-							oneRepo.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
-						}
-						else{
-							$localStorage.environments.forEach((oneEnv) => {
-								if(!oneRepo.scope.kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
-									oneRepo.scope.kubeEnv = oneEnv.code;
-								}
-							});
-						}
 					}
+					
+					oneRepo.scope.kubeEnv = 'invalid';
+					if(currentScope.wizard.deployment.previousEnvironment){
+						oneRepo.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
+					}
+					
 					if(defaultWizardSecretValues && defaultWizardSecretValues.length > 0){
 						oneRepo.scope.defaultWizardSecretValues = angular.copy(defaultWizardSecretValues);
 						oneRepo.scope.defaultWizardSecretValues.forEach((oneTemplateSecret) =>{
@@ -682,16 +671,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(isKubernetes){
 						resource.scope.enableAutoScale = (Object.hasOwnProperty.call(record, 'enableAutoScale')) ? record.enableAutoScale : true;
 						resource.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
-						if(currentScope.wizard.deployment.previousEnvironment){
-							resource.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
-						}
-						else{
-							$localStorage.environments.forEach((oneEnv) => {
-								if(!resource.scope.kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
-									resource.scope.kubeEnv = oneEnv.code;
-								}
-							});
-						}
+					}
+					
+					resource.scope.kubeEnv = 'invalid';
+					if(currentScope.wizard.deployment.previousEnvironment){
+						resource.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
 					}
 					
 					if(defaultWizardSecretValues && defaultWizardSecretValues.length > 0){

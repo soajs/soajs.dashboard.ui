@@ -32,6 +32,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		context.configReposBranches = {};
 		context.configReposBranchesStatus = {};
 		
+		context.secretsAllowed = 'none';
 		context.resourceDeployed = false;
 		if (resource && resource.instance && resource.instance.id) {
 			context.resourceDeployed = true;
@@ -483,6 +484,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		
 		context.getSecrets = function(cb){
 			overlayLoading.show();
+			if(context.kubeEnv && context.kubeEnv === 'invalid'){
+				return cb();
+			}
 			
 			let params = {
 				env: (context.kubeEnv)? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
@@ -585,6 +589,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 									tag: context.formData.deployOptions.custom.image.tag || ''
 								};
 							}
+						}
+						
+						//add check, if recipe does not support certificates, do not show the secrets input at all
+						if(context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none'){
+							context.secretsAllowed = context.recipes[i].recipe.deployOptions.certificates;
 						}
 					}
 				}

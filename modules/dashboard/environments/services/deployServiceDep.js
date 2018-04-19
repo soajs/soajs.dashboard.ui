@@ -189,6 +189,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		if(!$scope.oneEnv){
 			$scope.oneEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toUpperCase();
 		}
+		$scope.secretsAllowed = 'none';
 		$scope.cdEnvs = [$scope.oneEnv];
 		$scope.deployed = false;
 		$scope.recipes = angular.copy(currentScope.recipes);
@@ -435,6 +436,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 							}
 							$scope.allowGitOverride = true;
 						}
+						
+						//add check, if recipe does not support certificates, do not show the secrets input at all
+						if(catalogRecipe.recipe.deployOptions.certificates && catalogRecipe.recipe.deployOptions.certificates !== 'none'){
+							$scope.secretsAllowed = catalogRecipe.recipe.deployOptions.certificates;
+						}
 					}
 				});
 			}
@@ -671,6 +677,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		};
 		
 		$scope.getSecrets = function (oneEnv, cb) {
+			if($scope.kubeEnv && $scope.kubeEnv === 'invalid'){
+				return cb();
+			}
 			
 			let params = {
 				env: ($scope.kubeEnv)? $scope.kubeEnv.toUpperCase() : oneEnv.toUpperCase()

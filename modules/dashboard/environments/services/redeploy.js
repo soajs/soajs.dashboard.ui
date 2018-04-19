@@ -95,9 +95,9 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					&& Array.isArray(service.ports)
 					&& service.ports.length > 0){
 					//let ports = [];
-					
+					let inpsectService = angular.copy(service);
 					catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
-						service.ports.forEach(function (oneServicePort) {
+						inpsectService.ports.forEach(function (oneServicePort) {
 							if (oneServicePort.published && oneServicePort.published > 30000){
 								oneServicePort.published -= 30000;
 							}
@@ -111,7 +111,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						"label": "Published Ports",
 						"entries": []
 					};
-					currentScope.loadBalancer = (service.servicePortType === 'loadBalancer');
+					currentScope.loadBalancer = (inpsectService.servicePortType === 'loadBalancer');
 					
 					publishedPortEntry.entries.push({
 						'name': "loadBalancer",
@@ -125,7 +125,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 									oneEntry.entries.forEach((oneSubEntry) => {
 										if(oneSubEntry.label === "Published Ports"){
 											if (!value && oneSubEntry.entries){
-												service.ports.forEach(function (oneServicePort) {
+												inpsectService.ports.forEach(function (oneServicePort) {
 													if(oneServicePort.published) {
 														oneSubEntry.entries.push({
 															"name": "group-" + oneServicePort.name,
@@ -159,7 +159,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							formConfig.data = {};
 						}
 						formConfig.data.ports = [];
-						service.ports.forEach(function (onePort, key) {
+						inpsectService.ports.forEach(function (onePort, key) {
 							formConfig.data.ports.push({
 								"name": onePort.name,
 								"target": parseInt(onePort.target),
@@ -183,6 +183,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 									}]
 								});
 							}
+							
 						});
 					}
 					

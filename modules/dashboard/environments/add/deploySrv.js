@@ -174,6 +174,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		currentScope.nextStep();
 	}
 	
+	function setIsManualHidden(currentScope) {
+		
+	}
+	
 	function go(currentScope) {
 		
 		mainScope = currentScope;
@@ -206,6 +210,22 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			currentScope.form.formData.deployment[technology].myCloudProvider = myCloudProvider.v;
 			currentScope.cloudProviderHelpLink[technology] = myCloudProvider.help[technology];
 		};
+		
+		let showManual = true; // show manual iff none of the stages is repos/resources/secrets deployment
+		if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
+			let deployments = currentScope.wizard.template.deploy.deployments;
+			let stepsKeys = Object.keys(deployments);
+			stepsKeys.forEach(function (eachStep) {
+				if(deployments[eachStep]){
+					let stagesKeys = Object.keys(deployments[eachStep]);
+					stagesKeys.forEach(function (eachStage) {
+						if(eachStage.includes('.repo.') || eachStage.includes('.resources.') || eachStage.includes('secrets')){
+							showManual = false;
+						}
+					});
+				}
+			});
+		}
 		
 		overlayLoading.show();
 		currentScope.previousPlatformDeployment = false;
@@ -301,7 +321,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				docker: currentScope.form.formData.selectedDriver === 'docker' || false,
 				kubernetes: currentScope.form.formData.selectedDriver === 'kubernetes' || false,
 				manual: currentScope.form.formData.selectedDriver === 'manual' || false,
-				previous: currentScope.previousEnvironment
+				previous: currentScope.previousEnvironment,
+				showManual : showManual
 			};
 			
 			if (currentScope.previousEnvironment && currentScope.previousEnvironment !== '') {
@@ -310,7 +331,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					docker: false,
 					kubernetes: false,
 					manual: false,
-					previous: currentScope.previousEnvironment
+					previous: currentScope.previousEnvironment,
+					showManual : showManual
 				};
 				renderPreviousDeployInfo(currentScope);
 			}

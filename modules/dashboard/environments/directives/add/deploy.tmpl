@@ -185,7 +185,7 @@
 			</tbody>
 		</table>
 	</accordion-group>
-	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')">
+	<accordion-group ng-show="platforms.showManual" is-open="platforms.manual" ng-click="switchDriver('manual')">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.manual" value="true" name="manual" disabled/>&nbsp;
 			I will Deploy Everything Manually on my Local Machine or a My Custom Server

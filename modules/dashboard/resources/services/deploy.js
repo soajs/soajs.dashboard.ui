@@ -485,6 +485,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		context.getSecrets = function(cb){
 			overlayLoading.show();
 			if(context.kubeEnv && context.kubeEnv === 'invalid'){
+				if(context.defaultWizardSecretValues){
+					context.secrets = context.defaultWizardSecretValues;
+				}
 				return cb();
 			}
 			

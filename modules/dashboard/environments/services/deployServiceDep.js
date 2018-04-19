@@ -679,6 +679,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		
 		$scope.getSecrets = function (oneEnv, cb) {
 			if($scope.kubeEnv && $scope.kubeEnv === 'invalid'){
+				if($scope.defaultWizardSecretValues){
+					$scope.secrets = $scope.defaultWizardSecretValues;
+				}
 				return cb();
 			}
 			

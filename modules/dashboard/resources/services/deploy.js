@@ -20,6 +20,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
+		context.catalogConflictingPorts = '';
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
 		context.message = {};
@@ -783,6 +784,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				context.formData.deployOptions.custom.ports = ports;
 			}
+			context.catalogConflictingPorts = '';
 			if(selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
 				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
 				&& selectedRecipe.recipe.deployOptions.ports.length > 0 ) {
@@ -817,22 +819,27 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 				if (loadBalancer !== 0 && nodePort !==0){
-					$modalInstance.close();
-					$modal.open({
-						templateUrl: "portConfiguration.tmpl",
-						size: 'm',
-						backdrop: true,
-						keyboard: true,
-						controller: function ($scope, $modalInstance) {
-							fixBackDrop();
-							$scope.currentScope = currentScope;
-							$scope.title = 'Port Configuration';
-							$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
-							$scope.closeModal = function () {
-								$modalInstance.close();
-							};
-						}
-					});
+					if($modalInstance){
+						$modalInstance.close();
+						$modal.open({
+							templateUrl: "portConfiguration.tmpl",
+							size: 'm',
+							backdrop: true,
+							keyboard: true,
+							controller: function ($scope, $modalInstance) {
+								fixBackDrop();
+								$scope.currentScope = currentScope;
+								$scope.title = 'Port Configuration';
+								$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
+								$scope.closeModal = function () {
+									$modalInstance.close();
+								};
+							}
+						});
+					}
+					else{
+						context.catalogConflictingPorts = selectedRecipe.name;
+					}
 				}
 			}
 			if (ports && !recipe){

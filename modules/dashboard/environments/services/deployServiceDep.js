@@ -181,7 +181,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			var envPlatform = envDeployer.selected.split('.')[1];
 			isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
 		}
-		
+		$scope.catalogConflictingPorts = '';
 		$scope.controllerScope = currentScope;
 		$scope.isKubernetes = isKubernetes;
 		$scope.deployNewService = true;
@@ -463,6 +463,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.setExposedPorts = function (oneEnv, version, oneSrv, selectedRecipe, cb) {
 			let ports;
 			let recipe = false;
+			$scope.catalogConflictingPorts = '';
 			if ($scope.services && $scope.services[oneSrv] && $scope.services[oneSrv].deploySettings
 				&& $scope.services[oneSrv].deploySettings.options
 				&& $scope.services[oneSrv].deploySettings.options.custom
@@ -506,24 +507,29 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				});
 				if (loadBalancer !== 0 && nodePort !==0){
-					// todo fix this!
 					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports = [];
-					$modalInstance.close();
-					$modal.open({
-						templateUrl: "portConfiguration.tmpl",
-						size: 'm',
-						backdrop: true,
-						keyboard: true,
-						controller: function ($scope, $modalInstance) {
-							fixBackDrop();
-							$scope.currentScope = currentScope;
-							$scope.title = 'Port Configuration';
-							$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
-							$scope.closeModal = function () {
-								$modalInstance.close();
-							};
-						}
-					});
+					if($modalInstance){
+						$modalInstance.close();
+						
+						$modal.open({
+							templateUrl: "portConfiguration.tmpl",
+							size: 'm',
+							backdrop: true,
+							keyboard: true,
+							controller: function ($scope, $modalInstance) {
+								fixBackDrop();
+								$scope.currentScope = currentScope;
+								$scope.title = 'Port Configuration';
+								$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
+								$scope.closeModal = function () {
+									$modalInstance.close();
+								};
+							}
+						});
+					}
+					else{
+						$scope.catalogConflictingPorts = selectedRecipe.name;
+					}
 				}
 				if (ports && !recipe){
 					//get the type of the ports

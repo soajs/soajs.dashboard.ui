@@ -493,6 +493,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							oneRepo.formIsInvalid = $invalid;
 						});
 						
+						oneRepo.scope.$watch('catalogConflictingPorts', (value) => {
+							currentScope.loadingDynamicSection = false;
+							if(value && value !==''){
+								currentScope.loadingDynamicSection = true;
+								
+							}
+						});
+						
 						counter++;
 						if (counter < entriesNames.length) {
 							buildMyForms(counter, cb);
@@ -733,6 +741,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							
 							resource.scope.$watch("addEditResource.$invalid", function($invalid){
 								resource.formIsInvalid = $invalid;
+							});
+							
+							resource.scope.$watch('catalogConflictingPorts', (value) => {
+								currentScope.loadingDynamicSection = false;
+								if(value && value !==''){
+									currentScope.loadingDynamicSection = true;
+									
+								}
 							});
 							
 							counter++;

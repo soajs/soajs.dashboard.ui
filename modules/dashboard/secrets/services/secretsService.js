@@ -151,6 +151,10 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', functi
 		buildForm($scope, $modalInstance, options, function () {
 			$scope.editor = $scope.form.entries[1].tabs[0].entries[1];
 			
+			if(data && data.namespace && extraInputs && Array.isArray(extraInputs) && extraInputs.length > 0){
+				$scope.form.formData.namespace = data.namespace;
+			}
+			
 			if(cb && typeof cb === 'function'){
 				return cb();
 			}

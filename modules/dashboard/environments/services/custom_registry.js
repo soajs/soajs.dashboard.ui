@@ -126,7 +126,9 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 					});
 				}
 				
+				overlayLoading.show();
 				internalCustomRegistryFormManagement($scope, currentScope.envCode, $modalInstance, customRegistry, action, save, cancel, currentScope.access, currentScope.getLast, currentScope.listCustomRegistry);
+				overlayLoading.hide();
 			}
 		});
 	}
@@ -246,12 +248,10 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 		
 		$scope.getEnvs = function () {
 			$scope.envs = {};
-			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/environment/list'
 			}, function (error, envs) {
-				overlayLoading.hide();
 				if (error) {
 					$scope.displayAlert('danger', error.message);
 				}

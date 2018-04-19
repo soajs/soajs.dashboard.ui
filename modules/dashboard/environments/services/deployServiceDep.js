@@ -318,7 +318,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				}
 			}
-			else if ($scope.isAutoScalable
+			else if (!$scope.noCDoverride && $scope.isAutoScalable
 				&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig
 				&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication
 				&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode

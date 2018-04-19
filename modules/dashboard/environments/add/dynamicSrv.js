@@ -477,7 +477,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						else{
 							$localStorage.environments.forEach((oneEnv) => {
-								if(!kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
+								if(!oneRepo.scope.kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
 									oneRepo.scope.kubeEnv = oneEnv.code;
 								}
 							});
@@ -687,7 +687,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						else{
 							$localStorage.environments.forEach((oneEnv) => {
-								if(!kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
+								if(!resource.scope.kubeEnv && oneEnv.code.toUpperCase() !== currentScope.wizard.gi.code.toUpperCase() && oneEnv.deployer.selected.indexOf('kubernetes') !== -1){
 									resource.scope.kubeEnv = oneEnv.code;
 								}
 							});

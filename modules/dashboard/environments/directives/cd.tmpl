@@ -81,10 +81,10 @@
 		</div>
 	</fieldset>
 	
-	<fieldset class="repos" ng-if="secrets">
+	<fieldset class="repos" ng-if="secrets && secretsAllowed !=='none'">
 		<legend>Secret</legend>
 		<div>
-			<ui-select multiple theme="bootstrap" ng-model= "cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true" >
+			<ui-select multiple theme="bootstrap" ng-model= "cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true" ng-required="secretsAllowed === 'required'">
 				<ui-select-match placeholder="Select secret...">{{$item.name}}</ui-select-match>
 				<ui-select-choices repeat="secret in secrets | filter: {name: $select.search}">
 					<div ng-bind-html="secret.name | highlight: $select.search"></div>
@@ -99,7 +99,7 @@
 				<legend>Mount Path</legend>
 				<div ng-repeat="secret in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets">
 					<label class = "secretMountPathRepo" >{{secret.name}}</label><br />
-					<input type="text" class="form-control secretMountPathRepo" ng-model="secret.mountPath" ng-disabled="false"/>
+					<input type="text" class="form-control secretMountPathRepo" ng-model="secret.mountPath" ng-disabled="false" ng-required="true"/>
 					<label class="fieldMsg">Provide a mount path for your secret. Mount path are used from within the containers.</label>
 					<br /><br/>
 				</div>

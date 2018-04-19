@@ -485,6 +485,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 		context.getSecrets = function(cb){
 			overlayLoading.show();
 			if(context.kubeEnv && context.kubeEnv === 'invalid'){
+				if(context.defaultWizardSecretValues){
+					context.secrets = context.defaultWizardSecretValues;
+				}
 				return cb();
 			}
 			
@@ -506,7 +509,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				}
 				context.secrets = context.defaultWizardSecretValues || [];
 				if (secrets && Array.isArray(secrets) && secrets.length > 0) {
-					context.secrets = context.secrets.concat(secrets);
+					secrets.forEach((oneSecret) => {
+						let found = false;
+						context.secrets.forEach((oneExistingSecret) => {
+							if(oneExistingSecret.name === oneSecret.name){
+								found = true;
+							}
+						});
+						
+						if(!found){
+							context.secrets.push(oneSecret);
+						}
+					});
 				}
 				if (cb) return cb();
 			});
@@ -592,6 +606,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 						}
 						
 						//add check, if recipe does not support certificates, do not show the secrets input at all
+						context.secretsAllowed = 'none';
 						if(context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none'){
 							context.secretsAllowed = context.recipes[i].recipe.deployOptions.certificates;
 						}

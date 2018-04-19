@@ -84,6 +84,16 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 								};
 							}
 							
+							if (currentScope.response[step].data && currentScope.response[step].data.length > 0) {
+								let finalData = {};
+								currentScope.response[step].data.forEach((oneData) => {
+									for(let s in oneData){
+										finalData[s] = oneData[s];
+									}
+								});
+								currentScope.response[step].data = [finalData];
+							}
+							
 							currentScope.response[parent].children.push({
 								child: child,
 								data: angular.copy(currentScope.response[step])

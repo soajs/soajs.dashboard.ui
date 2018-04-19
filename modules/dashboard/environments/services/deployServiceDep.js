@@ -174,7 +174,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		
 	}
 	
-	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes, cb) {
+	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes, $modalInstance, cb) {
 		if(isKubernetes === undefined){
 			//re-calculate isKubernetes
 			var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
@@ -507,7 +507,23 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				});
 				if (loadBalancer !== 0 && nodePort !==0){
 					// todo fix this!
-					// return cb(new Error("Invalid Port Configuration Detected"));
+					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports = [];
+					$modalInstance.close();
+					$modal.open({
+						templateUrl: "portConfiguration.tmpl",
+						size: 'm',
+						backdrop: true,
+						keyboard: true,
+						controller: function ($scope, $modalInstance) {
+							fixBackDrop();
+							$scope.currentScope = currentScope;
+							$scope.title = 'Port Configuration';
+							$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
+							$scope.closeModal = function () {
+								$modalInstance.close();
+							};
+						}
+					});
 				}
 				if (ports && !recipe){
 					//get the type of the ports

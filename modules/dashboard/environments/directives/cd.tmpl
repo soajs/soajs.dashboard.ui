@@ -66,7 +66,7 @@
 			<label class="fieldMsg">Turn on to use Load Balancer</label>
 			<br /><br/>
 		</div>
-		<div ng-if="!cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-repeat="exposedPorts in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports">
+		<div ng-if="!cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-repeat="exposedPorts in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports track by exposedPorts.target">
 			<fieldset ng-if="exposedPorts.isPublished || exposedPorts.published">
 				<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
 				<div >
@@ -175,3 +175,14 @@
 		</div>
 	</fieldset>
 </div>
+<script type="text/ng-template" id="portConfiguration.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-body">
+		<alert type="danger">{{message}}</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="closeModal()">Cancel</button>
+	</div>
+</script>

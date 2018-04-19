@@ -408,11 +408,11 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				size: 'lg',
 				backdrop: true,
 				keyboard: true,
-				controller: function ($scope) {
+				controller: function ($scope, $modalInstance) {
 					
 					fixBackDrop();
 					
-					deployServiceDep.buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf,isKubernetes, function(err){
+					deployServiceDep.buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf,isKubernetes, $modalInstance, function(err){
 						if (err){
 							currentScope.displayAlert('danger', err.message);
 						}

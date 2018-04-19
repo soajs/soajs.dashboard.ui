@@ -1,6 +1,6 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDataApi', function (resourceConfiguration, ngDataApi) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', function (resourceConfiguration, $modal, ngDataApi) {
 	
 	function decodeRepoNameAndSubName(name) {
 		let splits = name.split('__SOAJS_DELIMITER__');
@@ -766,7 +766,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			return record;
 		};
 		
-		context.setExposedPorts = function (selectedRecipe, cb) {
+		context.setExposedPorts = function (selectedRecipe) {
 			let ports;
 			if (context.formData.config){
 				if (typeof context.formData.config === 'string'){
@@ -817,9 +817,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					}
 				});
 				if (loadBalancer !== 0 && nodePort !==0){
-					// todo fix this!
-					// selectedRecipe.recipe.deployOptions.ports =[];
-					// return cb(new Error("Invalid Port Configuration Detected"));
+					$modalInstance.close();
+					$modal.open({
+						templateUrl: "portConfiguration.tmpl",
+						size: 'm',
+						backdrop: true,
+						keyboard: true,
+						controller: function ($scope, $modalInstance) {
+							fixBackDrop();
+							$scope.currentScope = currentScope;
+							$scope.title = 'Port Configuration';
+							$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
+							$scope.closeModal = function () {
+								$modalInstance.close();
+							};
+						}
+					});
 				}
 			}
 			if (ports && !recipe){

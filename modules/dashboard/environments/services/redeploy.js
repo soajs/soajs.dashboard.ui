@@ -203,9 +203,8 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					formConfig.entries[0].entries.push(publishedPortEntry);
 				}
 				if (LoadBalancer !== 0 && nodePort !== 0){
-					console.log("currentScope.modalInstance.dismiss('cancel')");
 					$modal.open({
-						templateUrl: "portConfiguration.tmpl",
+						templateUrl: "portConfigurationReDepoly.tmpl",
 						size: 'm',
 						backdrop: true,
 						keyboard: true,

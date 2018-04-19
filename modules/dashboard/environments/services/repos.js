@@ -412,7 +412,11 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					
 					fixBackDrop();
 					
-					deployServiceDep.buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf,isKubernetes);
+					deployServiceDep.buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf,isKubernetes, function(err){
+						if (err){
+							currentScope.displayAlert('danger', err.message);
+						}
+					});
 					
 					$scope.cancel = function () {
 						deployService.close();
@@ -518,6 +522,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						configuration.default.options.deployConfig.replication.replicas = configuration.default.options.autoScale.replicas.min;
 				}
 				configuration.default.deploy = true;
+				if (configuration.default.options.custom && configuration.default.options.custom && Object.hasOwnProperty.call(configuration.default.options.custom, 'loadBalancer')){
+					delete configuration.default.options.custom.loadBalancer;
+				}
 			}
 		}
 		else {
@@ -556,6 +563,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				else if(configuration.version.options.deployConfig.replication.mode === 'deployment' && configuration.version.options.autoScale && configuration.version.options.autoScale.replicas && configuration.version.options.autoScale.replicas.min){
 						configuration.version.options.deployConfig.replication.replicas = configuration.version.options.autoScale.replicas.min;
 				}
+				if (configuration.version.options.custom && configuration.version.options.custom && Object.hasOwnProperty.call(configuration.version.options.custom, 'loadBalancer')){
+					delete configuration.version.options.custom.loadBalancer;
+				}
 				configuration.version.deploy = true;
 			}
 		}
@@ -563,7 +573,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		if(cb && typeof cb === 'function'){
 			return cb(configuration);
 		}
-		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',

@@ -58,6 +58,54 @@
 			<label class="fieldMsg">Unless specified, the root will be used</label>
 		</div>
 	</fieldset>
+	<fieldset  ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports">
+		<legend>Published Ports</legend>
+		<div>
+			<label class="f-left" >Load Balancer</label>
+			<label class="toggleSwitch f-left"><input type="checkbox" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-value ="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-change="useLoadBalancer(oneSrv, oneEnv, version)"><span class="buttonSlider round"></span></label>
+			<label class="fieldMsg">Turn on to use Load Balancer</label>
+			<br /><br/>
+		</div>
+		<div ng-if="!cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-repeat="exposedPorts in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports">
+			<fieldset ng-if="exposedPorts.isPublished || exposedPorts.published">
+				<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
+				<div >
+					<label>Published Port</label>
+					<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true"/>
+					<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
+						Enter a value if you want to expose this resource to a specific port.
+					</label>
+				</div>
+			</fieldset>
+			<br>
+		</div>
+	</fieldset>
+	
+	<fieldset class="repos" ng-if="secrets">
+		<legend>Secret</legend>
+		<div>
+			<ui-select multiple theme="bootstrap" ng-model= "cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true" >
+				<ui-select-match placeholder="Select secret...">{{$item.name}}</ui-select-match>
+				<ui-select-choices repeat="secret in secrets | filter: {name: $select.search}">
+					<div ng-bind-html="secret.name | highlight: $select.search"></div>
+					<small>
+						id: {{secret.uid}}
+					</small>
+				</ui-select-choices>
+			</ui-select>
+		</div>
+		<div class= "f-left" style="width: 100%">
+			<fieldset ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets.length > 0" >
+				<legend>Mount Path</legend>
+				<div ng-repeat="secret in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.secrets">
+					<label class = "secretMountPathRepo" >{{secret.name}}</label><br />
+					<input type="text" class="form-control secretMountPathRepo" ng-model="secret.mountPath" ng-disabled="false"/>
+					<label class="fieldMsg">Provide a mount path for your secret. Mount path are used from within the containers.</label>
+					<br /><br/>
+				</div>
+			</fieldset>
+		</div>
+	</fieldset>
 	<fieldset>
 		<legend>Environment Scaling</legend>
 		<div>

@@ -377,9 +377,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 		};
 		
-		context.setSourceCodeData = function () {
-			let recipes = context.recipes;
-			let selectedRecipe;
+		context.setSourceCodeData = function (selectedRecipe) {
 			let customType;
 			
 			context.sourceCodeConfig = {
@@ -401,14 +399,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					}
 				}
 			};
-			
-			if (context.formData.deployOptions && context.formData.deployOptions.recipe && recipes) {
-				recipes.forEach(function (eachRecipe) {
-					if (eachRecipe._id === context.formData.deployOptions.recipe) {
-						selectedRecipe = eachRecipe;
-					}
-				});
-			}
 			
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
@@ -491,8 +481,27 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 		};
 		
-		context.getCatalogRecipes = function (cb) {
+		context.getSecrets = function(cb){
 			overlayLoading.show();
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/secrets/list',
+				params: {
+					env: currentScope.envCode.toUpperCase(),
+				}
+			}, function (error, secrets) {
+				if (error) {
+					context.displayAlert('danger', error.message);
+				}
+				context.secrets = [];
+				if (secrets && Array.isArray(secrets) && secrets.length > 0) {
+					context.secrets = secrets;
+				}
+				if (cb) return cb();
+			});
+		};
+		
+		context.getCatalogRecipes = function (cb) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/catalog/recipes/list'
@@ -515,7 +524,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 							}
 						});
 						
-						context.displayRecipeInputs();
+						context.displayRecipeInputs(function(err){
+							if (err){
+								context.displayAlert('danger', err.message);
+							}
+						});
 					}
 					
 					if (cb) return cb();
@@ -530,7 +543,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 		};
 		
-		context.displayRecipeInputs = function () {
+		context.displayRecipeInputs = function (cb) {
+			let recipes = context.recipes;
+			let selectedRecipe = context.recipes;
 			context.recipeUserInput.envs = {};
 			if (context.formData.deployOptions && context.formData.deployOptions.recipe) {
 				for (var i = 0; i < context.recipes.length; i++) {
@@ -567,8 +582,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					}
 				}
 			}
-			
-			context.setSourceCodeData();
+			if (context.formData.deployOptions && context.formData.deployOptions.recipe && recipes) {
+				recipes.forEach(function (eachRecipe) {
+					if (eachRecipe._id === context.formData.deployOptions.recipe) {
+						selectedRecipe = eachRecipe;
+					}
+				});
+			}
+			context.setSourceCodeData(selectedRecipe);
+			context.setExposedPorts(selectedRecipe, cb);
 		};
 		
 		context.updateDeploymentName = function () {
@@ -668,13 +690,94 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			return record;
 		};
 		
+		context.setExposedPorts = function (selectedRecipe, cb) {
+			let ports;
+			if (context.formData.config){
+				if (typeof context.formData.config === 'string'){
+					ports = JSON.parse(context.formData.config).ports;
+				}
+				else {
+					ports = context.formData.config.ports
+				}
+			}
+			let recipe = false;
+			if (ports) {
+				if (!context.formData.deployOptions.custom){
+					context.formData.deployOptions.custom = {};
+				}
+				context.formData.deployOptions.custom.ports = ports;
+			}
+			if(selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
+				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
+				&& selectedRecipe.recipe.deployOptions.ports.length > 0 ) {
+				//use ports from recipe if no ports were coming from previuos save
+				if (!ports){
+					recipe = true;
+					ports = selectedRecipe.recipe.deployOptions.ports;
+				}
+				if (!context.formData.deployOptions.custom){
+					context.formData.deployOptions.custom = {};
+				}
+				if (recipe){
+					context.formData.deployOptions.custom.ports = [];
+				}
+				//check if there port mismatch in type
+				let nodePort =0, loadBalancer=0;
+				selectedRecipe.recipe.deployOptions.ports.forEach(function (onePort) {
+					if (recipe){
+						context.formData.deployOptions.custom.ports.push(onePort);
+					}
+					if(onePort.isPublished || onePort.published){
+						context.formData.deployOptions.custom.loadBalancer = true;
+						if (onePort.published){
+							if (recipe){
+								context.formData.deployOptions.custom.loadBalancer = false;
+							}
+							nodePort++;
+						}
+						else {
+							loadBalancer++;
+						}
+					}
+				});
+				if (loadBalancer !== 0 && nodePort !==0){
+					// todo fix this!
+					// selectedRecipe.recipe.deployOptions.ports =[];
+					// return cb(new Error("Invalid Port Configuration Detected"));
+				}
+			}
+			if (ports && !recipe){
+				//get the type of the ports
+				context.formData.deployOptions.custom.ports = [];
+				ports.forEach(function (onePort) {
+					context.formData.deployOptions.custom.ports.push(onePort);
+					if(onePort.isPublished || onePort.published){
+						context.formData.deployOptions.custom.loadBalancer = true;
+						if (onePort.published){
+							context.formData.deployOptions.custom.loadBalancer = false;
+						}
+					}
+				});
+			}
+		};
+		
+		context.useLoadBalancer = function (){
+			context.formData.deployOptions.custom.ports.forEach(function (onePort) {
+				delete onePort.published
+			});
+		};
+		
 		context.fillForm();
 		
 		if(!context.noCDoverride){
-			context.getCatalogRecipes();
+			context.getSecrets(function(cb){
+				context.getCatalogRecipes(cb);
+			});
 		}
 		else{
-			context.displayRecipeInputs();
+			context.getSecrets(function (cb) {
+				context.displayRecipeInputs(cb);
+			});
 		}
 		
 		if (cb && typeof cb === 'function')

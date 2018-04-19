@@ -91,7 +91,104 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					});
 				}
 				
-				//append inputs whose type is userInput
+				if (service.ports
+					&& Array.isArray(service.ports)
+					&& service.ports.length > 0){
+					//let ports = [];
+					
+					catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
+						service.ports.forEach(function (oneServicePort) {
+							if (oneServicePort.published && oneServicePort.published > 30000){
+								oneServicePort.published -= 30000;
+							}
+							if (oneCatalogPort.target === oneServicePort.target){
+								oneServicePort.name = oneCatalogPort.name;
+							}
+						});
+					});
+					let publishedPortEntry = {
+						"type": "group",
+						"label": "Published Ports",
+						"entries": []
+					};
+					currentScope.loadBalancer = (service.servicePortType === 'loadBalancer');
+					
+					publishedPortEntry.entries.push({
+						'name': "loadBalancer",
+						'label': "Load Balancer" ,
+						'type': 'buttonSlider',
+						'value': currentScope.loadBalancer,
+						'fieldMsg': "Turn on to use Load Balancer",
+						"onAction": function(id, value, form){
+							form.entries.forEach((oneEntry) => {
+								if(oneEntry.label === "Deployment Options"){
+									oneEntry.entries.forEach((oneSubEntry) => {
+										if(oneSubEntry.label === "Published Ports"){
+											if (!value && oneSubEntry.entries){
+												service.ports.forEach(function (oneServicePort) {
+													if(oneServicePort.published) {
+														oneSubEntry.entries.push({
+															"name": "group-" + oneServicePort.name,
+															"label": oneServicePort.name + ":" + oneServicePort.target,
+															"type": "group",
+															"entries": [{
+																'name': oneServicePort.name,
+																'type': 'number',
+																'label': 'Published Port',
+																'value': parseInt(oneServicePort.published),
+																'fieldMsg': "Detected Published Port: " + oneServicePort.name + " with internal value " + oneServicePort.target + ". Enter a value if you want to expose this resource to a specific port.",
+																"min": 1,
+																"max": 2767
+															}]
+														});
+													}
+												});
+											}
+											else {
+												oneSubEntry.entries.length = 1;
+											}
+										}
+									});
+								}
+							});
+						}
+					});
+					
+					if (!currentScope.loadBalancer){
+						if (!formConfig.data) {
+							formConfig.data = {};
+						}
+						formConfig.data.ports = [];
+						service.ports.forEach(function (onePort, key) {
+							formConfig.data.ports.push({
+								"name": onePort.name,
+								"target": parseInt(onePort.target),
+								"preserveClientIP": onePort.preserveClientIP
+							});
+							if(onePort.published) {
+								formConfig.data.ports[key].isPublished = true;
+								formConfig.data.ports[key].published = parseInt(onePort.published);
+								publishedPortEntry.entries.push({
+									"name": "group-" + onePort.protocol,
+									"label": onePort.name + ":" + onePort.target,
+									"type": "group",
+									"entries": [{
+										'name': onePort.name+onePort.published,
+										'type': 'number',
+										'label': 'Published Port',
+										'value': parseInt(onePort.published),
+										'fieldMsg': "Detected Published Port: " + onePort.name + " with internal value " + onePort.target + ". Enter a value if you want to expose this resource to a specific port.",
+										"min": 1,
+										"max": 2767
+									}]
+								});
+							}
+						});
+					}
+					
+					formConfig.entries[0].entries.push(publishedPortEntry);
+				}
+				
 				for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
 					if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
 						
@@ -228,7 +325,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							}
 						]
 					};
-					buildFormWithModal(currentScope, $modal, options);
+					buildFormWithModal(currentScope, $modal, options, () => {
+						for(let i in formConfig.data){
+							if(!currentScope.form.formData[i]){
+								currentScope.form.formData[i] = formConfig.data[i];
+							}
+						}
+					});
 				}
 			}
 		}
@@ -830,6 +933,10 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							};
 						}
 					}
+				}
+				
+				if (formData.ports){
+					params.custom.ports = formData.ports;
 				}
 			}
 			

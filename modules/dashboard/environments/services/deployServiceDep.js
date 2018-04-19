@@ -174,7 +174,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		
 	}
 	
-	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes) {
+	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes, cb) {
 		if(isKubernetes === undefined){
 			//re-calculate isKubernetes
 			var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
@@ -438,17 +438,97 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				});
 			}
 			
-			$scope.setSourceCodeData(oneEnv, version, oneSrv);
+			let selectedRecipe;
+			let recipes = $scope.recipes;
+			
+			for (let type in $scope.recipes) {
+				recipes[type].forEach(function (catalogRecipe) {
+					if (catalogRecipe._id === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe) {
+						selectedRecipe = catalogRecipe;
+					}
+				});
+			}
+			$scope.setExposedPorts(oneEnv, version, oneSrv, selectedRecipe, cb);
+			$scope.setSourceCodeData(oneEnv, version, oneSrv, selectedRecipe);
 		};
 		
-		$scope.setSourceCodeData = function (oneEnv, version, oneSrv) {
+		$scope.setExposedPorts = function (oneEnv, version, oneSrv, selectedRecipe, cb) {
+			let ports;
+			let recipe = false;
+			if ($scope.services && $scope.services[oneSrv] && $scope.services[oneSrv].deploySettings
+				&& $scope.services[oneSrv].deploySettings.options
+				&& $scope.services[oneSrv].deploySettings.options.custom
+				&& $scope.services[oneSrv].deploySettings.options.custom.ports
+				&& $scope.services[oneSrv].deploySettings.options.custom.ports.length > 0){
+				ports = angular.copy($scope.services[oneSrv].deploySettings.options.custom.ports);
+			}
+			let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+			if(selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
+				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
+				&& selectedRecipe.recipe.deployOptions.ports.length > 0 ) {
+				//check if at least of the ports is exposed
+				if (!ports){
+					recipe = true;
+					ports = selectedRecipe.recipe.deployOptions.ports;
+				}
+				if (!formDataRoot.custom){
+					formDataRoot.custom = {};
+				}
+				if (recipe){
+					formDataRoot.custom.ports = [];
+				}
+				//check if there port mismatch in type
+				let nodePort =0, loadBalancer=0;
+				selectedRecipe.recipe.deployOptions.ports.forEach(function (onePort) {
+					if (recipe){
+						formDataRoot.custom.ports.push(onePort);
+					}
+					if(onePort.isPublished || onePort.published){
+						formDataRoot.custom.loadBalancer = true;
+						formDataRoot.custom.ports.push(onePort);
+						if (onePort.published){
+							if (recipe) {
+								formDataRoot.custom.loadBalancer = false;
+							}
+							nodePort++;
+						}
+						else {
+							loadBalancer++;
+						}
+					}
+				});
+				if (loadBalancer !== 0 && nodePort !==0){
+					// todo fix this!
+					// return cb(new Error("Invalid Port Configuration Detected"));
+				}
+				if (ports && !recipe){
+					//get the type of the ports
+					formDataRoot.custom.ports = [];
+					ports.forEach(function (onePort) {
+						formDataRoot.custom.ports.push(onePort);
+						if(onePort.isPublished || onePort.published){
+							formDataRoot.custom.loadBalancer = true;
+							if (onePort.published){
+								formDataRoot.custom.loadBalancer = false;
+							}
+						}
+					});
+				}
+			}
+		};
+		
+		$scope.useLoadBalancer = function (oneSrv, oneEnv, version){
+			if ($scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv] && $scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version]){
+				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports.forEach(function (onePort) {
+					delete onePort.published;
+				});
+			}
+		};
+		
+		$scope.setSourceCodeData = function (oneEnv, version, oneSrv, selectedRecipe) {
 			
-			let recipes = $scope.recipes;
 			let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 			let formData = formDataRoot.custom;
-			
-			let selectedRecipe;
-			
 			$scope.sourceCodeConfig = {
 				configuration: {
 					isEnabled: false,
@@ -458,14 +538,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				}
 			};
-			
-			for (let type in $scope.recipes) {
-				recipes[type].forEach(function (catalogRecipe) {
-					if (catalogRecipe._id === formDataRoot.recipe) {
-						selectedRecipe = catalogRecipe;
-					}
-				});
-			}
 			
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
@@ -597,15 +669,39 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			});
 		};
 		
+		$scope.getSecrets = function (oneEnv, cb) {
+			getSendDataFromServer($scope, ngDataApi, {
+				'method': 'get',
+				'routeName': '/dashboard/secrets/list',
+				params: {
+					env: oneEnv.toUpperCase(),
+				}
+			}, function (error, secrets) {
+				if (error) {
+					$scope.displayAlert('danger', error.message);
+				} else {
+					$scope.secrets = [];
+					if (secrets && Array.isArray(secrets) && secrets.length > 0) {
+						$scope.secrets = secrets;
+					}
+					return cb();
+				}
+			});
+		};
+		
 		if(!$scope.noCDoverride){
 			getCDRecipe($scope, oneRepo, function () {
-				$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+				$scope.getSecrets($scope.oneEnv, function (){
+					$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv, cb)
+				});
 			});
 		}
 		else{
-			getServiceBranches($scope, { gitAccount: $scope.gitAccount, repo: oneRepo, cd: true }, function () {
-				getServiceInEnv($scope, $scope.oneEnv, $scope.oneSrv, () =>{
-					$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv)
+			getServiceBranches($scope, {gitAccount: $scope.gitAccount, repo: oneRepo, cd: true}, function (cb) {
+				getServiceInEnv($scope, $scope.oneEnv, $scope.oneSrv, () => {
+					$scope.getSecrets($scope.oneEnv, function () {
+						$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv, cb);
+					});
 				});
 			});
 		}

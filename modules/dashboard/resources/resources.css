@@ -171,3 +171,21 @@ fieldset.autoScale legend {
     margin-top: -3px !important;
     width: 18px !important;
 }
+
+.resource .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap {
+    min-height: 60px;
+    height: auto!important;
+}
+
+label.secretMountPathResource{
+    float: none!important;
+}
+
+input.secretMountPathResource{
+    float: none!important;
+    width:100%!important;
+}

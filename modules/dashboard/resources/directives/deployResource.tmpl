@@ -112,7 +112,53 @@
 		<label class="fieldMsg">Unless specified, the root will be used</label>
 	</div>
 </fieldset>
+<fieldset class="custom-fieldset" ng-if="formData.deployOptions.custom && formData.deployOptions.custom.ports">
+	<legend>Published Ports</legend>
+		<div>
+			<label>Load Balancer</label>
+			<label class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.deployOptions.custom.loadBalancer" ng-value="formData.deployOptions.custom.loadBalancer" ng-change="useLoadBalancer()"><span class="buttonSlider round"></span></label>
+			<label class="fieldMsg">Turn on to use Load Balancer</label>
+			<br/><br/>
+		</div>
+		<div ng-repeat="exposedPorts in formData.deployOptions.custom.ports" ng-if="!formData.deployOptions.custom.loadBalancer">
+			<fieldset class="custom-fieldset" ng-if="exposedPorts.isPublished || exposedPorts.published">
+			<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
+			<div>
+				<label>Published Port</label>
+				<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true"/>
+				<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
+					Enter a value if you want to expose this resource to a specific port.
+				</label>
+			</div>
+			</fieldset>
+		</div>
+	<br>
+</fieldset>
 
+<fieldset class="custom-fieldset resource" ng-if="secrets">
+	<legend>Secrets</legend>
+	<div>
+		<ui-select multiple theme="bootstrap" ng-model="formData.deployOptions.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true">
+			<ui-select-match placeholder="Select secret...">{{$item.name}}</ui-select-match>
+			<ui-select-choices repeat="secret in secrets | filter: {name: $select.search}">
+				<div ng-bind-html="secret.name | highlight: $select.search"></div>
+				<small>
+					id: {{secret.uid}}
+				</small>
+			</ui-select-choices>
+		</ui-select>
+	</div>
+	<fieldset ng-if="formData.deployOptions.custom.secrets && formData.deployOptions.custom.secrets.length > 0" >
+		<legend>Mount Path</legend>
+		<div ng-repeat="secret in formData.deployOptions.custom.secrets">
+			<label class = "secretMountPathResource" >{{secret.name}}</label><br />
+			<input type="text" class="form-control secretMountPathResource" ng-model="secret.mountPath" ng-disabled="false"/>
+			<label class="fieldMsg">Provide a mount path for your secret. Mount path are used from within the containers.</label>
+			<br /><br/>
+		</div>
+	</fieldset>
+	
+</fieldset>
 <fieldset class="custom-fieldset">
 	<legend>Environment Scaling</legend>
 	<div>

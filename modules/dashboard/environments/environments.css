@@ -668,3 +668,24 @@ input:checked + .buttonSlider:before {
 .ownerLabel {
     color: #A9A9A9;
 }
+
+.repos .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+
+}
+
+.repos .ui-select-multiple.ui-select-bootstrap {
+    display: block!important;
+    float: left;
+    height: auto;
+    min-height: 60px;
+    width: 95%!important;
+}
+
+label.secretMountPathRepo{
+    float: none!important;
+}
+input.secretMountPathRepo{
+    float: none!important;
+    width:96%!important;
+}

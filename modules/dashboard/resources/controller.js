@@ -210,6 +210,24 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							shared: $scope.formData.shared || false,
 							config: $scope.formData.config
 						};
+						if ($scope.formData.deployOptions.custom
+							&& $scope.formData.deployOptions.custom.ports
+							&& $scope.formData.deployOptions.custom.ports.length > 0){
+							$scope.formData.deployOptions.custom.ports.forEach(function (onePort) {
+								if(Object.hasOwnProperty.call(onePort, 'loadBalancer')){
+									delete onePort.loadBalancer
+								}
+								if(!saveOptions.config.ports){
+									saveOptions.config.ports = []
+								}
+								saveOptions.config.ports.push(onePort);
+							});
+						}
+						if ($scope.formData.deployOptions.custom
+							&& $scope.formData.deployOptions.custom.secrets
+							&& $scope.formData.deployOptions.custom.secrets.length > 0){
+							saveOptions.config.secrets = $scope.formData.deployOptions.custom.secrets
+						}
 						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
 							saveOptions.sharedEnv = {};
 							$scope.formData.sharedEnv = {};
@@ -220,7 +238,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								}
 							});
 						}
-						
 						var options = {};
 						if ($scope.options.formAction === 'add') {
 							options = {
@@ -335,12 +352,18 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							if (cb) return cb();
 							else return;
 						}
-						
 						var deployOptions = angular.copy($scope.formData.deployOptions);
 						if (!deployOptions.custom) {
 							deployOptions.custom = {};
 						}
 						
+						if(deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0){
+							deployOptions.custom.ports.forEach(function (onePort) {
+								if(onePort.hasOwnProperty.call(onePort, 'LoadBalancer')){
+									delete onePort.LoadBalancer
+								}
+							});
+						}
 						deployOptions.custom.type = 'resource';
 						
 						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);

@@ -13,6 +13,13 @@
 			<span ng-repeat="oneChild in oneResponse.children">
 				<div ng-if="oneChild.data && oneChild.data.done" style="margin-bottom: 10px;" class="capitalize">
 					<span class="icon icon-checkmark green"></span>{{key}} {{oneChild.child}} Created ...<br>
+					
+					<div ng-show="oneChild.data.data">
+						<pre ng-if="typeof(oneChild.data.data) === 'object'"><code>{{oneChild.data.data}}</code></pre>
+					</div>
+				</div>
+				<div ng-if="oneChild.data && !oneChild.data.done" style="margin-bottom: 10px;" class="capitalize">
+					<span class="icon icon-loop2 yellow"></span>{{key}} {{oneChild.child}} Next in Queue ...<br>
 				</div>
 			</span>
 		</div>

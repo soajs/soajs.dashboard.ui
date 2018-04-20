@@ -89,8 +89,8 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 								currentScope.response[step].data.forEach((oneData) => {
 									for(let s in oneData){
 										finalData[s] = oneData[s];
-										if (s === 'dns' && finalData[s].msg && currentScope.wizard.nginx) {
-											finalData[s] = currentScope.wizard.nginx.domain;
+										if (child === 'dns' && s === 'dns' && finalData[s].msg) {
+											finalData[s].msg = finalData[s].msg.replace("%domain%", currentScope.wizard.nginx.domain);
 										}
 									}
 								});

@@ -38,7 +38,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 							}
 						}
 						
-						formData.code = formData.code.toUpperCase();
+						formData.code = formData.code.trim().toUpperCase();
 						currentScope.wizard.gi = angular.copy(formData);
 						$localStorage.addEnv = angular.copy(currentScope.wizard);
 						delete $localStorage.addEnv.template.content;

@@ -1,15 +1,20 @@
 'use strict';
 
+// isInBetween : is a flag added to some functions to signal that the api is called in between other apis or not
+// if set to false: no overlay will be shown / hidden and vice versa
+
 var resourcesApp = soajsApp.components;
 resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$modal', 'ngDataApi', '$cookies', 'injectFiles', 'resourceConfiguration', 'resourceDeploy', function ($scope, $http, $timeout, $modal, ngDataApi, $cookies, injectFiles, resourceConfiguration, resourceDeploy) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
 	
-	$scope.listResources = function (cb) {
+	$scope.listResources = function (isInBetween, cb) {
 		$scope.oldStyle = false;
 		getEnvironment(function () {
-			overlayLoading.show();
+			if(!isInBetween){
+				overlayLoading.show();
+			}
 			getSendDataFromServer($scope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/resources/list',
@@ -17,11 +22,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					env: $scope.envCode
 				}
 			}, function (error, response) {
-				overlayLoading.hide();
 				if (error) {
+					overlayLoading.hide();
 					$scope.displayAlert('danger', error.message);
 				}
 				else {
+					if(!isInBetween){
+						overlayLoading.hide();
+					}
 					$scope.resources = { list: response };
 					$scope.resources.original = angular.copy($scope.resources.list); //keep a copy of the original resources records
 					
@@ -149,23 +157,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		buildFormWithModal(currentScope, $modal, options);
 	};
 	
-	function decodeRepoNameAndSubName(name) {
-		let splits = name.split('__SOAJS_DELIMITER__');
-		
-		let output = {
-			name : splits[0]
-		};
-		
-		if(splits.length > 0){
-			let subName = splits[1];
-			if(subName){
-				output.subName = splits[1];
-			}
-		}
-		
-		return output;
-	}
-	
 	$scope.manageResource = function (resource, action, settings) {
 		var currentScope = $scope;
 		$modal.open({
@@ -178,10 +169,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 				
-				$scope.save = function (cb) {
+				$scope.save = function (isInBetween, cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
+					}
+					
+					if (!isInBetween) {
+						overlayLoading.show();
 					}
 					
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
@@ -193,6 +188,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							saveResourceDeployConfig(function () {
 								if (cb) return cb();
 								
+								if (!isInBetween) {
+									overlayLoading.hide();
+								}
 								$scope.formData = {};
 								$modalInstance.close();
 								currentScope.load();
@@ -263,10 +261,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							};
 						}
 						
-						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
-							overlayLoading.hide();
 							if (error) {
+								overlayLoading.hide();
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -312,10 +309,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						if (!$scope.formData.canBeDeployed) {
 							delete options.data.config.options;
 						}
-						overlayLoading.show();
+						
 						getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
-							overlayLoading.hide();
 							if (error) {
+								overlayLoading.hide();
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -332,13 +329,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
+					overlayLoading.show();
+					
 					if (deployOnly) {
 						deployResource(function () {
 							currentScope.load();
 						});
 					}
 					else {
-						$scope.save(function () {
+						$scope.save(true, function () {
 							deployResource(function () {
 								$scope.formData = {};
 								$modalInstance.close();
@@ -426,8 +425,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
-					$scope.save(function () {
+					overlayLoading.show();
+					
+					$scope.save(true, function () {
 						rebuildService(function () {
+							overlayLoading.hide();
 							$scope.formData = {};
 							$modalInstance.close();
 							currentScope.load();
@@ -453,7 +455,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
 						rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;
 						
-						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, {
 							method: 'put',
 							routeName: '/dashboard/cloud/services/redeploy',
@@ -465,8 +466,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								custom: rebuildOptions
 							}
 						}, function (error) {
-							overlayLoading.hide();
 							if (error) {
+								overlayLoading.hide();
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -603,7 +604,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 			else {
 				$scope.displayAlert('success', 'Resource updated successfully');
-				$scope.listResources();
+				$scope.listResources(false);
 			}
 		});
 	};
@@ -687,13 +688,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			else return;
 		}
 		
-		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources/config'
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
+				overlayLoading.hide();
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
@@ -705,11 +705,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	};
 	
 	$scope.load = function (cb) {
+		overlayLoading.show();
 		$scope.listDeployedServices(function () {
 			$scope.getDeployConfig(function () {
-				$scope.listResources(function () {
+				$scope.listResources(true, function () {
+					overlayLoading.hide();
 					if (cb) return cb;
-					
 					return;
 				});
 			});

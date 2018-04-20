@@ -174,10 +174,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		currentScope.nextStep();
 	}
 	
-	function setIsManualHidden(currentScope) {
-		
-	}
-	
 	function go(currentScope) {
 		
 		mainScope = currentScope;

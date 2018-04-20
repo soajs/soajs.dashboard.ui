@@ -567,7 +567,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
 					resource.scope.envCode = currentScope.envCode;
 					resource.scope.recipes = [];
-					
 					for(let type in currentScope.recipes){
 						currentScope.recipes[type].forEach((oneRecipe) =>{
 							if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
@@ -893,6 +892,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		};
 		
 		currentScope.back = function () {
+			currentScope.referringStep = "dynamicSrv";
 			currentScope.deploymentStackStep--;
 			if (currentScope.deploymentStackStep < 0) {
 				if (currentScope.form && currentScope.form.formData) {

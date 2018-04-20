@@ -23,7 +23,12 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 		}
 		
 		if (!controllerRepoExist) {
-			currentScope.nextStep();
+			if(currentScope.referringStep === 'dynamicSrv'){
+				currentScope.previousStep();
+			}
+			else{
+				currentScope.nextStep();
+			}
 		} else {
 			
 			currentScope.clearOnPersistMySession = function () {

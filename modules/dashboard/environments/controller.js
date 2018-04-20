@@ -372,7 +372,10 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						if (error) {
 							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
+						
+						overlayLoading.show();
 						deleteEnvironment($scope, flag, function (error, response) {
+							overlayLoading.hide();
 							if (error) {
 								$scope.deleteEnvError = error.message;
 							}

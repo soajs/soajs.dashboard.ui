@@ -48,12 +48,15 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 					}
 					
 					if(currentScope.wizard.template){
+						let storedTemplateFound = false;
 						currentScope.templates.forEach(function (oneTemplate) {
 							if(currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id){
+								storedTemplateFound = true;
 								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.nextStep();
 							}
 							else if(currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name){
+								storedTemplateFound = true;
 								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.wizard.template._id = oneTemplate._id;
 								
@@ -65,6 +68,13 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 								}
 							}
 						});
+						
+						if(!storedTemplateFound){
+							// template not found // clear storage and redirect to main page
+							delete $localStorage.addEnv;
+							delete currentScope.wizard;
+							currentScope.$parent.go("/environments-add");
+						}
 					}
 					
 					if($routeParams.portal){

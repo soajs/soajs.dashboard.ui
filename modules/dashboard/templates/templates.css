@@ -74,3 +74,24 @@
     border:solid 1px #337ab7;
     font-weight:bold;
 }
+
+.restrictions label{
+    width:20%;
+    float:left;
+}
+
+.restrictions .adjacentList {
+    padding-left:0px;
+    margin-left:20px;
+    float:left;
+    list-style-type:none;
+}
+
+.restrictions .adjacentList li{
+    float:left;
+    margin-right:30px;
+}
+
+.restrictions .adjacentList li .btn{
+    cursor:default;
+}

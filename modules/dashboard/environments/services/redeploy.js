@@ -100,7 +100,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					
 					let inpsectService = angular.copy(service);
 					catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
-						if (oneCatalogPort.isPublished){
+						if (oneCatalogPort.isPublished || oneCatalogPort.published){
 							if (oneCatalogPort.published){
 								nodePort++;
 							}

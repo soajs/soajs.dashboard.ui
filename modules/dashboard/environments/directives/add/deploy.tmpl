@@ -1,5 +1,5 @@
 <accordion close-others="true">
-	<accordion-group ng-show="availableEnvironments.length > 0" is-open="platforms.previous" ng-click="switchDriver('previous')">
+	<accordion-group is-open="platforms.previous" ng-click="switchDriver('previous')" ng-show="restrictions.previousEnv && availableEnvironments.length > 0">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.previous" value="true" name="previous" disabled/>&nbsp;
 			I want to use the same deployer settings of a previous environment
@@ -30,7 +30,7 @@
 			</fieldset>
 		</div>
 	</accordion-group>
-	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
+	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')" ng-show="restrictions.docker">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
 			I want to use Docker as my Deployment Technology
@@ -105,7 +105,7 @@
 			</tbody>
 		</table>
 	</accordion-group>
-	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')">
+	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')" ng-show="restrictions.kubernetes">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.kubernetes" value="true" name="kubernetes" disabled/>&nbsp;
 			I want to use Kubernetes as my Deployment Technology
@@ -185,7 +185,7 @@
 			</tbody>
 		</table>
 	</accordion-group>
-	<accordion-group ng-show="platforms.showManual" is-open="platforms.manual" ng-click="switchDriver('manual')">
+	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')" ng-show="restrictions.showManual">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.manual" value="true" name="manual" disabled/>&nbsp;
 			I will Deploy Everything Manually on my Local Machine or a My Custom Server

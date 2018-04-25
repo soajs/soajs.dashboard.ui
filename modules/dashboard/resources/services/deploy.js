@@ -20,6 +20,40 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
+		
+		context.deploymentData = {};
+		
+		// todo: mocked data
+		context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
+			v: 'us-east-2',
+			'l': 'US East (Ohio)'
+		}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
+			v: 'us-west-2',
+			'l': 'US West (Oregon)'
+		}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
+			v: 'eu-west-2',
+			'l': 'EU (London)'
+		}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
+			v: 'ap-northeast-1',
+			'l': 'Asia Pacific (Tokyo)'
+		}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
+			v: 'ap-south-1',
+			'l': 'Asia Pacific (Mumbai)'
+		}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
+			v: 'ap-southeast-2',
+			'l': 'Asia Pacific (Sydney)'
+		}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
+		
+		context.deploymentData.vmSize = [
+			{v : 'smallSize1', l:"Small Size 1"},
+			{v : 'mediumSize2', l:"Medium Size 2"}
+		];
+		
+		context.deploymentData.vmSize = [
+			{v : 'none', l:"None"}
+		];
+		
+		
 		context.catalogConflictingPorts = '';
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
@@ -541,25 +575,99 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					context.displayAlert('danger', error.message);
 				}
 				else {
-					if (recipes && Array.isArray(recipes)) {
-						recipes.forEach(function (oneRecipe) {
-							
-							if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
-								context.oldStyle = true;
+					
+					context.recipes = [
+						{
+							"_id": "5ae07aa09fdc3e40b2ea61a6",
+							"name": "Recipe 1",
+							"type": "service",
+							"subtype": "soajs",
+							"description": "This recipe allows you to deploy a services built using the SOAJS framework",
+							"locked": true,
+							"restriction": {
+								"deployment": ["vm", "container"],
+								"driver": ["container.docker"],
+								"infra": ["azure"]
 							}
-							else {
-								if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-									context.recipes.push(oneRecipe);
-								}
+						},
+						{
+							"_id": "5ae07aa09fdc3e40b2ea61a7",
+							"name": "Recipe 2",
+							"type": "service",
+							"subtype": "soajs",
+							"description": "This recipe allows you to deploy the SOAJS API Gateway",
+							"locked": true,
+							"restriction": {
+								"deployment": ["vm"],
+								"driver": [],
+								"infra": ["azure","aws"]
 							}
-						});
-						
-						context.displayRecipeInputs(function(err){
-							if (err){
-								context.displayAlert('danger', err.message);
+						},
+						{
+							"_id": "5ae07aa09fdc3e40b2ea61a8",
+							"name": "Recipe 3",
+							"type": "service",
+							"subtype": "soajs",
+							"description": "This recipe allows you to deploy the SOAJS API Gateway",
+							"locked": true,
+							"restriction": {
+								"deployment": ["container"],
+								"driver": ["container.docker","container.kubernetes"],
+								"infra": []
 							}
-						});
-					}
+						},
+						{
+							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"name": "Recipe 4",
+							"type": "service",
+							"subtype": "soajs",
+							"description": "This recipe allows you to deploy the SOAJS API Gateway",
+							"locked": true,
+							"restriction": {
+								"deployment": [],
+								"driver": [],
+								"infra": []
+							}
+						},
+						{
+							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"name": "Recipe 5",
+							"type": "service",
+							"subtype": "soajs",
+							"description": "This recipe allows you to deploy the SOAJS API Gateway",
+							"locked": true,
+							"restriction": {}
+						},
+						{
+							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"name": "Recipe 6",
+							"type": "service",
+							"subtype": "soajs",
+							"description": "This recipe allows you to deploy the SOAJS API Gateway",
+							"locked": true
+						}
+					];
+					
+					// todo: restore code
+					// if (recipes && Array.isArray(recipes)) {
+					// 	recipes.forEach(function (oneRecipe) {
+					//
+					// 		if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
+					// 			context.oldStyle = true;
+					// 		}
+					// 		else {
+					// 			if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
+					// 				context.recipes.push(oneRecipe);
+					// 			}
+					// 		}
+					// 	});
+					//
+					// 	context.displayRecipeInputs(function(err){
+					// 		if (err){
+					// 			context.displayAlert('danger', err.message);
+					// 		}
+					// 	});
+					// }
 					
 					if (cb) return cb();
 				}

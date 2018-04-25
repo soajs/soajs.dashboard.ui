@@ -4,6 +4,60 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	
 	let mainScope; // set on go
 	
+	function calculateRestrictions(currentScope) {
+		let restrictions = currentScope.wizard.template.restriction;
+		let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment // stronger then restrictions
+		if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
+			let deployments = currentScope.wizard.template.deploy.deployments;
+			let stepsKeys = Object.keys(deployments);
+			stepsKeys.forEach(function (eachStep) {
+				if (deployments[eachStep]) {
+					let stagesKeys = Object.keys(deployments[eachStep]);
+					stagesKeys.forEach(function (eachStage) {
+						if (eachStage.includes('.repo.') || eachStage.includes('.resources.') || eachStage.includes('secrets')) {
+							showManualDeploy = false;
+						}
+					});
+				}
+			});
+		}
+		
+		if (!restrictions || Object.keys(restrictions).length === 0) {
+			currentScope.restrictions = {
+				docker : true,
+				kubernetes : true,
+				previousEnv : true,
+				showManual : showManualDeploy
+			};
+			return;
+		}
+		
+		let docker, kubernetes, manual;
+		if (restrictions.deployment && restrictions.deployment.indexOf('container') !== -1) {
+			if (restrictions.driver) {
+				if (restrictions.driver.indexOf('container.docker') !== -1) {
+					docker = true;
+				}
+				if (restrictions.driver.indexOf('container.kubernetes') !== -1) {
+					kubernetes = true;
+				}
+			}
+		}
+		
+		if (restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
+			if (showManualDeploy) {
+				manual = true;
+			}
+		}
+		
+		currentScope.restrictions = {
+			docker: docker,
+			kubernetes: kubernetes,
+			previousEnv: (docker || kubernetes),
+			showManual: manual
+		};
+	}
+	
 	function switchDriver(driver) {
 		if (!mainScope.platforms) {
 			mainScope.platforms = {
@@ -190,7 +244,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				if (currentScope.availableEnvironments[i].deployer.type === 'manual') {
 					currentScope.availableEnvironments.splice(i, 1);
 				}
-				else if(currentScope.availableEnvironments[i].code === currentScope.wizard.gi.code){
+				else if (currentScope.availableEnvironments[i].code === currentScope.wizard.gi.code) {
 					currentScope.availableEnvironments.splice(i, 1);
 				}
 			}
@@ -206,22 +260,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			currentScope.form.formData.deployment[technology].myCloudProvider = myCloudProvider.v;
 			currentScope.cloudProviderHelpLink[technology] = myCloudProvider.help[technology];
 		};
-		
-		let showManual = true; // show manual iff none of the stages is repos/resources/secrets deployment
-		if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
-			let deployments = currentScope.wizard.template.deploy.deployments;
-			let stepsKeys = Object.keys(deployments);
-			stepsKeys.forEach(function (eachStep) {
-				if(deployments[eachStep]){
-					let stagesKeys = Object.keys(deployments[eachStep]);
-					stagesKeys.forEach(function (eachStage) {
-						if(eachStage.includes('.repo.') || eachStage.includes('.resources.') || eachStage.includes('secrets')){
-							showManual = false;
-						}
-					});
-				}
-			});
-		}
 		
 		overlayLoading.show();
 		currentScope.previousPlatformDeployment = false;
@@ -318,8 +356,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				docker: currentScope.form.formData.selectedDriver === 'docker' || false,
 				kubernetes: currentScope.form.formData.selectedDriver === 'kubernetes' || false,
 				manual: currentScope.form.formData.selectedDriver === 'manual' || false,
-				previous: currentScope.previousEnvironment,
-				showManual : showManual
+				previous: currentScope.previousEnvironment
 			};
 			
 			if (currentScope.previousEnvironment && currentScope.previousEnvironment !== '') {
@@ -328,11 +365,12 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					docker: false,
 					kubernetes: false,
 					manual: false,
-					previous: currentScope.previousEnvironment,
-					showManual : showManual
+					previous: currentScope.previousEnvironment
 				};
 				renderPreviousDeployInfo(currentScope);
 			}
+			
+			calculateRestrictions(currentScope);
 			
 			currentScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 			overlayLoading.hide();

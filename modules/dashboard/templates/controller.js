@@ -125,6 +125,15 @@ templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles'
 				$scope.logo = (oneTmpl.logo) ? oneTmpl.logo : null;
 				
 				$scope.title = oneTmpl.name;
+				$scope.reusable = true;
+				if(Object.hasOwnProperty.call(oneTmpl, 'reusable')){
+					$scope.reusable = oneTmpl.reusable;
+				}
+				
+				if(oneTmpl.restriction){
+					$scope.restriction = oneTmpl.restriction;
+				}
+				
 				$scope.description = oneTmpl.description;
 				$scope.content = oneTmpl.content;
 				

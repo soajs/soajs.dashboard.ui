@@ -5,8 +5,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	let mainScope; // set on go
 	
 	function calculateRestrictions(currentScope) {
-		let restrictions = currentScope.wizard.template.restrictions;
-		
+		let restrictions = currentScope.wizard.template.restriction;
 		let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment // stronger then restrictions
 		if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
 			let deployments = currentScope.wizard.template.deploy.deployments;
@@ -54,7 +53,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		currentScope.restrictions = {
 			docker: docker,
 			kubernetes: kubernetes,
-			previousEnv: true,
+			previousEnv: (docker || kubernetes),
 			showManual: manual
 		};
 	}

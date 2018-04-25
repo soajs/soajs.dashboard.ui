@@ -1,7 +1,7 @@
 "use strict";
 var deployService = soajsApp.components;
 deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
-	
+
 	function getServiceBranches(currentScope, opts, cb) {
 		currentScope.loadingBranches = true;
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -30,11 +30,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		});
 	}
-	
+
 	function getServiceInEnv(currentScope, env, serviceName, cb) {
 		buildFormData(currentScope, env, serviceName, cb)
 	}
-	
+
 	function getCDRecipe(currentScope, oneRepo, cb) {
 		currentScope.cdConfiguration = null;
 		var defaultCD = {
@@ -60,7 +60,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			type: currentScope.serviceType,
 			icon: 'minus'
 		};
-		
+
 		var max = Object.keys(currentScope.cdConfiguration).length;
 		currentScope.maxEntries = 0;
 		var repoCount = 0;
@@ -81,7 +81,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				});
 			}
 		});
-		
+
 		function populateServiceInEnvironments(serviceName, defaultCD, mCb) {
 			var oneCDEnv = currentScope.oneEnv;
 			var types = ['service', 'daemon', 'other'];
@@ -105,18 +105,18 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				mCb();
 			}
 		}
-		
+
 		function getEnvServices(envCode, serviceName, mCb) {
 			getServiceInEnv(currentScope, envCode, serviceName, mCb);
 		}
 	}
-	
+
 	function buildFormData(currentScope, env, serviceName, cb) {
 		var dashboardServices = ['dashboard', 'proxy'];
 		if (dashboardServices.indexOf(serviceName) !== -1) {
 			return cb();
 		}
-		
+
 		if (!currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj) {
 			currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj = {
 				branches: [],
@@ -171,9 +171,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		currentScope.cdConfiguration[serviceName].display = true;
 		currentScope.cdConfiguration[serviceName][env.toUpperCase()].display = true;
 		return cb();
-		
+
 	}
-	
+
 	function buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf, isKubernetes, $modalInstance, cb) {
 		if(isKubernetes === undefined){
 			//re-calculate isKubernetes
@@ -193,7 +193,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.cdEnvs = [$scope.oneEnv];
 		$scope.deployed = false;
 		$scope.recipes = angular.copy(currentScope.recipes);
-		
+
 		$scope.oneSrv = (service && service.name) ? service.name : oneRepo.name;
 		$scope.serviceType = (service && service.type) ? service.type : 'other';
 		$scope.showCD = true;
@@ -219,7 +219,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.gitAccount = gitAccount;
 		$scope.alerts = [];
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
-		
+
 		$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
 			if($scope.branches){
 				$scope.branches.forEach(function (oneBranch) {
@@ -232,7 +232,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				});
 			}
 		};
-		
+
 		$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {
 			$scope.alerts = [];
 			if (isCode) {
@@ -243,11 +243,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			}
 			$scope.alerts.push({'type': type, 'msg': msg});
 		};
-		
+
 		$scope.closeAlert = function (index) {
 			$scope.alerts.splice(index, 1);
 		};
-		
+
 		$scope.showHide = function (oneService, name) {
 			if (oneService.icon === 'minus') {
 				oneService.icon = 'plus';
@@ -258,7 +258,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				jQuery('#cd_' + name).slideDown()
 			}
 		};
-		
+
 		$scope.cdShowHide = function (oneSrv, name) {
 			if ($scope.cdConfiguration[oneSrv].icon === 'minus') {
 				$scope.cdConfiguration[oneSrv].icon = 'plus';
@@ -269,11 +269,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				jQuery('#cdc_' + name).slideDown()
 			}
 		};
-		
+
 		$scope.activateAutoScale = function () {
 			$scope.autoScale = !$scope.autoScale;
 		};
-		
+
 		$scope.setDeploy = function (oneEnv, version, oneSrv) {
 			var deployedBranch = '';
 			if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch) {
@@ -295,7 +295,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			else {
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].active = true;
 			}
-			
+
 			if(!$scope.noCDoverride){
 				$scope.myRecipes = [];
 				for (var type in $scope.recipes) {
@@ -306,7 +306,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					});
 				}
 			}
-			
+
 			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options = {'deployConfig': {'replication': {}}};
 			}
@@ -329,7 +329,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource) {
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource = {};
 			}
-			
+
 			$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = (oneRepo.owner && oneRepo.owner.login) ? oneRepo.owner.login : oneRepo.owner;
 			$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.repo = oneRepo.name;
 			if (isKubernetes) {
@@ -370,12 +370,12 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			if (service && $scope.serviceType === 'daemon' && service.grpConf) {
 				$scope.groupConfigs = service.grpConf;
 			}
-			
+
 			// on load if u need edit cicd
-			
+
 			$scope.injectCatalogEntries(oneEnv, version, oneSrv);
 		};
-		
+
 		$scope.injectCatalogEntries = function (oneEnv, version, oneSrv) {
 			$scope.allowGitOverride = false;
 			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom) {
@@ -397,10 +397,10 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						if (catalogRecipe.recipe.deployOptions.image.override) {
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix)
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix = catalogRecipe.recipe.deployOptions.image.prefix;
-							
+
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.name)
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.name = catalogRecipe.recipe.deployOptions.image.name;
-							
+
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag)
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag = catalogRecipe.recipe.deployOptions.image.tag;
 						}
@@ -426,7 +426,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						if (Object.keys($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env).length === 0) {
 							delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env;
 						}
-						
+
 						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.env = oneEnv;
 						if (['service', 'daemon', 'other'].indexOf(catalogRecipe.type) !== -1) {
 							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.name = oneSrv;
@@ -436,7 +436,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 							}
 							$scope.allowGitOverride = true;
 						}
-						
+
 						//add check, if recipe does not support certificates, do not show the secrets input at all
 						$scope.secretsAllowed = 'none';
 						if(catalogRecipe.recipe.deployOptions.certificates && catalogRecipe.recipe.deployOptions.certificates !== 'none'){
@@ -445,10 +445,10 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				});
 			}
-			
+
 			let selectedRecipe;
 			let recipes = $scope.recipes;
-			
+
 			for (let type in $scope.recipes) {
 				recipes[type].forEach(function (catalogRecipe) {
 					if (catalogRecipe._id === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe) {
@@ -459,18 +459,23 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			$scope.setExposedPorts(oneEnv, version, oneSrv, selectedRecipe, cb);
 			$scope.setSourceCodeData(oneEnv, version, oneSrv, selectedRecipe);
 		};
-		
+
 		$scope.setExposedPorts = function (oneEnv, version, oneSrv, selectedRecipe, cb) {
 			let ports;
 			let recipe = false;
 			$scope.catalogConflictingPorts = '';
-			if ($scope.services && $scope.services[oneSrv] && $scope.services[oneSrv].deploySettings
-				&& $scope.services[oneSrv].deploySettings.options
-				&& $scope.services[oneSrv].deploySettings.options.custom
-				&& $scope.services[oneSrv].deploySettings.options.custom.ports
-				&& $scope.services[oneSrv].deploySettings.options.custom.ports.length > 0){
-				ports = angular.copy($scope.services[oneSrv].deploySettings.options.custom.ports);
+
+			let deployOptionsInfo;
+			if ($scope.services && $scope.services[oneSrv] && $scope.services[oneSrv].deploySettings && $scope.services[oneSrv].deploySettings.options){
+				deployOptionsInfo = $scope.services[oneSrv].deploySettings.options;
 			}
+			else if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options){
+				deployOptionsInfo = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+			}
+			if(deployOptionsInfo.custom && deployOptionsInfo.custom.ports && deployOptionsInfo.custom.ports.length > 0){
+				ports = angular.copy(deployOptionsInfo.custom.ports);
+			}
+			
 			let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 			if(selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
 				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
@@ -489,12 +494,17 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				//check if there port mismatch in type
 				let nodePort =0, loadBalancer=0;
 				selectedRecipe.recipe.deployOptions.ports.forEach(function (onePort) {
+					let pushed = false;
 					if (recipe){
+						pushed = true;
 						formDataRoot.custom.ports.push(onePort);
 					}
 					if(onePort.isPublished || onePort.published){
 						formDataRoot.custom.loadBalancer = true;
-						formDataRoot.custom.ports.push(onePort);
+						if(!pushed){
+							pushed = true;
+							formDataRoot.custom.ports.push(onePort);
+						}
 						if (onePort.published){
 							if (recipe) {
 								formDataRoot.custom.loadBalancer = false;
@@ -510,7 +520,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports = [];
 					if($modalInstance){
 						$modalInstance.close();
-						
+
 						$modal.open({
 							templateUrl: "portConfiguration.tmpl",
 							size: 'm',
@@ -546,7 +556,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			}
 		};
-		
+
 		$scope.useLoadBalancer = function (oneSrv, oneEnv, version){
 			if ($scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv] && $scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version]){
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports.forEach(function (onePort) {
@@ -554,9 +564,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				});
 			}
 		};
-		
+
 		$scope.setSourceCodeData = function (oneEnv, version, oneSrv, selectedRecipe) {
-			
+
 			let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 			let formData = formDataRoot.custom;
 			$scope.sourceCodeConfig = {
@@ -568,28 +578,28 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				}
 			};
-			
+
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
-				
+
 				let conf = sourceCode.configuration;
-				
+
 				$scope.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
-				
+
 				if (!formData.sourceCode) {
 					formData.sourceCode = {};
 				}
-				
+
 				if (conf) {
 					$scope.sourceCodeConfig.configuration.isEnabled = true;
 					$scope.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
 					$scope.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
-					
+
 					if (conf.repo && conf.repo !== '') {
 						if (!formData.sourceCode.configuration) {
 							formData.sourceCode.configuration = {};
 						}
-						
+
 						formData.sourceCode.configuration.repo = conf.repo;
 						formData.sourceCode.configuration.branch = conf.branch;
 					} else {
@@ -598,7 +608,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						}
 					}
 				}
-				
+
 				if (conf) {
 					$scope.listAccounts(oneEnv, version, oneSrv, function () {
 						// special case: if the form was overwritten from cicd we have to load the branch
@@ -618,7 +628,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				formData.sourceCode = {}; // clear
 			}
 		};
-		
+
 		$scope.listAccounts = function (oneEnv, version, oneSrv, callback) {
 			getSendDataFromServer($scope, ngDataApi, {
 				'method': 'get',
@@ -631,9 +641,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					$scope.displayAlert('danger', error.message);
 				} else {
 					let configRecords = [];
-					
+
 					configRecords.push({name: "-- Leave Empty --"});
-					
+
 					if (response) {
 						response.forEach(function (eachAccount) {
 							if (eachAccount.repos) {
@@ -653,31 +663,31 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 							}
 						});
 					}
-					
+
 					$scope.configRepos.config = configRecords;
-					
+
 					callback();
 				}
 			});
 		};
-		
+
 		$scope.fetchBranches = function (oneEnv, version, oneSrv) {
 			let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 			let formData = formDataRoot.custom;
-			
+
 			let selectedRepo = formData.sourceCode.configuration.repo;
-			
+
 			if (!selectedRepo || selectedRepo === '' || selectedRepo === '-- Leave Empty --') {
 				return;
 			}
-			
+
 			let accountData = {};
 			$scope.configRepos.config.forEach(function (eachAcc) {
 				if (eachAcc.name === selectedRepo) {
 					accountData = eachAcc;
 				}
 			});
-			
+
 			$scope.configReposBranchesStatus[selectedRepo] = 'loading';
 			getSendDataFromServer($scope, ngDataApi, {
 				'method': 'get',
@@ -698,7 +708,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			});
 		};
-		
+
 		$scope.getSecrets = function (oneEnv, cb) {
 			if($scope.kubeEnv && $scope.kubeEnv === 'invalid'){
 				if($scope.defaultWizardSecretValues){
@@ -706,15 +716,15 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				}
 				return cb();
 			}
-			
+
 			let params = {
 				env: ($scope.kubeEnv)? $scope.kubeEnv.toUpperCase() : oneEnv.toUpperCase()
 			};
-			
+
 			if(isKubernetes && $scope.kubeNamespace){
 				params.namespace = $scope.kubeNamespace;
 			}
-			
+
 			getSendDataFromServer($scope, ngDataApi, {
 				'method': 'get',
 				'routeName': '/dashboard/secrets/list',
@@ -733,7 +743,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 									found = true;
 								}
 							});
-							
+
 							if(!found){
 								$scope.secrets.push(oneSecret);
 							}
@@ -743,7 +753,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			});
 		};
-		
+
 		if(!$scope.noCDoverride){
 			getCDRecipe($scope, oneRepo, function () {
 				$scope.getSecrets($scope.oneEnv, function (){
@@ -760,16 +770,16 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				});
 			});
 		}
-		
+
 		// source code updates
 		$scope.configRepos = [];
 		$scope.configReposBranches = {};
 		$scope.configReposBranchesStatus = {};
-		
+
 	}
-	
+
 	return {
 		'buildDeployForm': buildDeployForm
 	}
-	
+
 }]);

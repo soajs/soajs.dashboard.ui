@@ -767,26 +767,23 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					});
 				}
 			}
-			
+
 			return record;
 		};
-		
+
 		context.setExposedPorts = function (selectedRecipe) {
 			let ports;
-			if (context.formData.config){
-				if (typeof context.formData.config === 'string'){
-					ports = JSON.parse(context.formData.config).ports;
-				}
-				else {
-					ports = context.formData.config.ports
-				}
+			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports){
+				ports = context.formData.deployOptions.custom.ports;
 			}
 			let recipe = false;
-			if (ports) {
-				if (!context.formData.deployOptions.custom){
-					context.formData.deployOptions.custom = {};
+
+			if(!ports && context.noCDoverride){
+				if(resource.deploy && resource.deploy.options && resource.deploy.options.custom && resource.deploy.options.custom.ports){
+					if(Array.isArray(resource.deploy.options.custom.ports) && resource.deploy.options.custom.ports.length > 0){
+						ports = resource.deploy.options.custom.ports;
+					}
 				}
-				context.formData.deployOptions.custom.ports = ports;
 			}
 			context.catalogConflictingPorts = '';
 			if(selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports

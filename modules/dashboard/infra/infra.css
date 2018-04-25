@@ -1,0 +1,32 @@
+.tr-google-wrapper ,
+.tr-aws-wrapper ,
+.tr-azure-wrapper {
+    width:30%;
+    float:left;
+    margin:1%;
+    border: solid 1px #cccccc;
+    border-radius: 8px;
+}
+
+.tr-google-wrapper:hover,
+.tr-aws-wrapper:hover,
+.tr-azure-wrapper:hover {
+    border: solid 1px #bbbbbb;
+    cursor:pointer;
+    background-color:#efefef;
+}
+
+
+.tr-google-wrapper td,
+.tr-aws-wrapper td,
+.tr-azure-wrapper td{
+    width:100%;
+    display:block;
+}
+
+.tr-google-wrapper #google,
+.tr-aws-wrapper #aws,
+.tr-azure-wrapper #azure{
+    padding:10px;
+    text-align:center;
+}

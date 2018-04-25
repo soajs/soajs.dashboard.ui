@@ -1,0 +1,219 @@
+.environmentBox {
+    border-radius: 5px;
+    border:solid 1px #eeeeee;
+    padding:5px;
+    width:98%;
+    margin: 10px;
+    cursor:pointer;
+}
+
+.environmentBox:hover {
+    background-color:#DEF1F7;
+    border: solid 1px #337ab7;
+    /*-webkit-box-shadow: 0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+    /*-moz-box-shadow:    0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+    /*box-shadow:         0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+}
+
+.environmentBox:hover hr{
+    border-color:#333333;
+}
+
+#addEnvironment .modal-header span.closeButton{
+    display:none;
+}
+
+.addEnvTable {
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+.addEnvTable table{
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+.addEnvTable th{
+    border-collapse: collapse !important;
+    width: 50% !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    padding-left: 8px !important;
+}
+
+.addEnvTable tr:nth-child(odd){
+    background-color: #f2f2f2 !important;
+    width: 100% !important;
+}
+.addEnvTable td{
+    padding-top: 5px;
+    max-width: 500px;
+    overflow: auto;
+    text-overflow: clip;
+    white-space: nowrap;
+    border-collapse: collapse !important;
+    width: 50% !important;
+    padding-left: 8px !important;
+}
+.addEnvTable td label{
+    padding-bottom: 5px;
+}
+.addEnvImg div{
+    width: 15%;
+}
+.addEnvImg div img {
+    width: 100%;
+}
+.addEnvImg h4 {
+    display: inline-block;
+}
+.c-right {
+    clear: right;
+}
+
+.cloud-tr-bgColor {
+    background-color: rgba(112, 128, 141, 0.1)
+}
+
+.ace_editor{
+    height: 150px;
+}
+
+.customRegistryAceEditor {
+    max-height: 150px;
+    min-height: 18px;
+    overflow-y: scroll;
+}
+
+#page div.entryBoxesGrid div.entryBox{
+    float:none;
+}
+
+/* The switch - the box around the slider */
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 50px !important;
+    height: 20px !important;
+    top: 7px;
+    left: 6px;
+}
+
+/* Hide default HTML checkbox */
+.toggleSwitch input {display:none;}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+
+    width: 50px !important;
+    height: 20px !important;
+    top: 7px;
+    left: 6px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.buttonSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.buttonSlider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+
+    top: 1px;
+}
+
+input:checked + .buttonSlider {
+    background-color: #5cb85c;
+}
+
+input:focus + .buttonSlider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .buttonSlider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.buttonSlider.round {
+    border-radius: 34px;
+}
+
+.buttonSlider.round:before {
+    border-radius: 50%;
+}
+
+.nonBulletPoint {
+    list-style-type: none;
+}
+
+.tip-alert h3 {
+    background-color: inherit;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+.tip-alert p {
+    margin-bottom: 0;
+    margin-top: 3px;
+}
+
+.repos .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+
+}
+
+.repos .ui-select-multiple.ui-select-bootstrap {
+    display: block!important;
+    float: left;
+    height: auto;
+    min-height: 60px;
+    width: 95%!important;
+}
+
+label.secretMountPathRepo{
+    float: none!important;
+}
+input.secretMountPathRepo{
+    float: none!important;
+    width:96%!important;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap {
+    min-height: 60px;
+    height: auto!important;
+}
+
+label.secretMountPathResource{
+    float: none!important;
+}
+
+input.secretMountPathResource{
+    float: none!important;
+    width:100%!important;
+}

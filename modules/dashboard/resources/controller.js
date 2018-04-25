@@ -1,15 +1,20 @@
 'use strict';
 
+// isInBetween : is a flag added to some functions to signal that the api is called in between other apis or not
+// if set to false: no overlay will be shown / hidden and vice versa
+
 var resourcesApp = soajsApp.components;
 resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$modal', 'ngDataApi', '$cookies', 'injectFiles', 'resourceConfiguration', 'resourceDeploy', function ($scope, $http, $timeout, $modal, ngDataApi, $cookies, injectFiles, resourceConfiguration, resourceDeploy) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
 	
-	$scope.listResources = function (cb) {
+	$scope.listResources = function (isInBetween, cb) {
 		$scope.oldStyle = false;
 		getEnvironment(function () {
-			overlayLoading.show();
+			if(!isInBetween){
+				overlayLoading.show();
+			}
 			getSendDataFromServer($scope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/resources/list',
@@ -17,11 +22,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					env: $scope.envCode
 				}
 			}, function (error, response) {
-				overlayLoading.hide();
 				if (error) {
+					overlayLoading.hide();
 					$scope.displayAlert('danger', error.message);
 				}
 				else {
+					if(!isInBetween){
+						overlayLoading.hide();
+					}
 					$scope.resources = { list: response };
 					$scope.resources.original = angular.copy($scope.resources.list); //keep a copy of the original resources records
 					
@@ -149,23 +157,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		buildFormWithModal(currentScope, $modal, options);
 	};
 	
-	function decodeRepoNameAndSubName(name) {
-		let splits = name.split('__SOAJS_DELIMITER__');
-		
-		let output = {
-			name : splits[0]
-		};
-		
-		if(splits.length > 0){
-			let subName = splits[1];
-			if(subName){
-				output.subName = splits[1];
-			}
-		}
-		
-		return output;
-	}
-	
 	$scope.manageResource = function (resource, action, settings) {
 		var currentScope = $scope;
 		$modal.open({
@@ -178,61 +169,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 				
-				function reformatSourceCodeForCicd(record) {
-					if(record.configuration && record.configuration.repo){
-						let selectedRepo = record.configuration.repo;
-						if(selectedRepo === '-- Leave Empty --'){
-							record.configuration.repo = "";
-							record.configuration.branch = "";
-						}else{
-							$scope.configRepos.config.forEach(function (eachConf) {
-								if(eachConf.name === selectedRepo){
-									record.configuration.commit = eachConf.configSHA;
-									record.configuration.owner = eachConf.owner;
-								}
-							});
-						}
-					}
-					
-					if(record.custom && record.custom.repo){
-						let selectedRepoComposed = record.custom.repo;
-						let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
-						
-						let selectedRepo = decoded.name;
-						let subName = decoded.subName;
-						
-						record.custom.repo = selectedRepo; // save clear value
-						
-						if(selectedRepo === '-- Leave Empty --'){
-							record.custom.repo = "";
-							record.custom.branch = "";
-						}else {
-							$scope.configRepos.customType.forEach(function (eachConf) {
-								if (eachConf.name === selectedRepo) {
-									record.custom.owner = eachConf.owner;
-									record.custom.subName = subName; // for multi
-									
-									if (eachConf.configSHA && typeof eachConf.configSHA === 'object') { // for multi
-										eachConf.configSHA.forEach(function (eachConfig) {
-											if (eachConfig.contentName === subName) {
-												record.custom.commit = eachConfig.sha;
-											}
-										});
-									} else {
-										record.custom.commit = eachConf.configSHA;
-									}
-								}
-							});
-						}
-					}
-					
-					return record;
-				}
-				
-				$scope.save = function (cb) {
+				$scope.save = function (isInBetween, cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
+					}
+					
+					if (!isInBetween) {
+						overlayLoading.show();
 					}
 					
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
@@ -244,6 +188,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							saveResourceDeployConfig(function () {
 								if (cb) return cb();
 								
+								if (!isInBetween) {
+									overlayLoading.hide();
+								}
 								$scope.formData = {};
 								$modalInstance.close();
 								currentScope.load();
@@ -261,15 +208,34 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							shared: $scope.formData.shared || false,
 							config: $scope.formData.config
 						};
+						if ($scope.formData.deployOptions.custom
+							&& $scope.formData.deployOptions.custom.ports
+							&& $scope.formData.deployOptions.custom.ports.length > 0){
+							$scope.formData.deployOptions.custom.ports.forEach(function (onePort) {
+								if(Object.hasOwnProperty.call(onePort, 'loadBalancer')){
+									delete onePort.loadBalancer
+								}
+								if(!saveOptions.config.ports){
+									saveOptions.config.ports = []
+								}
+								saveOptions.config.ports.push(onePort);
+							});
+						}
+						if ($scope.formData.deployOptions.custom
+							&& $scope.formData.deployOptions.custom.secrets
+							&& $scope.formData.deployOptions.custom.secrets.length > 0){
+							saveOptions.config.secrets = $scope.formData.deployOptions.custom.secrets
+						}
 						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
 							saveOptions.sharedEnv = {};
+							$scope.formData.sharedEnv = {};
 							$scope.envs.list.forEach(function (oneEnv) {
 								if (oneEnv.selected) {
+									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
 									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
 								}
 							});
 						}
-						
 						var options = {};
 						if ($scope.options.formAction === 'add') {
 							options = {
@@ -295,10 +261,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							};
 						}
 						
-						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
-							overlayLoading.hide();
 							if (error) {
+								overlayLoading.hide();
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -322,7 +287,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 						deployOptions.custom.type = 'resource';
 						
-						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						
 						if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
@@ -344,10 +309,10 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						if (!$scope.formData.canBeDeployed) {
 							delete options.data.config.options;
 						}
-						overlayLoading.show();
+						
 						getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
-							overlayLoading.hide();
 							if (error) {
+								overlayLoading.hide();
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -364,13 +329,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
+					overlayLoading.show();
+					
 					if (deployOnly) {
 						deployResource(function () {
 							currentScope.load();
 						});
 					}
 					else {
-						$scope.save(function () {
+						$scope.save(true, function () {
 							deployResource(function () {
 								$scope.formData = {};
 								$modalInstance.close();
@@ -384,15 +351,21 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							if (cb) return cb();
 							else return;
 						}
-						
 						var deployOptions = angular.copy($scope.formData.deployOptions);
 						if (!deployOptions.custom) {
 							deployOptions.custom = {};
 						}
 						
+						if(deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0){
+							deployOptions.custom.ports.forEach(function (onePort) {
+								if(onePort.hasOwnProperty.call(onePort, 'LoadBalancer')){
+									delete onePort.LoadBalancer
+								}
+							});
+						}
 						deployOptions.custom.type = 'resource';
 						
-						deployOptions.custom.sourceCode = reformatSourceCodeForCicd(deployOptions.sourceCode);
+						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						
 						if ($scope.options.formAction === 'add') {
@@ -452,8 +425,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
-					$scope.save(function () {
+					overlayLoading.show();
+					
+					$scope.save(true, function () {
 						rebuildService(function () {
+							overlayLoading.hide();
 							$scope.formData = {};
 							$modalInstance.close();
 							currentScope.load();
@@ -472,14 +448,13 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						
 						$scope.formData.deployOptions.custom.type = 'resource';
 						
-						$scope.formData.deployOptions.custom.sourceCode = reformatSourceCodeForCicd($scope.formData.deployOptions.sourceCode);
+						$scope.formData.deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd($scope.formData.deployOptions.sourceCode);
 						delete $scope.formData.deployOptions.sourceCode;
 						
 						var rebuildOptions = angular.copy($scope.formData.deployOptions.custom);
 						rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
 						rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;
 						
-						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, {
 							method: 'put',
 							routeName: '/dashboard/cloud/services/redeploy',
@@ -491,8 +466,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								custom: rebuildOptions
 							}
 						}, function (error) {
-							overlayLoading.hide();
 							if (error) {
+								overlayLoading.hide();
 								$scope.displayAlert('danger', error.message);
 							}
 							else {
@@ -629,7 +604,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 			else {
 				$scope.displayAlert('success', 'Resource updated successfully');
-				$scope.listResources();
+				$scope.listResources(false);
 			}
 		});
 	};
@@ -713,13 +688,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			else return;
 		}
 		
-		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources/config'
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
+				overlayLoading.hide();
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
@@ -731,11 +705,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	};
 	
 	$scope.load = function (cb) {
+		overlayLoading.show();
 		$scope.listDeployedServices(function () {
 			$scope.getDeployConfig(function () {
-				$scope.listResources(function () {
+				$scope.listResources(true, function () {
+					overlayLoading.hide();
 					if (cb) return cb;
-					
 					return;
 				});
 			});

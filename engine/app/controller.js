@@ -10,7 +10,8 @@ function configureRouteNavigation(navigation, scope) {
 			resolve: {
 				load: ['$q', '$rootScope', function ($q, $rootScope) {
 					var deferred = $q.defer();
-					require(navigationEntry.scripts, function () {
+					let scriptLocation = navigationEntry.scripts;
+					require(scriptLocation, function () {
 						$rootScope.$apply(function () {
 							deferred.resolve();
 						});

@@ -669,56 +669,23 @@ input:checked + .buttonSlider:before {
     color: #A9A9A9;
 }
 
-#addEnvironment .modal-header span.closeButton{
-    display:none;
+.repos .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+
 }
 
-.addEnvTable {
-    border-collapse: collapse !important;
-    width: 100% !important;
-}
-.addEnvTable table{
-    border-collapse: collapse !important;
-    width: 100% !important;
-}
-.addEnvTable th{
-    border-collapse: collapse !important;
-    width: 50% !important;
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-    padding-left: 8px !important;
+.repos .ui-select-multiple.ui-select-bootstrap {
+    display: block!important;
+    float: left;
+    height: auto;
+    min-height: 60px;
+    width: 95%!important;
 }
 
-.addEnvTable tr:nth-child(odd){
-    background-color: #f2f2f2 !important;
-    width: 100% !important;
+label.secretMountPathRepo{
+    float: none!important;
 }
-.addEnvTable td{
-    padding-top: 5px;
-    max-width: 500px;
-    overflow: auto;
-    text-overflow: clip;
-    white-space: nowrap;
-    border-collapse: collapse !important;
-    width: 50% !important;
-    padding-left: 8px !important;
-}
-.addEnvTable td label{
-    padding-bottom: 5px;
-}
-.addEnvImg div{
-    width: 15%;
-}
-.addEnvImg div img {
-    width: 100%;
-}
-.addEnvImg h4 {
-    display: inline-block;
-}
-.c-right {
-    clear: right;
-}
-
-.cloud-tr-bgColor {
-    background-color: rgba(112, 128, 141, 0.1)
+input.secretMountPathRepo{
+    float: none!important;
+    width:96%!important;
 }

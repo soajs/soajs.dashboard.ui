@@ -103,15 +103,29 @@
 		    <div ng-if="notsupported">
 			    <alert type="danger">The selected Driver is not supported, please choose another.</alert>
 		    </div>
-	        <div ng-if="!notsupported" class="form" ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>
+		    <form ng-if="!notsupported" name="addEditResource" id="addEditResource" ng-submit="addEditResource.$valid && onSubmit()">
+	            <div class="form" ng-include="'modules/dashboard/resources/directives/resource.tmpl'"></div>
+		    </form>
 	    </div>
 	    <div class="modal-footer">
 		    <span ng-if="options.allowEdit">
-	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save()">Save</button>
+	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save(false)">Save</button>
 	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="saveAndDeploy()">Save & Deploy</button>
 	            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id" ng-disabled="!valid" ng-click="saveAndRebuild()">Save & Rebuild</button>
 	        </span>
 	        <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
 		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="portConfiguration.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-body">
+		<alert type="danger">{{message}}</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="closeModal()">Cancel</button>
 	</div>
 </script>

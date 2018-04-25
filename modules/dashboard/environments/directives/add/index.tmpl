@@ -1,0 +1,33 @@
+<section ng-controller="addEnvironmentCtrl">
+	<div ng-show="!wizard.template">
+		<div ng-include="'modules/dashboard/environments/directives/add/template.tmpl'"></div>
+	</div>
+	<div ng-show="wizard.template">
+		<form>
+			<div class="header"><h3>Creating a New Environment</h3></div>
+		</form>
+		<div ng-switch="addEnvCounter">
+			<div ng-switch-when="1">
+				<div ng-include="'modules/dashboard/environments/directives/add/gi.tmpl'"></div>
+			</div>
+			<div ng-switch-when="2">
+				<div ng-include="'modules/dashboard/environments/directives/add/deploy.tmpl'"></div>
+			</div>
+			<div ng-switch-when="3">
+				<div ng-include="'modules/dashboard/environments/directives/add/registry.tmpl'"></div>
+			</div>
+			<div ng-switch-when="4">
+				<div ng-include="'modules/dashboard/environments/directives/add/dynamic.tmpl'"></div>
+			</div>
+			<div ng-switch-when="5">
+				<div ng-include="'modules/dashboard/environments/directives/add/nginx.tmpl'"></div>
+			</div>
+			<div ng-switch-when="6">
+				<div ng-include="'modules/dashboard/environments/directives/add/overview.tmpl'"></div>
+			</div>
+			<div ng-switch-when="7">
+				<div ng-include="'modules/dashboard/environments/directives/add/status.tmpl'"></div>
+			</div>
+		</div>
+	</div>
+</section>

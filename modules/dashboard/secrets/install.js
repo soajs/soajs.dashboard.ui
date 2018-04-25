@@ -21,7 +21,7 @@ var secretsNav = [
         'mainMenu': true,
         'tracker': true,
         'order': 5,
-        'scripts': ['modules/dashboard/secrets/config.js', 'modules/dashboard/secrets/controller.js'],
+        'scripts': ['modules/dashboard/secrets/config.js', 'modules/dashboard/secrets/controller.js', 'modules/dashboard/secrets/services/secretsService.js'],
         'ancestor': [translation.home[LANG]]
     }
 ];

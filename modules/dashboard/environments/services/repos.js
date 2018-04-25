@@ -4,10 +4,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})){
 		var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
 		var envPlatform = envDeployer.selected.split('.')[1];
-		var isKubernetes = (envPlatform.toLowerCase() === "kubernetes");
+		var isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
 	}
 	
-	function listGitAccounts(currentScope) {
+	function listGitAccounts(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
 			'routeName': '/dashboard/gitAccounts/accounts/list',
@@ -29,9 +29,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						getServices(currentScope, function () {
 							getDaemons(currentScope, function () {
 								processGitAccountsRepos(function() {
-									getCdData(currentScope, function () {
-										getDeployedServices(currentScope);
-									});
+									
+									if(cb && typeof cb === 'function'){
+										return cb();
+									}
+									else{
+										getCdData(currentScope, function () {
+											getDeployedServices(currentScope);
+										});
+									}
 								});
 							});
 						});
@@ -391,31 +397,29 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			openUpgradeModal(currentScope);
 		}
 		else{
+			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})){
+				var envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
+				var envPlatform = envDeployer.selected.split('.')[1];
+				var isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
+			}
+			
 			var deployService = $modal.open({
 				templateUrl: 'deployService.tmpl',
 				size: 'lg',
 				backdrop: true,
 				keyboard: true,
-				controller: function ($scope) {
+				controller: function ($scope, $modalInstance) {
 					
 					fixBackDrop();
 					
-					deployServiceDep.buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf,isKubernetes);
+					deployServiceDep.buildDeployForm($scope, currentScope, oneRepo, service, version, gitAccount, daemonGrpConf,isKubernetes, $modalInstance, function(err){
+						if (err){
+							currentScope.displayAlert('danger', err.message);
+						}
+					});
 					
 					$scope.cancel = function () {
 						deployService.close();
-					};
-					
-					$scope.updateGitBranch = function (oneSrv, oneEnv, version) {
-						$scope.branches.forEach(function (oneBranch) {
-							if (oneBranch.name === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch){
-								if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options) {
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.branch;
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.commit = oneBranch.commit.sha;
-								}
-							}
-						});
-						
 					};
 					
 					$scope.saveRecipe = function (type) {
@@ -455,7 +459,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		});
 	}
 
-	function saveRecipe(currentScope, type) {
+	function saveRecipe(currentScope, type, cb) {
 		var configuration = {};
 		var modes = ['deployment', 'replicated'];
 		var oneEnv = currentScope.oneEnv;
@@ -518,6 +522,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						configuration.default.options.deployConfig.replication.replicas = configuration.default.options.autoScale.replicas.min;
 				}
 				configuration.default.deploy = true;
+				if (configuration.default.options.custom && configuration.default.options.custom && Object.hasOwnProperty.call(configuration.default.options.custom, 'loadBalancer')){
+					delete configuration.default.options.custom.loadBalancer;
+				}
 			}
 		}
 		else {
@@ -556,8 +563,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				else if(configuration.version.options.deployConfig.replication.mode === 'deployment' && configuration.version.options.autoScale && configuration.version.options.autoScale.replicas && configuration.version.options.autoScale.replicas.min){
 						configuration.version.options.deployConfig.replication.replicas = configuration.version.options.autoScale.replicas.min;
 				}
+				if (configuration.version.options.custom && configuration.version.options.custom && Object.hasOwnProperty.call(configuration.version.options.custom, 'loadBalancer')){
+					delete configuration.version.options.custom.loadBalancer;
+				}
 				configuration.version.deploy = true;
 			}
+		}
+		
+		if(cb && typeof cb === 'function'){
+			return cb(configuration);
 		}
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -819,7 +833,8 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		'getDeployedServices': getDeployedServices,
 		'deployService': deployService,
 		'doDeploy': doDeploy,
-		'checkHeapster': checkHeapster
+		'checkHeapster': checkHeapster,
+		'saveRecipe': saveRecipe
 	};
 
 }]);

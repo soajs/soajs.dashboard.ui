@@ -1,18 +1,39 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDataApi', function (resourceConfiguration, ngDataApi) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', function (resourceConfiguration, $modal, ngDataApi) {
+	
+	function decodeRepoNameAndSubName(name) {
+		let splits = name.split('__SOAJS_DELIMITER__');
+		
+		let output = {
+			name : splits[0]
+		};
+		
+		if(splits.length > 0){
+			let subName = splits[1];
+			if(subName){
+				output.subName = splits[1];
+			}
+		}
+		
+		return output;
+	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		context.formData = {};
+		context.catalogConflictingPorts = '';
+		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
 		context.message = {};
-		context.recipes = [];
+		if(!context.noCDoverride){
+			context.recipes = [];
+		}
 		context.recipeUserInput = {image: {}, envs: {}};
 		
 		context.configRepos = [];
 		context.configReposBranches = {};
 		context.configReposBranchesStatus = {};
 		
+		context.secretsAllowed = 'none';
 		context.resourceDeployed = false;
 		if (resource && resource.instance && resource.instance.id) {
 			context.resourceDeployed = true;
@@ -40,6 +61,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				context.notsupported = true;
 			}
 		});
+		
+		context.decodeRepoNameAndSubName = decodeRepoNameAndSubName;
 		
 		context.fetchBranches = function (confOrCustom) {
 			let selectedRepo, subNameInCaseMulti;
@@ -118,7 +141,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			envCode: currentScope.envCode,
 			envType: currentScope.envType,
 			envPlatform: currentScope.envPlatform,
-			enableAutoScale: false,
+			enableAutoScale: currentScope.enableAutoScale || false,
 			formAction: action,
 			aceEditorConfig: {
 				maxLines: Infinity,
@@ -338,27 +361,29 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				}
 				
 				// take source code configuration from cicd on edit
-				if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
-					context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
-					
-					// reconstruct complex repo on load
-					if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
-						let subName = "";
-						if (context.formData.deployOptions.sourceCode.custom.subName) {
-							subName = context.formData.deployOptions.sourceCode.custom.subName;
-						}
-						context.formData.deployOptions.sourceCode.custom.repo = context.formData.deployOptions.sourceCode.custom.repo + "__SOAJS_DELIMITER__" + subName;
-					}
-				}
+				updateCustomRepoName();
 				
 				context.buildComputedHostname();
 				
 			}
 		};
 		
-		context.setSourceCodeData = function () {
-			let recipes = context.recipes;
-			let selectedRecipe;
+		function updateCustomRepoName(){
+			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
+				context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
+				
+				// reconstruct complex repo on load
+				if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
+					let subName = "";
+					if (context.formData.deployOptions.sourceCode.custom.subName) {
+						subName = context.formData.deployOptions.sourceCode.custom.subName;
+					}
+					context.formData.deployOptions.sourceCode.custom.repo = context.formData.deployOptions.sourceCode.custom.repo + "__SOAJS_DELIMITER__" + subName;
+				}
+			}
+		}
+		
+		context.setSourceCodeData = function (selectedRecipe) {
 			let customType;
 			
 			context.sourceCodeConfig = {
@@ -380,14 +405,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					}
 				}
 			};
-			
-			if (context.formData.deployOptions && context.formData.deployOptions.recipe && recipes) {
-				recipes.forEach(function (eachRecipe) {
-					if (eachRecipe._id === context.formData.deployOptions.recipe) {
-						selectedRecipe = eachRecipe;
-					}
-				});
-			}
 			
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
@@ -470,8 +487,51 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 		};
 		
-		context.getCatalogRecipes = function (cb) {
+		context.getSecrets = function(cb){
 			overlayLoading.show();
+			if(context.kubeEnv && context.kubeEnv === 'invalid'){
+				if(context.defaultWizardSecretValues){
+					context.secrets = context.defaultWizardSecretValues;
+				}
+				return cb();
+			}
+			
+			let params = {
+				env: (context.kubeEnv)? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
+			};
+			
+			if(currentScope.envPlatform === 'kubernetes' && context.kubeNamespace){
+				params.namespace = context.kubeNamespace;
+			}
+			
+			getSendDataFromServer(currentScope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/secrets/list',
+				params: params
+			}, function (error, secrets) {
+				if (error) {
+					context.displayAlert('danger', error.message);
+				}
+				context.secrets = context.defaultWizardSecretValues || [];
+				if (secrets && Array.isArray(secrets) && secrets.length > 0) {
+					secrets.forEach((oneSecret) => {
+						let found = false;
+						context.secrets.forEach((oneExistingSecret) => {
+							if(oneExistingSecret.name === oneSecret.name){
+								found = true;
+							}
+						});
+						
+						if(!found){
+							context.secrets.push(oneSecret);
+						}
+					});
+				}
+				if (cb) return cb();
+			});
+		};
+		
+		context.getCatalogRecipes = function (cb) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/catalog/recipes/list'
@@ -494,7 +554,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 							}
 						});
 						
-						context.displayRecipeInputs();
+						context.displayRecipeInputs(function(err){
+							if (err){
+								context.displayAlert('danger', err.message);
+							}
+						});
 					}
 					
 					if (cb) return cb();
@@ -509,7 +573,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 			}
 		};
 		
-		context.displayRecipeInputs = function () {
+		context.displayRecipeInputs = function (cb) {
+			let recipes = context.recipes;
+			let selectedRecipe = context.recipes;
 			context.recipeUserInput.envs = {};
 			if (context.formData.deployOptions && context.formData.deployOptions.recipe) {
 				for (var i = 0; i < context.recipes.length; i++) {
@@ -543,14 +609,30 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 								};
 							}
 						}
+						
+						//add check, if recipe does not support certificates, do not show the secrets input at all
+						context.secretsAllowed = 'none';
+						if(context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none'){
+							context.secretsAllowed = context.recipes[i].recipe.deployOptions.certificates;
+						}
 					}
 				}
 			}
-			
-			context.setSourceCodeData();
+			if (context.formData.deployOptions && context.formData.deployOptions.recipe && recipes) {
+				recipes.forEach(function (eachRecipe) {
+					if (eachRecipe._id === context.formData.deployOptions.recipe) {
+						selectedRecipe = eachRecipe;
+					}
+				});
+			}
+			context.setSourceCodeData(selectedRecipe);
+			context.setExposedPorts(selectedRecipe, cb);
 		};
 		
-		context.updateDeploymentName = function () {
+		context.updateDeploymentName = function (resourceName) {
+			resourceName = (resourceName) ? resourceName.toLowerCase() : '';
+			context.formData.name = resourceName;
+			
 			if (context.formData.canBeDeployed) {
 				if (!context.formData.deployOptions) {
 					context.formData.deployOptions = {};
@@ -558,19 +640,19 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 				if (!context.formData.deployOptions.custom) {
 					context.formData.deployOptions.custom = {}
 				}
-				
-				context.formData.deployOptions.custom.name = context.formData.name;
-				context.buildComputedHostname();
+				context.formData.deployOptions.custom.name = resourceName;
 			}
+			
+			context.buildComputedHostname(resourceName);
 		};
 		
-		context.buildComputedHostname = function () {
+		context.buildComputedHostname = function (resourceName) {
+			
+			context.options.computedHostname = resourceName;
+			
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
-				if (context.envPlatform === 'docker') {
-					context.options.computedHostname = context.formData.deployOptions.custom.name;
-				}
-				else if (context.envPlatform === 'kubernetes') {
-					context.options.computedHostname = context.formData.deployOptions.custom.name + '-service';
+				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
+					context.options.computedHostname = resourceName + '-service';
 					
 					var selected = context.envDeployer.selected.split('.');
 					if (context.envDeployer && context.envDeployer[selected[0]] && context.envDeployer[selected[0]][selected[1]] && context.envDeployer[selected[0]][selected[1]][selected[2]]) {
@@ -580,8 +662,50 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 							context.options.computedHostname += '.' + platformConfig.namespace.default;
 							
 							if (platformConfig.namespace.perService) {
-								context.options.computedHostname += '-' + context.formData.deployOptions.custom.name;
+								context.options.computedHostname += '-' + resourceName;
 							}
+						}
+					}
+				}
+			}
+			
+			
+			if(context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0){
+				for(let $index = context.form.entries.length -1; $index >=0; $index--){
+					let oneEntry = context.form.entries[$index];
+					if(oneEntry.name && oneEntry.name === 'servers0'){
+						oneEntry.entries.forEach((oneSubEntry) => {
+							oneSubEntry.disabled = false;
+							delete oneSubEntry.disabled;
+							context.form.formData[oneSubEntry.name] = '';
+							
+							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
+								oneSubEntry.disabled = true;
+								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+							}
+							if(oneSubEntry.name.includes("port")){
+								oneSubEntry.value = oneSubEntry.value.toString();
+								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
+							}
+							if(oneSubEntry.name.includes("removeserver")){
+								oneSubEntry.value = '<span class=\'icon icon-cross red\'></span>';
+								if(context.formData.canBeDeployed && resourceName && resourceName !== ''){
+									oneSubEntry.value = '';
+								}
+							}
+						});
+					}
+					
+					if(context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0'){
+						context.form.entries.splice($index, 1);
+					}
+					
+					if(oneEntry.name && oneEntry.name === 'anotherservers'){
+						if(context.formData.canBeDeployed){
+							jQuery('#anotherservers').hide();
+						}
+						else{
+							jQuery('#anotherservers').show();
 						}
 					}
 				}
@@ -594,12 +718,174 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', 'ngDat
 					oneEnv.selected = true;
 				});
 			}
+		};
+		
+		context.reformatSourceCodeForCicd = function(record) {
+			if(record.configuration && record.configuration.repo){
+				let selectedRepo = record.configuration.repo;
+				if(selectedRepo === '-- Leave Empty --'){
+					record.configuration.repo = "";
+					record.configuration.branch = "";
+				}else{
+					context.configRepos.config.forEach(function (eachConf) {
+						if(eachConf.name === selectedRepo){
+							record.configuration.commit = eachConf.configSHA;
+							record.configuration.owner = eachConf.owner;
+						}
+					});
+				}
+			}
 			
-			return;
+			if(record.custom && record.custom.repo){
+				let selectedRepoComposed = record.custom.repo;
+				let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
+				
+				let selectedRepo = decoded.name;
+				let subName = decoded.subName;
+				
+				record.custom.repo = selectedRepo; // save clear value
+				
+				if(selectedRepo === '-- Leave Empty --'){
+					record.custom.repo = "";
+					record.custom.branch = "";
+				}else {
+					context.configRepos.customType.forEach(function (eachConf) {
+						if (eachConf.name === selectedRepo) {
+							record.custom.owner = eachConf.owner;
+							record.custom.subName = subName; // for multi
+							
+							if (eachConf.configSHA && typeof eachConf.configSHA === 'object') { // for multi
+								eachConf.configSHA.forEach(function (eachConfig) {
+									if (eachConfig.contentName === subName) {
+										record.custom.commit = eachConfig.sha;
+									}
+								});
+							} else {
+								record.custom.commit = eachConf.configSHA;
+							}
+						}
+					});
+				}
+			}
+			
+			return record;
+		};
+		
+		context.setExposedPorts = function (selectedRecipe) {
+			let ports;
+			if (context.formData.config){
+				if (typeof context.formData.config === 'string'){
+					ports = JSON.parse(context.formData.config).ports;
+				}
+				else {
+					ports = context.formData.config.ports
+				}
+			}
+			let recipe = false;
+			if (ports) {
+				if (!context.formData.deployOptions.custom){
+					context.formData.deployOptions.custom = {};
+				}
+				context.formData.deployOptions.custom.ports = ports;
+			}
+			context.catalogConflictingPorts = '';
+			if(selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
+				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
+				&& selectedRecipe.recipe.deployOptions.ports.length > 0 ) {
+				//use ports from recipe if no ports were coming from previuos save
+				if (!ports){
+					recipe = true;
+					ports = selectedRecipe.recipe.deployOptions.ports;
+				}
+				if (!context.formData.deployOptions.custom){
+					context.formData.deployOptions.custom = {};
+				}
+				if (recipe){
+					context.formData.deployOptions.custom.ports = [];
+				}
+				//check if there port mismatch in type
+				let nodePort =0, loadBalancer=0;
+				selectedRecipe.recipe.deployOptions.ports.forEach(function (onePort) {
+					if (recipe){
+						context.formData.deployOptions.custom.ports.push(onePort);
+					}
+					if(onePort.isPublished || onePort.published){
+						context.formData.deployOptions.custom.loadBalancer = true;
+						if (onePort.published){
+							if (recipe){
+								context.formData.deployOptions.custom.loadBalancer = false;
+							}
+							nodePort++;
+						}
+						else {
+							loadBalancer++;
+						}
+					}
+				});
+				if (loadBalancer !== 0 && nodePort !==0){
+					if($modalInstance){
+						$modalInstance.close();
+						$modal.open({
+							templateUrl: "portConfiguration.tmpl",
+							size: 'm',
+							backdrop: true,
+							keyboard: true,
+							controller: function ($scope, $modalInstance) {
+								fixBackDrop();
+								$scope.currentScope = currentScope;
+								$scope.title = 'Port Configuration';
+								$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + selectedRecipe.name;
+								$scope.closeModal = function () {
+									$modalInstance.close();
+								};
+							}
+						});
+					}
+					else{
+						context.catalogConflictingPorts = selectedRecipe.name;
+					}
+				}
+			}
+			if (ports && !recipe){
+				//get the type of the ports
+				context.formData.deployOptions.custom.ports = [];
+				ports.forEach(function (onePort) {
+					context.formData.deployOptions.custom.ports.push(onePort);
+					if(onePort.isPublished || onePort.published){
+						context.formData.deployOptions.custom.loadBalancer = true;
+						if (onePort.published){
+							context.formData.deployOptions.custom.loadBalancer = false;
+						}
+					}
+				});
+			}
+		};
+		
+		context.useLoadBalancer = function (){
+			context.formData.deployOptions.custom.ports.forEach(function (onePort) {
+				delete onePort.published
+			});
 		};
 		
 		context.fillForm();
-		context.getCatalogRecipes();
+		
+		if(!context.noCDoverride){
+			context.getSecrets(function(cb){
+				context.getCatalogRecipes(cb);
+			});
+			if(context.formData && context.formData.canBeDeployed && resource && resource.name){
+				setTimeout(() => {
+					context.updateDeploymentName(resource.name);
+				}, 200);
+			}
+		}
+		else{
+			//this is called by add env wizard.
+			updateCustomRepoName();
+			context.getSecrets(function (cb) {
+				context.displayRecipeInputs(cb);
+			});
+		}
 		
 		if (cb && typeof cb === 'function')
 			return cb();

@@ -2,20 +2,20 @@
 var dynamicServices = soajsApp.components;
 dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$compile', 'customRegistrySrv', 'resourceDeploy', 'resourceConfiguration', 'secretsService', 'deployRepos', 'deployServiceDep', function (ngDataApi, $timeout, $modal, $localStorage, $window, $compile, customRegistrySrv, resourceDeploy, resourceConfiguration, secretsService, deployRepos, deployServiceDep) {
 	let defaultWizardSecretValues = [];
-	
+
 	let predefinedSchemaSteps = {
 		custom_registry: {
 			deploy: function (currentScope, context) {
 				function buildMyForms(counter, cb) {
-					
+
 					let ci = entriesNames[counter];
 					let customRegistry = ciEntries[ci];
-					
+
 					let record = angular.copy(customRegistry);
 					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 						record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
 					}
-					
+
 					customRegistry.scope = currentScope.$new(true); //true means detached from main currentScope
 					customRegistrySrv.internalCustomRegistryFormManagement(customRegistry.scope, currentScope.envCode, null, record, 'add');
 					let entries = [
@@ -27,7 +27,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						let element = angular.element(document.getElementById("ci_" + ci));
 						element.html("<ngform></ngform>");
 						$compile(element.contents())(customRegistry.scope);
-						
+
 						counter++;
 						if (counter < entriesNames.length) {
 							buildMyForms(counter, cb);
@@ -37,11 +37,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 				}
-				
+
 				//create a copy just in case
 				let ciEntries = angular.copy(context.inputs);
 				currentScope.dynamicStep = context;
-				
+
 				currentScope.saveData = function () {
 					if (!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv) {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
@@ -49,12 +49,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					else {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
-					
+
 					let entriesCount = 0;
 					for (let ci in ciEntries) {
 						let customRegistry = ciEntries[ci];
 						customRegistry.scope.save();
-						
+
 						if(customRegistry.scope.$valid){
 							//map the values back to custom registry
 							let imfv = angular.copy(customRegistry.scope.formData);
@@ -72,7 +72,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							delete customRegistry.scope;
 							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(customRegistry);
 							entriesCount++;
-							
+
 							//trigger next here
 							if(entriesCount === Object.keys(ciEntries).length){
 								currentScope.next();
@@ -80,7 +80,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					}
 				};
-				
+
 				overlayLoading.show();
 				let entriesNames = Object.keys(ciEntries);
 				currentScope.loadingDynamicSection = true;
@@ -95,9 +95,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let secretKey = entriesNames[counter];
 					let oneSecret = secretEntries[secretKey];
-					
+
 					currentScope.namespaceConfig = namespaceConfig;
-					
+
 					let extraInputs = [];
 					if(namespaces && namespaces.length > 0){
 						extraInputs = [
@@ -112,7 +112,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						];
 					}
-					
+
 					let record = {
 						secretName: oneSecret.name,
 						secretData: oneSecret.data
@@ -122,7 +122,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							secretName: currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].name,
 							textMode: (currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'text'),
 						};
-						
+
 						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].datatype === 'file'){
 							record['secretFile']= currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].data;
 						}
@@ -132,25 +132,25 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								record['secretData'] = JSON.parse(record['secretData']);
 							}
 						}
-						
+
 						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].namespace){
 							record.namespace = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter].namespace;
 						}
-						
+
 						if(!record.namespace && oneSecret.namespace){
 							record.namespace = oneSecret.namespace;
 						}
 					}
-					
+
 					oneSecret.scope = currentScope.$new(true); //true means detached from main currentScope
 					oneSecret.scope.selectedEnvironment = {code: currentScope.envCode};
 					currentScope.selectedEnvironment = {code: currentScope.envCode};
-					
+
 					secretsService.addSecret(oneSecret.scope, null, currentScope, [], extraInputs, record, () => {
 						let element = angular.element(document.getElementById("secret_" + secretKey));
 						element.html("<ngform></ngform>");
 						$compile(element.contents())(oneSecret.scope);
-						
+
 						counter++;
 						if (counter < entriesNames.length) {
 							buildMyForms(counter, cb);
@@ -160,7 +160,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 				}
-				
+
 				function listNamespaces (kubernetes, cb) {
 					if (!kubernetes) {
 						//in case of swarm deployment, set namespace value to All Namespaces and set filter value to null in order to always display all fields
@@ -168,20 +168,20 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
 						return cb();
 					}
-					
+
 					//find if there is an environment that uses kubernetes
 					//if found, then make the api call else use the default namespace
 					let kubeEnv;
 					if(currentScope.wizard.deployment.previousEnvironment){
 						kubeEnv = currentScope.wizard.deployment.previousEnvironment;
 					}
-					
+
 					if(!kubeEnv){
 						namespaces = [];
 						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
 						return cb();
 					}
-					
+
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
 						routeName: '/dashboard/cloud/namespaces/list',
@@ -203,7 +203,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 				}
-				
+
 				let namespaces = [];
 				let namespaceConfig = {
 					defaultValue: {
@@ -211,11 +211,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						name: '--- All Namespaces ---'
 					}
 				};
-				
+
 				//create a copy just in case
 				let secretEntries = angular.copy(context.inputs);
 				currentScope.dynamicStep = context;
-				
+
 				currentScope.saveData = function () {
 					if (!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv) {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
@@ -223,7 +223,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					else {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
-					
+
 					defaultWizardSecretValues = [];
 					let entriesCount = 0;
 					for (let secretName in secretEntries) {
@@ -249,7 +249,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						});
 					}
 				};
-				
+
 				overlayLoading.show();
 				currentScope.loadingDynamicSection = true;
 				let entriesNames = Object.keys(secretEntries);
@@ -266,21 +266,21 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				function buildMyForms(counter, cb) {
 					let repoName = entriesNames[counter];
 					let oneRepo = repoEntries[repoName];
-					
+
 					oneRepo.type = templateDefaults.type; //enforce
 					oneRepo.category = templateDefaults.category; //enforce
-					
+
 					let service = {};
 					let record = {};
 					let version = {};
 					let gitAccount = {};
 					let daemonGrpConf = (oneRepo.type === 'daemon' && oneRepo.group) ? oneRepo.group : "";
 					let isKubernetes = (currentScope.wizard.deployment.selectedDriver === 'kubernetes');
-					
+
 					oneRepo.name = repoName;
 					oneRepo.scope = currentScope.$new(true); //true means detached from main currentScope
 					oneRepo.scope.oneEnv = currentScope.envCode;
-					
+
 					if(oneRepo.name === 'controller'){
 						version = 'Default';
 					}
@@ -298,38 +298,38 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						})
 					}
-					
+
 					oneRepo.scope.cdData = {};
 					oneRepo.scope.cdData[oneRepo.scope.oneEnv.toUpperCase()] = {};
-					
+
 					oneRepo.scope.noCDoverride = true;
-					
+
 					oneRepo.scope.cdConfiguration = {};
 					oneRepo.scope.cdConfiguration[oneRepo.name] = {};
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv] = {};
-					
+
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj = { ha: {} };
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version] = {};
-					
+
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData = {};
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions = {};
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version] = { deploy: true };
 					oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = {};
-					
+
 					oneRepo.scope.myRecipes = [];
 					for(let type in currentScope.recipes){
 						currentScope.recipes[type].forEach((oneRecipe) =>{
-							
+
 							if(oneRecipe.type === oneRepo.type && oneRecipe.subtype === oneRepo.category){
 								oneRepo.scope.myRecipes.push(oneRecipe);
 							}
 						});
 					}
-					
+
 					//if default values
 					if(currentScope.wizard.template.content.deployments.repo[repoName].deploy){
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.repo[repoName].deploy;
-						
+
 						if(deployFromTemplate.recipes){
 							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
 								oneRepo.scope.myRecipes = [];
@@ -342,7 +342,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									});
 								}
 							}
-							
+
 							if(deployFromTemplate.recipes.default){
 								let defaultFromTemplate = deployFromTemplate.recipes.default;
 								if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
@@ -355,13 +355,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									}
 								}
 							}
-							
+
 						}
-						
+
 						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig = {};
 						}
-						
+
 						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings = {};
 						}
@@ -371,15 +371,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication = {};
 						}
-						
+
 						if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication = {};
 						}
-						
+
 						if(deployFromTemplate.memoryLimit){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 						}
-						
+
 						if(deployFromTemplate.mode){
 							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 								let mode = deployFromTemplate.mode;
@@ -391,7 +391,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication.mode = mode;
 							}
 						}
-						
+
 						if(deployFromTemplate.replicas){
 							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.replication.replicas = deployFromTemplate.replicas;
@@ -399,7 +399,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						}
 					}
-					
+
 					//on update
 					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv && currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[0]){
 						let previousImfv = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[0];
@@ -413,28 +413,28 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							previousImfv = previousImfv.version;
 						}
 						oneRepo.gitSource = previousImfv.options.gitSource;
-						
+
 						if(oneRepo.name === 'controller'){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.type = "custom";
 						}
 						else{
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.type = oneRepo.type;
 						}
-						
+
 						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = previousImfv.options;
 						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version] = {
 							name: oneRepo.name,
 							type: oneRepo.type,
 							deploySettings: previousImfv.options
 						};
-						
+
 						if(!controller){
 							if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
 								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
 							}
 						}
 					}
-					
+
 					//prepare to print the form
 					currentScope.accounts.forEach((oneGitAccount) => {
 						if (oneGitAccount.owner === oneRepo.gitSource.owner) {
@@ -445,7 +445,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									oneGitRepo.servicesList.forEach((oneService) => {
 										if (oneService.name === oneRepo.name) {
 											service = oneService;
-											
+
 											if(service.name === 'controller'){
 												version = 'Default';
 											}
@@ -464,43 +464,43 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							});
 						}
 					});
-					
+
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
 						oneRepo.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
 					}
-					
+
 					oneRepo.scope.kubeEnv = 'invalid';
 					if(currentScope.wizard.deployment.previousEnvironment){
 						oneRepo.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
 					}
-					
+
 					if(defaultWizardSecretValues && defaultWizardSecretValues.length > 0){
 						oneRepo.scope.defaultWizardSecretValues = angular.copy(defaultWizardSecretValues);
 						oneRepo.scope.defaultWizardSecretValues.forEach((oneTemplateSecret) =>{
 							oneTemplateSecret.uid = "from-template-" + oneTemplateSecret.name.toLowerCase();
 						});
 					}
-					
+
 					deployServiceDep.buildDeployForm(oneRepo.scope, currentScope, record, service, version, gitAccount, daemonGrpConf, isKubernetes);
 					let entries = [];
 					buildDynamicForm(oneRepo.scope, entries, () => {
 						let element = angular.element(document.getElementById("repo_" + repoName));
 						element.append("<form name=\"deployRepo\" id=\"deployRepo\"><div ng-include=\"'modules/dashboard/environments/directives/cd.tmpl'\"></div></form>");
 						$compile(element.contents())(oneRepo.scope);
-						
+
 						oneRepo.scope.$watch("deployRepo.$invalid", function($invalid){
 							oneRepo.formIsInvalid = $invalid;
 						});
-						
+
 						oneRepo.scope.$watch('catalogConflictingPorts', (value) => {
 							currentScope.loadingDynamicSection = false;
 							if(value && value !==''){
 								currentScope.loadingDynamicSection = true;
-								
+
 							}
 						});
-						
+
 						counter++;
 						if (counter < entriesNames.length) {
 							buildMyForms(counter, cb);
@@ -510,7 +510,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 				}
-				
+
 				let templateDefaults = currentScope.wizard.template.content.deployments.repo[context.section[context.section.length -1]];
 				//create a copy just in case
 				let repoEntries = angular.copy(context.inputs);
@@ -522,18 +522,18 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					else {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
-					
+
 					let entriesCount = 0;
 					for (let repoName in repoEntries) {
 						let oneRepo = repoEntries[repoName];
-						
+
 						deployRepos.saveRecipe(oneRepo.scope, 'deploy', (imfv) => {
 							if(typeof(oneRepo.formIsInvalid) ==='boolean' && !oneRepo.formIsInvalid){
 								delete oneRepo.scope;
 								delete oneRepo.formIsInvalid;
 								imfv.name = repoName;
 								imfv.type = templateDefaults.type;
-								
+
 								currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(imfv);
 								entriesCount++;
 								if(entriesCount === Object.keys(repoEntries).length){
@@ -544,7 +544,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						});
 					}
 				};
-				
+
 				overlayLoading.show();
 				currentScope.loadingDynamicSection = true;
 				let entriesNames = Object.keys(repoEntries);
@@ -557,7 +557,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		resources: {
 			deploy: function (currentScope, context, fCb) {
 				let isKubernetes = (currentScope.wizard.deployment.selectedDriver === 'kubernetes');
-				
+
 				function buildMyForms(counter, cb) {
 					let key = entriesNames[counter];
 					let resource = resourceEntries[key];
@@ -574,7 +574,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						});
 					}
-					
+
 					//if default values
 					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 						for(let type in currentScope.recipes){
@@ -586,13 +586,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								});
 							}
 						}
-						
+
 						record.canBeDeployed = true;
 						resource.scope.envType = 'container';
 						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver;
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
-						
+
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.resources[key].deploy;
 						if(deployFromTemplate.recipes){
 							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
@@ -628,13 +628,13 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						if(!record.deployOptions){
 							record.deployOptions = {};
 						}
-						
+
 						if(!record.deployOptions.custom){
 							record.deployOptions.custom = {};
 						}
-						
+
 						record.deployOptions.custom.name = key;
-						
+
 						if(!record.deployOptions.deployConfig){
 							record.deployOptions.deployConfig = {};
 						}
@@ -666,35 +666,35 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						}
 					}
-					
+
 					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 						record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
 						record.label = resource.label;
-						
+
 						if(record.config && record.config.servers){
 							record.config.servers.forEach((oneServer) =>{
 								oneServer.port = oneServer.port.toString();
 							});
 						}
 					}
-					
+
 					if(isKubernetes){
 						resource.scope.enableAutoScale = (Object.hasOwnProperty.call(record, 'enableAutoScale')) ? record.enableAutoScale : true;
 						resource.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
 					}
-					
+
 					resource.scope.kubeEnv = 'invalid';
 					if(currentScope.wizard.deployment.previousEnvironment){
 						resource.scope.kubeEnv = currentScope.wizard.deployment.previousEnvironment;
 					}
-					
+
 					if(defaultWizardSecretValues && defaultWizardSecretValues.length > 0){
 						resource.scope.defaultWizardSecretValues = angular.copy(defaultWizardSecretValues);
 						resource.scope.defaultWizardSecretValues.forEach((oneTemplateSecret) =>{
 							oneTemplateSecret.uid = "from-template-" + oneTemplateSecret.name.toLowerCase();
 						});
 					}
-					
+
 					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
 						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 							resource.scope.hideDeployButton = true;
@@ -731,25 +731,25 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							let element = angular.element(document.getElementById("resource_" + key));
 							element.append("<form name=\"addEditResource\" id=\"addEditResource\"><div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\"></div></form>");
 							$compile(element.contents())(resource.scope);
-							
+
 							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 								setTimeout(() => {
 									resource.scope.updateDeploymentName(record.name);
 								}, 200);
 							}
-							
+
 							resource.scope.$watch("addEditResource.$invalid", function($invalid){
 								resource.formIsInvalid = $invalid;
 							});
-							
+
 							resource.scope.$watch('catalogConflictingPorts', (value) => {
 								currentScope.loadingDynamicSection = false;
 								if(value && value !==''){
 									currentScope.loadingDynamicSection = true;
-									
+
 								}
 							});
-							
+
 							counter++;
 							if (counter < entriesNames.length) {
 								buildMyForms(counter, cb);
@@ -760,7 +760,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						});
 					});
 				}
-				
+
 				currentScope.saveData = function () {
 					if (!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv) {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
@@ -768,12 +768,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					else {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.length = 0;
 					}
-					
+
 					let entriesCount = 0;
 					for (let key in resourceEntries) {
 						let resource = resourceEntries[key];
 						resourceConfiguration.mapConfigurationFormDataToConfig(resource.scope, function () {
-							
+
 							if(typeof(resource.formIsInvalid) === 'boolean' && !resource.formIsInvalid){
 								//map the values back to custom registry
 								let imfv = angular.copy(resource.scope.formData);
@@ -830,11 +830,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						});
 					}
 				};
-				
+
 				currentScope.dynamicStep = context;
 				let resourceEntries = angular.copy(context.inputs);
 				let entriesNames = Object.keys(resourceEntries);
-				
+
 				overlayLoading.show();
 				currentScope.loadingDynamicSection = true;
 				buildMyForms(0, () => {
@@ -844,32 +844,32 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			}
 		}
 	};
-	
+
 	function buildDynamicForm(currentScope, entries, postFormExecute) {
 		let options = {
 			timeout: $timeout,
 			entries: entries,
 			name: 'addEnvironment'
 		};
-		
+
 		buildForm(currentScope, $modal, options, function () {
 			if (postFormExecute && typeof postFormExecute === 'function') {
 				postFormExecute();
 			}
 		});
 	}
-	
+
 	function go(currentScope) {
 		currentScope.loadingDynamicSection = true;
 		currentScope.mapStorageToWizard($localStorage.addEnv);
-		
+
 		let stack = [];
 		if (currentScope.wizard) {
 			deployRepos.listGitAccounts(currentScope, () => {
 				getDeploymentWorkflow(currentScope, stack, currentScope.wizard.template);
-				
+
 				currentScope.envCode = currentScope.wizard.gi.code.toUpperCase();
-				
+
 				//this template has no deployment workflow go to overview
 				if (stack.length === 0) {
 					currentScope.nextStep();
@@ -883,14 +883,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 			});
 		}
-		
+
 		currentScope.reset = function () {
 			delete $localStorage.addEnv;
 			delete currentScope.wizard;
 			currentScope.form.formData = {};
 			currentScope.$parent.go("/environments")
 		};
-		
+
 		currentScope.back = function () {
 			currentScope.referringStep = "dynamicSrv";
 			currentScope.deploymentStackStep--;
@@ -904,12 +904,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				processStack(currentScope, stack);
 			}
 		};
-		
+
 		currentScope.next = function () {
 			//update template in local storage
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
 			delete $localStorage.addEnv.template.content;
-			
+
 			currentScope.deploymentStackStep++;
 			if (currentScope.deploymentStackStep >= stack.length) {
 				if (currentScope.form && currentScope.form.formData) {
@@ -923,15 +923,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			}
 		};
 	}
-	
+
 	function returnObjectPathFromString(stringPath, mainObj) {
 		function index(obj, i) {
 			return obj[i]
 		}
-		
+
 		return stringPath.split('.').reduce(index, mainObj);
 	}
-	
+
 	function getDeploymentWorkflow(currentScope, stack, template) {
 		if (template.deploy && Object.keys(template.deploy).length > 0) {
 			let schemaOptions = Object.keys(template.deploy);
@@ -946,7 +946,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								'stepPath': stepPath,
 								'section': (stepPath.indexOf(".") !== -1) ? stepPath.split(".") : stepPath
 							};
-							
+
 							//if manual deployment, then process database entries only
 							if(currentScope.wizard.deployment.selectedDriver === 'manual' && stage === 'database'){
 								prepareInputs(stage, oneGroup, stepPath, opts);
@@ -959,11 +959,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				});
 			});
 		}
-		
+
 		function prepareInputs(stage, oneGroup, stepPath, opts){
 			//case of ui read only, loop in array and generate an inputs object then call utils
 			if (template.deploy[stage][oneGroup][stepPath].ui && template.deploy[stage][oneGroup][stepPath].ui.readOnly) {
-			
+
 			}
 			else {
 				let inputs = {};
@@ -988,12 +988,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						doDataArray(dataArray, inputs);
 					}
 				}
-				
-				
+
+
 				opts['inputs'] = inputs;
 				stack.push(opts);
 			}
-			
+
 			function doDataArray(dataArray, inputs){
 				if (dataArray.data && Array.isArray(dataArray.data)) {
 					dataArray.data.forEach((oneDataEntry) => {
@@ -1007,7 +1007,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						stepPath = stepPath.split(".");
 						section = stepPath[stepPath.length - 1];
 					}
-					
+
 					if (dataArray.limit) {
 						if (dataArray.limit > 1) {
 							for (let i = 0; i < dataArray.limit; i++) {
@@ -1027,7 +1027,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			}
 		}
 	}
-	
+
 	function processStack(currentScope, stack) {
 		let stackStep = stack[currentScope.deploymentStackStep];
 		if (stackStep && stackStep.inputs) {
@@ -1037,7 +1037,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				subSection = contentSection[1];
 				contentSection = contentSection[0];
 			}
-			
+
 			let predefinedStepFunction;
 			//check if template has a content entry for level 0 of this section
 			if (currentScope.wizard.template.content[contentSection]) {
@@ -1049,7 +1049,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					predefinedStepFunction = contentSection;
 				}
 			}
-			
+
 			stackStep.predefinedStepFunction = predefinedStepFunction;
 			if (predefinedStepFunction) {
 				predefinedSchemaSteps[predefinedStepFunction].deploy(currentScope, stackStep);
@@ -1061,7 +1061,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		else {
 			nextStep();
 		}
-		
+
 		function nextStep() {
 			//jump to next step or leave
 			if (currentScope.deploymentStackStep === stack.length - 1) {
@@ -1074,7 +1074,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			}
 		}
 	}
-	
+
 	return {
 		"go": go
 	}

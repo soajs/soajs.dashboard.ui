@@ -256,21 +256,21 @@
 		
 		</fieldset>
 
-		<fieldset class="custom-fieldset">
+		<fieldset class="custom-fieldset" ng-if="deploymentData.selectedRecipe.recipe.deployOptions.image.override">
 			<legend>Image</legend>
 
 			<label>Provider</label>
-			<select name="provider"  class="form-control"  ng-required="true" ng-model="formData.custom.image.prefix"></select>
+			<select name="provider"  class="form-control" ng-change="getImagesList(formData.custom.image.prefix)" ng-options="prefix.v as prefix.l for prefix in deploymentData.providers"  ng-required="true" ng-model="formData.custom.image.prefix"></select>
 			<label class="fieldMsg">Choose your provider</label>
 			<br/>
 
 			<label>Image Name</label>
-			<select name="image"  class="form-control"  ng-required="true"  ng-model="formData.custom.image.name"></select>
+			<select name="image"   class="form-control" ng-change="getVersionsList(formData.custom.image.name)" ng-options="image.v as image.l for image in deploymentData.images" ng-required="true"   ng-model="formData.custom.image.name"></select>
 			<label class="fieldMsg">Choose your image</label>
 			<br/>
 
 			<label>version</label>
-			<select name="version"  class="form-control"  ng-required="true"  ng-model="formData.custom.image.tag"></select>
+			<select name="version"  class="form-control"  ng-required="true" ng-options="version.v as version.l for version in deploymentData.imageVersions" ng-model="formData.custom.image.tag"></select>
 			<label class="fieldMsg">Choose your version</label>
 			<br/>
 

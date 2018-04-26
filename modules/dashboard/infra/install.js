@@ -11,7 +11,7 @@ let infraNav = [
 		},
 		'url': '#/infra',
 		'tplPath': 'modules/dashboard/infra/directives/list.tmpl',
-		'icon': 'cog',
+		'icon': 'codepen',
 		'pillar': {
 			'name': 'development',
 			'label': translation.develop[LANG],

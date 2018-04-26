@@ -23,37 +23,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.deploymentData = {};
 		
-		// todo: mocked data
-		context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
-			v: 'us-east-2',
-			'l': 'US East (Ohio)'
-		}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
-			v: 'us-west-2',
-			'l': 'US West (Oregon)'
-		}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
-			v: 'eu-west-2',
-			'l': 'EU (London)'
-		}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
-			v: 'ap-northeast-1',
-			'l': 'Asia Pacific (Tokyo)'
-		}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
-			v: 'ap-south-1',
-			'l': 'Asia Pacific (Mumbai)'
-		}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
-			v: 'ap-southeast-2',
-			'l': 'Asia Pacific (Sydney)'
-		}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
-		
-		context.deploymentData.vmSize = [
-			{v : 'smallSize1', l:"Small Size 1"},
-			{v : 'mediumSize2', l:"Medium Size 2"}
-		];
-		
-		context.deploymentData.disk = [
-			{v : 'none', l:"None"}
-		];
-		
-		
 		context.catalogConflictingPorts = '';
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
@@ -1020,6 +989,61 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.fillForm();
+		
+		/*
+			VM specific
+		 */
+		context.getRegionsList = function () {
+			context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
+				v: 'us-east-2',
+				'l': 'US East (Ohio)'
+			}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
+				v: 'us-west-2',
+				'l': 'US West (Oregon)'
+			}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
+				v: 'eu-west-2',
+				'l': 'EU (London)'
+			}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
+				v: 'ap-northeast-1',
+				'l': 'Asia Pacific (Tokyo)'
+			}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
+				v: 'ap-south-1',
+				'l': 'Asia Pacific (Mumbai)'
+			}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
+				v: 'ap-southeast-2',
+				'l': 'Asia Pacific (Sydney)'
+			}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
+		};
+		context.getVmSizesList = function () {
+			context.deploymentData.vmSize = [
+				{v : 'smallSize1', l:"Small Size 1"},
+				{v : 'mediumSize2', l:"Medium Size 2"}
+			];
+		};
+		context.getDisksList = function () {
+			context.deploymentData.disk = [
+				{v : 'none', l:"None"}
+			];
+		};
+		context.getProvidersList = function () {
+			context.deploymentData.providers = [
+				{v : 'provider1', l:"Provider 1 Samir"}
+			];
+		};
+		context.getImagesList = function (providerName) {
+			context.deploymentData.images = {
+				"provider1" : [
+					{v : 'image1', l:"Image 1 example"}
+				]
+			};
+		};
+		context.getVersionsList = function (imageName) {
+			context.deploymentData.imageVersions = {
+				"image1" : [
+					{v : 'v1', l:"Version 1 - Alfa"}
+				]
+			};
+		};
 		
 		if(!context.noCDoverride){
 			context.getSecrets(function(cb){

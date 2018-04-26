@@ -42,12 +42,14 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					kubernetes = true;
 				}
 			}
+			else{
+				docker = true;
+				kubernetes = true;
+			}
 		}
 		
-		if (restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
-			if (showManualDeploy) {
-				manual = true;
-			}
+		if (showManualDeploy && restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
+			manual = true;
 		}
 		
 		currentScope.restrictions = {

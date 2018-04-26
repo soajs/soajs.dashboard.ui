@@ -18,7 +18,7 @@ if(location && location.host){
 var protocol = window.location.protocol;
 
 //detect port
-var mydomainport = (protocol ==='https:') ? 443 : 30080;
+var mydomainport = (protocol ==='https:') ? 443 : 80;
 if (location && location.port && parseInt(location.port) !== 80) {
 	mydomainport = location.port;
 }
@@ -31,12 +31,7 @@ if(customSettings && customSettings.api && customSettings.api !== ''){
 }
 
 //set the key
-// local
-// var myKey = "d44dfaaf1a3ba93adc6b3368816188f96134dfedec7072542eb3d84ec3e3d260f639954b8c0bc51e742c1dff3f80710e3e728edb004dce78d82d7ecd5e17e88c39fef78aa29aa2ed19ed0ca9011d75d9fc441a3c59845ebcf11f9393d5962549";
-// docker
 var myKey = "9b96ba56ce934ded56c3f21ac9bdaddc8ba4782b7753cf07576bfabcace8632eba1749ff1187239ef1f56dd74377aa1e5d0a1113de2ed18368af4b808ad245bc7da986e101caddb7b75992b14d6a866db884ea8aee5ab02786886ecf9f25e974";
-// herrontech
-// var myKey = "d44dfaaf1a3ba93adc6b3368816188f96134dfedec7072542eb3d84ec3e3d260f639954b8c0bc51e742c1dff3f80710e3e728edb004dce78d82d7ecd5e17e88c39fef78aa29aa2ed19ed0ca9011d75d9fc441a3c59845ebcf11f9393d5962549";
 if(customSettings && customSettings.key && customSettings.key !== ''){
 	myKey = customSettings.key;
 }
@@ -63,7 +58,8 @@ var modules = {
 			catalogs: 'modules/dashboard/catalogs/install.js',
 			ci: 'modules/dashboard/ci/install.js',
 			cd: 'modules/dashboard/cd/install.js',
-			templates: 'modules/dashboard/templates/install.js'
+			templates: 'modules/dashboard/templates/install.js',
+			infra: 'modules/dashboard/infra/install.js'
 		}
 	},
 	"manage": {

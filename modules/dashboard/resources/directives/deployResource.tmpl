@@ -21,7 +21,13 @@
 		<br>
 	</div>
 	
-	<div ng-if="deploymentData.type === 'container'">
+	<div>
+		<label>Deployment Technology</label>
+		<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deploymentTechnology" ng-change="onDeploymentTechnologySelect()"></select>
+		<label class="fieldMsg">Choose a deployment technology</label>
+	</div>
+	
+	<div ng-if="formData.deployOptions.deploymentTechnology === 'container'">
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
@@ -204,11 +210,10 @@
 		</div>
 	</div>
 	
-	<!--<div ng-if="deploymentData.type === 'vm'">-->
-	<div>
-		<!--<select>-->
-		<!--TODO: update vm deployment section -->
-		<!--deploymentData.regions ...-->
-		<!--</select>-->
+	<div ng-if="formData.deployOptions.deploymentTechnology ==='vm'">
+		<label>Infra</label>
+		<select class="form-control" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deploymentTechnologyInfra" ng-change="onDeploymentTechnologyInfraSelect()"></select>
+		<label class="fieldMsg">Choose a deployment technology</label>
+		
 	</div>
 </fieldset>

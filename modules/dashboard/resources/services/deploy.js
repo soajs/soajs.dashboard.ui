@@ -582,7 +582,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					
 					context.recipes = [
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a6",
+							"_id": "5ae07aa09fdc3e40b2ea61a1",
 							"name": "Recipe 1",
 							"type": "service",
 							"subtype": "soajs",
@@ -595,7 +595,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a7",
+							"_id": "5ae07aa09fdc3e40b2ea61a2",
 							"name": "Recipe 2",
 							"type": "service",
 							"subtype": "soajs",
@@ -608,7 +608,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a8",
+							"_id": "5ae07aa09fdc3e40b2ea61a3",
 							"name": "Recipe 3",
 							"type": "service",
 							"subtype": "soajs",
@@ -621,7 +621,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"_id": "5ae07aa09fdc3e40b2ea61a4",
 							"name": "Recipe 4",
 							"type": "service",
 							"subtype": "soajs",
@@ -634,7 +634,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"_id": "5ae07aa09fdc3e40b2ea61a5",
 							"name": "Recipe 5",
 							"type": "service",
 							"subtype": "soajs",
@@ -643,7 +643,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							"restriction": {}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"_id": "5ae07aa09fdc3e40b2ea61a6",
 							"name": "Recipe 6",
 							"type": "service",
 							"subtype": "soajs",
@@ -651,6 +651,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							"locked": true
 						}
 					];
+					
+					// todo:
+					// if manual deployment
+					// loop and check if no restriction or vm included => show recipe
+					//                if not hide recipe
 					
 					// todo: restore code
 					// if (recipes && Array.isArray(recipes)) {
@@ -686,6 +691,42 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.displayRecipeInputs = function (cb) {
+			
+			function calculateRestrictions(currentScope) {
+				
+				let allRecipes = currentScope.recipes;
+				let selectedRecipeId = currentScope.formData.deployOptions.recipe;
+				let selectedRecipe;
+				allRecipes.forEach(function (eachRecipe) {
+					if (eachRecipe._id === selectedRecipeId) {
+						selectedRecipe = eachRecipe;
+					}
+				});
+				
+				// todo: u may want to refresh the fields before starting
+				// currentScope.formData.deployOptions.deploymentTechnology
+				// currentScope.formData.deployOptions.deploymentTechnologyInfra
+				
+				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
+				let allInfra = ["azure", "aws", "google"];
+				if (!selectedRecipe) {
+					currentScope.deploymentData.selectedRestrictionsDep = [];
+				} else {
+					let restriction = selectedRecipe.restriction;
+					if (!restriction || Object.keys(restriction).length === 0) {
+						currentScope.deploymentData.selectedRestrictionsDep = allDeployments;
+						currentScope.deploymentData.selectedRestrictionsInfra = allInfra;
+					} else {
+						currentScope.deploymentData.selectedRestrictionsDep = restriction.deployment;
+						currentScope.deploymentData.selectedRestrictionsInfra = restriction.infra;
+					}
+				}
+				
+				if (currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
+					currentScope.formData.deployOptions.deploymentTechnology = currentScope.deploymentData.selectedRestrictionsDep[0];
+				}
+			}
+			
 			let recipes = context.recipes;
 			let selectedRecipe = context.recipes;
 			context.recipeUserInput.envs = {};
@@ -737,6 +778,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 			}
+			
+			calculateRestrictions(context);
 			context.setSourceCodeData(selectedRecipe);
 			context.setExposedPorts(selectedRecipe, cb);
 		};

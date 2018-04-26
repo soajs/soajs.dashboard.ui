@@ -179,6 +179,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(!kubeEnv){
 						namespaces = [];
 						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
+						
+						if(currentScope.wizard.deployment.selectedDriver === 'kubernetes'){
+							namespaces = [ {"v": currentScope.wizard.deployment.deployment.kubernetes.NS, "l": currentScope.wizard.deployment.deployment.kubernetes.NS}];
+						}
+						
 						return cb();
 					}
 					

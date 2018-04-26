@@ -703,9 +703,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 				
-				// todo: u may want to refresh the fields before starting
-				// currentScope.formData.deployOptions.deploymentTechnology
-				// currentScope.formData.deployOptions.deploymentTechnologyInfra
+				// refresh before starting
+				currentScope.formData.deployOptions.deploymentTechnology = '';
+				currentScope.formData.deployOptions.deploymentTechnologyInfra = '';
 				
 				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 				let allInfra = ["azure", "aws", "google"];

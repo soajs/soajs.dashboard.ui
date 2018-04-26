@@ -5,27 +5,29 @@
 	</p>
 </alert>
 <br/>
-<fieldset class="custom-fieldset">
+
+<div>
+	<label>Deployment Name</label>
+	<input type="text" class="form-control" ng-model="formData.deployOptions.custom.name" ng-required="true" ng-disabled="true"/>
+	<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
+	<br/>
+</div>
+<div>
+	<label>Catalog Recipe</label>
+	<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs()"></select>
+	<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
+	<br>
+	<br>
+</div>
+
+<div>
+	<label>Deployment Technology</label>
+	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deploymentTechnology" ng-change="onDeploymentTechnologySelect()"></select>
+	<label class="fieldMsg">Choose a deployment technology</label>
+</div>
+
+<fieldset class="custom-fieldset" ng-if="formData.deployOptions.deploymentTechnology && formData.deployOptions.deploymentTechnology !== ''">
 	<legend>Deployment Options</legend>
-	<div>
-		<label>Deployment Name</label>
-		<input type="text" class="form-control" ng-model="formData.deployOptions.custom.name" ng-required="true" ng-disabled="true"/>
-		<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
-		<br/>
-	</div>
-	<div>
-		<label>Catalog Recipe</label>
-		<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs()"></select>
-		<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
-		<br>
-		<br>
-	</div>
-	
-	<div>
-		<label>Deployment Technology</label>
-		<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deploymentTechnology" ng-change="onDeploymentTechnologySelect()"></select>
-		<label class="fieldMsg">Choose a deployment technology</label>
-	</div>
 	
 	<div ng-if="formData.deployOptions.deploymentTechnology === 'container'">
 		<div>

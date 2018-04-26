@@ -473,6 +473,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
 						oneRepo.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
+
+						//check inputs for autoscale from previous attempt
+						if(oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.autoScale){
+							oneRepo.scope.autoScale = true;
+						}
 					}
 
 					oneRepo.scope.kubeEnv = 'invalid';

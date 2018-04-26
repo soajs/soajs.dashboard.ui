@@ -23,37 +23,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.deploymentData = {};
 		
-		// todo: mocked data
-		context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
-			v: 'us-east-2',
-			'l': 'US East (Ohio)'
-		}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
-			v: 'us-west-2',
-			'l': 'US West (Oregon)'
-		}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
-			v: 'eu-west-2',
-			'l': 'EU (London)'
-		}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
-			v: 'ap-northeast-1',
-			'l': 'Asia Pacific (Tokyo)'
-		}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
-			v: 'ap-south-1',
-			'l': 'Asia Pacific (Mumbai)'
-		}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
-			v: 'ap-southeast-2',
-			'l': 'Asia Pacific (Sydney)'
-		}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
-		
-		context.deploymentData.vmSize = [
-			{v : 'smallSize1', l:"Small Size 1"},
-			{v : 'mediumSize2', l:"Medium Size 2"}
-		];
-		
-		context.deploymentData.vmSize = [
-			{v : 'none', l:"None"}
-		];
-		
-		
 		context.catalogConflictingPorts = '';
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
@@ -582,7 +551,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					
 					context.recipes = [
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a6",
+							"_id": "5ae07aa09fdc3e40b2ea61a1",
 							"name": "Recipe 1",
 							"type": "service",
 							"subtype": "soajs",
@@ -595,7 +564,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a7",
+							"_id": "5ae07aa09fdc3e40b2ea61a2",
 							"name": "Recipe 2",
 							"type": "service",
 							"subtype": "soajs",
@@ -608,7 +577,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a8",
+							"_id": "5ae07aa09fdc3e40b2ea61a3",
 							"name": "Recipe 3",
 							"type": "service",
 							"subtype": "soajs",
@@ -621,7 +590,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"_id": "5ae07aa09fdc3e40b2ea61a4",
 							"name": "Recipe 4",
 							"type": "service",
 							"subtype": "soajs",
@@ -634,7 +603,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"_id": "5ae07aa09fdc3e40b2ea61a5",
 							"name": "Recipe 5",
 							"type": "service",
 							"subtype": "soajs",
@@ -643,7 +612,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							"restriction": {}
 						},
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a9",
+							"_id": "5ae07aa09fdc3e40b2ea61a6",
 							"name": "Recipe 6",
 							"type": "service",
 							"subtype": "soajs",
@@ -651,6 +620,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							"locked": true
 						}
 					];
+					
+					// todo:
+					// if manual deployment
+					// loop and check if no restriction or vm included => show recipe
+					//                if not hide recipe
 					
 					// todo: restore code
 					// if (recipes && Array.isArray(recipes)) {
@@ -686,6 +660,42 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.displayRecipeInputs = function (cb) {
+			
+			function calculateRestrictions(currentScope) {
+				
+				let allRecipes = currentScope.recipes;
+				let selectedRecipeId = currentScope.formData.deployOptions.recipe;
+				let selectedRecipe;
+				allRecipes.forEach(function (eachRecipe) {
+					if (eachRecipe._id === selectedRecipeId) {
+						selectedRecipe = eachRecipe;
+					}
+				});
+				
+				// refresh before starting
+				currentScope.formData.deployOptions.deploymentTechnology = '';
+				currentScope.formData.deployOptions.deploymentTechnologyInfra = '';
+				
+				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
+				let allInfra = ["azure", "aws", "google"];
+				if (!selectedRecipe) {
+					currentScope.deploymentData.selectedRestrictionsDep = [];
+				} else {
+					let restriction = selectedRecipe.restriction;
+					if (!restriction || Object.keys(restriction).length === 0) {
+						currentScope.deploymentData.selectedRestrictionsDep = allDeployments;
+						currentScope.deploymentData.selectedRestrictionsInfra = allInfra;
+					} else {
+						currentScope.deploymentData.selectedRestrictionsDep = restriction.deployment;
+						currentScope.deploymentData.selectedRestrictionsInfra = restriction.infra;
+					}
+				}
+				
+				if (currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
+					currentScope.formData.deployOptions.deploymentTechnology = currentScope.deploymentData.selectedRestrictionsDep[0];
+				}
+			}
+			
 			let recipes = context.recipes;
 			let selectedRecipe = context.recipes;
 			context.recipeUserInput.envs = {};
@@ -737,6 +747,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 			}
+			
+			calculateRestrictions(context);
 			context.setSourceCodeData(selectedRecipe);
 			context.setExposedPorts(selectedRecipe, cb);
 		};
@@ -977,6 +989,61 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.fillForm();
+		
+		/*
+			VM specific
+		 */
+		context.getRegionsList = function () {
+			context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
+				v: 'us-east-2',
+				'l': 'US East (Ohio)'
+			}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
+				v: 'us-west-2',
+				'l': 'US West (Oregon)'
+			}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
+				v: 'eu-west-2',
+				'l': 'EU (London)'
+			}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
+				v: 'ap-northeast-1',
+				'l': 'Asia Pacific (Tokyo)'
+			}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
+				v: 'ap-south-1',
+				'l': 'Asia Pacific (Mumbai)'
+			}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
+				v: 'ap-southeast-2',
+				'l': 'Asia Pacific (Sydney)'
+			}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
+		};
+		context.getVmSizesList = function () {
+			context.deploymentData.vmSize = [
+				{v : 'smallSize1', l:"Small Size 1"},
+				{v : 'mediumSize2', l:"Medium Size 2"}
+			];
+		};
+		context.getDisksList = function () {
+			context.deploymentData.disk = [
+				{v : 'none', l:"None"}
+			];
+		};
+		context.getProvidersList = function () {
+			context.deploymentData.providers = [
+				{v : 'provider1', l:"Provider 1 Samir"}
+			];
+		};
+		context.getImagesList = function (providerName) {
+			context.deploymentData.images = {
+				"provider1" : [
+					{v : 'image1', l:"Image 1 example"}
+				]
+			};
+		};
+		context.getVersionsList = function (imageName) {
+			context.deploymentData.imageVersions = {
+				"image1" : [
+					{v : 'v1', l:"Version 1 - Alfa"}
+				]
+			};
+		};
 		
 		if(!context.noCDoverride){
 			context.getSecrets(function(cb){

@@ -5,23 +5,31 @@
 	</p>
 </alert>
 <br/>
-<fieldset class="custom-fieldset">
+
+<div>
+	<label>Deployment Name</label>
+	<input type="text" class="form-control" ng-model="formData.deployOptions.custom.name" ng-required="true" ng-disabled="true"/>
+	<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
+	<br/>
+</div>
+<div>
+	<label>Catalog Recipe</label>
+	<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs()"></select>
+	<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
+	<br>
+	<br>
+</div>
+
+<div>
+	<label>Deployment Technology</label>
+	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deploymentTechnology" ng-change="onDeploymentTechnologySelect()"></select>
+	<label class="fieldMsg">Choose a deployment technology</label>
+</div>
+
+<fieldset class="custom-fieldset" ng-if="formData.deployOptions.deploymentTechnology && formData.deployOptions.deploymentTechnology !== ''">
 	<legend>Deployment Options</legend>
-	<div>
-		<label>Deployment Name</label>
-		<input type="text" class="form-control" ng-model="formData.deployOptions.custom.name" ng-required="true" ng-disabled="true"/>
-		<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
-		<br/>
-	</div>
-	<div>
-		<label>Catalog Recipe</label>
-		<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs()"></select>
-		<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
-		<br>
-		<br>
-	</div>
 	
-	<div ng-if="deploymentData.type === 'container'">
+	<div ng-if="formData.deployOptions.deploymentTechnology === 'container'">
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
@@ -204,11 +212,50 @@
 		</div>
 	</div>
 	
-	<!--<div ng-if="deploymentData.type === 'vm'">-->
-	<div>
-		<!--<select>-->
-		<!--TODO: update vm deployment section -->
-		<!--deploymentData.regions ...-->
-		<!--</select>-->
+	<div ng-if="formData.deployOptions.deploymentTechnology ==='vm'">
+		<label>Infra</label>
+		<select class="form-control" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deploymentTechnologyInfra" ng-change="onDeploymentTechnologyInfraSelect()"></select>
+		<label class="fieldMsg">Choose a deployment technology</label>
+		
+		<label>Region</label>
+		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in deploymentData.regions"  ng-model="formData.region" ></select>
+		<label class="fieldMsg">Choose the region</label>
+		
+		<label>Flavor</label>
+		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.v as size.l for size in deploymentData.vmSize"  ng-model="formData.flavor"></select>
+		<label class="fieldMsg">Choose the flavor</label>
+		
+		
+		<label>Data Disk</label>
+		<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.dataDisk"></select>
+		<label class="fieldMsg">Choose your Data Disk</label>
+		
+		<fieldset class="custom-fieldset">
+			<legend>Admin Access</legend>
+			
+			<label>Username</label>
+			<input name="username" type="text" class="form-control"  ng-required="true"  ng-model="formData.username"></input>
+			<label class="fieldMsg">Choose your Data Disk</label>
+			<br/>
+			
+			<label>Authentication type SSH public key/password</label>
+			<label class="toggleSwitch f-right "><input type="checkbox" ng-model="formData.auth"><span class="buttonSlider round"></span></label>
+			<label class="fieldMsg">Choose if password or SSH</label>
+			<br /><br />
+			
+			<div ng-if="!formData.auth">
+				<label>Token</label>
+				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.token"></textarea>
+				<br />
+			</div>
+			
+			<div ng-if="formData.auth">
+				<label>Password</label>
+				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.password"></input>
+			</div>
+		
+		</fieldset>
+	
+	
 	</div>
 </fieldset>

@@ -50,7 +50,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		];
 		
 		context.deploymentData.disk = [
-			{v : 'None', l:"None"}
+			{v : 'none', l:"None"}
 		];
 		
 		

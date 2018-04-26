@@ -21,15 +21,15 @@
 </div>
 
 <div>
-	<label>Deployment Technology</label>
-	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deploymentTechnology" ng-change="onDeploymentTechnologySelect()"></select>
-	<label class="fieldMsg">Choose a deployment technology</label>
+	<label>Deployment Technology Type</label>
+	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect()"></select>
+	<label class="fieldMsg">Choose a deployment technology type</label>
 </div>
 
-<fieldset class="custom-fieldset" ng-if="formData.deployOptions.deploymentTechnology && formData.deployOptions.deploymentTechnology !== ''">
+<fieldset class="custom-fieldset" ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''">
 	<legend>Deployment Options</legend>
 	
-	<div ng-if="formData.deployOptions.deploymentTechnology === 'container'">
+	<div ng-if="formData.deployOptions.deployConfig.type === 'container'">
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
@@ -212,46 +212,46 @@
 		</div>
 	</div>
 	
-	<div ng-if="formData.deployOptions.deploymentTechnology ==='vm'">
+	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
 		<label>Infra</label>
-		<select class="form-control" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deploymentTechnologyInfra" ng-change="onDeploymentTechnologyInfraSelect()"></select>
+		<select class="form-control" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra.provider"></select>
 		<label class="fieldMsg">Choose a deployment technology</label>
 		
 		<label>Region</label>
-		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in deploymentData.regions"  ng-model="formData.region" ></select>
+		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in deploymentData.regions"  ng-model="formData.deployOptions.deployConfig.region" ></select>
 		<label class="fieldMsg">Choose the region</label>
 		
 		<label>Flavor</label>
-		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.v as size.l for size in deploymentData.vmSize"  ng-model="formData.flavor"></select>
+		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.v as size.l for size in deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
 		<label class="fieldMsg">Choose the flavor</label>
 		
 		
 		<label>Data Disk</label>
-		<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.dataDisk"></select>
+		<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.dataDisk"></select>
 		<label class="fieldMsg">Choose your Data Disk</label>
 		
 		<fieldset class="custom-fieldset">
 			<legend>Admin Access</legend>
 			
 			<label>Username</label>
-			<input name="username" type="text" class="form-control"  ng-required="true"  ng-model="formData.username"></input>
+			<input name="username" type="text" class="form-control"  ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.username"></input>
 			<label class="fieldMsg">Choose your Data Disk</label>
 			<br/>
 			
 			<label>Authentication type SSH public key/password</label>
-			<label class="toggleSwitch f-right "><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.authType"><span class="buttonSlider round"></span></label>
+			<label class="toggleSwitch f-right "><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword"><span class="buttonSlider round"></span></label>
 			<label class="fieldMsg">Choose if password or SSH</label>
 			<br /><br />
 			
-			<div ng-if="!formData.authType">
+			<div ng-if="!formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
 				<label>Token</label>
-				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.token"></textarea>
+				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token"></textarea>
 				<br />
 			</div>
 			
-			<div ng-if="formData.authType">
+			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
 				<label>Password</label>
-				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.password"></input>
+				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password"></input>
 			</div>
 		
 		</fieldset>
@@ -260,17 +260,17 @@
 			<legend>Image</legend>
 
 			<label>Provider</label>
-			<select name="provider"  class="form-control"  ng-required="true" ng-model="formData.provider"></select>
+			<select name="provider"  class="form-control"  ng-required="true" ng-model="formData.custom.image.prefix"></select>
 			<label class="fieldMsg">Choose your provider</label>
 			<br/>
 
-			<label>Image</label>
-			<select name="image"  class="form-control"  ng-required="true"  ng-model="formData.image"></select>
+			<label>Image Name</label>
+			<select name="image"  class="form-control"  ng-required="true"  ng-model="formData.custom.image.name"></select>
 			<label class="fieldMsg">Choose your image</label>
 			<br/>
 
 			<label>version</label>
-			<select name="version"  class="form-control"  ng-required="true"  ng-model="formData.version"></select>
+			<select name="version"  class="form-control"  ng-required="true"  ng-model="formData.custom.image.tag"></select>
 			<label class="fieldMsg">Choose your version</label>
 			<br/>
 

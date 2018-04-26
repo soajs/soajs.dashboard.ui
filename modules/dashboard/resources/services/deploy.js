@@ -673,8 +673,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				});
 				
 				// refresh before starting
-				currentScope.formData.deployOptions.deploymentTechnology = '';
-				currentScope.formData.deployOptions.deploymentTechnologyInfra = '';
+				// todo: on load form set formData to a standard JSON object and get rid of these checks
+				if(!currentScope.formData.deployOptions.deployConfig){
+					currentScope.formData.deployOptions.deployConfig = {};
+				}
+				if(!currentScope.formData.deployOptions.deployConfig.infra){
+					currentScope.formData.deployOptions.deployConfig.infra = {};
+				}
+				currentScope.formData.deployOptions.deployConfig.type = '';
+				currentScope.formData.deployOptions.deployConfig.infra.provider = '';
 				
 				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 				let allInfra = ["azure", "aws", "google"];
@@ -692,7 +699,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				
 				if (currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
-					currentScope.formData.deployOptions.deploymentTechnology = currentScope.deploymentData.selectedRestrictionsDep[0];
+					currentScope.formData.deployOptions.deployConfig.type = currentScope.deploymentData.selectedRestrictionsDep[0];
+					context.onDeploymentTechnologySelect();
 				}
 			}
 			
@@ -1043,6 +1051,28 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					{v : 'v1', l:"Version 1 - Alfa"}
 				]
 			};
+		};
+		
+		// listeners
+		let vmStuffAreLoaded = false;
+		context.onDeploymentTechnologySelect = function () {
+			
+			if(!vmStuffAreLoaded){
+				if(context.formData.deployOptions.deployConfig.type === 'vm'){
+					context.getRegionsList();
+					context.getVmSizesList();
+					context.getDisksList();
+					context.getProvidersList();
+				}
+				vmStuffAreLoaded = true;
+			}
+		}
+		context.onAuthTypeChange = function () {
+			if(context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
+				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token = '';
+			}else{
+				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password = '';
+			}
 		};
 		
 		if(!context.noCDoverride){

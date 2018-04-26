@@ -96,6 +96,42 @@ let infraConfig = {
 				'fieldMsg': 'Enter a label for this provider, the accordion in the list will use it.',
 				'required': true
 			},
+			{
+				'name': 'clientId',
+				'label': 'Client ID',
+				'type': 'string',
+				'value': "",
+				'placeholder': 'Azure Client ID',
+				'fieldMsg': 'Client ID is required to communicate with Azure\'s API',
+				'required': true
+			},
+			{
+				'name': 'secret',
+				'label': 'Client Secret',
+				'type': 'string',
+				'value': "",
+				'placeholder': 'Azure Client Secret',
+				'fieldMsg': 'Client Secret is required to communicate with Azure\'s API',
+				'required': true
+			},
+			{
+				'name': 'domain',
+				'label': 'Tenant ID',
+				'type': 'string',
+				'value': "",
+				'placeholder': 'Application Tenant ID',
+				'fieldMsg': 'Enter the ID of the tenant that your application requires to communicate with Azure subscription',
+				'required': true
+			},
+			{
+				'name': 'subscriptionId',
+				'label': 'Subscription ID',
+				'type': 'string',
+				'value': "",
+				'placeholder': 'Subscription ID',
+				'fieldMsg': 'Provide the ID of the subscription you want to use',
+				'required': true
+			}
 		]
 	}
 };

@@ -49,8 +49,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			{v : 'mediumSize2', l:"Medium Size 2"}
 		];
 		
-		context.deploymentData.vmSize = [
-			{v : 'none', l:"None"}
+		context.deploymentData.disk = [
+			{v : 'None', l:"None"}
 		];
 		
 		

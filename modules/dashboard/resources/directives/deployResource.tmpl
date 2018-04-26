@@ -239,21 +239,41 @@
 			<br/>
 			
 			<label>Authentication type SSH public key/password</label>
-			<label class="toggleSwitch f-right "><input type="checkbox" ng-model="formData.auth"><span class="buttonSlider round"></span></label>
+			<label class="toggleSwitch f-right "><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.authType"><span class="buttonSlider round"></span></label>
 			<label class="fieldMsg">Choose if password or SSH</label>
 			<br /><br />
 			
-			<div ng-if="!formData.auth">
+			<div ng-if="!formData.authType">
 				<label>Token</label>
 				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.token"></textarea>
 				<br />
 			</div>
 			
-			<div ng-if="formData.auth">
+			<div ng-if="formData.authType">
 				<label>Password</label>
 				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.password"></input>
 			</div>
 		
+		</fieldset>
+
+		<fieldset class="custom-fieldset">
+			<legend>Image</legend>
+
+			<label>Provider</label>
+			<select name="provider"  class="form-control"  ng-required="true" ng-model="formData.provider"></select>
+			<label class="fieldMsg">Choose your provider</label>
+			<br/>
+
+			<label>Image</label>
+			<select name="image"  class="form-control"  ng-required="true"  ng-model="formData.image"></select>
+			<label class="fieldMsg">Choose your image</label>
+			<br/>
+
+			<label>version</label>
+			<select name="version"  class="form-control"  ng-required="true"  ng-model="formData.version"></select>
+			<label class="fieldMsg">Choose your version</label>
+			<br/>
+
 		</fieldset>
 	
 	

@@ -5,7 +5,6 @@
 	</p>
 </alert>
 <br/>
-
 <fieldset class="custom-fieldset">
 	<legend>Deployment Options</legend>
 	<div>
@@ -14,7 +13,6 @@
 		<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
 		<br/>
 	</div>
-	
 	<div>
 		<label>Catalog Recipe</label>
 		<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs()"></select>

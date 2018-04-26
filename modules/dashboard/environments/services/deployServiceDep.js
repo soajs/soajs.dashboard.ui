@@ -464,13 +464,18 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			let ports;
 			let recipe = false;
 			$scope.catalogConflictingPorts = '';
-			if ($scope.services && $scope.services[oneSrv] && $scope.services[oneSrv].deploySettings
-				&& $scope.services[oneSrv].deploySettings.options
-				&& $scope.services[oneSrv].deploySettings.options.custom
-				&& $scope.services[oneSrv].deploySettings.options.custom.ports
-				&& $scope.services[oneSrv].deploySettings.options.custom.ports.length > 0){
-				ports = angular.copy($scope.services[oneSrv].deploySettings.options.custom.ports);
+
+			let deployOptionsInfo;
+			if ($scope.services && $scope.services[oneSrv] && $scope.services[oneSrv].deploySettings && $scope.services[oneSrv].deploySettings.options){
+				deployOptionsInfo = $scope.services[oneSrv].deploySettings.options;
 			}
+			else if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options){
+				deployOptionsInfo = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
+			}
+			if(deployOptionsInfo.custom && deployOptionsInfo.custom.ports && deployOptionsInfo.custom.ports.length > 0){
+				ports = angular.copy(deployOptionsInfo.custom.ports);
+			}
+			
 			let formDataRoot = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 			if(selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
 				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
@@ -489,12 +494,17 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				//check if there port mismatch in type
 				let nodePort =0, loadBalancer=0;
 				selectedRecipe.recipe.deployOptions.ports.forEach(function (onePort) {
+					let pushed = false;
 					if (recipe){
+						pushed = true;
 						formDataRoot.custom.ports.push(onePort);
 					}
 					if(onePort.isPublished || onePort.published){
 						formDataRoot.custom.loadBalancer = true;
-						formDataRoot.custom.ports.push(onePort);
+						if(!pushed){
+							pushed = true;
+							formDataRoot.custom.ports.push(onePort);
+						}
 						if (onePort.published){
 							if (recipe) {
 								formDataRoot.custom.loadBalancer = false;

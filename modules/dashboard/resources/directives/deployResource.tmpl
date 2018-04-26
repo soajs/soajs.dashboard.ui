@@ -206,6 +206,53 @@
 	
 	<!--<div ng-if="deploymentData.type === 'vm'">-->
 	<div>
+
+		<label>Infra</label>
+		<select  name="infra" class="form-control"  ng-required="true" ng-model="formData.infra" ></select>
+		<label class="fieldMsg">Choose your infra</label>
+
+		<label>Region</label>
+		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in deploymentData.regions"  ng-model="formData.region" ></select>
+		<label class="fieldMsg">Choose the region</label>
+
+		<label>Flavor</label>
+		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.v as size.l for size in deploymentData.vmSize"  ng-model="formData.flavor"></select>
+		<label class="fieldMsg">Choose the flavor</label>
+
+
+		<label>Data Disk</label>
+		<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.dataDisk"></select>
+		<label class="fieldMsg">Choose your Data Disk</label>
+
+		<fieldset class="custom-fieldset">
+			<legend>Admin Access</legend>
+
+			<label>Username</label>
+			<input name="username" type="text" class="form-control"  ng-required="true"  ng-model="formData.username"></input>
+			<label class="fieldMsg">Choose your Data Disk</label>
+			<br/>
+
+			<label>Authentication type SSH public key/password</label>
+			<label class="toggleSwitch f-right "><input type="checkbox" ng-model="formData.auth"><span class="buttonSlider round"></span></label>
+			<label class="fieldMsg">Choose if password or SSH</label>
+			<br /><br />
+
+			<div ng-if="!formData.auth">
+				<label>Token</label>
+				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.token"></textarea>
+				<br />
+			</div>
+
+			<div ng-if="formData.auth">
+				<label>Password</label>
+				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.password"></input>
+			</div>
+
+
+		</fieldset>
+
+
+
 		<!--<select>-->
 		<!--TODO: update vm deployment section -->
 		<!--deploymentData.regions ...-->

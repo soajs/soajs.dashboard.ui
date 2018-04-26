@@ -169,6 +169,21 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 				
+				/**
+				 * update deployConfig.infra account using provider
+				 */
+				function updateFormDataBeforeSave() {
+					let infraProviders = $scope.deploymentData.infraProviders;
+					let infraObject = $scope.formData.deployOptions.deployConfig.infra;
+					
+					infraProviders.forEach(function (eachProvider) {
+						if(eachProvider.name === infraObject.provider){ // if found
+							infraObject.account = eachProvider.accountId;
+						}
+					});
+				}
+				
+				
 				$scope.save = function (isInBetween, cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
@@ -182,6 +197,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
 						$scope.formData.deployOptions.custom.type = 'resource';
 					}
+					
+					updateFormDataBeforeSave();
 					
 					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
 						saveResource(function () {
@@ -331,6 +348,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					
 					overlayLoading.show();
 					
+					updateFormDataBeforeSave();
+					
 					if (deployOnly) {
 						deployResource(function () {
 							currentScope.load();
@@ -426,6 +445,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					}
 					
 					overlayLoading.show();
+					
+					updateFormDataBeforeSave();
 					
 					$scope.save(true, function () {
 						rebuildService(function () {

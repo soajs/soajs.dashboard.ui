@@ -1,6 +1,32 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', function (resourceConfiguration, $modal, ngDataApi) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi','$cookies','$localStorage', function (resourceConfiguration, $modal, ngDataApi, $cookies,$localStorage) {
+	
+	function refreshDeployConfig(currentScope) {
+		let deployConfig = currentScope.formData.deployOptions.deployConfig;
+		if(!deployConfig){
+			currentScope.formData.deployOptions.deployConfig = {};
+			deployConfig = currentScope.formData.deployOptions.deployConfig;
+		}
+		
+		if(deployConfig.infra){
+			deployConfig.infra.provider = '';
+			deployConfig.infra.account = '';
+		}
+		if(deployConfig.vmConfiguration){
+			deployConfig.vmConfiguration.flavor = '';
+			deployConfig.vmConfiguration.dataDisk = '';
+			
+			if(deployConfig.vmConfiguration.adminAccess){
+				deployConfig.vmConfiguration.adminAccess.username = '';
+				deployConfig.vmConfiguration.adminAccess.password = '';
+				deployConfig.vmConfiguration.adminAccess.token = '';
+			}
+		}
+		
+		deployConfig.type = '';
+		deployConfig.region = '';
+	}
 	
 	function decodeRepoNameAndSubName(name) {
 		let splits = name.split('__SOAJS_DELIMITER__');
@@ -20,7 +46,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		
 		context.deploymentData = {};
 		
 		context.catalogConflictingPorts = '';
@@ -621,26 +646,49 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					];
 					
-					// todo:
-					// if manual deployment
-					// loop and check if no restriction or vm included => show recipe
-					//                if not hide recipe
+					if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+						context.myEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+					}
+					
+					let deploymentType;
+					$localStorage.environments.forEach((oneEnv) => {
+						if (oneEnv.code === context.myEnv) {
+							deploymentType = oneEnv.deployer.type;
+						}
+					});
+					
+					// delete // only used for testing
+					context.displayRecipeInputs(false, function(err){
+						if (err){
+							context.displayAlert('danger', err.message);
+						}
+					});
 					
 					// todo: restore code
 					// if (recipes && Array.isArray(recipes)) {
 					// 	recipes.forEach(function (oneRecipe) {
-					//
 					// 		if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
 					// 			context.oldStyle = true;
 					// 		}
 					// 		else {
 					// 			if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-					// 				context.recipes.push(oneRecipe);
+					//
+					// 				if(deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
+					// 					if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
+					// 						context.recipes.push(oneRecipe);
+					// 					} else {
+					// 						if(oneRecipe.restriction.deployment.indexOf("vm") !== -1){ // vm supported
+					// 							context.recipes.push(oneRecipe);
+					// 						}
+					// 					}
+					// 				}else{ // add it anyway
+					// 					context.recipes.push(oneRecipe);
+					// 				}
 					// 			}
 					// 		}
 					// 	});
 					//
-					// 	context.displayRecipeInputs(function(err){
+					// 	context.displayRecipeInputs(false, function(err){
 					// 		if (err){
 					// 			context.displayAlert('danger', err.message);
 					// 		}
@@ -659,29 +707,28 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
-		context.displayRecipeInputs = function (cb) {
+		context.displayRecipeInputs = function (refresh, cb) {
 			
 			function calculateRestrictions(currentScope) {
-				
 				let allRecipes = currentScope.recipes;
-				let selectedRecipeId = currentScope.formData.deployOptions.recipe;
+				let selectedRecipeId;
 				let selectedRecipe;
+				
+				if(currentScope.formData.deployOptions && currentScope.formData.deployOptions.recipe){
+					selectedRecipeId = currentScope.formData.deployOptions.recipe;
+				}else{
+					return; // no selected recipe yet
+				}
+				
 				allRecipes.forEach(function (eachRecipe) {
 					if (eachRecipe._id === selectedRecipeId) {
 						selectedRecipe = eachRecipe;
 					}
 				});
 				
-				// refresh before starting
-				// todo: on load form set formData to a standard JSON object and get rid of these checks
-				if(!currentScope.formData.deployOptions.deployConfig){
-					currentScope.formData.deployOptions.deployConfig = {};
+				if(refresh){
+					refreshDeployConfig(currentScope);
 				}
-				if(!currentScope.formData.deployOptions.deployConfig.infra){
-					currentScope.formData.deployOptions.deployConfig.infra = {};
-				}
-				currentScope.formData.deployOptions.deployConfig.type = '';
-				currentScope.formData.deployOptions.deployConfig.infra.provider = '';
 				
 				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 				let allInfra = ["azure", "aws", "google"];
@@ -1001,6 +1048,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		/*
 			VM specific
 		 */
+		context.getInfraProviders = function () {
+			context.deploymentData.infraProviders = [
+				{
+					name : "aws",
+					accountId : "AWSTESTID123"
+				},
+				{
+					name : "google",
+					accountId : "GOOGLETESTID456"
+				},
+				{
+					name : "azure",
+					accountId : "Azure_TESTID789"
+				}
+			];
+		};
 		context.getRegionsList = function () {
 			context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
 				v: 'us-east-2',
@@ -1059,6 +1122,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			
 			if(!vmStuffAreLoaded){
 				if(context.formData.deployOptions.deployConfig.type === 'vm'){
+					context.getInfraProviders();
 					context.getRegionsList();
 					context.getVmSizesList();
 					context.getDisksList();
@@ -1089,7 +1153,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			//this is called by add env wizard.
 			updateCustomRepoName();
 			context.getSecrets(function (cb) {
-				context.displayRecipeInputs(cb);
+				context.displayRecipeInputs(true, cb);
 			});
 		}
 		

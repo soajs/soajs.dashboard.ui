@@ -222,7 +222,7 @@
 		<label class="fieldMsg">Choose the region</label>
 		
 		<label>Flavor</label>
-		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.v as size.l for size in deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
+		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.name as (size.name + ' ( cpus : ' + size.numberOfCores+', memory: '+size.memoryInMB/1000 + ' )') for size in deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
 		<label class="fieldMsg">Choose the flavor</label>
 		
 		

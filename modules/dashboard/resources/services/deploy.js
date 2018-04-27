@@ -1,6 +1,32 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', function (resourceConfiguration, $modal, ngDataApi) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi','$cookies','$localStorage', function (resourceConfiguration, $modal, ngDataApi, $cookies,$localStorage) {
+	
+	function refreshDeployConfig(currentScope) {
+		let deployConfig = currentScope.formData.deployOptions.deployConfig;
+		if(!deployConfig){
+			currentScope.formData.deployOptions.deployConfig = {};
+			deployConfig = currentScope.formData.deployOptions.deployConfig;
+		}
+		
+		if(deployConfig.infra){
+			deployConfig.infra.provider = '';
+			deployConfig.infra.account = '';
+		}
+		if(deployConfig.vmConfiguration){
+			deployConfig.vmConfiguration.flavor = '';
+			deployConfig.vmConfiguration.dataDisk = '';
+			
+			if(deployConfig.vmConfiguration.adminAccess){
+				deployConfig.vmConfiguration.adminAccess.username = '';
+				deployConfig.vmConfiguration.adminAccess.password = '';
+				deployConfig.vmConfiguration.adminAccess.token = '';
+			}
+		}
+		
+		deployConfig.type = '';
+		deployConfig.region = '';
+	}
 	
 	function decodeRepoNameAndSubName(name) {
 		let splits = name.split('__SOAJS_DELIMITER__');
@@ -20,7 +46,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		
 		context.deploymentData = {};
 		
 		context.catalogConflictingPorts = '';
@@ -551,19 +576,29 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					
 					context.recipes = [
 						{
-							"_id": "5ae07aa09fdc3e40b2ea61a1",
-							"name": "Recipe 1",
-							"type": "service",
-							"subtype": "soajs",
-							"description": "This recipe allows you to deploy a services built using the SOAJS framework",
-							"locked": true,
-							"restriction": {
-								"deployment": ["vm", "container"],
-								"driver": ["container.docker"],
-								"infra": ["azure"]
-							}
-						},
-						{
+                            "_id": "5ae07aa09fdc3e40b2ea61a1",
+                            "name": "Recipe 1",
+                            "type": "service",
+                            "subtype": "soajs",
+                            "description": "This recipe allows you to deploy a services built using the SOAJS framework",
+                            "locked": true,
+                            "restriction": {
+                                "deployment": ["vm", "container"],
+                                "driver": ["container.docker"],
+                                "infra": ["azure"]
+                            },
+                            "recipe": {
+                                "deployOptions": {
+                                    "image": {
+                                    	"override" : true,
+                                        "prefix": "provider2",
+                                        "name": "image2",
+                                        "tag": "v2"
+                                    }
+                                }
+                            }
+                        },
+                        {
 							"_id": "5ae07aa09fdc3e40b2ea61a2",
 							"name": "Recipe 2",
 							"type": "service",
@@ -574,7 +609,17 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								"deployment": ["vm"],
 								"driver": [],
 								"infra": ["azure","aws"]
-							}
+							},
+                            "recipe": {
+                                "deployOptions": {
+                                    "image": {
+                                        "override" : true,
+                                        "prefix": "provider1",
+                                        "name": "image1",
+                                        "tag": "v1"
+                                    }
+                                }
+                            }
 						},
 						{
 							"_id": "5ae07aa09fdc3e40b2ea61a3",
@@ -587,7 +632,17 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								"deployment": ["container"],
 								"driver": ["container.docker","container.kubernetes"],
 								"infra": []
-							}
+							},
+                            "recipe": {
+                                "deployOptions": {
+                                    "image": {
+                                        "override" : false,
+                                        "prefix": "provider1",
+                                        "name": "image1",
+                                        "tag": "v1"
+                                    }
+                                }
+                            }
 						},
 						{
 							"_id": "5ae07aa09fdc3e40b2ea61a4",
@@ -621,26 +676,49 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					];
 					
-					// todo:
-					// if manual deployment
-					// loop and check if no restriction or vm included => show recipe
-					//                if not hide recipe
+					if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
+						context.myEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+					}
+					
+					let deploymentType;
+					$localStorage.environments.forEach((oneEnv) => {
+						if (oneEnv.code === context.myEnv) {
+							deploymentType = oneEnv.deployer.type;
+						}
+					});
+					
+					// delete // only used for testing
+					context.displayRecipeInputs(false, function(err){
+						if (err){
+							context.displayAlert('danger', err.message);
+						}
+					});
 					
 					// todo: restore code
 					// if (recipes && Array.isArray(recipes)) {
 					// 	recipes.forEach(function (oneRecipe) {
-					//
 					// 		if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
 					// 			context.oldStyle = true;
 					// 		}
 					// 		else {
 					// 			if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-					// 				context.recipes.push(oneRecipe);
+					//
+					// 				if(deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
+					// 					if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
+					// 						context.recipes.push(oneRecipe);
+					// 					} else {
+					// 						if(oneRecipe.restriction.deployment.indexOf("vm") !== -1){ // vm supported
+					// 							context.recipes.push(oneRecipe);
+					// 						}
+					// 					}
+					// 				}else{ // add it anyway
+					// 					context.recipes.push(oneRecipe);
+					// 				}
 					// 			}
 					// 		}
 					// 	});
 					//
-					// 	context.displayRecipeInputs(function(err){
+					// 	context.displayRecipeInputs(false, function(err){
 					// 		if (err){
 					// 			context.displayAlert('danger', err.message);
 					// 		}
@@ -659,23 +737,75 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
-		context.displayRecipeInputs = function (cb) {
+		context.displayRecipeInputs = function (refresh, cb) {
 			
 			function calculateRestrictions(currentScope) {
-				
 				let allRecipes = currentScope.recipes;
-				let selectedRecipeId = currentScope.formData.deployOptions.recipe;
+				let selectedRecipeId;
 				let selectedRecipe;
+				
+				if(currentScope.formData.deployOptions && currentScope.formData.deployOptions.recipe){
+					selectedRecipeId = currentScope.formData.deployOptions.recipe;
+				}else{
+					return; // no selected recipe yet
+				}
+				
 				allRecipes.forEach(function (eachRecipe) {
 					if (eachRecipe._id === selectedRecipeId) {
 						selectedRecipe = eachRecipe;
+						context.deploymentData.selectedRecipe = selectedRecipe;
 					}
 				});
 				
-				// refresh before starting
-				currentScope.formData.deployOptions.deploymentTechnology = '';
-				currentScope.formData.deployOptions.deploymentTechnologyInfra = '';
+				if(refresh){
+					refreshDeployConfig(currentScope);
+				}
 				
+				if(!currentScope.formData.deployOptions.deployConfig.infra){
+					currentScope.formData.deployOptions.deployConfig.infra = {};
+				}
+				currentScope.formData.deployOptions.deployConfig.type = '';
+				currentScope.formData.deployOptions.deployConfig.infra.provider = '';
+
+				if (!context.formData.custom) {
+                    context.formData.custom = {}
+				}
+				if (!context.formData.custom.image) {
+                    context.formData.custom.image = {}
+				}
+				if (selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.image.override) {
+					context.getProvidersList(() => {
+                        context.formData.custom.image.prefix = '';
+                        context.deploymentData.providers.forEach((provider) =>{
+                            if (provider.v === selectedRecipe.recipe.deployOptions.image.prefix) {
+                                context.formData.custom.image.prefix = selectedRecipe.recipe.deployOptions.image.prefix;
+                            }
+                        });
+                        context.getImagesList(selectedRecipe.recipe.deployOptions.image.prefix, () =>{
+                            context.deploymentData.images.forEach((image) =>{
+                                if (image.v === selectedRecipe.recipe.deployOptions.image.name) {
+                                    context.formData.custom.image.name = image.v
+                                }
+                            });
+                            if (context.deploymentData.images.length === 0) {
+                                context.deploymentData.imageVersions = [];
+                            } else {
+                                context.getVersionsList(selectedRecipe.recipe.deployOptions.image.name, () =>{
+                                    context.deploymentData.imageVersions.forEach((version) =>{
+                                        if (version.v === selectedRecipe.recipe.deployOptions.image.tag) {
+                                            context.formData.custom.image.tag = version.v
+                                        }
+                                    });
+                                });
+                            }
+                        })
+					});
+				} else {
+                    context.formData.custom.image.prefix = '';
+                    context.formData.custom.image.name = '';
+                    context.formData.custom.image.tag = '';
+				}
+
 				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 				let allInfra = ["azure", "aws", "google"];
 				if (!selectedRecipe) {
@@ -692,7 +822,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				
 				if (currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
-					currentScope.formData.deployOptions.deploymentTechnology = currentScope.deploymentData.selectedRestrictionsDep[0];
+					currentScope.formData.deployOptions.deployConfig.type = currentScope.deploymentData.selectedRestrictionsDep[0];
+					context.onDeploymentTechnologySelect();
 				}
 			}
 			
@@ -993,6 +1124,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		/*
 			VM specific
 		 */
+		context.getInfraProviders = function () {
+			context.deploymentData.infraProviders = [
+				{
+					name : "aws",
+					accountId : "AWSTESTID123"
+				},
+				{
+					name : "google",
+					accountId : "GOOGLETESTID456"
+				},
+				{
+					name : "azure",
+					accountId : "Azure_TESTID789"
+				}
+			];
+		};
 		context.getRegionsList = function () {
 			context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
 				v: 'us-east-2',
@@ -1014,35 +1161,90 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				'l': 'Asia Pacific (Sydney)'
 			}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
 		};
+
 		context.getVmSizesList = function () {
 			context.deploymentData.vmSize = [
 				{v : 'smallSize1', l:"Small Size 1"},
 				{v : 'mediumSize2', l:"Medium Size 2"}
 			];
 		};
+
 		context.getDisksList = function () {
 			context.deploymentData.disk = [
 				{v : 'none', l:"None"}
 			];
 		};
-		context.getProvidersList = function () {
+
+		context.getProvidersList = function (cb) {
+			context.deploymentData.providers = [];
 			context.deploymentData.providers = [
-				{v : 'provider1', l:"Provider 1 Samir"}
+				{v : "provider1", l: "Provider 1"},
+				{v: "provider2", l: "Provider 2"}
 			];
+			if (cb) {
+				cb();
+			}
 		};
-		context.getImagesList = function (providerName) {
-			context.deploymentData.images = {
-				"provider1" : [
-					{v : 'image1', l:"Image 1 example"}
-				]
-			};
+
+		context.getImagesList = function (providerName, cb) {
+			let values = {
+                "provider1" : [
+                    {v : 'image1', l:"Image 1 example"},
+                ],
+                "provider2" : [
+                    {v : 'image2', l:"Image 2 example"},
+                ]
+            };
+			if (values[providerName]  === undefined) {
+                context.deploymentData.images = [];
+			} else {
+                context.deploymentData.images = values[providerName];
+			}
+
+			if(cb){
+				cb();
+			}
 		};
-		context.getVersionsList = function (imageName) {
-			context.deploymentData.imageVersions = {
-				"image1" : [
-					{v : 'v1', l:"Version 1 - Alfa"}
-				]
-			};
+
+        context.getVersionsList = function (imageName, cb) {
+            let values = {
+                "image1": [
+                    {v: 'v1', l: "Version 1 - Alfa"}
+                ],
+                "image2": [
+                    {v: 'v2', l: "Version 2 - Alfa"}
+                ]
+            };
+            if (values[imageName] === undefined) {
+                context.deploymentData.imageVersions = [];
+            }
+            context.deploymentData.imageVersions = values[imageName];
+            if (cb) {
+                cb();
+            }
+        };
+		
+		// listeners
+		let vmStuffAreLoaded = false;
+		context.onDeploymentTechnologySelect = function () {
+			
+			if(!vmStuffAreLoaded){
+				if(context.formData.deployOptions.deployConfig.type === 'vm'){
+					context.getInfraProviders();
+					context.getRegionsList();
+					context.getVmSizesList();
+					context.getDisksList();
+					context.getProvidersList();
+				}
+				vmStuffAreLoaded = true;
+			}
+		};
+		context.onAuthTypeChange = function () {
+			if(context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
+				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token = '';
+			}else{
+				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password = '';
+			}
 		};
 		
 		if(!context.noCDoverride){
@@ -1059,7 +1261,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			//this is called by add env wizard.
 			updateCustomRepoName();
 			context.getSecrets(function (cb) {
-				context.displayRecipeInputs(cb);
+				context.displayRecipeInputs(true, cb);
 			});
 		}
 		

@@ -238,7 +238,7 @@
 			<label class="fieldMsg">Choose your Data Disk</label>
 			<br/>
 			
-			<label>Authentication type SSH public key/password</label>
+			<label style="width:34%;">Authentication type SSH public key/password</label>
 			<label class="toggleSwitch f-right "><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword"><span class="buttonSlider round"></span></label>
 			<label class="fieldMsg">Choose if password or SSH</label>
 			<br /><br />
@@ -246,12 +246,14 @@
 			<div ng-if="!formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
 				<label>Token</label>
 				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token"></textarea>
+                <label class="fieldMsg">Provide the token</label>
 				<br />
 			</div>
 			
 			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
 				<label>Password</label>
 				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password"></input>
+                <label class="fieldMsg">Provide the password</label>
 			</div>
 		
 		</fieldset>

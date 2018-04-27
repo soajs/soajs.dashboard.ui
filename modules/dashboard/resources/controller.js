@@ -169,65 +169,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 				
-				/**
-				 * update deployConfig.infra account using provider
-				 */
-				function updateFormDataBeforeSave() {
-					let infraProviders = $scope.deploymentData.infraProviders;
-					let deployConfig = $scope.formData.deployOptions.deployConfig;
-					let deployOptions = $scope.formData.deployOptions;
-					let infraObject = deployConfig.infra;
-					
-					infraProviders.forEach(function (eachProvider) {
-						if(eachProvider.name === infraObject.provider){ // if found
-							infraObject.account = eachProvider.accountId;
-						}
-					});
-                    // clean
-					if (deployConfig && $deployConfig.type === "vm") {
-						if (deployConfig.memoryLimit) {
-							delete deployConfig.memoryLimit
-						}
-
-						if (deployConfig.replication) {
-							delete deployConfig.replication
-						}
-
-						if (deployConfig.replication) {
-							delete deployConfig.replication
-						}
-
-                        if (deployOptions.custom  && deployOptions.custom.secrets) {
-                            delete deployOptions.custom.secrets
-                        }
-
-                        if (deployOptions.custom  && deployOptions.custom.ports) {
-                            delete deployOptions.custom.ports
-                        }
-
-                        if (deployOptions.custom  && deployOptions.custom.sourceCode) {
-                            delete deployOptions.custom.sourceCode
-                        }
-
-                        if (deployOptions.custom  && (deployOptions.custom.loadBalancer || deployOptions.custom.loadBalancer === false)) {
-                            delete deployOptions.custom.loadBalancer
-                        }
-					}
-
-					if (deployConfig && deployConfig.type === "container") {
-					    if (deployConfig.infra || deployConfig.infra === '') {
-					        delete deployConfig.infra
-                        }
-                        if (deployConfig.region || deployConfig.region === '') {
-					        delete deployConfig.region
-                        }
-                        if (deployConfig.vmConfiguration) {
-					        delete deployConfig.vmConfiguration
-                        }
-                    }
-				}
-				
-				
 				$scope.save = function (isInBetween, cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
@@ -242,7 +183,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						$scope.formData.deployOptions.custom.type = 'resource';
 					}
 					
-					updateFormDataBeforeSave();
+					resourceDeploy.updateFormDataBeforeSave($scope);
 					
 					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
 						saveResource(function () {
@@ -392,7 +333,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					
 					overlayLoading.show();
 					
-					updateFormDataBeforeSave();
+					resourceDeploy.updateFormDataBeforeSave($scope);
 					
 					if (deployOnly) {
 						deployResource(function () {
@@ -490,7 +431,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					
 					overlayLoading.show();
 					
-					updateFormDataBeforeSave();
+					resourceDeploy.updateFormDataBeforeSave($scope);
 					
 					$scope.save(true, function () {
 						rebuildService(function () {

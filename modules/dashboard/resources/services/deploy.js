@@ -1174,9 +1174,31 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		context.getVmSizesList = function () {
 			context.deploymentData.vmSize = [
-				{v : 'smallSize1', l:"Small Size 1"},
-				{v : 'mediumSize2', l:"Medium Size 2"}
-			];
+				{
+					"name": "Standard_A1",
+					"numberOfCores": 1,
+					"osDiskSizeInMB": 1047552,
+					"resourceDiskSizeInMB": 71680,
+					"memoryInMB": 1792,
+					"maxDataDiskCount": 2
+				},
+				{
+					"name": "Standard_A2",
+					"numberOfCores": 2,
+					"osDiskSizeInMB": 1047552,
+					"resourceDiskSizeInMB": 138240,
+					"memoryInMB": 3584,
+					"maxDataDiskCount": 4
+				},
+				{
+					"name": "Standard_A3",
+					"numberOfCores": 4,
+					"osDiskSizeInMB": 1047552,
+					"resourceDiskSizeInMB": 291840,
+					"memoryInMB": 7168,
+					"maxDataDiskCount": 8
+				}
+			]
 		};
 
 		context.getDisksList = function () {

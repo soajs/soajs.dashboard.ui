@@ -22,7 +22,7 @@
 
 <div>
 	<label>Deployment Technology Type</label>
-	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect()"></select>
+	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>
 	<label class="fieldMsg">Choose a deployment technology type</label>
 </div>
 

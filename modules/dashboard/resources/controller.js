@@ -174,13 +174,16 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				 */
 				function updateFormDataBeforeSave() {
 					let infraProviders = $scope.deploymentData.infraProviders;
-					let infraObject = $scope.formData.deployOptions.deployConfig.infra;
+					let deployConfig = $scope.formData.deployOptions.deployConfig;
+					let infraObject = deployConfig.infra;
 					
 					infraProviders.forEach(function (eachProvider) {
 						if(eachProvider.name === infraObject.provider){ // if found
 							infraObject.account = eachProvider.accountId;
 						}
 					});
+					// todo: if deployConfig.... .type === container clean vm w vice versa
+
 				}
 				
 				

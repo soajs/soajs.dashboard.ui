@@ -182,8 +182,48 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							infraObject.account = eachProvider.accountId;
 						}
 					});
-					// todo: if deployConfig.... .type === container clean vm w vice versa
+                    // clean
+					if ($scope.formData.deployOptions.deployConfig && $scope.formData.deployOptions.deployConfig.type === "vm") {
+						if ($scope.formData.deployOptions.deployConfig.memoryLimit) {
+							delete $scope.formData.deployOptions.deployConfig.memoryLimit
+						}
 
+						if ($scope.formData.deployOptions.deployConfig.replication) {
+							delete $scope.formData.deployOptions.deployConfig.replication
+						}
+
+						if ($scope.formData.deployOptions.deployConfig.replication) {
+							delete $scope.formData.deployOptions.deployConfig.replication
+						}
+
+                        if ($scope.formData.deployOptions.custom  && $scope.formData.deployOptions.custom.secrets) {
+                            delete $scope.formData.deployOptions.custom.secrets
+                        }
+
+                        if ($scope.formData.deployOptions.custom  && $scope.formData.deployOptions.custom.ports) {
+                            delete $scope.formData.deployOptions.custom.ports
+                        }
+
+                        if ($scope.formData.deployOptions.custom  && $scope.formData.deployOptions.custom.sourceCode) {
+                            delete $scope.formData.deployOptions.custom.sourceCode
+                        }
+
+                        if ($scope.formData.deployOptions.custom  && ($scope.formData.deployOptions.custom.loadBalancer || $scope.formData.deployOptions.custom.loadBalancer === false)) {
+                            delete $scope.formData.deployOptions.custom.loadBalancer
+                        }
+					}
+
+					if ($scope.formData.deployOptions.deployConfig && $scope.formData.deployOptions.deployConfig.type === "container") {
+					    if ($scope.formData.deployOptions.deployConfig.infra || $scope.formData.deployOptions.deployConfig.infra === '') {
+					        delete $scope.formData.deployOptions.deployConfig.infra
+                        }
+                        if ($scope.formData.deployOptions.deployConfig.region || $scope.formData.deployOptions.deployConfig.region === '') {
+					        delete $scope.formData.deployOptions.deployConfig.region
+                        }
+                        if ($scope.formData.deployOptions.deployConfig.vmConfiguration) {
+					        delete $scope.formData.deployOptions.deployConfig.vmConfiguration
+                        }
+                    }
 				}
 				
 				

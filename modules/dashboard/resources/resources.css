@@ -120,9 +120,16 @@ input:checked + .buttonSlider:before {
 
 .custom-fieldset div label:not(.fieldMsg) {
     margin-top: 10px;
-    float: left;
     width: 24%;
+
 }
+
+.custom-fieldset div textarea:not(.fieldMsg) {
+    width: 74%;
+    float : right;
+}
+
+
 
 .custom-fieldset div input, .custom-fieldset div select {
     float: right;

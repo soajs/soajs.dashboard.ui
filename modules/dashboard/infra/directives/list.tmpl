@@ -9,7 +9,11 @@
 	<accordion close-others="false">
 		<accordion-group is-open="oneInfra.open" ng-repeat="oneInfra in infraProviders">
 			<accordion-heading>{{oneInfra.label}}</accordion-heading>
-			<div class="w-100 c-both t-right">
+			<div class="w50 f-left">
+				<label ng-if="oneInfra.technologies">Technologies:&nbsp;</label>
+				<span class="btn btn-sm btn-default capitalize" ng-repeat="oneTechnology in oneInfra.technologies">{{oneTechnology}}</span>
+			</div>
+			<div class="w50 f-left t-right">
 				<a href="" ng-click="editProvider(oneInfra)" class="btn btn-sm btn-success" ng-if="access.edit">
 					<span class="icon icon-pencil"></span> Edit
 				</a>&nbsp;
@@ -18,15 +22,16 @@
 				</a>
 			</div>
 			<div>
+				<br /><br />
 				<tabset>
 					<tab heading="Deployments">
 						<br>
-						<div ng-if="oneInfra.deployments.length === 0">
+						<div ng-if="!oneInfra.deployments || oneInfra.deployments.length === 0">
 							<alert type="warning">
 								No deployed found for this provider <a href="#/environments-add" class="btn btn-warning btn-sm f-right" style="position:relative; top:-5px;">Deploy New Environment</a>
 							</alert>
 						</div>
-						<div ng-if="oneInfra.deployments.length > 0" class="grid">
+						<div ng-if="oneInfra.deployments && oneInfra.deployments.length > 0" class="grid">
 							<table width="100%">
 								<thead>
 									<tr>
@@ -47,9 +52,38 @@
 							</table>
 						</div>
 					</tab>
-					<tab heading="Infra Code Templates">
+					<tab heading="Infra Code Templates" ng-if="oneInfra.templates">
 						<br />
-						<alert type="warning">No Templates available, please add.</alert>
+						<a class="btn btn-sm btn-primary" ng-if="access.addTEmplate" ng-click="addTemplate(oneInfra)">
+							<span class="icon icon-plus"></span> Add New Template
+						</a>
+						<br /><br />
+						<alert type="warning" ng-if="!oneInfra.templates || oneInfra.templates.length === 0">No Templates available, please add.</alert>
+						<div ng-if="oneInfra.templates && oneInfra.templates.length > 0" class="grid">
+							<table width="100%">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Name</th>
+										<th>Description</th>
+										<th>Location</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="oneTmpl in oneInfra.templates" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
+										<td>
+											<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;
+											<a href="" ng-click="editTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-pencil"></span></a>&nbsp;
+											<a href="" ng-click="downloadTemplate(oneTmpl, oneInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
+											<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, oneInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>
+										</td>
+										<td>{{oneTmpl.name}}</td>
+										<td>{{oneTmpl.description}}</td>
+										<td>{{oneTmpl.location}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</tab>
 				</tabset>
 			</div>

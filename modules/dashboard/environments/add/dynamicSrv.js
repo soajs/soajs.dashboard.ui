@@ -733,6 +733,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
+							
+							if(resource.scope.formData.deployOptions && resource.deployOptions){
+								resource.scope.formData.deployOptions.deployConfig = resource.deployOptions.deployConfig;
+								let deployConfig = resource.scope.formData.deployOptions.deployConfig;
+								if(deployConfig && deployConfig.type ==='vm'){
+									resource.scope.onDeploymentTechnologySelect();
+								}
+							}
+							
 							let element = angular.element(document.getElementById("resource_" + key));
 							element.append("<form name=\"addEditResource\" id=\"addEditResource\"><div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\"></div></form>");
 							$compile(element.contents())(resource.scope);
@@ -862,6 +871,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				postFormExecute();
 			}
 		});
+	}
+	
+	function updateResourceFormDataBeforeSave(deployOptions) {
+		resourceDeploy.updateFormDataBeforeSave(deployOptions);
 	}
 	
 	function go(currentScope) {
@@ -1081,6 +1094,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	return {
-		"go": go
+		"go": go,
+		"updateResourceFormDataBeforeSave" : updateResourceFormDataBeforeSave
 	}
 }]);

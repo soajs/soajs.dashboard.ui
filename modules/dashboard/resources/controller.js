@@ -183,7 +183,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						$scope.formData.deployOptions.custom.type = 'resource';
 					}
 					
-					resourceDeploy.updateFormDataBeforeSave($scope);
+					resourceDeploy.updateFormDataBeforeSave($scope.formData.deployOptions);
 					
 					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
 						saveResource(function () {
@@ -333,7 +333,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					
 					overlayLoading.show();
 					
-					resourceDeploy.updateFormDataBeforeSave($scope);
+					resourceDeploy.updateFormDataBeforeSave($scope.formData.deployOptions);
 					
 					if (deployOnly) {
 						deployResource(function () {
@@ -431,7 +431,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					
 					overlayLoading.show();
 					
-					resourceDeploy.updateFormDataBeforeSave($scope);
+					resourceDeploy.updateFormDataBeforeSave($scope.formData.deployOptions);
 					
 					$scope.save(true, function () {
 						rebuildService(function () {

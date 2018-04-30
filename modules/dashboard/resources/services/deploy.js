@@ -5,17 +5,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	/**
 	 * update deployConfig.infra account using provider
 	 */
-	function updateFormDataBeforeSave(context) {
-		let infraProviders = context.deploymentData.infraProviders;
-		let deployConfig = context.formData.deployOptions.deployConfig;
-		let deployOptions = context.formData.deployOptions;
-		let infraObject = deployConfig.infra;
+	function updateFormDataBeforeSave(deployOptions) {
+		let deployConfig = deployOptions.deployConfig;
 		
-		infraProviders.forEach(function (eachProvider) {
-			if(eachProvider.name === infraObject.provider){ // if found
-				infraObject.account = eachProvider.accountId;
-			}
-		});
+		// // fetch infra providers and append account name for infra
+		// let infraProviders = context.deploymentData.infraProviders;
+		// let infraObject = deployConfig.infra;
+		// infraProviders.forEach(function (eachProvider) {
+		// 	if(eachProvider.name === infraObject.provider){ // if found
+		// 		infraObject.account = eachProvider.accountId;
+		// 	}
+		// });
+		
 		// clean
 		if (deployConfig && deployConfig.type === "vm") {
 			if (deployConfig.memoryLimit) {

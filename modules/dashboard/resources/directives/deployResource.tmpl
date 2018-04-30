@@ -20,7 +20,7 @@
 	<br>
 </div>
 
-<div>
+<div ng-if="formData.deployOptions.recipe">
 	<label>Deployment Technology Type</label>
 	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>
 	<label class="fieldMsg">Choose a deployment technology type</label>
@@ -222,29 +222,29 @@
 		<label class="fieldMsg">Choose the region</label>
 		
 		<label>Flavor</label>
-		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.name as (size.name + ' ( cpus : ' + size.numberOfCores+', memory: '+size.memoryInMB/1000 + ' )') for size in deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
+		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.name as (size.name + ' ( cpus : ' + size.numberOfCores+', memory: '+size.memoryInMB/1000 + ' GB )') for size in deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
 		<label class="fieldMsg">Choose the flavor</label>
 		
 		
-		<label>Data Disk</label>
-		<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.dataDisk"></select>
-		<label class="fieldMsg">Choose your Data Disk</label>
+		<!--<label>Data Disk</label>-->
+		<!--<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.dataDisk"></select>-->
+		<!--<label class="fieldMsg">Choose your Data Disk</label>-->
 		
 		<fieldset class="custom-fieldset">
 			<legend>Admin Access</legend>
-			
+
+			<label style="width:34%;">Use Authentication Password</label>
+			<label class="toggleSwitch f-right "><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword"><span class="buttonSlider round"></span></label>
+			<label class="fieldMsg">Choose if password or SSH</label>
+			<br /><br />
+
 			<label>Username</label>
 			<input name="username" type="text" class="form-control"  ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.username"></input>
 			<label class="fieldMsg">Choose your Data Disk</label>
 			<br/>
-			
-			<label style="width:34%;">Authentication type SSH public key/password</label>
-			<label class="toggleSwitch f-right "><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword"><span class="buttonSlider round"></span></label>
-			<label class="fieldMsg">Choose if password or SSH</label>
-			<br /><br />
-			
+
 			<div ng-if="!formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
-				<label>Token</label>
+				<label>SSH Public Key</label>
 				<textarea name="token" class="form-control" ng-required="true" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token"></textarea>
                 <label class="fieldMsg">Provide the token</label>
 				<br />

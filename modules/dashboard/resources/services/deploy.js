@@ -1,7 +1,65 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
 resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi','$cookies','$localStorage', function (resourceConfiguration, $modal, ngDataApi, $cookies,$localStorage) {
-
+	
+	/**
+	 * update deployConfig.infra account using provider
+	 */
+	function updateFormDataBeforeSave(context) {
+		let infraProviders = context.deploymentData.infraProviders;
+		let deployConfig = context.formData.deployOptions.deployConfig;
+		let deployOptions = context.formData.deployOptions;
+		let infraObject = deployConfig.infra;
+		
+		infraProviders.forEach(function (eachProvider) {
+			if(eachProvider.name === infraObject.provider){ // if found
+				infraObject.account = eachProvider.accountId;
+			}
+		});
+		// clean
+		if (deployConfig && deployConfig.type === "vm") {
+			if (deployConfig.memoryLimit) {
+				delete deployConfig.memoryLimit
+			}
+			
+			if (deployConfig.replication) {
+				delete deployConfig.replication
+			}
+			
+			if (deployConfig.replication) {
+				delete deployConfig.replication
+			}
+			
+			if (deployOptions.custom  && deployOptions.custom.secrets) {
+				delete deployOptions.custom.secrets
+			}
+			
+			if (deployOptions.custom  && deployOptions.custom.ports) {
+				delete deployOptions.custom.ports
+			}
+			
+			if (deployOptions.custom  && deployOptions.custom.sourceCode) {
+				delete deployOptions.custom.sourceCode
+			}
+			
+			if (deployOptions.custom  && (deployOptions.custom.loadBalancer || deployOptions.custom.loadBalancer === false)) {
+				delete deployOptions.custom.loadBalancer
+			}
+		}
+		
+		if (deployConfig && deployConfig.type === "container") {
+			if (deployConfig.infra || deployConfig.infra === '') {
+				delete deployConfig.infra
+			}
+			if (deployConfig.region || deployConfig.region === '') {
+				delete deployConfig.region
+			}
+			if (deployConfig.vmConfiguration) {
+				delete deployConfig.vmConfiguration
+			}
+		}
+	}
+	
 	function fetchDefaultImagesOnOverride(context) {
         if (!context.formData.custom) {
             context.formData.custom = {}
@@ -639,14 +697,105 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                                 "infra": ["azure"]
                             },
                             "recipe": {
-                                "deployOptions": {
-                                    "image": {
-                                    	"override" : true,
-                                        "prefix": "provider2",
-                                        "name": "image2",
-                                        "tag": "v2"
-                                    }
-                                }
+	                            "deployOptions": {
+		                            "image": {
+			                            "override" : true,
+			                            "prefix": "provider2",
+			                            "name": "image2",
+			                            "tag": "v2"
+		                            },
+		                            "sourceCode": {
+			                            "configuration": {
+				                            "label": "Attach Custom Configuration",
+				                            "repo": "",
+				                            "branch": "",
+				                            "required": false
+			                            },
+			                            "custom": {
+				                            "label": "Attach Custom UI",
+				                            "repo": "",
+				                            "branch": "",
+				                            "type": "static",
+				                            "required": false
+			                            }
+		                            },
+		                            "readinessProbe": {
+			                            "httpGet": {
+				                            "path": "/",
+				                            "port": "http"
+			                            },
+			                            "initialDelaySeconds": 5,
+			                            "timeoutSeconds": 2,
+			                            "periodSeconds": 5,
+			                            "successThreshold": 1,
+			                            "failureThreshold": 3
+		                            },
+		                            "restartPolicy": {
+			                            "condition": "any",
+			                            "maxAttempts": 5
+		                            },
+		                            "container": {
+			                            "network": "soajsnet",
+			                            "workingDir": "/opt/soajs/deployer/"
+		                            },
+		                            "voluming": [
+			                            {
+				                            "docker": {
+					                            "volume": {
+						                            "Type": "volume",
+						                            "Source": "soajs_log_volume",
+						                            "Target": "/var/log/soajs/"
+					                            }
+				                            },
+				                            "kubernetes": {
+					                            "volume": {
+						                            "name": "soajs-log-volume",
+						                            "hostPath": {
+							                            "path": "/var/log/soajs/"
+						                            }
+					                            },
+					                            "volumeMount": {
+						                            "mountPath": "/var/log/soajs/",
+						                            "name": "soajs-log-volume"
+					                            }
+				                            }
+			                            },
+			                            {
+				                            "docker": {
+					                            "volume": {
+						                            "Type": "bind",
+						                            "ReadOnly": true,
+						                            "Source": "/var/run/docker.sock",
+						                            "Target": "/var/run/docker.sock"
+					                            }
+				                            }
+			                            },
+			                            {
+				                            "docker": {
+					                            "volume": {
+						                            "Type": "volume",
+						                            "Source": "soajs_certs_volume",
+						                            "Target": "/var/certs/soajs/"
+					                            }
+				                            }
+			                            }
+		                            ],
+		                            "ports": [
+			                            {
+				                            "name": "http",
+				                            "target": 80,
+				                            "isPublished": true,
+				                            "preserveClientIP": true
+			                            },
+			                            {
+				                            "name": "https",
+				                            "target": 443,
+				                            "isPublished": true,
+				                            "preserveClientIP": true
+			                            }
+		                            ],
+		                            "certificates": "optional"
+	                            }
                             }
                         },
                         {
@@ -1307,6 +1456,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	return {
-		'buildDeployForm': buildDeployForm
+		'buildDeployForm': buildDeployForm,
+		'updateFormDataBeforeSave' : updateFormDataBeforeSave
 	}
 }]);

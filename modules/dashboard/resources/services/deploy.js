@@ -111,8 +111,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
         }
 
         if(deployConfig.infra){
-			deployConfig.infra.provider = '';
-			deployConfig.infra.account = '';
+			deployConfig.infra = '';
         }
         if(deployConfig.vmConfiguration){
 			deployConfig.vmConfiguration.flavor = '';
@@ -695,7 +694,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                             "restriction": {
                                 "deployment": ["vm", "container"],
                                 "driver": ["container.docker"],
-                                "infra": ["azure"]
+                                "infra": ["aws"]
                             },
                             "recipe": {
 	                            "deployOptions": {
@@ -809,7 +808,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							"restriction": {
 								"deployment": ["vm"],
 								"driver": [],
-								"infra": ["azure","aws"]
+								"infra": ["google","azure"]
 							},
                             "recipe": {
                                 "deployOptions": {
@@ -961,29 +960,44 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                 if(refresh){
                     refreshDeployConfig(currentScope, context);
                 }
-                  fetchDefaultImagesOnOverride(context);
-
-				let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
-				let allInfra = ["azure", "aws", "google"];
-				if (!selectedRecipe) {
-					currentScope.deploymentData.selectedRestrictionsDep = [];
-				} else {
-					let restriction = selectedRecipe.restriction;
-					if (!restriction || Object.keys(restriction).length === 0) {
-						currentScope.deploymentData.selectedRestrictionsDep = allDeployments;
-						currentScope.deploymentData.selectedRestrictionsInfra = allInfra;
+                  
+                fetchDefaultImagesOnOverride(context);
+				
+                // todo: if vm
+                // context.onDeploymentTechnologySelect(false);
+				context.loadVmData(function () {
+					let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
+					let allInfra = currentScope.deploymentData.infraProviders; // [{_id,name}]
+					
+					if (!selectedRecipe) {
+						currentScope.deploymentData.selectedRestrictionsDep = [];
 					} else {
-						currentScope.deploymentData.selectedRestrictionsDep = restriction.deployment;
-						currentScope.deploymentData.selectedRestrictionsInfra = restriction.infra;
-						context.onDeploymentTechnologySelect();
-
+						let restriction = selectedRecipe.restriction;
+						if (!restriction || Object.keys(restriction).length === 0) {
+							currentScope.deploymentData.selectedRestrictionsDep = allDeployments;
+							currentScope.deploymentData.selectedRestrictionsInfra = allInfra;
+						} else {
+							// convert ["aws"] => [{_id,name}] after matching data with infraProviders
+							let reformattedRestrictionInfra = [];
+							if(restriction.infra){
+								restriction.infra.forEach(function (eachInfra) {
+									allInfra.forEach(function (originalInfra) {
+										if(originalInfra.name === eachInfra){
+											reformattedRestrictionInfra.push(originalInfra);
+										}
+									})
+								})
+							}
+							
+							currentScope.deploymentData.selectedRestrictionsDep = restriction.deployment;
+							currentScope.deploymentData.selectedRestrictionsInfra = reformattedRestrictionInfra;
+						}
 					}
-				}
-
-				if (currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
-					currentScope.formData.deployOptions.deployConfig.type = currentScope.deploymentData.selectedRestrictionsDep[0];
-					context.onDeploymentTechnologySelect();
-				}
+					
+					if (currentScope.deploymentData.selectedRestrictionsDep && currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
+						currentScope.formData.deployOptions.deployConfig.type = currentScope.deploymentData.selectedRestrictionsDep[0];
+					}
+				});
 			}
 
 			let recipes = context.recipes;
@@ -1280,24 +1294,35 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.fillForm();
 		
+		context.onExposedPortsUpdate = function () {
+			context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
+		};
+		
 		/*
 			VM specific
 		 */
-		context.getInfraProviders = function () {
+		context.getInfraProviders = function (cb) {
 			context.deploymentData.infraProviders = [
 				{
+					_id : 'xxxxx0',
 					name : "aws",
 					accountId : "AWSTESTID123"
 				},
 				{
+					_id : 'xxxxx1',
 					name : "google",
 					accountId : "GOOGLETESTID456"
 				},
 				{
+					_id : 'xxxxx2',
 					name : "azure",
 					accountId : "Azure_TESTID789"
 				}
 			];
+			
+			if(cb){
+				cb();
+			}
 		};
 
 		context.getRegionsList = function () {
@@ -1407,25 +1432,31 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
         };
 		
 		// listeners
-		let vmStuffAreLoaded = false;
 		context.onDeploymentTechnologySelect = function (refresh) {
- 		if (refresh) {
-            refreshDeployConfig(currentScope, context);
-        }
-             fetchDefaultImagesOnOverride(context);
-
-			if(!vmStuffAreLoaded){
-				if(context.formData.deployOptions.deployConfig.type === 'vm'){
-					context.getInfraProviders();
+			if (refresh) {
+				refreshDeployConfig(currentScope, context);
+			}
+			fetchDefaultImagesOnOverride(context);
+		};
+		
+		let vmDataLoaded = false;
+		context.loadVmData= function (cb) {
+			// if (context.formData.deployOptions.deployConfig.type === 'vm') {
+			// todo: call them in parallel and call cb once done
+			if(!vmDataLoaded){
+				context.getInfraProviders(function () {
 					context.getRegionsList();
 					context.getVmSizesList();
 					context.getDisksList();
 					context.getProvidersList();
-
-                    vmStuffAreLoaded = true;
-				}
+					cb();
+				});
+			}else{
+				cb();
 			}
-		};
+			// }
+		}
+		
 		context.onAuthTypeChange = function () {
 			if(context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
 				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token = '';

@@ -136,7 +136,7 @@
 						<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
 						<div>
 							<label>Published Port</label>
-							<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true"/>
+							<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true" ng-change="onExposedPortsUpdate()"/>
 							<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
 								Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.
 							</label>
@@ -214,7 +214,7 @@
 	
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
 		<label>Infra</label>
-		<select class="form-control" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra.provider"></select>
+		<select class="form-control" ng-required="true" ng-options="tech._id as tech.name for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra"></select>
 		<label class="fieldMsg">Choose a deployment technology</label>
 		
 		<label>Region</label>

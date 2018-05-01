@@ -217,3 +217,22 @@ input.secretMountPathResource{
     float: none!important;
     width:100%!important;
 }
+
+.infraProvider{
+    text-align: center;
+    border: solid 1px #cccccc;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 10px;
+    width: 23%;
+}
+
+.selectedInfraProvider,
+.infraProvider:hover{
+    background-color:#C1DDEC;
+    cursor:pointer;
+}
+
+.grid table table{
+    min-width:auto;
+}

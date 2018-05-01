@@ -1,3 +1,11 @@
+<script type="text/ng-template" id="infraProvider.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-body">
+		<ngform></ngform>
+	</div>
+</script>
 <accordion close-others="true">
 	<accordion-group is-open="platforms.previous" ng-click="switchDriver('previous')" ng-show="restrictions.previousEnv && availableEnvironments.length > 0">
 		<accordion-heading>
@@ -35,155 +43,28 @@
 			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
 			I want to use Docker as my Deployment Technology
 		</accordion-heading>
-		<div class="table w100 c-both">
-			<div class="f-right" style="width:15%;">
-				<img ng-src="themes/default/img/docker_logo.png" width="100%" />
-			</div>
-			<p>
-				I have already prepared my machine(s) and installed <a href="https://www.docker.com/" target="_blank">Docker</a> as my container technology.
-			</p>
-			<div>
-				<div class="f-left w20">
-					<b>Select a Cloud Provider:</b>
-					<ui-select ng-model="myCloudProvider" ng-change="showProviderLink(myCloudProvider, 'docker')">
-						<ui-select-match>
-							<img ng-src="{{$select.selected.image}}" height="24" style="position: relative; top: -6px;"/>&nbsp;
-							<span ng-bind="$select.selected.l"></span>
-						</ui-select-match>
-						<ui-select-choices repeat="item in (cloudProviders) track by item.v">
-							<img ng-src="{{item.image}}" height="24"/>&nbsp;
-							<span ng-bind="item.l"></span>
-						</ui-select-choices>
-					</ui-select>
-				</div>
-				<div class="f-left" ng-if="cloudProviderHelpLink.docker && cloudProviderHelpLink.docker !==''" style="padding:25px 20px;">
-					<a href="{{cloudProviderHelpLink.docker}}" target="_blank">Click here to Learn how to Prepare a machine for this provider.</a>
-				</div>
+		
+		<div>
+			<div class="w100 c-both"><label>Select an Infra Provider</label><br></div>
+			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
+				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
 		</div>
-		<hr>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tbody>
-				<tr class="form-group machineIP-wrapper">
-					<td>
-						<div id="dockerIP-wrapper">
-							<label class="f-left">Machine IP</label>
-							<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.nodes" class="form-control" placeholder="127.0.0.1" />
-							<div class="fieldMsg hint">Provide the IP of the Docker Master Node.</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group machinePort-wrapper">
-					<td>
-						<div id="dockerPort-wrapper">
-							<div>
-								<label class="f-left">Docker Port</label>
-								<input type="text" ng-required="platforms.docker" ng-model="form.formData.deployment.docker.externalPort" class="form-control" placeholder="2376" />
-								<div class="w100 c-both fieldMsg hint">Provide the value of the Docker Internal Port so that the Dashboard can connect to your machine(s).</div>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group network-wrapper">
-					<td >
-						<div id="network-wrapper">
-							<label class="f-left">Docker Network Name</label>
-							<input type="text" ng-required="platforms.docker" class="form-control" placeholder="soajsnet" ng-model="form.formData.deployment.docker.network" />
-							<div class="fieldMsg hint">Provide the Docker network name of your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group tr-code-wrapper">
-					<td class="form-select">
-						<div id="dtoken-wrapper">
-							<label class="f-left">Docker Secret Token</label>
-							<textarea ng-required="platforms.docker" class="form-control" rows="4" placeholder="My Docker Secret Token" ng-model="form.formData.deployment.docker.token"></textarea>
-							<div class="fieldMsg hint">Provide the Docker Secret Token so that the Dashboard can connect to your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div ng-show="wizard.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
 	</accordion-group>
 	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')" ng-show="restrictions.kubernetes">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.kubernetes" value="true" name="kubernetes" disabled/>&nbsp;
 			I want to use Kubernetes as my Deployment Technology
 		</accordion-heading>
-		<div class="table w100 c-both">
-			<div class="f-right" style="width:15%;">
-				<img ng-src="themes/default/img/kubernetes_logo.png" width="100%" />
-			</div>
-			<p>
-				I have already prepared my machine(s) and installed <a href="https://kubernetes.io/" target="_blank">Kubernetes</a> as my container technology.
-			</p>
-			<div>
-				<div class="f-left w20">
-					<b>Select a Cloud Provider:</b>
-					<ui-select ng-model="myCloudProvider" ng-change="showProviderLink(myCloudProvider, 'kubernetes')">
-						<ui-select-match>
-							<img ng-src="{{$select.selected.image}}" height="24" style="position: relative; top: -6px;"/>&nbsp;
-							<span ng-bind="$select.selected.l"></span>
-						</ui-select-match>
-						<ui-select-choices repeat="item in (cloudProviders) track by item.v">
-							<img ng-src="{{item.image}}" height="24"/>&nbsp;
-							<span ng-bind="item.l"></span>
-						</ui-select-choices>
-					</ui-select>
-				</div>
-				<div class="f-left" ng-if="cloudProviderHelpLink.kubernetes && cloudProviderHelpLink.kubernetes !==''" style="padding:25px 20px;">
-					<a href="{{cloudProviderHelpLink.kubernetes}}" target="_blank">Click here to Learn how to Prepare a machine for this provider.</a>
-				</div>
+		
+		<div>
+			<div class="w100 c-both"><label>Select an Infra Provider</label><br></div>
+			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
+				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
 		</div>
-		
-		<hr>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tbody>
-				<tr class="form-group machineIP-wrapper">
-					<td>
-						<div id="kubernetesIP-wrapper">
-							<label class="f-left">Machine IP</label>
-							<input type="text" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.nodes" class="form-control" placeholder="127.0.0.1" />
-							<div class="fieldMsg hint">Provide the IP of the Kubernetes Master Node.</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group machinePort-wrapper">
-					<td>
-						<div id="kubernetesPort-wrapper">
-							<label class="f-left">Kubernetes Port</label>
-							<input type="text" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.port" class="form-control" placeholder="6443" />
-							<div class="fieldMsg hint">Provide the Kubernetes Port so that the Dashboard can connect to your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group token-wrapper">
-					<td >
-						<div id="token-wrapper">
-							<label class="f-left">Kubernetes Secret Token</label>
-							<textarea ng-required="platforms.kubernetes" class="form-control" rows="4" placeholder="My Kubernetes Secret Token" ng-model="form.formData.deployment.kubernetes.token"></textarea>
-							<div class="fieldMsg hint">Provide the Kubernetes Secret Token so that the Dashboard can connect to your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-				<tr class="form-group namespace-wrapper">
-					<td >
-						<div id="namespace-wrapper">
-							<label class="f-left">Kubernetes Namespace Value</label>
-							<input type="text" class="form-control" ng-required="platforms.kubernetes" placeholder="soajs" ng-model="form.formData.deployment.kubernetes.NS" /><br />
-							<div class="fieldMsg hint">Provide the Kubernetes namespace that will be used when deploying services in this environment.</div>
-							<label class="f-left">Kubernetes Namespace Mode</label>
-							<div class="f-left" style="margin:15px 0 0 35px;">
-								<input type="radio" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.perService" name="global" ng-value="false" />&nbsp;Global Namespace Per Project
-								<input type="radio" ng-required="platforms.kubernetes" ng-model="form.formData.deployment.kubernetes.perService" name="service" ng-value="true" style="margin-left:35px;" />&nbsp;Specific Namespace Per Service
-							</div>
-							<div class="fieldMsg hint">Provide the Kubernetes Secret Token so that the Dashboard can connect to your machine(s).</div>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div ng-show="wizard.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
 	</accordion-group>
 	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')" ng-show="restrictions.showManual">
 		<accordion-heading>

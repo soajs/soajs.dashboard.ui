@@ -52,7 +52,7 @@
 							</table>
 						</div>
 					</tab>
-					<tab heading="Infra Code Templates" ng-if="oneInfra.templates">
+					<tab heading="Infra Code Templates" ng-if="oneInfra.name !== 'local' && oneInfra.templates">
 						<br />
 						<a class="btn btn-sm btn-primary" ng-if="access.addTEmplate" ng-click="addTemplate(oneInfra)">
 							<span class="icon icon-plus"></span> Add New Template

@@ -1,0 +1,69 @@
+
+<fieldset>
+	<legend style="width:15%;">
+		<img ng-if="overview.selectedInfraProvider.technologies[0] === 'docker'" ng-src="themes/default/img/docker_logo.png" width="100%" alt="Docker Logo"/>
+		<img ng-if="overview.selectedInfraProvider.technologies[0] === 'kubernetes'" ng-src="themes/default/img/kubernetes_logo.png" width="100%" alt="Kubernetes Logo"/>
+	</legend>
+	<br />
+	<!--Docker-->
+	<div ng-if="overview.selectedInfraProvider.technologies[0] =='docker'">
+		<div ng-show="previousEnvironment">
+			<div class="alert alert-info">
+				<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+			</div>
+			<div ng-show="previousPlatformDeployment">
+				<hr>
+				<br />
+				<div class="entryBoxes entryBoxesGrid">
+					<div class="entryBox driverEntryBox" style="display:block;">
+						<div class="header">
+							{{driver|uppercase}}
+						</div>
+						<div class="body">
+							<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy">
+			<p>Deploying on: <img ng-src="{{overview.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.selectedInfraProvider.label}}</p><br />
+		</div>
+		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
+	</div>
+	<!--Kuberenetes-->
+	<div ng-if="overview.selectedInfraProvider.technologies[0] =='kubernetes'">
+		<div ng-show="previousEnvironment">
+			<div class="alert alert-info">
+				<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+			</div>
+			<div ng-show="previousPlatformDeployment">
+				<hr>
+				<br />
+				<div class="entryBoxes entryBoxesGrid">
+					<div class="entryBox driverEntryBox" style="display:block;">
+						<div class="header">
+							{{driver|uppercase}}
+						</div>
+						<div class="body">
+							<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy">
+			<p>Deploying on: <img ng-src="{{overview.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.selectedInfraProvider.label}}</p><br />
+		</div>
+		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
+	</div>
+	<!--Manual-->
+	<div ng-if="wizard.deploy.selectedDriver=='manual'">
+		<div class="alert alert-info">
+			<h4><span class="icon icon-info"></span> Info:</h4>
+			<p> I will not use any container technology to deploy my Service(s) and Daemon(s).
+				I will also handle pulling and applying updates on the machines of this Environment myself.
+			</p>
+		</div>
+	</div>
+</fieldset>

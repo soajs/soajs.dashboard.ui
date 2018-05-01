@@ -1,78 +1,552 @@
 "use strict";
-var serviceProviders = [
-	{
-		v: 'aws',
-		l: 'Amazon Web Services',
-		image: 'modules/dashboard/environments/images/aws.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213183/AWS+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344246/AWS+Kubernetes'
+var serviceProviders = {
+	aws: {
+		docker: {
+			ui: {
+				"form": {
+					"scale": {
+						"entries": [
+							{
+								'name': 'number',
+								'label': 'Worker Node(s)',
+								'type': 'number',
+								'value': 0,
+								'tooltip': 'Enter the number of Worker Node(s) to scale your deployment to',
+								'fieldMsg': 'AWS only supports scaling the worker nodes in Docker, enter the number you wish to scale to.',
+								'placeholder': '1',
+								'required': true
+							}
+						]
+					},
+					"deploy": {
+						"grid": {
+							"columns": {
+								"region": {
+									"label": "Region",
+									"fields": [
+										{
+											"name": "region",
+											"label": "Region"
+										}
+									]
+								},
+								"masternodes": {
+									"label": "Master Node(s)",
+									"fields": [
+										{
+											"name": "masterflavor",
+											"label": "Flavor"
+										},
+										{
+											"name": "masternumber",
+											"label": "Number"
+										},
+										{
+											"name": "masterstorage",
+											"label": "Storage"
+										},
+										{
+											"name": "masterstoragetype",
+											"label": "Storage Type"
+										}
+									]
+								},
+								"workernodes": {
+									"label": "Worker Node(s)",
+									"fields": [
+										{
+											"name": "workerflavor",
+											"label": "Flavor"
+										},
+										{
+											"name": "workernumber",
+											"label": "Number"
+										},
+										{
+											"name": "workerstorage",
+											"label": "Storage"
+										},
+										{
+											"name": "workerstoragetype",
+											"label": "Storage Type"
+										}
+									]
+								}
+							}
+						},
+						"entries": [
+								{
+									'name': 'region',
+									'label': 'Select a Region',
+									'type': 'select',
+									'value': [],
+									'tooltip': 'Select Deployment Region',
+									"fieldMsg": "AWS deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges.",
+									'required': true
+								},
+								{
+									"label": "Key Pair",
+									"fieldMsg": "Enter the name of an existing EC2 KeyPair to enable SSH access on the instances to be deployed",
+									'name': 'keyPair',
+									"type": "text",
+									"value": "",
+									"placeholder": "mykeypair",
+									"required": true
+								},
+								{
+									"name": "aws",
+									"label": "AWS Extra Settings",
+									"type": "group",
+									"collapsed": true,
+									"entries": [
+										{
+											"label": "Enable Daily Resource Cleanup",
+											"fieldMsg": "Cleans up unused images, containers, networks and volumes",
+											'name': 'enableDailyResourceCleanup',
+											"type": "select",
+											"value": [
+												{ "v": true, "l": "Yes" },
+												{ "v": false, "l": "No", "selected": true }
+											],
+											"required": true
+										},
+										{
+											"label": "Use Cloudwatch for Container Logging",
+											"fieldMsg": "Send all Container logs to CloudWatch",
+											'name': 'cloudwatchContainerLogging',
+											"type": "select",
+											"value": [
+												{ "v": true, "l": "Yes" },
+												{ "v": false, "l": "No", "selected": true }
+											],
+											"required": true
+										},
+										{
+											"label": "Enable Cloudwatch Container Monitoring",
+											"fieldMsg": "Enable CloudWatch detailed monitoring for all instances",
+											'name': 'cloudwatchContainerMonitoring',
+											"type": "select",
+											"value": [
+												{ "v": true, "l": "Yes" },
+												{ "v": false, "l": "No", "selected": true }
+											],
+											"required": true
+										},
+										{
+											"label": "Enable EBS I/O Optimization",
+											"fieldMsg": "Specifies whether the launch configuration is optimized for EBS I/O",
+											'name': 'ebsIO',
+											"type": "select",
+											"value": [
+												{ "v": true, "l": "Yes" },
+												{ "v": false, "l": "No", "selected": true }
+											],
+											"required": true
+										}
+									]
+								},
+								{
+									"name": "masternodes", // cannot edit
+									"label": "Master Nodes",
+									"type": "group",
+									"entries": [
+										{
+											'name': 'masternumber',
+											'label': 'Number',
+											'type': 'number',
+											'value': 1,
+											'placeholder': '1',
+											'tooltip': 'Enter how many Master node machine(s) you want to deploy',
+											'fieldMsg': 'Enter how many Master node machine(s) you want to deploy',
+											'required': true
+										},
+										{
+											'name': 'masterflavor',
+											'label': 'Machine Type',
+											'type': 'select',
+											'value': [
+												{
+													'v': 't2.medium',
+													'l': 'T2 Medium / 2 vCPUs x 4 GiB',
+													'selected': true,
+													'group': "General Purpose"
+												},
+												{
+													'v': 'c4.large',
+													'l': 'C4 Large / 2 vCPUs x 3.75 GiB',
+													'group': "Compute Optimized"
+												}
+											],
+											'tooltip': 'Pick the Flavor of your master node machine(s)',
+											'fieldMsg': 'Pick the Flavor of your master node machine(s)',
+											'required': true,
+											'labelDisplay': true
+										},
+										{
+											'name': 'masterstorage',
+											'label': 'Storage',
+											'type': 'number',
+											'value': 30,
+											'tooltip': 'Enter the amount of Storage you want for each machine in GB.',
+											'fieldMsg': 'Enter the amount of Storage you want for each machine in GB.',
+											'required': true
+										},
+										{
+											'name': 'masterstoragetype',
+											'label': 'Storage Type',
+											'type': 'select',
+											'value': [{ 'v': 'gp2', 'l': 'GP2', 'selected': true }, {
+												'v': 'standard',
+												'l': 'Standard'
+											}],
+											'tooltip': 'Select the type of Storage Drive Technology',
+											'fieldMsg': 'Select the type of Storage Drive Technology',
+											'required': true,
+											'labelDisplay': true
+										}
+									]
+								},
+								{
+									"name": "workernodes",
+									"label": "Worker Nodes",
+									"type": "group",
+									"entries": [
+										{
+											'name': 'workernumber',
+											'label': 'Number',
+											'type': 'number',
+											'value': 1,
+											'placeholder': '1',
+											'tooltip': 'Enter how many Worker node machine(s) you want to deploy',
+											'fieldMsg': 'Enter how many Worker node machine(s) you want to deploy',
+											'required': true
+										},
+										{
+											'name': 'workerflavor',
+											'label': 'Machine Type',
+											'type': 'select',
+											'value': [
+												{
+													'v': 't2.medium',
+													'l': 'T2 Medium / 2 vCPUs x 4 GiB',
+													'selected': true,
+													'group': "General Purpose"
+												},
+												{ 'v': 't2.large', 'l': 'T2 Large / 2 vCPUs x 8 GiB', 'group': "General Purpose" },
+												{
+													'v': 't2.xlarge',
+													'l': 'T2 XLarge / 4 vCPUs x 16 GiB',
+													'group': "General Purpose"
+												},
+												{
+													'v': 't2.2xlarge',
+													'l': 'T2 2XLarge / 8 vCPUs x 32 GiB',
+													'group': "General Purpose"
+												},
+												{ 'v': 'm4.large', 'l': 'M4 Large / 2 vCPUs x 8 GiB', 'group': "General Purpose" },
+												{
+													'v': 'm4.xlarge',
+													'l': 'M4 XLarge / 4 vCPUs x 16 GiB',
+													'group': "General Purpose"
+												},
+												{
+													'v': 'm4.2xlarge',
+													'l': 'M4 2XLarge / 8 vCPUs x 32 GiB',
+													'group': "General Purpose"
+												},
+												{
+													'v': 'm4.4xlarge',
+													'l': 'M4 4XLarge / 16 vCPUs x 64 GiB',
+													'group': "General Purpose"
+												},
+												
+												{
+													'v': 'c4.large',
+													'l': 'C4 Large / 2 vCPUs x 3.75 GiB',
+													'group': "Compute Optimized"
+												},
+												{
+													'v': 'c4.xlarge',
+													'l': 'C4 XLarge / 4 vCPUs x 7.5 GiB',
+													'group': "Compute Optimized"
+												},
+												{
+													'v': 'c4.2xlarge',
+													'l': 'C4 2XLarge / 8 vCPUs x 15 GiB',
+													'group': "Compute Optimized"
+												},
+												{
+													'v': 'c4.4xlarge',
+													'l': 'C4 4XLarge / 16 vCPUs x 30 GiB',
+													'group': "Compute Optimized"
+												},
+												
+												{
+													'v': 'r4.large',
+													'l': 'R4 Large / 2 vCPUs x 15.25 GiB',
+													'group': "Memory Optimized"
+												},
+												{
+													'v': 'r4.xlarge',
+													'l': 'R4 XLarge / 4 vCPUs x 30.5 GiB',
+													'group': "Memory Optimized"
+												},
+												{
+													'v': 'r4.2xlarge',
+													'l': 'R4 2XLarge / 8 vCPUs x 61 GiB',
+													'group': "Memory Optimized"
+												},
+												{
+													'v': 'r4.4xlarge',
+													'l': 'R4 4XLarge / 16 vCPUs x 122 GiB',
+													'group': "Memory Optimized"
+												},
+												
+												{
+													'v': 'r3.large',
+													'l': 'R3 Large / 2 vCPUs x 15 GiB',
+													'group': "Memory Optimized"
+												},
+												{
+													'v': 'r3.xlarge',
+													'l': 'R3 XLarge / 4 vCPUs x 30.5 GiB',
+													'group': "Memory Optimized"
+												},
+												{
+													'v': 'r3.2xlarge',
+													'l': 'R3 2XLarge / 8 vCPUs x 61 GiB',
+													'group': "Memory Optimized"
+												},
+												{
+													'v': 'r3.4xlarge',
+													'l': 'R3 4XLarge / 16 vCPUs x 122 GiB',
+													'group': "Memory Optimized"
+												},
+												
+												{
+													'v': 'i3.large',
+													'l': 'I3 Large / 2 vCPUs x 15.25 GiB',
+													'group': "Storage Optimized"
+												},
+												{
+													'v': 'i3.xlarge',
+													'l': 'I3 XLarge / 4 vCPUs x 30.5 GiB',
+													'group': "Storage Optimized"
+												},
+												{
+													'v': 'i3.2xlarge',
+													'l': 'I3 2XLarge / 8 vCPUs x 61 GiB',
+													'group': "Storage Optimized"
+												},
+												{
+													'v': 'i3.4xlarge',
+													'l': 'I3 4XLarge / 16 vCPUs x 122 GiB',
+													'group': "Storage Optimized"
+												}
+											
+											],
+											'tooltip': 'Pick the Flavor of your worker node machine(s)',
+											'fieldMsg': 'Pick the Flavor of your worker node machine(s)',
+											'required': true,
+											'labelDisplay': true
+										},
+										{
+											'name': 'workerstorage',
+											'label': 'Storage',
+											'type': 'number',
+											'value': 30,
+											'tooltip': 'Enter the amount of Storage you want for each machine in GB.',
+											'fieldMsg': 'Enter the amount of Storage you want for each machine in GB.',
+											'required': true
+										},
+										{
+											'name': 'workerstoragetype',
+											'label': 'Storage Type',
+											'type': 'select',
+											'value': [{ 'v': 'gp2', 'l': 'GP2', 'selected': true }, {
+												'v': 'standard',
+												'l': 'Standard'
+											}],
+											'tooltip': 'Select the type of Storage Drive Technology',
+											'fieldMsg': 'Select the type of Storage Drive Technology',
+											'required': true,
+											'labelDisplay': true
+										}
+									]
+								}
+							]
+					}
+				}
+			}
 		}
 	},
-	{
-		v: 'rackspace',
-		l: 'Rackspace',
-		image: 'modules/dashboard/environments/images/rackspace.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442528/Rackspace+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142147626/Rackspace+Kubernetes'
+	google: {
+		kubernetes: {
+			ui: {
+				"form": {
+					"scale": {
+						"entries": [
+							{
+								'name': 'number',
+								'label': 'Worker Node(s)',
+								'type': 'number',
+								'value': 0,
+								'tooltip': 'Enter the number of Worker Node(s) to scale your deployment to',
+								'fieldMsg': 'Google Cloud only supports scaling the worker nodes in Kubernetes, enter the number you wish to scale to.',
+								'placeholder': '1',
+								'required': true
+							}
+						]
+					},
+					"deploy": {
+						"grid": {
+							"columns": {
+								"region": {
+									"label": "Region",
+									"fields": [
+										{
+											"name": "region",
+											"label": "Region"
+										}
+									]
+								},
+								"workernodes": {
+									"label": "Worker Node(s)",
+									"fields": [
+										{
+											"name": "workerflavor",
+											"label": "Flavor"
+										},
+										{
+											"name": "workernumber",
+											"label": "Number"
+										}
+									]
+								}
+							}
+						},
+						"entries": [
+							{
+								'name': 'region',
+								'label': 'Select a Region',
+								'type': 'select',
+								'value': [],
+								'tooltip': 'Select Deployment Region',
+								'required': true,
+								"fieldMsg": "Google Cloud deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
+							},
+							{
+								"name": "workernodes",
+								"label": "Worker Nodes",
+								"type": "group",
+								"entries": [
+									{
+										'name': 'workernumber',
+										'label': 'Number',
+										'type': 'number',
+										'value': 1,
+										'placeholder': '1',
+										'tooltip': 'Enter how many Worker node machine(s) you want to deploy',
+										'required': true,
+										'fieldMsg': 'Specify how many Work node machine(s) you want your deployment to include upon creation.'
+									},
+									{
+										'name': 'workerflavor',
+										'label': 'Machine Type',
+										'type': 'select',
+										'value': [
+											{
+												'v': 'n1-standard-2',
+												'l': 'N1 Standard 2 / 2 vCPUs x 7.5 GiB',
+												'selected': true,
+												'group': "General Purpose"
+											},
+											{
+												'v': 'n1-standard-4',
+												'l': 'N1 Standard 4 / 4 vCPUs x 15 GiB',
+												'group': "General Purpose"
+											},
+											{
+												'v': 'n1-standard-8',
+												'l': 'N1 Standard 8 / 8 vCPUs x 30 GiB',
+												'group': "General Purpose"
+											},
+											{
+												'v': 'n1-standard-16',
+												'l': 'N1 Standard 16 / 16 vCPUs x 60 GiB',
+												'group': "General Purpose"
+											},
+											
+											{
+												'v': 'n1-highcpu-4',
+												'l': 'N1 HighCPU 4 / 4 vCPUs x 3.6 GiB',
+												'group': "Compute Optimized"
+											},
+											{
+												'v': 'n1-highcpu-8',
+												'l': 'N1 HighCPU 8 / 8 vCPUs x 7.2 GiB',
+												'group': "Compute Optimized"
+											},
+											{
+												'v': 'n1-highcpu-16',
+												'l': 'N1 HighCPU 16 / 16 vCPUs x 14.4 GiB',
+												'group': "Compute Optimized"
+											},
+											
+											{
+												'v': 'n1-highmem-2',
+												'l': 'N1 HighMEM 2 / 2 vCPUs x 13 GiB',
+												'group': "Memory Optimized"
+											},
+											{
+												'v': 'n1-highmem-4',
+												'l': 'N1 HighMEM 4 / 4 vCPUs x 26 GiB',
+												'group': "Memory Optimized"
+											},
+											{
+												'v': 'n1-highmem-8',
+												'l': 'N1 HighMEM 8 / 8 vCPUs x 52 GiB',
+												'group': "Memory Optimized"
+											},
+											{
+												'v': 'n1-highmem-16',
+												'l': 'N1 HighMEM 16 / 16 vCPUs x 104 GiB',
+												'group': "Memory Optimized"
+											}
+										],
+										'tooltip': 'Pick the Flavor of your worker node machine(s)',
+										'required': true,
+										'fieldMsg': 'Pick a Machine flavor from CPU & RAM to apply to all your worker node machine(s).'
+									}
+								]
+							}
+						]
+					}
+				}
+			}
 		}
 	},
-	{
-		v: 'google',
-		l: 'Google Cloud',
-		image: 'modules/dashboard/environments/images/google.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142409762/Google+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344252/Google+Kubernetes'
-		}
-	},
-	{
-		v: 'azure',
-		l: 'Microsoft Azure',
-		image: 'modules/dashboard/environments/images/azure.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142147642/Microsoft+Azure+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213187/Microsoft+Azure+Kubernetes'
-		}
-	},
-	{
-		v: 'joyent',
-		l: 'Joyent',
-		image: 'modules/dashboard/environments/images/joyent.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442552/Joyent+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442556/Joyent+Kubernetes'
-		}
-	},
-	{
-		'v': 'liquidweb',
-		l: 'Liquid Web',
-		image: 'modules/dashboard/environments/images/liquidweb.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142213203/Liquid+Web+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142180385/Liquid+Web+Kubernetes'
-		}
-	},
-	{
-		'v': 'digitalocean',
-		l: 'Digital Ocean',
-		image: 'modules/dashboard/environments/images/digitalocean.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142376998/Digital+Ocean+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142344256/Digital+Ocean+Kubernetes'
-		}
-	},
-	{
-		v: 'other',
-		l: 'Ubuntu',
-		image: 'modules/dashboard/environments/images/ubuntu.png',
-		help: {
-			docker: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142442570/Other+with+Docker',
-			kubernetes: 'https://soajsorg.atlassian.net/wiki/spaces/EX/pages/142377002/Other+with+Kubernetes'
+	local: {
+		kubernetes: {
+			ui: {
+				form: {
+					deploy:{
+						entries: []
+					}
+				}
+			}
+		},
+		docker: {
+			ui: {
+				form: {
+					deploy:{
+						entries: []
+					}
+				}
+			}
 		}
 	}
-];
+};
 
 var environmentsConfig = {
 	deployer: {

@@ -339,6 +339,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 								'action': function (formData) {
 									mainScope.wizard.selectedInfraProvider.deploy = formData;
 									mainScope.wizard.selectedInfraProvider.deploy.grid = environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.grid;
+									mainScope.wizard.selectedInfraProvider.deploy.technology = technology;
 									$modalInstance.close();
 								}
 							},
@@ -361,6 +362,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		else{
 			selectedInfraProvider.deploy = {};
+			selectedInfraProvider.deploy.technology = technology;
 		}
 	}
 	

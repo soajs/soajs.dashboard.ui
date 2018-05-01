@@ -515,6 +515,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				if (configuration.default.options && configuration.default.options.deployConfig && configuration.default.options.deployConfig.memoryLimit) {
 					configuration.default.options.deployConfig.memoryLimit *= 1048576;
 				}
+				
 				if((!currentScope.autoScale || !currentScope.isAutoScalable || configuration.default.options.deployConfig.replication.mode !== 'deployment') && configuration.default.options.autoScale){
 					delete  configuration.default.options.autoScale;
 				}
@@ -525,6 +526,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				if (configuration.default.options.custom && configuration.default.options.custom && Object.hasOwnProperty.call(configuration.default.options.custom, 'loadBalancer')){
 					delete configuration.default.options.custom.loadBalancer;
 				}
+			}
+			
+			if(!configuration.default.options.autoScale){
+				delete configuration.default.options.autoScale;
 			}
 		}
 		else {
@@ -567,6 +572,10 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					delete configuration.version.options.custom.loadBalancer;
 				}
 				configuration.version.deploy = true;
+			}
+			
+			if(!configuration.version.options.autoScale){
+				delete configuration.version.options.autoScale;
 			}
 		}
 		

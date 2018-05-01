@@ -198,7 +198,15 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		$scope.serviceType = (service && service.type) ? service.type : 'other';
 		$scope.showCD = true;
 		$scope.isAutoScalable = currentScope.isAutoScalable || false;
-		$scope.autoScale = false;
+
+		let autoScale = false;
+		if($scope.noCDoverride){
+			if(Object.hasOwnProperty.call($scope, 'autoScale')){
+				autoScale = $scope.autoScale;
+			}
+		}
+		$scope.autoScale = autoScale;
+		
 		if (daemonGrpConf) {
 			$scope.daemonGrpConf = daemonGrpConf;
 		}

@@ -292,12 +292,23 @@
 			<!--<label class="fieldMsg">Choose your version</label>-->
 			<!--<br/>-->
 		</fieldset>
-	
+		
+		<fieldset class="custom-fieldset" ng-if="formData.deployOptions.custom && formData.deployOptions.custom.ports">
+			<legend>Published Ports</legend>
+			<div ng-repeat="exposedPorts in formData.deployOptions.custom.ports">
+				<fieldset class="custom-fieldset" ng-if="exposedPorts.isPublished || exposedPorts.published">
+					<legend class="capitalize">{{exposedPorts.name}}</legend>
+					<div>
+						<label>Published Port</label>
+						<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true" ng-change="onExposedPortsUpdate()"/>
+						<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value
+							Enter a value if you want to expose this resource to a specific port; Port values are
+							limited to a range between 0 and 2767.
+						</label>
+					</div>
+				</fieldset>
+			</div>
+		</fieldset>
 	
 	</div>
-
-	<div>
-
-	</div>
-
 </fieldset>

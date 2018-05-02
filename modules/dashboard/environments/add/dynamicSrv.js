@@ -964,7 +964,17 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				
 				//this template has no deployment workflow go to overview
 				if (stack.length === 0) {
-					currentScope.nextStep();
+					if(['overview'].indexOf(currentScope.referringStep) !== -1){
+						currentScope.referringStep = "dynamicSrv";
+						currentScope.deploymentStackStep = 0;
+						if (currentScope.form && currentScope.form.formData) {
+							currentScope.form.formData = {};
+						}
+						currentScope.previousStep();
+					}
+					else{
+						currentScope.nextStep();
+					}
 				}
 				else {
 					currentScope.deploymentStackStep = 0;

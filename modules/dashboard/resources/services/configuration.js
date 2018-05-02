@@ -20,7 +20,7 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 			// for mongo servers, update deployment port (in deployment options) along with server port (Driver configuration)
 			if(type === 'cluster' && category ==='mongo' && entries.servers) {
 				entries.servers.entries[1].onAction = function (id, value) {
-					if (currentScope.formData.deployOptions.custom && currentScope.formData.deployOptions.custom.ports[0] && currentScope.formData.deployOptions.custom.ports[0].published) {
+					if (currentScope.formData.deployOptions.custom && currentScope.formData.deployOptions.custom.ports && currentScope.formData.deployOptions.custom.ports[0] && currentScope.formData.deployOptions.custom.ports[0].published) {
                         currentScope.formData.deployOptions.custom.ports[0].published = parseInt(value);
 					}
 				}

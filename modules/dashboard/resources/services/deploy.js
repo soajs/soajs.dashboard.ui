@@ -683,199 +683,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				else {
 
-					context.recipes = [
-						{
-                            "_id": "5ae07aa09fdc3e40b2ea61a1",
-                            "name": "Recipe 1",
-                            "type": "service",
-                            "subtype": "soajs",
-                            "description": "This recipe allows you to deploy a services built using the SOAJS framework",
-                            "locked": true,
-                            "restriction": {
-                                "deployment": ["vm", "container"],
-                                "driver": ["container.docker"],
-                                "infra": ["aws"]
-                            },
-                            "recipe": {
-	                            "deployOptions": {
-		                            "image": {
-			                            "override" : true,
-			                            "prefix": "provider2",
-			                            "name": "image2",
-			                            "tag": "v2"
-		                            },
-		                            "sourceCode": {
-			                            "configuration": {
-				                            "label": "Attach Custom Configuration",
-				                            "repo": "",
-				                            "branch": "",
-				                            "required": false
-			                            },
-			                            "custom": {
-				                            "label": "Attach Custom UI",
-				                            "repo": "",
-				                            "branch": "",
-				                            "type": "static",
-				                            "required": false
-			                            }
-		                            },
-		                            "readinessProbe": {
-			                            "httpGet": {
-				                            "path": "/",
-				                            "port": "http"
-			                            },
-			                            "initialDelaySeconds": 5,
-			                            "timeoutSeconds": 2,
-			                            "periodSeconds": 5,
-			                            "successThreshold": 1,
-			                            "failureThreshold": 3
-		                            },
-		                            "restartPolicy": {
-			                            "condition": "any",
-			                            "maxAttempts": 5
-		                            },
-		                            "container": {
-			                            "network": "soajsnet",
-			                            "workingDir": "/opt/soajs/deployer/"
-		                            },
-		                            "voluming": [
-			                            {
-				                            "docker": {
-					                            "volume": {
-						                            "Type": "volume",
-						                            "Source": "soajs_log_volume",
-						                            "Target": "/var/log/soajs/"
-					                            }
-				                            },
-				                            "kubernetes": {
-					                            "volume": {
-						                            "name": "soajs-log-volume",
-						                            "hostPath": {
-							                            "path": "/var/log/soajs/"
-						                            }
-					                            },
-					                            "volumeMount": {
-						                            "mountPath": "/var/log/soajs/",
-						                            "name": "soajs-log-volume"
-					                            }
-				                            }
-			                            },
-			                            {
-				                            "docker": {
-					                            "volume": {
-						                            "Type": "bind",
-						                            "ReadOnly": true,
-						                            "Source": "/var/run/docker.sock",
-						                            "Target": "/var/run/docker.sock"
-					                            }
-				                            }
-			                            },
-			                            {
-				                            "docker": {
-					                            "volume": {
-						                            "Type": "volume",
-						                            "Source": "soajs_certs_volume",
-						                            "Target": "/var/certs/soajs/"
-					                            }
-				                            }
-			                            }
-		                            ],
-		                            "ports": [
-			                            {
-				                            "name": "http",
-				                            "target": 80,
-				                            "isPublished": true,
-				                            "preserveClientIP": true
-			                            },
-			                            {
-				                            "name": "https",
-				                            "target": 443,
-				                            "isPublished": true,
-				                            "preserveClientIP": true
-			                            }
-		                            ],
-		                            "certificates": "optional"
-	                            }
-                            }
-                        },
-                        {
-							"_id": "5ae07aa09fdc3e40b2ea61a2",
-							"name": "Recipe 2",
-							"type": "service",
-							"subtype": "soajs",
-							"description": "This recipe allows you to deploy the SOAJS API Gateway",
-							"locked": true,
-							"restriction": {
-								"deployment": ["vm"],
-								"driver": [],
-								"infra": ["google","azure"]
-							},
-                            "recipe": {
-                                "deployOptions": {
-                                    "image": {
-                                        "override" : true,
-                                        "prefix": "provider1",
-                                        "name": "image1",
-                                        "tag": "v1"
-                                    }
-                                }
-                            }
-						},
-						{
-							"_id": "5ae07aa09fdc3e40b2ea61a3",
-							"name": "Recipe 3",
-							"type": "service",
-							"subtype": "soajs",
-							"description": "This recipe allows you to deploy the SOAJS API Gateway",
-							"locked": true,
-							"restriction": {
-								"deployment": ["container"],
-								"driver": ["container.docker","container.kubernetes"],
-								"infra": []
-							},
-                            "recipe": {
-                                "deployOptions": {
-                                    "image": {
-                                        "override" : false,
-                                        "prefix": "provider1",
-                                        "name": "image1",
-                                        "tag": "v1"
-                                    }
-                                }
-                            }
-						},
-						{
-							"_id": "5ae07aa09fdc3e40b2ea61a4",
-							"name": "Recipe 4",
-							"type": "service",
-							"subtype": "soajs",
-							"description": "This recipe allows you to deploy the SOAJS API Gateway",
-							"locked": true,
-							"restriction": {
-								"deployment": [],
-								"driver": [],
-								"infra": []
-							}
-						},
-						{
-							"_id": "5ae07aa09fdc3e40b2ea61a5",
-							"name": "Recipe 5",
-							"type": "service",
-							"subtype": "soajs",
-							"description": "This recipe allows you to deploy the SOAJS API Gateway",
-							"locked": true,
-							"restriction": {}
-						},
-						{
-							"_id": "5ae07aa09fdc3e40b2ea61a6",
-							"name": "Recipe 6",
-							"type": "service",
-							"subtype": "soajs",
-							"description": "This recipe allows you to deploy the SOAJS API Gateway",
-							"locked": true
-						}
-					];
-
 					if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 						context.myEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 					}
@@ -895,35 +702,35 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					});
 
 					// todo: restore code
-					// if (recipes && Array.isArray(recipes)) {
-					// 	recipes.forEach(function (oneRecipe) {
-					// 		if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
-					// 			context.oldStyle = true;
-					// 		}
-					// 		else {
-					// 			if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-					//
-					// 				if(deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
-					// 					if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
-					// 						context.recipes.push(oneRecipe);
-					// 					} else {
-					// 						if(oneRecipe.restriction.deployment.indexOf("vm") !== -1){ // vm supported
-					// 							context.recipes.push(oneRecipe);
-					// 						}
-					// 					}
-					// 				}else{ // add it anyway
-					// 					context.recipes.push(oneRecipe);
-					// 				}
-					// 			}
-					// 		}
-					// 	});
-					//
-					// 	context.displayRecipeInputs(false, false, function(err){
-					// 		if (err){
-					// 			context.displayAlert('danger', err.message);
-					// 		}
-					// 	});
-					// }
+					if (recipes && Array.isArray(recipes)) {
+						recipes.forEach(function (oneRecipe) {
+							if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
+								context.oldStyle = true;
+							}
+							else {
+								if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
+
+									if(deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
+										if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
+											context.recipes.push(oneRecipe);
+										} else {
+											if(oneRecipe.restriction.deployment.indexOf("vm") !== -1){ // vm supported
+												context.recipes.push(oneRecipe);
+											}
+										}
+									}else{ // add it anyway
+										context.recipes.push(oneRecipe);
+									}
+								}
+							}
+						});
+
+						context.displayRecipeInputs(false, false, function(err){
+							if (err){
+								context.displayAlert('danger', err.message);
+							}
+						});
+					}
 
 					if (cb) return cb();
 				}
@@ -1058,6 +865,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.updateDeploymentName = function (resourceName) {
+			if (resourceName) {
+                resourceName = resourceName.toLowerCase();
+                resourceName = resourceName.replace(/\s+/g, '');
+			}
+
 			resourceName = (resourceName) ? resourceName.toLowerCase() : '';
 			context.formData.name = resourceName;
 
@@ -1298,7 +1110,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		context.fillForm();
 		
 		context.onExposedPortsUpdate = function () {
-			context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
+			if (context.form.formData.port0 &&context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {
+                context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
+			}
 		};
 		
 		/*

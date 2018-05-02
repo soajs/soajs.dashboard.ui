@@ -109,6 +109,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 						if(apiTemplateDeployInfo[stage][group][stepName].imfv && Array.isArray(apiTemplateDeployInfo[stage][group][stepName].imfv) && apiTemplateDeployInfo[stage][group][stepName].imfv.length > 0) {
 							apiTemplateDeployInfo[stage][group][stepName].imfv.forEach((oneResourceImfv) => {
 								delete oneResourceImfv.enableAutoScale;
+								oneResourceImfv.deploy.options = oneResourceImfv.deployOptions; // overwriting deploy // todo: verify with mike
 								dynamicSrv.updateResourceFormDataBeforeSave(oneResourceImfv.deployOptions);
 							});
 						}

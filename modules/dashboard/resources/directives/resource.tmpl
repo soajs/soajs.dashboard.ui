@@ -5,7 +5,7 @@
 			<br />
 			<div>
 				<label>Resource Name</label>
-				<input type="text" class="form-control" ng-model="formData.name" ng-required="true" ng-change="updateDeploymentName(formData.name)" ng-disabled="options.formAction === 'update'" ng-pattern="/^[a-z0-9]{0,61}$/"/>
+				<input type="text" class="form-control" ng-model="formData.name" ng-required="true" ng-keyup="updateDeploymentName(formData.name)" ng-disabled="options.formAction === 'update'"/>
 				<label class="fieldMsg">Choose the name of the new resource, the name value should be small letters only</label>
 				<br />
 			</div>

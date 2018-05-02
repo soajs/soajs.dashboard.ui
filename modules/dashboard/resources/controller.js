@@ -33,7 +33,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					$scope.resources = { list: response };
 					$scope.resources.original = angular.copy($scope.resources.list); //keep a copy of the original resources records
 					
-					if ($scope.deployConfig && $scope.deployedServices) {
+					if ($scope.deployedServices) {
 						markDeployed();
 					}
 					
@@ -105,7 +105,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					if ($scope.deployedServices[i].labels && $scope.deployedServices[i].labels['soajs.resource.id'] === oneResource._id.toString()) {
 						oneResource.isDeployed = true;
 						oneResource.instance = $scope.deployedServices[i];
-						break;
+					}
+					else if ($scope.deployedServices[i].name === oneResource.name && $scope.deployedServices[i].labels["soajs.service.technology"] === "vm"){
+						oneResource.isDeployed = true;
+						oneResource.instance = $scope.deployedServices[i];
+						oneResource.canBeDeployed = true;
+						if($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()] && $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]){
+							oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
+						}
 					}
 				}
 			});
@@ -665,6 +672,53 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		});
 	};
 	
+	$scope.listVms = function(cb) {
+		
+		//todo: call list vm api
+		let response = [
+			{
+				"id": "mikemongovm",
+				"name": "mikemongovm",
+				"labels": {
+					"soajs.content": "true",
+					"soajs.env.code": "dashboard",
+					"soajs.service.technology": "vm",
+					"soajs.infra.id": "5ae9e5cd55dc7960e796823b",
+					"soajs.resource.id": "5ae9f082e371a7632ded1243",
+					"soajs.image.name": "Ubuntu",
+					"soajs.image.prefix": "Canonical",
+					"soajs.image.tag": "16.04-LTS",
+					"soajs.catalog.id": "5ae9e8ac885ee42487b7c027",
+					"soajs.service.name": "mikemongovm",
+					"soajs.service.label": "mikemongovm",
+					"soajs.service.type": "cluster",
+					"soajs.service.subtype": "mongo",
+					
+					//these values will be received from vmRecord.tags
+					"service.image.name": "Ubuntu",
+					"service.image.prefix": "Canonical",
+					"service.image.tag": "16.04-LTS",
+					
+					"soajs.service.vm.group": "DASHBOARD",
+					"soajs.service.vm.size": "Standard_A1"
+				},
+				"ports": [],
+				"voluming": {},
+				"ip": "xxx.xxx.xxx.xxx", //still don't know from where
+				"location": "eastus",
+				"status": "succeeded"
+			}
+		];
+		
+		if($scope.deployedServices && Array.isArray($scope.deployedServices)){
+			$scope.deployedServices = $scope.deployedServices.concat(response);
+		}
+		else{
+			$scope.deployedServices = response;
+		}
+		return cb();
+	};
+	
 	$scope.listDeployedServices = function (cb) {
 		if ($scope.envType === 'manual') {
 			if (cb) return cb();
@@ -682,18 +736,18 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
-				$scope.deployedServices = response;
+				if($scope.deployedServices && Array.isArray($scope.deployedServices)){
+					$scope.deployedServices = $scope.deployedServices.concat(response);
+				}
+				else{
+					$scope.deployedServices = response;
+				}
 				if (cb) return cb();
 			}
 		});
 	};
 	
 	$scope.getDeployConfig = function (cb) {
-		if ($scope.envType === 'manual') {
-			if (cb) return cb();
-			else return;
-		}
-		
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources/config'
@@ -712,12 +766,14 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	
 	$scope.load = function (cb) {
 		overlayLoading.show();
-		$scope.listDeployedServices(function () {
-			$scope.getDeployConfig(function () {
-				$scope.listResources(true, function () {
-					overlayLoading.hide();
-					if (cb) return cb;
-					return;
+		$scope.listVms(() => {
+			$scope.listDeployedServices(function () {
+				$scope.getDeployConfig(function () {
+					$scope.listResources(true, function () {
+						overlayLoading.hide();
+						if (cb) return cb;
+						return;
+					});
 				});
 			});
 		});

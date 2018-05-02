@@ -1128,6 +1128,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				else {
 					delete providers.soajsauth;
 					context.deploymentData.infraProviders = providers;
+					
+					if(resource && resource.deployOptions){
+						context.formData.deployOptions.deployConfig.infra = resource.deployOptions.deployConfig.infra;
+						context.repopulateRegions();
+					}
 				}
 				
 				if(cb){

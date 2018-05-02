@@ -372,112 +372,122 @@
 				</alert>
 				<br/>
 			</div>
-			<div ng-if="!localDeployment">
-				<div>
-					<button class="btn btn-primary" ng-if="access.hacloud.nodes.add && envPlatform !== 'kubernetes'" ng-click="addNode()">
-						Add New Node
-					</button>
-					<br/><br/>
-				</div>
-			</div>
 			<div class="entryBoxes nodes">
-				<div ng-repeat="node in nodes.list" class="entryBox mb20">
-					<div class="header">
-						<span ng-show="node.tag" ng-click="changeTag(node);">
-							<span class="serviceLabelBox myPointer">
-								&nbsp;<img ng-src="{{node.tag.image}}" height="16" alt="" />&nbsp;{{node.tag.l}}
-								<span class="icon icon-arrow-right"></span>
-							</span>&nbsp;
-						</span>
-						<span ng-show="!node.tag" ng-click="changeTag(node);">
-							<span class="serviceLabelBox myPointer">
-								<span class="icon icon-price-tag"></span>&nbsp;Tag Node
-							</span>&nbsp;
-						</span>
-						{{node.hostname}}
-						<span class="rightActions" ng-if="envCode === 'DASHBOARD' && !localDeployment">
-                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node.id)">
-                                <span class="icon icon-cross" tooltip="Remove Node"></span>
-                            </a>
-							<div ng-if="envPlatform === 'docker'">
-								<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
-	                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
+				<accordion>
+					<accordion-group is-open="true" ng-repeat="providerInfo in infraProviders">
+						<accordion-heading>
+							<img border="0" ng-src="{{providerInfo.image}}" height="16" alt=""/>&nbsp;{{providerInfo.label}}
+						</accordion-heading>
+						
+						<button class="btn btn-primary" ng-if="access.hacloud.nodes.add && envPlatform !== 'kubernetes' && providerInfo.name ==='local'" ng-click="addNode()">
+							Add New Node
+						</button>
+						<button class="btn btn-primary" ng-if="access.hacloud.nodes.add && providerInfo.name !== 'local'" ng-click="scaleNodes(providerInfo)">
+							Scale Nodes
+						</button>
+						<br/><br/>
+						<div ng-repeat="node in providerInfo.nodes.list" class="entryBox mb20">
+							<div class="header">
+								<span ng-if="provider.name === 'local'">
+									<span ng-show="node.tag" ng-click="changeTag(node);">
+									<span class="serviceLabelBox myPointer">
+										&nbsp;<img ng-src="{{node.tag.image}}" height="16" alt="" />&nbsp;{{node.tag.l}}
+										<span class="icon icon-arrow-right"></span>
+									</span>&nbsp;
+								</span>
+									<span ng-show="!node.tag" ng-click="changeTag(node);">
+									<span class="serviceLabelBox myPointer">
+										<span class="icon icon-price-tag"></span>&nbsp;Tag Node
+									</span>&nbsp;
+								</span>
+								</span>
+								
+								{{node.hostname}}
+								<span class="rightActions" ng-if="envCode === 'DASHBOARD' && !localDeployment">
+	                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node.id)">
+	                                <span class="icon icon-cross" tooltip="Remove Node"></span>
 	                            </a>
-	                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
-	                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
+								<div ng-if="envPlatform === 'docker'">
+									<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
+		                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
+		                            </a>
+		                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
+		                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
+		                            </a>
+								</div>
+	                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
+	                                <span class="icon icon-switch" tooltip="Activate"></span>
 	                            </a>
+	                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
+	                                <span class="icon icon-power-cord" tooltip="Drain"></span>
+	                            </a>
+	                        </span>
 							</div>
-                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
-                                <span class="icon icon-switch" tooltip="Activate"></span>
-                            </a>
-                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
-                                <span class="icon icon-power-cord" tooltip="Drain"></span>
-                            </a>
-                        </span>
-					</div>
-					<div class="body">
-						<div class="grid">
-							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
-								<thead>
-									<tr class="header">
-										<td>IP Address</td>
-										<td>Role</td>
-										<td>Availability</td>
-										<td>Memory Resources</td>
-										<td>CPU Count</td>
-										<td class="metricsHeader2" ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
-											Metrics
-										</td>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="cloud-tr-bgColor">
-										<td>{{node.ip}}</td>
-										<td>{{node.spec.role}}</td>
-										<td>{{node.spec.availability}}</td>
-										<td>{{node.resources.memory | bytesToGbytes}} Gi</td>
-										<td>{{node.resources.cpus}}</td>
-										<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
-											<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
-												<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
-													 <b>CPU:</b>&nbsp;{{nodesMetrics[node.hostname].currentCpu}}m
-												</span>
-												<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
-													<b>CPU:</b> N/A
-												</span>
-											</div>
-											<div style=" float : left; text-align: left">
-												<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
-													<b>Memory:</b>&nbsp;{{nodesMetrics[node.hostname].currentMemory}}
-												</span>
-												<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
-													<b>Memory:</b> N/A
-												</span>
-											</div>
-											<a href="" ng-if="nodesMetrics[node.hostname].memory || nodesMetrics[node.hostname].cpu" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
-												<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }"></span>
-											</a>
-										</td>
-									</tr>
-									<tr ng-if="ShowMetrics[node.hostname] && isMetricsServerDeployed">
-										<td colspan="6">
-											<div class="col-md-6" ng-if="nodesMetrics[node.hostname].cpu">
-												<canvas id="nodeCpu{{node.hostname}}" class="chart chart-line" chart-data="nodesMetrics[node.hostname].cpu"
-												        chart-labels="nodesMetrics[node.hostname].timestamp"  chart-options="chartOptions[node.hostname].cpu.options" chart-dataset-override="chartOptions[node.hostname].cpu.override">
-												</canvas>
-											</div>
-											<div class="col-md-6" ng-if="nodesMetrics[node.hostname].memory">
-												<canvas id="nodeMemory{{node.hostname}}" class="chart chart-line" chart-data="nodesMetrics[node.hostname].memory"
-												        chart-labels="nodesMetrics[node.hostname].timestamp" chart-options="chartOptions[node.hostname].memory.options" chart-dataset-override="chartOptions[node.hostname].memory.override">
-												</canvas>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
+							<div class="body">
+								<div class="grid">
+									<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
+										<thead>
+											<tr class="header">
+												<td>IP Address</td>
+												<td>Role</td>
+												<td>Availability</td>
+												<td>Memory Resources</td>
+												<td>CPU Count</td>
+												<td class="metricsHeader2" ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
+													Metrics
+												</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr class="cloud-tr-bgColor">
+												<td>{{node.ip}}</td>
+												<td>{{node.spec.role}}</td>
+												<td>{{node.spec.availability}}</td>
+												<td>{{node.resources.memory | bytesToGbytes}} Gi</td>
+												<td>{{node.resources.cpus}}</td>
+												<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
+													<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
+													<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
+														 <b>CPU:</b>&nbsp;{{nodesMetrics[node.hostname].currentCpu}}m
+													</span>
+														<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
+														<b>CPU:</b> N/A
+													</span>
+													</div>
+													<div style=" float : left; text-align: left">
+													<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
+														<b>Memory:</b>&nbsp;{{nodesMetrics[node.hostname].currentMemory}}
+													</span>
+														<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
+														<b>Memory:</b> N/A
+													</span>
+													</div>
+													<a href="" ng-if="nodesMetrics[node.hostname].memory || nodesMetrics[node.hostname].cpu" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
+														<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }"></span>
+													</a>
+												</td>
+											</tr>
+											<tr ng-if="ShowMetrics[node.hostname] && isMetricsServerDeployed">
+												<td colspan="6">
+													<div class="col-md-6" ng-if="nodesMetrics[node.hostname].cpu">
+														<canvas id="nodeCpu{{node.hostname}}" class="chart chart-line" chart-data="nodesMetrics[node.hostname].cpu"
+														        chart-labels="nodesMetrics[node.hostname].timestamp"  chart-options="chartOptions[node.hostname].cpu.options" chart-dataset-override="chartOptions[node.hostname].cpu.override">
+														</canvas>
+													</div>
+													<div class="col-md-6" ng-if="nodesMetrics[node.hostname].memory">
+														<canvas id="nodeMemory{{node.hostname}}" class="chart chart-line" chart-data="nodesMetrics[node.hostname].memory"
+														        chart-labels="nodesMetrics[node.hostname].timestamp" chart-options="chartOptions[node.hostname].memory.options" chart-dataset-override="chartOptions[node.hostname].memory.override">
+														</canvas>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
+					</accordion-group>
+				</accordion>
 			</div>
 		</tab>
 	</tabset>

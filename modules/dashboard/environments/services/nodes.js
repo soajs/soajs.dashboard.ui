@@ -57,7 +57,6 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 				if(info && info.machines && info.machines.length > 0){
 					info.machines.forEach((oneMachine) => {
 						nodes.forEach((oneNode) => {
-							console.log(oneNode.hostname, oneMachine.name);
 							if (oneMachine.name === oneNode.hostname) {
 								oneNode.ip = oneMachine.ip;
 								deployedInfra[counter].nodes.list.push(oneNode);
@@ -65,19 +64,13 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 						});
 					});
 				}
+				else{
+					deployedInfra[counter].nodes.list = nodes;
+				}
 				
 				counter--;
 				if(counter >= 0){
 					joinInfraAndNodes(currentScope, nodes, deployedInfra, counter);
-				}
-				else{
-					for(let infraName in currentScope.infraProviders){
-						if(currentScope.infraProviders[infraName]){
-							if(!currentScope.infraProviders[infraName].nodes  || (currentScope.infraProviders[infraName].nodes && currentScope.infraProviders[infraName].nodes.list.length === 0)){
-								delete currentScope.infraProviders[infraName];
-							}
-						}
-					}
 				}
 			}
 		});
@@ -108,7 +101,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 
 	function scaleNodes(currentScope, providerInfo) {
 		//call bridge, and request scaling an environment deployment
-		let formEntries = providerInfo.form.scale[currentScope.envPlatform].entries;
+		let formEntries = environmentsConfig.providers[providerInfo.name][currentScope.envPlatform].ui.form.scale.entries;
 
 		let workernumber = 0;
 		providerInfo.nodes.list.forEach((oneNode) => {
@@ -133,22 +126,19 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 					'label': translation.submit[LANG],
 					'btn': 'primary',
 					'action': function (formData) {
-
+						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, {
 							"method": "post",
-							"routeName": "/bridge/executeDriver",
+							"routeName": "/dashboard/infra/cluster/scale",
+							"params":{
+								"id": providerInfo._id,
+								"envCode": currentScope.envCode.toUpperCase(),
+							},
 							"data":{
-								"type": "infra",
-								"name": providerInfo.provider.name,
-								"driver": providerInfo.provider.name,
-								"command": "scaleCluster",
-								"soajs_project": projectName,
-								"options": {
-									"data": formData,
-									"envCode": currentScope.envCode.toUpperCase()
-								}
+								"number": formData.number
 							}
 						}, function (error) {
+							overlayLoading.hide();
 							if (error) {
 								currentScope.form.displayAlert('danger', error.message);
 							}
@@ -156,7 +146,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 								currentScope.$parent.displayAlert('success', "Deployment Scaled Successfully, changes might take a few minutes.");
 								currentScope.modalInstance.close();
 								currentScope.form.formData = {};
-								currentScope.listInfraProviders();
+								listInfraProviders(currentScope);
 							}
 						});
 					}

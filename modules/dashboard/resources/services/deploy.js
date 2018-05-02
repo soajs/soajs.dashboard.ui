@@ -1058,6 +1058,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.updateDeploymentName = function (resourceName) {
+			if (resourceName) {
+                resourceName.toLowerCase();
+                resourceName = resourceName.replace(/\s+/g, '');
+			}
+
 			resourceName = (resourceName) ? resourceName.toLowerCase() : '';
 			context.formData.name = resourceName;
 

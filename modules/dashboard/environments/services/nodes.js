@@ -6,7 +6,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 	 * Nodes Functions
 	 * @param currentScope
 	 */
-	function listNodes(currentScope) {
+	function listNodes(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/nodes/list",
@@ -29,8 +29,151 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 						});
 					}
 				});
+				if(cb && typeof(cb) === 'function'){
+					return cb(currentScope.nodes.list);
+				}
 			}
 		});
+	}
+
+	function joinInfraAndNodes(currentScope, nodes, deployedInfra, counter) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra/cluster",
+			"params": {
+				"id": deployedInfra[counter]._id,
+				"envCode": currentScope.envCode.toLowerCase()
+			}
+		}, function (error, info) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				deployedInfra[counter].nodes = {
+					list: []
+				};
+
+				//link provider with environment
+				if(info && info.machines && info.machines.length > 0){
+					info.machines.forEach((oneMachine) => {
+						nodes.forEach((oneNode) => {
+							console.log(oneNode.hostname, oneMachine.name);
+							if (oneMachine.name === oneNode.hostname) {
+								oneNode.ip = oneMachine.ip;
+								deployedInfra[counter].nodes.list.push(oneNode);
+							}
+						});
+					});
+				}
+				
+				counter--;
+				if(counter >= 0){
+					joinInfraAndNodes(currentScope, nodes, deployedInfra, counter);
+				}
+				else{
+					for(let infraName in currentScope.infraProviders){
+						if(currentScope.infraProviders[infraName]){
+							if(!currentScope.infraProviders[infraName].nodes  || (currentScope.infraProviders[infraName].nodes && currentScope.infraProviders[infraName].nodes.list.length === 0)){
+								delete currentScope.infraProviders[infraName];
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	function listInfraProviders(currentScope) {
+		//call bridge, get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra",
+			params: {
+				envCode: currentScope.envCode.toLowerCase()
+			}
+		}, function (error, providers) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				currentScope.infraProviders = angular.copy(providers);
+				delete currentScope.infraProviders.soajsauth;
+
+				listNodes(currentScope, (nodes) => {
+					joinInfraAndNodes(currentScope, nodes, currentScope.infraProviders, currentScope.infraProviders.length -1);
+				});
+			}
+		});
+	}
+
+	function scaleNodes(currentScope, providerInfo) {
+		//call bridge, and request scaling an environment deployment
+		let formEntries = providerInfo.form.scale[currentScope.envPlatform].entries;
+
+		let workernumber = 0;
+		providerInfo.nodes.list.forEach((oneNode) => {
+			if(oneNode.spec.role === 'manager'){
+				workernumber++;
+			}
+		});
+
+		var options = {
+			timeout: $timeout,
+			form: {
+				"entries": formEntries
+			},
+			data: {
+				"number": workernumber
+			},
+			name: 'scaleNodes',
+			label: 'Scale Node(s)',
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.submit[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/bridge/executeDriver",
+							"data":{
+								"type": "infra",
+								"name": providerInfo.provider.name,
+								"driver": providerInfo.provider.name,
+								"command": "scaleCluster",
+								"soajs_project": projectName,
+								"options": {
+									"data": formData,
+									"envCode": currentScope.envCode.toUpperCase()
+								}
+							}
+						}, function (error) {
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.$parent.displayAlert('success', "Deployment Scaled Successfully, changes might take a few minutes.");
+								currentScope.modalInstance.close();
+								currentScope.form.formData = {};
+								currentScope.listInfraProviders();
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						currentScope.modalInstance.dismiss('cancel');
+						currentScope.form.formData = {};
+					}
+				}
+			]
+		};
+
+		buildFormWithModal(currentScope, $modal, options);
 	}
 	
 	function addNode(currentScope) {
@@ -203,6 +346,8 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		'addNode': addNode,
 		'removeNode': removeNode,
 		'updateNode': updateNode,
-		'changeTag': changeTag
+		'changeTag': changeTag,
+		'listInfraProviders': listInfraProviders,
+		'scaleNodes': scaleNodes
 	};
 }]);

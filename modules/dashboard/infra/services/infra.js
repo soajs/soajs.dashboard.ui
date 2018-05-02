@@ -11,7 +11,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', function (ngDat
 		getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
 			overlayLoading.hide();
 			result.forEach((oneResult) =>{
-				oneResult.open = (oneResult.deployments.length > 0 || oneResult.templates.length > 0);
+				oneResult.open = (oneResult.deployments.length > 0 || (oneResult.templates && oneResult.templates.length > 0));
 			});
 			return cb(error, result);
 		});

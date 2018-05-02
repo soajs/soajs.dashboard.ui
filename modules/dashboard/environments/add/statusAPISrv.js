@@ -90,7 +90,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 									for(let s in oneData){
 										finalData[s] = oneData[s];
 										if (child === 'dns' && s === 'dns' && finalData[s].msg) {
-											finalData[s].msg = finalData[s].msg.replace("%domain%", currentScope.wizard.nginx.domain);
+											finalData[s].msg = finalData[s].msg.replace("%domain%", currentScope.wizard.nginx.domain.toLowerCase());
 										}
 									}
 								});
@@ -122,7 +122,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 					}
 				}
 			});
-		}, 5000);
+		}, 15000);
 		
 		currentScope.$on("$destroy", function () {
 			$timeout.cancel(autoRefreshTimeoutProgress);

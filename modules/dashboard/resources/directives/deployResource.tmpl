@@ -214,7 +214,7 @@
 	
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
 		<label>Infra</label>
-		<select class="form-control" ng-required="true" ng-options="tech._id as tech.name for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra"></select>
+		<select class="form-control" ng-required="true" ng-options="tech._id as tech.label for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra" ng-change="repopulateRegions()"></select>
 		<label class="fieldMsg">Choose a deployment technology</label>
 		
 		<label>Region</label>

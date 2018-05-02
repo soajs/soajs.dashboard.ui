@@ -1295,7 +1295,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		context.fillForm();
 		
 		context.onExposedPortsUpdate = function () {
-			context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
+			if (context.form.formData.port0 &&context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {
+                context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
+			}
 		};
 		
 		/*

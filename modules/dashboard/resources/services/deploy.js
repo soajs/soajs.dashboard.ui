@@ -888,7 +888,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					});
 
 					// delete // only used for testing
-					context.displayRecipeInputs(false, function(err){
+					context.displayRecipeInputs(false, false, function(err){
 						if (err){
 							context.displayAlert('danger', err.message);
 						}
@@ -918,7 +918,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					// 		}
 					// 	});
 					//
-					// 	context.displayRecipeInputs(false, function(err){
+					// 	context.displayRecipeInputs(false, false, function(err){
 					// 		if (err){
 					// 			context.displayAlert('danger', err.message);
 					// 		}
@@ -937,7 +937,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
-		context.displayRecipeInputs = function (refresh, cb) {
+		context.displayRecipeInputs = function (refresh, ui, cb) {
 			
 			function calculateRestrictions(currentScope) {
 				let allRecipes = currentScope.recipes;
@@ -1054,7 +1054,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 			calculateRestrictions(context);
 			context.setSourceCodeData(selectedRecipe);
-			context.setExposedPorts(selectedRecipe, cb);
+			context.setExposedPorts(selectedRecipe, ui, cb);
 		};
 		
 		context.updateDeploymentName = function (resourceName) {
@@ -1199,15 +1199,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			return record;
 		};
 
-		context.setExposedPorts = function (selectedRecipe) {
+		context.setExposedPorts = function (selectedRecipe, ui) {
 			let ports;
-			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports){
+			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && !ui){
 				ports = context.formData.deployOptions.custom.ports;
 			}
 			let recipe = false;
 
 			if(!ports && context.noCDoverride){
-				if(resource.deploy && resource.deploy.options && resource.deploy.options.custom && resource.deploy.options.custom.ports){
+				if(resource.deploy && resource.deploy.options && resource.deploy.options.custom && resource.deploy.options.custom.ports && !ui){
 					if(Array.isArray(resource.deploy.options.custom.ports) && resource.deploy.options.custom.ports.length > 0){
 						ports = resource.deploy.options.custom.ports;
 					}
@@ -1247,6 +1247,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				});
+				if (loadBalancer === 0 && nodePort ===0){
+					context.publishPorts = false;
+				}
+				else {
+					context.publishPorts = true;
+				}
 				if (loadBalancer !== 0 && nodePort !==0){
 					if($modalInstance){
 						$modalInstance.close();
@@ -1284,12 +1290,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 			}
-		};
-		
-		context.useLoadBalancer = function (){
-			context.formData.deployOptions.custom.ports.forEach(function (onePort) {
-				delete onePort.published
-			});
+			if (context.formData.deployOptions.custom){
+				context.formData.deployOptions.custom.ports = ports;
+			}
 		};
 		
 		context.fillForm();
@@ -1479,7 +1482,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			//this is called by add env wizard.
 			updateCustomRepoName();
 			context.getSecrets(function (cb) {
-				context.displayRecipeInputs(true, cb);
+				context.displayRecipeInputs(true, false, cb);
 			});
 		}
 		

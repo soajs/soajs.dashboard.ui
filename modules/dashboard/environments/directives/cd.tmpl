@@ -28,7 +28,7 @@
 		</div>
 		<div>
 			<label>Catalog Recipe</label><img class="loadingImage" ng-src={{imagePath}} ng-if="loadingRecipes">
-			<select class="form-control" ng-if="!loadingRecipes" ng-required="true" ng-disabled="deployed" ng-options="recipe._id as recipe.name group by recipe.type for recipe in myRecipes" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe" ng-change="injectCatalogEntries(oneEnv, version, oneSrv)"></select>
+			<select class="form-control" ng-if="!loadingRecipes" ng-required="true" ng-disabled="deployed" ng-options="recipe._id as recipe.name group by recipe.type for recipe in myRecipes" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe" ng-change="injectCatalogEntries(oneEnv, version, oneSrv, true)"></select>
 			<label class="fieldMsg">Choose a catalog recipe and define the deployment strategy in this
 				environment.</label>
 			<br>
@@ -63,12 +63,12 @@
 				<label class="fieldMsg">Unless specified, the root will be used</label>
 			</div>
 		</fieldset>
-		<fieldset  ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports">
+		<fieldset  ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports && cdConfiguration[oneSrv][oneEnv].cdData.versions[version].publishPorts">
 			<legend>Published Ports</legend>
-			<div>
+			<div ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer">
 				<label class="f-left" >Load Balancer</label>
-				<label class="toggleSwitch f-left"><input type="checkbox" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-value ="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-change="useLoadBalancer(oneSrv, oneEnv, version)"><span class="buttonSlider round"></span></label>
-				<label class="fieldMsg">Turn on to use Load Balancer</label>
+				<label class="toggleSwitch f-left"><input type="checkbox" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-value ="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-disabled=true><span class="buttonSlider round"></span></label>
+				<label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>
 				<br /><br/>
 			</div>
 			<div ng-if="!cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.loadBalancer" ng-repeat="exposedPorts in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports track by exposedPorts.target">

@@ -376,7 +376,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			$scope.injectCatalogEntries(oneEnv, version, oneSrv);
 		};
 		
-		$scope.injectCatalogEntries = function (oneEnv, version, oneSrv) {
+		$scope.injectCatalogEntries = function (oneEnv, version, oneSrv, ui) {
 			$scope.allowGitOverride = false;
 			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom) {
 				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom = {};
@@ -456,11 +456,12 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				});
 			}
-			$scope.setExposedPorts(oneEnv, version, oneSrv, selectedRecipe, cb);
+			$scope.setExposedPorts(oneEnv, version, oneSrv, selectedRecipe, ui);
 			$scope.setSourceCodeData(oneEnv, version, oneSrv, selectedRecipe);
 		};
 		
-		$scope.setExposedPorts = function (oneEnv, version, oneSrv, selectedRecipe, cb) {
+		$scope.setExposedPorts = function (oneEnv, version, oneSrv, selectedRecipe, ui) {
+			//ui only used if call came from the user
 			let ports;
 			let recipe = false;
 			$scope.catalogConflictingPorts = '';
@@ -472,7 +473,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			else if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options){
 				deployOptionsInfo = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options;
 			}
-			if(deployOptionsInfo.custom && deployOptionsInfo.custom.ports && deployOptionsInfo.custom.ports.length > 0){
+			if(deployOptionsInfo.custom && deployOptionsInfo.custom.ports && deployOptionsInfo.custom.ports.length > 0 && !ui){
 				ports = angular.copy(deployOptionsInfo.custom.ports);
 			}
 			
@@ -516,6 +517,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						}
 					}
 				});
+				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].publishPorts = !(loadBalancer === 0 && nodePort === 0);
 				if (loadBalancer !== 0 && nodePort !==0){
 					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports = [];
 					if($modalInstance){
@@ -554,14 +556,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						}
 					});
 				}
-			}
-		};
-		
-		$scope.useLoadBalancer = function (oneSrv, oneEnv, version){
-			if ($scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv] && $scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version]){
-				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports.forEach(function (onePort) {
-					delete onePort.published;
-				});
+				if ($scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv] && $scope.cdConfiguration[oneSrv] && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version]) {
+					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.ports = ports;
+				}
 			}
 		};
 		

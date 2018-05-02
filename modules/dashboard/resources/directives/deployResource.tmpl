@@ -14,7 +14,7 @@
 </div>
 <div>
 	<label>Catalog Recipe</label>
-	<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true)"></select>
+	<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)"></select>
 	<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
 	<br>
 	<br>
@@ -123,12 +123,12 @@
 					<label class="fieldMsg">Unless specified, the root will be used</label>
 				</div>
 			</fieldset>
-			<fieldset class="custom-fieldset" ng-if="formData.deployOptions.custom && formData.deployOptions.custom.ports">
+			<fieldset class="custom-fieldset" ng-if="formData.deployOptions.custom && formData.deployOptions.custom.ports && publishPorts">
 				<legend>Published Ports</legend>
-				<div>
+				<div ng-if="formData.deployOptions.custom.loadBalancer">
 					<label>Load Balancer</label>
-					<label class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.deployOptions.custom.loadBalancer" ng-value="formData.deployOptions.custom.loadBalancer" ng-change="useLoadBalancer()"><span class="buttonSlider round"></span></label>
-					<label class="fieldMsg">Turn on to use Load Balancer</label>
+					<label class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.deployOptions.custom.loadBalancer" ng-value="formData.deployOptions.custom.loadBalancer"  ng-disabled=true><span class="buttonSlider round"></span></label>
+					<label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>
 					<br/><br/>
 				</div>
 				<div ng-repeat="exposedPorts in formData.deployOptions.custom.ports" ng-if="!formData.deployOptions.custom.loadBalancer">
@@ -136,7 +136,7 @@
 						<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
 						<div>
 							<label>Published Port</label>
-							<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true" ng-change="onExposedPortsUpdate()"/>
+							<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled=false min="1" max="2767" ng-required="true" ng-change="onExposedPortsUpdate()"/>
 							<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
 								Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.
 							</label>

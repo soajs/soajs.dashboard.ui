@@ -125,46 +125,12 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					};
 					currentScope.loadBalancer = (inpsectService.servicePortType === 'loadBalancer');
 					
-					publishedPortEntry.entries.push({
-						'name': "loadBalancer",
-						'label': "Load Balancer" ,
-						'type': 'buttonSlider',
-						'value': currentScope.loadBalancer,
-						'fieldMsg': "Turn on to use Load Balancer",
-						"onAction": function(id, value, form){
-							form.entries.forEach((oneEntry) => {
-								if(oneEntry.label === "Deployment Options"){
-									oneEntry.entries.forEach((oneSubEntry) => {
-										if(oneSubEntry.label === "Published Ports"){
-											if (!value && oneSubEntry.entries){
-												inpsectService.ports.forEach(function (oneServicePort) {
-													if(oneServicePort.published) {
-														oneSubEntry.entries.push({
-															"name": "group-" + oneServicePort.name,
-															"label": oneServicePort.name + ":" + oneServicePort.target,
-															"type": "group",
-															"entries": [{
-																'name': oneServicePort.name,
-																'type': 'number',
-																'label': 'Published Port',
-																'value': parseInt(oneServicePort.published),
-																'fieldMsg': "Detected Published Port: " + oneServicePort.name + " with internal value " + oneServicePort.target + ". Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.",
-																"min": 1,
-																"max": 2767
-															}]
-														});
-													}
-												});
-											}
-											else {
-												oneSubEntry.entries.length = 1;
-											}
-										}
-									});
-								}
-							});
-						}
-					});
+					if (currentScope.loadBalancer){
+						publishedPortEntry.entries.push({
+							'type': 'html',
+							'value': '<label>Load Balancer</label> <label class="toggleSwitch f-right"><input type="checkbox"  disabled=true checked=true><span class="buttonSlider round"></span></label> <label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>'
+						});
+					}
 					
 					if (!currentScope.loadBalancer){
 						if (!formConfig.data) {
@@ -319,7 +285,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 									}
 								]
 							};
-							buildFormWithModal(currentScope, $modal, options);
+							buildFormWithModal(currentScope, $modal, options, () => {
+								for(let i in formConfig.data){
+									if(!currentScope.form.formData[i]){
+										currentScope.form.formData[i] = formConfig.data[i];
+									}
+								}
+							});
 						}
 					});
 				}

@@ -693,15 +693,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							deploymentType = oneEnv.deployer.type;
 						}
 					});
-
-					// delete // only used for testing
-					context.displayRecipeInputs(false, false, function(err){
-						if (err){
-							context.displayAlert('danger', err.message);
-						}
-					});
-
-					// todo: restore code
+					
 					if (recipes && Array.isArray(recipes)) {
 						recipes.forEach(function (oneRecipe) {
 							if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {

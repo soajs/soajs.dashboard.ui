@@ -78,8 +78,6 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		buildForm(currentScope, $modal, options, function () {
 			overlayLoading.hide();
 		});
-		
-		
 	}
 	
 	return {

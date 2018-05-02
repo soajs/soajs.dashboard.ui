@@ -24,10 +24,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		if (!restrictions || Object.keys(restrictions).length === 0) {
 			currentScope.restrictions = {
-				docker : true,
-				kubernetes : true,
-				previousEnv : true,
-				showManual : showManualDeploy
+				docker: true,
+				kubernetes: true,
+				previousEnv: true,
+				showManual: showManualDeploy
 			};
 			return;
 		}
@@ -42,7 +42,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					kubernetes = true;
 				}
 			}
-			else{
+			else {
 				docker = true;
 				kubernetes = true;
 			}
@@ -72,7 +72,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		switch (driver) {
 			case 'previous':
-				if (mainScope.form.formData.deployment.previousEnvironment) {
+				if (mainScope.form && mainScope.form.formData && mainScope.form.formData.deployment && mainScope.form.formData.deployment.previousEnvironment) {
 					mainScope.changeLikeEnv();
 				}
 				mainScope.platforms.previous = true;
@@ -113,9 +113,15 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			if (currentScope.availableEnvironments[i].code === currentScope.previousEnvironment) {
 				currentScope.platform = currentScope.availableEnvironments[i].deployer.selected.split(".")[1];
 				currentScope.driver = currentScope.availableEnvironments[i].deployer.selected.split(".")[2];
-				if (currentScope.platform !== 'manual') {
-					currentScope.config = currentScope.availableEnvironments[i].deployer.container[currentScope.platform][currentScope.driver];
-				}
+				currentScope.config = currentScope.availableEnvironments[i].deployer.container[currentScope.platform][currentScope.driver];
+				//link the infra that was used for this environment
+				currentScope.infraProviders.forEach((oneProvider) => {
+					oneProvider.deployments.forEach((oneDeployment) => {
+						if(oneDeployment.environments.indexOf(currentScope.previousEnvironment) !== -1){
+							mainScope.wizard.selectedInfraProvider = oneProvider;
+						}
+					});
+				});
 			}
 		}
 	}
@@ -132,99 +138,26 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function handleFormData(currentScope, formData) {
-		
 		if (currentScope.platforms.manual) {
 			formData.selectedDriver = 'manual';
 			delete formData.kubernetes;
 			delete formData.docker;
 			delete formData.previousEnvironment;
-			
-			delete currentScope.wizard.controller;
-			delete currentScope.wizard.nginx;
 		}
 		else if (currentScope.platforms.previous) {
 			if (currentScope.previousEnvironment === '') {
 				$window.alert("Select the environment your want to clone its deployment settings to proceed!");
 				return false;
 			}
-			formData.deployment = {};
-			currentScope.availableEnvironments.forEach((oneEnv) => {
-				if (oneEnv.code === currentScope.previousEnvironment) {
-					formData.previousEnvironment = currentScope.previousEnvironment;
-					formData.selectedDriver = oneEnv.deployer.selected.split(".")[1]; //docker || kubernetes
-					
-					if (formData.selectedDriver === 'docker') {
-						delete formData.kubernetes;
-						let localRemote = (oneEnv.deployer.selected.indexOf("remote") !== -1) ? 'remote' : 'local';
-						formData.deployment.docker = oneEnv.deployer.container[formData.selectedDriver][localRemote];
-						if (formData.deployment.docker.auth && formData.deployment.docker.auth.token) {
-							formData.deployment.docker.token = formData.deployment.docker.auth.token;
-							delete formData.deployment.docker.auth.token;
-						}
-						formData.deployment.docker.dockerremote = formData.deployment.docker.selected !== 'container.docker.local';
-					}
-					
-					if (formData.selectedDriver === 'kubernetes') {
-						delete formData.docker;
-						formData.deployment.kubernetes = {};
-						formData.deployment.kubernetes.kubernetesremote = oneEnv.deployer.selected !== 'container.kubernetes.local';
-						let localRemote = (formData.deployment.kubernetes.kubernetesremote) ? 'remote' : 'local';
-						formData.deployment.kubernetes = {
-							kubernetesremote: oneEnv.deployer.selected !== 'container.kubernetes.local',
-							port: oneEnv.deployer.container.kubernetes[localRemote].apiPort,
-							NS: oneEnv.deployer.container.kubernetes[localRemote].namespace.default,
-							perService: oneEnv.deployer.container.kubernetes[localRemote].namespace.perService,
-							token: oneEnv.deployer.container.kubernetes[localRemote].auth.token
-						};
-						
-						if (oneEnv.deployer.container.kubernetes[localRemote].nodes) {
-							formData.deployment.kubernetes.nodes = oneEnv.deployer.container.kubernetes[localRemote].nodes;
-						}
-					}
-				}
-			});
+			formData.previousEnvironment = currentScope.previousEnvironment;
 		}
 		else {
 			delete formData.previousEnvironment;
-			if (currentScope.platforms.docker) {
-				delete formData.kubernetes;
-				delete formData.deployment.kubernetes;
-				formData.selectedDriver = 'docker';
-				formData.deployment.docker.dockerremote = true;
-				if (!formData.deployment.docker.nodes || !formData.deployment.docker.externalPort || !formData.deployment.docker.network || !formData.deployment.docker.token) {
-					$window.alert("Provide the information on how to connect to docker on your remote machine.");
-					return false;
-				}
-				
-				formData.deployment.docker.apiPort = formData.deployment.docker.externalPort;
-			}
-			if (currentScope.platforms.kubernetes) {
-				delete formData.docker;
-				delete formData.deployment.docker;
-				formData.selectedDriver = 'kubernetes';
-				formData.deployment.kubernetes.kubernetesremote = true;
-				if (!formData.deployment.kubernetes.nodes || !formData.deployment.kubernetes.port || !formData.deployment.kubernetes.token || !formData.deployment.kubernetes.NS || !Object.hasOwnProperty.call(formData.deployment.kubernetes, 'perService')) {
-					$window.alert("Provide the information on how to connect to kubernetes on your remote machine.");
-					return false;
-				}
-			}
-			
-			if (!formData.selectedDriver) {
-				$window.alert("You have not specified the deployment strategy of this environment.");
-				return false;
-			}
+			formData = angular.copy(currentScope.wizard.selectedInfraProvider.deploy);
+			delete formData.grid;
 		}
 		
 		currentScope.wizard.deployment = angular.copy(formData);
-		
-		if (currentScope.wizard.deployment) {   // clean other stuff
-			let selectedDriver = currentScope.wizard.deployment.selectedDriver;
-			let selectedData = angular.copy(currentScope.wizard.deployment.deployment[selectedDriver]);
-			currentScope.wizard.deployment.deployment = {
-				[selectedDriver]: selectedData
-			};
-		}
-		
 		$localStorage.addEnv = angular.copy(currentScope.wizard);
 		delete $localStorage.addEnv.template.content;
 		currentScope.nextStep();
@@ -234,8 +167,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		mainScope = currentScope;
 		currentScope.switchDriver = switchDriver;
-		currentScope.cloudProviders = environmentsConfig.providers;
-		currentScope.cloudProviderHelpLink = {};
+		currentScope.selectProvider = selectProvider;
 		
 		currentScope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 		currentScope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
@@ -252,15 +184,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			}
 		}
 		
-		currentScope.changeLikeEnv = function (code) {
+		currentScope.changeLikeEnv = function () {
 			currentScope.previousPlatformDeployment = true;
 			currentScope.previousEnvironment = currentScope.form.formData.deployment.previousEnvironment;
 			renderPreviousDeployInfo(currentScope);
-		};
-		
-		currentScope.showProviderLink = function (myCloudProvider, technology) {
-			currentScope.form.formData.deployment[technology].myCloudProvider = myCloudProvider.v;
-			currentScope.cloudProviderHelpLink[technology] = myCloudProvider.help[technology];
 		};
 		
 		overlayLoading.show();
@@ -321,61 +248,148 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			}
 		});
 		
-		buildForm(currentScope, $modal, options, function () {
-			
-			currentScope.mapStorageToWizard($localStorage.addEnv);
-			
-			if (currentScope.wizard.deployment) {
-				currentScope.form.formData = angular.copy(currentScope.wizard.deployment);
-			}
-			
-			if (!currentScope.form.formData) {
-				currentScope.form.formData = {};
-			}
-			
-			if (!currentScope.form.formData.deployment) {
-				currentScope.form.formData.deployment = {};
-			}
-			
-			if (currentScope.form.formData.previousEnvironment) {
-				currentScope.form.formData.deployment.previousEnvironment = currentScope.form.formData.previousEnvironment;
-				currentScope.previousEnvironment = currentScope.form.formData.previousEnvironment;
-			}
-			
-			if (!currentScope.form.formData.deployment.docker) {
-				currentScope.form.formData.deployment.docker = {
-					dockerremote: false
-				};
-			}
-			
-			if (!currentScope.form.formData.deployment.kubernetes) {
-				currentScope.form.formData.deployment.kubernetes = {
-					kubernetesremote: false
-				};
-			}
-			
-			currentScope.platforms = {
-				docker: currentScope.form.formData.selectedDriver === 'docker' || false,
-				kubernetes: currentScope.form.formData.selectedDriver === 'kubernetes' || false,
-				manual: currentScope.form.formData.selectedDriver === 'manual' || false,
-				previous: currentScope.previousEnvironment
-			};
-			
-			if (currentScope.previousEnvironment && currentScope.previousEnvironment !== '') {
-				currentScope.previousPlatformDeployment = true;
+		listInfraProviders(currentScope, () => {
+			buildForm(currentScope, $modal, options, function () {
+				
+				currentScope.mapStorageToWizard($localStorage.addEnv);
+				
+				if (currentScope.wizard.deployment) {
+					currentScope.form.formData = angular.copy(currentScope.wizard.deployment);
+				}
+				
+				if (!currentScope.form.formData) {
+					currentScope.form.formData = {};
+				}
+				
+				if (currentScope.form.formData.previousEnvironment) {
+					currentScope.previousEnvironment = currentScope.form.formData.previousEnvironment;
+				}
+				
+				if(currentScope.wizard.selectedInfraProvider){
+					currentScope.form.formData.selectedDriver = currentScope.wizard.selectedInfraProvider.technologies[0];
+					
+					currentScope.infraProviders.forEach((oneProvider) => {
+						if(oneProvider.name === currentScope.wizard.selectedInfraProvider.name){
+							oneProvider.deploy = currentScope.wizard.selectedInfraProvider.deploy;
+						}
+					});
+				}
+				
 				currentScope.platforms = {
-					docker: false,
-					kubernetes: false,
-					manual: false,
+					docker: currentScope.form.formData.selectedDriver === 'docker' || false,
+					kubernetes: currentScope.form.formData.selectedDriver === 'kubernetes' || false,
+					manual: currentScope.form.formData.selectedDriver === 'manual' || false,
 					previous: currentScope.previousEnvironment
 				};
-				renderPreviousDeployInfo(currentScope);
+				
+				if (currentScope.previousEnvironment && currentScope.previousEnvironment !== '') {
+					currentScope.previousPlatformDeployment = true;
+					currentScope.platforms = {
+						docker: false,
+						kubernetes: false,
+						manual: false,
+						previous: currentScope.previousEnvironment
+					};
+					renderPreviousDeployInfo(currentScope);
+				}
+				
+				calculateRestrictions(currentScope);
+				
+				currentScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
+				overlayLoading.hide();
+			});
+		});
+	}
+	
+	function selectProvider(oneProvider, technology) {
+		let selectedInfraProvider = oneProvider;
+		mainScope.wizard.selectedInfraProvider = oneProvider;
+		
+		mainScope.infraProviders.forEach((oneProvider) => {
+			delete oneProvider.deploy;
+		});
+		
+		let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
+		if(formEntries && formEntries.length > 0){
+			formEntries.forEach((oneEntry) => {
+				if (oneEntry.name === 'region') {
+					oneEntry.value = oneProvider.regions;
+					oneEntry.value[0].selected = true;
+				}
+			});
+			
+			$modal.open({
+				templateUrl: "infraProvider.tmpl",
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope, $modalInstance) {
+					fixBackDrop();
+					$scope.title = 'Configuring Deployment on ' + selectedInfraProvider.label;
+					let formConfig = {
+						timeout: $timeout,
+						data: mainScope.wizard.selectedInfraProvider.deploy,
+						"entries": formEntries,
+						name: 'deployon' + selectedInfraProvider.name,
+						"actions": [
+							{
+								'type': 'submit',
+								'label': "Save & Continue",
+								'btn': 'primary',
+								'action': function (formData) {
+									mainScope.wizard.selectedInfraProvider.deploy = formData;
+									mainScope.wizard.selectedInfraProvider.deploy.grid = environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.grid;
+									mainScope.wizard.selectedInfraProvider.deploy.technology = technology;
+									$modalInstance.close();
+								}
+							},
+							{
+								'type': 'reset',
+								'label': translation.cancel[LANG],
+								'btn': 'danger',
+								'action': function () {
+									$modalInstance.dismiss('cancel');
+								}
+							}
+						]
+					};
+					
+					buildForm($scope, null, formConfig, function () {
+					
+					});
+				}
+			});
+		}
+		else{
+			selectedInfraProvider.deploy = {};
+			selectedInfraProvider.deploy.technology = technology;
+		}
+	}
+	
+	function listInfraProviders(currentScope, cb) {
+		//get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra"
+		}, function (error, providers) {
+			if (error) {
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error.message);
 			}
-			
-			calculateRestrictions(currentScope);
-			
-			currentScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
-			overlayLoading.hide();
+			else {
+				currentScope.infraProviders = angular.copy(providers);
+				delete currentScope.infraProviders.soajsauth;
+				currentScope.infraProviders.forEach((oneProvider) => {
+					if (oneProvider.name === 'local') {
+						let technolog = oneProvider.technologies[0];
+						oneProvider.image = "themes/" + themeToUse + "/img/" + technolog + "_logo.png";
+					}
+					else {
+						oneProvider.image = "modules/dashboard/environments/images/" + oneProvider.name + ".png";
+					}
+				});
+				return cb();
+			}
 		});
 	}
 	

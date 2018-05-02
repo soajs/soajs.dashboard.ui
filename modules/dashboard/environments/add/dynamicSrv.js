@@ -181,7 +181,23 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
 						
 						if(currentScope.wizard.deployment.selectedDriver === 'kubernetes'){
-							namespaces = [ {"v": currentScope.wizard.deployment.deployment.kubernetes.NS, "l": currentScope.wizard.deployment.deployment.kubernetes.NS}];
+							//check if previous
+							if(currentScope.wizard.deployment.previousEnvironment){
+								currentScope.availableEnvironments.forEach((onePreviousEnv) =>{
+									if(onePreviousEnv.code === currentScope.wizard.deployment.previousEnvironment){
+										namespaces = [ {"v": onePreviousEnv.deployer.container.kubernetes.remote.namespace.default, "l": onePreviousEnv.deployer.container.kubernetes.remote.namespace.default}];
+									}
+								});
+							}
+							//check current provider
+							else{
+								if(currentScope.wizard.selectedInfraProvider.api.namespace){
+									namespaces = [ {"v": currentScope.wizard.selectedInfraProvider.api.namespace.default, "l": currentScope.wizard.selectedInfraProvider.api.namespace.default}];
+								}
+								else {
+									namespaces = [ {"v": 'soajs', "l": 'soajs'}];
+								}
+							}
 						}
 						
 						return cb();
@@ -472,7 +488,24 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
-						oneRepo.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
+						
+						//check if previous
+						if(currentScope.wizard.deployment.previousEnvironment){
+							currentScope.availableEnvironments.forEach((onePreviousEnv) =>{
+								if(onePreviousEnv.code === currentScope.wizard.deployment.previousEnvironment){
+									oneRepo.scope.kubeNamespace = onePreviousEnv.deployer.container.kubernetes.remote.namespace.default;
+								}
+							});
+						}
+						//check current provider
+						else{
+							if(currentScope.wizard.selectedInfraProvider.api.namespace){
+								oneRepo.scope.kubeNamespace = currentScope.wizard.selectedInfraProvider.api.namespace.default;
+							}
+							else {
+								oneRepo.scope.kubeNamespace = 'soajs';
+							}
+						}
 					}
 					
 					oneRepo.scope.kubeEnv = 'invalid';
@@ -594,7 +627,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						record.canBeDeployed = true;
 						resource.scope.envType = 'container';
-						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver;
+						resource.scope.envPlatform = currentScope.wizard.deployment.technology;
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
 						
@@ -685,7 +718,23 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					
 					if(isKubernetes){
 						resource.scope.enableAutoScale = (Object.hasOwnProperty.call(record, 'enableAutoScale')) ? record.enableAutoScale : true;
-						resource.scope.kubeNamespace = currentScope.wizard.deployment.deployment.kubernetes.NS;
+						//check if previous
+						if(currentScope.wizard.deployment.previousEnvironment){
+							currentScope.availableEnvironments.forEach((onePreviousEnv) =>{
+								if(onePreviousEnv.code === currentScope.wizard.deployment.previousEnvironment){
+									resource.scope.kubeNamespace = onePreviousEnv.deployer.container.kubernetes.remote.namespace.default;
+								}
+							});
+						}
+						//check current provider
+						else{
+							if(currentScope.wizard.selectedInfraProvider.api.namespace){
+								resource.scope.kubeNamespace = currentScope.wizard.selectedInfraProvider.api.namespace.default;
+							}
+							else {
+								resource.scope.kubeNamespace = 'soajs';
+							}
+						}
 					}
 					
 					resource.scope.kubeEnv = 'invalid';
@@ -704,8 +753,33 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 							resource.scope.hideDeployButton = true;
 							if(isKubernetes){
-								let remote = currentScope.wizard.deployment.deployment.kubernetes.kubernetesremote;
-								let deployment = currentScope.wizard.deployment.deployment.kubernetes;
+								let remote = true;
+								let deployment;
+								//check if previous
+								if(currentScope.wizard.deployment.previousEnvironment){
+									currentScope.availableEnvironments.forEach((onePreviousEnv) =>{
+										if(onePreviousEnv.code === currentScope.wizard.deployment.previousEnvironment){
+											deployment = {
+												nodes: onePreviousEnv.deployer.container.kubernetes.remote.nodes,
+												NS: onePreviousEnv.deployer.container.kubernetes.remote.namespace.default,
+												perService: onePreviousEnv.deployer.container.kubernetes.remote.namespace.perService,
+												token: onePreviousEnv.deployer.container.kubernetes.remote.auth.token
+											};
+										}
+									});
+								}
+								//check current provider
+								else{
+									if(currentScope.wizard.selectedInfraProvider.api.namespace){
+										deployment = {
+											nodes: currentScope.wizard.selectedInfraProvider.api.ipaddress,
+											NS: currentScope.wizard.selectedInfraProvider.api.namespace,
+											perService: currentScope.wizard.selectedInfraProvider.api.perService,
+											token: currentScope.wizard.selectedInfraProvider.api.token
+										};
+									}
+								}
+								
 								let driverConfiguration = {
 									"nodes" : deployment.nodes,
 									"namespace" : {

@@ -6,7 +6,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 	 * Nodes Functions
 	 * @param currentScope
 	 */
-	function listNodes(currentScope) {
+	function listNodes(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/nodes/list",
@@ -29,8 +29,141 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 						});
 					}
 				});
+				if(cb && typeof(cb) === 'function'){
+					return cb(currentScope.nodes.list);
+				}
 			}
 		});
+	}
+
+	function joinInfraAndNodes(currentScope, nodes, deployedInfra, counter) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra/cluster",
+			"params": {
+				"id": deployedInfra[counter]._id,
+				"envCode": currentScope.envCode.toLowerCase()
+			}
+		}, function (error, info) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				deployedInfra[counter].nodes = {
+					list: []
+				};
+
+				//link provider with environment
+				if(info && info.machines && info.machines.length > 0){
+					info.machines.forEach((oneMachine) => {
+						nodes.forEach((oneNode) => {
+							if (oneMachine.name === oneNode.hostname) {
+								oneNode.ip = oneMachine.ip;
+								deployedInfra[counter].nodes.list.push(oneNode);
+							}
+						});
+					});
+				}
+				else{
+					deployedInfra[counter].nodes.list = nodes;
+				}
+				
+				counter--;
+				if(counter >= 0){
+					joinInfraAndNodes(currentScope, nodes, deployedInfra, counter);
+				}
+			}
+		});
+	}
+
+	function listInfraProviders(currentScope) {
+		//call bridge, get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra",
+			params: {
+				envCode: currentScope.envCode.toLowerCase()
+			}
+		}, function (error, providers) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				currentScope.infraProviders = angular.copy(providers);
+				delete currentScope.infraProviders.soajsauth;
+
+				listNodes(currentScope, (nodes) => {
+					joinInfraAndNodes(currentScope, nodes, currentScope.infraProviders, currentScope.infraProviders.length -1);
+				});
+			}
+		});
+	}
+
+	function scaleNodes(currentScope, providerInfo) {
+		//call bridge, and request scaling an environment deployment
+		let formEntries = environmentsConfig.providers[providerInfo.name][currentScope.envPlatform].ui.form.scale.entries;
+
+		let workernumber = 0;
+		providerInfo.nodes.list.forEach((oneNode) => {
+			if(oneNode.spec.role === 'manager'){
+				workernumber++;
+			}
+		});
+
+		var options = {
+			timeout: $timeout,
+			form: {
+				"entries": formEntries
+			},
+			data: {
+				"number": workernumber
+			},
+			name: 'scaleNodes',
+			label: 'Scale Node(s)',
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.submit[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/infra/cluster/scale",
+							"params":{
+								"id": providerInfo._id,
+								"envCode": currentScope.envCode.toUpperCase(),
+							},
+							"data":{
+								"number": formData.number
+							}
+						}, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.$parent.displayAlert('success', "Deployment Scaled Successfully, changes might take a few minutes.");
+								currentScope.modalInstance.close();
+								currentScope.form.formData = {};
+								listInfraProviders(currentScope);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						currentScope.modalInstance.dismiss('cancel');
+						currentScope.form.formData = {};
+					}
+				}
+			]
+		};
+
+		buildFormWithModal(currentScope, $modal, options);
 	}
 	
 	function addNode(currentScope) {
@@ -203,6 +336,8 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		'addNode': addNode,
 		'removeNode': removeNode,
 		'updateNode': updateNode,
-		'changeTag': changeTag
+		'changeTag': changeTag,
+		'listInfraProviders': listInfraProviders,
+		'scaleNodes': scaleNodes
 	};
 }]);

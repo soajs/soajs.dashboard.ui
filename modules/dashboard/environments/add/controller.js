@@ -190,6 +190,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		};
 		
 		if(wizard.selectedInfraProvider){
+			output.data.infraId = wizard.selectedInfraProvider._id; // required
+		}
+		
+		if(wizard.selectedInfraProvider){
 			output.selectedInfraProvider = wizard.selectedInfraProvider;
 		}
 		

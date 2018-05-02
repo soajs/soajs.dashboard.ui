@@ -674,49 +674,66 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	
 	$scope.listVms = function(cb) {
 		
-		//todo: call list vm api
-		let response = [
-			{
-				"id": "mikemongovm",
-				"name": "mikemongovm",
-				"labels": {
-					"soajs.content": "true",
-					"soajs.env.code": "dashboard",
-					"soajs.service.technology": "vm",
-					"soajs.infra.id": "5ae9e5cd55dc7960e796823b",
-					"soajs.resource.id": "5ae9f082e371a7632ded1243",
-					"soajs.image.name": "Ubuntu",
-					"soajs.image.prefix": "Canonical",
-					"soajs.image.tag": "16.04-LTS",
-					"soajs.catalog.id": "5ae9e8ac885ee42487b7c027",
-					"soajs.service.name": "mikemongovm",
-					"soajs.service.label": "mikemongovm",
-					"soajs.service.type": "cluster",
-					"soajs.service.subtype": "mongo",
-					
-					//these values will be received from vmRecord.tags
-					"service.image.name": "Ubuntu",
-					"service.image.prefix": "Canonical",
-					"service.image.tag": "16.04-LTS",
-					
-					"soajs.service.vm.group": "DASHBOARD",
-					"soajs.service.vm.size": "Standard_A1"
-				},
-				"ports": [],
-				"voluming": {},
-				"ip": "xxx.xxx.xxx.xxx", //still don't know from where
-				"location": "eastus",
-				"status": "succeeded"
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/cloud/vm/list",
+			"params": {
+				"env": $scope.envCode
 			}
-		];
-		
-		if($scope.deployedServices && Array.isArray($scope.deployedServices)){
-			$scope.deployedServices = $scope.deployedServices.concat(response);
-		}
-		else{
-			$scope.deployedServices = response;
-		}
-		return cb();
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				let response = {
+					azure: {
+						label: "My Azure Provider",
+						list: [
+							{
+								"id": "mikemongovm",
+								"name": "mikemongovm",
+								"labels": {
+									"soajs.content": "true",
+									"soajs.env.code": "dashboard",
+									"soajs.service.technology": "vm",
+									"soajs.infra.id": "5ae9e5cd55dc7960e796823b",
+									"soajs.resource.id": "5ae9f082e371a7632ded1243",
+									"soajs.image.name": "Ubuntu",
+									"soajs.image.prefix": "Canonical",
+									"soajs.image.tag": "16.04-LTS",
+									"soajs.catalog.id": "5ae9e8ac885ee42487b7c027",
+									"soajs.service.name": "mikemongovm",
+									"soajs.service.label": "mikemongovm",
+									"soajs.service.type": "cluster",
+									"soajs.service.subtype": "mongo",
+									
+									//these values will be received from vmRecord.tags
+									"service.image.name": "Ubuntu",
+									"service.image.prefix": "Canonical",
+									"service.image.tag": "16.04-LTS",
+									
+									"soajs.service.vm.group": "DASHBOARD",
+									"soajs.service.vm.size": "Standard_A1"
+								},
+								"ports": [],
+								"voluming": {},
+								"ip": "xxx.xxx.xxx.xxx", //still don't know from where
+								"location": "eastus",
+								"status": "succeeded"
+							}
+						]
+					}
+				};
+				
+				if(!$scope.deployedServices || !Array.isArray($scope.deployedServices)) {
+					$scope.deployedServices = [];
+				}
+				for(let infra in response){
+					$scope.deployedServices = $scope.deployedServices.concat(response[infra].list);
+				}
+				return cb();
+			}
+		});
 	};
 	
 	$scope.listDeployedServices = function (cb) {

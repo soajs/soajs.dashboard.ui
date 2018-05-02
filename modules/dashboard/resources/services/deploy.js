@@ -288,7 +288,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				height: '500px'
 			},
 			allowEdit: allowEdit,
-			computedHostname: ''
+			computedHostname: '',
+			allowDeploy: (currentScope.envPlatform !== 'manual')
 		};
 		
 		context.title = 'Add New Resource';
@@ -696,6 +697,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					
 					if (recipes && Array.isArray(recipes)) {
 						recipes.forEach(function (oneRecipe) {
+							if(context.options.envPlatform === 'manual'){
+								if(oneRecipe.restriction && oneRecipe.restriction.deployment.indexOf("vm") !== -1){
+									context.options.allowDeploy = true;
+								}
+							}
 							if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
 								context.oldStyle = true;
 							}

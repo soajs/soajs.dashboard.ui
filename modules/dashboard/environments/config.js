@@ -27,6 +27,10 @@ var serviceProviders = {
 										{
 											"name": "region",
 											"label": "Region"
+										},
+										{
+											"name": "infraCodeTemplate",
+											"label": "Infra Code Template"
 										}
 									]
 								},
@@ -407,6 +411,10 @@ var serviceProviders = {
 										{
 											"name": "region",
 											"label": "Region"
+										},
+										{
+											"name": "infraCodeTemplate",
+											"label": "Infra Code Template"
 										}
 									]
 								},

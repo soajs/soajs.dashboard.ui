@@ -302,9 +302,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function selectProvider(oneProvider, technology) {
-		let selectedInfraProvider = oneProvider;
-		mainScope.wizard.selectedInfraProvider = oneProvider;
-		
+		let selectedInfraProvider = angular.copy(oneProvider);
 		mainScope.infraProviders.forEach((oneProvider) => {
 			delete oneProvider.deploy;
 		});
@@ -318,6 +316,24 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 			});
 			
+			let infraTemplates =[];
+			oneProvider.templates.forEach((oneTmpl) => {
+				let label = oneTmpl.name;
+				if(oneTmpl.description && oneTmpl.description !== ''){
+					label += " | " + oneTmpl.description;
+				}
+				infraTemplates.push({'v': oneTmpl.name, 'l': label});
+			});
+			
+			formEntries.unshift({
+				type: 'select',
+				name: 'infraCodeTemplate',
+				label: "Infra Code Template",
+				value: infraTemplates,
+				required: true,
+				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster."
+			});
+			
 			$modal.open({
 				templateUrl: "infraProvider.tmpl",
 				size: 'lg',
@@ -328,7 +344,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					$scope.title = 'Configuring Deployment on ' + selectedInfraProvider.label;
 					let formConfig = {
 						timeout: $timeout,
-						data: mainScope.wizard.selectedInfraProvider.deploy,
+						data: (mainScope.wizard.selectedInfraProvider) ? mainScope.wizard.selectedInfraProvider.deploy : {},
 						"entries": formEntries,
 						name: 'deployon' + selectedInfraProvider.name,
 						"actions": [
@@ -337,9 +353,11 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 								'label': "Save & Continue",
 								'btn': 'primary',
 								'action': function (formData) {
-									mainScope.wizard.selectedInfraProvider.deploy = formData;
-									mainScope.wizard.selectedInfraProvider.deploy.grid = environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.grid;
-									mainScope.wizard.selectedInfraProvider.deploy.technology = technology;
+									selectedInfraProvider.deploy = formData;
+									selectedInfraProvider.deploy.grid = environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.grid;
+									selectedInfraProvider.deploy.technology = technology;
+									mainScope.wizard.selectedInfraProvider = selectedInfraProvider;
+									oneProvider.deploy = selectedInfraProvider.deploy;
 									$modalInstance.close();
 								}
 							},
@@ -348,6 +366,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 								'label': translation.cancel[LANG],
 								'btn': 'danger',
 								'action': function () {
+									oneProvider.deploy = mainScope.wizard.selectedInfraProvider.deploy;
 									$modalInstance.dismiss('cancel');
 								}
 							}
@@ -363,6 +382,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		else{
 			selectedInfraProvider.deploy = {};
 			selectedInfraProvider.deploy.technology = technology;
+			oneProvider.deploy = selectedInfraProvider.deploy;
+			mainScope.wizard.selectedInfraProvider = selectedInfraProvider;
 		}
 	}
 	

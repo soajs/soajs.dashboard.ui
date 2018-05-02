@@ -8,15 +8,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	function updateFormDataBeforeSave(deployOptions) {
 		let deployConfig = deployOptions.deployConfig;
 		
-		// // fetch infra providers and append account name for infra
-		// let infraProviders = context.deploymentData.infraProviders;
-		// let infraObject = deployConfig.infra;
-		// infraProviders.forEach(function (eachProvider) {
-		// 	if(eachProvider.name === infraObject.provider){ // if found
-		// 		infraObject.account = eachProvider.accountId;
-		// 	}
-		// });
-		
 		// clean
 		if (deployConfig && deployConfig.type === "vm") {
 			if (deployConfig.memoryLimit) {
@@ -694,6 +685,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							deploymentType = oneEnv.deployer.type;
 						}
 					});
+
 					
 					if (recipes && Array.isArray(recipes)) {
 						recipes.forEach(function (oneRecipe) {
@@ -769,7 +761,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                 fetchDefaultImagesOnOverride(context);
 				
                 // todo: if vm
-                // context.onDeploymentTechnologySelect(false);
 				context.loadVmData(function () {
 					let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 					let allInfra = currentScope.deploymentData.infraProviders; // [{_id,name}]
@@ -1117,49 +1108,51 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			VM specific
 		 */
 		context.getInfraProviders = function (cb) {
-			context.deploymentData.infraProviders = [
-				{
-					_id : 'xxxxx0',
-					name : "aws",
-					accountId : "AWSTESTID123"
-				},
-				{
-					_id : 'xxxxx1',
-					name : "google",
-					accountId : "GOOGLETESTID456"
-				},
-				{
-					_id : 'xxxxx2',
-					name : "azure",
-					accountId : "Azure_TESTID789"
+			//call bridge, get the available providers
+			getSendDataFromServer(context, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/infra",
+				params: {
+					// envCode: context.envCode.toLowerCase()
 				}
-			];
-			
-			if(cb){
-				cb();
-			}
-		};
-
-		context.getRegionsList = function () {
-			context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
-				v: 'us-east-2',
-				'l': 'US East (Ohio)'
-			}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
-				v: 'us-west-2',
-				'l': 'US West (Oregon)'
-			}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
-				v: 'eu-west-2',
-				'l': 'EU (London)'
-			}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
-				v: 'ap-northeast-1',
-				'l': 'Asia Pacific (Tokyo)'
-			}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
-				v: 'ap-south-1',
-				'l': 'Asia Pacific (Mumbai)'
-			}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
-				v: 'ap-southeast-2',
-				'l': 'Asia Pacific (Sydney)'
-			}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
+			}, function (error, providers) {
+				if (error) {
+					context.displayAlert('danger', error.message);
+				}
+				else {
+					delete providers.soajsauth;
+					context.deploymentData.infraProviders = providers;
+					
+					
+					// context.deploymentData.infraProviders = providers.regions;
+					// todo:
+					
+					context.deploymentData.regions = [{v: 'us-east-1', 'l': 'US East (N. Virginia)'}, {
+						v: 'us-east-2',
+						'l': 'US East (Ohio)'
+					}, {v: 'us-west-1', 'l': 'US West (N. California)'}, {
+						v: 'us-west-2',
+						'l': 'US West (Oregon)'
+					}, {v: 'ca-central-1', 'l': 'Canada (Central)'}, {v: 'eu-west-1', 'l': 'EU (Ireland)'}, {
+						v: 'eu-west-2',
+						'l': 'EU (London)'
+					}, {v: 'eu-central-1', 'l': 'EU (Frankfurt)'}, {
+						v: 'ap-northeast-1',
+						'l': 'Asia Pacific (Tokyo)'
+					}, {v: 'ap-northeast-2', 'l': 'Asia Pacific (Seoul)'}, {
+						v: 'ap-south-1',
+						'l': 'Asia Pacific (Mumbai)'
+					}, {v: 'ap-southeast-1', 'l': 'Asia Pacific (Singapore)'}, {
+						v: 'ap-southeast-2',
+						'l': 'Asia Pacific (Sydney)'
+					}, {v: 'sa-east-1', 'l': 'South America (São Paulo)'}];
+					
+				}
+				
+				if(cb){
+					cb();
+				}
+			});
 		};
 
 		context.getVmSizesList = function () {
@@ -1259,8 +1252,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			// if (context.formData.deployOptions.deployConfig.type === 'vm') {
 			// todo: call them in parallel and call cb once done
 			if(!vmDataLoaded){
+				vmDataLoaded = true;
 				context.getInfraProviders(function () {
-					context.getRegionsList();
 					context.getVmSizesList();
 					context.getDisksList();
 					context.getProvidersList();

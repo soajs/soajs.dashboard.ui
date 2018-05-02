@@ -1546,7 +1546,7 @@ var environmentsNav = [
 		'order': 7,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/metrics.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/vm.js', 'modules/dashboard/environments/services/metrics.js'],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'injectFiles', function ($scope, $cookies, $timeout, envHosts, injectFiles) {
+environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'injectFiles', 'vmSrv', function ($scope, $cookies, $timeout, envHosts, injectFiles, vmSrv) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -54,6 +54,7 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	$scope.listHosts = function (env, noPopulate) {
 		$scope.waitMessage.close();
 		$scope.getEnvironment(env, function () {
+			vmSrv.listServices($scope);
 			envHosts.listHosts($scope, env, noPopulate);
 		});
 	};

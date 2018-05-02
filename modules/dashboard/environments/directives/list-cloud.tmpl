@@ -490,6 +490,10 @@
 				</accordion>
 			</div>
 		</tab>
+		<tab heading="Virtual Machines" ng-if="vms">
+			<br />
+			<div ng-include="'modules/dashboard/environments/directives/list-vms.tmpl'"></div>
+		</tab>
 	</tabset>
 </section>
 

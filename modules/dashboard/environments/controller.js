@@ -172,10 +172,11 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								}
 								else{
 									let deployerInfo = response[i].deployer.selected.split(".");
-									if(deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local'){
+									if((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')){
 										response[i].machineip = response[i].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
 									}
 								}
+								
 								newList.push(response[i]);
 								putMyEnv(response[i]);
 								found = true;
@@ -189,7 +190,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						}
 						else{
 							let deployerInfo = response[0].deployer.selected.split(".");
-							if(deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local'){
+							if((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')){
 								response[0].machineip = response[0].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
 							}
 						}

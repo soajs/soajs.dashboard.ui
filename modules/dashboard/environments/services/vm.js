@@ -83,7 +83,9 @@ vmServices.service('vmSrv', [ 'ngDataApi', '$timeout', '$modal', function (ngDat
 					// 	}
 					// };
 					delete response.soajsauth;
-					currentScope.vms = response;
+					if(response && Object.keys(response).length > 0){
+						currentScope.vms = response;
+					}
 				}
 			});
 		}

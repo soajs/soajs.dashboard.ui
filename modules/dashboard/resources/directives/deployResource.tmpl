@@ -22,7 +22,7 @@
 
 <div ng-if="formData.deployOptions.recipe">
 	<label>Deployment Technology Type</label>
-	<select class="form-control" ng-disabled="deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>
+	<select class="form-control" ng-disabled="resourceDeployed || deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>
 	<label class="fieldMsg">Choose a deployment technology type</label>
 </div>
 
@@ -214,7 +214,7 @@
 	
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
 		<label>Infra</label>
-		<select class="form-control" ng-required="true" ng-options="tech._id as tech.label for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra" ng-change="repopulateRegions()"></select>
+		<select class="form-control" ng-disabled="resourceDeployed" ng-required="true" ng-options="tech._id as tech.label for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra" ng-change="repopulateRegions()"></select>
 		<label class="fieldMsg">Choose a deployment technology</label>
 		
 		<label>Region</label>

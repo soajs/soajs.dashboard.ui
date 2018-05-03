@@ -93,7 +93,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
         }
     }
 
-	function refreshDeployConfig(currentScope, context, selectedRecipe) {
+	function refreshDeployConfig(context) {
 
         let deployConfig = context.formData.deployOptions.deployConfig;
         if(!deployConfig){
@@ -735,7 +735,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.displayRecipeInputs = function (refresh, ui, cb) {
-			
 			function calculateRestrictions(currentScope) {
 				let allRecipes = currentScope.recipes;
 				let selectedRecipeId;
@@ -755,7 +754,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				});
 
                 if(refresh){
-                    refreshDeployConfig(currentScope, context);
+                    refreshDeployConfig(context);
                 }
                   
                 fetchDefaultImagesOnOverride(context);
@@ -1228,7 +1227,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		// listeners
 		context.onDeploymentTechnologySelect = function (refresh) {
 			if (refresh) {
-				refreshDeployConfig(currentScope, context);
+				refreshDeployConfig(context);
 			}
 			fetchDefaultImagesOnOverride(context);
 		};
@@ -1239,10 +1238,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			// todo: call them in parallel and call cb once done
 			if(!vmDataLoaded){
 				vmDataLoaded = true;
+				overlayLoading.show();
 				context.getInfraProviders(function () {
 					context.getVmSizesList();
 					context.getDisksList();
 					context.getProvidersList();
+					overlayLoading.hide();
 					cb();
 				});
 			}else{

@@ -303,7 +303,7 @@
 						<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="65535" ng-required="true" ng-change="onExposedPortsUpdate()"/>
 						<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value
 							Enter a value if you want to expose this resource to a specific port; Port values are
-							limited to a range between 0 and 2767.
+							limited to a range between 0 and 65535.
 						</label>
 					</div>
 				</fieldset>

@@ -688,38 +688,57 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				let response = {
 					azure: {
 						label: "My Azure Provider",
-						list: [
+						list:[
 							{
-								"id": "mikemongovm",
+								"type": "vm",
 								"name": "mikemongovm",
+								"id": "mikemongovm",
 								"labels": {
 									"soajs.content": "true",
 									"soajs.env.code": "dashboard",
 									"soajs.service.technology": "vm",
 									"soajs.infra.id": "5ae9e5cd55dc7960e796823b",
 									"soajs.resource.id": "5ae9f082e371a7632ded1243",
-									"soajs.image.name": "Ubuntu",
 									"soajs.image.prefix": "Canonical",
-									"soajs.image.tag": "16.04-LTS",
-									"soajs.catalog.id": "5ae9e8ac885ee42487b7c027",
+									"soajs.image.name": "UbuntuServer",
+									"soajs.image.tag": "17.10",
 									"soajs.service.name": "mikemongovm",
 									"soajs.service.label": "mikemongovm",
 									"soajs.service.type": "cluster",
-									"soajs.service.subtype": "mongo",
-									
-									//these values will be received from vmRecord.tags
-									"service.image.name": "Ubuntu",
-									"service.image.prefix": "Canonical",
-									"service.image.tag": "16.04-LTS",
-									
-									"soajs.service.vm.group": "DASHBOARD",
-									"soajs.service.vm.size": "Standard_A1"
+									"soajs.service.subtype": "mongo"
 								},
-								"ports": [],
+								"ports": [
+									{
+										"protocol": "tcp",
+										"target": 27017,
+										"published": 27017
+									},
+									{
+										"protocol": "tcp",
+										"target": 22,
+										"published": 22
+									}
+								],
 								"voluming": {},
-								"ip": "xxx.xxx.xxx.xxx", //still don't know from where
-								"location": "eastus",
-								"status": "succeeded"
+								"tasks": [
+									{
+										"id": "mikemongovm",
+										"name": "mikemongovm",
+										"status": {
+											"state": "succeeded",
+											"ts": 1525338149668
+										},
+										"ref": {
+											"os": {
+												"type": "Linux",
+												"diskSizeGB": 30
+											}
+										}
+									}
+								],
+								"env": [],
+								"servicePortType": "nodePort",
+								"ip": "xxx-xxx-xxx-xxx"
 							}
 						]
 					}

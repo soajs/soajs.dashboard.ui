@@ -381,6 +381,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 			x[3].info.host = $scope.envDomain;
 			x[3].info.scheme = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
 			x[3].schemes[0] = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
+			
 			if(parseInt($scope.servicePort) === parseInt(x[3].host.split(':')[1])) {
 				x[3].basePath = '';
 			}
@@ -394,6 +395,9 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				x[3].info.tenantKey = selectedTenant.extKey;
 				if(Object.hasOwnProperty.call(selectedTenant, "access_token")){
 					x[3].tenant_access_token = selectedTenant.access_token;
+					if(!x[3].tenant_access_token){
+						delete x[3].tenant_access_token;
+					}
 				}
 			}
 			

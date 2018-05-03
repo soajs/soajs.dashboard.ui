@@ -183,6 +183,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			delete formData.previousEnvironment;
 			formData = angular.copy(currentScope.wizard.selectedInfraProvider.deploy);
 			delete formData.grid;
+			
+			formData.selectedDriver = formData.technology;
 		}
 		
 		currentScope.wizard.deployment = angular.copy(formData);

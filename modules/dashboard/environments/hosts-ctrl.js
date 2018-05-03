@@ -63,6 +63,10 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		vmSrv.inspectService($scope, service);
 	};
 	
+	$scope.maintenanceService = function(service, operation){
+		vmSrv.maintenanceService($scope, service, operation);
+	};
+	
 	$scope.deleteService = function(service){
 		vmSrv.deleteService($scope, service);
 	};

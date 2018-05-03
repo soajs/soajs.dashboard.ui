@@ -205,7 +205,11 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.listNamespaces = function (cb) {
 		hacloudSrv.listNamespaces($scope, cb);
 	};
-
+	
+	$scope.maintenanceService = function(service, operation){
+		vmSrv.maintenanceService($scope, service, operation);
+	};
+	
 	$scope.deleteService = function (service, groupName) {
 		if(service.labels && service.labels['soajs.service.technology'] === 'vm'){
 			vmSrv.deleteService($scope, service);

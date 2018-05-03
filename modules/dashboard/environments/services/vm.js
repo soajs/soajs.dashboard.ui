@@ -153,7 +153,7 @@ vmServices.service('vmSrv', [ 'ngDataApi', '$timeout', '$modal', function (ngDat
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/cloud/vm/maintenance',
-			params: params
+			data: params
 		}, function (error) {
 			overlayLoading.hide();
 			if (error) {

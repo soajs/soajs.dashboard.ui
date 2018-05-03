@@ -1,5 +1,5 @@
 <accordion close-others="false">
-	<accordion-group is-open="$first" ng-repeat="(infra, infraInfo) in vms">
+	<accordion-group is-open="$first" ng-repeat="(infra, infraInfo) in vms" ng-show="infraInfo.list.length > 0">
 		<accordion-heading>{{infraInfo.label}}</accordion-heading>
 		
 		<div class="entryBoxes" ng-show="infraInfo.list">
@@ -59,7 +59,7 @@
 									<td>{{instance.status.ts | prettyLocalDate}}</td>
 									<td>
 										<span ng-show="instance.status.state === 'failed'" tooltip-class="ctrl-tooltip" tooltip-placement="left" class="red"><b>{{instance.status.state}}</b></span>
-										<span ng-show="instance.status.state !== 'failed'" ng-class="{'green': instance.status.state ==='succeeded', 'red': instance.status.state !=='succeeded'}"><b>{{instance.status.state}}</b></span>
+										<span ng-show="instance.status.state !== 'failed'" ng-class="{'green': instance.status.state ==='succeeded', 'red': instance.status.state !=='succeeded'}"><b>{{(instance.status.state !== 'succeeded') ? instance.status.state : "Running"}}</b></span>
 									</td>
 								</tr>
 							</tbody>

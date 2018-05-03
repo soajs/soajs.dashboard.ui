@@ -748,7 +748,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					$scope.deployedServices = [];
 				}
 				for(let infra in response){
-					$scope.deployedServices = $scope.deployedServices.concat(response[infra].list);
+					if(response[infra]){
+						$scope.deployedServices = $scope.deployedServices.concat(response[infra].list);
+					}
 				}
 				return cb();
 			}

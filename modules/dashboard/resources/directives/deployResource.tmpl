@@ -136,9 +136,9 @@
 						<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
 						<div>
 							<label>Published Port</label>
-							<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled=false min="1" max="2767" ng-required="true" ng-change="onExposedPortsUpdate()"/>
+							<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled=false min="1" max="65000" ng-required="true" ng-change="onExposedPortsUpdate()"/>
 							<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
-								Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.
+								Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 65000.
 							</label>
 						</div>
 					</fieldset>
@@ -252,8 +252,12 @@
 			
 			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
 				<label>Password</label>
-				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password"></input>
-                <label class="fieldMsg">Provide the password</label>
+				<div style="float: right; width: 5%; vertical-align: top; margin-top: 1px; margin-left: 5px">
+					<img ng-if="isPasswordValid" ng-src="./themes/default/img/valid.png" width="32px" height="32px"/> &nbsp;
+					<img ng-if="!isPasswordValid" ng-src="./themes/default/img/invalid.png" width="32px" height="32px"/> &nbsp;
+				</div>
+				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password" ng-change="validatePassword()" style="width: 69%"></input>
+				<label class="fieldMsg">Provide the password</label>
 			</div>
 		
 		</fieldset>

@@ -862,6 +862,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						let resource = resourceEntries[key];
 						resourceConfiguration.mapConfigurationFormDataToConfig(resource.scope, function () {
 							
+							let validDeploy = resourceDeploy.updateFormDataBeforeSave(resource.scope, resource.scope.formData.deployOptions);
+							if(!validDeploy){
+								return;
+							}
+							
 							if(typeof(resource.formIsInvalid) === 'boolean' && !resource.formIsInvalid){
 								//map the values back to custom registry
 								let imfv = angular.copy(resource.scope.formData);
@@ -872,7 +877,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 										"options": {
 											"deployConfig": {
 												"replication": {
-													"mode": imfv.deployOptions.deployConfig.replication.mode
+													"mode": imfv.deployOptions.deployConfig.replication?imfv.deployOptions.deployConfig.replication.mode:""
 												},
 												"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
 											},
@@ -888,7 +893,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 										imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
 									}
 
-									if(imfv.deployOptions.deployConfig.replication.replicas){
+									if(imfv.deployOptions.deployConfig.replication && imfv.deployOptions.deployConfig.replication.replicas){
 										imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
 									}
 
@@ -945,10 +950,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				postFormExecute();
 			}
 		});
-	}
-	
-	function updateResourceFormDataBeforeSave(deployOptions) {
-		resourceDeploy.updateFormDataBeforeSave(deployOptions);
 	}
 	
 	function go(currentScope) {
@@ -1178,7 +1179,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	return {
-		"go": go,
-		"updateResourceFormDataBeforeSave" : updateResourceFormDataBeforeSave
+		"go": go
 	}
 }]);

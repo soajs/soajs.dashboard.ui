@@ -182,15 +182,18 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
-					if (!isInBetween) {
-						overlayLoading.show();
-					}
-					
 					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
 						$scope.formData.deployOptions.custom.type = 'resource';
 					}
 					
-					resourceDeploy.updateFormDataBeforeSave($scope.formData.deployOptions);
+					let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
+					if(!validDeploy){
+						return;
+					}
+					
+					if (!isInBetween) {
+						overlayLoading.show();
+					}
 					
 					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
 						saveResource(function () {
@@ -338,9 +341,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
-					overlayLoading.show();
+					let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
+					if(!validDeploy){
+						return;
+					}
 					
-					resourceDeploy.updateFormDataBeforeSave($scope.formData.deployOptions);
+					overlayLoading.show();
 					
 					if (deployOnly) {
 						deployResource(function () {
@@ -436,9 +442,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						return;
 					}
 					
-					overlayLoading.show();
+					let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
+					if(!validDeploy){
+						return;
+					}
 					
-					resourceDeploy.updateFormDataBeforeSave($scope.formData.deployOptions);
+					overlayLoading.show();
 					
 					$scope.save(true, function () {
 						rebuildService(function () {

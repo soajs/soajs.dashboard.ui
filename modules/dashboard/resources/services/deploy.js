@@ -5,7 +5,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	/**
 	 * update deployConfig.infra account using provider
 	 */
-	function updateFormDataBeforeSave(deployOptions) {
+	function updateFormDataBeforeSave(context, deployOptions) {
 		let deployConfig = deployOptions.deployConfig;
 		
 		// clean
@@ -26,16 +26,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				delete deployOptions.custom.secrets
 			}
 			
-			if (deployOptions.custom  && deployOptions.custom.ports) {
-				delete deployOptions.custom.ports
-			}
-			
 			if (deployOptions.custom  && deployOptions.custom.sourceCode) {
 				delete deployOptions.custom.sourceCode
 			}
 			
 			if (deployOptions.custom  && (deployOptions.custom.loadBalancer || deployOptions.custom.loadBalancer === false)) {
 				delete deployOptions.custom.loadBalancer
+			}
+			
+			if(deployConfig.vmConfiguration && deployConfig.vmConfiguration.adminAccess && deployConfig.vmConfiguration.adminAccess.isPassword){
+				if(!context.isPasswordValid){
+					return false;
+				}
 			}
 		}
 		
@@ -50,6 +52,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				delete deployConfig.vmConfiguration
 			}
 		}
+		
+		return true;
 	}
 	
 	function fetchDefaultImagesOnOverride(context) {
@@ -780,7 +784,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 										if(originalInfra.name === eachInfra){
 											reformattedRestrictionInfra.push(originalInfra);
 										}
-									})
+									});
 								})
 							}
 							
@@ -791,6 +795,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					
 					if (currentScope.deploymentData.selectedRestrictionsDep && currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
 						currentScope.formData.deployOptions.deployConfig.type = currentScope.deploymentData.selectedRestrictionsDep[0];
+					}
+					
+					// beyond loading data, validate password
+					if(currentScope.formData.deployOptions.deployConfig.vmConfiguration && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
+						currentScope.validatePassword();
 					}
 				});
 			}
@@ -1021,6 +1030,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if (!ports){
 					recipe = true;
 					ports = selectedRecipe.recipe.deployOptions.ports;
+					if(context.form && context.form.formData && ports && ports[0]){ // applicable for resources with driver configuration only
+						context.form.formData.port0 = ports[0].published; // set port in drivers's configuration as well
+					}
 				}
 				if (!context.formData.deployOptions.custom){
 					context.formData.deployOptions.custom = {};
@@ -1096,6 +1108,41 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.fillForm();
+		
+		context.validatePassword = function () {
+			let password = context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password;
+			if (!password) {
+				context.isPasswordValid = false;
+				return;
+			}
+			
+			let upperCase, lowerCase, numeric, special; // must have at least one of each
+			let control; // must not have any (control = i / c / tm ... (copy right))
+			
+			for (let i = 0; i < password.length; i++) {
+				let currentChar = password.charAt(i);
+				let currentCharIsNumeric = false;
+				let currentCharIsSpecial = false;
+				
+				if ('0123456789'.indexOf(currentChar) !== -1) { // is a number
+					numeric = true;
+					currentCharIsNumeric = true;
+				}
+				if (!(/^[a-zA-Z0-9]*$/.test(currentChar))) { // is a special character
+					special = true;
+					currentCharIsSpecial = true;
+				}
+				if (!currentCharIsNumeric && !currentCharIsSpecial && currentChar === currentChar.toLowerCase()) { // is lower
+					lowerCase = true;
+				}
+				if (!currentCharIsNumeric && !currentCharIsSpecial && currentChar === currentChar.toUpperCase()) { // is upper
+					upperCase = true;
+				}
+			}
+			
+			// 3 out of 4 conditions will set it to true
+			context.isPasswordValid = (((upperCase ? 1 : 0) + (lowerCase ? 1 : 0) + (numeric ? 1 : 0) + (special ? 1 : 0)) >= 3);
+		};
 		
 		context.onExposedPortsUpdate = function () {
 			if (context.form.formData.port0 &&context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {

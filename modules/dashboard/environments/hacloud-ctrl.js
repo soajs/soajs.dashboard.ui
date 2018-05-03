@@ -207,7 +207,12 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 
 	$scope.deleteService = function (service, groupName) {
-		hacloudSrv.deleteService($scope, service, groupName);
+		if(service.labels && service.labels['soajs.service.technology'] === 'vm'){
+			vmSrv.deleteService($scope, service);
+		}
+		else{
+			hacloudSrv.deleteService($scope, service, groupName);
+		}
 	};
 
 	$scope.scaleService = function (service, groupName) {
@@ -223,7 +228,12 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 
 	$scope.inspectService = function (service) {
-		hacloudSrv.inspectService($scope, service);
+		if(service.labels && service.labels['soajs.service.technology'] === 'vm'){
+			vmSrv.inspectService($scope, service);
+		}
+		else {
+			hacloudSrv.inspectService($scope, service);
+		}
 	};
 
 	$scope.reloadServiceRegistry = function (service) {

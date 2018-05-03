@@ -73,7 +73,8 @@ vmServices.service('vmSrv', [ 'ngDataApi', '$timeout', '$modal', function (ngDat
 		}
 	}
 	
-	function deleteService(currentScope, service, groupName) {
+	function deleteService(currentScope, service) {
+		console.log(service);
 		// var params = {
 		// 	env: currentScope.envCode,
 		// 	namespace: service.namespace,

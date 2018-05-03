@@ -59,6 +59,14 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		});
 	};
 	
+	$scope.inspectService = function(service){
+		vmSrv.inspectService($scope, service);
+	};
+	
+	$scope.deleteService = function(service){
+		vmSrv.deleteService($scope, service);
+	};
+	
 	$scope.executeHeartbeatTest = function (env, oneHost) {
 		envHosts.executeHeartbeatTest($scope, env, oneHost);
 	};

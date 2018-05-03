@@ -33,6 +33,16 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		
 		let docker, kubernetes, manual;
+		currentScope.infraProviders.forEach((oneInfra) => {
+			if(oneInfra.technologies.indexOf('kubernetes') !== -1){
+				kubernetes = true;
+			}
+			
+			if(oneInfra.technologies.indexOf('docker') !== -1){
+				docker = true;
+			}
+		});
+		
 		if (restrictions.deployment && restrictions.deployment.indexOf('container') !== -1) {
 			if (restrictions.driver) {
 				if (restrictions.driver.indexOf('container.docker') !== -1) {
@@ -155,7 +165,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			delete formData.docker;
 			delete formData.previousEnvironment;
 			formData.selectedDriver = 'ondemand';
-			console.log(formData);
 		}
 		else if (currentScope.platforms.manual) {
 			formData.selectedDriver = 'manual';

@@ -95,5 +95,14 @@
 			</p>
 		</alert>
 	</accordion-group>
+	<accordion-group is-open="platforms.ondemand" ng-click="switchDriver('ondemand')">
+		<accordion-heading>
+			<input type="radio" ng-checked="platforms.ondemand" value="true" name="ondemand" disabled/>&nbsp;
+			I want to create an environment without any deployment configuration.
+		</accordion-heading>
+		<p>
+			I don't want to configure any infra deployment at this point, i will do it later on.
+		</p>
+	</accordion-group>
 </accordion>
 <div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>

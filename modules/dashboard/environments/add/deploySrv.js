@@ -66,7 +66,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				manual: true,
 				docker: false,
 				kubernetes: false,
-				previous: false
+				previous: false,
+				ondemand: false
 			};
 		}
 		
@@ -79,6 +80,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				mainScope.platforms.docker = false;
 				mainScope.platforms.kubernetes = false;
 				mainScope.platforms.manual = false;
+				mainScope.platforms.ondemand = false;
 				mainScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				break;
 			case 'docker':
@@ -87,6 +89,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				mainScope.platforms.docker = true;
 				mainScope.platforms.kubernetes = false;
 				mainScope.platforms.manual = false;
+				mainScope.platforms.ondemand = false;
 				mainScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				break;
 			case 'kubernetes':
@@ -95,7 +98,16 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				mainScope.platforms.kubernetes = true;
 				mainScope.platforms.docker = false;
 				mainScope.platforms.manual = false;
+				mainScope.platforms.ondemand = false;
 				mainScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
+				break;
+			case 'ondemand':
+				delete mainScope.previousEnvironment;
+				mainScope.platforms.previous = false;
+				mainScope.platforms.docker = false;
+				mainScope.platforms.kubernetes = false;
+				mainScope.platforms.manual = false;
+				mainScope.platforms.ondemand = true;
 				break;
 			case 'manual':
 			default:
@@ -138,7 +150,14 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function handleFormData(currentScope, formData) {
-		if (currentScope.platforms.manual) {
+		if (currentScope.platforms.ondemand) {
+			delete formData.kubernetes;
+			delete formData.docker;
+			delete formData.previousEnvironment;
+			formData.selectedDriver = 'ondemand';
+			console.log(formData);
+		}
+		else if (currentScope.platforms.manual) {
 			formData.selectedDriver = 'manual';
 			delete formData.kubernetes;
 			delete formData.docker;
@@ -279,7 +298,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					docker: currentScope.form.formData.selectedDriver === 'docker' || false,
 					kubernetes: currentScope.form.formData.selectedDriver === 'kubernetes' || false,
 					manual: currentScope.form.formData.selectedDriver === 'manual' || false,
-					previous: currentScope.previousEnvironment
+					previous: currentScope.previousEnvironment,
+					ondemand: currentScope.form.formData.selectedDriver === 'ondemand' || false
 				};
 				
 				if (currentScope.previousEnvironment && currentScope.previousEnvironment !== '') {

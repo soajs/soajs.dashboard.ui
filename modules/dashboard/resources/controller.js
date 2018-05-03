@@ -538,15 +538,25 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		function deleteInstance(cb) {
 			if (resource.isDeployed && resource.instance && resource.instance.id) {
 				overlayLoading.show();
+				
+				let params = {
+					env: $scope.envCode,
+					serviceId: resource.instance.id,
+					mode: resource.instance.labels['soajs.service.mode'],
+					name: resource.instance.name,
+				};
+				
+				if(resource.instance.labels && resource.instance.labels['soajs.service.technology'] === 'vm'){
+					params.infraAccountId =  resource.instance.labels['soajs.infra.id'];
+					params.location =  resource.instance.labels['soajs.service.vm.location'];
+					params.technology =  resource.instance.labels['soajs.service.technology'];
+					delete params.mode;
+				}
+				
 				getSendDataFromServer($scope, ngDataApi, {
 					method: 'delete',
 					routeName: '/dashboard/cloud/services/delete',
-					params: {
-						env: $scope.envCode,
-						serviceId: resource.instance.id,
-						mode: resource.instance.labels['soajs.service.mode'],
-						name: resource.instance.name,
-					}
+					params: params
 				}, function (error) {
 					overlayLoading.hide();
 					if (error) {
@@ -694,65 +704,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
-				// let response = {
-				// 	azure: {
-				// 		label: "My Azure Provider",
-				// 		list:[
-				// 			{
-				// 				"type": "vm",
-				// 				"name": "mikemongovm",
-				// 				"id": "mikemongovm",
-				// 				"labels": {
-				// 					"soajs.content": "true",
-				// 					"soajs.env.code": "dashboard",
-				// 					"soajs.service.technology": "vm",
-				// 					"soajs.infra.id": "5ae9e5cd55dc7960e796823b",
-				// 					"soajs.resource.id": "5ae9f082e371a7632ded1243",
-				// 					"soajs.image.prefix": "Canonical",
-				// 					"soajs.image.name": "UbuntuServer",
-				// 					"soajs.image.tag": "17.10",
-				// 					"soajs.service.name": "mikemongovm",
-				// 					"soajs.service.label": "mikemongovm",
-				// 					"soajs.service.type": "cluster",
-				// 					"soajs.service.subtype": "mongo"
-				// 				},
-				// 				"ports": [
-				// 					{
-				// 						"protocol": "tcp",
-				// 						"target": 27017,
-				// 						"published": 27017
-				// 					},
-				// 					{
-				// 						"protocol": "tcp",
-				// 						"target": 22,
-				// 						"published": 22
-				// 					}
-				// 				],
-				// 				"voluming": {},
-				// 				"tasks": [
-				// 					{
-				// 						"id": "mikemongovm",
-				// 						"name": "mikemongovm",
-				// 						"status": {
-				// 							"state": "succeeded",
-				// 							"ts": 1525338149668
-				// 						},
-				// 						"ref": {
-				// 							"os": {
-				// 								"type": "Linux",
-				// 								"diskSizeGB": 30
-				// 							}
-				// 						}
-				// 					}
-				// 				],
-				// 				"env": [],
-				// 				"servicePortType": "nodePort",
-				// 				"ip": "xxx-xxx-xxx-xxx"
-				// 			}
-				// 		]
-				// 	}
-				// };
-				
 				if(!$scope.deployedServices || !Array.isArray($scope.deployedServices)) {
 					$scope.deployedServices = [];
 				}

@@ -35,26 +35,32 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		if (!restrictions || Object.keys(restrictions).length === 0) {
 			currentScope.restrictions = {
-				docker: docker,
-				kubernetes: kubernetes,
+				docker: true,
+				kubernetes: true,
 				previousEnv: true,
-				showManual: manual
+				showManual: showManualDeploy
 			};
 			return;
 		}
 		
-		if (restrictions.deployment && restrictions.deployment.indexOf('container') !== -1) {
-			if (restrictions.driver) {
-				if (restrictions.driver.indexOf('container.docker') !== -1) {
-					docker = true;
+		if (restrictions.deployment) {
+			if(restrictions.deployment.indexOf('container') !== -1){
+				if (restrictions.driver) {
+					if (restrictions.driver.indexOf('container.docker') !== -1) {
+						docker = true;
+					}
+					if (restrictions.driver.indexOf('container.kubernetes') !== -1) {
+						kubernetes = true;
+					}
 				}
-				if (restrictions.driver.indexOf('container.kubernetes') !== -1) {
+				else {
+					docker = true;
 					kubernetes = true;
 				}
 			}
-			else {
-				docker = true;
-				kubernetes = true;
+			else{
+				docker = false;
+				kubernetes = false;
 			}
 		}
 		
@@ -68,6 +74,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			previousEnv: (docker || kubernetes),
 			showManual: manual
 		};
+		
 	}
 	
 	function switchDriver(driver) {

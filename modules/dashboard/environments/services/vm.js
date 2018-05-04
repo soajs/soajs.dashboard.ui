@@ -20,71 +20,17 @@ vmServices.service('vmSrv', [ 'ngDataApi', '$timeout', '$modal', function (ngDat
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
-					// let response = {
-					// 	azure: {
-					// 		label: "My Azure Provider",
-					// 		list: [
-					// 			{
-					// 				"type": "vm",
-					// 				"name": "mikemongovm",
-					// 				"id": "mikemongovm",
-					// 				"labels": {
-					// 					"soajs.content": "true",
-					// 					"soajs.env.code": "dashboard",
-					// 					"soajs.service.technology": "vm",
-					// 					"soajs.infra.id": "5ae9e5cd55dc7960e796823b",
-					// 					"soajs.resource.id": "5ae9f082e371a7632ded1243",
-					// 					"soajs.image.prefix": "Canonical",
-					// 					"soajs.image.name": "UbuntuServer",
-					// 					"soajs.image.tag": "17.10",
-					// 					"soajs.service.name": "mikemongovm",
-					// 					"soajs.service.label": "mikemongovm",
-					// 					"soajs.service.type": "cluster",
-					// 					"soajs.service.subtype": "mongo",
-					// 					"soajs.service.vm.location": "eastus",
-					// 					"soajs.service.vm.group": "DASHBOARD",
-					// 					"soajs.service.vm.size": "Standard_A1"
-					//
-					// 				},
-					// 				"ports": [
-					// 					{
-					// 						"protocol": "tcp",
-					// 						"target": 27017,
-					// 						"published": 27017
-					// 					},
-					// 					{
-					// 						"protocol": "tcp",
-					// 						"target": 22,
-					// 						"published": 22
-					// 					}
-					// 				],
-					// 				"voluming": {},
-					// 				"tasks": [
-					// 					{
-					// 						"id": "mikemongovm",
-					// 						"name": "mikemongovm",
-					// 						"status": {
-					// 							"state": "succeeded",
-					// 							"ts": 1525338149668
-					// 						},
-					// 						"ref": {
-					// 							"os": {
-					// 								"type": "Linux",
-					// 								"diskSizeGB": 30
-					// 							}
-					// 						}
-					// 					}
-					// 				],
-					// 				"env": [],
-					// 				"servicePortType": "nodePort",
-					// 				"ip": "xxx-xxx-xxx-xxx"
-					// 			}
-					// 		]
-					// 	}
-					// };
 					delete response.soajsauth;
 					if(response && Object.keys(response).length > 0){
-						currentScope.vms = response;
+						let vmsFound = false;
+						for(let infra in response){
+							if(response[infra].list && response[infra].list.length > 0){
+								vmsFound = true;
+							}
+						}
+						if(vmsFound){
+							currentScope.vms = response;
+						}
 					}
 				}
 			});

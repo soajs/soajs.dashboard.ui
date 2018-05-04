@@ -88,35 +88,48 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		}
 		
 		function markDeployed() {
-			$scope.resources.list.forEach(function (oneResource) {
-				if ($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()]) {
-					if ($scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]) {
-						var resourceConfig = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name];
-						
-						if (!resourceConfig.deploy) return;
-						if (!resourceConfig.options || !resourceConfig.options.recipe) return;
-						
-						oneResource.canBeDeployed = true;
-						oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
-					}
-				}
-				
-				for (var i = 0; i < $scope.deployedServices.length; i++) {
-					if ($scope.deployedServices[i].labels && $scope.deployedServices[i].labels['soajs.resource.id'] === oneResource._id.toString()) {
-						oneResource.isDeployed = true;
-						oneResource.instance = $scope.deployedServices[i];
-					}
-					else if ($scope.deployedServices[i].name === oneResource.name && $scope.deployedServices[i].labels["soajs.service.technology"] === "vm"){
-						oneResource.isDeployed = true;
-						oneResource.instance = $scope.deployedServices[i];
-						oneResource.canBeDeployed = true;
-						if($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()] && $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]){
-							oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
+			$scope.markDeployed();
+		}
+	};
+	
+	$scope.markDeployed = function () {
+		$scope.resources.list.forEach(function (oneResource) {
+			if ($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()]) {
+				if ($scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]) {
+					var resourceConfig = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name];
+					
+					if (!resourceConfig.deploy) return;
+					if (!resourceConfig.options || !resourceConfig.options.recipe) return;
+					
+					oneResource.canBeDeployed = true;
+					oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
+					
+					if($scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].status && oneResource.deployOptions.deployConfig.type === 'vm'){
+						if(!oneResource.instance){
+							oneResource.isDeployed = true;
+							oneResource.instance = {
+								id: oneResource.name
+							};
 						}
 					}
 				}
-			});
-		}
+			}
+			
+			for (var i = 0; i < $scope.deployedServices.length; i++) {
+				if ($scope.deployedServices[i].labels && $scope.deployedServices[i].labels['soajs.resource.id'] === oneResource._id.toString()) {
+					oneResource.isDeployed = true;
+					oneResource.instance = $scope.deployedServices[i];
+				}
+				else if ($scope.deployedServices[i].name === oneResource.name && $scope.deployedServices[i].labels["soajs.service.technology"] === "vm"){
+					oneResource.isDeployed = true;
+					oneResource.instance = $scope.deployedServices[i];
+					oneResource.canBeDeployed = true;
+					if($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()] && $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]){
+						oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
+					}
+				}
+			}
+		});
 	};
 	
 	$scope.addResource = function () {
@@ -707,14 +720,22 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				if(!$scope.deployedServices || !Array.isArray($scope.deployedServices)) {
 					$scope.deployedServices = [];
 				}
+				
+				let updateList = false;
 				for(let infra in response){
 					if(response[infra]){
 						$scope.deployedServices = $scope.deployedServices.concat(response[infra].list);
+						updateList = true;
 					}
 				}
-				return cb();
+				
+				if(updateList){
+					//this response might take more time to be returned
+					$scope.markDeployed();
+				}
 			}
 		});
+		setTimeout(() => { return cb(); }, 500);
 	};
 	
 	$scope.listDeployedServices = function (cb) {
@@ -770,7 +791,6 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					$scope.listResources(true, function () {
 						overlayLoading.hide();
 						if (cb) return cb;
-						return;
 					});
 				});
 			});

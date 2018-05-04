@@ -37,7 +37,8 @@ var resourcesAppConfig = {
 	                {'v': 'objectrocket_mongo', 'l': "Object Rocket - Mongo SAAS", "group": "cluster"},
 	                {'v': 'objectrocket_elasticsearch', 'l': "Object Rocket - ElasticSearch SAAS", "group": "cluster"},
 
-					{'v': 'mysql', 'l': "SQL", "group": "cluster"},
+					{'v': 'mysql', 'l': "MySQL", "group": "cluster"},
+					{'v': 'sql', 'l': "SQL", "group": "cluster"},
 					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
 					{'v': 'other', 'l': "Other", "group": "cluster"},
 

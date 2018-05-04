@@ -52,7 +52,7 @@ var catalogAppConfig = {
 
 					{'v': 'mongo', 'l': "Mongo", "group": "cluster"},
 					{'v': 'elasticsearch', 'l': "ElasticSearch", "cluster": "cluster"},
-					{'v': 'mysql', 'l': "MySQL", "group": "cluster"},
+					{'v': 'mysql', 'l': "SQL", "group": "cluster"},
 					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
 					{'v': 'other', 'l': "Other", "group": "cluster"},
 

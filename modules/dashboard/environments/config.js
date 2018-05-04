@@ -1114,7 +1114,7 @@ var environmentsConfig = {
 			'categories': {
 				mongo: {'l': "Mongo"},
 				elasticsearch: {'l': "ElasticSearch"},
-				mysql: {'l': "MySQL"},
+				mysql: {'l': "SQL"},
 				oracle: {'l': "Oracle"},
 				other: {'l': "Other"}
 			}

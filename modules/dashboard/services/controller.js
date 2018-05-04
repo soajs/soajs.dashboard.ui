@@ -381,7 +381,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 			x[3].info.host = $scope.envDomain;
 			x[3].info.scheme = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
 			x[3].schemes[0] = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
-			
+			x[3].basePath = x[3].basePath.toLowerCase();
 			if(parseInt($scope.servicePort) === parseInt(x[3].host.split(':')[1])) {
 				x[3].basePath = '';
 			}
@@ -405,7 +405,6 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				$window.alert('This service does not have any published ports. Either update the catalog recipe of this service and publish its port OR deploy the SOAJS Controller and an Nginx in the environment you have selected to communicate with your service.');
 			}
 			else {
-				
 				$scope.protocolConflict = false;
 				$scope.protocolConflictLink = "";
 				$scope.protocolConflictBrowser = "";

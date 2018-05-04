@@ -236,3 +236,9 @@ input.secretMountPathResource{
 .grid table table{
     min-width:auto;
 }
+
+.passwordCheckmark{
+    position: absolute;
+    top: 2px;
+    left: 6%;
+}

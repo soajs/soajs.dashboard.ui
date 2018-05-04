@@ -797,6 +797,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					if(currentScope.formData.deployOptions.deployConfig.vmConfiguration && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
 						currentScope.validatePassword();
 					}
+					context.updateDeploymentName(context.formData.name);
 				});
 			}
 
@@ -875,7 +876,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				context.formData.deployOptions.custom.name = resourceName;
 			}
-
+			
+			let deployConfig = context.formData.deployOptions.deployConfig;
+			context.vmExposedPortsDisabled = (deployConfig && deployConfig.type === 'vm');
 			context.buildComputedHostname(resourceName);
 		};
 		
@@ -901,8 +904,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				}
 			}
-
-
+			
 			if(context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0){
 				for(let $index = context.form.entries.length -1; $index >=0; $index--){
 					let oneEntry = context.form.entries[$index];
@@ -916,8 +918,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								oneSubEntry.disabled = true;
 								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
 							}
+							
 							if(oneSubEntry.name.includes("port")){
 								oneSubEntry.disabled = context.vmExposedPortsDisabled;
+								if(context.vmExposedPortsDisabled  ){
+									let firstPort = context.formData.deployOptions.custom.ports[0];
+									oneSubEntry.value = firstPort.published || firstPort.target;
+								}
 								oneSubEntry.value = oneSubEntry.value.toString();
 								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
 							}
@@ -1005,7 +1012,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			return record;
 		};
 
-		context.setExposedPorts = function (selectedRecipe, ui) {
+		context.setExposedPorts = function (selectedRecipe, ui, cb) {
 			let ports;
 			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && !ui){
 				ports = context.formData.deployOptions.custom.ports;
@@ -1101,6 +1108,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 			if (context.formData.deployOptions.custom){
 				context.formData.deployOptions.custom.ports = ports;
+			}
+			
+			if(cb){
+				return cb();
 			}
 		};
 		
@@ -1298,13 +1309,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				refreshDeployConfig(context);
 			}
 			fetchDefaultImagesOnOverride(context);
-			
-			let deployConfig = context.formData.deployOptions.deployConfig;
-			
-			if (deployConfig.type === 'vm') {
-				context.vmExposedPortsDisabled = true;
-				context.buildComputedHostname(resource.name);
-			}
 		};
 		
 		let vmDataLoaded = false;
@@ -1325,7 +1329,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				cb();
 			}
 			// }
-		}
+		};
 		
 		context.onAuthTypeChange = function () {
 			if(context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
@@ -1348,8 +1352,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		else{
 			//this is called by add env wizard.
 			updateCustomRepoName();
-			context.getSecrets(function (cb) {
-				context.displayRecipeInputs(true, false, cb);
+			context.getSecrets(function () {
+				context.displayRecipeInputs(true, false, (error,response) => {
+					if(context.formData && context.formData.canBeDeployed && resource && resource.name){
+						setTimeout(() => {
+							context.updateDeploymentName(resource.name);
+						}, 200);
+					}
+				});
 			});
 		}
 		

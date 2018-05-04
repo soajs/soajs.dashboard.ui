@@ -57,79 +57,79 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function fetchDefaultImagesOnOverride(context) {
-        if (!context.formData.custom) {
-            context.formData.custom = {}
-        }
-        if (!context.formData.custom.image) {
-            context.formData.custom.image = {}
-        }
-        if (context.deploymentData.selectedRecipe && context.deploymentData.selectedRecipe.recipe && context.deploymentData.selectedRecipe.recipe.deployOptions && context.deploymentData.selectedRecipe.recipe.deployOptions.image.override) {
-            context.getProvidersList(() => {
-                context.formData.custom.image.prefix = '';
-                context.deploymentData.providers.forEach((provider) =>{
-                    if (provider.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix) {
-                        context.formData.custom.image.prefix = context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix;
-                    }
-                });
-                context.getImagesList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix, () =>{
-                    context.deploymentData.images.forEach((image) =>{
-                        if (image.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.name) {
-                            context.formData.custom.image.name = image.v
-                        }
-                    });
-                    if (context.deploymentData.images.length === 0) {
-                        context.deploymentData.imageVersions = [];
-                    } else {
-                        context.getVersionsList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.name, () =>{
-                            context.deploymentData.imageVersions.forEach((version) =>{
-                                if (version.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.tag) {
-                                    context.formData.custom.image.tag = version.v
-                                }
-                            });
-                        });
-                    }
-                })
-            });
-        } else {
-            context.formData.custom.image.prefix = '';
-            context.formData.custom.image.name = '';
-            context.formData.custom.image.tag = '';
-        }
-    }
-
+		if (!context.formData.custom) {
+			context.formData.custom = {}
+		}
+		if (!context.formData.custom.image) {
+			context.formData.custom.image = {}
+		}
+		if (context.deploymentData.selectedRecipe && context.deploymentData.selectedRecipe.recipe && context.deploymentData.selectedRecipe.recipe.deployOptions && context.deploymentData.selectedRecipe.recipe.deployOptions.image.override) {
+			context.getProvidersList(() => {
+				context.formData.custom.image.prefix = '';
+				context.deploymentData.providers.forEach((provider) =>{
+					if (provider.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix) {
+						context.formData.custom.image.prefix = context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix;
+					}
+				});
+				context.getImagesList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix, () =>{
+					context.deploymentData.images.forEach((image) =>{
+						if (image.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.name) {
+							context.formData.custom.image.name = image.v
+						}
+					});
+					if (context.deploymentData.images.length === 0) {
+						context.deploymentData.imageVersions = [];
+					} else {
+						context.getVersionsList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.name, () =>{
+							context.deploymentData.imageVersions.forEach((version) =>{
+								if (version.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.tag) {
+									context.formData.custom.image.tag = version.v
+								}
+							});
+						});
+					}
+				})
+			});
+		} else {
+			context.formData.custom.image.prefix = '';
+			context.formData.custom.image.name = '';
+			context.formData.custom.image.tag = '';
+		}
+	}
+	
 	function refreshDeployConfig(context) {
-
-        let deployConfig = context.formData.deployOptions.deployConfig;
-        if(!deployConfig){
-            context.formData.deployOptions.deployConfig = {};
+		
+		let deployConfig = context.formData.deployOptions.deployConfig;
+		if(!deployConfig){
+			context.formData.deployOptions.deployConfig = {};
 			deployConfig = context.formData.deployOptions.deployConfig;
-        }
-
-        if(deployConfig.infra){
+		}
+		
+		if(deployConfig.infra){
 			deployConfig.infra = '';
-        }
-        if(deployConfig.vmConfiguration){
+		}
+		if(deployConfig.vmConfiguration){
 			deployConfig.vmConfiguration.flavor = '';
 			deployConfig.vmConfiguration.dataDisk = '';
-
+			
 			if(deployConfig.vmConfiguration.adminAccess){
 				deployConfig.vmConfiguration.adminAccess.username = '';
 				deployConfig.vmConfiguration.adminAccess.password = '';
 				deployConfig.vmConfiguration.adminAccess.token = '';
 			}
-        }
-
-		 deployConfig.region = '';
-
-        if (deployConfig && deployConfig.type === 'container') {
-            if (deployConfig.memoryLimit) {
-                deployConfig.memoryLimit = ''
-            }
-
-            if (deployConfig.replication) {
-                deployConfig.replication = {}
-            }
-        }
+		}
+		
+		deployConfig.region = '';
+		
+		if (deployConfig && deployConfig.type === 'container') {
+			if (deployConfig.memoryLimit) {
+				deployConfig.memoryLimit = ''
+			}
+			
+			if (deployConfig.replication) {
+				deployConfig.replication = {}
+			}
+		}
 	}
 	
 	function decodeRepoNameAndSubName(name) {
@@ -247,7 +247,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					} else {
 						context.configReposBranchesStatus[selectedRepo] = 'loaded';
 						context.configReposBranches[selectedRepo] = response.branches;
-
+						
 						//if multi auto generate path
 						if (confOrCustom === 'cust') {
 							context.sourceCodeConfig.custom.repoPath.disabled = false;
@@ -340,10 +340,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				} else {
 					let configRecords = [];
 					let customRecords = [];
-
+					
 					configRecords.push({name: "-- Leave Empty --"});
 					customRecords.push({name: "-- Leave Empty --"});
-
+					
 					if (response) {
 						response.forEach(function (eachAccount) {
 							if (eachAccount.repos) {
@@ -359,7 +359,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 											configSHA: eachRepo.configSHA
 										});
 									}
-
+									
 									if (['custom', 'service', 'daemon', 'static'].indexOf(eachRepo.type) !== -1) {
 										if (!customType || eachRepo.type === customType) {
 											customRecords.push({
@@ -374,7 +374,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 									}
 									else if (eachRepo.type === 'multi') {
 										eachRepo.configSHA.forEach((subRepo) => {
-
+											
 											//if not locked or locked from catalog and the value is multi
 											if (!customType || customType === 'multi') {
 												if ((!customRepoInfo || !customRepoInfo.subName) || (customRepoInfo && customRepoInfo.subName === subRepo.contentName)) {
@@ -391,10 +391,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 													}
 												}
 											}
-
+											
 											//if not locked or locked from catalog and value not multi
 											if (!customType || customType !== 'multi') {
-
+												
 												//one of the sub repo types should match locked type or no locked type and acceptable type
 												if ((!customType && ['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) || (customType === subRepo.contentType)) {
 													customRecords.push({
@@ -408,17 +408,17 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 													});
 												}
 											}
-
+											
 										});
 									}
 								});
 							}
 						});
 					}
-
+					
 					context.configRepos.customType = customRecords;
 					context.configRepos.config = configRecords;
-
+					
 					callback();
 				}
 			});
@@ -428,7 +428,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			if (context.envs && context.envs.list && context.envs.list.length > 0) {
 				return;
 			}
-
+			
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
@@ -449,13 +449,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						else if (currentScope.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
 							return;
 						}
-
+						
 						var envEntry = {
 							code: oneEnv.code,
 							description: oneEnv.description,
 							selected: (resource && resource.sharedEnv && resource.sharedEnv[oneEnv.code.toUpperCase()])
 						};
-
+						
 						if (resource && resource.shared && action === 'update') {
 							if (resource.sharedEnv) {
 								envEntry.selected = (resource.sharedEnv[oneEnv.code.toUpperCase()]);
@@ -466,7 +466,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								context.envs.sharedWithAll = true;
 							}
 						}
-
+						
 						context.envs.list.push(envEntry);
 					});
 				}
@@ -518,7 +518,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.setSourceCodeData = function (selectedRecipe) {
 			let customType;
-
+			
 			context.sourceCodeConfig = {
 				configuration: {
 					isEnabled: false,
@@ -538,29 +538,29 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				}
 			};
-
+			
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
-
+				
 				let conf = sourceCode.configuration;
 				let cust = sourceCode.custom;
-
+				
 				context.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
-
+				
 				if (!context.formData.deployOptions.sourceCode) {
 					context.formData.deployOptions.sourceCode = {};
 				}
-
+				
 				if (conf) {
 					context.sourceCodeConfig.configuration.isEnabled = true;
 					context.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
 					context.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
-
+					
 					if (conf.repo && conf.repo !== '') {
 						if (!context.formData.deployOptions.sourceCode.configuration) {
 							context.formData.deployOptions.sourceCode.configuration = {};
 						}
-
+						
 						context.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
 						context.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
 					} else {
@@ -571,19 +571,19 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				}
-
+				
 				if (cust && context.formData.type === 'server') {
 					customType = cust.type;
-
+					
 					context.sourceCodeConfig.custom.isEnabled = true;
 					context.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
 					context.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
-
+					
 					if (cust.repo && cust.repo !== '') {
 						if (!context.formData.deployOptions.sourceCode.custom) {
 							context.formData.deployOptions.sourceCode.custom = {};
 						}
-
+						
 						context.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
 						context.formData.deployOptions.sourceCode.custom.branch = cust.branch;
 					} else {
@@ -594,7 +594,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				}
-
+				
 				if (conf || ((cust && context.formData.type === 'server'))) {
 					context.listAccounts(customType, cust, function () {
 						// special case: if the form was overwritten from cicd we have to load the branch
@@ -628,19 +628,19 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				return cb();
 			}
-
+			
 			if(!currentScope.envPlatform){
 				return cb();
 			}
-
+			
 			let params = {
 				env: (context.kubeEnv)? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
 			};
-
+			
 			if(currentScope.envPlatform === 'kubernetes' && context.kubeNamespace){
 				params.namespace = context.kubeNamespace;
 			}
-
+			
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/secrets/list',
@@ -658,7 +658,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								found = true;
 							}
 						});
-
+						
 						if(!found){
 							context.secrets.push(oneSecret);
 						}
@@ -678,18 +678,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					context.displayAlert('danger', error.message);
 				}
 				else {
-
+					
 					if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 						context.myEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 					}
-
+					
 					let deploymentType;
 					$localStorage.environments.forEach((oneEnv) => {
 						if (oneEnv.code === context.myEnv) {
 							deploymentType = oneEnv.deployer.type;
 						}
 					});
-
+					
 					
 					if (recipes && Array.isArray(recipes)) {
 						recipes.forEach(function (oneRecipe) {
@@ -703,7 +703,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 							else {
 								if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-
+									
 									if(deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
 										if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
 											context.recipes.push(oneRecipe);
@@ -718,14 +718,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								}
 							}
 						});
-
+						
 						context.displayRecipeInputs(false, false, function(err){
 							if (err){
 								context.displayAlert('danger', err.message);
 							}
 						});
 					}
-
+					
 					if (cb) return cb();
 				}
 			});
@@ -743,7 +743,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				let allRecipes = currentScope.recipes;
 				let selectedRecipeId;
 				let selectedRecipe;
-
+				
 				if(currentScope.formData.deployOptions && currentScope.formData.deployOptions.recipe){
 					selectedRecipeId = currentScope.formData.deployOptions.recipe;
 				}else{
@@ -759,7 +759,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				
 				context.onDeploymentTechnologySelect(refresh);
 				
-                // todo: if vm
+				// todo: if vm
 				context.loadVmData(function () {
 					let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 					let allInfra = currentScope.deploymentData.infraProviders; // [{_id,name}]
@@ -800,7 +800,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					context.updateDeploymentName(context.formData.name);
 				});
 			}
-
+			
 			let recipes = context.recipes;
 			let selectedRecipe = context.recipes;
 			context.recipeUserInput.envs = {};
@@ -811,14 +811,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							for (var env in context.recipes[i].recipe.buildOptions.env) {
 								if (context.recipes[i].recipe.buildOptions.env[env].type === 'userInput') {
 									context.recipeUserInput.envs[env] = context.recipes[i].recipe.buildOptions.env[env];
-
+									
 									if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.env && context.formData.deployOptions.custom.env[env]) {
 										context.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
 									}
 								}
 							}
 						}
-
+						
 						if (context.recipes[i].recipe.deployOptions && context.recipes[i].recipe.deployOptions.image && context.recipes[i].recipe.deployOptions.image.override) {
 							context.recipeUserInput.image = {
 								override: true,
@@ -826,7 +826,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								name: context.recipes[i].recipe.deployOptions.image.name || '',
 								tag: context.recipes[i].recipe.deployOptions.image.tag || ''
 							};
-
+							
 							if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.image && Object.keys(context.formData.deployOptions.custom.image).length > 0) {
 								context.recipeUserInput.image = {
 									override: true,
@@ -836,7 +836,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								};
 							}
 						}
-
+						
 						//add check, if recipe does not support certificates, do not show the secrets input at all
 						context.secretsAllowed = 'none';
 						if(context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none'){
@@ -852,7 +852,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 			}
-
+			
 			calculateRestrictions(context);
 			context.setSourceCodeData(selectedRecipe);
 			context.setExposedPorts(selectedRecipe, ui, cb);
@@ -860,13 +860,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.updateDeploymentName = function (resourceName) {
 			if (resourceName) {
-                resourceName = resourceName.toLowerCase();
-                resourceName = resourceName.replace(/\s+/g, '');
+				resourceName = resourceName.toLowerCase();
+				resourceName = resourceName.replace(/\s+/g, '');
 			}
-
+			
 			resourceName = (resourceName) ? resourceName.toLowerCase() : '';
 			context.formData.name = resourceName;
-
+			
 			if (context.formData.canBeDeployed) {
 				if (!context.formData.deployOptions) {
 					context.formData.deployOptions = {};
@@ -883,20 +883,20 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.buildComputedHostname = function (resourceName) {
-
+			
 			context.options.computedHostname = resourceName;
-
+			
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
 				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
 					context.options.computedHostname = resourceName + '-service';
-
+					
 					var selected = context.envDeployer.selected.split('.');
 					if (context.envDeployer && context.envDeployer[selected[0]] && context.envDeployer[selected[0]][selected[1]] && context.envDeployer[selected[0]][selected[1]][selected[2]]) {
 						var platformConfig = context.envDeployer[selected[0]][selected[1]][selected[2]];
-
+						
 						if (platformConfig && platformConfig.namespace && platformConfig.namespace.default) {
 							context.options.computedHostname += '.' + platformConfig.namespace.default;
-
+							
 							if (platformConfig.namespace.perService) {
 								context.options.computedHostname += '-' + resourceName;
 							}
@@ -913,7 +913,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							oneSubEntry.disabled = false;
 							delete oneSubEntry.disabled;
 							context.form.formData[oneSubEntry.name] = '';
-
+							
 							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
 								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
@@ -936,11 +936,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						});
 					}
-
+					
 					if(context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0'){
 						context.form.entries.splice($index, 1);
 					}
-
+					
 					if(oneEntry.name && oneEntry.name === 'anotherservers'){
 						if(context.formData.canBeDeployed){
 							jQuery('#anotherservers').hide();
@@ -976,16 +976,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					});
 				}
 			}
-
+			
 			if(record.custom && record.custom.repo){
 				let selectedRepoComposed = record.custom.repo;
 				let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
-
+				
 				let selectedRepo = decoded.name;
 				let subName = decoded.subName;
-
+				
 				record.custom.repo = selectedRepo; // save clear value
-
+				
 				if(selectedRepo === '-- Leave Empty --'){
 					record.custom.repo = "";
 					record.custom.branch = "";
@@ -994,7 +994,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						if (eachConf.name === selectedRepo) {
 							record.custom.owner = eachConf.owner;
 							record.custom.subName = subName; // for multi
-
+							
 							if (eachConf.configSHA && typeof eachConf.configSHA === 'object') { // for multi
 								eachConf.configSHA.forEach(function (eachConfig) {
 									if (eachConfig.contentName === subName) {
@@ -1008,17 +1008,17 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					});
 				}
 			}
-
+			
 			return record;
 		};
-
+		
 		context.setExposedPorts = function (selectedRecipe, ui, cb) {
 			let ports;
 			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && !ui){
 				ports = context.formData.deployOptions.custom.ports;
 			}
 			let recipe = false;
-
+			
 			if(!ports && context.noCDoverride){
 				if(resource.deploy && resource.deploy.options && resource.deploy.options.custom && resource.deploy.options.custom.ports && !ui){
 					if(Array.isArray(resource.deploy.options.custom.ports) && resource.deploy.options.custom.ports.length > 0){
@@ -1154,7 +1154,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.onExposedPortsUpdate = function () {
 			if (context.form.formData.port0 &&context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {
-                context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
+				context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
 			}
 		};
 		
@@ -1194,7 +1194,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			});
 		};
-
+		
 		context.getVmSizesList = function () {
 			context.deploymentData.vmSize = [
 				{
@@ -1247,13 +1247,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			]
 		};
-
+		
 		context.getDisksList = function () {
 			context.deploymentData.disk = [
 				{v : 'none', l:"None"}
 			];
 		};
-
+		
 		context.getProvidersList = function (cb) {
 			context.deploymentData.providers = [];
 			context.deploymentData.providers = [
@@ -1264,44 +1264,44 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				cb();
 			}
 		};
-
+		
 		context.getImagesList = function (providerName, cb) {
 			let values = {
-                "provider1" : [
-                    {v : 'image1', l:"Image 1 example"},
-                ],
-                "provider2" : [
-                    {v : 'image2', l:"Image 2 example"},
-                ]
-            };
+				"provider1" : [
+					{v : 'image1', l:"Image 1 example"},
+				],
+				"provider2" : [
+					{v : 'image2', l:"Image 2 example"},
+				]
+			};
 			if (values[providerName]  === undefined) {
-                context.deploymentData.images = [];
+				context.deploymentData.images = [];
 			} else {
-                context.deploymentData.images = values[providerName];
+				context.deploymentData.images = values[providerName];
 			}
-
+			
 			if(cb){
 				cb();
 			}
 		};
-
-        context.getVersionsList = function (imageName, cb) {
-            let values = {
-                "image1": [
-                    {v: 'v1', l: "Version 1 - Alfa"}
-                ],
-                "image2": [
-                    {v: 'v2', l: "Version 2 - Alfa"}
-                ]
-            };
-            if (values[imageName] === undefined) {
-                context.deploymentData.imageVersions = [];
-            }
-            context.deploymentData.imageVersions = values[imageName];
-            if (cb) {
-                cb();
-            }
-        };
+		
+		context.getVersionsList = function (imageName, cb) {
+			let values = {
+				"image1": [
+					{v: 'v1', l: "Version 1 - Alfa"}
+				],
+				"image2": [
+					{v: 'v2', l: "Version 2 - Alfa"}
+				]
+			};
+			if (values[imageName] === undefined) {
+				context.deploymentData.imageVersions = [];
+			}
+			context.deploymentData.imageVersions = values[imageName];
+			if (cb) {
+				cb();
+			}
+		};
 		
 		// listeners
 		context.onDeploymentTechnologySelect = function (refresh) {

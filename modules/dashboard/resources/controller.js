@@ -265,11 +265,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 						}
 						
 						if(saveOptions.config && saveOptions.config.ports){
-							saveOptions.config.ports.forEach(function (eachPort, index) {
-								if(eachPort.name ==='ssh'){
-									saveOptions.config.ports.splice(index,1);
-								}
-							});
+							delete saveOptions.config.ports;
 						}
 						
 						var options = {};

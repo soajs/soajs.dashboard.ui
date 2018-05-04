@@ -346,6 +346,11 @@ function buildForm(context, modal, configuration, cb) {
 	
 	context.form.do = function (functionObj) {
 		context.form.submitted = false;
+		
+		if(!context.form.formData){
+			context.form.formData = {};
+		}
+		
 		var formDataKeys = Object.keys(context.form.formData);
 		var fileTypes = ['document', 'image', 'audio', 'video'];
 		var customData = [];
@@ -595,6 +600,14 @@ soajsApp.directive('ngformInputs', function () {
 	return {
 		restrict: 'E',
 		templateUrl: 'engine/lib/form/inputs.tmpl'
+	};
+});
+
+
+soajsApp.directive('ngformActions', function () {
+	return {
+		restrict: 'E',
+		templateUrl: 'engine/lib/form/actions.tmpl'
 	};
 });
 

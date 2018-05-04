@@ -10,7 +10,8 @@ function configureRouteNavigation(navigation, scope) {
 			resolve: {
 				load: ['$q', '$rootScope', function ($q, $rootScope) {
 					var deferred = $q.defer();
-					require(navigationEntry.scripts, function () {
+					let scriptLocation = navigationEntry.scripts;
+					require(scriptLocation, function () {
 						$rootScope.$apply(function () {
 							deferred.resolve();
 						});
@@ -116,6 +117,14 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 				$scope.currentDeployer = { type: '' };
 			}
 			$scope.currentDeployer.type = record.deployer.type;
+			
+			for(let container in data.deployer.container){
+				for(let driver in data.deployer.container[container]){
+					if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
+						delete data.deployer.container[container][driver].auth.token;
+					}
+				}
+			}
 			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 		}
 		
@@ -255,10 +264,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			
 			let hide = false;
 			if (currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
-				hide = (['resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else if ($scope.currentDeployer.type === 'manual') {
-				hide = (['environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else {
 				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)

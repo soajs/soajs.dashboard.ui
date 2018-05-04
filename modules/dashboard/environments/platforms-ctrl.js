@@ -31,14 +31,6 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		envPlatforms.editDriverConfig($scope, driver);
 	};
 
-	$scope.uploadCerts = function (platform, driverName) {
-		envPlatforms.uploadCerts($scope, platform, driverName);
-	};
-
-	$scope.removeCert = function (certId, platform, driverName) {
-		envPlatforms.removeCert($scope, certId, platform, driverName);
-	};
-
 	$scope.updateDockerConfiguration = function(driver){
 		envPlatforms.updateDockerConfiguration($scope, driver);
 	};

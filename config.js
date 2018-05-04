@@ -45,6 +45,7 @@ var apiConfiguration = {
 };
 
 var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs'];
+var KUBERNETES_SYSTEM_DEPLOYMENTS = [ 'kube-dns', 'kube-proxy', 'kube-apiserver', 'kube-scheduler', 'kube-controller-manager', 'kube-flannel-ds' ];
 var soajsAppModules = ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.select', 'luegg.directives', 'angular-sortable-view', 'ngRoute', 'ngCookies', 'ngStorage', 'textAngular', "ngFileUpload", "swaggerUi", "ui.ace", "ngCkeditor", "chart.js"];
 
 var modules = {
@@ -56,7 +57,8 @@ var modules = {
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',
 			catalogs: 'modules/dashboard/catalogs/install.js',
 			ci: 'modules/dashboard/ci/install.js',
-			cd: 'modules/dashboard/cd/install.js'
+			cd: 'modules/dashboard/cd/install.js',
+			templates: 'modules/dashboard/templates/install.js'
 		}
 	},
 	"manage": {
@@ -70,7 +72,8 @@ var modules = {
 	"deploy": {
 		"dashboard": {
 			environments: 'modules/dashboard/environments/install.js',
-			resources: 'modules/dashboard/resources/install.js'
+			resources: 'modules/dashboard/resources/install.js',
+			secrets: 'modules/dashboard/secrets/install.js'
 		}
 	},
 	"common": {

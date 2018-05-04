@@ -29,19 +29,6 @@
     </fieldset>
 </section>
 
-<script type="text/ng-template" id="uploadCertsInfo.html">
-    <div class="modal-body">
-        <div ng-bind-html="text"></div>
-    </div>
-    <div class="modal-footer" ng-if="data">
-        <button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
-    </div>
-</script>
-
-<script type="text/ng-template" id="uploadCerts.tmpl">
-    <div ng-include="'modules/dashboard/environments/directives/uploadCerts.tmpl'"></div>
-</script>
-
 <script type="text/ng-template" id="updateNamespaceConfig.tmpl">
     <div ng-include="'modules/dashboard/environments/directives/updateNamespaceConfig.tmpl'"></div>
 </script>

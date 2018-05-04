@@ -796,26 +796,33 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error.message);
-			}
-			else {
-				var autoRefreshPromise;
-				
-				var mInstance = $modal.open({
-					templateUrl: "logBox.html",
-					size: 'lg',
-					backdrop: true,
-					keyboard: false,
-					windowClass: 'large-Modal',
-					controller: function ($scope, $modalInstance) {
-						$scope.title = "Host Logs of " + task.name;
+			var autoRefreshPromise;
+
+			var mInstance = $modal.open({
+				templateUrl: "logBox.html",
+				size: 'lg',
+				backdrop: true,
+				keyboard: false,
+				windowClass: 'large-Modal',
+				controller: function ($scope, $modalInstance) {
+					$scope.title = "Host Logs of " + task.name;
+					fixBackDrop();
+
+					$scope.ok = function () {
+						$modalInstance.dismiss('ok');
+					};
+
+					if(error) {
+						$scope.message = {
+							warning: 'Instance logs are not available at the moment. Make sure that the instance is <strong style="color:green;">running</strong> and healthy.<br> If this is a newly deployed instance, please try again in a few moments.'
+						};
+					}
+					else {
 						$scope.data = remove_special(response.data);
-						fixBackDrop();
 						$timeout(function () {
 							highlightMyCode()
 						}, 500);
-						
+
 						$scope.refreshLogs = function () {
 							getSendDataFromServer(currentScope, ngDataApi, {
 								method: "get",
@@ -835,39 +842,35 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 									if (!$scope.$$phase) {
 										$scope.$apply();
 									}
-									
+
 									fixBackDrop();
 									$timeout(function () {
 										highlightMyCode()
 									}, 500);
-									
+
 									autoRefreshPromise = $timeout(function () {
 										$scope.refreshLogs();
 									}, 5000);
 								}
 							});
 						};
-						
-						$scope.ok = function () {
-							$modalInstance.dismiss('ok');
-						};
-						
+
 						$scope.refreshLogs();
 					}
-				});
-				
-				mInstance.result.then(function () {
-					//Get triggers when modal is closed
-					currentScope.pauseRefresh = false;
-					$timeout.cancel(autoRefreshPromise);
-				}, function () {
-					//gets triggers when modal is dismissed.
-					currentScope.pauseRefresh = false;
-					$timeout.cancel(autoRefreshPromise);
-				});
-			}
+				}
+			});
+
+			mInstance.result.then(function () {
+				//Get triggers when modal is closed
+				currentScope.pauseRefresh = false;
+				$timeout.cancel(autoRefreshPromise);
+			}, function () {
+				//gets triggers when modal is dismissed.
+				currentScope.pauseRefresh = false;
+				$timeout.cancel(autoRefreshPromise);
+			});
 		});
-		
+
 		function remove_special(str) {
 			if (!str) {
 				return 'No logs found for this instance'; //in case container has no logs, return message to display

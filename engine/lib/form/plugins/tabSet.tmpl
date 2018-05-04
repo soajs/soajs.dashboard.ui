@@ -1,7 +1,11 @@
 <div class="{{entry.class}}">
 	<label ng-bind-html="entry.label|toTrustedHtml" class=""></label>
 	<tabset>
-		<tab ng-repeat="oneTab in entry.tabs" heading="{{oneTab.label}}">
+		<tab ng-repeat="oneTab in entry.tabs" heading="{{oneTab.label}}" ng-click="form.call(oneTab.onAction, oneTab.name , form.formData[oneTab.name], form )">
+			<div ng-show="oneTab.description" >
+				<br>
+				<alert type="{{oneTab.description.type}}" ng-bind-html="oneTab.description.content"></alert>
+			</div>
 			<table border="0" cellspacing="0" cellpadding="0" width="100%">
 				<tr ng-repeat="entry in oneTab.entries" class="form-group tr-{{entry.name}}-wrapper" ng-switch="entry.type">
 					<td ng-if="entry.directive">

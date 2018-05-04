@@ -171,3 +171,97 @@ fieldset.autoScale legend {
     margin-top: -3px !important;
     width: 18px !important;
 }
+
+/* The switch - the box around the slider */
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 50px !important;
+    height: 20px !important;
+    top: 7px;
+    left: 6px;
+}
+
+/* Hide default HTML checkbox */
+.toggleSwitch input {display:none;}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+
+    width: 50px !important;
+    height: 20px !important;
+    top: 7px;
+    left: 6px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.buttonSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.buttonSlider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+
+    top: 1px;
+}
+
+input:checked + .buttonSlider {
+    background-color: #5cb85c;
+}
+
+input:focus + .buttonSlider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .buttonSlider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.buttonSlider.round {
+    border-radius: 34px;
+}
+
+.buttonSlider.round:before {
+    border-radius: 50%;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+    padding-left: 20px;
+}
+
+.resource .ui-select-multiple.ui-select-bootstrap {
+    min-height: 60px;
+    height: auto!important;
+}
+
+label.secretMountPathResource{
+    float: none!important;
+}
+
+input.secretMountPathResource{
+    float: none!important;
+    width:100%!important;
+}

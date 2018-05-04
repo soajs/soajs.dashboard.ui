@@ -10,7 +10,7 @@
 	<div>
 		<label>Deployment Name</label>
 		<input type="text" class="form-control" ng-model="formData.deployOptions.custom.name" ng-required="true" ng-disabled="true"/>
-		<label class="fieldMsg">Choose a name for the new deployment</label>
+		<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
 		<br/>
 	</div>
 	<div>
@@ -66,90 +66,141 @@
 	</div>
 </fieldset>
 
-<fieldset class="custom-fieldset" ng-if="sourceCodeConfig.configuration.isEnabled">
-	<legend>{{selectedSourceCode.configuration.label}}</legend>
-	<div>
-		<label>Repository</label>
-		<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="formData.deployOptions.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
-		<label class="fieldMsg">Choose your configuration repository</label>
-		<br>
-	</div>
+<div ng-if="catalogConflictingPorts !== ''">
+	<alert type='danger'>Unable to proceed, Detected port conflict in Catalog recipe: {{catalogConflictingPorts}}</alert>
+</div>
+<div ng-if="catalogConflictingPorts === ''">
+	<fieldset class="custom-fieldset" ng-if="sourceCodeConfig.configuration.isEnabled">
+		<legend>{{selectedSourceCode.configuration.label}}</legend>
+		<div>
+			<label>Repository</label>
+			<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="formData.deployOptions.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
+			<label class="fieldMsg">Choose your configuration repository</label>
+			<br>
+		</div>
+		
+		<div ng-if="formData.deployOptions.sourceCode.configuration.repo && formData.deployOptions.sourceCode.configuration.repo !== '-- Leave Empty --'">
+			<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[formData.deployOptions.sourceCode.configuration.repo]==='loading'"></label>
+			<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[formData.deployOptions.sourceCode.configuration.repo]" ng-model="formData.deployOptions.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="formData.deployOptions.sourceCode.configuration.repo && formData.deployOptions.sourceCode.configuration.repo !== '-- Leave Empty --'">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="formData.deployOptions.sourceCode.configuration.path" ng-required="false"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
+	</fieldset>
 	
-	<div ng-if="formData.deployOptions.sourceCode.configuration.repo && formData.deployOptions.sourceCode.configuration.repo !== '-- Leave Empty --'">
-		<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[formData.deployOptions.sourceCode.configuration.repo]==='loading'"></label>
-		<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[formData.deployOptions.sourceCode.configuration.repo]" ng-model="formData.deployOptions.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
-		<label class="fieldMsg">Choose your branch</label>
+	<fieldset class="custom-fieldset" ng-if="sourceCodeConfig.custom.isEnabled">
+		<legend>{{selectedSourceCode.custom.label}}</legend>
+		<div>
+			<label>Repository</label>
+			<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="formData.deployOptions.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled">
+			</select>
+			<label class="fieldMsg">Choose your custom code repository</label>
+			<br>
+		</div>
+		
+		<div ng-if="formData.deployOptions.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
+			<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
+			<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="formData.deployOptions.sourceCode.custom.branch" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled"></select>
+			<label class="fieldMsg">Choose your branch</label>
+			<br>
+		</div>
+		
+		<div ng-if="formData.deployOptions.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
+			<label>Path</label>
+			<input type="text" class="form-control" ng-model="formData.deployOptions.sourceCode.custom.path" ng-required="false" ng-disabled="sourceCodeConfig.custom.repoPath.disabled"/>
+			<label class="fieldMsg">Unless specified, the root will be used</label>
+		</div>
+	</fieldset>
+	<fieldset class="custom-fieldset" ng-if="formData.deployOptions.custom && formData.deployOptions.custom.ports">
+		<legend>Published Ports</legend>
+		<div>
+			<label>Load Balancer</label>
+			<label class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.deployOptions.custom.loadBalancer" ng-value="formData.deployOptions.custom.loadBalancer" ng-change="useLoadBalancer()"><span class="buttonSlider round"></span></label>
+			<label class="fieldMsg">Turn on to use Load Balancer</label>
+			<br/><br/>
+		</div>
+		<div ng-repeat="exposedPorts in formData.deployOptions.custom.ports" ng-if="!formData.deployOptions.custom.loadBalancer">
+			<fieldset class="custom-fieldset" ng-if="exposedPorts.isPublished || exposedPorts.published">
+				<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}</legend>
+				<div>
+					<label>Published Port</label>
+					<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="2767" ng-required="true"/>
+					<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
+						Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.
+					</label>
+				</div>
+			</fieldset>
+		</div>
 		<br>
-	</div>
+	</fieldset>
 	
-	<div ng-if="formData.deployOptions.sourceCode.configuration.repo && formData.deployOptions.sourceCode.configuration.repo !== '-- Leave Empty --'">
-		<label>Path</label>
-		<input type="text" class="form-control" ng-model="formData.deployOptions.sourceCode.configuration.path" ng-required="false"/>
-		<label class="fieldMsg">Unless specified, the root will be used</label>
-	</div>
-</fieldset>
-
-<fieldset class="custom-fieldset" ng-if="sourceCodeConfig.custom.isEnabled">
-	<legend>{{selectedSourceCode.custom.label}}</legend>
-	<div>
-		<label>Repository</label>
-		<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="formData.deployOptions.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled">
-		</select>
-		<label class="fieldMsg">Choose your configuration repository</label>
-		<br>
-	</div>
-	
-	<div ng-if="formData.deployOptions.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
-		<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
-		<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="formData.deployOptions.sourceCode.custom.branch" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled"></select>
-		<label class="fieldMsg">Choose your branch</label>
-		<br>
-	</div>
-	
-	<div ng-if="formData.deployOptions.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
-		<label>Path</label>
-		<input type="text" class="form-control" ng-model="formData.deployOptions.sourceCode.custom.path" ng-required="false" ng-disabled="sourceCodeConfig.custom.repoPath.disabled"/>
-		<label class="fieldMsg">Unless specified, the root will be used</label>
-	</div>
-</fieldset>
-
-<fieldset class="custom-fieldset">
-	<legend>Environment Scaling</legend>
-	<div>
-		<label>Deployment Mode</label>
-		<select class="form-control" ng-required="true" ng-options="mode.value as mode.label for mode in options.deploymentModes" ng-model="formData.deployOptions.deployConfig.replication.mode"></select>
-		<br/><br/>
-	</div>
-	<div ng-if="!options.enableAutoScale && (formData.deployOptions.deployConfig.replication.mode == 'replicated' || formData.deployOptions.deployConfig.replication.mode == 'deployment')">
-		<label>Replica Count</label>
-		<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.replication.replicas" ng-required="true"/>
-		<br/><br/>
-	</div>
-	<fieldset ng-if="options.envPlatform === 'kubernetes' && formData.deployOptions.deployConfig.replication.mode === 'deployment'" ng-class="{'autoScale':!options.enableAutoScale}">
-		<legend>Auto Scale <input type="checkbox" ng-model="options.enableAutoScale"></legend>
-		<fieldset ng-if="options.enableAutoScale">
-			<legend>Metrics</legend>
-			<div>
-				<label>CPU</label>
-				<input type="number" class="form-control" ng-model="formData.deployOptions.autoScale.metrics.cpu.percent" ng-required="true"/>
-				<label class="fieldMsg">Enter CPU percentage</label>
-				<br>
+	<fieldset class="custom-fieldset resource" ng-if="secrets && secretsAllowed !=='none'">
+		<legend>Secrets</legend>
+		<div>
+			<ui-select multiple theme="bootstrap" ng-model="formData.deployOptions.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true" ng-required="secretsAllowed === 'required'">
+				<ui-select-match placeholder="Select secret...">{{$item.name}}</ui-select-match>
+				<ui-select-choices repeat="secret in secrets | filter: {name: $select.search}">
+					<div ng-bind-html="secret.name | highlight: $select.search"></div>
+					<small>
+						id: {{secret.uid}}
+					</small>
+				</ui-select-choices>
+			</ui-select>
+		</div>
+		<fieldset ng-if="formData.deployOptions.custom.secrets && formData.deployOptions.custom.secrets.length > 0" >
+			<legend>Mount Path</legend>
+			<div ng-repeat="secret in formData.deployOptions.custom.secrets">
+				<label class = "secretMountPathResource" >{{secret.name}}</label><br />
+				<input type="text" class="form-control secretMountPathResource" ng-model="secret.mountPath" ng-disabled="false" ng-required="true"/>
+				<label class="fieldMsg">Provide a mount path for your secret. Mount path are used from within the containers.</label>
+				<br /><br/>
 			</div>
 		</fieldset>
-		<fieldset ng-if="options.enableAutoScale">
-			<legend>Replicas</legend>
-			<div>
-				<label>min</label>
-				<input type="number" class="form-control" ng-model="formData.deployOptions.autoScale.replicas.min" ng-required="true"/>
-				<label class="fieldMsg">Enter minimum Replica Count that is greater or equal to 1</label>
-				<br>
-			</div>
-			<div>
-				<label>max</label>
-				<input type="number" class="form-control" ng-model="formData.deployOptions.autoScale.replicas.max" ng-required="true"/>
-				<label class="fieldMsg">Enter maximum Replica Count that is greater or equal to 1</label>
-				<br>
-			</div>
+	
+	</fieldset>
+	<fieldset class="custom-fieldset">
+		<legend>Environment Scaling</legend>
+		<div>
+			<label>Deployment Mode</label>
+			<select class="form-control" ng-required="true" ng-options="mode.value as mode.label for mode in options.deploymentModes" ng-model="formData.deployOptions.deployConfig.replication.mode"></select>
+			<br/><br/>
+		</div>
+		<div ng-if="!options.enableAutoScale && (formData.deployOptions.deployConfig.replication.mode == 'replicated' || formData.deployOptions.deployConfig.replication.mode == 'deployment')">
+			<label>Replica Count</label>
+			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.replication.replicas" ng-required="true"/>
+			<br/><br/>
+		</div>
+		<fieldset ng-if="options.envPlatform === 'kubernetes' && formData.deployOptions.deployConfig.replication.mode === 'deployment'" ng-class="{'autoScale':!options.enableAutoScale}">
+			<legend>Auto Scale <label class="switch"><input type="checkbox" ng-model="options.enableAutoScale"><span class="buttonSlider round"></span></label></legend>
+			<fieldset ng-if="options.enableAutoScale">
+				<legend>Metrics</legend>
+				<div>
+					<label>CPU</label>
+					<input type="number" class="form-control" ng-model="formData.deployOptions.autoScale.metrics.cpu.percent" ng-required="true"/>
+					<label class="fieldMsg">Enter CPU percentage</label>
+					<br>
+				</div>
+			</fieldset>
+			<fieldset ng-if="options.enableAutoScale">
+				<legend>Replicas</legend>
+				<div>
+					<label>min</label>
+					<input type="number" class="form-control" ng-model="formData.deployOptions.autoScale.replicas.min" ng-required="true"/>
+					<label class="fieldMsg">Enter minimum Replica Count that is greater or equal to 1</label>
+					<br>
+				</div>
+				<div>
+					<label>max</label>
+					<input type="number" class="form-control" ng-model="formData.deployOptions.autoScale.replicas.max" ng-required="true"/>
+					<label class="fieldMsg">Enter maximum Replica Count that is greater or equal to 1</label>
+					<br>
+				</div>
+			</fieldset>
 		</fieldset>
 	</fieldset>
-</fieldset>
+</div>

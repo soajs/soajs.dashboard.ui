@@ -878,6 +878,10 @@ var translation = {
 	"progress": {
 		"ENG": "Progress",
 		"FRA": "Progress"
+	},
+	"secrets": {
+		"ENG": "Secrets",
+		"FRA": "Secrets"
 	}
 };
 

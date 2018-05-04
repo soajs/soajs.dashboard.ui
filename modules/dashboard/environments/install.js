@@ -1,6 +1,6 @@
 "use strict";
 
-var envTranslation ={
+var envTranslation = {
 	"code": {
 		"ENG": "Code",
 		"FRA": "Code"
@@ -14,8 +14,8 @@ var envTranslation ={
 		"FRA": "Repositories"
 	},
 	"platformsAndCertificates": {
-		"ENG": "Platforms & Certificates",
-		"FRA": "Platforms & Certificates"
+		"ENG": "Platforms",
+		"FRA": "Platforms"
 	},
 	"hosts": {
 		"ENG": "Hosts",
@@ -543,10 +543,10 @@ var envTranslation ={
 		"ENG": " new controller(s) for environment ",
 		"FRA": " new controllers(s) for environment "
 	},
-    "newNginxEnvironment": {
-        "ENG": " new nginx instance(s) for environment ",
-        "FRA": " new nginx instance(s) for environment "
-    },
+	"newNginxEnvironment": {
+		"ENG": " new nginx instance(s) for environment ",
+		"FRA": " new nginx instance(s) for environment "
+	},
 	"zombieContainers": {
 		"ENG": "Zombie Containers",
 		"FRA": "Zombie Containers"
@@ -742,7 +742,7 @@ var envTranslation ={
 		"ENG": "Specify if CORS should should support credentials in requests",
 		"FRA": "Specify if CORS should should support credentials in requests"
 	},
-	"credentials":{
+	"credentials": {
 		"ENG": "Credentials",
 		"FRA": "Credentials"
 	},
@@ -774,23 +774,23 @@ var envTranslation ={
 		"ENG": "Grants",
 		"FRA": "Grants"
 	},
-	"accessTokenLifetime":{
+	"accessTokenLifetime": {
 		"ENG": "Access Token Lifetime",
 		"FRA": "Access Token Lifetime"
 	},
-	"accessTokenLifetimeNote":{
+	"accessTokenLifetimeNote": {
 		"ENG": "Access Token Lifetime in seconds. Default is 1 hour.",
 		"FRA": "Access Token Lifetime in seconds. Default is 1 hour."
 	},
-	"refreshTokenLifetime":{
+	"refreshTokenLifetime": {
 		"ENG": "Refresh Token Lifetime",
 		"FRA": "Refresh Token Lifetime"
 	},
-	"refreshTokenLifetimeNote":{
+	"refreshTokenLifetimeNote": {
 		"ENG": "Refresh Token Lifetime in seconds. Default is 14 days.",
 		"FRA": "Refresh Token Lifetime in seconds. Default is 14 days."
 	},
-
+	
 	"enterCommaSeparatedValues": {
 		"ENG": "Enter comma separated values",
 		"FRA": "Enter comma separated values"
@@ -952,7 +952,7 @@ var envTranslation ={
 	 You need to go to Multi-Tenancy and generate new keys for all your tenants
 	 Specify the algorithm to use and a password (minimum 5 characters) to encrypt tenant keys. More info on what options are supported is found at
 	 */
-
+	
 	"changingTenantKeySecurityEncryptionConfigurationDisablesTenantKeys": {
 		"ENG": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys.",
 		"FRA": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys."
@@ -1250,7 +1250,7 @@ var envTranslation ={
 		"ENG": "Private Key",
 		"FRA": "Private Key"
 	},
-
+	
 	//list-service-config
 	"reloadRegistry": {
 		"ENG": "Reload Registry",
@@ -1358,15 +1358,15 @@ var envTranslation ={
 		"ENG": "Available files of type",
 		"FRA": "Available files of type"
 	},
-	"loadDaemonGroupConfig":{
+	"loadDaemonGroupConfig": {
 		"ENG": "Load Daemon Group Config",
 		"FRA": "Load Daemon Group Config"
 	},
-	"unableToDownloadProfile":{
+	"unableToDownloadProfile": {
 		"ENG": "Unable to Download Profile",
 		"FRA": "Unable to Download Profile"
 	},
-	"downloadProfile":{
+	"downloadProfile": {
 		"ENG": "Download Profile",
 		"FRA": "Download Profile"
 	}
@@ -1386,13 +1386,36 @@ var environmentsNav = [
 		},
 		'label': translation.addNewEnvironment[LANG],
 		'url': '#/environments-add',
-		'tplPath': 'modules/dashboard/environments/directives/add.tmpl',
-		'pillar':{
+		'tplPath': 'modules/dashboard/environments/directives/add/index.tmpl',
+		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
 			'position': 3
 		},
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/addEnv-ctrl.js', 'modules/dashboard/environments/services/addEnv.js', 'modules/dashboard/environments/services/addEnvLib/overview.js'],
+		'scripts': [
+			'modules/dashboard/environments/config.js',
+			'modules/dashboard/environments/add/controller.js',
+			'modules/dashboard/environments/add/templateSrv.js',
+			'modules/dashboard/environments/add/giSrv.js',
+			'modules/dashboard/environments/add/deploySrv.js',
+			'modules/dashboard/environments/add/registrySrv.js',
+			'modules/dashboard/environments/add/overviewSrv.js',
+			'modules/dashboard/environments/add/nginxSrv.js',
+			'modules/dashboard/environments/add/dynamicSrv.js',
+			'modules/dashboard/environments/add/statusSrv.js',
+			'modules/dashboard/environments/add/statusAPISrv.js',
+			'modules/dashboard/environments/services/custom_registry.js',
+			
+			'modules/dashboard/resources/config.js',
+			'modules/dashboard/resources/services/deploy.js',
+			'modules/dashboard/resources/services/configuration.js',
+			
+			'modules/dashboard/secrets/config.js',
+			'modules/dashboard/secrets/services/secretsService.js',
+			
+			'modules/dashboard/environments/services/repos.js',
+			'modules/dashboard/environments/services/deployServiceDep.js'
+		],
 	},
 	{
 		'id': 'environments',
@@ -1405,7 +1428,7 @@ var environmentsNav = [
 		'url': '#/environments',
 		'tplPath': 'modules/dashboard/environments/directives/list.tmpl',
 		'icon': 'earth',
-		'pillar':{
+		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
 			'position': 3
@@ -1413,7 +1436,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js', 'modules/dashboard/environments/services/custom_registry.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -1427,7 +1450,7 @@ var environmentsNav = [
 		},
 		'tplPath': 'modules/dashboard/environments/directives/edit.tmpl',
 		'tracker': true,
-		'pillar':{
+		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
 			'position': 3
@@ -1448,7 +1471,7 @@ var environmentsNav = [
 		'icon': 'git',
 		'excludedEnvs': ['dashboard'],
 		"fallbackLocation": "#/environments",
-		'pillar':{
+		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
 			'position': 3
@@ -1456,7 +1479,7 @@ var environmentsNav = [
 		'order': 2,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js','modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -1493,7 +1516,7 @@ var environmentsNav = [
 		'url': '#/environments-dbs',
 		'tplPath': 'modules/dashboard/environments/directives/list-databases.tmpl',
 		'icon': 'database',
-		'pillar':{
+		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
 			'position': 3
@@ -1515,7 +1538,7 @@ var environmentsNav = [
 		'url': '#/environments-clouds-deployments',
 		'tplPath': 'modules/dashboard/environments/directives/cloud-deployments.tmpl',
 		'icon': 'sphere',
-		'pillar':{
+		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],
 			'position': 3
@@ -1523,7 +1546,7 @@ var environmentsNav = [
 		'order': 7,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/clouds.js','modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/metrics.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/metrics.js'],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

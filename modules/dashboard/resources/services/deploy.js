@@ -916,12 +916,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							
 							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
-								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+								
+								if(context.vmExposedPortsDisabled && resource.status === 'ready'){
+									context.form.formData[oneSubEntry.name] = resource.config.servers[0].host;
+								}
+								else{
+									context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+								}
 							}
 							
 							if(oneSubEntry.name.includes("port")){
 								oneSubEntry.disabled = context.vmExposedPortsDisabled;
-								if(context.vmExposedPortsDisabled  ){
+								if(context.vmExposedPortsDisabled){
 									let firstPort = context.formData.deployOptions.custom.ports[0];
 									oneSubEntry.value = firstPort.published || firstPort.target;
 								}

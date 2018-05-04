@@ -917,7 +917,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
 							}
 							if(oneSubEntry.name.includes("port")){
-								oneSubEntry.disabled = context.vmExposedPortsDisabled;
+								oneSubEntry.disabled = context.vmExposedPortsDisabled || context.resourceDeployed;
 								oneSubEntry.value = oneSubEntry.value.toString();
 								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
 							}
@@ -1301,10 +1301,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			
 			let deployConfig = context.formData.deployOptions.deployConfig;
 			
-			if (deployConfig.type === 'vm') {
-				context.vmExposedPortsDisabled = true;
-				context.buildComputedHostname(resource.name);
-			}
+			context.vmExposedPortsDisabled = (deployConfig.type === 'vm');
+			context.buildComputedHostname(resource.name);
 		};
 		
 		let vmDataLoaded = false;

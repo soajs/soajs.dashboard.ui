@@ -22,16 +22,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			});
 		}
 		
-		if (!restrictions || Object.keys(restrictions).length === 0) {
-			currentScope.restrictions = {
-				docker: true,
-				kubernetes: true,
-				previousEnv: true,
-				showManual: showManualDeploy
-			};
-			return;
-		}
-		
 		let docker, kubernetes, manual;
 		currentScope.infraProviders.forEach((oneInfra) => {
 			if(oneInfra.technologies.indexOf('kubernetes') !== -1){
@@ -42,6 +32,16 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				docker = true;
 			}
 		});
+		
+		if (!restrictions || Object.keys(restrictions).length === 0) {
+			currentScope.restrictions = {
+				docker: docker,
+				kubernetes: kubernetes,
+				previousEnv: true,
+				showManual: manual
+			};
+			return;
+		}
 		
 		if (restrictions.deployment && restrictions.deployment.indexOf('container') !== -1) {
 			if (restrictions.driver) {

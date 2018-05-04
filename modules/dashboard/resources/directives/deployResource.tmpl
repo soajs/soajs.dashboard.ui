@@ -236,7 +236,7 @@
 			<label >Use Authentication Password</label>
 			<label class="toggleSwitch f-right " style="float: right"><input type="checkbox" ng-click="onAuthTypeChange()" ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword"><span class="buttonSlider round"></span></label>
 			<label class="fieldMsg">Choose if password or SSH</label>
-			<br /><br />
+			<br />
 
 			<label>Username</label>
 			<input name="username" type="text" class="form-control"  ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.username"></input>
@@ -250,13 +250,17 @@
 				<br />
 			</div>
 			
-			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword">
+			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword" style="position: relative">
+				
 				<label>Password</label>
-				<div style="float: right; width: 5%; vertical-align: top; margin-top: 1px; margin-left: 5px">
-					<img ng-if="isPasswordValid" ng-src="./themes/default/img/valid.png" width="32px" height="32px"/> &nbsp;
-					<img ng-if="!isPasswordValid" ng-src="./themes/default/img/invalid.png" width="32px" height="32px"/> &nbsp;
+				
+				<div style="position: absolute; top:8px; left: 23%;">
+					<span class="icon icon-checkmark green" ng-if="isPasswordValid"></span>
+					<span class="icon icon-cross red" ng-if="!isPasswordValid"></span>
 				</div>
-				<input name="password" type="text"class="form-control" ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password" ng-change="validatePassword()" style="width: 69%"></input>
+				
+				<input name="password" type="password"class="form-control" ng-required="true"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password" ng-change="validatePassword()" ng-valid="isPasswordValid"></input>
+				
 				<label class="fieldMsg">Provide the password</label>
 			</div>
 		
@@ -304,7 +308,7 @@
 					<legend class="capitalize">{{exposedPorts.name}}</legend>
 					<div>
 						<label>Published Port</label>
-						<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="false" min="1" max="65535" ng-required="true" ng-change="onExposedPortsUpdate()"/>
+						<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="vmExposedPortsDisabled" min="1" max="65535" ng-required="true" ng-change="onExposedPortsUpdate()"/>
 						<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value
 							Enter a value if you want to expose this resource to a specific port; Port values are
 							limited to a range between 0 and 65535.

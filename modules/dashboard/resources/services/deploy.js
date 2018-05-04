@@ -756,12 +756,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						context.deploymentData.selectedRecipe = selectedRecipe;
 					}
 				});
-
-                if(refresh){
-                    refreshDeployConfig(context);
-                }
-                  
-                fetchDefaultImagesOnOverride(context);
+				
+				context.onDeploymentTechnologySelect(refresh);
 				
                 // todo: if vm
 				context.loadVmData(function () {
@@ -921,6 +917,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								context.form.formData[oneSubEntry.name] = context.options.computedHostname;
 							}
 							if(oneSubEntry.name.includes("port")){
+								oneSubEntry.disabled = context.vmExposedPortsDisabled;
 								oneSubEntry.value = oneSubEntry.value.toString();
 								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
 							}
@@ -1212,6 +1209,30 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					"resourceDiskSizeInMB": 291840,
 					"memoryInMB": 7168,
 					"maxDataDiskCount": 8
+				},
+				{
+					"name": "Standard_D12",
+					"numberOfCores": 4,
+					"osDiskSizeInMB": 1047552,
+					"resourceDiskSizeInMB": 204800,
+					"memoryInMB": 28672,
+					"maxDataDiskCount": 16
+				},
+				{
+					"name": "Standard_D13",
+					"numberOfCores": 8,
+					"osDiskSizeInMB": 1047552,
+					"resourceDiskSizeInMB": 409600,
+					"memoryInMB": 57344,
+					"maxDataDiskCount": 32
+				},
+				{
+					"name": "Standard_D14",
+					"numberOfCores": 16,
+					"osDiskSizeInMB": 1047552,
+					"resourceDiskSizeInMB": 819200,
+					"memoryInMB": 114688,
+					"maxDataDiskCount": 64
 				}
 			]
 		};
@@ -1277,6 +1298,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				refreshDeployConfig(context);
 			}
 			fetchDefaultImagesOnOverride(context);
+			
+			let deployConfig = context.formData.deployOptions.deployConfig;
+			
+			if (deployConfig.type === 'vm') {
+				context.vmExposedPortsDisabled = true;
+				context.buildComputedHostname(resource.name);
+			}
 		};
 		
 		let vmDataLoaded = false;

@@ -628,11 +628,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				return cb();
 			}
-
+			
 			if(!currentScope.envPlatform){
 				return cb();
 			}
-
+			
 			let params = {
 				env: (context.kubeEnv)? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
 			};

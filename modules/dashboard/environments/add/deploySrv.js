@@ -43,6 +43,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			return;
 		}
 		
+		let docker, kubernetes, manual;
 		if (restrictions.deployment && restrictions.deployment.indexOf('container') !== -1) {
 			if (restrictions.driver) {
 				if (restrictions.driver.indexOf('container.docker') !== -1) {

@@ -110,6 +110,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 							oneResource.instance = {
 								id: oneResource.name
 							};
+							oneResource.status = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].status;
 						}
 					}
 				}
@@ -126,6 +127,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					oneResource.canBeDeployed = true;
 					if($scope.deployConfig && $scope.deployConfig[$scope.envCode.toUpperCase()] && $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name]){
 						oneResource.deployOptions = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].options;
+						oneResource.status = $scope.deployConfig[$scope.envCode.toUpperCase()][oneResource.name].status;
 					}
 				}
 			}
@@ -261,6 +263,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 								}
 							});
 						}
+						
+						if(saveOptions.config && saveOptions.config.ports){
+							delete saveOptions.config.ports;
+						}
+						
 						var options = {};
 						if ($scope.options.formAction === 'add') {
 							options = {
@@ -555,9 +562,12 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				let params = {
 					env: $scope.envCode,
 					serviceId: resource.instance.id,
-					mode: resource.instance.labels['soajs.service.mode'],
 					name: resource.instance.name,
 				};
+				
+				if(resource && resource.instance && resource.instance.labels && resource.instance.labels['soajs.service.mode'] && resource.instance.labels['soajs.service.technology'] !== 'vm'){
+					params.mode = resource.instance.labels['soajs.service.mode'];
+				}
 				
 				if(resource.instance.labels && resource.instance.labels['soajs.service.technology'] === 'vm'){
 					params.infraAccountId =  resource.instance.labels['soajs.infra.id'];

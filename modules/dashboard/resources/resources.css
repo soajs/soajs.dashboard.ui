@@ -272,3 +272,9 @@ input.secretMountPathResource{
     float: none!important;
     width:100%!important;
 }
+
+.passwordCheckmark{
+    position: absolute;
+    top:8px;
+    left: 23%;
+}

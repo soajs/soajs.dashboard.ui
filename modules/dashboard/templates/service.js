@@ -3,6 +3,15 @@ var templateService = soajsApp.components;
 templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies', '$window', function (Upload, ngDataApi, $timeout, $cookies, $window) {
 	
 	function listTemplates(currentScope) {
+		
+		// if coming back from add import template, clear file input
+		if(currentScope && currentScope.form && currentScope.form.formData){
+			currentScope.form.formData = {};
+		}
+		if(document.getElementById('myTemplate_0')){
+			document.getElementById('myTemplate_0').value = "";
+		}
+		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
@@ -103,6 +112,9 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 				response.errors.details.forEach((oneError) => {
 					currentScope.$parent.displayAlert('danger', oneError.code + " => " + oneError.message);
 				});
+				
+				currentScope.form.formData = {};
+				document.getElementById('myTemplate_0').value = ""; // clear file input
 			}
 			else {
 				if (response.data && Array.isArray(response.data) && response.data[0].code && response.data[0].msg) {

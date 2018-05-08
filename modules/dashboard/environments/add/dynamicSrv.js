@@ -627,7 +627,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						
 						record.canBeDeployed = true;
 						resource.scope.envType = 'container';
-						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver;
+						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.technology;
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
 						

@@ -1,7 +1,7 @@
 'use strict';
 var catalogApp = soajsApp.components;
 
-catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles) {
+catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles,) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -133,7 +133,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				
 				$scope.oldStyle = false;
 				$scope.originalRecipes.forEach(function (oneRecipe) {
-					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
+					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming && oneRecipe.recipe.deployOptions.voluming.volumes) {
 						$scope.oldStyle = true;
 					}
 				});
@@ -214,10 +214,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
-	
+
+
 	function proceedWithForm(currentScope, mainFormConfig, data, submitAction) {
 		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0;
-		
+
 		if (data.type !== 'server' && mainFormConfig[5].tabs[1].entries[2]) {
 			mainFormConfig[5].tabs[1].entries.pop();
 		}
@@ -1148,7 +1149,54 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		}
 
-		$modal.open({
+		// add restrictions
+		if (mainFormConfig.length === 8) {
+            mainFormConfig.push(
+                {
+                    "type": "html",
+                    "value": "<hr><h2>Restrictions</h2>"
+                },
+                {
+                    'name': 'restrictions',
+                    'label': 'Attach Restrictions',
+                    'type': 'buttonSlider',
+                    onAction(id, data, form) {
+                        if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
+                            overlayLoading.show();
+                            listInfraProviders(currentScope,() => {
+                                overlayLoading.hide();
+                                form.entries.push({
+                                    'name': 'deploymentType',
+                                    'label': 'Deployment Type',
+                                    'type': 'uiselect',
+                                    "multiple" : true,
+                                    'value' : currentScope.infraProviders.deploymentTypes,
+									"required" : true,
+                                    'fieldMsg' : "Choose the type of deployment",
+                                    onAction(id, data, form) {
+                                        restrictionBehavior(id, data, form,currentScope);
+                                    }
+                                });
+                            });
+                        }else {
+                            form.formData.deploymentType = [];
+                            form.formData.infra = [];
+                            form.formData.drivers = [];
+                            if (form.entries.length === 13) {
+                                form.entries.pop()
+                            }
+                            if (form.entries.length === 12) {
+                                form.entries.pop()
+                            }
+                            if (form.entries.length === 11) {
+                                form.entries.pop()
+                            }
+                        }
+                    }
+                });
+		}
+
+        $modal.open({
 			templateUrl: "editRecipe.tmpl",
 			size: 'lg',
 			backdrop: true,
@@ -1161,7 +1209,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				};
 				var formConfig = angular.copy(mainFormConfig);
 				
-				$scope.addNewEnvVar = function () {
+                restrictionOnLoad($scope, currentScope, data);
+				
+                $scope.addNewEnvVar = function () {
 					var envVars = angular.copy(catalogAppConfig.form.envVars);
 					envVars.name += envCounter;
 					
@@ -1414,6 +1464,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						btn: 'primary',
 						action: function (fData) {
 							var formData = fromToAPI(fData, envCounter, volumeCounter, portCounter, labelCounter);
+
 							if (formData.recipe.deployOptions.sourceCode.configuration && (!formData.recipe.deployOptions.sourceCode.configuration.label || formData.recipe.deployOptions.sourceCode.configuration.label === '')) {
 								$scope.form.displayAlert('danger', 'Must add label for configuration repository');
 							}
@@ -1430,25 +1481,29 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 											if (formData.recipe.deployOptions.sourceCode.custom && formData.recipe.deployOptions.sourceCode.custom.repo !== '' && formData.recipe.deployOptions.sourceCode.custom.branch === '') {
 												$scope.form.displayAlert('danger', 'Must add branch for your repository');
 											} else {
-												getSendDataFromServer($scope, ngDataApi, {
-													method: submitAction.method,
-													routeName: submitAction.routeName,
-													params: submitAction.params,
-													data: {
-														catalog: formData
-													}
-												}, function (error, response) {
-													overlayLoading.hide();
-													if (error) {
-														$scope.form.displayAlert('danger', error.message);
-													}
-													else {
-														$scope.form.displayAlert('success', 'Recipe Saved Successfully');
-														$modalInstance.close();
-														$scope.form.formData = {};
-														currentScope.listRecipes();
-													}
-												});
+                                                if ( $scope.form.formData && $scope.form.formData.restrictions && $scope.form.formData.restrictions === true && $scope.form.formData.deploymentType && $scope.form.formData.deploymentType.length === 0) {
+                                                        $scope.form.displayAlert('danger', 'Must choose at least the type of deployment in restrictions');
+                                                } else {
+                                                    getSendDataFromServer($scope, ngDataApi, {
+                                                        method: submitAction.method,
+                                                        routeName: submitAction.routeName,
+                                                        params: submitAction.params,
+                                                        data: {
+                                                            catalog: formData
+                                                        }
+                                                    }, function (error, response) {
+                                                        overlayLoading.hide();
+                                                        if (error) {
+                                                            $scope.form.displayAlert('danger', error.message);
+                                                        }
+                                                        else {
+                                                            $scope.form.displayAlert('success', 'Recipe Saved Successfully');
+                                                            $modalInstance.close();
+                                                            $scope.form.formData = {};
+                                                            currentScope.listRecipes();
+                                                        }
+                                                    });
+												}
 											}
 										}
 									}
@@ -1495,6 +1550,37 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			else {
 				output['imageOverride'] = 'false';
 			}
+
+            if (data.restriction && Object.keys(data.restriction).length > 0) {
+                output['restrictions'] = true;
+            }
+
+            if (data.restriction && data.restriction.deployment &&  data.restriction.deployment.length > 0) {
+				let deployment = [];
+                for (let i = 0; i < data.restriction.deployment.length ; i ++) {
+                    deployment.push({v: data.restriction.deployment[i], l : data.restriction.deployment[i]}) ;
+                }
+                output['deploymentType'] = deployment;
+           }
+
+           if (data.restriction && data.restriction.infra &&  data.restriction.infra.length > 0) {
+				let infra = [];
+                for (let i = 0; i < data.restriction.infra.length ; i ++) {
+                    infra.push({v: data.restriction.infra[i], l : data.restriction.infra[i]}) ;
+                }
+                output['infra'] = infra;
+           }
+
+           if (data.restriction && data.restriction.driver &&  data.restriction.driver.length > 0) {
+				let drivers = [];
+                for (let i = 0; i < data.restriction.driver.length ; i ++) {
+                	if (data.restriction.driver[i] && data.restriction.driver[i].indexOf('.') !== -1) {
+                        data.restriction.driver[i] = data.restriction.driver[i].split('.')[1];
+					}
+                    drivers.push({v: data.restriction.driver[i], l : data.restriction.driver[i]}) ;
+                }
+                output['drivers'] = drivers;
+           }
 			
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.label) {
 				output['Label'] = data.recipe.deployOptions.sourceCode.configuration.label
@@ -1526,7 +1612,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.type) {
 				output['customType'] = data.recipe.deployOptions.sourceCode.custom.type
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.branch) {
 				output['customBranch'] = data.recipe.deployOptions.sourceCode.custom.branch
 			}
@@ -1737,6 +1823,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			type: formData.type,
 			subtype: formData.subtype,
 			description: formData.description,
+            restriction : {},
 			recipe: {
 				deployOptions: {
 					"image": {
@@ -1765,7 +1852,27 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		};
-		
+
+		if (formData.deploymentType && formData.deploymentType.length > 0) {
+			for (let i = 0; i < formData.deploymentType.length ; i ++) {
+                formData.deploymentType[i] = formData.deploymentType[i].v
+			}
+            apiData['restriction']["deployment"] = formData.deploymentType
+		}
+		if (formData.drivers && formData.drivers.length > 0) {
+            for (let i = 0; i < formData.drivers.length ; i ++) {
+                formData.drivers[i] = formData.drivers[i].v
+            }
+            apiData['restriction']["driver"] = formData.drivers
+		}
+		if (formData.infra && formData.infra.length > 0) {
+            for (let i = 0; i < formData.infra.length ; i ++) {
+                formData.infra[i] = formData.infra[i].v
+            }
+            apiData['restriction']["infra"] = formData.infra
+		}
+
+
 		if (formData.configButton && formData.configButton === true) {
 			apiData.recipe.deployOptions.sourceCode.configuration = {
 				'label': formData.Label,
@@ -2162,7 +2269,234 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	$scope.viewRecipe = function (recipe) {
 		proceedWithForm($scope, catalogAppConfig.form.entries, recipe, null);
 	};
+
+    function listInfraProviders(currentScope, cb) {
+        //get the available providers
+        getSendDataFromServer(currentScope, ngDataApi, {
+            "method": "get",
+            "routeName": "/dashboard/infra"
+        }, function (error, providers) {
+            if (error) {
+                overlayLoading.hide();
+                currentScope.displayAlert('danger', error.message);
+            }
+            else {
+            	let types = [];
+            	let infratype = [];
+            	let vmnfra = [];
+            	let containerInfra = [];
+            	let drivers = [];
+                currentScope.infraProviders = {};
+                currentScope.infraProviders.deploymentTypes = [];
+                currentScope.infraProviders.containerInfra = [];
+                currentScope.infraProviders.vmInfra = [];
+                currentScope.infraProviders.drivers = [];
+
+                providers.forEach((oneProvider) => {
+                    if (oneProvider.technologies) {
+                        //adding deployments type
+                        if (types.indexOf('container') === -1) {
+                            if (oneProvider.technologies.indexOf('container') !== -1 || oneProvider.technologies.indexOf('docker') !== -1 || oneProvider.technologies.indexOf('kubernetes') !== -1) {
+                                types.push("container");
+                                currentScope.infraProviders.deploymentTypes.push({v: "container", l: "container"});
+                            }
+                        }
+                        if (infratype.indexOf("vm") === -1) {
+                            if (oneProvider.technologies.indexOf('vm') !== 1) {
+                                infratype.push("vm");
+                                currentScope.infraProviders.deploymentTypes.push({v: "vm", l: "vm"});
+                            }
+                        }
+                    }
+
+                    // adding all the infra for container
+                    if (oneProvider.technologies.indexOf('container') !== -1 || oneProvider.technologies.indexOf('docker') !== -1 || oneProvider.technologies.indexOf('kubernetes') !== -1) {
+                        if (containerInfra.indexOf(oneProvider.name) === -1) {
+                            containerInfra.push(oneProvider.name);
+                            currentScope.infraProviders.containerInfra.push({v: oneProvider.name, l: oneProvider.name, group: "Container" });
+                        }
+                        //adding drivers for container type
+                        oneProvider.technologies.forEach((oneTech) => {
+                            if (drivers.indexOf(oneTech) === -1) {
+                                drivers.push(oneTech);
+                                currentScope.infraProviders.drivers.push({v: "container." + oneTech, l: oneTech})
+                            }
+                        });
+                    }
+                    // adding the infra for vm
+                    if (oneProvider.technologies.indexOf('vm') !== -1) {
+                        if (vmnfra.indexOf(oneProvider.name) === -1) {
+                            vmnfra.push(oneProvider.name);
+                            currentScope.infraProviders.vmInfra.push({v: oneProvider.name, l: oneProvider.name, group: "Vm"});
+                        }
+                    }
+                });
+				return cb();
+            }
+        });
+    }
+
+    function restrictionBehavior (id, data, form, currentScope) {
+        let type = form.formData.deploymentType;
+        if (type && type.length === 1 &&  type[0].v === 'vm' ) {
+            form.formData.infra = [];
+            if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
+                form.entries.pop();
+                form.entries.pop();
+            }
+            if (form.entries[form.entries.length - 1].name === 'deploymentType') {
+                form.entries.push({
+                    'name': 'infra',
+                    'label': 'Infra',
+                    'type': 'uiselect',
+                    "multiple": true,
+                    "value": currentScope.infraProviders.vmInfra,
+                    'fieldMsg' : "Please provide the infra(s)",
+                });
+            }
+        }
+        else {
+            if (type.length === 0) {
+                form.formData.infra = [];
+                form.formData.drivers = [];
+                if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
+                    form.entries.pop();
+                    form.entries.pop();
+                }
+                if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name !== 'drivers') {
+                    form.entries.pop();
+                }
+            }
+            if (type && type.length === 1 && type[0].v === 'container') {
+                form.formData.infra = [];
+                form.formData.drivers = [];
+                if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
+                    form.entries.pop();
+                    form.entries.pop();
+                }
+                if (form.entries[form.entries.length - 1].name === 'deploymentType') {
+                    form.entries.push({
+                        'name': 'drivers',
+                        'label': 'Drivers',
+                        'type': 'uiselect',
+                        "multiple": true,
+                        "value": currentScope.infraProviders.drivers,
+                        'fieldMsg' : "Please provide the driver(s)",
+                    });
+                    form.entries.push({
+                        'name': 'infra',
+                        'label': 'Infra',
+                        'type': 'uiselect',
+                        "multiple": true,
+                        "value": currentScope.infraProviders.containerInfra,
+                        'fieldMsg' : "Please provide the infra(s)",
+                    });
+                }
+            } else {
+                if (type && type.length === 2) {
+                    form.formData.infra = [];
+                    form.formData.drivers = [];
+                    let container = angular.copy(currentScope.infraProviders.containerInfra);
+                    let infra = angular.copy(currentScope.infraProviders.vmInfra);
+                    let infras = container.concat(infra);
+                    if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
+                        form.entries.pop();
+                        form.entries.pop();
+                    }
+
+                    if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name !== 'drivers') {
+                        form.entries.pop();
+                    }
+
+                    form.entries.push({
+                        'name': 'drivers',
+                        'label': 'Drivers',
+                        'type': 'uiselect',
+                        "multiple": true,
+                        "value": currentScope.infraProviders.drivers,
+                        'fieldMsg' : "Please provide the driver(s)",
+                    });
+                    form.entries.push({
+                        'name': 'infra',
+                        'label': 'Infra',
+                        'type': 'uiselect',
+                        "multiple": true,
+                        "value": infras,
+                        'fieldMsg' : "Please provide the infra(s)",
+                    })
+                }
+            }
+        }
+	}
 	
+	function restrictionOnLoad ($scope, currentScope, data) {
+        if (data.restriction && Object.keys(data.restriction).length > 0) {
+            listInfraProviders(currentScope, () => {
+            	//if ($scope.form && $scope.form.entries) {
+                    $scope.form.entries.push({
+                        'name': 'deploymentType',
+                        'label': 'Deployment Type',
+                        'type': 'uiselect',
+                        "multiple": true,
+                        'value': currentScope.infraProviders.deploymentTypes,
+                        "required" : true,
+                        'fieldMsg': "Please provide the type(s) of deployment",
+                        onAction(id, data, form) {
+                            restrictionBehavior(id, data, form, currentScope);
+                        }
+                    });
+
+                    if (data.restriction.deployment && data.restriction.deployment.indexOf('vm') !== -1 && data.restriction.deployment && data.restriction.deployment.indexOf('container') === -1) {
+                        $scope.form.entries.push({
+                            'name': 'infra',
+                            'label': 'Infra',
+                            'type': 'uiselect',
+                            "multiple": true,
+                            'value': currentScope.infraProviders.vmInfra,
+                            'fieldMsg': "Please provide the infra(s)",
+                        });
+                    }
+                    if (data.restriction.deployment && data.restriction.deployment.indexOf('container') !== -1 && data.restriction.deployment.indexOf('vm') === -1) {
+                        $scope.form.entries.push({
+                            'name': 'drivers',
+                            'label': 'Drivers',
+                            'type': 'uiselect',
+                            "multiple": true,
+                            'value': currentScope.infraProviders.drivers,
+                            'fieldMsg': "Please provide the driver(s)",
+                        });
+                        $scope.form.entries.push({
+                            'name': 'infra',
+                            'label': 'Infra',
+                            'type': 'uiselect',
+                            "multiple": true,
+                            'value': currentScope.infraProviders.containerInfra,
+                            'fieldMsg': "Please provide the infra(s)",
+                        });
+                    }
+                    if (data.restriction.deployment && data.restriction.deployment.indexOf('container') !== -1 && data.restriction.deployment.indexOf('vm') !== -1) {
+                        $scope.form.entries.push({
+                            'name': 'drivers',
+                            'label': 'Drivers',
+                            'type': 'uiselect',
+                            "multiple": true,
+                            'value':  currentScope.infraProviders.drivers,
+                            'fieldMsg': "Please provide the driver(s)",
+                        });
+                        $scope.form.entries.push({
+                            'name': 'infra',
+                            'label': 'Infra',
+                            'type': 'uiselect',
+                            "multiple": true,
+                            'value':  currentScope.infraProviders.containerInfra.concat(currentScope.infraProviders.vmInfra),
+                            'fieldMsg': "Please provide the infra(s)",
+                        });
+                    }
+			//	}
+			});
+		}
+	}
+
 	$scope.deleteRecipe = function (recipe, versioning) {
 		var params = {
 			id: recipe._id
@@ -2197,6 +2531,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	}
 	
 }]);
+
+// fix the drivers issue
 
 catalogApp.filter('capitalizeFirst', function () {
 	return function (input) {

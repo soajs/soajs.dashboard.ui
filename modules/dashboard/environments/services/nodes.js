@@ -29,7 +29,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		let formEntries = environmentsConfig.providers[providerInfo.name][currentScope.envPlatform].ui.form.scale.entries;
 
 		let workernumber = 0;
-		providerInfo.nodes.list.forEach((oneNode) => {
+		providerInfo.nodes.forEach((oneNode) => {
 			if(oneNode.spec.role === 'manager'){
 				workernumber++;
 			}
@@ -71,7 +71,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 								currentScope.$parent.displayAlert('success', "Deployment Scaled Successfully, changes might take a few minutes.");
 								currentScope.modalInstance.close();
 								currentScope.form.formData = {};
-								listInfraProviders(currentScope);
+								listNodes(currentScope);
 							}
 						});
 					}

@@ -1577,9 +1577,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                 	if (data.restriction.driver[i] && data.restriction.driver[i].indexOf('.') !== -1) {
                         data.restriction.driver[i] = data.restriction.driver[i].split('.')[1];
 					}
-                    drivers.push({v: data.restriction.driver[i], l : data.restriction.driver[i]}) ;
+                    drivers.push({v: "container." + data.restriction.driver[i], l : data.restriction.driver[i]});
                 }
-                output['drivers'] = drivers;
+               output['drivers'] = drivers;
            }
 			
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.label) {

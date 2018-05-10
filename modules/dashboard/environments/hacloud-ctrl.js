@@ -164,10 +164,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			}
 		});
 	};
-
-	$scope.listInfraProviders = function(){
-		nodeSrv.listInfraProviders($scope);
-	};
 	
 	$scope.scaleNodes = function(providerInfo){
 		nodeSrv.scaleNodes($scope, providerInfo);
@@ -323,7 +319,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	
 	if ($scope.access.hacloud.nodes.list && $scope.envCode) {
 		$scope.getEnvironment();
-		$scope.listInfraProviders();
+		$scope.listNodes();
 	}
 	
 	if ($scope.access.listHosts && $scope.envCode) {

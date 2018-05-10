@@ -386,22 +386,8 @@
 							Scale Nodes
 						</button>
 						<br/><br/>
-						<div ng-repeat="node in providerInfo.nodes.list" class="entryBox mb20">
+						<div ng-repeat="node in providerInfo.nodes" class="entryBox mb20">
 							<div class="header">
-								<span ng-if="provider.name === 'local'">
-									<span ng-show="node.tag" ng-click="changeTag(node);">
-									<span class="serviceLabelBox myPointer">
-										&nbsp;<img ng-src="{{node.tag.image}}" height="16" alt="" />&nbsp;{{node.tag.l}}
-										<span class="icon icon-arrow-right"></span>
-									</span>&nbsp;
-								</span>
-									<span ng-show="!node.tag" ng-click="changeTag(node);">
-									<span class="serviceLabelBox myPointer">
-										<span class="icon icon-price-tag"></span>&nbsp;Tag Node
-									</span>&nbsp;
-								</span>
-								</span>
-								
 								{{node.hostname}}
 								<span class="rightActions" ng-if="envCode === 'DASHBOARD' && !localDeployment">
 	                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node.id)">

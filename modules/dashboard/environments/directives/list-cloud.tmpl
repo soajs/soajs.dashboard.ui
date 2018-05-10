@@ -389,25 +389,25 @@
 						<div ng-repeat="node in providerInfo.nodes" class="entryBox mb20">
 							<div class="header">
 								{{node.hostname}}
-								<span class="rightActions" ng-if="envCode === 'DASHBOARD' && !localDeployment">
-	                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node.id)">
-	                                <span class="icon icon-cross" tooltip="Remove Node"></span>
-	                            </a>
-								<div ng-if="envPlatform === 'docker'">
-									<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
-		                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
+								<span class="rightActions" ng-if="!localDeployment">
+		                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node)">
+		                                <span class="icon icon-cross" tooltip="Remove Node"></span>
 		                            </a>
-		                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
-		                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
+									<div ng-if="envPlatform === 'docker'">
+										<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
+			                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
+			                            </a>
+			                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
+			                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
+			                            </a>
+									</div>
+		                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
+		                                <span class="icon icon-switch" tooltip="Activate"></span>
 		                            </a>
-								</div>
-	                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
-	                                <span class="icon icon-switch" tooltip="Activate"></span>
-	                            </a>
-	                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
-	                                <span class="icon icon-power-cord" tooltip="Drain"></span>
-	                            </a>
-	                        </span>
+		                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
+		                                <span class="icon icon-power-cord" tooltip="Drain"></span>
+		                            </a>
+		                        </span>
 							</div>
 							<div class="body">
 								<div class="grid">

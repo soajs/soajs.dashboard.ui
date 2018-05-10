@@ -11,7 +11,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	var autoRefreshTimeoutMetrics;
 
 	$scope.serviceProviders = environmentsConfig.providers;
-
+	$scope.localDeployment = false;
     $scope.nodes = {};
 	$scope.services = {};
 
@@ -314,6 +314,8 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
 		if($scope.envDeployer && $scope.envDeployer.selected){
 			$scope.envPlatform = $scope.envDeployer.selected.split('.')[1];
+			
+			$scope.localDeployment = ($scope.envDeployer.selected.includes("docker.local"))
 		}
 	}
 	

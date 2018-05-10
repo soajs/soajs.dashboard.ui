@@ -153,13 +153,13 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		buildFormWithModal(currentScope, $modal, options);
 	}
 	
-	function removeNode(currentScope, nodeId) {
+	function removeNode(currentScope, node) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/cloud/nodes/remove",
 			"params": {
 				env: currentScope.envCode,
-				nodeId: nodeId
+				nodeId: node.id
 			}
 		}, function (error, response) {
 			if (error) {

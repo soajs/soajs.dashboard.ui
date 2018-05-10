@@ -263,7 +263,7 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 		var count = 0;
 		var infoForm = angular.copy(swaggerEditorConfig.form);
 		infoForm.timeout = $timeout;
-		
+
 		infoForm.entries.forEach(function (entry) {
 			if (entry.name === 'dbs') {
 				entry.entries = [];
@@ -330,7 +330,7 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 					if(currentScope.form.formData[entry.name]){
 						currentScope.form.formData[entry.name].forEach(function (eachSavedRecord) {
 							let dbs = angular.copy(dbForm.db);
-							
+
 							dbs.forEach(function (eachDb) {
 								let name = eachDb.name.substring(0, eachDb.name.indexOf('%count%'));
 								eachDb.name = eachDb.name.replace('%count%', count);
@@ -347,7 +347,7 @@ swaggerEditorSrv.service('swaggerEditorSrv', ['$timeout', 'ngDataApi', '$window'
 								
 								if (eachDb.type === 'radio') { // multitenant
 									eachDb.value.forEach(function (eachValue) {
-										eachValue.selected = (String(eachSavedRecord.hasOwnProperty(name)) === String(eachValue.v));
+										eachValue.selected = (eachSavedRecord.hasOwnProperty(name) && (String(eachSavedRecord[name]) === String(eachValue.v)));
 									});
 								}
 								

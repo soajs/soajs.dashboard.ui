@@ -24,11 +24,11 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		let docker, kubernetes, manual;
 		currentScope.infraProviders.forEach((oneInfra) => {
-			if(oneInfra.technologies.indexOf('kubernetes') !== -1){
+			if (oneInfra.technologies.indexOf('kubernetes') !== -1) {
 				kubernetes = true;
 			}
 			
-			if(oneInfra.technologies.indexOf('docker') !== -1){
+			if (oneInfra.technologies.indexOf('docker') !== -1) {
 				docker = true;
 			}
 		});
@@ -44,7 +44,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		
 		if (restrictions.deployment) {
-			if(restrictions.deployment.indexOf('container') !== -1){
+			if (restrictions.deployment.indexOf('container') !== -1) {
 				if (restrictions.driver) {
 					if (restrictions.driver.indexOf('container.docker') !== -1) {
 						docker = true;
@@ -58,7 +58,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					kubernetes = true;
 				}
 			}
-			else{
+			else {
 				docker = false;
 				kubernetes = false;
 			}
@@ -146,7 +146,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				//link the infra that was used for this environment
 				currentScope.infraProviders.forEach((oneProvider) => {
 					oneProvider.deployments.forEach((oneDeployment) => {
-						if(oneDeployment.environments.indexOf(currentScope.previousEnvironment) !== -1){
+						if (oneDeployment.environments.indexOf(currentScope.previousEnvironment) !== -1) {
 							mainScope.wizard.selectedInfraProvider = oneProvider;
 						}
 					});
@@ -303,11 +303,11 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					currentScope.previousEnvironment = currentScope.form.formData.previousEnvironment;
 				}
 				
-				if(currentScope.wizard.selectedInfraProvider){
+				if (currentScope.wizard.selectedInfraProvider) {
 					currentScope.form.formData.selectedDriver = currentScope.wizard.selectedInfraProvider.technologies[0];
 					
 					currentScope.infraProviders.forEach((oneProvider) => {
-						if(oneProvider.name === currentScope.wizard.selectedInfraProvider.name){
+						if (oneProvider.name === currentScope.wizard.selectedInfraProvider.name) {
 							oneProvider.deploy = currentScope.wizard.selectedInfraProvider.deploy;
 						}
 					});
@@ -347,7 +347,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		});
 		
 		let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
-		if(formEntries && formEntries.length > 0){
+		if (formEntries && formEntries.length > 0) {
 			formEntries.forEach((oneEntry) => {
 				if (oneEntry.name === 'region') {
 					oneEntry.value = oneProvider.regions;
@@ -355,13 +355,13 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 			});
 			
-			let infraTemplates =[];
+			let infraTemplates = [];
 			oneProvider.templates.forEach((oneTmpl) => {
 				let label = oneTmpl.name;
-				if(oneTmpl.description && oneTmpl.description !== ''){
+				if (oneTmpl.description && oneTmpl.description !== '') {
 					label += " | " + oneTmpl.description;
 				}
-				infraTemplates.push({'v': oneTmpl.name, 'l': label});
+				infraTemplates.push({ 'v': oneTmpl.name, 'l': label });
 			});
 			
 			formEntries.unshift({
@@ -413,12 +413,12 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					};
 					
 					buildForm($scope, null, formConfig, function () {
-					
+						
 					});
 				}
 			});
 		}
-		else{
+		else {
 			selectedInfraProvider.deploy = {};
 			selectedInfraProvider.deploy.technology = technology;
 			oneProvider.deploy = selectedInfraProvider.deploy;

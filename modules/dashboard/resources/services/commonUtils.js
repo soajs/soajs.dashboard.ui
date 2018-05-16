@@ -2,13 +2,13 @@
 var commonUtilsService = soajsApp.components;
 commonUtilsService.service('commonUtils', ['ngDataApi', function (ngDataApi) {
 
-	function listResources($scope, cb) {
+	function listResources($scope, params, cb) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources/list', // must edit the path
 			params: {
-				env: $scope.envCode
+				env: $scope.context.envCode
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -16,18 +16,19 @@ commonUtilsService.service('commonUtils', ['ngDataApi', function (ngDataApi) {
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
-				cb(response);
+			    return cb(response);
 			}
 		});
 	}
 
 	function deleteResource ($scope, params, cb) {
         overlayLoading.show();
+        return cb();
         getSendDataFromServer($scope, ngDataApi, {
             method: 'delete',
             routeName: '/dashboard/resources/delete', // must edit the path
             params: {
-                env: $scope.envCode.toUpperCase(),
+                env: $scope.context.envCode.toUpperCase(),
                 id: params.resource._id
             }
         }, function (error) {
@@ -42,13 +43,14 @@ commonUtilsService.service('commonUtils', ['ngDataApi', function (ngDataApi) {
 	}
 
     function togglePlugResource ($scope, params, cb) {
+        return cb();
         overlayLoading.show();
         getSendDataFromServer($scope, ngDataApi, {
             method: 'put',
             routeName: '/dashboard/resources/update', // update the path if any
             params: {
                 id: params.resourceId,
-                env: $scope.envCode.toUpperCase(),
+                env: $scope.context.envCode.toUpperCase(),
             },
             data: { resource: params.resourceRecord }
         }, function (error) {
@@ -63,21 +65,19 @@ commonUtilsService.service('commonUtils', ['ngDataApi', function (ngDataApi) {
         });
     }
 
-    function upgradeAll ($scope, cb) {
-        overlayLoading.show();
+    function listVms ($scope, params, cb) {
         getSendDataFromServer($scope, ngDataApi, {
-            method: 'get',
-            routeName: '/dashboard/resources/upgrade',
-            params: {
-                env: $scope.envCode
+            "method": "get",
+            "routeName": "/dashboard/cloud/vm/list",
+            "params": {
+                "env": $scope.context.envCode
             }
         }, function (error, response) {
-            overlayLoading.hide();
             if (error) {
                 $scope.displayAlert('danger', error.message);
             }
             else {
-                return cb();
+                return cb(response)
             }
         });
     }
@@ -86,7 +86,7 @@ commonUtilsService.service('commonUtils', ['ngDataApi', function (ngDataApi) {
 		listResources,
         deleteResource,
         togglePlugResource,
-        upgradeAll
+        listVms
 	};
 	
 }]);

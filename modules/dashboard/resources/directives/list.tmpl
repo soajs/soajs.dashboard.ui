@@ -3,9 +3,9 @@
         <button class="btn btn-primary f-left" ng-if="access.add" ng-click="addResource()">Add New Resource</button>
         <button class="btn btn-primary f-right" ng-if="access.list" ng-click="listResources()"><span class="icon icon-loop2"></span>Refresh</button>
         <br /><br />
-        <div ng-if="resources && resources.list && resources.list.length > 0">
+        <div ng-if="context.resources && context.resources.list && context.resources.list.length > 0">
             <tabset>
-                <tab ng-repeat="(type, categories) in resources.types" heading="{{type|capitalizeFirst}}">
+                <tab ng-repeat="(type, categories) in context.resources.types" heading="{{type|capitalizeFirst}}">
                     <br />
                     <accordion close-others="false">
                         <accordion-group is-open="true" ng-repeat="(category, content) in categories">

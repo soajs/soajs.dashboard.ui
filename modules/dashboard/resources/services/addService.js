@@ -14,7 +14,7 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commo
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 				
-				$scope.save = function (isInBetween, cb) {
+				$scope.save = function (cb) {
 					if (!$scope.options.allowEdit) {
 						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
 						return;
@@ -29,18 +29,11 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commo
 						return;
 					}
 					
-					if (!isInBetween) {
-						overlayLoading.show();
-					}
-					
 					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
 						saveResource(function () {
 							saveResourceDeployConfig(function () {
 								if (cb) return cb();
 								
-								if (!isInBetween) {
-									overlayLoading.hide();
-								}
 								$scope.formData = {};
 								$modalInstance.close();
 								currentScope.load();
@@ -174,7 +167,7 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commo
 						});
 					}
 					else {
-						$scope.save(true, function () {
+						$scope.save(function () {
 							deployResource(function () {
 								$scope.formData = {};
 								$modalInstance.close();
@@ -269,7 +262,7 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commo
 					
 					overlayLoading.show();
 					
-					$scope.save(true, function () {
+					$scope.save(function () {
 						rebuildService(function () {
 							overlayLoading.hide();
 							$scope.formData = {};

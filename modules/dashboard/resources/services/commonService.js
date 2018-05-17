@@ -65,7 +65,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         });
     }
 
-    function listVms ($scope, apiParams, cb) {
+    function listVmsApi ($scope, apiParams, cb) {
         getSendDataFromServer($scope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/cloud/vm/list",
@@ -123,7 +123,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		listResourcesApi,
         deleteResourceApi,
         togglePlugResourceApi,
-        listVms,
+		listVmsApi,
 		addEditResourceApi
 	};
 	

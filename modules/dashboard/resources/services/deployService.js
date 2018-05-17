@@ -269,10 +269,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.options = {
 			deploymentModes: [],
-			envCode: currentScope.envCode,
-			envType: currentScope.envType,
-			envPlatform: currentScope.envPlatform,
-			enableAutoScale: currentScope.enableAutoScale || false,
+			envCode: currentScope.context.envCode,
+			envType: currentScope.context.envType,
+			envPlatform: currentScope.context.envPlatform,
+			enableAutoScale: currentScope.context.enableAutoScale || false,
 			formAction: action,
 			aceEditorConfig: {
 				maxLines: Infinity,
@@ -283,7 +283,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			},
 			allowEdit: allowEdit,
 			computedHostname: '',
-			allowDeploy: (currentScope.envPlatform !== 'manual')
+			allowDeploy: (currentScope.context.envPlatform !== 'manual')
 		};
 		
 		context.title = 'Add New Resource';
@@ -294,7 +294,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			context.title = 'View ' + resource.name;
 		}
 		
-		if (currentScope.envPlatform === 'kubernetes') {
+		if (currentScope.context.envPlatform === 'kubernetes') {
 			context.options.deploymentModes = [
 				{
 					label: 'deployment - deploy the specified number of replicas based on the availability of resources',
@@ -306,7 +306,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			];
 		}
-		else if (currentScope.envPlatform === 'docker') {
+		else if (currentScope.context.envPlatform === 'docker') {
 			context.options.deploymentModes = [
 				{
 					label: 'replicated - deploy the specified number of replicas based on the availability of resources',
@@ -445,7 +445,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							if (resource.created.toUpperCase() === oneEnv.code.toUpperCase()) return;
 						}
 						//in case of add resource, check current environment
-						else if (currentScope.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
+						else if (currentScope.context.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
 							return;
 						}
 						
@@ -633,7 +633,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 			
 			let params = {
-				env: (context.kubeEnv) ? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
+				env: (context.kubeEnv) ? context.kubeEnv.toUpperCase() : currentScope.context.envCode.toUpperCase()
 			};
 			
 			if (currentScope.envPlatform === 'kubernetes' && context.kubeNamespace) {

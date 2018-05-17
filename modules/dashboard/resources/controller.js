@@ -16,8 +16,93 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
 	
 	$scope.listResources = function (cb) {
-		let params = {};
-		commonService.listResources($scope, params, function (response) {
+		let apiParams = {};
+		commonService.listResourcesApi($scope, apiParams, function (response) {
+            response = [{
+                "_id": "5ae2f95948907d64edf3c6bb",
+                "name": "dash_cluster",
+                "type": "cluster",
+                "category": "mongo",
+                "created": "DASHBOARD",
+                "author": "owner",
+                "locked": true,
+                "plugged": true,
+                "shared": true,
+                "config": {
+                    "servers": [{
+                        "host": "192.168.35.35",
+                        "port": 27017
+                    }],
+                    "credentials": {},
+                    "URLParam": {
+                        "bufferMaxEntries": 0,
+                        "maxPoolSize": 5
+                    },
+                    "extraParam": {
+                        "db": {
+                            "native_parser": true,
+                            "bufferMaxEntries": 0
+                        },
+                        "server": {}
+                    },
+                    "streaming": {}
+                },
+                "permission": true,
+                "sensitive": true
+            },
+				{
+                    "_id": "5af96cdbceefe91a3386f1d2",
+                    "name": "test",
+                    "type": "cluster",
+                    "category": "mongo",
+                    "locked": false,
+                    "plugged": false,
+                    "shared": false,
+                    "config": {
+                        "servers": [{
+                            "host": "dev",
+                            "port": 4444
+                        }],
+                        "credentials": {
+                            "username": "owner",
+                            "password": "password"
+                        },
+                        "URLParam": {},
+                        "extraParam": {},
+                        "streaming": {}
+                    },
+                    "created": "dev",
+                    "author": "owner",
+                    "permission": true,
+                    "canBeDeployed": true,
+                    "deployOptions": {
+                        "custom": {
+                            "name": "test",
+                            "ports": [{
+                                "name": "mongo",
+                                "target": 27017,
+                                "isPublished": true
+                            }],
+                            "loadBalancer": true,
+                            "type": "resource",
+                            "sourceCode": {
+                                "configuration": {
+                                    "repo": "",
+                                    "branch": ""
+                                }
+                            }
+                        },
+                        "recipe": "5ae2f95948907d64edf3c6c9",
+                        "deployConfig": {
+                            "type": "container",
+                            "memoryLimit": 128974848,
+                            "replication": {
+                                "mode": "global"
+                            }
+                        }
+                    },
+                    "allowEdit": true
+                }];
 			$scope.context.resources = {list: response};
 			$scope.context.resources.original = angular.copy($scope.context.resources.list); //keep a copy of the original resources records
 			groupByType($scope.context.resources, $scope.context.envCode);
@@ -70,22 +155,22 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		delete resourceRecord.permission;
 		resourceRecord.plugged = plug;
 		
-		let params = {
+		let apiParams = {
 			resourceId: resourceId,
 			resourceRecord: resourceRecord
 		};
 		
-		commonService.togglePlugResource($scope, params, function () {
+		commonService.togglePlugResourceApi($scope, apiParams, function () {
 			$scope.displayAlert('success', 'Resource updated successfully');
 			$scope.listResources();
 		});
 	};
 	
 	$scope.deleteResource = function (resource) {
-		let params = {
+		let apiParams = {
 			resource: resource,
 		};
-		commonService.deleteResource($scope, params, function () {
+		commonService.deleteResourceApi($scope, apiParams, function () {
 			$scope.displayAlert('success', 'Resource deleted successfully');
 			$scope.listResources();
 		});

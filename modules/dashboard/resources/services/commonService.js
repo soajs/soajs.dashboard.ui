@@ -2,7 +2,7 @@
 var commonService = soajsApp.components;
 commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 
-	function listResources($scope, params, cb) {
+	function listResourcesApi($scope, apiParams, cb) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -21,7 +21,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		});
 	}
 
-	function deleteResource ($scope, params, cb) {
+	function deleteResourceApi($scope, apiParams, cb) {
         overlayLoading.show();
         return cb();
         getSendDataFromServer($scope, ngDataApi, {
@@ -29,7 +29,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
             routeName: '/dashboard/resources/delete', // must edit the path
             params: {
                 env: $scope.context.envCode.toUpperCase(),
-                id: params.resource._id
+                id: apiParams.resource._id
             }
         }, function (error) {
             overlayLoading.hide();
@@ -42,14 +42,14 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         });
 	}
 
-    function togglePlugResource ($scope, params, cb) {
+    function togglePlugResourceApi ($scope, apiParams, cb) {
         return cb();
         overlayLoading.show();
         getSendDataFromServer($scope, ngDataApi, {
             method: 'put',
             routeName: '/dashboard/resources/update', // update the path if any
             params: {
-                id: params.resourceId,
+                id: apiParams.resourceId,
                 env: $scope.context.envCode.toUpperCase(),
             },
             data: { resource: params.resourceRecord }
@@ -65,7 +65,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         });
     }
 
-    function listVms ($scope, params, cb) {
+    function listVms ($scope, apiParams, cb) {
         getSendDataFromServer($scope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/cloud/vm/list",
@@ -82,15 +82,15 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         });
     }
     
-    function addEditResourceApi($scope, apiParam, cb) {
+    function addEditResourceApi($scope, apiParams, cb) {
 	    var options = {};
 	    if ($scope.options.formAction === 'add') {
 		    options = {
 			    method: 'post',
 			    routeName: '/dashboard/resources/add',
 			    data: {
-				    env: apiParam.envCode,
-				    resource: apiParam.saveOptions
+				    env: apiParams.envCode,
+				    resource: apiParams.saveOptions
 			    }
 		    };
 	    }
@@ -99,11 +99,11 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    method: 'put',
 			    routeName: '/dashboard/resources/update',
 			    params: {
-				    env: apiParam.envCode,
-				    id: apiParam.id
+				    env: apiParams.envCode,
+				    id: apiParams.id
 			    },
 			    data: {
-				    resource: apiParam.saveOptions
+				    resource: apiParams.saveOptions
 			    }
 		    };
 	    }
@@ -120,9 +120,9 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
 
 	return {
-		listResources,
-        deleteResource,
-        togglePlugResource,
+		listResourcesApi,
+        deleteResourceApi,
+        togglePlugResourceApi,
         listVms,
 		addEditResourceApi
 	};

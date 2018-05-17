@@ -180,8 +180,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.categoryLabel = oneCategory.l;
 			}
 		});
-		
-		let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.envCode.toUpperCase()));
+		let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.context.envCode.toUpperCase()));
 		context.allowEdit = allowEdit;
 		
 		if (resource.name === 'dash_cluster') {

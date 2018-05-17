@@ -1,6 +1,6 @@
 "use strict";
-var commonUtilsService = soajsApp.components;
-commonUtilsService.service('commonUtils', ['ngDataApi', function (ngDataApi) {
+var commonService = soajsApp.components;
+commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 
 	function listResources($scope, params, cb) {
 		overlayLoading.show();

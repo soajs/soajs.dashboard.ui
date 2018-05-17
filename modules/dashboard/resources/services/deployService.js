@@ -1,6 +1,6 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi','$cookies','$localStorage', function (resourceConfiguration, $modal, ngDataApi, $cookies,$localStorage) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage) {
 	
 	/**
 	 * update deployConfig.infra account using provider
@@ -22,20 +22,20 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				delete deployConfig.replication
 			}
 			
-			if (deployOptions.custom  && deployOptions.custom.secrets) {
+			if (deployOptions.custom && deployOptions.custom.secrets) {
 				delete deployOptions.custom.secrets
 			}
 			
-			if (deployOptions.custom  && deployOptions.custom.sourceCode) {
+			if (deployOptions.custom && deployOptions.custom.sourceCode) {
 				delete deployOptions.custom.sourceCode
 			}
 			
-			if (deployOptions.custom  && (deployOptions.custom.loadBalancer || deployOptions.custom.loadBalancer === false)) {
+			if (deployOptions.custom && (deployOptions.custom.loadBalancer || deployOptions.custom.loadBalancer === false)) {
 				delete deployOptions.custom.loadBalancer
 			}
 			
-			if(deployConfig.vmConfiguration && deployConfig.vmConfiguration.adminAccess && deployConfig.vmConfiguration.adminAccess.isPassword){
-				if(!context.isPasswordValid){
+			if (deployConfig.vmConfiguration && deployConfig.vmConfiguration.adminAccess && deployConfig.vmConfiguration.adminAccess.isPassword) {
+				if (!context.isPasswordValid) {
 					return false;
 				}
 			}
@@ -66,13 +66,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		if (context.deploymentData.selectedRecipe && context.deploymentData.selectedRecipe.recipe && context.deploymentData.selectedRecipe.recipe.deployOptions && context.deploymentData.selectedRecipe.recipe.deployOptions.image.override) {
 			context.getProvidersList(() => {
 				context.formData.custom.image.prefix = '';
-				context.deploymentData.providers.forEach((provider) =>{
+				context.deploymentData.providers.forEach((provider) => {
 					if (provider.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix) {
 						context.formData.custom.image.prefix = context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix;
 					}
 				});
-				context.getImagesList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix, () =>{
-					context.deploymentData.images.forEach((image) =>{
+				context.getImagesList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix, () => {
+					context.deploymentData.images.forEach((image) => {
 						if (image.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.name) {
 							context.formData.custom.image.name = image.v
 						}
@@ -80,8 +80,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					if (context.deploymentData.images.length === 0) {
 						context.deploymentData.imageVersions = [];
 					} else {
-						context.getVersionsList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.name, () =>{
-							context.deploymentData.imageVersions.forEach((version) =>{
+						context.getVersionsList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.name, () => {
+							context.deploymentData.imageVersions.forEach((version) => {
 								if (version.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.tag) {
 									context.formData.custom.image.tag = version.v
 								}
@@ -100,19 +100,19 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	function refreshDeployConfig(context) {
 		
 		let deployConfig = context.formData.deployOptions.deployConfig;
-		if(!deployConfig){
+		if (!deployConfig) {
 			context.formData.deployOptions.deployConfig = {};
 			deployConfig = context.formData.deployOptions.deployConfig;
 		}
 		
-		if(deployConfig.infra){
+		if (deployConfig.infra) {
 			deployConfig.infra = '';
 		}
-		if(deployConfig.vmConfiguration){
+		if (deployConfig.vmConfiguration) {
 			deployConfig.vmConfiguration.flavor = '';
 			deployConfig.vmConfiguration.dataDisk = '';
 			
-			if(deployConfig.vmConfiguration.adminAccess){
+			if (deployConfig.vmConfiguration.adminAccess) {
 				deployConfig.vmConfiguration.adminAccess.username = '';
 				deployConfig.vmConfiguration.adminAccess.password = '';
 				deployConfig.vmConfiguration.adminAccess.token = '';
@@ -136,12 +136,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		let splits = name.split('__SOAJS_DELIMITER__');
 		
 		let output = {
-			name : splits[0]
+			name: splits[0]
 		};
 		
-		if(splits.length > 0){
+		if (splits.length > 0) {
 			let subName = splits[1];
-			if(subName){
+			if (subName) {
 				output.subName = splits[1];
 			}
 		}
@@ -156,7 +156,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
 		context.message = {};
-		if(!context.noCDoverride){
+		if (!context.noCDoverride) {
 			context.recipes = [];
 		}
 		context.recipeUserInput = {image: {}, envs: {}};
@@ -501,7 +501,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
-		function updateCustomRepoName(){
+		function updateCustomRepoName() {
 			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
 				context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
 				
@@ -620,24 +620,24 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
-		context.getSecrets = function(cb){
+		context.getSecrets = function (cb) {
 			overlayLoading.show();
-			if(context.kubeEnv && context.kubeEnv === 'invalid'){
-				if(context.defaultWizardSecretValues){
+			if (context.kubeEnv && context.kubeEnv === 'invalid') {
+				if (context.defaultWizardSecretValues) {
 					context.secrets = context.defaultWizardSecretValues;
 				}
 				return cb();
 			}
 			
-			if(!currentScope.envPlatform){
+			if (!currentScope.envPlatform) {
 				return cb();
 			}
 			
 			let params = {
-				env: (context.kubeEnv)? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
+				env: (context.kubeEnv) ? context.kubeEnv.toUpperCase() : currentScope.envCode.toUpperCase()
 			};
 			
-			if(currentScope.envPlatform === 'kubernetes' && context.kubeNamespace){
+			if (currentScope.envPlatform === 'kubernetes' && context.kubeNamespace) {
 				params.namespace = context.kubeNamespace;
 			}
 			
@@ -654,12 +654,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					secrets.forEach((oneSecret) => {
 						let found = false;
 						context.secrets.forEach((oneExistingSecret) => {
-							if(oneExistingSecret.name === oneSecret.name){
+							if (oneExistingSecret.name === oneSecret.name) {
 								found = true;
 							}
 						});
 						
-						if(!found){
+						if (!found) {
 							context.secrets.push(oneSecret);
 						}
 					});
@@ -679,8 +679,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 				else {
 					
-					if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-						context.myEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+					if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+						context.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 					}
 					
 					let deploymentType;
@@ -690,37 +690,34 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					});
 					
-					
 					if (recipes && Array.isArray(recipes)) {
 						recipes.forEach(function (oneRecipe) {
-							if(context.options.envPlatform === 'manual'){
-								if(oneRecipe.restriction && oneRecipe.restriction.deployment.indexOf("vm") !== -1){
+							if (context.options.envPlatform === 'manual') {
+								if (oneRecipe.restriction && oneRecipe.restriction.deployment.indexOf("vm") !== -1) {
 									context.options.allowDeploy = true;
 								}
 							}
-							if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
-								context.oldStyle = true;
-							}
+							
 							else {
 								if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
 									
-									if(deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
+									if (deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
 										if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
 											context.recipes.push(oneRecipe);
 										} else {
-											if(oneRecipe.restriction.deployment.indexOf("vm") !== -1){ // vm supported
+											if (oneRecipe.restriction.deployment.indexOf("vm") !== -1) { // vm supported
 												context.recipes.push(oneRecipe);
 											}
 										}
-									}else{ // add it anyway
+									} else { // add it anyway
 										context.recipes.push(oneRecipe);
 									}
 								}
 							}
 						});
 						
-						context.displayRecipeInputs(false, false, function(err){
-							if (err){
+						context.displayRecipeInputs(false, false, function (err) {
+							if (err) {
 								context.displayAlert('danger', err.message);
 							}
 						});
@@ -744,9 +741,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				let selectedRecipeId;
 				let selectedRecipe;
 				
-				if(currentScope.formData.deployOptions && currentScope.formData.deployOptions.recipe){
+				if (currentScope.formData.deployOptions && currentScope.formData.deployOptions.recipe) {
 					selectedRecipeId = currentScope.formData.deployOptions.recipe;
-				}else{
+				} else {
 					return; // no selected recipe yet
 				}
 				
@@ -774,10 +771,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						} else {
 							// convert ["aws"] => [{_id,name}] after matching data with infraProviders
 							let reformattedRestrictionInfra = [];
-							if(restriction.infra){
+							if (restriction.infra) {
 								restriction.infra.forEach(function (eachInfra) {
 									allInfra.forEach(function (originalInfra) {
-										if(originalInfra.name === eachInfra){
+										if (originalInfra.name === eachInfra) {
 											reformattedRestrictionInfra.push(originalInfra);
 										}
 									});
@@ -794,7 +791,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 					
 					// beyond loading data, validate password
-					if(currentScope.formData.deployOptions.deployConfig.vmConfiguration && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
+					if (currentScope.formData.deployOptions.deployConfig.vmConfiguration && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess && currentScope.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword) {
 						currentScope.validatePassword();
 					}
 					context.updateDeploymentName(context.formData.name);
@@ -839,7 +836,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						
 						//add check, if recipe does not support certificates, do not show the secrets input at all
 						context.secretsAllowed = 'none';
-						if(context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none'){
+						if (context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none') {
 							context.secretsAllowed = context.recipes[i].recipe.deployOptions.certificates;
 						}
 					}
@@ -905,10 +902,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			}
 			
-			if(context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0){
-				for(let $index = context.form.entries.length -1; $index >=0; $index--){
+			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0) {
+				for (let $index = context.form.entries.length - 1; $index >= 0; $index--) {
 					let oneEntry = context.form.entries[$index];
-					if(oneEntry.name && oneEntry.name === 'servers0'){
+					if (oneEntry.name && oneEntry.name === 'servers0') {
 						oneEntry.entries.forEach((oneSubEntry) => {
 							oneSubEntry.disabled = false;
 							delete oneSubEntry.disabled;
@@ -917,41 +914,41 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
 								
-								if(context.vmExposedPortsDisabled && resource.status === 'ready'){
+								if (context.vmExposedPortsDisabled && resource.status === 'ready') {
 									context.form.formData[oneSubEntry.name] = resource.config.servers[0].host;
 								}
-								else{
+								else {
 									context.form.formData[oneSubEntry.name] = context.options.computedHostname;
 								}
 							}
 							
-							if(oneSubEntry.name.includes("port")){
+							if (oneSubEntry.name.includes("port")) {
 								oneSubEntry.disabled = context.vmExposedPortsDisabled;
-								if(context.vmExposedPortsDisabled){
+								if (context.vmExposedPortsDisabled) {
 									let firstPort = context.formData.deployOptions.custom.ports[0];
 									oneSubEntry.value = firstPort.published || firstPort.target;
 								}
 								oneSubEntry.value = oneSubEntry.value.toString();
 								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
 							}
-							if(oneSubEntry.name.includes("removeserver")){
+							if (oneSubEntry.name.includes("removeserver")) {
 								oneSubEntry.value = '<span class=\'icon icon-cross red\'></span>';
-								if(context.formData.canBeDeployed && resourceName && resourceName !== ''){
+								if (context.formData.canBeDeployed && resourceName && resourceName !== '') {
 									oneSubEntry.value = '';
 								}
 							}
 						});
 					}
 					
-					if(context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0'){
+					if (context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0') {
 						context.form.entries.splice($index, 1);
 					}
 					
-					if(oneEntry.name && oneEntry.name === 'anotherservers'){
-						if(context.formData.canBeDeployed){
+					if (oneEntry.name && oneEntry.name === 'anotherservers') {
+						if (context.formData.canBeDeployed) {
 							jQuery('#anotherservers').hide();
 						}
-						else{
+						else {
 							jQuery('#anotherservers').show();
 						}
 					}
@@ -967,15 +964,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
-		context.reformatSourceCodeForCicd = function(record) {
-			if(record.configuration && record.configuration.repo){
+		context.reformatSourceCodeForCicd = function (record) {
+			if (record.configuration && record.configuration.repo) {
 				let selectedRepo = record.configuration.repo;
-				if(selectedRepo === '-- Leave Empty --'){
+				if (selectedRepo === '-- Leave Empty --') {
 					record.configuration.repo = "";
 					record.configuration.branch = "";
-				}else{
+				} else {
 					context.configRepos.config.forEach(function (eachConf) {
-						if(eachConf.name === selectedRepo){
+						if (eachConf.name === selectedRepo) {
 							record.configuration.commit = eachConf.configSHA;
 							record.configuration.owner = eachConf.owner;
 						}
@@ -983,7 +980,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			}
 			
-			if(record.custom && record.custom.repo){
+			if (record.custom && record.custom.repo) {
 				let selectedRepoComposed = record.custom.repo;
 				let decoded = decodeRepoNameAndSubName(selectedRepoComposed);
 				
@@ -992,10 +989,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				
 				record.custom.repo = selectedRepo; // save clear value
 				
-				if(selectedRepo === '-- Leave Empty --'){
+				if (selectedRepo === '-- Leave Empty --') {
 					record.custom.repo = "";
 					record.custom.branch = "";
-				}else {
+				} else {
 					context.configRepos.customType.forEach(function (eachConf) {
 						if (eachConf.name === selectedRepo) {
 							record.custom.owner = eachConf.owner;
@@ -1020,46 +1017,46 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.setExposedPorts = function (selectedRecipe, ui, cb) {
 			let ports;
-			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && !ui){
+			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && !ui) {
 				ports = context.formData.deployOptions.custom.ports;
 			}
 			let recipe = false;
 			
-			if(!ports && context.noCDoverride){
-				if(resource.deploy && resource.deploy.options && resource.deploy.options.custom && resource.deploy.options.custom.ports && !ui){
-					if(Array.isArray(resource.deploy.options.custom.ports) && resource.deploy.options.custom.ports.length > 0){
+			if (!ports && context.noCDoverride) {
+				if (resource.deploy && resource.deploy.options && resource.deploy.options.custom && resource.deploy.options.custom.ports && !ui) {
+					if (Array.isArray(resource.deploy.options.custom.ports) && resource.deploy.options.custom.ports.length > 0) {
 						ports = resource.deploy.options.custom.ports;
 					}
 				}
 			}
 			context.catalogConflictingPorts = '';
-			if(selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
+			if (selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
 				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
-				&& selectedRecipe.recipe.deployOptions.ports.length > 0 ) {
+				&& selectedRecipe.recipe.deployOptions.ports.length > 0) {
 				//use ports from recipe if no ports were coming from previuos save
-				if (!ports){
+				if (!ports) {
 					recipe = true;
 					ports = selectedRecipe.recipe.deployOptions.ports;
-					if(context.form && context.form.formData && ports && ports[0]){ // applicable for resources with driver configuration only
+					if (context.form && context.form.formData && ports && ports[0]) { // applicable for resources with driver configuration only
 						context.form.formData.port0 = ports[0].published; // set port in drivers's configuration as well
 					}
 				}
-				if (!context.formData.deployOptions.custom){
+				if (!context.formData.deployOptions.custom) {
 					context.formData.deployOptions.custom = {};
 				}
-				if (recipe){
+				if (recipe) {
 					context.formData.deployOptions.custom.ports = [];
 				}
 				//check if there port mismatch in type
-				let nodePort =0, loadBalancer=0;
+				let nodePort = 0, loadBalancer = 0;
 				selectedRecipe.recipe.deployOptions.ports.forEach(function (onePort) {
-					if (recipe){
+					if (recipe) {
 						context.formData.deployOptions.custom.ports.push(onePort);
 					}
-					if(onePort.isPublished || onePort.published){
+					if (onePort.isPublished || onePort.published) {
 						context.formData.deployOptions.custom.loadBalancer = true;
-						if (onePort.published){
-							if (recipe){
+						if (onePort.published) {
+							if (recipe) {
 								context.formData.deployOptions.custom.loadBalancer = false;
 							}
 							nodePort++;
@@ -1069,14 +1066,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				});
-				if (loadBalancer === 0 && nodePort ===0){
+				if (loadBalancer === 0 && nodePort === 0) {
 					context.publishPorts = false;
 				}
 				else {
 					context.publishPorts = true;
 				}
-				if (loadBalancer !== 0 && nodePort !==0){
-					if($modalInstance){
+				if (loadBalancer !== 0 && nodePort !== 0) {
+					if ($modalInstance) {
 						$modalInstance.close();
 						$modal.open({
 							templateUrl: "portConfiguration.tmpl",
@@ -1094,29 +1091,29 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						});
 					}
-					else{
+					else {
 						context.catalogConflictingPorts = selectedRecipe.name;
 					}
 				}
 			}
-			if (ports && !recipe){
+			if (ports && !recipe) {
 				//get the type of the ports
 				context.formData.deployOptions.custom.ports = [];
 				ports.forEach(function (onePort) {
 					context.formData.deployOptions.custom.ports.push(onePort);
-					if(onePort.isPublished || onePort.published){
+					if (onePort.isPublished || onePort.published) {
 						context.formData.deployOptions.custom.loadBalancer = true;
-						if (onePort.published){
+						if (onePort.published) {
 							context.formData.deployOptions.custom.loadBalancer = false;
 						}
 					}
 				});
 			}
-			if (context.formData.deployOptions.custom){
+			if (context.formData.deployOptions.custom) {
 				context.formData.deployOptions.custom.ports = ports;
 			}
 			
-			if(cb){
+			if (cb) {
 				return cb();
 			}
 		};
@@ -1159,22 +1156,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.onExposedPortsUpdate = function () {
-			if (context.form.formData.port0 &&context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {
+			if (context.form.formData.port0 && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {
 				context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
 			}
 		};
 		
-		context.repopulateRegions = function(){
+		context.repopulateRegions = function () {
 			context.deploymentData.regions = [];
 			context.deploymentData.infraProviders.forEach((oneProvider) => {
-				if(oneProvider._id === context.formData.deployOptions.deployConfig.infra){
+				if (oneProvider._id === context.formData.deployOptions.deployConfig.infra) {
 					context.deploymentData.regions = oneProvider.regions;
 				}
 			})
 		};
 		
 		/*
-			VM specific
+		 VM specific
 		 */
 		context.getInfraProviders = function (cb) {
 			//call bridge, get the available providers
@@ -1189,13 +1186,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					delete providers.soajsauth;
 					context.deploymentData.infraProviders = providers;
 					
-					if(resource && resource.deployOptions){
+					if (resource && resource.deployOptions) {
 						context.formData.deployOptions.deployConfig.infra = resource.deployOptions.deployConfig.infra;
 						context.repopulateRegions();
 					}
 				}
 				
-				if(cb){
+				if (cb) {
 					cb();
 				}
 			});
@@ -1256,14 +1253,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.getDisksList = function () {
 			context.deploymentData.disk = [
-				{v : 'none', l:"None"}
+				{v: 'none', l: "None"}
 			];
 		};
 		
 		context.getProvidersList = function (cb) {
 			context.deploymentData.providers = [];
 			context.deploymentData.providers = [
-				{v : "provider1", l: "Provider 1"},
+				{v: "provider1", l: "Provider 1"},
 				{v: "provider2", l: "Provider 2"}
 			];
 			if (cb) {
@@ -1273,20 +1270,20 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.getImagesList = function (providerName, cb) {
 			let values = {
-				"provider1" : [
-					{v : 'image1', l:"Image 1 example"},
+				"provider1": [
+					{v: 'image1', l: "Image 1 example"},
 				],
-				"provider2" : [
-					{v : 'image2', l:"Image 2 example"},
+				"provider2": [
+					{v: 'image2', l: "Image 2 example"},
 				]
 			};
-			if (values[providerName]  === undefined) {
+			if (values[providerName] === undefined) {
 				context.deploymentData.images = [];
 			} else {
 				context.deploymentData.images = values[providerName];
 			}
 			
-			if(cb){
+			if (cb) {
 				cb();
 			}
 		};
@@ -1318,10 +1315,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		let vmDataLoaded = false;
-		context.loadVmData= function (cb) {
+		context.loadVmData = function (cb) {
 			// if (context.formData.deployOptions.deployConfig.type === 'vm') {
 			// todo: call them in parallel and call cb once done
-			if(!vmDataLoaded){
+			if (!vmDataLoaded) {
 				vmDataLoaded = true;
 				overlayLoading.show();
 				context.getInfraProviders(function () {
@@ -1331,36 +1328,36 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					overlayLoading.hide();
 					cb();
 				});
-			}else{
+			} else {
 				cb();
 			}
 			// }
 		};
 		
 		context.onAuthTypeChange = function () {
-			if(context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword){
+			if (context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword) {
 				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token = '';
-			}else{
+			} else {
 				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password = '';
 			}
 		};
 		
-		if(!context.noCDoverride){
-			context.getSecrets(function(cb){
+		if (!context.noCDoverride) {
+			context.getSecrets(function (cb) {
 				context.getCatalogRecipes(cb);
 			});
-			if(context.formData && context.formData.canBeDeployed && resource && resource.name){
+			if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
 				setTimeout(() => {
 					context.updateDeploymentName(resource.name);
 				}, 200);
 			}
 		}
-		else{
+		else {
 			//this is called by add env wizard.
 			updateCustomRepoName();
 			context.getSecrets(function () {
-				context.displayRecipeInputs(true, false, (error,response) => {
-					if(context.formData && context.formData.canBeDeployed && resource && resource.name){
+				context.displayRecipeInputs(true, false, (error, response) => {
+					if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
 						setTimeout(() => {
 							context.updateDeploymentName(resource.name);
 						}, 200);
@@ -1375,6 +1372,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	
 	return {
 		'buildDeployForm': buildDeployForm,
-		'updateFormDataBeforeSave' : updateFormDataBeforeSave
+		'updateFormDataBeforeSave': updateFormDataBeforeSave
 	}
 }]);

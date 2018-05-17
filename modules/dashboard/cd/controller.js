@@ -216,7 +216,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		}
 	};
-
+	
+	/**
+	 * Updates & Upgrades
+	 */
+	
 	$scope.getUpdates = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -267,7 +271,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		}
 	};
-
+	
 	$scope.getLedger = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -403,7 +407,79 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
+	/**
+	 * Other Log Messages
+	 */
+	$scope.getOtherLogs = function () {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/cd/ledger',
+			params: {
+				"env": $scope.myEnv,
+				"logs": true
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				$scope.logs = response;
+				$scope.logsCount = response.length;
+				if ($scope.logsCount > 0) {
+					$scope.logsCount = "(" + $scope.logsCount + ")";
+				}
+				else {
+					$scope.logsCount = null;
+				}
+			}
+		});
+	};
+	
+	$scope.readOneLog = function(oneEntry) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/dashboard/cd/ledger/read',
+			data: {
+				"data": { "id": oneEntry._id, "logs": true }
+			}
+			
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				$scope.displayAlert('success', 'Entry updated');
+				$scope.getOtherLogs();
+			}
+		});
+	};
+	
+	$scope.readAllLogs = function(oneEntry) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/dashboard/cd/ledger/read',
+			data: {
+				"data": { "all": true, "logs": true }
+			}
+			
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				$scope.displayAlert('success', 'All entries updated');
+				$scope.getOtherLogs();
+			}
+		});
+	};
+	
 	injectFiles.injectCss("modules/dashboard/cd/cd.css");
 
 	// Start here

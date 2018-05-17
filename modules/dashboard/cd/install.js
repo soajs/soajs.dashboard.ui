@@ -26,16 +26,16 @@ var cdNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
-		'id': 'updates-upgrades',
-		'label': "Update & Upgrades",
+		'id': 'audit',
+		'label': "Audit",
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/cd',
 			'method': 'get'
 		},
-		'url': '#/updates-upgrades',
+		'url': '#/audit',
 		"fallbackLocation": "#/environments",
-		'tplPath': 'modules/dashboard/cd/directives/updates-upgrades.tmpl',
+		'tplPath': 'modules/dashboard/cd/directives/audit.tmpl',
 		'icon': 'drive',
 		'pillar': {
 			'name': 'deployment',

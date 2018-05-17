@@ -179,5 +179,32 @@
 				</alert>
 			</div>
 		</tab>
+		<tab heading="Audit Logs {{logsCount}}" ng-click="getOtherLogs()">
+			<br/>
+			<input ng-show="logs && logs.length > 0" type="button" class="btn btn-sm btn-primary" ng-confirm-click="Clicking this button means you have read all the ledger entries. Are you sure you want to proceed?" ng-click="readAllLogs()" value="Mark All as Read"/>
+			<a href="" class="btn btn-sm btn-primary f-right" ng-click="getOtherLogs()">
+				<span class="icon icon-loop2"></span> Refresh
+			</a>
+			<br /><br />
+			<div class="grid" ng-show="logs && logs.length > 0">
+				<div class="table">
+					<div ng-repeat="oneEntry in logs" ng-class="{'first': $first, 'last': $last, 'notread' : !oneEntry.read, 'updateError': oneEntry.error }" ng-class-odd="'odd'" ng-class-even="'even'" class="row w100 c-both">
+						<div class="f-left mt-5">
+							<a href="" ng-click="readOneLog(oneEntry)" tooltip="Mark as Read" class="mr-10 readBox">
+								<span class="icon icon-drawer2"></span>
+							</a>
+							<span>{{oneEntry.message}}</span>
+							<span><em>{{oneEntry.ts|fulldate}}</em></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div ng-show="!logs || logs.length === 0">
+				<alert type="info">
+					No Message available at this moment.
+				</alert>
+			</div>
+		</tab>
 	</tabset>
 </section>

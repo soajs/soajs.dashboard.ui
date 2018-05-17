@@ -1,6 +1,6 @@
 "use strict";
 var addService = soajsApp.components;
-addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', function ($timeout, $modal, resourceDeploy) {
+addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commonService', function ($timeout, $modal, resourceDeploy, commonService) {
 	
 	function manageResource($scope, resource, action, settings) {
 		var currentScope = $scope;
@@ -66,7 +66,7 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', functi
 									delete onePort.loadBalancer
 								}
 								if (!saveOptions.config.ports) {
-									saveOptions.config.ports = []
+									saveOptions.config.ports = [];
 								}
 								saveOptions.config.ports.push(onePort);
 							});
@@ -91,42 +91,19 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', functi
 							delete saveOptions.config.ports;
 						}
 						
-						var options = {};
-						if ($scope.options.formAction === 'add') {
-							options = {
-								method: 'post',
-								routeName: '/dashboard/resources/add',
-								data: {
-									env: $scope.options.envCode.toUpperCase(),
-									resource: saveOptions
-								}
-							};
-						}
-						else {
-							options = {
-								method: 'put',
-								routeName: '/dashboard/resources/update',
-								params: {
-									env: $scope.options.envCode.toUpperCase(),
-									id: $scope.formData._id
-								},
-								data: {
-									resource: saveOptions
-								}
-							};
-						}
+						let apiParams = {
+							type: $scope.options.formAction, // add or edit
+							envCode: $scope.options.envCode.toUpperCase(),
+							saveOptions,
+							id: $scope.formData._id // for edit
+						};
 						
-						getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
-							if (error) {
-								overlayLoading.hide();
-								$scope.displayAlert('danger', error.message);
-							}
-							else {
-								$scope.newResource = result;
-								$scope.displayAlert('success', 'Resource updated successfully');
-								return cb();
-							}
+						commonService.addEditResourceApi($scope, apiParams, function (response) {
+							$scope.newResource = response;
+							$scope.displayAlert('success', 'Resource updated successfully');
+							return cb();
 						});
+						
 					}
 					
 					function saveResourceDeployConfig(cb) {

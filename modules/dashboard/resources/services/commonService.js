@@ -81,12 +81,50 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
             }
         });
     }
+    
+    function addEditResourceApi($scope, apiParam, cb) {
+	    var options = {};
+	    if ($scope.options.formAction === 'add') {
+		    options = {
+			    method: 'post',
+			    routeName: '/dashboard/resources/add',
+			    data: {
+				    env: apiParam.envCode,
+				    resource: apiParam.saveOptions
+			    }
+		    };
+	    }
+	    else {
+		    options = {
+			    method: 'put',
+			    routeName: '/dashboard/resources/update',
+			    params: {
+				    env: apiParam.envCode,
+				    id: apiParam.id
+			    },
+			    data: {
+				    resource: apiParam.saveOptions
+			    }
+		    };
+	    }
+	
+	    getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
+		    if (error) {
+			    overlayLoading.hide();
+			    $scope.displayAlert('danger', error.message);
+		    }
+		    else {
+			    return cb(result);
+		    }
+	    });
+    }
 
 	return {
 		listResources,
         deleteResource,
         togglePlugResource,
-        listVms
+        listVms,
+		addEditResourceApi
 	};
 	
 }]);

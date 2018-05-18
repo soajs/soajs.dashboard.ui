@@ -216,7 +216,7 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 		}
 	}
 	
-	function mapConfigurationFormDataToConfig(currentScope, cb){
+	function mapConfigurationFormDataToConfig(currentScope){
 		let config = {};
 		
 		//pull all array inputs
@@ -260,7 +260,6 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 		}
 		
 		currentScope.formData.config = config;
-		return cb();
 		
 		function doOneLevelInput(fromName, toName, oneEntry, from, to, entries){
 			

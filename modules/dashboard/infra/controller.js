@@ -440,6 +440,12 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 												}
 											});
 										}
+										else {
+											overlayLoading.hide();
+											$scope.displayAlert('success', "Template Uploaded Successfully.");
+											$scope.modalInstance.close();
+											$scope.getProviders();
+										}
 									}).error(function () {
 										overlayLoading.hide();
 										$scope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");

@@ -11,28 +11,35 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
-				//bala callback bas hye zeta
+				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 
 				$scope.saveNew = function (type) {
 				    
-                    let apiParams = {};
+					let formData = $scope.formData;
                     let deployOptions = {};
                     let rebuildOptions = {};
-                    
-                    function saveResource() {
+					
+					let apiParams = {
+						type: $scope.options.formAction, // add or edit
+						envCode: $scope.options.envCode.toUpperCase(),
+						id: formData._id // only for edit
+					};
+					
+					
+					function saveResource() {
                         let saveOptions = {
-                            name: $scope.formData.name,
-                            type: $scope.formData.type,
-                            category: $scope.formData.category,
-                            locked: $scope.formData.locked || false,
-                            plugged: $scope.formData.plugged || false,
-                            shared: $scope.formData.shared || false,
-                            config: $scope.formData.config
+                            name: formData.name,
+                            type: formData.type,
+                            category: formData.category,
+                            locked: formData.locked || false,
+                            plugged: formData.plugged || false,
+                            shared: formData.shared || false,
+                            config: formData.config
                         };
 
-                        if ($scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.ports && $scope.formData.deployOptions.custom.ports.length > 0) {
-                            $scope.formData.deployOptions.custom.ports.forEach(function (onePort) {
+                        if (formData.deployOptions.custom && formData.deployOptions.custom.ports && formData.deployOptions.custom.ports.length > 0) {
+                            formData.deployOptions.custom.ports.forEach(function (onePort) {
                                 if (Object.hasOwnProperty.call(onePort, 'loadBalancer')) {
                                     delete onePort.loadBalancer
                                 }
@@ -43,13 +50,13 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                             });
                         }
 
-                        if ($scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.secrets && $scope.formData.deployOptions.custom.secrets.length > 0) {
-                            saveOptions.config.secrets = $scope.formData.deployOptions.custom.secrets
+                        if (formData.deployOptions.custom && formData.deployOptions.custom.secrets && formData.deployOptions.custom.secrets.length > 0) {
+                            saveOptions.config.secrets = formData.deployOptions.custom.secrets
                         }
 
-                        if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
+                        if (formData.shared && !$scope.envs.sharedWithAll) {
                             saveOptions.sharedEnv = {};
-                            $scope.formData.sharedEnv = {};
+                            formData.sharedEnv = {};
                             $scope.envs.list.forEach(function (oneEnv) {
                                 if (oneEnv.selected) {
                                     saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
@@ -61,18 +68,13 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         if (saveOptions.config && saveOptions.config.ports) {
                             delete saveOptions.config.ports;
                         }
-
-                        apiParams = {
-                            type: $scope.options.formAction, // add or edit
-                            envCode: $scope.options.envCode.toUpperCase(),
-                            saveOptions,
-                            id: $scope.formData._id, // for edit
-                        };
+						
+						apiParams.saveOptions = saveOptions;
 
                         let deployOptions = {};
 
-                        if ($scope.formData.deployOptions && Object.keys($scope.formData.deployOptions).length !== 0) {
-                            deployOptions = angular.copy($scope.formData.deployOptions);
+                        if (formData.deployOptions && Object.keys(formData.deployOptions).length !== 0) {
+                            deployOptions = angular.copy(formData.deployOptions);
 
                             if (!deployOptions.custom) {
                                 deployOptions.custom = {};
@@ -86,18 +88,18 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                             if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
                                 deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
                             }
-                            apiParams['resourceName'] = $scope.formData.name;
-                            apiParams['deploy'] =$scope.formData.canBeDeployed || false;
+                            apiParams['resourceName'] = formData.name;
+                            apiParams['deploy'] =formData.canBeDeployed || false;
                             apiParams['options'] = deployOptions;
 
-                            if (!$scope.formData.canBeDeployed) {
+                            if (!formData.canBeDeployed) {
                                 delete apiParams['options'];
                             }
                         }
                     }
 
                     function updateApiParams(type) {
-                        deployOptions = angular.copy($scope.formData.deployOptions);
+                        deployOptions = angular.copy(formData.deployOptions);
                         if (!deployOptions.custom) {
                             deployOptions.custom = {};
                         }
@@ -105,7 +107,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         deployOptions.custom.type = 'resource';
                         deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
                         delete deployOptions.sourceCode;
-                        if (type === "saveAndDeploy" && (!$scope.formData.canBeDeployed || !$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0)) {
+                        if (type === "saveAndDeploy" && (!formData.canBeDeployed || !formData.deployOptions || Object.keys(formData.deployOptions).length === 0)) {
                             if (deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0) {
 
                                 deployOptions.custom.ports.forEach(function (onePort) {
@@ -125,8 +127,8 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                                 }
                             }
                             else {
-                                deployOptions.custom.resourceId = $scope.formData._id;
-                                deployOptions.env = $scope.formData.created;
+                                deployOptions.custom.resourceId = formData._id;
+                                deployOptions.env = formData.created;
 
                                 if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
                                     deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
@@ -135,24 +137,24 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                             apiParams["deployOptions"] = deployOptions;
                         }
 
-                        if (type === "saveAndRebuild" && (!$scope.formData.isDeployed || !$scope.formData.canBeDeployed || (!$scope.formData.instance && !$scope.formData.instance.id))) {
+                        if (type === "saveAndRebuild" && (!formData.isDeployed || !formData.canBeDeployed || (!formData.instance && !formData.instance.id))) {
                             rebuildOptions = angular.copy(deployOptions.custom);
-                            rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
-                            rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;
+                            rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
+                            rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
                             apiParams["rebuildOptions"] = deployOptions;
                         }
                     }
 
                     if (!$scope.options.allowEdit) {
-                        $scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
+                        $scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + formData.created + ' environment');
                         return;
                     }
 
-                    if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
-                        $scope.formData.deployOptions.custom.type = 'resource';
+                    if (formData.deployOptions && formData.deployOptions.custom) {
+                        formData.deployOptions.custom.type = 'resource';
                     }
 
-                    let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
+                    let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, formData.deployOptions);
                     if (!validDeploy) {
                         return;
                     }
@@ -167,7 +169,6 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 					if (type === 'saveAndRebuild') {
                         updateApiParams('saveAndRebuild');
                     }
-
 
                     commonService.addEditResourceApi($scope, apiParams, function (response) {
                         $scope.newResource = response;

@@ -91,6 +91,8 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    data: {
 				    env: apiParams.envCode,
 				    resource: apiParams.saveOptions
+                    //add input for cd records apiParams.options
+                    // add input for deploy apiParams.deployOptions
 			    }
 		    };
 	    }
@@ -101,14 +103,17 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    params: {
 				    env: apiParams.envCode,
 				    id: apiParams.id
+                    // add inputs for cd records apiParams.options
+                    // add input for rebuild apiParmas.rebuildOptions
 			    },
 			    data: {
 				    resource: apiParams.saveOptions
+                    //add input for cd records [apiParams.deployOptions]
 			    }
 		    };
 	    }
-	
-	    getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
+        return cb();
+	    getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
 		    if (error) {
 			    overlayLoading.hide();
 			    $scope.displayAlert('danger', error.message);
@@ -118,6 +123,8 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		    }
 	    });
     }
+
+
 
 	return {
 		listResourcesApi,

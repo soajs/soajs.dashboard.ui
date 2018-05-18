@@ -1,6 +1,6 @@
 "use strict";
 var addService = soajsApp.components;
-addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commonService', function ($timeout, $modal, resourceDeploy, commonService) {
+addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDeploy', 'commonService', 'resourceConfiguration', function ($timeout, ngDataApi, $modal, resourceDeploy, commonService, resourceConfiguration) {
 	
 	function manageResource($scope, resource, action, settings) {
 		var currentScope = $scope;
@@ -13,306 +13,173 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commo
 				fixBackDrop();
 				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
-				
-				$scope.save = function (cb) {
-					if (!$scope.options.allowEdit) {
-						$scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
-						return;
-					}
-					
-					if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
-						$scope.formData.deployOptions.custom.type = 'resource';
-					}
-					
-					let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
-					if (!validDeploy) {
-						return;
-					}
-					
-					resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
-						saveResource(function () {
-							saveResourceDeployConfig(function () {
-								if (cb) return cb();
-								
-								$scope.formData = {};
-								$modalInstance.close();
-								currentScope.load();
-							});
-						});
-					});
-					
-					function saveResource(cb) {
-						var saveOptions = {
-							name: $scope.formData.name,
-							type: $scope.formData.type,
-							category: $scope.formData.category,
-							locked: $scope.formData.locked || false,
-							plugged: $scope.formData.plugged || false,
-							shared: $scope.formData.shared || false,
-							config: $scope.formData.config
-						};
-						if ($scope.formData.deployOptions.custom
-							&& $scope.formData.deployOptions.custom.ports
-							&& $scope.formData.deployOptions.custom.ports.length > 0) {
-							$scope.formData.deployOptions.custom.ports.forEach(function (onePort) {
-								if (Object.hasOwnProperty.call(onePort, 'loadBalancer')) {
-									delete onePort.loadBalancer
-								}
-								if (!saveOptions.config.ports) {
-									saveOptions.config.ports = [];
-								}
-								saveOptions.config.ports.push(onePort);
-							});
-						}
-						if ($scope.formData.deployOptions.custom
-							&& $scope.formData.deployOptions.custom.secrets
-							&& $scope.formData.deployOptions.custom.secrets.length > 0) {
-							saveOptions.config.secrets = $scope.formData.deployOptions.custom.secrets
-						}
-						if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
-							saveOptions.sharedEnv = {};
-							$scope.formData.sharedEnv = {};
-							$scope.envs.list.forEach(function (oneEnv) {
-								if (oneEnv.selected) {
-									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
-									saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
-								}
-							});
-						}
-						
-						if (saveOptions.config && saveOptions.config.ports) {
-							delete saveOptions.config.ports;
-						}
-						
-						let apiParams = {
-							type: $scope.options.formAction, // add or edit
-							envCode: $scope.options.envCode.toUpperCase(),
-							saveOptions,
-							id: $scope.formData._id // for edit
-						};
-						
-						commonService.addEditResourceApi($scope, apiParams, function (response) {
-							$scope.newResource = response;
-							$scope.displayAlert('success', 'Resource updated successfully');
-							return cb();
-						});
-						
-					}
-					
-					function saveResourceDeployConfig(cb) {
-						
-						if (!$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0) {
-							if (cb) return cb();
-							else return;
-						}
-						
-						var deployOptions = angular.copy($scope.formData.deployOptions);
-						if (!deployOptions.custom) {
-							deployOptions.custom = {};
-						}
-						deployOptions.custom.type = 'resource';
-						
-						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
-						delete deployOptions.sourceCode;
-						
-						if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
-							deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
-						}
-						
-						var options = {
-							method: 'put',
-							routeName: '/dashboard/resources/config/update',
-							data: {
-								env: (($scope.options.formAction === 'update') ? $scope.formData.created.toUpperCase() : $scope.options.envCode.toUpperCase()),
-								resourceName: $scope.formData.name,
-								config: {
-									deploy: $scope.formData.canBeDeployed || false,
-									options: deployOptions
-								}
-							}
-						};
-						if (!$scope.formData.canBeDeployed) {
-							delete options.data.config.options;
-						}
-						
-						getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
-							if (error) {
-								overlayLoading.hide();
-								$scope.displayAlert('danger', error.message);
-							}
-							else {
-								$scope.displayAlert('success', 'Resource deployment configuration updated successfully');
-								if (cb) return cb();
-							}
-						});
-					}
-				};
-				
-				$scope.saveAndDeploy = function (deployOnly) {
-					if (!$scope.options.allowEdit) {
-						$scope.displayAlert('warning', 'Deploying this resource is only allowed in the ' + $scope.formData.created + ' environment');
-						return;
-					}
-					
-					let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
-					if (!validDeploy) {
-						return;
-					}
-					
-					overlayLoading.show();
-					
-					if (deployOnly) {
-						deployResource(function () {
-							currentScope.load();
-						});
-					}
-					else {
-						$scope.save(function () {
-							deployResource(function () {
-								$scope.formData = {};
-								$modalInstance.close();
-								currentScope.load();
-							});
-						});
-					}
-					
-					function deployResource(cb) {
-						if (!$scope.formData.canBeDeployed || !$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0) {
-							if (cb) return cb();
-							else return;
-						}
-						var deployOptions = angular.copy($scope.formData.deployOptions);
-						if (!deployOptions.custom) {
-							deployOptions.custom = {};
-						}
-						
-						if (deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0) {
-							deployOptions.custom.ports.forEach(function (onePort) {
-								if (onePort.hasOwnProperty.call(onePort, 'LoadBalancer')) {
-									delete onePort.LoadBalancer
-								}
-							});
-						}
-						deployOptions.custom.type = 'resource';
-						
-						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
-						delete deployOptions.sourceCode;
-						
-						if ($scope.options.formAction === 'add') {
-							if ($scope.newResource && Object.keys($scope.newResource).length > 0) {
-								deployOptions.custom.resourceId = $scope.newResource._id;
-							}
-							
-							deployOptions.env = $scope.options.envCode;
-							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
-								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
-							}
-						}
-						else {
-							deployOptions.custom.resourceId = $scope.formData._id;
-							deployOptions.env = $scope.formData.created;
-							
-							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
-								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
-							}
-						}
-						
-						overlayLoading.show();
-						getSendDataFromServer(currentScope, ngDataApi, {
-							method: 'post',
-							routeName: '/dashboard/cloud/services/soajs/deploy',
-							data: deployOptions
-						}, function (error) {
-							overlayLoading.hide();
-							if (error) {
-								$scope.displayAlert('danger', error.message);
-								if ($scope.newResource && $scope.newResource._id) {
-									getSendDataFromServer($scope, ngDataApi, {
-										method: 'delete',
-										routeName: '/dashboard/resources/delete',
-										params: {
-											env: currentScope.envCode.toUpperCase(),
-											id: $scope.newResource._id
-										}
-									}, function (error) {
-										if (error) {
-											$scope.displayAlert('danger', error.message);
-										}
-									});
-								}
-							}
-							else {
-								$scope.displayAlert('success', 'Resource deployed successfully. Check the High Availability - Cloud section to see it running');
-								if (cb) return cb();
-							}
-						});
-					}
-				};
-				
-				$scope.saveAndRebuild = function () {
-					if (!$scope.options.allowEdit) {
-						$scope.displayAlert('warning', 'Rebuilding this resource is only allowed in the ' + $scope.formData.created + ' environment');
-						return;
-					}
-					
-					let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
-					if (!validDeploy) {
-						return;
-					}
-					
-					overlayLoading.show();
-					
-					$scope.save(function () {
-						rebuildService(function () {
-							overlayLoading.hide();
-							$scope.formData = {};
-							$modalInstance.close();
-							currentScope.load();
-						});
-					});
-					
-					function rebuildService(cb) {
-						if (!$scope.formData.isDeployed || !$scope.formData.canBeDeployed || (!$scope.formData.instance && !$scope.formData.instance.id)) {
-							if (cb) return cb();
-							else return;
-						}
-						
-						if (!$scope.formData.deployOptions.custom) {
-							$scope.formData.deployOptions.custom = {};
-						}
-						
-						$scope.formData.deployOptions.custom.type = 'resource';
-						
-						$scope.formData.deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd($scope.formData.deployOptions.sourceCode);
-						delete $scope.formData.deployOptions.sourceCode;
-						
-						var rebuildOptions = angular.copy($scope.formData.deployOptions.custom);
-						rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
-						rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;
-						
-						getSendDataFromServer(currentScope, ngDataApi, {
-							method: 'put',
-							routeName: '/dashboard/cloud/services/redeploy',
-							data: {
-								env: $scope.formData.created,
-								serviceId: $scope.formData.instance.id,
-								mode: $scope.formData.instance.labels['soajs.service.mode'],
-								action: 'rebuild',
-								custom: rebuildOptions
-							}
-						}, function (error) {
-							if (error) {
-								overlayLoading.hide();
-								$scope.displayAlert('danger', error.message);
-							}
-							else {
-								$scope.displayAlert('success', 'Resource rebuilt successfully');
-								if (cb) return cb();
-							}
-						});
-					}
-				};
-				
+
+				$scope.saveNew = function (type, deployOnly, cb) {
+                    let apiParams = {};
+
+                    function saveResource() {
+                        let saveOptions = {
+                            name: $scope.formData.name,
+                            type: $scope.formData.type,
+                            category: $scope.formData.category,
+                            locked: $scope.formData.locked || false,
+                            plugged: $scope.formData.plugged || false,
+                            shared: $scope.formData.shared || false,
+                            config: $scope.formData.config
+                        };
+
+                        if ($scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.ports && $scope.formData.deployOptions.custom.ports.length > 0) {
+                            $scope.formData.deployOptions.custom.ports.forEach(function (onePort) {
+                                if (Object.hasOwnProperty.call(onePort, 'loadBalancer')) {
+                                    delete onePort.loadBalancer
+                                }
+                                if (!saveOptions.config.ports) {
+                                    saveOptions.config.ports = [];
+                                }
+                                saveOptions.config.ports.push(onePort);
+                            });
+                        }
+
+                        if ($scope.formData.deployOptions.custom && $scope.formData.deployOptions.custom.secrets && $scope.formData.deployOptions.custom.secrets.length > 0) {
+                            saveOptions.config.secrets = $scope.formData.deployOptions.custom.secrets
+                        }
+
+                        if ($scope.formData.shared && !$scope.envs.sharedWithAll) {
+                            saveOptions.sharedEnv = {};
+                            $scope.formData.sharedEnv = {};
+                            $scope.envs.list.forEach(function (oneEnv) {
+                                if (oneEnv.selected) {
+                                    saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
+                                    saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
+                                }
+                            });
+                        }
+
+                        if (saveOptions.config && saveOptions.config.ports) {
+                            delete saveOptions.config.ports;
+                        }
+
+                        apiParams = {
+                            type: $scope.options.formAction, // add or edit
+                            envCode: $scope.options.envCode.toUpperCase(),
+                            saveOptions,
+                            id: $scope.formData._id, // for edit
+                        };
+
+                        let deployOptions = {};
+
+                        if ($scope.formData.deployOptions && Object.keys($scope.formData.deployOptions).length !== 0) {
+                            deployOptions = angular.copy($scope.formData.deployOptions);
+
+                            if (!deployOptions.custom) {
+                                deployOptions.custom = {};
+                            }
+
+                            deployOptions.custom.type = 'resource';
+
+                            deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
+                            delete deployOptions.sourceCode;
+
+                            if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
+                                deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
+                            }
+                            apiParams['resourceName'] = $scope.formData.name;
+                            apiParams['deploy'] =$scope.formData.canBeDeployed || false;
+                            apiParams['options'] = deployOptions;
+
+                            if (!$scope.formData.canBeDeployed) {
+                                delete apiParams['options'];
+                            }
+                        }
+                    }
+
+                    function updateApiParams(type) {
+                        deployOptions = angular.copy($scope.formData.deployOptions);
+                        if (!deployOptions.custom) {
+                            deployOptions.custom = {};
+                        }
+
+                        deployOptions.custom.type = 'resource';
+                        deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
+                        delete deployOptions.sourceCode;
+
+                        if (type === "saveAndDeploy" && (!$scope.formData.canBeDeployed || !$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0)) {
+                            if (deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0) {
+
+                                deployOptions.custom.ports.forEach(function (onePort) {
+                                    if (onePort.hasOwnProperty.call(onePort, 'LoadBalancer')) {
+                                        delete onePort.LoadBalancer
+                                    }
+                                });
+                            }
+                            if ($scope.options.formAction === 'add') {
+                                if ($scope.newResource && Object.keys($scope.newResource).length > 0) {
+                                    deployOptions.custom.resourceId = $scope.newResource._id;
+                                }
+
+                                deployOptions.env = $scope.options.envCode;
+                                if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
+                                    deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
+                                }
+                            }
+                            else {
+                                deployOptions.custom.resourceId = $scope.formData._id;
+                                deployOptions.env = $scope.formData.created;
+
+                                if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
+                                    deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
+                                }
+                            }
+                            apiParams["deployOptions"] = deployOptions;
+                        }
+
+                        if (type === "saveAndRebuild" && (!$scope.formData.isDeployed || !$scope.formData.canBeDeployed || (!$scope.formData.instance && !$scope.formData.instance.id))) {
+                            rebuildOptions = angular.copy(deployOptions.custom);
+                            rebuildOptions.memory = $scope.formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
+                            rebuildOptions.cpuLimit = $scope.formData.deployOptions.deployConfig.cpuLimit;
+                            apiParams["rebuildOptions"] = deployOptions;
+                        }
+                    }
+
+                    if (!$scope.options.allowEdit) {
+                        $scope.displayAlert('warning', 'Configuring this resource is only allowed in the ' + $scope.formData.created + ' environment');
+                        return;
+                    }
+
+                    if ($scope.formData.deployOptions && $scope.formData.deployOptions.custom) {
+                        $scope.formData.deployOptions.custom.type = 'resource';
+                    }
+
+                    let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, $scope.formData.deployOptions);
+                    if (!validDeploy) {
+                        return;
+                    }
+                    //ask etiennos about
+                    resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
+                            saveResource();
+                        });
+
+                    let deployOptions = {};
+                    let rebuildOptions = {};
+
+					if (type === 'saveAndDeploy') {
+                        updateApiParams('saveAndDeploy');
+                    }
+
+					if (type === 'saveAndRebuild') {
+                        updateApiParams('saveAndRebuild');
+                    }
+
+                    commonService.addEditResourceApi($scope, apiParams, function (response) {
+                        $scope.newResource = response;
+                        $scope.displayAlert('success', 'Resource updated successfully');
+                        $scope.formData = {};
+                        $modalInstance.close();
+                        currentScope.listResources();
+                        return cb();
+                    });
+                };
+
 				$scope.cancel = function () {
 					$modalInstance.close();
 					if ($scope.form && $scope.form.formData) {
@@ -322,6 +189,7 @@ addService.service('addService', ['$timeout', '$modal', 'resourceDeploy', 'commo
 				};
 			}
 		});
+		// apiparamss type save save and delpol aw rebuild
 	}
 	
 	function addNewPopUp($scope) {

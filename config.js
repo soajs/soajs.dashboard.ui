@@ -22,7 +22,8 @@ var mydomainport = (protocol ==='https:') ? 443 : 80;
 if (location && location.port && parseInt(location.port) !== 80) {
 	mydomainport = location.port;
 }
-mydomain += ":" + mydomainport;
+// mydomain += ":" + 30080;
+mydomain += ":" + 80;
 
 //set the api domain
 var mydomainAPI = "dashboard-api";

@@ -11,12 +11,15 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
-				
+				//bala callback bas hye zeta
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
 
-				$scope.saveNew = function (type, deployOnly, cb) {
+				$scope.saveNew = function (type) {
+				    
                     let apiParams = {};
-
+                    let deployOptions = {};
+                    let rebuildOptions = {};
+                    
                     function saveResource() {
                         let saveOptions = {
                             name: $scope.formData.name,
@@ -102,7 +105,6 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         deployOptions.custom.type = 'resource';
                         deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
                         delete deployOptions.sourceCode;
-
                         if (type === "saveAndDeploy" && (!$scope.formData.canBeDeployed || !$scope.formData.deployOptions || Object.keys($scope.formData.deployOptions).length === 0)) {
                             if (deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0) {
 
@@ -154,14 +156,10 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                     if (!validDeploy) {
                         return;
                     }
-                    //ask etiennos about
-                    resourceConfiguration.mapConfigurationFormDataToConfig($scope, function () {
-                            saveResource();
-                        });
-
-                    let deployOptions = {};
-                    let rebuildOptions = {};
-
+                    
+                    resourceConfiguration.mapConfigurationFormDataToConfig($scope);
+                    saveResource();
+                    
 					if (type === 'saveAndDeploy') {
                         updateApiParams('saveAndDeploy');
                     }
@@ -170,13 +168,13 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         updateApiParams('saveAndRebuild');
                     }
 
+
                     commonService.addEditResourceApi($scope, apiParams, function (response) {
                         $scope.newResource = response;
                         $scope.displayAlert('success', 'Resource updated successfully');
                         $scope.formData = {};
                         $modalInstance.close();
                         currentScope.listResources();
-                        return cb();
                     });
                 };
 
@@ -189,7 +187,6 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 				};
 			}
 		});
-		// apiparamss type save save and delpol aw rebuild
 	}
 	
 	function addNewPopUp($scope) {

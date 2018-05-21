@@ -1,6 +1,6 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, commonService) {
 	
 	/**
 	 * update deployConfig.infra account using provider
@@ -57,33 +57,35 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function fetchDefaultImagesOnOverride(context) {
-		if (!context.formData.custom) {
-			context.formData.custom = {}
+		let selectedRecipe = context.deploymentData.selectedRecipe;
+		let formData = context.formData;
+		if (!formData.custom) {
+            formData.custom = {}
 		}
-		if (!context.formData.custom.image) {
-			context.formData.custom.image = {}
+		if (!formData.custom.image) {
+            formData.custom.image = {}
 		}
-		if (context.deploymentData.selectedRecipe && context.deploymentData.selectedRecipe.recipe && context.deploymentData.selectedRecipe.recipe.deployOptions && context.deploymentData.selectedRecipe.recipe.deployOptions.image.override) {
+		if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.image.override) {
 			context.getProvidersList(() => {
-				context.formData.custom.image.prefix = '';
+                formData.custom.image.prefix = '';
 				context.deploymentData.providers.forEach((provider) => {
-					if (provider.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix) {
-						context.formData.custom.image.prefix = context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix;
+					if (provider.v === selectedRecipe.recipe.deployOptions.image.prefix) {
+                        formData.custom.image.prefix = selectedRecipe.recipe.deployOptions.image.prefix;
 					}
 				});
-				context.getImagesList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.prefix, () => {
+				context.getImagesList(selectedRecipe.recipe.deployOptions.image.prefix, () => {
 					context.deploymentData.images.forEach((image) => {
-						if (image.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.name) {
-							context.formData.custom.image.name = image.v
+						if (image.v === selectedRecipe.recipe.deployOptions.image.name) {
+                            formData.custom.image.name = image.v
 						}
 					});
 					if (context.deploymentData.images.length === 0) {
 						context.deploymentData.imageVersions = [];
 					} else {
-						context.getVersionsList(context.deploymentData.selectedRecipe.recipe.deployOptions.image.name, () => {
+						context.getVersionsList(selectedRecipe.recipe.deployOptions.image.name, () => {
 							context.deploymentData.imageVersions.forEach((version) => {
-								if (version.v === context.deploymentData.selectedRecipe.recipe.deployOptions.image.tag) {
-									context.formData.custom.image.tag = version.v
+								if (version.v === selectedRecipe.recipe.deployOptions.image.tag) {
+                                    formData.custom.image.tag = version.v
 								}
 							});
 						});
@@ -91,9 +93,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				})
 			});
 		} else {
-			context.formData.custom.image.prefix = '';
-			context.formData.custom.image.name = '';
-			context.formData.custom.image.tag = '';
+            formData.custom.image.prefix = '';
+            formData.custom.image.name = '';
+            formData.custom.image.tag = '';
 		}
 	}
 	
@@ -151,7 +153,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
 		context.deploymentData = {};
-		
 		context.catalogConflictingPorts = '';
 		context.formData = (cb && typeof cb === 'function') ? resource : {};
 		context.envs = [];
@@ -194,7 +195,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		});
 		
 		context.decodeRepoNameAndSubName = decodeRepoNameAndSubName;
-		
+
+		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
 			let selectedRepo, subNameInCaseMulti;
 			if (confOrCustom === 'conf') {
@@ -230,39 +232,32 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 			if (accountData && Object.keys(accountData).length > 0) {
 				context.configReposBranchesStatus[selectedRepo] = 'loading';
-				getSendDataFromServer(context, ngDataApi, {
-					'method': 'get',
-					'routeName': '/dashboard/gitAccounts/getBranches',
-					params: {
-						id: accountData.accountId,
-						name: selectedRepo,
-						type: 'repo',
-						provider: accountData.provider
-					}
-				}, function (error, response) {
-					if (error) {
-						context.configReposBranchesStatus[selectedRepo] = 'failed';
-						context.displayAlert('danger', error.message);
-					} else {
-						context.configReposBranchesStatus[selectedRepo] = 'loaded';
-						context.configReposBranches[selectedRepo] = response.branches;
-						
-						//if multi auto generate path
-						if (confOrCustom === 'cust') {
-							context.sourceCodeConfig.custom.repoPath.disabled = false;
-							if (accountData.type === 'multi' && subNameInCaseMulti) {
-								accountData.configSHA.forEach((oneSubRepo) => {
-									if (oneSubRepo.contentName === subNameInCaseMulti) {
-										context.formData.deployOptions.sourceCode.custom.path = oneSubRepo.path.replace("/config.js", "/");
-										context.sourceCodeConfig.custom.repoPath.disabled = true;
-									}
-								});
-							}
-							else {
-								context.formData.deployOptions.sourceCode.custom.path = "";
-							}
-						}
-					}
+
+				let apiParams = {
+                    id:accountData.accountId,
+                    name: selectedRepo,
+					type:'repo',
+					provider: accountData.provider
+				};
+                commonService.fetchBranches(currentScope, apiParams, function (response) {
+                    context.configReposBranchesStatus[selectedRepo] = 'loaded';
+                    context.configReposBranches[selectedRepo] = response.branches;
+
+                    //if multi auto generate path
+                    if (confOrCustom === 'cust') {
+                        context.sourceCodeConfig.custom.repoPath.disabled = false;
+                        if (accountData.type === 'multi' && subNameInCaseMulti) {
+                            accountData.configSHA.forEach((oneSubRepo) => {
+                                if (oneSubRepo.contentName === subNameInCaseMulti) {
+                                    context.formData.deployOptions.sourceCode.custom.path = oneSubRepo.path.replace("/config.js", "/");
+                                    context.sourceCodeConfig.custom.repoPath.disabled = true;
+                                }
+                            });
+                        }
+                        else {
+                            context.formData.deployOptions.sourceCode.custom.path = "";
+                        }
+                    }
 				});
 			}
 		};
@@ -325,150 +320,134 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.message = {};
 			}, 5000);
 		};
-		
+
+		// adding the api call to commonService
 		context.listAccounts = function (customType, customRepoInfo, callback) {
-			getSendDataFromServer(context, ngDataApi, {
-				'method': 'get',
-				'routeName': '/dashboard/gitAccounts/accounts/list',
-				params: {
-					fullList: true
-				}
-			}, function (error, response) {
-				if (error) {
-					context.displayAlert('danger', error.message);
-				} else {
-					let configRecords = [];
-					let customRecords = [];
-					
-					configRecords.push({name: "-- Leave Empty --"});
-					customRecords.push({name: "-- Leave Empty --"});
-					
-					if (response) {
-						response.forEach(function (eachAccount) {
-							if (eachAccount.repos) {
-								eachAccount.repos.forEach(function (eachRepo) {
-									// eachRepo : name, serviceName, type
-									if (eachRepo.type === 'config') {
-										configRecords.push({
-											owner: eachAccount.owner,
-											provider: eachAccount.provider,
-											accountId: eachAccount._id.toString(),
-											name: eachRepo.name,
-											type: eachRepo.type,
-											configSHA: eachRepo.configSHA
-										});
-									}
-									
-									if (['custom', 'service', 'daemon', 'static'].indexOf(eachRepo.type) !== -1) {
-										if (!customType || eachRepo.type === customType) {
-											customRecords.push({
-												owner: eachAccount.owner,
-												provider: eachAccount.provider,
-												accountId: eachAccount._id.toString(),
-												name: eachRepo.name,
-												type: eachRepo.type,
-												configSHA: eachRepo.configSHA
-											});
-										}
-									}
-									else if (eachRepo.type === 'multi') {
-										eachRepo.configSHA.forEach((subRepo) => {
-											
-											//if not locked or locked from catalog and the value is multi
-											if (!customType || customType === 'multi') {
-												if ((!customRepoInfo || !customRepoInfo.subName) || (customRepoInfo && customRepoInfo.subName === subRepo.contentName)) {
-													if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
-														customRecords.push({
-															owner: eachAccount.owner,
-															provider: eachAccount.provider,
-															accountId: eachAccount._id.toString(),
-															name: eachRepo.name,
-															subName: subRepo.contentName,
-															type: eachRepo.type,
-															configSHA: eachRepo.configSHA
-														});
-													}
-												}
-											}
-											
-											//if not locked or locked from catalog and value not multi
-											if (!customType || customType !== 'multi') {
-												
-												//one of the sub repo types should match locked type or no locked type and acceptable type
-												if ((!customType && ['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) || (customType === subRepo.contentType)) {
-													customRecords.push({
-														owner: eachAccount.owner,
-														provider: eachAccount.provider,
-														accountId: eachAccount._id.toString(),
-														name: eachRepo.name,
-														subName: subRepo.contentName,
-														type: eachRepo.type,
-														configSHA: eachRepo.configSHA
-													});
-												}
-											}
-											
-										});
-									}
-								});
-							}
-						});
-					}
-					
-					context.configRepos.customType = customRecords;
-					context.configRepos.config = configRecords;
-					
-					callback();
-				}
-			});
+			let apiParams = {
+                fullList : true
+			};
+            commonService.listAccounts(currentScope, apiParams, function (response) {
+                let configRecords = [];
+                let customRecords = [];
+
+                configRecords.push({name: "-- Leave Empty --"});
+                customRecords.push({name: "-- Leave Empty --"});
+
+                if (response) {
+                    response.forEach(function (eachAccount) {
+                        if (eachAccount.repos) {
+                            eachAccount.repos.forEach(function (eachRepo) {
+                                // eachRepo : name, serviceName, type
+                                if (eachRepo.type === 'config') {
+                                    configRecords.push({
+                                        owner: eachAccount.owner,
+                                        provider: eachAccount.provider,
+                                        accountId: eachAccount._id.toString(),
+                                        name: eachRepo.name,
+                                        type: eachRepo.type,
+                                        configSHA: eachRepo.configSHA
+                                    });
+                                }
+
+                                if (['custom', 'service', 'daemon', 'static'].indexOf(eachRepo.type) !== -1) {
+                                    if (!customType || eachRepo.type === customType) {
+                                        customRecords.push({
+                                            owner: eachAccount.owner,
+                                            provider: eachAccount.provider,
+                                            accountId: eachAccount._id.toString(),
+                                            name: eachRepo.name,
+                                            type: eachRepo.type,
+                                            configSHA: eachRepo.configSHA
+                                        });
+                                    }
+                                }
+                                else if (eachRepo.type === 'multi') {
+                                    eachRepo.configSHA.forEach((subRepo) => {
+
+                                        //if not locked or locked from catalog and the value is multi
+                                        if (!customType || customType === 'multi') {
+                                            if ((!customRepoInfo || !customRepoInfo.subName) || (customRepoInfo && customRepoInfo.subName === subRepo.contentName)) {
+                                                if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
+                                                    customRecords.push({
+                                                        owner: eachAccount.owner,
+                                                        provider: eachAccount.provider,
+                                                        accountId: eachAccount._id.toString(),
+                                                        name: eachRepo.name,
+                                                        subName: subRepo.contentName,
+                                                        type: eachRepo.type,
+                                                        configSHA: eachRepo.configSHA
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        //if not locked or locked from catalog and value not multi
+                                        if (!customType || customType !== 'multi') {
+
+                                            //one of the sub repo types should match locked type or no locked type and acceptable type
+                                            if ((!customType && ['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) || (customType === subRepo.contentType)) {
+                                                customRecords.push({
+                                                    owner: eachAccount.owner,
+                                                    provider: eachAccount.provider,
+                                                    accountId: eachAccount._id.toString(),
+                                                    name: eachRepo.name,
+                                                    subName: subRepo.contentName,
+                                                    type: eachRepo.type,
+                                                    configSHA: eachRepo.configSHA
+                                                });
+                                            }
+                                        }
+
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+
+                context.configRepos.customType = customRecords;
+                context.configRepos.config = configRecords;
+
+                callback();
+            });
 		};
-		
+
+		//adding the api call to commonService
 		context.getEnvs = function () {
 			if (context.envs && context.envs.list && context.envs.list.length > 0) {
 				return;
 			}
-			
-			overlayLoading.show();
-			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'get',
-				routeName: '/dashboard/environment/list'
-			}, function (error, envs) {
-				overlayLoading.hide();
-				if (error) {
-					context.displayAlert('danger', error.message);
-				}
-				else {
-					context.envs.list = [];
-					envs.forEach(function (oneEnv) {
-						//in case of update resource, check resource record to know what env it belongs to
-						if (resource && resource.created) {
-							if (resource.created.toUpperCase() === oneEnv.code.toUpperCase()) return;
-						}
-						//in case of add resource, check current environment
-						else if (currentScope.context.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
-							return;
-						}
-						
-						var envEntry = {
-							code: oneEnv.code,
-							description: oneEnv.description,
-							selected: (resource && resource.sharedEnv && resource.sharedEnv[oneEnv.code.toUpperCase()])
-						};
-						
-						if (resource && resource.shared && action === 'update') {
-							if (resource.sharedEnv) {
-								envEntry.selected = (resource.sharedEnv[oneEnv.code.toUpperCase()]);
-							}
-							else {
-								//shared with all envs
-								envEntry.selected = true;
-								context.envs.sharedWithAll = true;
-							}
-						}
-						
-						context.envs.list.push(envEntry);
-					});
-				}
+			let apiParams = {};
+            commonService.getEnvs(currentScope, apiParams, function (envs) {
+                context.envs.list = [];
+                envs.forEach(function (oneEnv) {
+                    //in case of update resource, check resource record to know what env it belongs to
+                    if (resource && resource.created) {
+                        if (resource.created.toUpperCase() === oneEnv.code.toUpperCase()) return;
+                    }
+                    //in case of add resource, check current environment
+                    else if (currentScope.context.envCode.toUpperCase() === oneEnv.code.toUpperCase()) {
+                        return;
+                    }
+
+                    var envEntry = {
+                        code: oneEnv.code,
+                        description: oneEnv.description,
+                        selected: (resource && resource.sharedEnv && resource.sharedEnv[oneEnv.code.toUpperCase()])
+                    };
+
+                    if (resource && resource.shared && action === 'update') {
+                        if (resource.sharedEnv) {
+                            envEntry.selected = (resource.sharedEnv[oneEnv.code.toUpperCase()]);
+                        }
+                        else {
+                            //shared with all envs
+                            envEntry.selected = true;
+                            context.envs.sharedWithAll = true;
+                        }
+                    }
+					context.envs.list.push(envEntry);
+                });
 			});
 		};
 		
@@ -514,10 +493,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			}
 		}
-		
+
+		// changes to deployoptions
 		context.setSourceCodeData = function (selectedRecipe) {
 			let customType;
-			
+			let configuration = context.sourceCodeConfig.configuration;
+			let custom = context.sourceCodeConfig.custom;
+			let deployOptions = context.formData.deployOptions;
+
 			context.sourceCodeConfig = {
 				configuration: {
 					isEnabled: false,
@@ -546,26 +529,26 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				
 				context.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
 				
-				if (!context.formData.deployOptions.sourceCode) {
-					context.formData.deployOptions.sourceCode = {};
+				if (!deployOptions.sourceCode) {
+                    deployOptions.sourceCode = {};
 				}
 				
 				if (conf) {
-					context.sourceCodeConfig.configuration.isEnabled = true;
-					context.sourceCodeConfig.configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
-					context.sourceCodeConfig.configuration.repoAndBranch.required = conf.required;
+                    configuration.isEnabled = true;
+                    configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
+                    configuration.repoAndBranch.required = conf.required;
 					
 					if (conf.repo && conf.repo !== '') {
-						if (!context.formData.deployOptions.sourceCode.configuration) {
-							context.formData.deployOptions.sourceCode.configuration = {};
+						if (!vv.sourceCode.configuration) {
+                            deployOptions.sourceCode.configuration = {};
 						}
-						
-						context.formData.deployOptions.sourceCode.configuration.repo = conf.repo;
-						context.formData.deployOptions.sourceCode.configuration.branch = conf.branch;
+
+                        deployOptions.sourceCode.configuration.repo = conf.repo;
+                        deployOptions.sourceCode.configuration.branch = conf.branch;
 					} else {
-						if (!context.formData.deployOptions.custom || !context.formData.deployOptions.custom.sourceCode || !context.formData.deployOptions.custom.sourceCode.configuration || !context.formData.deployOptions.custom.sourceCode.configuration.repo) { // if not filled from cicd
-							if (context.formData.deployOptions.sourceCode && context.formData.deployOptions.sourceCode.configuration) {
-								context.formData.deployOptions.sourceCode.configuration.repo = '-- Leave Empty --';
+						if (!deployOptions.custom || !deployOptions.custom.sourceCode || !deployOptions.custom.sourceCode.configuration || !deployOptions.custom.sourceCode.configuration.repo) { // if not filled from cicd
+							if (deployOptions.sourceCode && deployOptions.sourceCode.configuration) {
+                                deployOptions.sourceCode.configuration.repo = '-- Leave Empty --';
 							}
 						}
 					}
@@ -573,22 +556,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				
 				if (cust && context.formData.type === 'server') {
 					customType = cust.type;
-					
-					context.sourceCodeConfig.custom.isEnabled = true;
-					context.sourceCodeConfig.custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
-					context.sourceCodeConfig.custom.repoAndBranch.required = cust.required;
+
+                    custom.isEnabled = true;
+                    custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
+                    custom.repoAndBranch.required = cust.required;
 					
 					if (cust.repo && cust.repo !== '') {
-						if (!context.formData.deployOptions.sourceCode.custom) {
-							context.formData.deployOptions.sourceCode.custom = {};
+						if (!deployOptions.sourceCode.custom) {
+                            deployOptions.sourceCode.custom = {};
 						}
-						
-						context.formData.deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
-						context.formData.deployOptions.sourceCode.custom.branch = cust.branch;
+
+                        deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
+                        deployOptions.sourceCode.custom.branch = cust.branch;
 					} else {
-						if (!context.formData.deployOptions.custom || !context.formData.deployOptions.custom.sourceCode || !context.formData.deployOptions.custom.sourceCode.custom || !context.formData.deployOptions.custom.sourceCode.custom.repo) { // if not filled from cicd
-							if (context.formData.deployOptions.sourceCode && context.formData.deployOptions.sourceCode.custom) {
-								context.formData.deployOptions.sourceCode.custom.repo = '-- Leave Empty --' + '__SOAJS_DELIMITER__';
+						if (!deployOptions.custom || !deployOptions.custom.sourceCode || !deployOptions.custom.sourceCode.custom || !deployOptions.custom.sourceCode.custom.repo) { // if not filled from cicd
+							if (deployOptions.sourceCode && deployOptions.sourceCode.custom) {
+                                deployOptions.sourceCode.custom.repo = '-- Leave Empty --' + '__SOAJS_DELIMITER__';
 							}
 						}
 					}
@@ -597,14 +580,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if (conf || ((cust && context.formData.type === 'server'))) {
 					context.listAccounts(customType, cust, function () {
 						// special case: if the form was overwritten from cicd we have to load the branch
-						if (context.formData.deployOptions.sourceCode) {
-							if (context.formData.deployOptions.sourceCode.configuration && context.formData.deployOptions.sourceCode.configuration.repo) {
-								if (!context.configReposBranches[context.formData.deployOptions.sourceCode.configuration.repo]) {
+						if (deployOptions.sourceCode) {
+							if (deployOptions.sourceCode.configuration && deployOptions.sourceCode.configuration.repo) {
+								if (!context.configReposBranches[deployOptions.sourceCode.configuration.repo]) {
 									context.fetchBranches('conf');
 								}
 							}
-							if (context.formData.deployOptions.sourceCode.custom && context.formData.deployOptions.sourceCode.custom.repo) {
-								if (!context.configReposBranches[context.formData.deployOptions.sourceCode.custom.repo]) {
+							if (deployOptions.sourceCode.custom && deployOptions.sourceCode.custom.repo) {
+								if (!context.configReposBranches[deployOptions.sourceCode.custom.repo]) {
 									context.fetchBranches('cust');
 								}
 							}
@@ -612,119 +595,105 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					});
 				}
 			} else {
-				if (!context.formData.deployOptions) {
-					context.formData.deployOptions = {};
+				if (!deployOptions) {
+                    deployOptions = {};
 				}
-				context.formData.deployOptions.sourceCode = {}; // clear
+                deployOptions.sourceCode = {}; // clear
 			}
 		};
-		
+
+		//adding the api call to commonService
 		context.getSecrets = function (cb) {
-			overlayLoading.show();
-			if (context.kubeEnv && context.kubeEnv === 'invalid') {
-				if (context.defaultWizardSecretValues) {
-					context.secrets = context.defaultWizardSecretValues;
-				}
-				return cb();
-			}
-			
-			if (!currentScope.envPlatform) {
-				return cb();
-			}
-			
-			let params = {
-				env: (context.kubeEnv) ? context.kubeEnv.toUpperCase() : currentScope.context.envCode.toUpperCase()
-			};
-			
-			if (currentScope.envPlatform === 'kubernetes' && context.kubeNamespace) {
-				params.namespace = context.kubeNamespace;
-			}
-			
-			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'get',
-				routeName: '/dashboard/secrets/list',
-				params: params
-			}, function (error, secrets) {
-				if (error) {
-					context.displayAlert('danger', error.message);
-				}
-				context.secrets = context.defaultWizardSecretValues || [];
-				if (secrets && Array.isArray(secrets) && secrets.length > 0) {
-					secrets.forEach((oneSecret) => {
-						let found = false;
-						context.secrets.forEach((oneExistingSecret) => {
-							if (oneExistingSecret.name === oneSecret.name) {
-								found = true;
-							}
-						});
-						
-						if (!found) {
-							context.secrets.push(oneSecret);
-						}
-					});
-				}
-				if (cb) return cb();
-			});
-		};
-		
+            if (context.kubeEnv && context.kubeEnv === 'invalid') {
+                if (context.defaultWizardSecretValues) {
+                    context.secrets = context.defaultWizardSecretValues;
+                }
+                return cb();
+            }
+
+            if (!currentScope.envPlatform) {
+                return cb();
+            }
+
+            let apiParams = {
+                env: (context.kubeEnv) ? context.kubeEnv.toUpperCase() : currentScope.context.envCode.toUpperCase()
+            };
+
+            if (currentScope.envPlatform === 'kubernetes' && context.kubeNamespace) {
+                apiParams.namespace = context.kubeNamespace;
+            }
+
+            commonService.getSecrets(currentScope, apiParams, function (secrets) {
+                context.secrets = context.defaultWizardSecretValues || [];
+                if (secrets && Array.isArray(secrets) && secrets.length > 0) {
+                    secrets.forEach((oneSecret) => {
+                        let found = false;
+                        context.secrets.forEach((oneExistingSecret) => {
+                            if (oneExistingSecret.name === oneSecret.name) {
+                                found = true;
+                            }
+                        });
+
+                        if (!found) {
+                            context.secrets.push(oneSecret);
+                        }
+                    });
+                }
+                if (cb) return cb();
+            });
+        };
+
+        //adding the api call to commonService
 		context.getCatalogRecipes = function (cb) {
-			getSendDataFromServer(currentScope, ngDataApi, {
-				method: 'get',
-				routeName: '/dashboard/catalog/recipes/list'
-			}, function (error, recipes) {
-				overlayLoading.hide();
-				if (error) {
-					context.displayAlert('danger', error.message);
-				}
-				else {
-					
-					if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
-						context.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
-					}
-					
-					let deploymentType;
-					$localStorage.environments.forEach((oneEnv) => {
-						if (oneEnv.code === context.myEnv) {
-							deploymentType = oneEnv.deployer.type;
-						}
-					});
-					
-					if (recipes && Array.isArray(recipes)) {
-						recipes.forEach(function (oneRecipe) {
-							if (context.options.envPlatform === 'manual') {
-								if (oneRecipe.restriction && oneRecipe.restriction.deployment.indexOf("vm") !== -1) {
-									context.options.allowDeploy = true;
-								}
-							}
-							
-							else {
-								if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-									
-									if (deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
-										if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
-											context.recipes.push(oneRecipe);
-										} else {
-											if (oneRecipe.restriction.deployment.indexOf("vm") !== -1) { // vm supported
-												context.recipes.push(oneRecipe);
-											}
-										}
-									} else { // add it anyway
-										context.recipes.push(oneRecipe);
-									}
-								}
-							}
-						});
-						
-						context.displayRecipeInputs(false, false, function (err) {
-							if (err) {
-								context.displayAlert('danger', err.message);
-							}
-						});
-					}
-					
-					if (cb) return cb();
-				}
-			});
+			let apiParams = {};
+			commonService.getCatalogRecipes(currentScope, apiParams, function (recipes)  {
+				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+                    context.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
+                }
+
+                let deploymentType;
+                $localStorage.environments.forEach((oneEnv) => {
+                    if (oneEnv.code === context.myEnv) {
+                        deploymentType = oneEnv.deployer.type;
+                    }
+                });
+
+                if (recipes && Array.isArray(recipes)) {
+                    recipes.forEach(function (oneRecipe) {
+                        if (context.options.envPlatform === 'manual') {
+                            if (oneRecipe.restriction && oneRecipe.restriction.deployment.indexOf("vm") !== -1) {
+                                context.options.allowDeploy = true;
+                            }
+                        }
+
+                        else {
+                            if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
+
+                                if (deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
+                                    if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
+                                        context.recipes.push(oneRecipe);
+                                    } else {
+                                        if (oneRecipe.restriction.deployment.indexOf("vm") !== -1) { // vm supported
+                                            context.recipes.push(oneRecipe);
+                                        }
+                                    }
+                                } else { // add it anyway
+                                    context.recipes.push(oneRecipe);
+                                }
+                            }
+                        }
+                    });
+
+                    context.displayRecipeInputs(false, false, function (err) {
+                        if (err) {
+                            context.displayAlert('danger', err.message);
+                        }
+                    });
+                }
+
+                if (cb) return cb();
+            });
+
 		};
 		
 		context.upgradeRecipes = function () {
@@ -1172,28 +1141,20 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		/*
 		 VM specific
 		 */
+		//moved to commonService
 		context.getInfraProviders = function (cb) {
-			//call bridge, get the available providers
-			getSendDataFromServer(context, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/infra"
-			}, function (error, providers) {
-				if (error) {
-					context.displayAlert('danger', error.message);
-				}
-				else {
-					delete providers.soajsauth;
-					context.deploymentData.infraProviders = providers;
-					
-					if (resource && resource.deployOptions) {
-						context.formData.deployOptions.deployConfig.infra = resource.deployOptions.deployConfig.infra;
-						context.repopulateRegions();
-					}
-				}
-				
-				if (cb) {
-					cb();
-				}
+			let apiParams = {};
+			commonService.getInfraProviders(currentScope, apiParams, function (providers) {
+                delete providers.soajsauth;
+                context.deploymentData.infraProviders = providers;
+
+                if (resource && resource.deployOptions) {
+                    context.formData.deployOptions.deployConfig.infra = resource.deployOptions.deployConfig.infra;
+                    context.repopulateRegions();
+                }
+                if (cb) {
+                    cb();
+                }
 			});
 		};
 		
@@ -1314,6 +1275,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		let vmDataLoaded = false;
+		// must chage the loadVmData
 		context.loadVmData = function (cb) {
 			// if (context.formData.deployOptions.deployConfig.type === 'vm') {
 			// todo: call them in parallel and call cb once done

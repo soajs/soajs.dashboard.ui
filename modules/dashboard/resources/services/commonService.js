@@ -124,14 +124,113 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 	    });
     }
 
+    function getCatalogRecipes ($scope, apiParams, cb) {
+        overlayLoading.show();
+        getSendDataFromServer($scope, ngDataApi, {
+            method: 'get',
+            routeName: '/dashboard/catalog/recipes/list'
+        }, function (error, recipes) {
+            overlayLoading.hide();
+            if (error) {
+                $scope.displayAlert('danger', error.message);
+            }
+            return cb(recipes);
+        });
+    }
 
+    function getSecrets ($scope, apiParams, cb) {
+        overlayLoading.show();
+        getSendDataFromServer($scope, ngDataApi, {
+            method: 'get',
+            routeName: '/dashboard/secrets/list',
+            params: apiParams
+        }, function (error, secrets) {
+            overlayLoading.hide();
+            if (error) {
+                $scope.displayAlert('danger', error.message);
+            }
+            return cb(secrets);
+        });
+    }
+
+    function fetchBranches ($scope, apiParams, cb) {
+        getSendDataFromServer(context, ngDataApi, {
+            'method': 'get',
+            'routeName': '/dashboard/gitAccounts/getBranches',
+            params: {
+                id: apiParams.accountId,
+                name: apiParams.name,
+                type: 'repo',
+                provider: apiParams.provider
+            }
+        }, function (error, response) {
+            if (error) {
+                $scope.configReposBranchesStatus[apiParams.name] = 'failed';
+                $scope.displayAlert('danger', error.message);
+            } else {
+                return cb(response);
+            }
+        })
+    }
+
+    function listAccounts ($scope, apiParams, cb) {
+        getSendDataFromServer(context, ngDataApi, {
+            'method': 'get',
+            'routeName': '/dashboard/gitAccounts/accounts/list',
+            'params': apiParams
+        }, function (error, response) {
+            if (error) {
+                $scope.displayAlert('danger', error.message);
+            }else {
+                return cb(response)
+            }
+        });
+    }
+
+    function getEnvs ($scope, apiParams, cb) {
+        overlayLoading.show();
+        getSendDataFromServer(currentScope, ngDataApi, {
+            method: 'get',
+            routeName: '/dashboard/environment/list'
+        }, function (error, envs) {
+            overlayLoading.hide();
+            if (error) {
+                $scope.displayAlert('danger', error.message);
+            }
+            else {
+                return cb(envs);
+            }
+        });
+    }
+
+    function getInfraProviders ($scope, apiParams, cb) {
+        getSendDataFromServer(context, ngDataApi, {
+            "method": "get",
+            "routeName": "/dashboard/infra"
+        }, function (error, providers) {
+            if (error) {
+                $scope.displayAlert('danger', error.message);
+            }
+            else {
+                return cb(providers)
+            }
+        });
+    }
 
 	return {
 		listResourcesApi,
         deleteResourceApi,
         togglePlugResourceApi,
 		listVmsApi,
-		addEditResourceApi
+		addEditResourceApi,
+        getCatalogRecipes,
+        getSecrets,
+        fetchBranches,
+        listAccounts,
+        getEnvs,
+        getInfraProviders,
+
+
 	};
 	
 }]);

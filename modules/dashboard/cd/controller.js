@@ -486,5 +486,6 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 	if ($scope.access.get && $scope.myEnv && $scope.$parent.currentDeployer.type !== 'manual') {
 		$scope.getLedger();
 		$scope.getUpdates();
+		$scope.getOtherLogs();
 	}
 }]);

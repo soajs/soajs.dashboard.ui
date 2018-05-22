@@ -11,11 +11,9 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
-				
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
-
+                
 				$scope.save = function (type) {
-
                     let formData = $scope.formData;
                     let deployOptions = {};
                     let rebuildOptions = {};
@@ -52,10 +50,10 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                             saveOptions.config.secrets = formData.deployOptions.custom.secrets
                         }
 
-                        if (formData.shared && !$scope.envs.sharedWithAll) {
+                        if (formData.shared && !$scope .mainData.envs.sharedWithAll) {
                             saveOptions.sharedEnv = {};
                             formData.sharedEnv = {};
-                            $scope.envs.list.forEach(function (oneEnv) {
+                            $scope.mainData.envs.list.forEach(function (oneEnv) {
                                 if (oneEnv.selected) {
                                     saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;
                                     saveOptions.sharedEnv[oneEnv.code.toUpperCase()] = true;

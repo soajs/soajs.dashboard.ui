@@ -165,7 +165,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
             }
         }, function (error, response) {
             if (error) {
-                $scope.configReposBranchesStatus[apiParams.name] = 'failed';
+                $scope.mainData.configReposBranchesStatus[apiParams.name] = 'failed';
                 $scope.displayAlert('danger', error.message);
             } else {
                 return cb(response);
@@ -189,7 +189,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 
     function getEnvs ($scope, apiParams, cb) {
         overlayLoading.show();
-        getSendDataFromServer(currentScope, ngDataApi, {
+        getSendDataFromServer($scope, ngDataApi, {
             method: 'get',
             routeName: '/dashboard/environment/list'
         }, function (error, envs) {
@@ -204,7 +204,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
 
     function getInfraProviders ($scope, apiParams, cb) {
-        getSendDataFromServer(context, ngDataApi, {
+        getSendDataFromServer($scope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/infra"
         }, function (error, providers) {
@@ -229,8 +229,6 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         listAccounts,
         getEnvs,
         getInfraProviders,
-
-
 	};
 	
 }]);

@@ -86,6 +86,7 @@
 		    </form>
 	    </div>
 	    <div class="modal-footer">
+
 		    <span ng-if="options.allowEdit">
 	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save('save')">Save</button>
 	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="save('saveAndDeploy')">Save & Deploy</button>
@@ -101,7 +102,7 @@
 		<h3 class="modal-title">{{title}}</h3>
 	</div>
 	<div class="modal-body">
-		<alert type="danger">{{message}}</alert>
+		<alert type="danger">{{mainData.message}}</alert>
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary" ng-click="closeModal()">Cancel</button>

@@ -57,7 +57,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function fetchDefaultImagesOnOverride(context) {
-		let selectedRecipe = context.deploymentData.selectedRecipe;
+		let selectedRecipe = context.mainData.deploymentData.selectedRecipe;
 		let formData = context.formData;
 		if (!formData.custom) {
             formData.custom = {}
@@ -68,22 +68,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.image.override) {
 			context.getProvidersList(() => {
                 formData.custom.image.prefix = '';
-				context.deploymentData.providers.forEach((provider) => {
+                context.mainData.deploymentData.providers.forEach((provider) => {
 					if (provider.v === selectedRecipe.recipe.deployOptions.image.prefix) {
                         formData.custom.image.prefix = selectedRecipe.recipe.deployOptions.image.prefix;
 					}
 				});
 				context.getImagesList(selectedRecipe.recipe.deployOptions.image.prefix, () => {
-					context.deploymentData.images.forEach((image) => {
+                    context.mainData.deploymentData.images.forEach((image) => {
 						if (image.v === selectedRecipe.recipe.deployOptions.image.name) {
                             formData.custom.image.name = image.v
 						}
 					});
-					if (context.deploymentData.images.length === 0) {
-						context.deploymentData.imageVersions = [];
+					if (context.mainData.deploymentData.images.length === 0) {
+                        context.mainData.deploymentData.imageVersions = [];
 					} else {
 						context.getVersionsList(selectedRecipe.recipe.deployOptions.image.name, () => {
-							context.deploymentData.imageVersions.forEach((version) => {
+                            context.mainData.deploymentData.imageVersions.forEach((version) => {
 								if (version.v === selectedRecipe.recipe.deployOptions.image.tag) {
                                     formData.custom.image.tag = version.v
 								}
@@ -152,49 +152,52 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		context.deploymentData = {};
-		context.catalogConflictingPorts = '';
-		context.formData = (cb && typeof cb === 'function') ? resource : {};
-		context.envs = [];
-		context.message = {};
-		if (!context.noCDoverride) {
-			context.recipes = [];
-		}
-		context.recipeUserInput = {image: {}, envs: {}};
-		
-		context.configRepos = [];
-		context.configReposBranches = {};
-		context.configReposBranchesStatus = {};
-		
-		context.secretsAllowed = 'none';
-		context.resourceDeployed = false;
-		if (resource && resource.instance && resource.instance.id) {
-			context.resourceDeployed = true;
-		}
-		context.access = currentScope.access;
-		context.envPlatform = currentScope.envPlatform;
-		context.envDeployer = currentScope.envDeployer;
-		
+
+		context.mainData = {
+            deploymentData : {},
+            catalogConflictingPorts : '',
+			envs : [],
+            message : {},
+            recipeUserInput : {image: {}, envs: {}},
+            configRepos : [],
+            configReposBranches : {},
+            configReposBranchesStatus : {},
+            secretsAllowed : 'none',
+            resourceDeployed : false,
+            envPlatform : currentScope.envPlatform,
+            envDeployer : currentScope.envDeployer,
+            decodeRepoNameAndSubName : decodeRepoNameAndSubName
+		};
+
+        context.access = currentScope.access;
+        context.formData = (cb && typeof cb === 'function') ? resource : {};
+
 		let category = (resource && Object.keys(resource).length > 0) ? resource.category : settings.category;
-		resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory) => {
-			if (oneCategory.v === category) {
-				context.categoryLabel = oneCategory.l;
-			}
-		});
+
 		let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.context.envCode.toUpperCase()));
-		context.allowEdit = allowEdit;
+		context.mainData.allowEdit = allowEdit;
 		
 		if (resource.name === 'dash_cluster') {
-			context.sensitive = true;
+			context.mainData.sensitive = true;
 		}
 		
 		resourceConfiguration.loadDriverSchema(context, resource, settings, allowEdit, function (error) {
 			if (error) {
-				context.notsupported = true;
+				context.mainData.mainDatanotsupported = true;
 			}
 		});
-		
-		context.decodeRepoNameAndSubName = decodeRepoNameAndSubName;
+
+        if (!context.noCDoverride) {
+            context.mainData.recipes = [];
+        }
+        if (resource && resource.instance && resource.instance.id) {
+            context.mainData.resourceDeployed = true;
+        }
+        resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory) => {
+            if (oneCategory.v === category) {
+                context.mainData.categoryLabel = oneCategory.l;
+            }
+        });
 
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
@@ -215,7 +218,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			
 			let accountData = {};
 			if (confOrCustom === 'conf') {
-				context.configRepos.config.forEach(function (eachAcc) {
+				context.mainData.configRepos.config.forEach(function (eachAcc) {
 					if (eachAcc.name === selectedRepo) {
 						accountData = eachAcc;
 					}
@@ -223,7 +226,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 			else {
 				if (Object.keys(accountData).length === 0) {
-					context.configRepos.customType.forEach(function (eachAcc) {
+					context.mainData.configRepos.customType.forEach(function (eachAcc) {
 						if (eachAcc.name === selectedRepo) {
 							accountData = eachAcc;
 						}
@@ -231,7 +234,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			}
 			if (accountData && Object.keys(accountData).length > 0) {
-				context.configReposBranchesStatus[selectedRepo] = 'loading';
+				context.mainData.configReposBranchesStatus[selectedRepo] = 'loading';
 
 				let apiParams = {
                     id:accountData.accountId,
@@ -240,8 +243,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					provider: accountData.provider
 				};
                 commonService.fetchBranches(currentScope, apiParams, function (response) {
-                    context.configReposBranchesStatus[selectedRepo] = 'loaded';
-                    context.configReposBranches[selectedRepo] = response.branches;
+                    context.mainData.configReposBranchesStatus[selectedRepo] = 'loaded';
+                    context.mainData.configReposBranches[selectedRepo] = response.branches;
 
                     //if multi auto generate path
                     if (confOrCustom === 'cust') {
@@ -315,9 +318,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		}
 		
 		context.displayAlert = function (type, message) {
-			context.message[type] = message;
+			context.mainData.message[type] = message;
 			setTimeout(function () {
-				context.message = {};
+				context.mainData.message = {};
 			}, 5000);
 		};
 
@@ -405,8 +408,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                     });
                 }
 
-                context.configRepos.customType = customRecords;
-                context.configRepos.config = configRecords;
+                context.mainData.configRepos.customType = customRecords;
+                context.mainData.configRepos.config = configRecords;
 
                 callback();
             });
@@ -414,12 +417,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		//adding the api call to commonService
 		context.getEnvs = function () {
-			if (context.envs && context.envs.list && context.envs.list.length > 0) {
+			if (context.mainData.envs && context.mainData.envs.list && context.mainData.envs.list.length > 0) {
 				return;
 			}
 			let apiParams = {};
             commonService.getEnvs(currentScope, apiParams, function (envs) {
-                context.envs.list = [];
+                context.mainData.envs.list = [];
                 envs.forEach(function (oneEnv) {
                     //in case of update resource, check resource record to know what env it belongs to
                     if (resource && resource.created) {
@@ -443,10 +446,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                         else {
                             //shared with all envs
                             envEntry.selected = true;
-                            context.envs.sharedWithAll = true;
+                            context.mainData.envs.sharedWithAll = true;
                         }
                     }
-					context.envs.list.push(envEntry);
+                    context.mainData.envs.list.push(envEntry);
                 });
 			});
 		};
@@ -496,31 +499,31 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		// changes to deployoptions
 		context.setSourceCodeData = function (selectedRecipe) {
+			context.sourceCodeConfig = {
+                configuration: {
+                    isEnabled: false,
+                    repoAndBranch: {
+                        disabled: false,
+                        required: false
+                    }
+                },
+                custom: {
+                    isEnabled: false,
+                    repoAndBranch: {
+                        disabled: false,
+                        required: false
+                    },
+                    repoPath: {
+                        disabled: false
+                    }
+                }
+            };
+            
 			let customType;
 			let configuration = context.sourceCodeConfig.configuration;
 			let custom = context.sourceCodeConfig.custom;
 			let deployOptions = context.formData.deployOptions;
 
-			context.sourceCodeConfig = {
-				configuration: {
-					isEnabled: false,
-					repoAndBranch: {
-						disabled: false,
-						required: false
-					}
-				},
-				custom: {
-					isEnabled: false,
-					repoAndBranch: {
-						disabled: false,
-						required: false
-					},
-					repoPath: {
-						disabled: false
-					}
-				}
-			};
-			
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
 				
@@ -582,12 +585,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						// special case: if the form was overwritten from cicd we have to load the branch
 						if (deployOptions.sourceCode) {
 							if (deployOptions.sourceCode.configuration && deployOptions.sourceCode.configuration.repo) {
-								if (!context.configReposBranches[deployOptions.sourceCode.configuration.repo]) {
+								if (!context.mainData.configReposBranches[deployOptions.sourceCode.configuration.repo]) {
 									context.fetchBranches('conf');
 								}
 							}
 							if (deployOptions.sourceCode.custom && deployOptions.sourceCode.custom.repo) {
-								if (!context.configReposBranches[deployOptions.sourceCode.custom.repo]) {
+								if (!context.mainData.configReposBranches[deployOptions.sourceCode.custom.repo]) {
 									context.fetchBranches('cust');
 								}
 							}
@@ -596,7 +599,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			} else {
 				if (!deployOptions) {
-                    deployOptions = {};
+                    context.formData.deployOptions = {};
+                    deployOptions = context.formData.deployOptions;
 				}
                 deployOptions.sourceCode = {}; // clear
 			}
@@ -678,7 +682,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                                         }
                                     }
                                 } else { // add it anyway
-                                    context.recipes.push(oneRecipe);
+                                    context.mainData.recipes.push(oneRecipe);
                                 }
                             }
                         }
@@ -705,7 +709,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.displayRecipeInputs = function (refresh, ui, cb) {
 			function calculateRestrictions(currentScope) {
-				let allRecipes = currentScope.recipes;
+				let allRecipes = currentScope.mainData.recipes;
 				let selectedRecipeId;
 				let selectedRecipe;
 				
@@ -718,7 +722,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				allRecipes.forEach(function (eachRecipe) {
 					if (eachRecipe._id === selectedRecipeId) {
 						selectedRecipe = eachRecipe;
-						context.deploymentData.selectedRecipe = selectedRecipe;
+                        context.mainData.deploymentData.selectedRecipe = selectedRecipe;
 					}
 				});
 				
@@ -727,15 +731,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				// todo: if vm
 				context.loadVmData(function () {
 					let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
-					let allInfra = currentScope.deploymentData.infraProviders; // [{_id,name}]
-					
+					let allInfra = currentScope.mainData.deploymentData.infraProviders; // [{_id,name}]
+
 					if (!selectedRecipe) {
-						currentScope.deploymentData.selectedRestrictionsDep = [];
+						currentScope.mainData.deploymentData.selectedRestrictionsDep = [];
 					} else {
 						let restriction = selectedRecipe.restriction;
 						if (!restriction || Object.keys(restriction).length === 0) {
-							currentScope.deploymentData.selectedRestrictionsDep = allDeployments;
-							currentScope.deploymentData.selectedRestrictionsInfra = allInfra;
+							currentScope.mainData.deploymentData.selectedRestrictionsDep = allDeployments;
+							currentScope.mainData.deploymentData.selectedRestrictionsInfra = allInfra;
 						} else {
 							// convert ["aws"] => [{_id,name}] after matching data with infraProviders
 							let reformattedRestrictionInfra = [];
@@ -749,13 +753,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								})
 							}
 							
-							currentScope.deploymentData.selectedRestrictionsDep = restriction.deployment;
-							currentScope.deploymentData.selectedRestrictionsInfra = reformattedRestrictionInfra;
+							currentScope.mainData.deploymentData.selectedRestrictionsDep = restriction.deployment;
+							currentScope.mainData.deploymentData.selectedRestrictionsInfra = reformattedRestrictionInfra;
 						}
 					}
 					
-					if (currentScope.deploymentData.selectedRestrictionsDep && currentScope.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
-						currentScope.formData.deployOptions.deployConfig.type = currentScope.deploymentData.selectedRestrictionsDep[0];
+					if (currentScope.mainData.deploymentData.selectedRestrictionsDep && currentScope.mainData.deploymentData.selectedRestrictionsDep.length === 1) { // force select deployment technology iff one is available
+						currentScope.formData.deployOptions.deployConfig.type = currentScope.mainData.deploymentData.selectedRestrictionsDep[0];
 					}
 					
 					// beyond loading data, validate password
@@ -766,34 +770,34 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				});
 			}
 			
-			let recipes = context.recipes;
-			let selectedRecipe = context.recipes;
-			context.recipeUserInput.envs = {};
+			let recipes = context.mainData.recipes;
+			let selectedRecipe = context.mainData.recipes;
+			context.mainData.recipeUserInput.envs = {};
 			if (context.formData.deployOptions && context.formData.deployOptions.recipe) {
-				for (var i = 0; i < context.recipes.length; i++) {
-					if (context.recipes[i].recipe && context.recipes[i]._id === context.formData.deployOptions.recipe) {
-						if (context.recipes[i].recipe.buildOptions && context.recipes[i].recipe.buildOptions.env && Object.keys(context.recipes[i].recipe.buildOptions.env).length > 0) {
-							for (var env in context.recipes[i].recipe.buildOptions.env) {
-								if (context.recipes[i].recipe.buildOptions.env[env].type === 'userInput') {
-									context.recipeUserInput.envs[env] = context.recipes[i].recipe.buildOptions.env[env];
+				for (var i = 0; i < recipes.length; i++) {
+					if (recipes[i].recipe && recipes[i]._id === context.formData.deployOptions.recipe) {
+						if (recipes[i].recipe.buildOptions && recipes[i].recipe.buildOptions.env && Object.keys(recipes[i].recipe.buildOptions.env).length > 0) {
+							for (var env in recipes[i].recipe.buildOptions.env) {
+								if (recipes[i].recipe.buildOptions.env[env].type === 'userInput') {
+									context.mainData.recipeUserInput.envs[env] = recipes[i].recipe.buildOptions.env[env];
 									
 									if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.env && context.formData.deployOptions.custom.env[env]) {
-										context.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
+										context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
 									}
 								}
 							}
 						}
 						
-						if (context.recipes[i].recipe.deployOptions && context.recipes[i].recipe.deployOptions.image && context.recipes[i].recipe.deployOptions.image.override) {
-							context.recipeUserInput.image = {
+						if (recipes[i].recipe.deployOptions && recipes[i].recipe.deployOptions.image && recipes[i].recipe.deployOptions.image.override) {
+							context.mainData.recipeUserInput.image = {
 								override: true,
-								prefix: context.recipes[i].recipe.deployOptions.image.prefix || '',
-								name: context.recipes[i].recipe.deployOptions.image.name || '',
-								tag: context.recipes[i].recipe.deployOptions.image.tag || ''
+								prefix: recipes[i].recipe.deployOptions.image.prefix || '',
+								name: recipes[i].recipe.deployOptions.image.name || '',
+								tag: recipes[i].recipe.deployOptions.image.tag || ''
 							};
 							
 							if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.image && Object.keys(context.formData.deployOptions.custom.image).length > 0) {
-								context.recipeUserInput.image = {
+								context.mainData.recipeUserInput.image = {
 									override: true,
 									prefix: context.formData.deployOptions.custom.image.prefix || '',
 									name: context.formData.deployOptions.custom.image.name || '',
@@ -803,9 +807,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 						
 						//add check, if recipe does not support certificates, do not show the secrets input at all
-						context.secretsAllowed = 'none';
-						if (context.recipes[i].recipe.deployOptions.certificates && context.recipes[i].recipe.deployOptions.certificates !== 'none') {
-							context.secretsAllowed = context.recipes[i].recipe.deployOptions.certificates;
+						context.mainData.secretsAllowed = 'none';
+						if (recipes[i].recipe.deployOptions.certificates && recipes[i].recipe.deployOptions.certificates !== 'none') {
+							context.mainData.secretsAllowed = recipes[i].recipe.deployOptions.certificates;
 						}
 					}
 				}
@@ -855,9 +859,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
 					context.options.computedHostname = resourceName + '-service';
 					
-					var selected = context.envDeployer.selected.split('.');
-					if (context.envDeployer && context.envDeployer[selected[0]] && context.envDeployer[selected[0]][selected[1]] && context.envDeployer[selected[0]][selected[1]][selected[2]]) {
-						var platformConfig = context.envDeployer[selected[0]][selected[1]][selected[2]];
+					var selected = context.mainData.envDeployer.selected.split('.');
+					if (context.mainData.envDeployer && context.mainData.envDeployer[selected[0]] && context.mainData.envDeployer[selected[0]][selected[1]] && context.mainData.envDeployer[selected[0]][selected[1]][selected[2]]) {
+						var platformConfig = context.mainData.envDeployer[selected[0]][selected[1]][selected[2]];
 						
 						if (platformConfig && platformConfig.namespace && platformConfig.namespace.default) {
 							context.options.computedHostname += '.' + platformConfig.namespace.default;
@@ -925,8 +929,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.toggleShareWithAllEnvs = function () {
-			if (context.envs.sharedWithAll) {
-				context.envs.list.forEach(function (oneEnv) {
+			if (context.mainData.envs.sharedWithAll) {
+                context.mainData.envs.list.forEach(function (oneEnv) {
 					oneEnv.selected = true;
 				});
 			}
@@ -939,7 +943,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					record.configuration.repo = "";
 					record.configuration.branch = "";
 				} else {
-					context.configRepos.config.forEach(function (eachConf) {
+					context.mainData.configRepos.config.forEach(function (eachConf) {
 						if (eachConf.name === selectedRepo) {
 							record.configuration.commit = eachConf.configSHA;
 							record.configuration.owner = eachConf.owner;
@@ -961,7 +965,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					record.custom.repo = "";
 					record.custom.branch = "";
 				} else {
-					context.configRepos.customType.forEach(function (eachConf) {
+					context.mainData.configRepos.customType.forEach(function (eachConf) {
 						if (eachConf.name === selectedRepo) {
 							record.custom.owner = eachConf.owner;
 							record.custom.subName = subName; // for multi
@@ -997,7 +1001,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				}
 			}
-			context.catalogConflictingPorts = '';
+
+            context.mainData.catalogConflictingPorts = '';
 			if (selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports
 				&& Array.isArray(selectedRecipe.recipe.deployOptions.ports)
 				&& selectedRecipe.recipe.deployOptions.ports.length > 0) {
@@ -1060,7 +1065,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						});
 					}
 					else {
-						context.catalogConflictingPorts = selectedRecipe.name;
+                        context.mainData.catalogConflictingPorts = selectedRecipe.name;
 					}
 				}
 			}
@@ -1077,7 +1082,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 			}
-			if (context.formData.deployOptions.custom) {
+			console.log("-------");
+			console.log( context.formData ); // ToDelete #2del
+			if ( context.formData.deployOptions.custom) {
 				context.formData.deployOptions.custom.ports = ports;
 			}
 			
@@ -1130,10 +1137,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.repopulateRegions = function () {
-			context.deploymentData.regions = [];
-			context.deploymentData.infraProviders.forEach((oneProvider) => {
+            context.mainData.deploymentData.regions = [];
+            context.mainData.deploymentData.infraProviders.forEach((oneProvider) => {
 				if (oneProvider._id === context.formData.deployOptions.deployConfig.infra) {
-					context.deploymentData.regions = oneProvider.regions;
+                    context.mainData.deploymentData.regions = oneProvider.regions;
 				}
 			})
 		};
@@ -1146,7 +1153,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			let apiParams = {};
 			commonService.getInfraProviders(currentScope, apiParams, function (providers) {
                 delete providers.soajsauth;
-                context.deploymentData.infraProviders = providers;
+                context.mainData.deploymentData.infraProviders = providers;
 
                 if (resource && resource.deployOptions) {
                     context.formData.deployOptions.deployConfig.infra = resource.deployOptions.deployConfig.infra;
@@ -1159,7 +1166,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.getVmSizesList = function () {
-			context.deploymentData.vmSize = [
+            context.mainData.deploymentData.vmSize = [
 				{
 					"name": "Standard_A1",
 					"numberOfCores": 1,
@@ -1212,14 +1219,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.getDisksList = function () {
-			context.deploymentData.disk = [
+            context.mainData.deploymentData.disk = [
 				{v: 'none', l: "None"}
 			];
 		};
 		
 		context.getProvidersList = function (cb) {
-			context.deploymentData.providers = [];
-			context.deploymentData.providers = [
+            context.mainData.deploymentData.providers = [];
+            context.mainData.deploymentData.providers = [
 				{v: "provider1", l: "Provider 1"},
 				{v: "provider2", l: "Provider 2"}
 			];
@@ -1238,9 +1245,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				]
 			};
 			if (values[providerName] === undefined) {
-				context.deploymentData.images = [];
+                context.mainData.deploymentData.images = [];
 			} else {
-				context.deploymentData.images = values[providerName];
+                context.mainData.deploymentData.images = values[providerName];
 			}
 			
 			if (cb) {
@@ -1258,9 +1265,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				]
 			};
 			if (values[imageName] === undefined) {
-				context.deploymentData.imageVersions = [];
+                context.mainData.deploymentData.imageVersions = [];
 			}
-			context.deploymentData.imageVersions = values[imageName];
+            context.mainData.deploymentData.imageVersions = values[imageName];
 			if (cb) {
 				cb();
 			}

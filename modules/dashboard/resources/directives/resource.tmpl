@@ -1,4 +1,4 @@
-<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+<alert type="danger" ng-if="mainData.message.danger">{{mainData.message.danger}}</alert>
 <div class="form-group" ng-init="$root.valid = addEditResource.$valid" ng-keyup="$root.valid = addEditResource.$valid" ng-mousemove="$root.valid = addEditResource.$valid">
 	<tabset>
 		<tab heading="General Settings">
@@ -61,8 +61,8 @@
 				<div class="grid">
 					<table width="100%" border="0" cellpadding="5" cellspacing="3">
 						<tbody>
-							<tr class="first odd" ng-class="{'first': $first, 'last': $last, 'odd': $odd, 'even': $even}" ng-repeat="env in envs.list">
-								<td width="5%" ng-show="allowEdit"><input type="checkbox" name="{{env.code}}" ng-model="env.selected" ng-disabled="envs.sharedWithAll" /></td>
+							<tr class="first odd" ng-class="{'first': $first, 'last': $last, 'odd': $odd, 'even': $even}" ng-repeat="env in mainData.envs.list">
+								<td width="5%" ng-show="allowEdit"><input type="checkbox" name="{{env.code}}" ng-model="env.selected" ng-disabled="mainData.envs.sharedWithAll" /></td>
 								<td width="20%" align="left">{{env.code}}</td>
 								<td width="75%">{{env.description}}</td>
 							</tr>
@@ -80,7 +80,7 @@
 				<ngform-inputs></ngform-inputs>
 			</div>
 		</tab>
-		<tab ng-if="(access.deploy || access.rebuild) && options.allowDeploy" heading="Deployment Options" ng-show="!sensitive && recipes.length > 0">
+		<tab ng-if="(access.deploy || access.rebuild) && options.allowDeploy" heading="Deployment Options" ng-show="!sensitive && mainData.recipes.length > 0">
 			<br />
 			<alert type="warning" ng-if="options.formAction === 'update' && formData.created !== options.envCode" style="text-align: center;">
 				Configuring the deployment options of a resource is only allowed in the environment where it was created.<br />

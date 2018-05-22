@@ -263,7 +263,14 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 						break;
 				}
 			});
+			
 			if ($scope.upgradeCount > 0) {
+				$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
+					if(oneNavigation.id === 'updates-upgrades'){
+						oneNavigation.notification = ($scope.upgradeCount > 0);
+					}
+				});
+				
 				$scope.upgradeCount = "(" + $scope.upgradeCount + ")";
 			}
 			else {
@@ -293,7 +300,14 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 						$scope.updateCount++;
 					}
 				});
+				
 				if ($scope.updateCount > 0) {
+					$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
+						if(oneNavigation.id === 'updates-upgrades'){
+							oneNavigation.notification = ($scope.updateCount > 0);
+						}
+					});
+					
 					$scope.updateCount = "(" + $scope.updateCount + ")";
 				}
 				else {
@@ -457,6 +471,12 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 					else {
 						$scope.logsCount = null;
 					}
+					
+					$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
+						if(oneNavigation.id === 'audit'){
+							oneNavigation.notification = ($scope.logsCount > 0);
+						}
+					});
 				}
 			}
 		});

@@ -59,7 +59,7 @@ var cdNav = [
 		'url': '#/audit',
 		"fallbackLocation": "#/environments",
 		'tplPath': 'modules/dashboard/cd/directives/audit.tmpl',
-		'icon': 'drive',
+		'icon': 'file-text',
 		'pillar': {
 			'name': 'deployment',
 			'label': translation.deploy[LANG],

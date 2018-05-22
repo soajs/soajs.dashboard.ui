@@ -1561,3 +1561,24 @@ td.apiNavigationWide .pagination a {
     border-radius: 10px;
     border: solid 1px #ccc;
 }
+
+.smallNotification{
+    font-size: .83em;
+    line-height: 0.5em !important;
+    vertical-align: baseline;
+    position: relative;
+    top: -0.3em;
+    left: -0.3em;
+    height:2px !important;
+}
+
+.smallNotificationCollapsed{
+    font-size: .83em;
+    line-height: 0.5em !important;
+    vertical-align: baseline;
+    position: relative;
+    top: -3.7em;
+    left: 1.4em;
+    float:none !important;
+    height:2px !important;
+}

@@ -19,6 +19,8 @@
 			<a href="{{link.url}}" class="mainMenu{{$index}}" id="mainMenu-{{link.id}}">
 				<span class="icon icon-{{link.icon}}"></span>
 				<span ng-show="!collapseMainMenu">{{link.label}}</span>
+				<span ng-show="!collapseMainMenu && link.notification" class="red smallNotification icon icon-notification"></span>
+				<span ng-show="collapseMainMenu && link.notification" class="red smallNotificationCollapsed icon icon-notification"></span>
 			</a>
 		</li>
 	</ul>
@@ -27,6 +29,8 @@
 			<a href="{{link.url}}" class="mainMenu{{$index}}" id="mainMenu-{{link.id}}">
 				<span class="icon icon-{{link.icon}}"></span>
 				<span ng-show="!collapseMainMenu">{{link.label}}</span>
+				<span ng-show="!collapseMainMenu && link.notification" class="red smallNotification icon icon-notification"></span>
+				<span ng-show="collapseMainMenu && link.notification" class="red smallNotificationCollapsed icon icon-notification"></span>
 			</a>
 		</li>
 	</ul>

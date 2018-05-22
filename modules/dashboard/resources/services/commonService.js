@@ -174,7 +174,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
 
     function listAccounts ($scope, apiParams, cb) {
-        getSendDataFromServer(context, ngDataApi, {
+        getSendDataFromServer($scope, ngDataApi, {
             'method': 'get',
             'routeName': '/dashboard/gitAccounts/accounts/list',
             'params': apiParams

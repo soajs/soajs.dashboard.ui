@@ -675,10 +675,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
                                 if (deploymentType === 'manual') { // for manual deployments; show only recipes having having vm / all
                                     if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
-                                        context.recipes.push(oneRecipe);
+                                        context.mainData.recipes.push(oneRecipe);
                                     } else {
                                         if (oneRecipe.restriction.deployment.indexOf("vm") !== -1) { // vm supported
-                                            context.recipes.push(oneRecipe);
+                                            context.mainData.recipes.push(oneRecipe);
                                         }
                                     }
                                 } else { // add it anyway

@@ -245,7 +245,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			$scope.catalogLedger = [];
 			
 			$scope.upgradeCount = 0;
-			
+			let notificationCount = 0;
 			list.forEach(function (oneEntry) {
 				$scope.upgradeCount++;
 				if ($scope.myEnv.toLowerCase() === 'dashboard') {
@@ -262,12 +262,15 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 						$scope.catalogLedger.push(oneEntry);
 						break;
 				}
+				if(!oneEntry.read){
+					notificationCount++;
+				}
 			});
 			
-			if ($scope.upgradeCount > 0) {
+			if (notificationCount > 0) {
 				$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
 					if(oneNavigation.id === 'updates-upgrades'){
-						oneNavigation.notification = ($scope.upgradeCount > 0);
+						oneNavigation.notification = true;
 					}
 				});
 				
@@ -295,16 +298,20 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			else {
 				$scope.ledger = response.logs;
 				$scope.updateCount = 0;
+				let notificationCount  = 0;
 				$scope.ledger.forEach(function (oneLedgerEntry) {
 					if (oneLedgerEntry.notify && !oneLedgerEntry.manual && !oneLedgerEntry.read) {
 						$scope.updateCount++;
 					}
+					if(!oneLedgerEntry.read){
+						notificationCount++;
+					}
 				});
 				
-				if ($scope.updateCount > 0) {
+				if (notificationCount > 0) {
 					$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
 						if(oneNavigation.id === 'updates-upgrades'){
-							oneNavigation.notification = ($scope.updateCount > 0);
+							oneNavigation.notification = true;
 						}
 					});
 					

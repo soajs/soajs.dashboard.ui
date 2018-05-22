@@ -152,52 +152,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		context.mainData = {
-            deploymentData : {},
-            catalogConflictingPorts : '',
-			envs : [],
-            message : {},
-            recipeUserInput : {image: {}, envs: {}},
-            configRepos : [],
-            configReposBranches : {},
-            configReposBranchesStatus : {},
-            secretsAllowed : 'none',
-            resourceDeployed : false,
-            envPlatform : currentScope.envPlatform,
-            envDeployer : currentScope.envDeployer,
-            decodeRepoNameAndSubName : decodeRepoNameAndSubName
-		};
-
-        context.access = currentScope.access;
-        context.formData = (cb && typeof cb === 'function') ? resource : {};
-
-		let category = (resource && Object.keys(resource).length > 0) ? resource.category : settings.category;
-
-		let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.context.envCode.toUpperCase()));
-		context.allowEdit = allowEdit;
-		
-		if (resource.name === 'dash_cluster') {
-			context.mainData.sensitive = true;
-		}
-		
-		resourceConfiguration.loadDriverSchema(context, resource, settings, allowEdit, function (error) {
-			if (error) {
-				context.mainData.mainDatanotsupported = true;
-			}
-		});
-
-        if (!context.noCDoverride) {
-            context.mainData.recipes = [];
-        }
-        if (resource && resource.instance && resource.instance.id) {
-            context.mainData.resourceDeployed = true;
-        }
-        resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory) => {
-            if (oneCategory.v === category) {
-                context.mainData.categoryLabel = oneCategory.l;
-            }
-        });
-
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
 			let selectedRepo, subNameInCaseMulti;
@@ -263,58 +217,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				});
 			}
 		};
-		
-		context.options = {
-			deploymentModes: [],
-			envCode: currentScope.context.envCode,
-			envType: currentScope.context.envType,
-			envPlatform: currentScope.context.envPlatform,
-			enableAutoScale: currentScope.context.enableAutoScale || false,
-			formAction: action,
-			aceEditorConfig: {
-				maxLines: Infinity,
-				useWrapMode: true,
-				mode: 'json',
-				firstLineNumber: 1,
-				height: '500px'
-			},
-			allowEdit: allowEdit,
-			computedHostname: '',
-			allowDeploy: (currentScope.context.envPlatform !== 'manual')
-		};
-		
-		context.title = 'Add New Resource';
-		if (action === 'update' && context.options.allowEdit) {
-			context.title = 'Update ' + resource.name;
-		}
-		else if (!allowEdit) {
-			context.title = 'View ' + resource.name;
-		}
-		
-		if (currentScope.context.envPlatform === 'kubernetes') {
-			context.options.deploymentModes = [
-				{
-					label: 'deployment - deploy the specified number of replicas based on the availability of resources',
-					value: 'deployment'
-				},
-				{
-					label: 'daemonset - automatically deploy one replica of the service on each node in the cluster',
-					value: 'daemonset'
-				}
-			];
-		}
-		else if (currentScope.context.envPlatform === 'docker') {
-			context.options.deploymentModes = [
-				{
-					label: 'replicated - deploy the specified number of replicas based on the availability of resources',
-					value: 'replicated'
-				},
-				{
-					label: 'global - automatically deploy one replica of the service on each node in the cluster',
-					value: 'global'
-				}
-			];
-		}
 		
 		context.displayAlert = function (type, message) {
 			context.mainData.message[type] = message;
@@ -840,7 +742,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					context.formData.deployOptions = {};
 				}
 				if (!context.formData.deployOptions.custom) {
-					context.formData.deployOptions.custom = {}
+					context.formData.deployOptions.custom = {};
 				}
 				context.formData.deployOptions.custom.name = resourceName;
 			}
@@ -1081,8 +983,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 				});
 			}
-			console.log("-------");
-			console.log( context.formData ); // ToDelete #2del
 			if ( context.formData.deployOptions.custom) {
 				context.formData.deployOptions.custom.ports = ports;
 			}
@@ -1091,8 +991,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				return cb();
 			}
 		};
-		
-		context.fillForm();
 		
 		context.validatePassword = function () {
 			let password = context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password;
@@ -1280,8 +1178,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			fetchDefaultImagesOnOverride(context);
 		};
 		
-		let vmDataLoaded = false;
-		// must chage the loadVmData
 		context.loadVmData = function (cb) {
 			// if (context.formData.deployOptions.deployConfig.type === 'vm') {
 			// todo: call them in parallel and call cb once done
@@ -1309,6 +1205,109 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 		};
 		
+		// on Init
+		
+		let vmDataLoaded = false;
+		
+		context.mainData = {
+			deploymentData : {},
+			catalogConflictingPorts : '',
+			envs : [],
+			message : {},
+			recipeUserInput : {image: {}, envs: {}},
+			configRepos : [],
+			configReposBranches : {},
+			configReposBranchesStatus : {},
+			secretsAllowed : 'none',
+			resourceDeployed : false,
+			envPlatform : currentScope.envPlatform,
+			envDeployer : currentScope.envDeployer,
+			decodeRepoNameAndSubName : decodeRepoNameAndSubName
+		};
+		
+		context.access = currentScope.access;
+		context.formData = (cb && typeof cb === 'function') ? resource : {};
+		
+		let category = (resource && Object.keys(resource).length > 0) ? resource.category : settings.category;
+		
+		let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.context.envCode.toUpperCase()));
+		context.allowEdit = allowEdit;
+		
+		if (resource.name === 'dash_cluster') {
+			context.mainData.sensitive = true;
+		}
+		
+		resourceConfiguration.loadDriverSchema(context, resource, settings, allowEdit, function (error) {
+			if (error) {
+				context.mainData.mainDatanotsupported = true;
+			}
+		});
+		
+		if (!context.noCDoverride) {
+			context.mainData.recipes = [];
+		}
+		if (resource && resource.instance && resource.instance.id) {
+			context.mainData.resourceDeployed = true;
+		}
+		resourcesAppConfig.form.addResource.data.categories.forEach((oneCategory) => {
+			if (oneCategory.v === category) {
+				context.mainData.categoryLabel = oneCategory.l;
+			}
+		});
+		
+		
+		context.options = {
+			deploymentModes: [],
+			envCode: currentScope.context.envCode,
+			envType: currentScope.context.envType,
+			envPlatform: currentScope.context.envPlatform,
+			enableAutoScale: currentScope.context.enableAutoScale || false,
+			formAction: action,
+			aceEditorConfig: {
+				maxLines: Infinity,
+				useWrapMode: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				height: '500px'
+			},
+			allowEdit: allowEdit,
+			computedHostname: '',
+			allowDeploy: (currentScope.context.envPlatform !== 'manual')
+		};
+		
+		context.title = 'Add New Resource';
+		if (action === 'update' && context.options.allowEdit) {
+			context.title = 'Update ' + resource.name;
+		}
+		else if (!allowEdit) {
+			context.title = 'View ' + resource.name;
+		}
+		
+		if (currentScope.context.envPlatform === 'kubernetes') {
+			context.options.deploymentModes = [
+				{
+					label: 'deployment - deploy the specified number of replicas based on the availability of resources',
+					value: 'deployment'
+				},
+				{
+					label: 'daemonset - automatically deploy one replica of the service on each node in the cluster',
+					value: 'daemonset'
+				}
+			];
+		}
+		else if (currentScope.context.envPlatform === 'docker') {
+			context.options.deploymentModes = [
+				{
+					label: 'replicated - deploy the specified number of replicas based on the availability of resources',
+					value: 'replicated'
+				},
+				{
+					label: 'global - automatically deploy one replica of the service on each node in the cluster',
+					value: 'global'
+				}
+			];
+		}
+		
 		if (!context.noCDoverride) {
 			context.getSecrets(function (cb) {
 				context.getCatalogRecipes(cb);
@@ -1333,8 +1332,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			});
 		}
 		
-		if (cb && typeof cb === 'function')
+		context.fillForm();
+		
+		if (cb && typeof cb === 'function'){
 			return cb();
+		}
 	}
 	
 	return {

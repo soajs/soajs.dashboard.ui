@@ -152,7 +152,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 	
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-
 		context.mainData = {
             deploymentData : {},
             catalogConflictingPorts : '',
@@ -175,7 +174,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		let category = (resource && Object.keys(resource).length > 0) ? resource.category : settings.category;
 
 		let allowEdit = ((action === 'add') || (action === 'update' && resource.permission && resource.created.toUpperCase() === currentScope.context.envCode.toUpperCase()));
-		context.mainData.allowEdit = allowEdit;
+		context.allowEdit = allowEdit;
 		
 		if (resource.name === 'dash_cluster') {
 			context.mainData.sensitive = true;

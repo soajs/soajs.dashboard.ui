@@ -18,8 +18,83 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				delete response.soajsauth;
-				currentScope.infraProviders = response;
+				currentScope.nodes.list = response;
+				
+				currentScope.nodes.list.forEach(function(oneNode){
+					if(oneNode.labels && oneNode.labels.provider){
+						currentScope.serviceProviders.forEach(function(oneProvider){
+							if(oneProvider.v === oneNode.labels.provider){
+								oneNode.tag = oneProvider;
+							}
+						});
+					}
+				});
+				if(cb && typeof(cb) === 'function'){
+					return cb(currentScope.nodes.list);
+				}
+			}
+		});
+	}
+
+	function joinInfraAndNodes(currentScope, nodes, deployedInfra, counter) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra/cluster",
+			"params": {
+				"id": deployedInfra[counter]._id,
+				"envCode": currentScope.envCode.toLowerCase()
+			}
+		}, function (error, info) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				deployedInfra[counter].nodes = {
+					list: []
+				};
+
+				//link provider with environment
+				if(info && info.machines && info.machines.length > 0){
+					info.machines.forEach((oneMachine) => {
+						nodes.forEach((oneNode) => {
+							if (oneMachine.name === oneNode.hostname) {
+								oneNode.ip = oneMachine.ip;
+								deployedInfra[counter].nodes.list.push(oneNode);
+							}
+						});
+					});
+				}
+				else{
+					deployedInfra[counter].nodes.list = nodes;
+				}
+				
+				counter--;
+				if(counter >= 0){
+					joinInfraAndNodes(currentScope, nodes, deployedInfra, counter);
+				}
+			}
+		});
+	}
+
+	function listInfraProviders(currentScope) {
+		//call bridge, get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra",
+			params: {
+				envCode: currentScope.envCode.toLowerCase()
+			}
+		}, function (error, providers) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				currentScope.infraProviders = angular.copy(providers);
+				delete currentScope.infraProviders.soajsauth;
+
+				listNodes(currentScope, (nodes) => {
+					joinInfraAndNodes(currentScope, nodes, currentScope.infraProviders, currentScope.infraProviders.length -1);
+				});
 			}
 		});
 	}
@@ -29,7 +104,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		let formEntries = environmentsConfig.providers[providerInfo.name][currentScope.envPlatform].ui.form.scale.entries;
 
 		let workernumber = 0;
-		providerInfo.nodes.forEach((oneNode) => {
+		providerInfo.nodes.list.forEach((oneNode) => {
 			if(oneNode.spec.role === 'manager'){
 				workernumber++;
 			}
@@ -71,7 +146,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 								currentScope.$parent.displayAlert('success', "Deployment Scaled Successfully, changes might take a few minutes.");
 								currentScope.modalInstance.close();
 								currentScope.form.formData = {};
-								listNodes(currentScope);
+								listInfraProviders(currentScope);
 							}
 						});
 					}
@@ -153,13 +228,13 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		buildFormWithModal(currentScope, $modal, options);
 	}
 	
-	function removeNode(currentScope, node) {
+	function removeNode(currentScope, nodeId) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/cloud/nodes/remove",
 			"params": {
 				env: currentScope.envCode,
-				nodeId: node.id
+				nodeId: nodeId
 			}
 		}, function (error, response) {
 			if (error) {
@@ -199,11 +274,70 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		});
 	}
 	
+	function changeTag(currentScope, node){
+		var data ={};
+		var formConfig = angular.copy(environmentsConfig.form.nodeTag);
+		
+		if(node.tag){
+			data.tag = node.tag.v;
+		}
+		
+		var options = {
+			timeout: $timeout,
+			form: formConfig,
+			name: 'tagNode',
+			label: 'Tag Node',
+			data: data,
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.submit[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, {
+							"method": "put",
+							"routeName": "/dashboard/cloud/nodes/tag",
+							"data":{
+								"id": node.id,
+								"tag": formData.tag.v
+							}
+						}, function (error, response) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.modalInstance.close();
+								currentScope.form.formData = {};
+								currentScope.displayAlert('success', 'Node tagged successfully');
+								currentScope.listNodes(currentScope);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						currentScope.modalInstance.dismiss('cancel');
+						currentScope.form.formData = {};
+					}
+				}
+			]
+		};
+		
+		buildFormWithModal(currentScope, $modal, options);
+	}
+	
 	return {
 		'listNodes': listNodes,
 		'addNode': addNode,
 		'removeNode': removeNode,
 		'updateNode': updateNode,
+		'changeTag': changeTag,
+		'listInfraProviders': listInfraProviders,
 		'scaleNodes': scaleNodes
 	};
 }]);

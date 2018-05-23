@@ -7,22 +7,45 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	function calculateRestrictions(currentScope) {
 		let restrictions = currentScope.wizard.template.restriction;
 		let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment // stronger then restrictions
-		if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
-			let deployments = currentScope.wizard.template.deploy.deployments;
-			let stepsKeys = Object.keys(deployments);
-			stepsKeys.forEach(function (eachStep) {
-				if (deployments[eachStep]) {
-					let stagesKeys = Object.keys(deployments[eachStep]);
-					stagesKeys.forEach(function (eachStage) {
-						if (eachStage.includes('.repo.') || eachStage.includes('.resources.') || eachStage.includes('secrets')) {
-							showManualDeploy = false;
-						}
-					});
-				}
-			});
+		let showonDemand = false; // only in case of a blank env, manual
+		let manual;
+
+
+		currentScope.restrictions = {
+			docker: false,
+			kubernetes: false,
+			previousEnv: false,
+			onDemand: showonDemand,
+			showManual: showManualDeploy
+		};
+
+		if (currentScope.envType && currentScope.envType === 'manual') {
+			if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
+				showonDemand = true;
+			}
+			currentScope.restrictions.onDemand = showonDemand;
+			return;
+		} else {
+			showManualDeploy = false;
+			manual = false;
 		}
+
+		// if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
+		// 	let deployments = currentScope.wizard.template.deploy.deployments;
+		// 	let stepsKeys = Object.keys(deployments);
+		// 	stepsKeys.forEach(function (eachStep) {
+		// 		if (deployments[eachStep]) {
+		// 			let stagesKeys = Object.keys(deployments[eachStep]);
+		// 			stagesKeys.forEach(function (eachStage) {
+		// 				if (eachStage.includes('.repo.') || eachStage.includes('.resources.') || eachStage.includes('secrets')) {
+		// 					showManualDeploy = false;
+		// 				}
+		// 			});
+		// 		}
+		// 	});
+		// }
 		
-		let docker, kubernetes, manual;
+		let docker, kubernetes;
 		currentScope.infraProviders.forEach((oneInfra) => {
 			if (oneInfra.technologies.indexOf('kubernetes') !== -1) {
 				kubernetes = true;
@@ -32,12 +55,14 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				docker = true;
 			}
 		});
-		
+
+		// no restrictions obj
 		if (!restrictions || Object.keys(restrictions).length === 0) {
 			currentScope.restrictions = {
 				docker: true,
 				kubernetes: true,
 				previousEnv: true,
+				onDemand: showonDemand,
 				showManual: showManualDeploy
 			};
 			return;
@@ -45,6 +70,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		if (restrictions.deployment) {
 			if (restrictions.deployment.indexOf('container') !== -1) {
+				showonDemand = false; // todo
 				if (restrictions.driver) {
 					if (restrictions.driver.indexOf('container.docker') !== -1) {
 						docker = true;
@@ -67,14 +93,20 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		if (showManualDeploy && restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
 			manual = true;
 		}
-		
+
 		currentScope.restrictions = {
 			docker: docker,
 			kubernetes: kubernetes,
 			previousEnv: (docker || kubernetes),
+			onDemand: showonDemand,
 			showManual: manual
 		};
-		
+
+		if (restrictions && Object.hasOwnProperty.call(restrictions, 'allowInfraReuse')) {
+			if (restrictions.allowInfraReuse === false) {
+				currentScope.restrictions.previousEnv = false;
+			}
+		}
 	}
 	
 	function switchDriver(driver) {
@@ -201,6 +233,11 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function go(currentScope) {
+		if (!currentScope.envType) {
+			if ($localStorage.envType) {
+				currentScope.envType = $localStorage.envType;
+			}
+		}
 		
 		mainScope = currentScope;
 		currentScope.switchDriver = switchDriver;
@@ -427,6 +464,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function listInfraProviders(currentScope, cb) {
+		if (currentScope.envType && currentScope.envType === 'manual') {
+			return cb();
+		}
+
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",

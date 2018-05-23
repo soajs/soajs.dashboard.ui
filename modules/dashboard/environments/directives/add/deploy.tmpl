@@ -12,7 +12,8 @@
 			<input type="radio" ng-checked="platforms.previous" value="true" name="previous" disabled/>&nbsp;
 			I want to use the same deployer settings of a previous environment
 		</accordion-heading>
-		I want to deploy services, daemons & resources in this environment using the same deployment settings that i have for
+		I want to deploy services, daemons & resources in this environment using the same deployment settings that i
+		have for
 		<select ng-change="changeLikeEnv()" ng-model="form.formData.deployment.previousEnvironment" class="form-control w30" style="display: inline-block">
 			<option value=""> -- Choose Environment --</option>
 			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
@@ -24,7 +25,7 @@
 					<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" width="100%" alt="Docker Logo"/>
 					<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" width="100%" alt="Kubernetes Logo"/>
 				</legend>
-				<br />
+				<br/>
 				<div class="entryBoxes entryBoxesGrid">
 					<div class="entryBox driverEntryBox" style="display:block;">
 						<div class="header">
@@ -72,8 +73,11 @@
 			I will Deploy Everything Manually on my Local Machine or a My Custom Server
 		</accordion-heading>
 		<p>
-			I will not use any container technology to deploy my Service(s) and Daemon(s).<br />
+			I will not use any container technology to deploy my Service(s) and Daemon(s).<br/>
 			I will also handle pulling and applying updates on the machines of this Environment myself.
+		</p>
+		<p>
+		<a href="">Click here</a> for more details on the advantages of manual deployment.
 		</p>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
@@ -81,21 +85,22 @@
 					<td>
 						<div id="manualIP-wrapper">
 							<label class="f-left">Machine IP</label>
-							<input type="text" ng-required="platforms.manual" ng-model="form.formData.deployment.manual.nodes" class="form-control" placeholder="127.0.0.1" />
+							<input type="text" ng-required="platforms.manual" ng-model="form.formData.deployment.manual.nodes" class="form-control" placeholder="127.0.0.1"/>
 							<div class="fieldMsg hint">Provide the IP Address of one of your machine(s).</div>
 						</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<hr />
+		<hr/>
 		<alert type="warning">
 			<p>
-				Please make sure that the machines you will use for this environment will be reachable, otherwise this dashboard will not be able to communicate with this environment.
+				Please make sure that the machines you will use for this environment will be reachable, otherwise this
+				dashboard will not be able to communicate with this environment.
 			</p>
 		</alert>
 	</accordion-group>
-	<accordion-group is-open="platforms.ondemand" ng-click="switchDriver('ondemand')">
+	<accordion-group is-open="platforms.ondemand" ng-click="switchDriver('ondemand')" ng-show="restrictions.onDemand">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.ondemand" value="true" name="ondemand" disabled/>&nbsp;
 			I want to create an environment without any deployment configuration.

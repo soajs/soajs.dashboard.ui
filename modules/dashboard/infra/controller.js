@@ -328,14 +328,13 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 					}
 				)
 				if(value === 'external'){
-					//TODO: use entries[4] if you want to push it as a third tab after display
 					form.entries.push({
 						'name': 'tags',
 						'label': 'Tags',
 						'type': 'jsoneditor',
 						'height': '200px',
 						'value': "",
-						'fieldMsg': 'hi please',
+						'fieldMsg': '',
 						'required': false
 					});
 				}
@@ -476,7 +475,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 		}
 	};
 
-	$scope.editTemplate = function(oneTemplate){
+	$scope.editTemplate = function(oneTemplate, oneInfra){
 		if(oneTemplate.location === 'local'){
 			let entries = angular.copy(infraConfig.form.templates);
 
@@ -507,6 +506,15 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 					'type': 'jsoneditor',
 					'height': '200px',
 					'value': oneTemplate.display,
+					'fieldMsg': 'This JSON Editor will hold the template display options.',
+					'required': false
+				},
+				{
+					'label': 'Tags',
+					'name': 'tags',
+					'type': 'jsoneditor',
+					'height': '200px',
+					'value': oneTemplate.tags,
 					'fieldMsg': 'This JSON Editor will hold the template display options.',
 					'required': false
 				}
@@ -548,6 +556,151 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 									$scope.getProviders();
 								}
 							});
+						}
+					},
+					{
+						'type': 'reset',
+						'label': 'Cancel',
+						'btn': 'danger',
+						'action': function () {
+							delete $scope.form.formData;
+							$scope.modalInstance.close();
+						}
+					}
+				]
+			};
+
+			buildFormWithModal($scope, $modal, options);
+		}
+		else {
+			let entries = angular.copy(infraConfig.form.templates);
+
+			entries[2].value.push({'v': 'external', 'l': "external", 'selected': true});
+
+			entries.push(
+				{
+					'name': 'file',
+					'label': 'Template File',
+					'type': 'document',
+					'fieldMsg': 'Provide the document that contains your infra code template.'
+				},
+				{
+					'label': 'Inputs',
+					'name': 'inputs',
+					'type': 'jsoneditor',
+					'height': '200px',
+					'value': oneTemplate.inputs,
+					'fieldMsg': 'This JSON Editor will hold the template inputs.',
+					'required': false
+				},
+				{
+					'label': 'Display',
+					'name': 'display',
+					'type': 'jsoneditor',
+					'height': '200px',
+					'value': oneTemplate.display,
+					'fieldMsg': 'This JSON Editor will hold the template display options.',
+					'required': false
+				},
+				{
+					'label': 'Tags',
+					'name': 'tags',
+					'type': 'jsoneditor',
+					'height': '200px',
+					'value': oneTemplate.tags,
+					'fieldMsg': 'This JSON Editor will hold the template display options.',
+					'required': false
+				}
+			);
+
+			let options = {
+				timeout: $timeout,
+				form: {
+					"entries": entries
+				},
+				data: oneTemplate,
+				name: 'editTemplate',
+				label: 'Modify Infra Code Template',
+				actions: [
+					{
+						'type': 'submit',
+						'label': 'Submit',
+						'btn': 'primary',
+						'action': function (formData) {
+							//need to upload in this case
+							if(Object.keys(formData).length < 4){
+								$window.alert("Please fill out all the fields to proceed!");
+							}
+							else{
+								let soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
+								let dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
+								let access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+
+								let progress = {value: 0};
+								let options = {
+									url: apiConfiguration.domain + "/dashboard/infra/template/upload",
+									params: {
+										id: oneInfra._id,
+										name: formData.name,
+										description: formData.description,
+										access_token: access_token,
+										tags: formData.tags
+									},
+									file: formData.file_0,
+									headers: {
+										'soajsauth': soajsauthCookie,
+										'key': dashKeyCookie
+									}
+								};
+								options.params.tags.type = "template";
+
+								overlayLoading.show();
+								Upload.upload(options).progress(function (evt) {
+									let progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+									progress.value = progressPercentage;
+								}).success(function (response, status, headers, config) {
+									if (response.result === false && response.errors.details.length > 0) {
+										overlayLoading.hide();
+										$scope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
+									}
+									else if (Object.keys(formData.templateInputs).length > 0 || Object.keys(formData.gridDisplayOptions).length > 0) {
+										let compOptions = {
+											"method": "post",
+											"routeName": "/dashboard/infra/template/upload",
+											"params": {
+												"id": oneInfra._id
+											},
+											"data": {
+												"name": formData.name,
+												"inputs": formData.templateInputs,
+												"display": formData.gridDisplayOptions
+											}
+										};
+										getSendDataFromServer($scope, ngDataApi, compOptions, function (error, data) {
+											if (error) {
+												overlayLoading.hide();
+												$scope.displayAlert('danger', "Template uploaded successfully, but there was an error uploading the template input options, please try again.");
+											}
+											else {
+												overlayLoading.hide();
+												$scope.displayAlert('success', "Template Uploaded Successfully.");
+												$scope.modalInstance.close();
+												$scope.getProviders();
+											}
+										});
+									}
+									else {
+										overlayLoading.hide();
+										$scope.displayAlert('success', "Template Uploaded Successfully.");
+										$scope.modalInstance.close();
+										$scope.getProviders();
+									}
+								}).error(function () {
+									overlayLoading.hide();
+									$scope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
+								});
+
+							}
 						}
 					},
 					{

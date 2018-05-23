@@ -73,7 +73,7 @@
 									<tr ng-repeat="oneTmpl in oneInfra.templates" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
 										<td>
 											<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;
-											<a href="" ng-click="editTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-pencil"></span></a>&nbsp;
+											<a href="" ng-click="editTemplate(oneTmpl, oneInfra)" ><span class="icon icon-pencil"></span></a>&nbsp;
 											<a href="" ng-click="downloadTemplate(oneTmpl, oneInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
 											<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, oneInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>
 										</td>

@@ -386,28 +386,42 @@
 							Scale Nodes
 						</button>
 						<br/><br/>
-						<div ng-repeat="node in providerInfo.nodes" class="entryBox mb20">
+						<div ng-repeat="node in providerInfo.nodes.list" class="entryBox mb20">
 							<div class="header">
+								<span ng-if="provider.name === 'local'">
+									<span ng-show="node.tag" ng-click="changeTag(node);">
+									<span class="serviceLabelBox myPointer">
+										&nbsp;<img ng-src="{{node.tag.image}}" height="16" alt="" />&nbsp;{{node.tag.l}}
+										<span class="icon icon-arrow-right"></span>
+									</span>&nbsp;
+								</span>
+									<span ng-show="!node.tag" ng-click="changeTag(node);">
+									<span class="serviceLabelBox myPointer">
+										<span class="icon icon-price-tag"></span>&nbsp;Tag Node
+									</span>&nbsp;
+								</span>
+								</span>
+								
 								{{node.hostname}}
-								<span class="rightActions" ng-if="!localDeployment">
-		                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node)">
-		                                <span class="icon icon-cross" tooltip="Remove Node"></span>
+								<span class="rightActions" ng-if="envCode === 'DASHBOARD' && !localDeployment">
+	                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node.id)">
+	                                <span class="icon icon-cross" tooltip="Remove Node"></span>
+	                            </a>
+								<div ng-if="envPlatform === 'docker'">
+									<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
+		                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
 		                            </a>
-									<div ng-if="envPlatform === 'docker'">
-										<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
-			                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
-			                            </a>
-			                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
-			                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
-			                            </a>
-									</div>
-		                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
-		                                <span class="icon icon-switch" tooltip="Activate"></span>
+		                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
+		                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
 		                            </a>
-		                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
-		                                <span class="icon icon-power-cord" tooltip="Drain"></span>
-		                            </a>
-		                        </span>
+								</div>
+	                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
+	                                <span class="icon icon-switch" tooltip="Activate"></span>
+	                            </a>
+	                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
+	                                <span class="icon icon-power-cord" tooltip="Drain"></span>
+	                            </a>
+	                        </span>
 							</div>
 							<div class="body">
 								<div class="grid">

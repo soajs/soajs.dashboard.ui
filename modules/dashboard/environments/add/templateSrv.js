@@ -14,7 +14,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		return hasPortal;
 	}
 	
-	function go(currentScope) {
+	function go(currentScope){
 		currentScope.showTemplates = false;
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -30,46 +30,47 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 					currentScope.templates = angular.copy(response);
 					currentScope.oldStyle = false;
 					
-					for (let i = currentScope.templates.length - 1; i >= 0; i--) {
-						if (!currentScope.templates[i].type) {
+					for(let i = currentScope.templates.length -1; i >=0; i--){
+						if(!currentScope.templates[i].type){
 							currentScope.templates.splice(i, 1);
 						}
-						else {
+						else{
+							
 							if (currentScope.templates[i].type === '_BLANK') {
 								currentScope.oldStyle = true;
 							}
-							else if (currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0) {
+							else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
 								delete currentScope.templates[i].content;
 							}
-							else if (currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()) {
+							else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){
 								currentScope.templates.splice(i, 1);
 							}
 						}
 					}
 					
-					if (currentScope.wizard.template) {
+					if(currentScope.wizard.template){
 						let storedTemplateFound = false;
 						currentScope.templates.forEach(function (oneTemplate) {
-							if (currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id) {
+							if(currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id){
 								storedTemplateFound = true;
 								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.nextStep();
 							}
-							else if (currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name) {
+							else if(currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name){
 								storedTemplateFound = true;
 								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.wizard.template._id = oneTemplate._id;
 								
-								if (currentScope.goToStep === 'status') {
+								if(currentScope.goToStep === 'status'){
 									currentScope.checkStatus();
 								}
-								else {
+								else{
 									currentScope.nextStep();
 								}
 							}
 						});
 						
-						if (!storedTemplateFound) {
+						if(!storedTemplateFound){
 							// template not found // clear storage and redirect to main page
 							delete $localStorage.addEnv;
 							delete currentScope.wizard;
@@ -77,11 +78,11 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 						}
 					}
 					
-					if ($routeParams.portal) {
+					if($routeParams.portal){
 						delete $localStorage.envType;
 						currentScope.templates.forEach(function (oneTemplate) {
-							if (oneTemplate.name === environmentsConfig.predefinedPortalTemplateName) {
-								currentScope.wizard.template = angular.copy(oneTemplate);
+							if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
+								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 								currentScope.nextStep();
 							}
 						});
@@ -94,7 +95,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		});
 	}
 	
-	function chooseTemplate(currentScope, template) {
+	function chooseTemplate(currentScope, template){
 		currentScope.wizard.template = angular.copy(template);
 		currentScope.nextStep();
 	}

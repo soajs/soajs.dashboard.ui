@@ -326,7 +326,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 						'fieldMsg': 'This JSON Editor will hold the template display options.',
 						'required': false
 					}
-				)
+				);
 				if(value === 'external'){
 					form.entries.push({
 						'name': 'tags',
@@ -414,7 +414,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 											overlayLoading.hide();
 											$scope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
 										}
-										else if (Object.keys(formData.templateInputs).length > 0 || Object.keys(formData.gridDisplayOptions).length > 0) {
+										else if (formData.templateInputs.length > 0 || typeof(formData.gridDisplayOptions) === 'object') {
 											let compOptions = {
 												"method": "post",
 												"routeName": "/dashboard/infra/template/upload",
@@ -663,7 +663,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 										overlayLoading.hide();
 										$scope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
 									}
-									else if (Object.keys(formData.templateInputs).length > 0 || Object.keys(formData.gridDisplayOptions).length > 0) {
+									else if (formData.inputs.length > 0 || typeof(formData.display) === 'object') {
 										let compOptions = {
 											"method": "post",
 											"routeName": "/dashboard/infra/template/upload",
@@ -672,17 +672,16 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 											},
 											"data": {
 												"name": formData.name,
-												"inputs": formData.templateInputs,
-												"display": formData.gridDisplayOptions
+												"inputs": formData.inputs,
+												"display": formData.display
 											}
 										};
 										getSendDataFromServer($scope, ngDataApi, compOptions, function (error, data) {
+											overlayLoading.hide();
 											if (error) {
-												overlayLoading.hide();
 												$scope.displayAlert('danger', "Template uploaded successfully, but there was an error uploading the template input options, please try again.");
 											}
 											else {
-												overlayLoading.hide();
 												$scope.displayAlert('success', "Template Uploaded Successfully.");
 												$scope.modalInstance.close();
 												$scope.getProviders();

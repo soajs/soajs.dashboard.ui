@@ -155,6 +155,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
 			console.log("---- fetch branches");
+			
 			let selectedRepo, subNameInCaseMulti;
 			if (confOrCustom === 'conf') {
 				selectedRepo = context.formData.deployOptions.sourceCode.configuration.repo;
@@ -191,12 +192,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.mainData.configReposBranchesStatus[selectedRepo] = 'loading';
 
 				let apiParams = {
-                    id:accountData.accountId,
+					accountId:accountData.accountId,
                     name: selectedRepo,
 					type:'repo',
 					provider: accountData.provider
 				};
-                commonService.fetchBranches(currentScope, apiParams, function (response) {
+				
+                commonService.fetchBranches(context, apiParams, function (response) {
                     context.mainData.configReposBranchesStatus[selectedRepo] = 'loaded';
                     context.mainData.configReposBranches[selectedRepo] = response.branches;
 
@@ -620,6 +622,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.displayRecipeInputs = function (refresh, ui, cb) {
 			console.log("---- display recipe inputs");
+			
 			function calculateRestrictions(currentScope) {
 				let allRecipes = currentScope.mainData.recipes;
 				let selectedRecipeId;
@@ -640,7 +643,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				
 				context.onDeploymentTechnologySelect(refresh);
 				
-				// todo: if vm
 				context.loadVmData(function () {
 					let allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 					let allInfra = currentScope.mainData.deploymentData.infraProviders; // [{_id,name}]
@@ -734,9 +736,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				});
 			}
 			
-			calculateRestrictions(context);
+			// calculateRestrictions(context); //todo: restore
 			context.setSourceCodeData(selectedRecipe);
 			context.setExposedPorts(selectedRecipe, ui, cb);
+			
+			// forcing deployment technology to be container; todo:
+			if(context.formData.deployOptions.deployConfig){
+				context.formData.deployOptions.deployConfig.type = 'container';
+			}
+			context.onDeploymentTechnologySelect(refresh);
 		};
 		
 		context.updateDeploymentName = function (resourceName) {
@@ -1205,8 +1213,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		context.loadVmData = function (cb) {
 			console.log("---- load vm data");
-			// if (context.formData.deployOptions.deployConfig.type === 'vm') {
-			// todo: call them in parallel and call cb once done
 			if (!vmDataLoaded) {
 				vmDataLoaded = true;
 				overlayLoading.show();

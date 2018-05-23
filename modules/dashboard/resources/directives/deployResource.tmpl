@@ -20,16 +20,17 @@
 	<br>
 </div>
 
-<div ng-if="formData.deployOptions.recipe">
-	<label>Deployment Technology Type</label>
-	<select class="form-control" ng-disabled="mainData.resourceDeployed || mainData.deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in mainData.deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>
-	<label class="fieldMsg">Choose a deployment technology type</label>
-</div>
+<!--<div ng-if="formData.deployOptions.recipe">-->
+	<!--<label>Deployment Technology Type</label>-->
+	<!--<select class="form-control" ng-disabled="mainData.resourceDeployed || mainData.deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in mainData.deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>-->
+	<!--<label class="fieldMsg">Choose a deployment technology type</label>-->
+<!--</div>-->
 
-<fieldset class="custom-fieldset" ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''">
+<!--ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''"-->
+<fieldset class="custom-fieldset">
 	<legend>Deployment Options</legend>
 	
-	<div ng-if="formData.deployOptions.deployConfig.type === 'container'">
+	<!--<div ng-if="formData.deployOptions.deployConfig.type === 'container'">-->
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
@@ -210,7 +211,7 @@
 				</fieldset>
 			</fieldset>
 		</div>
-	</div>
+	<!--</div>-->
 	
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
 		<label>Infra</label>

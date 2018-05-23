@@ -71,7 +71,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
                         "extraParam": {},
                         "streaming": {}
                     },
-                    "created": "zzz",
+                    "created": "ZZZ",
                     "author": "owner",
                     "permission": true,
                     "canBeDeployed": true,

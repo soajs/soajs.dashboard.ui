@@ -154,13 +154,13 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
 
     function fetchBranches ($scope, apiParams, cb) {
-        getSendDataFromServer(context, ngDataApi, {
+        getSendDataFromServer($scope, ngDataApi, {
             'method': 'get',
             'routeName': '/dashboard/gitAccounts/getBranches',
             params: {
                 id: apiParams.accountId,
                 name: apiParams.name,
-                type: 'repo',
+                type: apiParams.type,
                 provider: apiParams.provider
             }
         }, function (error, response) {

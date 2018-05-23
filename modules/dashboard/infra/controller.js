@@ -584,7 +584,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 				$scope.displayAlert("danger", error);
 			}
 			else {
-				openSaveAsDialog(oneTemplate._id, data, "binary/octet-stream");
+				openSaveAsDialog('template.zip', data, "binary/octet-stream");
 			}
 		});
 	};

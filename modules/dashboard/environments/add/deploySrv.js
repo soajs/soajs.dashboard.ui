@@ -370,7 +370,14 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				label: "Infra Code Template",
 				value: infraTemplates,
 				required: true,
-				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster."
+				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
+				onAction: function(id, value, form){
+					oneProvider.templates.forEach((oneTmpl) => {
+						if(oneTmpl._id === value && oneTmpl.inputs && Array.isArray(oneTmpl.inputs)){
+							form.entries = form.entries.concat(oneTmpl.inputs);
+						}
+					});
+				}
 			});
 			
 			$modal.open({
@@ -394,6 +401,13 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 								'action': function (formData) {
 									selectedInfraProvider.deploy = formData;
 									selectedInfraProvider.deploy.grid = environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.grid;
+									//fill the columns
+									oneProvider.templates.forEach((oneTmpl) => {
+										if(oneTmpl._id === formData['infraCodeTemplate'] && oneTmpl.display){
+											selectedInfraProvider.deploy.grid.columns = oneTmpl.display;
+										}
+									});
+									
 									selectedInfraProvider.deploy.technology = technology;
 									mainScope.wizard.selectedInfraProvider = selectedInfraProvider;
 									oneProvider.deploy = selectedInfraProvider.deploy;
@@ -405,7 +419,9 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 								'label': translation.cancel[LANG],
 								'btn': 'danger',
 								'action': function () {
-									oneProvider.deploy = mainScope.wizard.selectedInfraProvider.deploy;
+									if(mainScope.wizard.selectedInfraProvider){
+										oneProvider.deploy = mainScope.wizard.selectedInfraProvider.deploy;
+									}
 									$modalInstance.dismiss('cancel');
 								}
 							}
@@ -413,7 +429,15 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					};
 					
 					buildForm($scope, null, formConfig, function () {
-						
+						if(mainScope.wizard.selectedInfraProvider && mainScope.wizard.selectedInfraProvider.deploy){
+							let chosenTemplate = mainScope.wizard.selectedInfraProvider.deploy['infraCodeTemplate'];
+							oneProvider.templates.forEach((oneTmpl) => {
+								if(oneTmpl._id === chosenTemplate && oneTmpl.inputs && Array.isArray(oneTmpl.inputs)){
+									$scope.form.entries = $scope.form.entries.concat(oneTmpl.inputs);
+								}
+							});
+							$scope.form.formData = mainScope.wizard.selectedInfraProvider.deploy;
+						}
 					});
 				}
 			});

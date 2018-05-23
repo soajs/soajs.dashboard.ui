@@ -47,6 +47,29 @@ var cdNav = [
 		'order': 9,
 		'scripts': ['modules/dashboard/cd/config.js', 'modules/dashboard/cd/controller.js'],
 		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'audit',
+		'label': "Audit",
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/cd',
+			'method': 'get'
+		},
+		'url': '#/audit',
+		"fallbackLocation": "#/environments",
+		'tplPath': 'modules/dashboard/cd/directives/audit.tmpl',
+		'icon': 'file-text',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 9,
+		'scripts': ['modules/dashboard/cd/config.js', 'modules/dashboard/cd/controller.js'],
+		'ancestor': [translation.home[LANG]]
 	}
 ];
 navigation = navigation.concat(cdNav);

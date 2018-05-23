@@ -494,7 +494,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 				},
 				{
 					'label': 'Inputs',
-					'name': 'templateInputs',
+					'name': 'inputs',
 					'type': 'jsoneditor',
 					'height': '200px',
 					'value': oneTemplate.inputs,
@@ -503,7 +503,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 				},
 				{
 					'label': 'Display',
-					'name': 'gridDisplayOptions',
+					'name': 'display',
 					'type': 'jsoneditor',
 					'height': '200px',
 					'value': oneTemplate.display,
@@ -530,7 +530,9 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 								"method": "put",
 								"routeName": "/dashboard/infra/template",
 								"params": {
-									"id": oneTemplate._id,
+									"id": oneTemplate._id
+								},
+								"data":{
 									"template": formData
 								}
 							};

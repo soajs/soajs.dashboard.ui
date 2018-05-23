@@ -160,7 +160,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				for (var version in cdDataClone) {
 					var v = version.replace('v', '');
 					cdData.versions[v] = cdDataClone[version];
-					cdData.versions[v].active = true;
+					if(typeof cdData.versions[v] === 'object'){
+						cdData.versions[v].active = true;
+					}
 				}
 			}
 			if (cdData.versions && Object.keys(cdData.versions).length === 0) {

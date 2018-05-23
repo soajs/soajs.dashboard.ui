@@ -2,7 +2,7 @@
 	<h3>Choose your environment type</h3>
 
 	<div class="text-center col-md-4 col-lg-4">
-		<div style="height: 100%;" class="environmentBox" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
+		<div class="environmentBox" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
 			<img ng-if="0" ng-src="" height="32" class="f-left"/>
 			<h4>Development environment</h4>
 			<hr>
@@ -12,15 +12,15 @@
 				Create a blank environment and handle deployment manually.<br>
 				Good for testing
 			</p>
-			<div class="readmore">
-				<a>Read more</a>
+			<div class="readmore clearfix">
+				<a><span class="icon icon-info"></span></a>
 			</div>
 		</div>
 	</div>
 	<div class="text-center col-md-4 col-lg-4">
 		<div class="environmentBox" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
 			<div style="font-size: 28px; padding: 3px; padding-left: 6px;" class="f-left">
-				<span class="icon icon-cloud"></span>
+				<span style="color: #337ab7;" class="icon icon-cloud"></span>
 			</div>
 			<h4>Single cloud environment</h4>
 			<hr>
@@ -36,14 +36,16 @@
 				<li>One cluster per provider</li>
 				<li>Communication via public IP</li>
 			</ul>
-			<div class="readmore">
-				<a>Read more</a>
+			<div class="readmore clearfix">
+				<a><span class="icon icon-info"></span></a>
 			</div>
 		</div>
 	</div>
 	<div class="text-center col-md-4 col-lg-4">
-		<div class="environmentBox" ng-class="{'selectedEnv': envType==='multiInfra'}" ng-click="">
-			<img ng-if="0" ng-src="" height="32" class="f-left"/>
+		<div class="environmentBox noHover" ng-class="{'selectedEnv': envType==='multiInfra'}" ng-click="">
+			<div class="f-left">
+				<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32"/>
+			</div>
 			<h4>Multi cloud environment</h4>
 			<hr>
 			<div class="envDescription">I want to create an environment and deploy it on multiple infra
@@ -55,8 +57,8 @@
 				<li>Cluster on more than one provider</li>
 				<li>Communication via private IP</li>
 			</ul>
-			<div class="readmore">
-				Read more
+			<div class="readmore clearfix">
+				<a><span class="icon icon-info"></span></a>
 			</div>
 		</div>
 	</div>

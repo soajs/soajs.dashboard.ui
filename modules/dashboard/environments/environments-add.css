@@ -1,3 +1,16 @@
+.envType {
+    display: block;
+    height: auto;
+    overflow: auto;
+}
+
+.envType .text-center {
+}
+
+.envType .environmentBox {
+    height: auto;
+}
+
 .environmentBox {
     border-radius: 5px;
     border: solid 1px #eeeeee;
@@ -13,6 +26,10 @@
     /*-webkit-box-shadow: 0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
     /*-moz-box-shadow:    0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
     /*box-shadow:         0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
+}
+
+.environmentBox.noHover {
+    pointer-events: none;
 }
 
 .environmentBox:hover hr {
@@ -44,15 +61,12 @@
 }
 
 .environmentBox .readmore a {
-    padding: 4px 20px;
-    border-radius: 5px;
-    border: solid 1px #eeeeee;
+    float: right;
+    padding: 4px 20px 0px 20px;
 }
 
 .environmentBox .readmore a:hover {
-    background-color: #449d44;
-    border: none;
-    color: white;
+
 }
 
 #addEnvironment .modal-header span.closeButton {

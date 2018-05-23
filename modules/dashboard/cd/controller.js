@@ -299,14 +299,16 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				$scope.ledger = response.logs;
 				$scope.updateCount = 0;
 				let notificationCount  = 0;
-				$scope.ledger.forEach(function (oneLedgerEntry) {
-					if (oneLedgerEntry.notify && !oneLedgerEntry.manual && !oneLedgerEntry.read) {
-						$scope.updateCount++;
-					}
-					if(!oneLedgerEntry.read){
-						notificationCount++;
-					}
-				});
+				if(Array.isArray($scope.ledger)){
+					$scope.ledger.forEach(function (oneLedgerEntry) {
+						if (oneLedgerEntry.notify && !oneLedgerEntry.manual && !oneLedgerEntry.read) {
+							$scope.updateCount++;
+						}
+						if(!oneLedgerEntry.read){
+							notificationCount++;
+						}
+					});
+				}
 				
 				if (notificationCount > 0) {
 					$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{

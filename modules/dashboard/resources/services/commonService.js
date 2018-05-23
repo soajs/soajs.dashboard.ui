@@ -217,6 +217,23 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         });
     }
 
+    function deployResource ($scope, apiParams, cb) {
+        overlayLoading.show();
+        getSendDataFromServer($scope, ngDataApi, {
+            method: 'post',
+            routeName: '/dashboard/cloud/services/soajs/deploy',
+            data: apiParams.deployOptions
+        }, function (error) {
+            overlayLoading.hide();
+            if (error) {
+                $scope.displayAlert('danger', error.message);
+            }
+            else {
+                return cb();
+            }
+        });
+    }
+
 	return {
 		listResourcesApi,
         deleteResourceApi,
@@ -229,6 +246,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         listAccounts,
         getEnvs,
         getInfraProviders,
+        deployResource
 	};
 	
 }]);

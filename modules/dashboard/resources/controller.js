@@ -107,22 +107,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		deployOptions.custom.resourceId = resource._id;
 		deployOptions.env = resource.created;
 		deployOptions.custom.type = "resource";
-		
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'post',
-			routeName: '/dashboard/cloud/services/soajs/deploy',
-			data: deployOptions
-		}, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			}
-			else {
-				$scope.displayAlert('success', 'Resource deployed successfully. Check the High Availability - Cloud section to see it running');
-				$scope.listResources();
-			}
-		});
+
+		let apiParams = {
+            'deployOptions' : deployOptions
+		};
+        commonService.deployResource($scope, apiParams, function () {
+            $scope.displayAlert('success', 'Resource deployed successfully. Check the High Availability - Cloud section to see it running');
+            $scope.listResources();
+        });
+
 	};
 	
 	//start here

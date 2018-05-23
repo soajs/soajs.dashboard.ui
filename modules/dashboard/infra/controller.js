@@ -256,7 +256,8 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 			"routeName": "/dashboard/infra/template",
 			"params": {
 				"id": oneInfra._id,
-				"templateId": oneTemplate._id
+				"templateId": oneTemplate._id,
+				"templateName": oneTemplate.name
 			}
 		};
 		overlayLoading.show();
@@ -480,16 +481,36 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 			let entries = angular.copy(infraConfig.form.templates);
 
 			entries[2].value.push({'v': 'local', 'l': "Local", 'selected': true});
-			entries.push({
-				'name': 'content',
-				'label': 'Template Content',
-				'type': 'jsoneditor',
-				'height': '400px',
-				'value': oneTemplate.content,
-				'tooltip': 'Enter the content of your Template',
-				'fieldMsg': 'Template Content is represented by a JSON configuration Object',
-				'required': true
-			});
+			entries.push(
+				{
+					'name': 'content',
+					'label': 'Template Content',
+					'type': 'jsoneditor',
+					'height': '400px',
+					'value': oneTemplate.content,
+					'tooltip': 'Enter the content of your Template',
+					'fieldMsg': 'Template Content is represented by a JSON configuration Object',
+					'required': true
+				},
+				{
+					'label': 'Inputs',
+					'name': 'templateInputs',
+					'type': 'jsoneditor',
+					'height': '200px',
+					'value': oneTemplate.inputs,
+					'fieldMsg': 'This JSON Editor will hold the template inputs.',
+					'required': false
+				},
+				{
+					'label': 'Display',
+					'name': 'gridDisplayOptions',
+					'type': 'jsoneditor',
+					'height': '200px',
+					'value': oneTemplate.display,
+					'fieldMsg': 'This JSON Editor will hold the template display options.',
+					'required': false
+				}
+			);
 
 			let options = {
 				timeout: $timeout,

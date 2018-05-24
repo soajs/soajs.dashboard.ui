@@ -20,7 +20,8 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                     let apiParams = {
 						type: $scope.options.formAction, // add or edit
 						envCode: $scope.options.envCode.toUpperCase(),
-						id: formData._id // only for edit
+						id: formData._id, // only for edit
+	                    canBeDeployed : $scope.formData.canBeDeployed
 					};
 
 					function updateApiParamsBeforeSave() {
@@ -167,11 +168,12 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                     }
 
                     commonService.addEditResourceApi($scope, apiParams, function (response) {
-                        $scope.newResource = response;
-                        $scope.displayAlert('success', 'Resource updated successfully');
-                        $scope.formData = {};
-                        $modalInstance.close();
-                        currentScope.listResources();
+                    	console.log("restore ici");
+                        // $scope.newResource = response;
+                        // $scope.displayAlert('success', 'Resource updated successfully');
+                        // $scope.formData = {};
+                        // $modalInstance.close();
+                        // currentScope.listResources();
                     });
                 };
 

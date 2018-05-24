@@ -83,36 +83,28 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
     
     function addEditResourceApi($scope, apiParams, cb) {
-	    var options = {};
-	    if ($scope.options.formAction === 'add') {
-		    options = {
-			    method: 'post',
-			    routeName: '/dashboard/resources/add',
-			    data: {
-				    env: apiParams.envCode,
-				    resource: apiParams.saveOptions
-                    //add input for cd records apiParams.options
-                    // add input for deploy apiParams.deployOptions
-			    }
-		    };
+	
+		console.log('---');
+		console.log(apiParams);
+	
+		let id = 'new';
+	    if ($scope.options.formAction !== 'add') { // on edit
+	    	id = apiParams.id;
 	    }
-	    else {
-		    options = {
-			    method: 'put',
-			    routeName: '/dashboard/resources/update',
-			    params: {
-				    env: apiParams.envCode,
-				    id: apiParams.id
-                    // add inputs for cd records apiParams.options
-                    // add input for rebuild apiParmas.rebuildOptions
-			    },
-			    data: {
-				    resource: apiParams.saveOptions
-                    //add input for cd records [apiParams.deployOptions]
+		
+	    var options = {
+		    method: 'post',
+		    routeName: `/dashboard/resources/${id}`,
+		    data: {
+			    env: apiParams.envCode,             // add/edit resource
+			    resource: apiParams.saveOptions,    // add/edit resource + cicd
+			    config: {
+				    deploy: apiParams.canBeDeployed || false,
+				    options: apiParams.options
 			    }
-		    };
-	    }
-        return cb();
+		    }
+	    };
+	
 	    getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
 		    if (error) {
 			    overlayLoading.hide();
@@ -122,6 +114,46 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    return cb(result);
 		    }
 	    });
+		
+	    // var options = {};
+	    // if ($scope.options.formAction === 'add') {
+		 //    options = {
+			//     method: 'post',
+			//     routeName: '/dashboard/resources/add',
+			//     data: {
+			// 	    env: apiParams.envCode,
+			// 	    resource: apiParams.saveOptions
+         //            //add input for cd records apiParams.options
+         //            // add input for deploy apiParams.deployOptions
+			//     }
+		 //    };
+	    // }
+	    // else {
+		 //    options = {
+			//     method: 'put',
+			//     routeName: '/dashboard/resources/update',
+			//     params: {
+			// 	    env: apiParams.envCode,
+			// 	    id: apiParams.id
+         //            // add inputs for cd records apiParams.options
+         //            // add input for rebuild apiParmas.rebuildOptions
+			//     },
+			//     data: {
+			// 	    resource: apiParams.saveOptions
+         //            //add input for cd records [apiParams.deployOptions]
+			//     }
+		 //    };
+	    // }
+	    //
+	    // getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
+		 //    if (error) {
+			//     overlayLoading.hide();
+			//     $scope.displayAlert('danger', error.message);
+		 //    }
+		 //    else {
+			//     return cb(result);
+		 //    }
+	    // });
     }
 
     function getCatalogRecipes ($scope, apiParams, cb) {

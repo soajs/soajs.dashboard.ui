@@ -221,14 +221,6 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 				}
 				else {
 					currentScope.updatesNotifications = [];
-					
-					if(response.logs.length > 0){
-						currentScope.$parent.$parent.$parent.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
-							if(oneNavigation.id === 'updates-upgrades'){
-								oneNavigation.notification = true;
-							}
-						});
-					}
 					response.logs.forEach(function (oneCodeUpdateEntry) {
 						if (oneCodeUpdateEntry.notify && !oneCodeUpdateEntry.manual) {
 							currentScope.updatesNotifications.push({
@@ -249,13 +241,6 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 							currentScope.displayAlert('danger', error.message);
 						}
 						else {
-							if(response.length > 0){
-								currentScope.$parent.$parent.$parent.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
-									if(oneNavigation.id === 'updates-upgrades'){
-										oneNavigation.notification = true;
-									}
-								});
-							}
 							response.forEach(function (oneUpdateEntry) {
 								currentScope.updatesNotifications.push({
 									id: oneUpdateEntry.id,

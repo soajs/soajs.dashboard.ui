@@ -556,6 +556,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.$on('$routeChangeSuccess', function () {
 			$scope.tracker = [];
 			doEnvPerNav();
+			
+			updateNotifications($scope, $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code, ngDataApi);
+			
 			$scope.rebuildMenus(function () {
 				for (var i = 0; i < $scope.navigation.length; i++) {
 					if ($scope.navigation[i].url === '#' + $route.current.originalPath) {

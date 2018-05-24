@@ -1562,7 +1562,18 @@ td.apiNavigationWide .pagination a {
     border: solid 1px #ccc;
 }
 
-.smallNotification{
+
+.smallNotificationCollapsed{
+    font-size: .83em;
+    line-height: 0.5em !important;
+    vertical-align: baseline;
+    position: relative;
+    top: 0em;
+    left: 1.9em;
+    height:2px !important;
+}
+
+.smallNotification {
     font-size: .83em;
     line-height: 0.5em !important;
     vertical-align: baseline;
@@ -1572,13 +1583,23 @@ td.apiNavigationWide .pagination a {
     height:2px !important;
 }
 
-.smallNotificationCollapsed{
-    font-size: .83em;
-    line-height: 0.5em !important;
-    vertical-align: baseline;
-    position: relative;
-    top: -3.7em;
-    left: 1.4em;
-    float:none !important;
-    height:2px !important;
+.smallNotificationCollapsed[data-badge]:after,
+.smallNotification[data-badge]:after {
+    content:attr(data-badge);
+    position:absolute;
+    top:-10px;
+    right:-10px;
+
+    background:#d9534f;
+    color:white;
+
+    width:18px;
+    height:18px;
+
+    font-size: .6em;
+    text-align:center;
+    line-height:16px;
+
+    border-radius:50%;
+    border: solid 1px white;
 }

@@ -267,13 +267,9 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				}
 			});
 			
+			updateNotifications($scope.$parent.$parent, $scope.myEnv, ngDataApi, notificationCount);
+			
 			if (notificationCount > 0) {
-				$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
-					if(oneNavigation.id === 'updates-upgrades'){
-						oneNavigation.notification = true;
-					}
-				});
-				
 				$scope.upgradeCount = "(" + $scope.upgradeCount + ")";
 			}
 			else {
@@ -301,7 +297,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				let notificationCount  = 0;
 				if(Array.isArray($scope.ledger)){
 					$scope.ledger.forEach(function (oneLedgerEntry) {
-						if (oneLedgerEntry.notify && !oneLedgerEntry.manual && !oneLedgerEntry.read) {
+						if (!oneLedgerEntry.manual && !oneLedgerEntry.read) {
 							$scope.updateCount++;
 						}
 						if(!oneLedgerEntry.read){
@@ -310,13 +306,9 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 					});
 				}
 				
+				updateNotifications($scope.$parent.$parent, $scope.myEnv, ngDataApi, notificationCount);
+				
 				if (notificationCount > 0) {
-					$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
-						if(oneNavigation.id === 'updates-upgrades'){
-							oneNavigation.notification = true;
-						}
-					});
-					
 					$scope.updateCount = "(" + $scope.updateCount + ")";
 				}
 				else {
@@ -427,108 +419,6 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			else {
 				$scope.displayAlert('success', 'Entry updated');
 				$scope.getLedger();
-			}
-		});
-	};
-	
-	/**
-	 * Other Log Messages
-	 */
-	$scope.getOtherLogs = function (loadMore) {
-		overlayLoading.show();
-		
-		let params = {
-			"env": $scope.myEnv,
-			"logs": true
-		};
-		
-		if (loadMore) {
-			//call the api and provide a start limit
-			params.start = $scope.logs.length;
-			if (params.start < 200) {
-				params.start = 200;
-			}
-			else {
-				params.start += 200;
-			}
-		}
-		else {
-			params.start = 0;
-		}
-		
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'get',
-			routeName: '/dashboard/cd/ledger',
-			params: params
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			}
-			else {
-				if (loadMore) {
-					$scope.logs = $scope.logs.concat(response.logs);
-				}
-				else {
-					$scope.logs = response.logs;
-					$scope.logsCount = response.unread || 0;
-					$scope.originalClount = response.count || 0;
-					
-					if ($scope.logsCount > 0) {
-						$scope.logsCount = "(" + $scope.logsCount + ")";
-					}
-					else {
-						$scope.logsCount = null;
-					}
-					
-					$scope.$parent.$parent.appNavigation.forEach((oneNavigation) =>{
-						if(oneNavigation.id === 'audit'){
-							oneNavigation.notification = ($scope.logsCount > 0);
-						}
-					});
-				}
-			}
-		});
-	};
-	
-	$scope.readOneLog = function (oneEntry) {
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'put',
-			routeName: '/dashboard/cd/ledger/read',
-			data: {
-				"data": {"id": oneEntry._id, "logs": true}
-			}
-			
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			}
-			else {
-				$scope.displayAlert('success', 'Entry updated');
-				$scope.getOtherLogs();
-			}
-		});
-	};
-	
-	$scope.readAllLogs = function (oneEntry) {
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'put',
-			routeName: '/dashboard/cd/ledger/read',
-			data: {
-				"data": {"all": true, "logs": true}
-			}
-			
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			}
-			else {
-				$scope.displayAlert('success', 'All entries updated');
-				$scope.getOtherLogs();
 			}
 		});
 	};

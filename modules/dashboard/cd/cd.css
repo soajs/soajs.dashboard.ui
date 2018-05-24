@@ -128,24 +128,3 @@ a.readBox{
     width: 30px;
     float: left;
 }
-
-.auditEntry {
-    height: 82px !important;
-}
-
-.auditEntry .content{
-    height: 50px;
-    overflow:hidden;
-    cursor:pointer;
-}
-
-.auditEntry2{
-    height: auto !important;
-}
-
-.auditEntry2 .content{
-    height: auto !important;
-    display:table;
-    width:100%;
-    cursor:pointer;
-}

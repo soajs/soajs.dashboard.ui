@@ -315,3 +315,83 @@ function redirectToLogin(scope) {
 	scope.enableInterface = false;
 	scope.go("/login");
 }
+
+function updateNotifications($scope, envCode, ngDataApi, notifications){
+	
+	if(notifications !== undefined && notifications !== null ){
+		if(notifications > 0){
+			$scope.appNavigation.forEach((oneNavigation) =>{
+				if(oneNavigation.id === 'updates-upgrades'){
+					oneNavigation.notification = notifications;
+				}
+			});
+		}
+		else{
+			$scope.appNavigation.forEach((oneNavigation) =>{
+				if(oneNavigation.id === 'updates-upgrades'){
+					delete oneNavigation.notification;
+				}
+			});
+		}
+	}
+	else{
+		getUpdates((updates) => {
+			getUpgrades((upgrades) => {
+				let notifications = upgrades + updates;
+				if(notifications > 0){
+					$scope.appNavigation.forEach((oneNavigation) =>{
+						if(oneNavigation.id === 'updates-upgrades'){
+							oneNavigation.notification = notifications;
+						}
+					});
+				}
+				else{
+					$scope.appNavigation.forEach((oneNavigation) =>{
+						if(oneNavigation.id === 'updates-upgrades'){
+							delete oneNavigation.notification;
+						}
+					});
+				}
+			});
+		});
+	}
+	
+	function getUpdates(cb){
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/cd/ledger',
+			params: {
+				"env": envCode
+			}
+		}, function (error, response) {
+			if (error || !response) {
+				return cb(0);
+			}
+			else {
+				return cb(response.unread || 0);
+			}
+		});
+	}
+	
+	function getUpgrades(cb) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/cd/updates',
+			params: {
+				"env": envCode
+			}
+		}, function (error, response) {
+			if (error || !response) {
+				return cb(0);
+			}
+			
+			let notificationCount = 0;
+			response.forEach(function (oneEntry) {
+				if(!oneEntry.read){
+					notificationCount++;
+				}
+			});
+			return cb(notificationCount);
+		});
+	}
+}

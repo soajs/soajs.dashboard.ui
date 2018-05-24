@@ -1,10 +1,10 @@
-.envType {
-    border-collapse:separate;
+div.envType {
+    border-collapse: separate;
     border-spacing: 30px;
 }
 
-.envType .environmentBox {
-    position:relative;
+div.envType .environmentBox {
+    position: relative;
 }
 
 .environmentBox2 {
@@ -12,6 +12,7 @@
     border: solid 1px #eeeeee;
     padding: 5px;
     cursor: pointer;
+    position: relative;
 }
 
 .environmentBox {
@@ -70,6 +71,9 @@
 .environmentBox .readmore {
     padding-top: 7px;
     padding-bottom: 10px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .environmentBox2 .readmore a,
@@ -81,6 +85,10 @@
 .environmentBox2 .readmore a:hover,
 .environmentBox .readmore a:hover {
 
+}
+
+.environmentBox2 .fieldMsg {
+    color: #333;
 }
 
 #addEnvironment .modal-header span.closeButton {

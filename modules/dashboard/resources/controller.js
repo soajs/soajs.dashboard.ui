@@ -16,7 +16,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
 	
 	$scope.listResources = function (cb) {
-		let apiParams = {};
+		let apiParams = {
+		    env : $scope.context.envCode,
+            envType : $scope.context.envType
+        };
+
 		commonService.listResourcesApi($scope, apiParams, function (response) {
 			$scope.context.resources = {list: response};
 			$scope.context.resources.original = angular.copy($scope.context.resources.list); //keep a copy of the original resources records

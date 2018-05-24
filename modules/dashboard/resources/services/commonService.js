@@ -7,9 +7,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources', // must edit the path
-			params: {
-				env: $scope.context.envCode
-			}
+			params: apiParams,
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {

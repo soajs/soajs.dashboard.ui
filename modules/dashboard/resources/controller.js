@@ -16,7 +16,11 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
 	
 	$scope.listResources = function (cb) {
-		let apiParams = {};
+		let apiParams = {
+		    env : $scope.context.envCode,
+            envType : $scope.context.envType
+        };
+
 		commonService.listResourcesApi($scope, apiParams, function (response) {
 			$scope.context.resources = {list: response};
 			$scope.context.resources.original = angular.copy($scope.context.resources.list); //keep a copy of the original resources records
@@ -57,8 +61,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		//get the original resource record
 		for (var i = 0; i < $scope.context.resources.original.length; i++) {
 			if ($scope.context.resources.original[i]._id === resource._id) {
-				let
-					resourceRecord = angular.copy($scope.context.resources.original[i]);
+				resourceRecord = angular.copy($scope.context.resources.original[i]);
 				break;
 			}
 		}
@@ -83,8 +86,23 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	
 	$scope.deleteResource = function (resource) {
 		let apiParams = {
-			resource: resource,
+			id: resource._id,
+			env : $scope.context.envCode.toUpperCase()
 		};
+		// for service
+        if (resource.isDeployed && resource.instance && resource.instance.id) {
+        	apiParams['serviceId'] = resource.instance.id;
+        	apiParams['name'] = resource.instance.name;
+		}
+		//for cicd
+        if (resource.canBeDeployed && resource.deployOptions) {
+            apiParams['envCode'] = resource.created;
+            apiParams['config'] = {
+                deploy: false
+            };
+            apiParams['resourceName'] = resource.name
+        }
+
 		commonService.deleteResourceApi($scope, apiParams, function () {
 			$scope.displayAlert('success', 'Resource deleted successfully');
 			$scope.listResources();

@@ -7,9 +7,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/resources', // must edit the path
-			params: {
-				env: $scope.context.envCode
-			}
+			params: apiParams,
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -23,14 +21,10 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 
 	function deleteResourceApi($scope, apiParams, cb) {
         overlayLoading.show();
-        return cb();
         getSendDataFromServer($scope, ngDataApi, {
             method: 'delete',
-            routeName: '/dashboard/resources/delete', // must edit the path
-            params: {
-                env: $scope.context.envCode.toUpperCase(),
-                id: apiParams.resource._id
-            }
+            routeName: '/dashboard/resources',
+            params: apiParams,
         }, function (error) {
             overlayLoading.hide();
             if (error) {
@@ -43,18 +37,16 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 	}
 
     function togglePlugResourceApi ($scope, apiParams, cb) {
-        return cb();
         overlayLoading.show();
         getSendDataFromServer($scope, ngDataApi, {
             method: 'put',
-            routeName: '/dashboard/resources/update', // update the path if any
+            routeName: '/dashboard/resources/update',
             params: {
                 id: apiParams.resourceId,
                 env: $scope.context.envCode.toUpperCase(),
             },
-            data: { resource: params.resourceRecord }
+            data: { resource: apiParams.resourceRecord }
         }, function (error) {
-
             overlayLoading.hide();
             if (error) {
                 $scope.displayAlert('danger', error.message);

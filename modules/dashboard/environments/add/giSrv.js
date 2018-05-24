@@ -1,6 +1,7 @@
 "use strict";
 var giServices = soajsApp.components;
-giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
+giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$location',
+	function (ngDataApi, $timeout, $modal, $localStorage, $window, $location) {
 	
 	function go(currentScope){
 		overlayLoading.show();
@@ -53,7 +54,8 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 						delete $localStorage.addEnv;
 						delete currentScope.wizard;
 						currentScope.form.formData = {};
-						currentScope.$parent.go("/environments")
+						$location.url($location.path());
+						currentScope.$parent.go("/environments");
 					}
 				}
 			]

@@ -11,6 +11,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
 	$scope.addEnvCounter = 0;
 	
+	$scope.envType = '';
+
 	function triggerMethod(counter) {
 		let method = $scope.steps[counter];
 		$scope[method]();
@@ -31,7 +33,17 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 		}
 		triggerMethod($scope.addEnvCounter);
 	};
-	
+
+	$scope.switchEnv = function (type) {
+		$scope.envType = type;
+		$localStorage.envType = type;
+		$scope.relistTemplate(type);
+	};
+
+	$scope.relistTemplate = function (type) {
+		templateSrvDeploy.filterTemplate($scope, type);
+	};
+
 	$scope.listTemplate = function () {
 		templateSrvDeploy.go($scope);
 	};

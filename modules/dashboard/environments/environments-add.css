@@ -1,37 +1,89 @@
+.envType {
+    display: block;
+    height: auto;
+    overflow: auto;
+}
+
+.envType .text-center {
+}
+
+.envType .environmentBox {
+    height: auto;
+}
+
 .environmentBox {
     border-radius: 5px;
-    border:solid 1px #eeeeee;
-    padding:5px;
-    width:98%;
+    border: solid 1px #eeeeee;
+    padding: 5px;
+    width: 98%;
     margin: 10px;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .environmentBox:hover {
-    background-color:#DEF1F7;
+    background-color: #DEF1F7;
     border: solid 1px #337ab7;
     /*-webkit-box-shadow: 0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
     /*-moz-box-shadow:    0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
     /*box-shadow:         0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
 }
 
-.environmentBox:hover hr{
-    border-color:#333333;
+.environmentBox.noHover {
+    pointer-events: none;
 }
 
-#addEnvironment .modal-header span.closeButton{
-    display:none;
+.environmentBox:hover hr {
+    border-color: #333333;
+}
+
+.environmentBox.selectedEnv {
+    background-color: #DEF1F7;
+}
+
+.environmentBox.selectedEnv hr {
+    border-color: #333333;
+}
+
+.envType .environmentBox ul {
+    text-align: left;
+    list-style-type: circle;
+}
+
+.environmentBox .envDescription {
+    padding-bottom: 10px;
+    color: #337ab7;
+    font-weight: bold;
+}
+
+.environmentBox .readmore {
+    padding-top: 7px;
+    padding-bottom: 10px;
+}
+
+.environmentBox .readmore a {
+    float: right;
+    padding: 4px 20px 0px 20px;
+}
+
+.environmentBox .readmore a:hover {
+
+}
+
+#addEnvironment .modal-header span.closeButton {
+    display: none;
 }
 
 .addEnvTable {
     border-collapse: collapse !important;
     width: 100% !important;
 }
-.addEnvTable table{
+
+.addEnvTable table {
     border-collapse: collapse !important;
     width: 100% !important;
 }
-.addEnvTable th{
+
+.addEnvTable th {
     border-collapse: collapse !important;
     width: 50% !important;
     margin-top: 10px !important;
@@ -39,11 +91,12 @@
     padding-left: 8px !important;
 }
 
-.addEnvTable tr:nth-child(odd){
+.addEnvTable tr:nth-child(odd) {
     background-color: #f2f2f2 !important;
     width: 100% !important;
 }
-.addEnvTable td{
+
+.addEnvTable td {
     padding-top: 5px;
     max-width: 500px;
     overflow: auto;
@@ -53,18 +106,23 @@
     width: 50% !important;
     padding-left: 8px !important;
 }
-.addEnvTable td label{
+
+.addEnvTable td label {
     padding-bottom: 5px;
 }
-.addEnvImg div{
+
+.addEnvImg div {
     width: 15%;
 }
+
 .addEnvImg div img {
     width: 100%;
 }
+
 .addEnvImg h4 {
     display: inline-block;
 }
+
 .c-right {
     clear: right;
 }
@@ -73,7 +131,7 @@
     background-color: rgba(112, 128, 141, 0.1)
 }
 
-.ace_editor{
+.ace_editor {
     height: 150px;
 }
 
@@ -83,8 +141,8 @@
     overflow-y: scroll;
 }
 
-#page div.entryBoxesGrid div.entryBox{
-    float:none;
+#page div.entryBoxesGrid div.entryBox {
+    float: none;
 }
 
 /* The switch - the box around the slider */
@@ -98,7 +156,9 @@
 }
 
 /* Hide default HTML checkbox */
-.toggleSwitch input {display:none;}
+.toggleSwitch input {
+    display: none;
+}
 
 /* The switch - the box around the slider */
 .switch {
@@ -112,7 +172,9 @@
 }
 
 /* Hide default HTML checkbox */
-.switch input {display:none;}
+.switch input {
+    display: none;
+}
 
 /* The slider */
 .buttonSlider {
@@ -185,19 +247,20 @@ input:checked + .buttonSlider:before {
 }
 
 .repos .ui-select-multiple.ui-select-bootstrap {
-    display: block!important;
+    display: block !important;
     float: left;
     height: auto;
     min-height: 60px;
-    width: 95%!important;
+    width: 95% !important;
 }
 
-label.secretMountPathRepo{
-    float: none!important;
+label.secretMountPathRepo {
+    float: none !important;
 }
-input.secretMountPathRepo{
-    float: none!important;
-    width:96%!important;
+
+input.secretMountPathRepo {
+    float: none !important;
+    width: 96% !important;
 }
 
 .resource .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
@@ -206,19 +269,19 @@ input.secretMountPathRepo{
 
 .resource .ui-select-multiple.ui-select-bootstrap {
     min-height: 60px;
-    height: auto!important;
+    height: auto !important;
 }
 
-label.secretMountPathResource{
-    float: none!important;
+label.secretMountPathResource {
+    float: none !important;
 }
 
-input.secretMountPathResource{
-    float: none!important;
-    width:100%!important;
+input.secretMountPathResource {
+    float: none !important;
+    width: 100% !important;
 }
 
-.infraProvider{
+.infraProvider {
     text-align: center;
     border: solid 1px #cccccc;
     border-radius: 10px;
@@ -228,16 +291,16 @@ input.secretMountPathResource{
 }
 
 .selectedInfraProvider,
-.infraProvider:hover{
-    background-color:#C1DDEC;
-    cursor:pointer;
+.infraProvider:hover {
+    background-color: #C1DDEC;
+    cursor: pointer;
 }
 
-.grid table table{
-    min-width:auto;
+.grid table table {
+    min-width: auto;
 }
 
-.passwordCheckmark{
+.passwordCheckmark {
     position: absolute;
     top: 2px;
     left: 6%;

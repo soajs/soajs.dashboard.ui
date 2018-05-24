@@ -1,14 +1,17 @@
 .envType {
-    display: block;
-    height: auto;
-    overflow: auto;
-}
-
-.envType .text-center {
+    border-collapse:separate;
+    border-spacing: 30px;
 }
 
 .envType .environmentBox {
-    height: auto;
+    position:relative;
+}
+
+.environmentBox2 {
+    border-radius: 5px;
+    border: solid 1px #eeeeee;
+    padding: 5px;
+    cursor: pointer;
 }
 
 .environmentBox {
@@ -20,6 +23,7 @@
     cursor: pointer;
 }
 
+.environmentBox2:hover,
 .environmentBox:hover {
     background-color: #DEF1F7;
     border: solid 1px #337ab7;
@@ -28,43 +32,53 @@
     /*box-shadow:         0px 0px 10px 4px rgba(43, 97, 143, 0.75);*/
 }
 
+.environmentBox2.noHover,
 .environmentBox.noHover {
     pointer-events: none;
 }
 
+.environmentBox2:hover hr,
 .environmentBox:hover hr {
     border-color: #333333;
 }
 
+.environmentBox2.selectedEnv,
 .environmentBox.selectedEnv {
     background-color: #DEF1F7;
 }
 
+.environmentBox2.selectedEnv hr,
 .environmentBox.selectedEnv hr {
     border-color: #333333;
 }
 
+.envType .environmentBox2 ul,
 .envType .environmentBox ul {
     text-align: left;
     list-style-type: circle;
 }
 
+.environmentBox2 .envDescription,
 .environmentBox .envDescription {
-    padding-bottom: 10px;
+    padding: 0 10px 10px 10px;
     color: #337ab7;
     font-weight: bold;
+    text-align: left;
 }
 
+.environmentBox2 .readmore,
 .environmentBox .readmore {
     padding-top: 7px;
     padding-bottom: 10px;
 }
 
+.environmentBox2 .readmore a,
 .environmentBox .readmore a {
     float: right;
     padding: 4px 20px 0px 20px;
 }
 
+.environmentBox2 .readmore a:hover,
 .environmentBox .readmore a:hover {
 
 }

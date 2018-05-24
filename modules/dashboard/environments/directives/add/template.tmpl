@@ -1,64 +1,63 @@
 <div class="envType">
-	<h3>Choose your environment type</h3>
-
-	<div class="text-center col-md-4 col-lg-4">
-		<div class="environmentBox" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
-			<img ng-if="0" ng-src="" height="32" class="f-left"/>
-			<h4>Development environment</h4>
-			<hr>
-			<div class="envDescription">I want to create a development environment
+	<h3>Choose Environment Type</h3>
+	
+	<div class="table">
+		<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
+			<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
+				<span style="color: #337ab7;" class="icon icon-embed2"></span>
 			</div>
-			<p class="fieldMsg">
-				Create a blank environment and handle deployment manually.<br>
-				Good for testing
-			</p>
-			<div class="readmore clearfix">
-				<a><span class="icon icon-info"></span></a>
+			<h4 class="t-left">Development</h4>
+			<hr>
+			<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+			<ul class="fieldMsg">
+				<li>Suitable for Development &amp; Testing</li>
+				<li><b>No Cloud Provider</b> for Container Deployment</li>
+				<li>Multi Cloud Providers for VM Deployments</li>
+				<li>Deploy Micro-services Manually</li>
+			</ul>
+			<div class="readmore">
+				<a href="" target="_blank">
+					<span class="icon icon-info"/>
+				</a>
 			</div>
 		</div>
-	</div>
-	<div class="text-center col-md-4 col-lg-4">
-		<div class="environmentBox" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
-			<div style="font-size: 28px; padding: 3px; padding-left: 6px;" class="f-left">
+		<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
+			<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
 				<span style="color: #337ab7;" class="icon icon-cloud"></span>
 			</div>
-			<h4>Single cloud environment</h4>
+			<h4 class="t-left">Single Cloud</h4>
 			<hr>
-			<div class="envDescription">I want to create an environment and deploy it on a single infra
-			</div>
-			<p class="fieldMsg">
-				Your container deployment is restricted to one cloud provider;
-				1 cloud provider per container cluster.<br>
-				If you choose only one provider, you can communicate using the private IP.<br>
-				You can have different clusters on different providers and communicate among them via public IP.
-			</p>
-			<ul>
-				<li>One cluster per provider</li>
-				<li>Communication via public IP</li>
+			<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+			<ul class="fieldMsg">
+				<li>Suitable for Production</li>
+				<li><b>1 Cloud Provider</b> for Container Deployment</li>
+				<li>Multi Cloud Providers for VM Deployments</li>
+				<li>Deploy Micro-service via VM and/or Container Technology</li>
 			</ul>
-			<div class="readmore clearfix">
-				<a><span class="icon icon-info"></span></a>
+			<div class="readmore">
+				<a href="" target="_blank">
+					<span class="icon icon-info"/>
+				</a>
 			</div>
 		</div>
-	</div>
-	<div class="text-center col-md-4 col-lg-4">
-		<div class="environmentBox noHover" ng-class="{'selectedEnv': envType==='multiInfra'}" ng-click="">
-			<div class="f-left">
-				<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32"/>
+		<div class="text-center table-cell environmentBox2 noHover" ng-class="{'selectedEnv': envType==='multiInfra'}">
+			<div class="f-left" style="padding: 3px 6px; margin-right:20px;">
+				<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32" />
 			</div>
-			<h4>Multi cloud environment</h4>
+			<h4 class="t-left">Multi Cloud</h4>
 			<hr>
-			<div class="envDescription">I want to create an environment and deploy it on multiple infra
-			</div>
-			<p class="fieldMsg">
-				Your container deployment is on multiple providers
-			</p>
-			<ul style="">
-				<li>Cluster on more than one provider</li>
-				<li>Communication via private IP</li>
+			<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+			<ul class="fieldMsg">
+				<li>Suitable for Production</li>
+				<li><b>Multi Cloud Providers</b> for Container Deployment</li>
+				<li>Multi Cloud Providers for VM Deployments</li>
+				<li>Deploy Micro-service via VM and/or Container Technology</li>
+				<li>VPN Support</li>
 			</ul>
-			<div class="readmore clearfix">
-				<a><span class="icon icon-info"></span></a>
+			<div class="readmore">
+				<a href="" target="_blank">
+					<span class="icon icon-info" />
+				</a>
 			</div>
 		</div>
 	</div>

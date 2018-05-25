@@ -4,61 +4,35 @@
 <div class="modal-body">
     <div class="form">
         <alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
-        <fieldset>
-	        <legend>Driver Configuration</legend>
-	        <form name="deploy2" id="deploy2" ng-submit="deploy2.$valid && onSubmit2()">
-		        <div class="form-group">
-			        <div>
-				        <label>Master Node IP</label>
-				        <input type="text" class="form-control" ng-required="true" ng-model="driver.nodes" />
-				        <br />
-			        </div>
-			        <div>
-				        <label>Kubernetes Token</label>
-				        <textarea rows="5" ng-required="true" ng-model="driver.token" class="form-control"></textarea>
-				        <br />
-			        </div>
-		        </div>
-		        <div class="c-both w100">
-			        <hr />
-			        <input type="submit" class="btn btn-primary" value="Update Driver" />
-		        </div>
-	        </form>
-        </fieldset>
-	    <fieldset>
-		    <legend>Namespace Configuration</legend>
-		    <form name="deploy" id="deploy" ng-submit="deploy.$valid && onSubmit()">
-			    <div class="form-group">
-				    <div>
-					    <label>Namespace Selection</label>
-					    <select class="form-control" ng-required="true" ng-options="selection.value as selection.label for selection in namespaces.ui.selection" ng-model="namespaces.data.selection" ng-change="reset()"></select>
-					    <br />
-				    </div>
-				    <div ng-if="namespaces.data.selection === 'existing'">
-					    <label>Choose Defaut Namespace</label>
-					    <select class="form-control" ng-required="true" ng-options="namespace.value as namespace.label for namespace in namespaces.ui.list" ng-model="namespaces.data.default"></select>
-					    <br />
-				    </div>
-				    <div ng-if="namespaces.data.selection === 'new'">
-					    <label>Create New Namespace</label>
-					    <input type="text" class="form-control" ng-required="true" ng-model="namespaces.data.default" />
-					    <br />
-				    </div>
-				    <div>
-					    <label>Namespace Type</label>
-					    <select class="form-control" ng-required="true" ng-model="namespaces.data.type">
-						    <option ng-repeat="type in namespaces.ui.type" value="{{type.value}}">{{type.label}}</option>
-					    </select>
-				    </div>
+	    <form name="deploy" id="deploy" ng-submit="deploy.$valid && onSubmit()">
+		    <div class="form-group">
+			    <div>
+				    <label>Namespace Selection</label>
+				    <select class="form-control" ng-required="true" ng-options="selection.value as selection.label for selection in namespaces.ui.selection" ng-model="namespaces.data.selection" ng-change="reset()"></select>
+				    <br />
 			    </div>
-			    <div class="c-both w100">
-				    <hr />
-				    <input type="submit" class="btn btn-primary" value="Update Namespace" />
+			    <div ng-if="namespaces.data.selection === 'existing'">
+				    <label>Choose Defaut Namespace</label>
+				    <select class="form-control" ng-required="true" ng-options="namespace.value as namespace.label for namespace in namespaces.ui.list" ng-model="namespaces.data.default"></select>
+				    <br />
 			    </div>
-		    </form>
-	    </fieldset>
-    </div>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+			    <div ng-if="namespaces.data.selection === 'new'">
+				    <label>Create New Namespace</label>
+				    <input type="text" class="form-control" ng-required="true" ng-model="namespaces.data.default" />
+				    <br />
+			    </div>
+			    <div>
+				    <label>Namespace Type</label>
+				    <select class="form-control" ng-required="true" ng-model="namespaces.data.type">
+					    <option ng-repeat="type in namespaces.ui.type" value="{{type.value}}">{{type.label}}</option>
+				    </select>
+			    </div>
+		    </div>
+		    <div class="c-both w100 t-right">
+			    <hr />
+			    <input type="submit" class="btn btn-primary" value="Update Namespace" />
+			    <button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+		    </div>
+	    </form>
+	</div>
 </div>

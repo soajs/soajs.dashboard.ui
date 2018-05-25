@@ -83,6 +83,10 @@ hr {
     width: 8.5cm;
 }
 
+.blueIcon{
+    color: #337ab7;
+}
+
 .blueAccordion {
     border: solid 1px #337ab7;
 }

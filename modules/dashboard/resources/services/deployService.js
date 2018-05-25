@@ -154,7 +154,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
-			console.log("---- fetch branches");
 			
 			let selectedRepo, subNameInCaseMulti;
 			if (confOrCustom === 'conf') {
@@ -222,7 +221,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.displayAlert = function (type, message) {
-			console.log("---- disaply alerts");
 			context.mainData.message[type] = message;
 			setTimeout(function () {
 				context.mainData.message = {};
@@ -231,7 +229,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		// adding the api call to commonService
 		context.listAccounts = function (customType, customRepoInfo, callback) {
-			console.log("---- list accounts");
 			let apiParams = {
                 fullList : true
 			};
@@ -323,7 +320,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		//adding the api call to commonService
 		context.getEnvs = function () {
-			console.log("---- get envs");
 			if (context.mainData.envs && context.mainData.envs.list && context.mainData.envs.list.length > 0) {
 				return;
 			}
@@ -362,7 +358,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.fillForm = function () {
-			console.log("---- fill forms");
 			if (action === 'add') {
 				context.formData.type = settings.type;
 				context.formData.category = settings.category;
@@ -391,7 +386,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		function updateCustomRepoName() {
-			console.log("---- update custom repo name");
 			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode) {
 				context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
 				
@@ -408,7 +402,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		// changes to deployoptions
 		context.setSourceCodeData = function (selectedRecipe) {
-			console.log("---- set source code data");
 			context.sourceCodeConfig = {
                 configuration: {
                     isEnabled: false,
@@ -518,7 +511,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		//adding the api call to commonService
 		context.getSecrets = function (cb) {
-			console.log("---- get secrets");
             if (context.kubeEnv && context.kubeEnv === 'invalid') {
                 if (context.defaultWizardSecretValues) {
                     context.secrets = context.defaultWizardSecretValues;
@@ -560,7 +552,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
         //adding the api call to commonService
 		context.getCatalogRecipes = function (cb) {
-			console.log("---- get catalog recipes");
 			let apiParams = {};
 			commonService.getCatalogRecipes(currentScope, apiParams, function (recipes)  {
 				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
@@ -613,7 +604,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.upgradeRecipes = function () {
-			console.log("---- upgrade recipes");
 			currentScope.$parent.go("#/catalog-recipes");
 			if ($modalInstance) {
 				$modalInstance.close();
@@ -621,7 +611,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.displayRecipeInputs = function (refresh, ui, cb) {
-			console.log("---- display recipe inputs");
 			
 			function calculateRestrictions(currentScope) {
 				let allRecipes = currentScope.mainData.recipes;
@@ -748,7 +737,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.updateDeploymentName = function (resourceName) {
-			console.log("---- update deployment name");
 			if (resourceName) {
 				resourceName = resourceName.toLowerCase();
 				resourceName = resourceName.replace(/\s+/g, '');
@@ -773,7 +761,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.buildComputedHostname = function (resourceName) {
-			console.log("---- build computed host name");
 			context.options.computedHostname = resourceName;
 			
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
@@ -850,7 +837,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.toggleShareWithAllEnvs = function () {
-			console.log("---- toggle share with all envs");
 			if (context.mainData.envs.sharedWithAll) {
                 context.mainData.envs.list.forEach(function (oneEnv) {
 					oneEnv.selected = true;
@@ -859,7 +845,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.reformatSourceCodeForCicd = function (record) {
-			console.log("---- reformat source code for cicd");
 			if (record.configuration && record.configuration.repo) {
 				let selectedRepo = record.configuration.repo;
 				if (selectedRepo === '-- Leave Empty --') {
@@ -911,7 +896,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.setExposedPorts = function (selectedRecipe, ui, cb) {
-			console.log("---- set exposed ports");
 			let ports;
 			if (context.formData.deployOptions && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && !ui) {
 				ports = context.formData.deployOptions.custom.ports;
@@ -1016,7 +1000,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.validatePassword = function () {
-			console.log("---- validate password");
 			let password = context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.password;
 			if (!password) {
 				context.isPasswordValid = false;
@@ -1052,14 +1035,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.onExposedPortsUpdate = function () {
-			console.log("---- on exposed ports update");
 			if (context.form.formData.port0 && context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports[0] && context.formData.deployOptions.custom.ports[0].published) {
 				context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
 			}
 		};
 		
 		context.repopulateRegions = function () {
-			console.log("---- repoupoulate regions");
             context.mainData.deploymentData.regions = [];
             context.mainData.deploymentData.infraProviders.forEach((oneProvider) => {
 				if (oneProvider._id === context.formData.deployOptions.deployConfig.infra) {
@@ -1073,7 +1054,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		 */
 		//moved to commonService
 		context.getInfraProviders = function (cb) {
-			console.log("---- get infra providers");
 			let apiParams = {};
 			commonService.getInfraProviders(currentScope, apiParams, function (providers) {
                 delete providers.soajsauth;
@@ -1090,7 +1070,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.getVmSizesList = function () {
-			console.log("---- get vm sizes list");
             context.mainData.deploymentData.vmSize = [
 				{
 					"name": "Standard_A1",
@@ -1144,14 +1123,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.getDisksList = function () {
-			console.log("---- get disks list");
             context.mainData.deploymentData.disk = [
 				{v: 'none', l: "None"}
 			];
 		};
 		
 		context.getProvidersList = function (cb) {
-			console.log("---- get providers list");
             context.mainData.deploymentData.providers = [];
             context.mainData.deploymentData.providers = [
 				{v: "provider1", l: "Provider 1"},
@@ -1163,7 +1140,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.getImagesList = function (providerName, cb) {
-			console.log("---- get images list");
 			let values = {
 				"provider1": [
 					{v: 'image1', l: "Image 1 example"},
@@ -1184,7 +1160,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.getVersionsList = function (imageName, cb) {
-			console.log("---- get versions list");
 			let values = {
 				"image1": [
 					{v: 'v1', l: "Version 1 - Alfa"}
@@ -1204,7 +1179,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		// listeners
 		context.onDeploymentTechnologySelect = function (refresh) {
-			console.log("---- on deployment technology select");
 			if (refresh) {
 				refreshDeployConfig(context);
 			}
@@ -1212,7 +1186,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.loadVmData = function (cb) {
-			console.log("---- load vm data");
 			if (!vmDataLoaded) {
 				vmDataLoaded = true;
 				overlayLoading.show();
@@ -1230,7 +1203,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 		
 		context.onAuthTypeChange = function () {
-			console.log("---- on auth type change");
 			if (context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.isPassword) {
 				context.formData.deployOptions.deployConfig.vmConfiguration.adminAccess.token = '';
 			} else {

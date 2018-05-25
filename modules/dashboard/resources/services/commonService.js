@@ -75,8 +75,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
     
     function addEditResourceApi($scope, apiParams, cb) {
-	
-	    overlayLoading.show();
+
 		let id = 'new';
 	    if ($scope.options.formAction !== 'add') { // on edit
 	    	id = apiParams.id;
@@ -107,10 +106,11 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 	    	options.data["action"] = "rebuild";
 	    	options.data["custom"] = apiParams.rebuildOptions;
 	    }
-	
+
+        overlayLoading.show();
 	    getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
-		    if (error) {
-			    overlayLoading.hide();
+            overlayLoading.hide();
+	        if (error) {
 			    $scope.displayAlert('danger', error.message);
 		    }
 		    else {

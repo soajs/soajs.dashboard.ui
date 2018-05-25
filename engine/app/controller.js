@@ -559,7 +559,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			
 			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
 				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-				updateNotifications($scope, envCode, ngDataApi);
+				if(updateNotifications){
+					updateNotifications($scope, envCode, ngDataApi);
+				}
 			}
 			
 			$scope.rebuildMenus(function () {

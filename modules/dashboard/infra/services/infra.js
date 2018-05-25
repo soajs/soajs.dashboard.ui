@@ -279,8 +279,47 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		});
 	}
 	
-	function editTemplate(currentScope, oneInfra, oneTemplate){
+	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor){
+		let inputs = inputsEditor.ngModel;
+		if(typeof(inputs) === 'string'){
+			try{
+				formData.inputs = JSON.parse(inputs);
+			}
+			catch(e){
+				$window.alert("Please enter a valid JSON schema inside the templates inputs field.");
+				return false;
+			}
+		}
 		
+		let display = displayEditor.ngModel;
+		if(typeof(display) === 'string'){
+			try{
+				formData.display = JSON.parse(display);
+			}
+			catch(e){
+				$window.alert("Please enter a valid JSON schema inside the templates inputs display field.");
+				return false;
+			}
+		}
+		
+		if(location === 'local'){
+			let content = contentEditor.ngModel;
+			if(typeof(content) === 'string'){
+				try{
+					formData.content = JSON.parse(content);
+				}
+				catch(e){
+					$window.alert("Please enter a valid JSON schema inside the templates field.");
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	function editTemplate(currentScope, oneInfra, oneTemplate){
+		let contentEditor, inputsEditor, displayEditor;
 		let entries = angular.copy(infraConfig.form.templates);
 		let options;
 		if(oneTemplate.location === 'local'){
@@ -300,6 +339,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
+							
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
+							if(!status){
+								return false;
+							}
+							
 							let options = {
 								"method": "put",
 								"routeName": "/dashboard/infra/template",
@@ -355,6 +400,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
+							
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
+							if(!status){
+								return false;
+							}
+							
 							if(formData.file_0){
 								uploadNewTemplateFile(formData);
 							}
@@ -379,7 +430,11 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}
 		
 		buildFormWithModal(currentScope, $modal, options, () => {
-		
+			inputsEditor = currentScope.form.entries[3].tabs[1].entries[0];
+			displayEditor = currentScope.form.entries[3].tabs[1].entries[1];
+			if(oneTemplate.location === 'local'){
+				contentEditor = currentScope.form.entries[3].tabs[0].entries[1];
+			}
 		});
 		
 		function uploadNewTemplateFile(formData){

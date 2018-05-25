@@ -173,12 +173,11 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                     }
 
                     commonService.addEditResourceApi($scope, apiParams, function (response) {
-                    	console.log("restore ici");
-                        // $scope.newResource = response;
-                        // $scope.displayAlert('success', 'Resource updated successfully');
-                        // $scope.formData = {};
-                        // $modalInstance.close();
-                        // currentScope.listResources();
+                        $scope.newResource = response;
+                        $scope.displayAlert('success', 'Resource updated successfully');
+                        $scope.formData = {};
+                        $modalInstance.close();
+                        currentScope.listResources();
                     });
                 };
 

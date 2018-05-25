@@ -557,7 +557,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			$scope.tracker = [];
 			doEnvPerNav();
 			
-			updateNotifications($scope, $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code, ngDataApi);
+			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
+				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+				updateNotifications($scope, envCode, ngDataApi);
+			}
 			
 			$scope.rebuildMenus(function () {
 				for (var i = 0; i < $scope.navigation.length; i++) {

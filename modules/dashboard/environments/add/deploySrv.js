@@ -23,6 +23,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				showonDemand = true;
 			}
 			currentScope.restrictions.onDemand = showonDemand;
+			switchDriver('manual');
 			return;
 		} else {
 			showManualDeploy = false;

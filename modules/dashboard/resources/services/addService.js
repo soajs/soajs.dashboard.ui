@@ -21,7 +21,8 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 						type: $scope.options.formAction, // add or edit
 						envCode: $scope.options.envCode.toUpperCase(),
 						id: formData._id, // only for edit
-	                    canBeDeployed : $scope.formData.canBeDeployed
+	                    canBeDeployed : $scope.formData.canBeDeployed,
+                        deployType : "save"
 					};
 
 					function updateApiParamsBeforeSave() {
@@ -105,6 +106,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
                         delete deployOptions.sourceCode;
                         if (type === "saveAndDeploy" && $scope.formData.canBeDeployed && $scope.formData.deployOptions && Object.keys($scope.formData.deployOptions).length > 0 ) {
+                            apiParams['deployType'] = "saveAndDeploy";
                             if (deployOptions.custom && deployOptions.custom.ports && deployOptions.custom.ports.length > 0) {
 
                                 deployOptions.custom.ports.forEach(function (onePort) {
@@ -136,6 +138,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 
                         if (type === "saveAndRebuild" && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id) {
                             rebuildOptions = angular.copy(deployOptions.custom);
+                            apiParams['deployType'] = "saveAndRebuild";
                             rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
                             rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
                             apiParams["rebuildOptions"] = rebuildOptions;

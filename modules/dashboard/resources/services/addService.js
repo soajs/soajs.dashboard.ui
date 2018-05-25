@@ -142,6 +142,8 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                             rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
                             rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
                             apiParams["rebuildOptions"] = rebuildOptions;
+                            apiParams["serviceId"] = formData.instance.id;
+                            apiParams["mode"] = formData.instance.labels['soajs.service.mode'];
                         }
                     }
 

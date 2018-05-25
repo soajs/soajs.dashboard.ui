@@ -83,20 +83,32 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 	    if ($scope.options.formAction !== 'add') { // on edit
 	    	id = apiParams.id;
 	    }
-		
+	    
 	    var options = {
 		    method: 'post',
 		    routeName: `/dashboard/resources/${id}`,
 		    data: {
-			    env: apiParams.envCode,             // add/edit resource
-			    resource: apiParams.saveOptions,    // add/edit resource + cic
-                deployType : apiParams.deployType,
-			    config: {
+			    env: apiParams.envCode,             // add/edit resource    + deploy + rebuild
+			    resource: apiParams.saveOptions,    // add/edit resource    + cicd
+                deployType : apiParams.deployType,  // deploy / rebuild
+			    config: {                           // cicd
 				    deploy: apiParams.canBeDeployed || false,
 				    options: apiParams.options
 			    }
 		    }
 	    };
+	    
+	    if(apiParams.deployType === 'saveAndDeploy'){
+	    	options.data["recipe"] = apiParams.deployOptions.recipe;
+	    	options.data["custom"] = apiParams.deployOptions.custom;
+		
+	    }
+	    if(apiParams.deployType === 'saveAndRebuild'){
+	    	options.data["serviceId"] = apiParams.serviceId;
+	    	options.data["mode"] = apiParams.mode;
+	    	options.data["action"] = "rebuild";
+	    	options.data["custom"] = apiParams.rebuildOptions;
+	    }
 	
 	    getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
 		    if (error) {

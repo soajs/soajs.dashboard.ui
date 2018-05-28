@@ -11,7 +11,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		envPlatform: '',
 		resources: {
 			original: []
-		},
+		}
 	};
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
 	

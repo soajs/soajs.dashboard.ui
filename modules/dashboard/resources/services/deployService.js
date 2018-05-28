@@ -2,6 +2,51 @@
 var resourceDeployService = soajsApp.components;
 resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, commonService) {
 	
+	function confirmMainData(context, currentScope) {
+		if(!context.mainData){
+			context.mainData = {};
+		}
+		if(!context.mainData.deploymentData){
+			context.mainData.deploymentData = {};
+		}
+		if(!context.mainData.catalogConflictingPorts){
+			context.mainData.catalogConflictingPorts = '';
+		}
+		if(!context.mainData.envs){
+			context.mainData.envs = [];
+		}
+		if(!context.mainData.message){
+			context.mainData.message = {};
+		}
+		if(!context.mainData.recipeUserInput){
+			context.mainData.recipeUserInput = {image: {}, envs: {}};
+		}
+		if(!context.mainData.configRepos){
+			context.mainData.configRepos = [];
+		}
+		if(!context.mainData.configReposBranches){
+			context.mainData.configReposBranches = {};
+		}
+		if(!context.mainData.configReposBranchesStatus){
+			context.mainData.configReposBranchesStatus = {};
+		}
+		if(!context.mainData.secretsAllowed){
+			context.mainData.secretsAllowed = 'none';
+		}
+		if(!context.mainData.resourceDeployed){
+			context.mainData.resourceDeployed = false;
+		}
+		if(!context.mainData.envPlatform){
+			context.mainData.envPlatform = currentScope.envPlatform;
+		}
+		if(!context.mainData.envDeployer){
+			context.mainData.envDeployer = currentScope.envDeployer;
+		}
+		if(!context.mainData.recipes){
+			context.mainData.recipes = [];
+		}
+	}
+	
 	/**
 	 * update deployConfig.infra account using provider
 	 */
@@ -1214,21 +1259,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		let vmDataLoaded = false;
 		
-		context.mainData = {
-			deploymentData : {},
-			catalogConflictingPorts : '',
-			envs : [],
-			message : {},
-			recipeUserInput : {image: {}, envs: {}},
-			configRepos : [],
-			configReposBranches : {},
-			configReposBranchesStatus : {},
-			secretsAllowed : 'none',
-			resourceDeployed : false,
-			envPlatform : currentScope.envPlatform,
-			envDeployer : currentScope.envDeployer,
-			decodeRepoNameAndSubName : decodeRepoNameAndSubName
-		};
+		confirmMainData(context, currentScope);
 		
 		context.access = currentScope.access;
 		context.formData = (cb && typeof cb === 'function') ? resource : {};

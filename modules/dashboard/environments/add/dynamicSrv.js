@@ -603,43 +603,48 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					record.name = key;
 					let settings = {"type": record.type, category: record.category};
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
-					resource.scope.envCode = currentScope.envCode;
-					resource.scope.recipes = [];
+					resource.scope.context= {};
+					resource.scope.context.envCode = currentScope.envCode;
+					resource.scope.mainData = {};
+					resource.scope.mainData.recipes = [];
+					
 					for(let type in currentScope.recipes){
 						currentScope.recipes[type].forEach((oneRecipe) =>{
 							if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
-								resource.scope.recipes.push(oneRecipe);
+								resource.scope.mainData.recipes.push(oneRecipe);
+								
 							}
 						});
 					}
 
 					//if default values
 					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+						resource.scope.mainData.recipes = [];
 						for(let type in currentScope.recipes){
 							if(type === record.type){
 								currentScope.recipes[type].forEach((oneRecipe) => {
 									if(oneRecipe.subtype === record.category){
-										resource.scope.recipes.push(oneRecipe);
+										resource.scope.mainData.recipes.push(oneRecipe);
 									}
 								});
 							}
 						}
 
 						record.canBeDeployed = true;
-						resource.scope.envType = 'container';
-						resource.scope.envPlatform = currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.technology;
+						resource.scope.context.envType = 'container';
+						resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.technology;
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
 
 						let deployFromTemplate = currentScope.wizard.template.content.deployments.resources[key].deploy;
 						if(deployFromTemplate.recipes){
 							if(deployFromTemplate.recipes.available && Array.isArray(deployFromTemplate.recipes.available) && deployFromTemplate.recipes.available.length > 0){
-								resource.scope.recipes = [];
+								resource.scope.mainData.recipes = [];
 								let available = deployFromTemplate.recipes.available;
 								for(let type in currentScope.recipes){
 									currentScope.recipes[type].forEach((oneRecipe) =>{
 										if(available.length > 0 && available.indexOf(oneRecipe.name) !== -1){
-											resource.scope.recipes.push(oneRecipe);
+											resource.scope.mainData.recipes.push(oneRecipe);
 										}
 									});
 								}
@@ -802,7 +807,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									envDeployer.selected = "container.kubernetes.local";
 									envDeployer.kubernetes.local = driverConfiguration;
 								}
-								resource.scope.envDeployer = envDeployer;
+								resource.scope.context.envDeployer = envDeployer;
 							}
 						}
 						let entries = [];
@@ -850,6 +855,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 
 				currentScope.saveData = function () {
+					
 					if (!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv) {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
 					}
@@ -860,67 +866,66 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let entriesCount = 0;
 					for (let key in resourceEntries) {
 						let resource = resourceEntries[key];
-						resourceConfiguration.mapConfigurationFormDataToConfig(resource.scope, function () {
-							
-							let validDeploy = resourceDeploy.updateFormDataBeforeSave(resource.scope, resource.scope.formData.deployOptions);
-							if(!validDeploy){
-								return;
-							}
-							
-							if(typeof(resource.formIsInvalid) === 'boolean' && !resource.formIsInvalid){
-								//map the values back to custom registry
-								let imfv = angular.copy(resource.scope.formData);
-								imfv.name = key; //force the name back as it was
-								imfv.enableAutoScale = resource.scope.options.enableAutoScale;
-								if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
-									imfv.deploy = {
-										"options": {
-											"deployConfig": {
-												"replication": {
-													"mode": imfv.deployOptions.deployConfig.replication?imfv.deployOptions.deployConfig.replication.mode:""
-												},
-												"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
+						resourceConfiguration.mapConfigurationFormDataToConfig(resource.scope);
+						
+						let validDeploy = resourceDeploy.updateFormDataBeforeSave(resource.scope, resource.scope.formData.deployOptions);
+						if (!validDeploy) {
+							return;
+						}
+						
+						if (typeof(resource.formIsInvalid) === 'boolean' && !resource.formIsInvalid) {
+							//map the values back to custom registry
+							let imfv = angular.copy(resource.scope.formData);
+							imfv.name = key; //force the name back as it was
+							imfv.enableAutoScale = resource.scope.options.enableAutoScale;
+							if (imfv.deployOptions && imfv.deployOptions.deployConfig) {
+								imfv.deploy = {
+									"options": {
+										"deployConfig": {
+											"replication": {
+												"mode": imfv.deployOptions.deployConfig.replication ? imfv.deployOptions.deployConfig.replication.mode : ""
 											},
-											"custom": imfv.deployOptions.custom,
-											"recipe": imfv.deployOptions.recipe,
-											"env": resource.scope.envCode
+											"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
 										},
-										"deploy": true,
-										"type": "custom"
-									};
-
-									if(imfv.deployOptions.sourceCode){
-										imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
-									}
-
-									if(imfv.deployOptions.deployConfig.replication && imfv.deployOptions.deployConfig.replication.replicas){
-										imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
-									}
-
-									imfv.deploy.options.custom.name = key;
-									imfv.deployOptions.name = key;
-									imfv.deployOptions.custom.type = 'resource';
-
-									//clean up any attached ui
-									if(imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo){
-										imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
-									}
+										"custom": imfv.deployOptions.custom,
+										"recipe": imfv.deployOptions.recipe,
+										"env": resource.scope.envCode
+									},
+									"deploy": true,
+									"type": "custom"
+								};
+								
+								if (imfv.deployOptions.sourceCode) {
+									imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
 								}
-								else {
-									delete imfv.deployOptions;
+								
+								if (imfv.deployOptions.deployConfig.replication && imfv.deployOptions.deployConfig.replication.replicas) {
+									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
 								}
-
-								resource = imfv;
-								delete resource.scope;
-								delete resource.formIsInvalid;
-								currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(resource);
-								entriesCount++;
-								if(entriesCount === Object.keys(resourceEntries).length){
-									//trigger next here
-									currentScope.next();
+								
+								imfv.deploy.options.custom.name = key;
+								imfv.deployOptions.name = key;
+								imfv.deployOptions.custom.type = 'resource';
+								
+								//clean up any attached ui
+								if (imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo) {
+									imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
 								}
 							}
-						});
+							else {
+								delete imfv.deployOptions;
+							}
+							
+							resource = imfv;
+							delete resource.scope;
+							delete resource.formIsInvalid;
+							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(resource);
+							entriesCount++;
+							if (entriesCount === Object.keys(resourceEntries).length) {
+								//trigger next here
+								currentScope.next();
+							}
+						}
 					}
 				};
 

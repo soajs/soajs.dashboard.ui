@@ -14,22 +14,23 @@
 </div>
 <div>
 	<label>Catalog Recipe</label>
-	<select class="form-control" ng-disabled="resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)"></select>
+	<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)"></select>
 	<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
 	<br>
 	<br>
 </div>
 
-<div ng-if="formData.deployOptions.recipe">
-	<label>Deployment Technology Type</label>
-	<select class="form-control" ng-disabled="resourceDeployed || deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>
-	<label class="fieldMsg">Choose a deployment technology type</label>
-</div>
+<!--<div ng-if="formData.deployOptions.recipe">-->
+	<!--<label>Deployment Technology Type</label>-->
+	<!--<select class="form-control" ng-disabled="mainData.resourceDeployed || mainData.deploymentData.selectedRestrictionsDep.length === 1" ng-required="true" ng-options="tech as tech for tech in mainData.deploymentData.selectedRestrictionsDep" ng-model="formData.deployOptions.deployConfig.type" ng-change="onDeploymentTechnologySelect(true)"></select>-->
+	<!--<label class="fieldMsg">Choose a deployment technology type</label>-->
+<!--</div>-->
 
-<fieldset class="custom-fieldset" ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''">
+<!--ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''"-->
+<fieldset class="custom-fieldset">
 	<legend>Deployment Options</legend>
 	
-	<div ng-if="formData.deployOptions.deployConfig.type === 'container'">
+	<!--<div ng-if="formData.deployOptions.deployConfig.type === 'container'">-->
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
@@ -46,20 +47,20 @@
 			<br/>
 		</div>
 		
-		<div ng-if="recipeUserInput.image.override">
-			<div ng-init="formData.deployOptions.custom.image.prefix = recipeUserInput.image.prefix">
+		<div ng-if="mainData.recipeUserInput.image.override">
+			<div ng-init="formData.deployOptions.custom.image.prefix = mainData.recipeUserInput.image.prefix">
 				<label>Image Prefix</label>
 				<input type="text" class="form-control" ng-model="formData.deployOptions.custom.image.prefix"/>
 				<div class="fieldMsg">Override the image prefix if you want</div>
 				<br/>
 			</div>
-			<div ng-init="formData.deployOptions.custom.image.name = recipeUserInput.image.name">
+			<div ng-init="formData.deployOptions.custom.image.name = mainData.recipeUserInput.image.name">
 				<label>Image Name</label>
 				<input type="text" class="form-control" ng-model="formData.deployOptions.custom.image.name"/>
 				<div class="fieldMsg">Override the image name if you want</div>
 				<br/>
 			</div>
-			<div ng-init="formData.deployOptions.custom.image.tag = recipeUserInput.image.tag">
+			<div ng-init="formData.deployOptions.custom.image.tag = mainData.recipeUserInput.image.tag">
 				<label>Image Tag</label>
 				<input type="text" class="form-control" ng-model="formData.deployOptions.custom.image.tag"/>
 				<div class="fieldMsg">Override the image tag if you want</div>
@@ -67,29 +68,29 @@
 			</div>
 		</div>
 		
-		<div ng-repeat="(env, envData) in recipeUserInput.envs" ng-init="formData.deployOptions.custom.env[env] = envData.default">
+		<div ng-repeat="(env, envData) in mainData.recipeUserInput.envs" ng-init="formData.deployOptions.custom.env[env] = envData.default">
 			<label>{{envData.label || envData.name}}</label>
 			<input type="text" class="form-control" ng-model="formData.deployOptions.custom.env[env]" ng-required="envData.required"/>
 			<div class="fieldMsg">{{envData.fieldMsg}}</div>
 			<br/>
 		</div>
 		
-		<div ng-if="catalogConflictingPorts !== ''">
-			<alert type='danger'>Unable to proceed, Detected port conflict in Catalog recipe: {{catalogConflictingPorts}}</alert>
+		<div ng-if="mainData.catalogConflictingPorts !== ''">
+			<alert type='danger'>Unable to proceed, Detected port conflict in Catalog recipe: {{mainData.catalogConflictingPorts}}</alert>
 		</div>
-		<div ng-if="catalogConflictingPorts === ''">
+		<div ng-if="mainData.catalogConflictingPorts === ''">
 			<fieldset class="custom-fieldset" ng-if="sourceCodeConfig.configuration.isEnabled">
 				<legend>{{selectedSourceCode.configuration.label}}</legend>
 				<div>
 					<label>Repository</label>
-					<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in configRepos.config" ng-model="formData.deployOptions.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
+					<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="repo.name as repo.name group by repo.owner for repo in mainData.configRepos.config" ng-model="formData.deployOptions.sourceCode.configuration.repo" ng-change="fetchBranches('conf')" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
 					<label class="fieldMsg">Choose your configuration repository</label>
 					<br>
 				</div>
 				
 				<div ng-if="formData.deployOptions.sourceCode.configuration.repo && formData.deployOptions.sourceCode.configuration.repo !== '-- Leave Empty --'">
-					<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[formData.deployOptions.sourceCode.configuration.repo]==='loading'"></label>
-					<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[formData.deployOptions.sourceCode.configuration.repo]" ng-model="formData.deployOptions.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
+					<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="mainData.configReposBranchesStatus[formData.deployOptions.sourceCode.configuration.repo]==='loading'"></label>
+					<select class="form-control" ng-required="sourceCodeConfig.configuration.repoAndBranch.required" ng-options="branch.name as branch.name for branch in mainData.configReposBranches[formData.deployOptions.sourceCode.configuration.repo]" ng-model="formData.deployOptions.sourceCode.configuration.branch" ng-disabled="sourceCodeConfig.configuration.repoAndBranch.disabled"></select>
 					<label class="fieldMsg">Choose your branch</label>
 					<br>
 				</div>
@@ -104,15 +105,15 @@
 				<legend>{{selectedSourceCode.custom.label}}</legend>
 				<div>
 					<label>Repository</label>
-					<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in configRepos.customType" ng-model="formData.deployOptions.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled">
+					<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="(repo.name + '__SOAJS_DELIMITER__' + repo.subName) as (repo.subName?(repo.name + ' - ' + repo.subName):repo.name) group by repo.owner for repo in mainData.configRepos.customType" ng-model="formData.deployOptions.sourceCode.custom.repo" ng-change="fetchBranches('cust')" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled">
 					</select>
 					<label class="fieldMsg">Choose your custom code repository</label>
 					<br>
 				</div>
 				
 				<div ng-if="formData.deployOptions.sourceCode.custom.repo && selectedCustomClear !== '-- Leave Empty --'">
-					<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
-					<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="branch.name as branch.name for branch in configReposBranches[selectedCustomClear]" ng-model="formData.deployOptions.sourceCode.custom.branch" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled"></select>
+					<label>Branch<img class="loadingImage" ng-src="themes/default/img/loading.gif" ng-if="mainData.configReposBranchesStatus[selectedCustomClear]==='loading'"></label>
+					<select class="form-control" ng-required="sourceCodeConfig.custom.repoAndBranch.required" ng-options="branch.name as branch.name for branch in mainData.configReposBranches[selectedCustomClear]" ng-model="formData.deployOptions.sourceCode.custom.branch" ng-disabled="sourceCodeConfig.custom.repoAndBranch.disabled"></select>
 					<label class="fieldMsg">Choose your branch</label>
 					<br>
 				</div>
@@ -145,10 +146,10 @@
 				</div>
 				<br>
 			</fieldset>
-			<fieldset class="custom-fieldset resource" ng-if="secrets && secretsAllowed !=='none'">
+			<fieldset class="custom-fieldset resource" ng-if="secrets && mainData.secretsAllowed !=='none'">
 				<legend>Secrets</legend>
 				<div>
-					<ui-select multiple theme="bootstrap" ng-model="formData.deployOptions.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true" ng-required="secretsAllowed === 'required'">
+					<ui-select multiple theme="bootstrap" ng-model="formData.deployOptions.custom.secrets" close-on-select="false" title="Choose a Secret"  close-on-select="true" ng-required="mainData.secretsAllowed === 'required'">
 						<ui-select-match placeholder="Select secret...">{{$item.name}}</ui-select-match>
 						<ui-select-choices repeat="secret in secrets | filter: {name: $select.search}">
 							<div ng-bind-html="secret.name | highlight: $select.search"></div>
@@ -210,24 +211,24 @@
 				</fieldset>
 			</fieldset>
 		</div>
-	</div>
+	<!--</div>-->
 	
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
 		<label>Infra</label>
-		<select class="form-control" ng-disabled="resourceDeployed" ng-required="true" ng-options="tech._id as tech.label for tech in deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra" ng-change="repopulateRegions()"></select>
+		<select class="form-control" ng-disabled="mainData.resourceDeployed" ng-required="true" ng-options="tech._id as tech.label for tech in mainData.deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra" ng-change="repopulateRegions()"></select>
 		<label class="fieldMsg">Choose a deployment technology</label>
 		
 		<label>Region</label>
-		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in deploymentData.regions"  ng-model="formData.deployOptions.deployConfig.region" ></select>
+		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in mainData.deploymentData.regions"  ng-model="formData.deployOptions.deployConfig.region" ></select>
 		<label class="fieldMsg">Choose the region</label>
 		
 		<label>Flavor</label>
-		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.name as (size.name + ' ( cpus : ' + size.numberOfCores+', memory: '+size.memoryInMB/1000 + ' GB )') for size in deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
+		<select name="flavor" class="form-control"  ng-required="true" ng-options="size.name as (size.name + ' ( cpus : ' + size.numberOfCores+', memory: '+size.memoryInMB/1000 + ' GB )') for size in mainData.deploymentData.vmSize"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.flavor"></select>
 		<label class="fieldMsg">Choose the flavor</label>
 		
 		
 		<!--<label>Data Disk</label>-->
-		<!--<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in deploymentData.disk"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.dataDisk"></select>-->
+		<!--<select name="disk" class="form-control"  ng-required="true" ng-options="data.v as data.l for data in mainData.deploymentData.disk"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.dataDisk"></select>-->
 		<!--<label class="fieldMsg">Choose your Data Disk</label>-->
 		
 		<fieldset class="custom-fieldset">
@@ -266,7 +267,7 @@
 		
 		</fieldset>
 		
-		<fieldset class="custom-fieldset" ng-if="deploymentData.selectedRecipe.recipe.deployOptions.image.override">
+		<fieldset class="custom-fieldset" ng-if="mainData.deploymentData.selectedRecipe.recipe.deployOptions.image.override">
 			<legend>Image</legend>
 			<label>Provider</label>
 			<input name="provider"  class="form-control" ng-required="false" ng-model="formData.custom.image.prefix" ng-disabled="true"></input>
@@ -286,17 +287,17 @@
 			<!--TODO: code ON HOLD-->
 			<!--<legend>Image</legend>-->
 			<!--<label>Provider</label>-->
-			<!--<select name="provider"  class="form-control" ng-change="getImagesList(formData.custom.image.prefix)" ng-options="prefix.v as prefix.l for prefix in deploymentData.providers"  ng-required="true" ng-model="formData.custom.image.prefix"></select>-->
+			<!--<select name="provider"  class="form-control" ng-change="getImagesList(formData.custom.image.prefix)" ng-options="prefix.v as prefix.l for prefix in mainData.deploymentData.providers"  ng-required="true" ng-model="formData.custom.image.prefix"></select>-->
 			<!--<label class="fieldMsg">Choose your provider</label>-->
 			<!--<br/>-->
 			
 			<!--<label>Image Name</label>-->
-			<!--<select name="image"   class="form-control" ng-change="getVersionsList(formData.custom.image.name)" ng-options="image.v as image.l for image in deploymentData.images" ng-required="true"   ng-model="formData.custom.image.name"></select>-->
+			<!--<select name="image"   class="form-control" ng-change="getVersionsList(formData.custom.image.name)" ng-options="image.v as image.l for image in mainData.deploymentData.images" ng-required="true"   ng-model="formData.custom.image.name"></select>-->
 			<!--<label class="fieldMsg">Choose your image</label>-->
 			<!--<br/>-->
 			
 			<!--<label>version</label>-->
-			<!--<select name="version"  class="form-control"  ng-required="true" ng-options="version.v as version.l for version in deploymentData.imageVersions" ng-model="formData.custom.image.tag"></select>-->
+			<!--<select name="version"  class="form-control"  ng-required="true" ng-options="version.v as version.l for version in mainData.deploymentData.imageVersions" ng-model="formData.custom.image.tag"></select>-->
 			<!--<label class="fieldMsg">Choose your version</label>-->
 			<!--<br/>-->
 		</fieldset>

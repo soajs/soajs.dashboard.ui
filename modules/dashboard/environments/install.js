@@ -1409,8 +1409,11 @@ var environmentsNav = [
 			'modules/dashboard/environments/services/custom_registry.js',
 			
 			'modules/dashboard/resources/config.js',
-			'modules/dashboard/resources/services/deploy.js',
-			'modules/dashboard/resources/services/configuration.js',
+			'modules/dashboard/resources/services/deployService.js',
+			'modules/dashboard/resources/services/configurationService.js',
+			'modules/dashboard/resources/services/deployService.js',
+			'modules/dashboard/resources/services/commonService.js',
+			'modules/dashboard/resources/services/addService.js',
 			
 			'modules/dashboard/secrets/config.js',
 			'modules/dashboard/secrets/services/secretsService.js',

@@ -1,20 +1,11 @@
 <section ng-controller="resourcesAppCtrl">
     <div ng-if="access.list">
         <button class="btn btn-primary f-left" ng-if="access.add" ng-click="addResource()">Add New Resource</button>
-        <button class="btn btn-primary f-right" ng-if="access.list" ng-click="load()"><span class="icon icon-loop2"></span>Refresh</button>
+        <button class="btn btn-primary f-right" ng-if="access.list" ng-click="listResources()"><span class="icon icon-loop2"></span>Refresh</button>
         <br /><br />
-	    <div ng-show="oldStyle">
-		    <alert type="danger">
-			    <h3 style="margin-top:5px;">Warning</h3>
-			    <hr>
-			    Some of the Resources have not been upgraded yet in this environment, they still use a configuration from previous SOAJS version(s).<br />
-			    This prevents you from updating their configuration and also impacts the databases section. Please upgrade these resources to the latest version <a href="" ng-click="upgradeAll()">[ Upgrade ]</a>
-		    </alert>
-		    <br />
-	    </div>
-        <div ng-if="resources && resources.list && resources.list.length > 0">
+        <div ng-if="context.resources && context.resources.list && context.resources.list.length > 0">
             <tabset>
-                <tab ng-repeat="(type, categories) in resources.types" heading="{{type|capitalizeFirst}}">
+                <tab ng-repeat="(type, categories) in context.resources.types" heading="{{type|capitalizeFirst}}">
                     <br />
                     <accordion close-others="false">
                         <accordion-group is-open="true" ng-repeat="(category, content) in categories">
@@ -78,20 +69,7 @@
 </section>
 
 <script type="text/ng-template" id="addEditResource.tmpl">
-	<div ng-if="oldStyle" class="form">
-		<div class="modal-header">
-			<h3 class="modal-title">Old Catalog Schemas Detected</h3>
-		</div>
-		<div class="modal-body">
-			<alert type="danger">
-				<h3 style="margin-top:5px;">Warning</h3>
-				<hr>
-				Some catalog recipes have not been upgraded yet, they still use a schema compatible with previous SOAJS version(s).<br />
-				This prevents you from configuring or deploying any repository. Please upgrade these recipes to the latest version <a href="" ng-click="upgradeRecipes()">[ Upgrade ]</a>
-			</alert>
-		</div>
-	</div>
-	<div ng-if="!oldStyle">
+	<div>
 		<div class="modal-header custom-modal-header">
 			<h3 class="modal-title">{{title}}
 				<span ng-if="driverLogo" class="f-right">
@@ -108,10 +86,11 @@
 		    </form>
 	    </div>
 	    <div class="modal-footer">
+
 		    <span ng-if="options.allowEdit">
-	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save(false)">Save</button>
-	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="saveAndDeploy()">Save & Deploy</button>
-	            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id" ng-disabled="!valid" ng-click="saveAndRebuild()">Save & Rebuild</button>
+	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save('save')">Save</button>
+	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="save('saveAndDeploy')">Save & Deploy</button>
+	            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id" ng-disabled="!valid" ng-click="save('saveAndRebuild')">Save & Rebuild</button>
 	        </span>
 	        <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
 		</div>
@@ -123,7 +102,7 @@
 		<h3 class="modal-title">{{title}}</h3>
 	</div>
 	<div class="modal-body">
-		<alert type="danger">{{message}}</alert>
+		<alert type="danger">{{mainData.message}}</alert>
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary" ng-click="closeModal()">Cancel</button>

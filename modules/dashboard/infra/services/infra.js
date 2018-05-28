@@ -48,7 +48,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.inputs : "",
-								'fieldMsg': 'todo .....',
+								'fieldMsg': "<div class='fieldMsg'>To learn more about our form library and the correct syntax to use for creating inputs click <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>Here</a></div>",
 								'required': false
 							},
 							{
@@ -57,7 +57,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.display : "",
-								'fieldMsg': 'todo .....',
+								'fieldMsg': "<div class='fieldMsg'>To learn more about our grid display library and the correct syntax to use for creating a grid to display your inputs click <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>Here</a></div>",
 								'required': false
 							}
 						]

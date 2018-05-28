@@ -177,10 +177,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 										id: oneInfra._id,
 										name: formData.name,
 										access_token: access_token,
+										description: formData.description,
 										tags: {
 											"type": "template",
-											"driver": formData.driver,
-											"description": formData.description
+											"driver": formData.driver
 										}
 									},
 									file: formData.file_0,
@@ -436,11 +436,11 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				params: {
 					id: oneInfra._id,
 					name: formData.name,
+					description: formData.description,
 					access_token: access_token,
 					tags: {
 						"type": "template",
-						"driver": formData.driver,
-						"description": formData.description
+						"driver": formData.driver
 					}
 				},
 				file: formData.file_0,

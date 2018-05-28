@@ -354,22 +354,17 @@ function buildForm(context, modal, configuration, cb) {
 		var formDataKeys = Object.keys(context.form.formData);
 		var fileTypes = ['document', 'image', 'audio', 'video'];
 		var customData = [];
+		
 		for (var i = 0; i < context.form.entries.length; i++) {
 			if (context.form.entries[i].type === 'jsoneditor') {
 				context.form.formData[context.form.entries[i].name] = JSON.parse(context.form.entries[i].ngModel);
 			}
 		}
-		for (var i = 0; i < context.form.entries.length; i++) {
-			for (var j = 0; j < formDataKeys.length; j++) {
-				var pattern = new RegExp(context.form.entries[i].name + "_[0-9]+");
-				if (pattern.test(formDataKeys[j]) && fileTypes.indexOf(context.form.entries[i].type) !== -1) {
-					customData.push({
-						label: formDataKeys[j],
-						data: context.form.formData[formDataKeys[j]]
-					});
-				}
-			}
+		
+		for (var j = 0; j < formDataKeys.length; j++) {
+			findFileInputSchema(context.form.entries, formDataKeys[j], fileTypes);
 		}
+		
 		if (functionObj.type === 'submit') {
 			var data = angular.copy(context.form.formData);
 			if (context.form.itemsAreValid(data)) {
@@ -384,6 +379,29 @@ function buildForm(context, modal, configuration, cb) {
 		}
 		else {
 			functionObj.action();
+		}
+		
+		function findFileInputSchema(entries, labelName, fileTypes){
+			let count = 0;
+			for (let i = 0; i < entries.length; i++) {
+				if(entries[i].tabs){
+					entries[i].tabs.forEach((oneTab) =>{
+						findFileInputSchema(oneTab.entries, labelName, fileTypes)
+					});
+				}
+				if(entries[i].entries){
+					findFileInputSchema(entries[i].entries, labelName, fileTypes)
+				}
+				else{
+					var pattern = new RegExp(entries[i].name + "_[0-9]+");
+					if (pattern.test(labelName) && fileTypes.indexOf(entries[i].type) !== -1) {
+						customData.push({
+							label: labelName,
+							data: context.form.formData[labelName]
+						});
+					}
+				}
+			}
 		}
 	};
 	

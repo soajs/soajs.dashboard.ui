@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv','metricsSrv', 'injectFiles', 'ngDataApi', 'vmSrv', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, metricsSrv, injectFiles, ngDataApi, vmSrv) {
+environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv','metricsSrv', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, metricsSrv, injectFiles, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
@@ -194,7 +194,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
     };
 
 	$scope.listServices = function (cb) {
-		vmSrv.listServices($scope);
 		hacloudSrv.listServices($scope, cb);
 	};
 
@@ -202,17 +201,8 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		hacloudSrv.listNamespaces($scope, cb);
 	};
 	
-	$scope.maintenanceService = function(service, operation){
-		vmSrv.maintenanceService($scope, service, operation);
-	};
-	
 	$scope.deleteService = function (service, groupName) {
-		if(service.labels && service.labels['soajs.service.technology'] === 'vm'){
-			vmSrv.deleteService($scope, service);
-		}
-		else{
-			hacloudSrv.deleteService($scope, service, groupName);
-		}
+		hacloudSrv.deleteService($scope, service, groupName);
 	};
 
 	$scope.scaleService = function (service, groupName) {
@@ -228,12 +218,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 
 	$scope.inspectService = function (service) {
-		if(service.labels && service.labels['soajs.service.technology'] === 'vm'){
-			vmSrv.inspectService($scope, service);
-		}
-		else {
-			hacloudSrv.inspectService($scope, service);
-		}
+		hacloudSrv.inspectService($scope, service);
 	};
 
 	$scope.reloadServiceRegistry = function (service) {

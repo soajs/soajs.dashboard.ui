@@ -1,13 +1,13 @@
 "use strict";
 var infraSrv = soajsApp.components;
 infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-	
+
 	function getInfra(currentScope, cb) {
 		let options = {
 			"method": "get",
 			"routeName": "/dashboard/infra"
 		};
-		
+
 		$timeout(() => {
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
@@ -19,13 +19,13 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			});
 		}, 500);
 	}
-	
+
 	function injectFormInputs(id, value, form, data){
 		//reset form inputs to 3
 		form.entries.length = 3;
-		
+
 		//check location value and inject accordingly new entries
-		
+
 		let additionalInputs = [
 			{
 				"type": "tabset",
@@ -79,7 +79,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				]
 			}
 		];
-		
+
 		/*
 		* Handle Tags
 		*
@@ -99,9 +99,9 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				'fieldMsg': '',
 				'required': false
 			}
-			
+
 		* */
-		
+
 		if(value === 'local'){
 			additionalInputs[0].tabs[0].entries.push({
 				'name': 'content',
@@ -120,27 +120,27 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				'fieldMsg': 'Provide the document that contains your infra code template.'
 			});
 		}
-	
+
 		form.entries = form.entries.concat(additionalInputs);
-		
+
 	}
-	
+
 	function addTemplate(currentScope, oneInfra){
 		let entries = angular.copy(infraConfig.form.templates);
-		
+
 		//inject select infra type
 		if(oneInfra.templatesTypes.indexOf("local") !== -1){
 			entries[2].value.push({'v': 'local', 'l': "Local"});
 		}
-		
+
 		if(oneInfra.templatesTypes.indexOf("external") !== -1){
 			entries[2].value.push({'v': 'external', 'l': "External"});
 		}
-		
+
 		entries[2].onAction = function(id, value, form){
 			injectFormInputs(id, value, form);
 		};
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -187,7 +187,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								let soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 								let dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
 								let access_token = $cookies.get('access_token', {'domain': interfaceDomain});
-								
+
 								let progress = {value: 0};
 								let options = {
 									url: apiConfiguration.domain + "/dashboard/infra/template/upload",
@@ -196,7 +196,9 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 										name: formData.name,
 										description: formData.description,
 										access_token: access_token,
-										tags: formData.tags
+										tags: {
+											"type": "template"
+										}
 									},
 									file: formData.file_0,
 									headers: {
@@ -204,8 +206,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 										'key': dashKeyCookie
 									}
 								};
-								options.params.tags.type = "template";
-								
+
 								overlayLoading.show();
 								Upload.upload(options).progress(function (evt) {
 									let progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
@@ -215,7 +216,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 										overlayLoading.hide();
 										currentScope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
 									}
-									else if (formData.templateInputs.length > 0 || typeof(formData.gridDisplayOptions) === 'object') {
+									else if (formData.inputs.length > 0 || typeof(formData.display) === 'object') {
 										let compOptions = {
 											"method": "post",
 											"routeName": "/dashboard/infra/template/upload",
@@ -251,7 +252,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 									overlayLoading.hide();
 									currentScope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
 								});
-								
+
 							}
 						}
 					}
@@ -267,7 +268,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				}
 			]
 		};
-		
+
 		buildFormWithModal(currentScope, $modal, options, () => {
 			if(entries[2].value.length === 1){
 				entries[2].value[0].selected = true;
@@ -278,7 +279,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			}
 		});
 	}
-	
+
 	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor){
 		let inputs = inputsEditor.ngModel;
 		if(typeof(inputs) === 'string'){
@@ -290,7 +291,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				return false;
 			}
 		}
-		
+
 		let display = displayEditor.ngModel;
 		if(typeof(display) === 'string'){
 			try{
@@ -301,7 +302,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				return false;
 			}
 		}
-		
+
 		if(location === 'local'){
 			let content = contentEditor.ngModel;
 			if(typeof(content) === 'string'){
@@ -314,17 +315,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	function editTemplate(currentScope, oneInfra, oneTemplate){
 		let contentEditor, inputsEditor, displayEditor;
 		let entries = angular.copy(infraConfig.form.templates);
 		let options;
 		if(oneTemplate.location === 'local'){
 			entries[2].value.push({'v': 'local', 'l': "Local", 'selected': true});
-			
+
 			options = {
 				timeout: $timeout,
 				form: {
@@ -339,12 +340,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
-							
+
 							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
 							if(!status){
 								return false;
 							}
-							
+
 							let options = {
 								"method": "put",
 								"routeName": "/dashboard/infra/template",
@@ -380,12 +381,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					}
 				]
 			};
-			
+
 			injectFormInputs('location', oneTemplate.location, options.form, oneTemplate);
 		}
 		else {
 			entries[2].value.push({'v': 'external', 'l': "external", 'selected': true});
-			
+
 			options = {
 				timeout: $timeout,
 				form: {
@@ -400,12 +401,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
-							
+
 							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
 							if(!status){
 								return false;
 							}
-							
+
 							if(formData.file_0){
 								uploadNewTemplateFile(formData);
 							}
@@ -425,10 +426,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					}
 				]
 			};
-			
+
 			injectFormInputs('location', oneTemplate.location, options.form, oneTemplate);
 		}
-		
+
 		buildFormWithModal(currentScope, $modal, options, () => {
 			inputsEditor = currentScope.form.entries[3].tabs[1].entries[0];
 			displayEditor = currentScope.form.entries[3].tabs[1].entries[1];
@@ -436,12 +437,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				contentEditor = currentScope.form.entries[3].tabs[0].entries[1];
 			}
 		});
-		
+
 		function uploadNewTemplateFile(formData){
 			let soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 			let dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
 			let access_token = $cookies.get('access_token', {'domain': interfaceDomain});
-			
+
 			let progress = {value: 0};
 			let options = {
 				url: apiConfiguration.domain + "/dashboard/infra/template/upload",
@@ -459,7 +460,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				}
 			};
 			options.params.tags.type = "template";
-			
+
 			overlayLoading.show();
 			Upload.upload(options).progress(function (evt) {
 				let progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
@@ -477,7 +478,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				currentScope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
 			});
 		}
-		
+
 		function updateTemplateCompletemntaryInfo(formData){
 			if (formData.inputs.length > 0 || typeof(formData.display) === 'object') {
 				let compOptions = {
@@ -512,7 +513,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			}
 		}
 	}
-	
+
 	return {
 		'getInfra': getInfra,
 		'addTemplate': addTemplate,

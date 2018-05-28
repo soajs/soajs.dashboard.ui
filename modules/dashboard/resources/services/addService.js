@@ -174,7 +174,15 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 
                     commonService.addEditResourceApi($scope, apiParams, function (response) {
                         $scope.newResource = response;
-                        $scope.displayAlert('success', 'Resource updated successfully');
+                        if (type === 'saveAndRebuild') {
+                            currentScope.displayAlert('success', 'Resource updated successfully. Check the High Availability - Cloud section to see it running');
+                        }
+                        if (type === 'saveAndDeploy') {
+                            currentScope.displayAlert('success', 'Resource deployed successfully. Check the High Availability - Cloud section to see it running');
+                        }
+                        if (type === 'save') {
+                            currentScope.displayAlert('success', 'Resource added successfully');
+                        }
                         $scope.formData = {};
                         $modalInstance.close();
                         currentScope.listResources();

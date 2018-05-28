@@ -3,7 +3,7 @@
 var templatesNav = [
     {
         'id': 'templates',
-        'label': "Templates",
+        'label': "Environment Templates",
         'checkPermission': {
             'service': 'dashboard',
             'route': '/environment/templates',

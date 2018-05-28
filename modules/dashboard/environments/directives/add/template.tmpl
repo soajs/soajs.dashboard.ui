@@ -1,226 +1,116 @@
 <div class="envType">
-	<form>
-		<div class="header">
-			<h3>Environment Type &amp; Template</h3>
-		</div>
-	</form>
-	
-	<accordion close-others="false">
-		<accordion-group is-open="environmentTypes">
-			<accordion-heading>
-				<span ng-click="chooseEnvironmentType()">Environment Type</span>
-			</accordion-heading>
-			<p class="fieldMsg">
-				Choose the type of environment you would like to create
-			</p>
-			<hr>
-			<div class="table">
-				<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
-					<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
-						<!--<span style="color: #337ab7;" class="icon icon-embed2"></span>-->
-						<img ng-src="modules/dashboard/environments/images/development.png" height="32"/>
-					</div>
-					<h4 class="t-left">Development</h4>
-					<hr>
-					<div>
-						<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-						</div>
-						<ul class="fieldMsg">
-							<li>Suitable for Development &amp; Testing</li>
-							<li><b>No Cloud Provider</b> for Container Deployment</li>
-							<li>Multi Cloud Providers for VM Deployments</li>
-							<li>Deploy Micro-services Manually</li>
-						</ul>
-						<br>
-						<div class="readmore">
-							<a href="" target="_blank" tooltip="Learn&nbsp;More">
-								<span class="icon icon-info"/>
-							</a>
-						</div>
-					</div>
-				</div>
-				<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
-					<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
-						<span style="color: #337ab7;" class="icon icon-cloud"></span>
-					</div>
-					<h4 class="t-left">Single Cloud</h4>
-					<hr>
-					<div>
-						<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-						</div>
-						<ul class="fieldMsg">
-							<li>Suitable for Production</li>
-							<li><b>1 Cloud Provider</b> for Container Deployment</li>
-							<li>Multi Cloud Providers for VM Deployments</li>
-							<li>Deploy Micro-service via VM and/or Container Technology</li>
-						</ul>
-						<br>
-						<div class="readmore">
-							<a href="" target="_blank" tooltip="Learn&nbsp;More">
-								<span class="icon icon-info"/>
-							</a>
-						</div>
-					</div>
-				</div>
-				<div class="text-center table-cell environmentBox2 noHover" ng-class="{'selectedEnv': envType==='multiInfra'}">
-					<div class="f-left" style="padding: 3px 6px; margin-right:20px;">
-						<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32"/>
-					</div>
-					<h4 class="t-left">Multi Cloud</h4>
-					<hr>
-					<div>
-						<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-						</div>
-						<ul class="fieldMsg">
-							<li>Suitable for Production</li>
-							<li><b>Multi Cloud Providers</b> for Container Deployment</li>
-							<li>Multi Cloud Providers for VM Deployments</li>
-							<li>Deploy Micro-service via VM and/or Container Technology</li>
-							<li>VPN Support</li>
-						</ul>
-						<br>
-						<div class="readmore">
-							<a href="" target="_blank" tooltip="Learn&nbsp;More">
-								<span class="icon icon-info"/>
-							</a>
-						</div>
-					</div>
-				</div>
+	<div ng-if="!showTemplates">
+		<form>
+			<div class="header">
+				<h3>Environment Type</h3>
 			</div>
-		</accordion-group>
+		</form>
 		
-		<accordion-group ng-if="showTemplates" is-open="showTemplates" id="templates">
-			<accordion-heading>Environment Template</accordion-heading>
-			<p class="fieldMsg">
-				Choose a template from the available list below and SOAJS will create your environment according to its content.
-				<a href="" target="_blank" tooltip="Click to Learn More about Environment Templates">[ Learn More ]</a>
-			</p>
-			<hr>
-			<div class="table" style="padding:20px 0 0 15px;">
-				<div ng-repeat="template in templates" class="text-center table-cell f-left environmentBox2 box-of-3" ng-class="{'selectedEnv': template.selected }">
-					<div ng-click="chooseTemplate(template);">
-						<div class="title">
-							<img ng-if="template.logo" ng-src="{{template.logo}}" height="32" class="f-left"/>
-							<h4>{{template.name}}</h4>
-						</div>
-						<hr>
-						<div class="content">
-							<div class="fieldMsg">{{template.description}}</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</accordion-group>
-	</accordion>
-	<div ng-if="showTemplates">
-		<div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>
-	</div>
-	<!--<div class="headline">
-		<h4>Environment Type</h4>
 		<p class="fieldMsg">
 			Choose the type of environment you would like to create
 		</p>
-		<hr>
-	</div>
-	<div class="table">
-		<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
-			<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
-				&lt;!&ndash;<span style="color: #337ab7;" class="icon icon-embed2"></span>&ndash;&gt;
-				<img ng-src="modules/dashboard/environments/images/development.png" height="32"/>
-			</div>
-			<h4 class="t-left">Development</h4>
-			<hr>
-			<div>
-				<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+		<div class="table">
+			<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
+				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
+					<img ng-src="modules/dashboard/environments/images/development.png" height="32"/>
 				</div>
-				<ul class="fieldMsg">
-					<li>Suitable for Development &amp; Testing</li>
-					<li><b>No Cloud Provider</b> for Container Deployment</li>
-					<li>Multi Cloud Providers for VM Deployments</li>
-					<li>Deploy Micro-services Manually</li>
-				</ul>
-				<br>
-				<div class="readmore">
-					<a href="" target="_blank" tooltip="Learn&nbsp;More">
-						<span class="icon icon-info"/>
-					</a>
-				</div>
-			</div>
-		</div>
-		<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
-			<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
-				<span style="color: #337ab7;" class="icon icon-cloud"></span>
-			</div>
-			<h4 class="t-left">Single Cloud</h4>
-			<hr>
-			<div>
-				<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-				</div>
-				<ul class="fieldMsg">
-					<li>Suitable for Production</li>
-					<li><b>1 Cloud Provider</b> for Container Deployment</li>
-					<li>Multi Cloud Providers for VM Deployments</li>
-					<li>Deploy Micro-service via VM and/or Container Technology</li>
-				</ul>
-				<br>
-				<div class="readmore">
-					<a href="" target="_blank" tooltip="Learn&nbsp;More">
-						<span class="icon icon-info"/>
-					</a>
-				</div>
-			</div>
-		</div>
-		<div class="text-center table-cell environmentBox2 noHover" ng-class="{'selectedEnv': envType==='multiInfra'}">
-			<div class="f-left" style="padding: 3px 6px; margin-right:20px;">
-				<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32"/>
-			</div>
-			<h4 class="t-left">Multi Cloud</h4>
-			<hr>
-			<div>
-				<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-				</div>
-				<ul class="fieldMsg">
-					<li>Suitable for Production</li>
-					<li><b>Multi Cloud Providers</b> for Container Deployment</li>
-					<li>Multi Cloud Providers for VM Deployments</li>
-					<li>Deploy Micro-service via VM and/or Container Technology</li>
-					<li>VPN Support</li>
-				</ul>
-				<br>
-				<div class="readmore">
-					<a href="" target="_blank" tooltip="Learn&nbsp;More">
-						<span class="icon icon-info"/>
-					</a>
-				</div>
-			</div>
-		</div>
-	</div>-->
-</div>
-<!--div ng-if="showTemplates" id="templates">
-	<br />
-	<div class="envType">
-		<div class="headline">
-			<h4>Environment Template</h4>
-			<p class="fieldMsg">
-				Choose a template from the available list below and SOAJS will create your environment according to its content.
-				<a href="" target="_blank" tooltip="Click to Learn More about Environment Templates">[ Learn More ]</a>
-			</p>
-			<hr>
-		</div>
-	</div>
-	<div class="table" style="padding:20px 0 0 15px;">
-		<div ng-repeat="template in templates" class="text-center table-cell f-left environmentBox2 box-of-3" ng-class="{'selectedEnv': template.selected }">
-			<div ng-click="chooseTemplate(template);">
-				<div class="title">
-					<img ng-if="template.logo" ng-src="{{template.logo}}" height="32" class="f-left"/>
-					<h4>{{template.name}}</h4>
-				</div>
+				<h4 class="t-left">Development</h4>
 				<hr>
-				<div class="content">
-					<div class="fieldMsg">{{template.description}}</div>
+				<div>
+					<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+					<ul class="fieldMsg">
+						<li>Suitable for Development &amp; Testing</li>
+						<li><b>No Cloud Provider</b> for Container Deployment</li>
+						<li>Multi Cloud Providers for VM Deployments</li>
+						<li>Deploy Micro-services Manually</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483000331/Development+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
+				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
+					<span style="color: #337ab7;" class="icon icon-cloud"></span>
+				</div>
+				<h4 class="t-left">Single Cloud</h4>
+				<hr>
+				<div>
+					<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+					<ul class="fieldMsg">
+						<li>Suitable for Production</li>
+						<li><b>1 Cloud Provider</b> for Container Deployment</li>
+						<li>Multi Cloud Providers for VM Deployments</li>
+						<li>Deploy Micro-service via VM and/or Container Technology</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="text-center table-cell environmentBox2 noHover" ng-class="{'selectedEnv': envType==='multiInfra'}">
+				<div class="f-left" style="padding: 3px 6px; margin-right:20px;">
+					<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32"/>
+				</div>
+				<h4 class="t-left">Multi Cloud</h4>
+				<hr>
+				<div>
+					<div class="envDescription">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+					<ul class="fieldMsg">
+						<li>Suitable for Production</li>
+						<li><b>Multi Cloud Providers</b> for Container Deployment</li>
+						<li>Multi Cloud Providers for VM Deployments</li>
+						<li>Deploy Micro-service via VM and/or Container Technology</li>
+						<li>VPN Support</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164189/Multi+Cloud+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>
-</div>-->
+	<div ng-if="showTemplates">
+		<form>
+			<div class="header">
+				<h3>Environment Template</h3>
+			</div>
+		</form>
+		<accordion close-others="false">
+			<accordion-group ng-if="showTemplates" is-open="showTemplates" id="templates">
+				<accordion-heading>Environment Template</accordion-heading>
+				<p class="fieldMsg">
+					Choose a template from the available list below and SOAJS will create your environment according to its content.
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479592503/Environment+Templates" target="_blank" tooltip="Click to Learn More about Environment Templates">[ Learn More ]</a>
+				</p>
+				<hr>
+				<div class="table" style="padding:20px 0 0 15px;">
+					<div ng-repeat="template in templates" class="text-center table-cell f-left environmentBox2 box-of-3" ng-class="{'selectedEnv': template.selected }">
+						<div ng-click="chooseTemplate(template);">
+							<div class="title">
+								<img ng-if="template.logo" ng-src="{{template.logo}}" height="32" class="f-left"/>
+								<h4>{{template.name}}</h4>
+							</div>
+							<hr>
+							<div class="content">
+								<div class="fieldMsg">{{template.description}}</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</accordion-group>
+		</accordion>
+	</div>
+	<div>
+		<div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>
+	</div>
+</div>

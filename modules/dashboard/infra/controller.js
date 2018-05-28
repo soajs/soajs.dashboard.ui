@@ -2,6 +2,7 @@
 var infraApp = soajsApp.components;
 infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraSrv', 'Upload', function ($scope, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraSrv, Upload) {
 	$scope.$parent.isUserNameLoggedIn();
+	$scope.showTemplateForm = false;
 
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraConfig.permissions);

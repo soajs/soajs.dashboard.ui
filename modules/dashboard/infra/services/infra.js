@@ -113,6 +113,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	}
 
 	function addTemplate(currentScope, oneInfra){
+		currentScope.showTemplateForm = true;
 		let entries = angular.copy(infraConfig.form.templates);
 
 		//inject select infra type
@@ -134,9 +135,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 		let options = {
 			timeout: $timeout,
-			form: {
-				"entries": entries
-			},
+			// form: {
+			// 	"entries": entries
+			// },
+			entries: entries,
 			name: 'addTemplate',
 			label: 'Add Infra Code Template',
 			actions: [
@@ -164,7 +166,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								}
 								else {
 									currentScope.displayAlert("success", "Template created successfully.");
-									currentScope.modalInstance.close();
+									currentScope.showTemplateForm = false;
 									currentScope.getProviders();
 								}
 							});
@@ -229,7 +231,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 											else {
 												overlayLoading.hide();
 												currentScope.displayAlert('success', "Template Uploaded Successfully.");
-												currentScope.modalInstance.close();
+												currentScope.showTemplateForm = false;
 												currentScope.getProviders();
 											}
 										});
@@ -237,7 +239,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 									else {
 										overlayLoading.hide();
 										currentScope.displayAlert('success', "Template Uploaded Successfully.");
-										currentScope.modalInstance.close();
+										currentScope.showTemplateForm = false;
 										currentScope.getProviders();
 									}
 								}).error(function () {
@@ -255,13 +257,13 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					'btn': 'danger',
 					'action': function () {
 						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
+						currentScope.showTemplateForm = false;
 					}
 				}
 			]
 		};
 
-		buildFormWithModal(currentScope, $modal, options, () => {
+		buildForm(currentScope, $modal, options, () => {
 			if(entries[2].value.length === 1) {
 				entries[2].value[0].selected = true;
 				currentScope.form.formData.location = entries[2].value[0].v;
@@ -319,14 +321,14 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		let contentEditor, inputsEditor, displayEditor;
 		let entries = angular.copy(infraConfig.form.templates);
 		let options;
+		currentScope.showTemplateForm = true;
+
 		if(oneTemplate.location === 'local'){
 			entries[2].value.push({'v': 'local', 'l': "Local", 'selected': true});
 
 			options = {
 				timeout: $timeout,
-				form: {
-					"entries": entries
-				},
+				entries: entries,
 				data: oneTemplate,
 				name: 'editTemplate',
 				label: 'Modify Infra Code Template',
@@ -360,7 +362,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								}
 								else {
 									currentScope.displayAlert("success", "Template modified successfully.");
-									currentScope.modalInstance.close();
+									currentScope.showTemplateForm = false;
 									currentScope.getProviders();
 								}
 							});
@@ -372,7 +374,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'btn': 'danger',
 						'action': function () {
 							delete currentScope.form.formData;
-							currentScope.modalInstance.close();
+							currentScope.showTemplateForm = false;
 						}
 					}
 				]
@@ -385,9 +387,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 			options = {
 				timeout: $timeout,
-				form: {
-					"entries": entries
-				},
+				entries: entries,
 				data: oneTemplate,
 				name: 'editTemplate',
 				label: 'Modify Infra Code Template',
@@ -417,7 +417,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'btn': 'danger',
 						'action': function () {
 							delete currentScope.form.formData;
-							currentScope.modalInstance.close();
+							currentScope.showTemplateForm = false;
 						}
 					}
 				]
@@ -499,7 +499,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					}
 					else {
 						currentScope.displayAlert('success', "Template Uploaded Successfully.");
-						currentScope.modalInstance.close();
+						currentScope.showTemplateForm = false;
 						currentScope.getProviders();
 					}
 				});
@@ -507,7 +507,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			else {
 				overlayLoading.hide();
 				currentScope.displayAlert('success', "Template Uploaded Successfully.");
-				currentScope.modalInstance.close();
+				currentScope.showTemplateForm = false;
 				currentScope.getProviders();
 			}
 		}

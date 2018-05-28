@@ -59,8 +59,8 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		// no restrictions obj
 		if (!restrictions || Object.keys(restrictions).length === 0) {
 			currentScope.restrictions = {
-				docker: true,
-				kubernetes: true,
+				docker: docker,
+				kubernetes: kubernetes,
 				previousEnv: true,
 				onDemand: showonDemand,
 				showManual: showManualDeploy

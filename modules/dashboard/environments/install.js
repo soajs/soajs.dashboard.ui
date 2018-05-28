@@ -1397,9 +1397,11 @@ var environmentsNav = [
 			'modules/dashboard/environments/add/controller.js',
 			'modules/dashboard/environments/add/templateSrv.js',
 			'modules/dashboard/environments/add/giSrv.js',
+			
 			'modules/dashboard/environments/add/deploySrv.js',
 			'modules/dashboard/environments/add/registrySrv.js',
 			'modules/dashboard/environments/add/overviewSrv.js',
+			
 			'modules/dashboard/environments/add/nginxSrv.js',
 			'modules/dashboard/environments/add/dynamicSrv.js',
 			'modules/dashboard/environments/add/statusSrv.js',
@@ -1418,7 +1420,7 @@ var environmentsNav = [
 			
 			'modules/dashboard/environments/services/repos.js',
 			'modules/dashboard/environments/services/deployServiceDep.js'
-		],
+		]
 	},
 	{
 		'id': 'environments',
@@ -1549,7 +1551,15 @@ var environmentsNav = [
 		'order': 7,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js', 'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 'modules/dashboard/environments/services/vm.js', 'modules/dashboard/environments/services/metrics.js'],
+		'scripts': [
+			'modules/dashboard/environments/config.js', 
+			'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js', 
+			'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 
+			'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 
+			'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 
+			'modules/dashboard/environments/services/vm.js', 
+			'modules/dashboard/environments/services/metrics.js'
+		],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

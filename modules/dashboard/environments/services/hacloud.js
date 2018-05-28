@@ -221,7 +221,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 				}
 				else {
 					currentScope.updatesNotifications = [];
-					response.forEach(function (oneCodeUpdateEntry) {
+					response.logs.forEach(function (oneCodeUpdateEntry) {
 						if (oneCodeUpdateEntry.notify && !oneCodeUpdateEntry.manual) {
 							currentScope.updatesNotifications.push({
 								id: oneCodeUpdateEntry.serviceId
@@ -247,6 +247,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 									mode: oneUpdateEntry.mode
 								})
 							});
+							
 							return cb();
 						}
 					});

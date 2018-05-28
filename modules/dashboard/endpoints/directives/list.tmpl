@@ -63,12 +63,12 @@
 <script type="text/ng-template" id="imfv_renderer.html">
 	<div>
 		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='red'><span class='icon icon-cross' title='Delete' ng-click="onDeleteImfv(mainType, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx,isCommonField)"></span></span>
-		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEditImfv(mainType, true,false,isCommonField, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span></span>
+		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blueIcon'><span class='icon icon-pencil2' title='Edit' ng-click="onEditImfv(mainType, true,false,isCommonField, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span></span>
 		
 		<span ng-if="input.validation.type">{{inputKey}} ( {{input.validation.type}} {{input.validation.items.type?"("+input.validation.items.type+")":""}} ) </span>
 		<span ng-if="input.type">{{inputKey}} ( {{input.type}} {{input.items.type?"("+input.items.type+")":""}} ) </span>
 		
-		<span ng-if="input.type === 'object' || input.validation.type === 'object' || (input.type === 'array' && input.items.type==='object') || (input.validation.type === 'array' && input.validation.items.type==='object') " class='blue'>
+		<span ng-if="input.type === 'object' || input.validation.type === 'object' || (input.type === 'array' && input.items.type==='object') || (input.validation.type === 'array' && input.validation.items.type==='object') " class='blueIcon'>
 				<span ng-class="{'icon icon-folder': (input.collapsed),'icon icon-folder-open':(!input.collapsed)}" title='' ng-click="collapse(input)"></span>
 			</span>
 	</div>
@@ -77,7 +77,7 @@
 		<ul ng-if="!input.collapsed">
 			<li ng-repeat="(inputKey,input) in input.validation.properties" ng-include="'imfv_renderer.html'"></li>
 		</ul>
-		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blue'>
+		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blueIcon'>
 				<span class='icon icon-plus addProperty' title="Add Property to {{inputKey}}" ng-click="onEditImfv(mainType, false,false,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>
 				.....</span>
 	</div>
@@ -86,7 +86,7 @@
 		<ul ng-if="!input.collapsed">
 			<li ng-repeat="(inputKey,input) in input.properties" ng-include="'imfv_renderer.html'"></li>
 		</ul>
-		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blue'>
+		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blueIcon'>
 				<span class='icon icon-plus addProperty' title="Add Property to {{inputKey}}" ng-click="onEditImfv(mainType, false,false,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>
 				.....</span>
 	</div>
@@ -96,7 +96,7 @@
 		<ul ng-if="!input.collapsed">
 			<li ng-repeat="(inputKey,input) in input.items.properties" ng-include="'imfv_renderer.html'"></li>
 		</ul>
-		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blue'>
+		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blueIcon'>
 				<span class='icon icon-plus addProperty' title='Add Array Item' ng-click="onEditImfv(mainType, false,true,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>.....</span>
 	</div>
 	
@@ -104,7 +104,7 @@
 		<ul ng-if="!input.collapsed">
 			<li ng-repeat="(inputKey,input) in input.validation.items.properties" ng-include="'imfv_renderer.html'"></li>
 		</ul>
-		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blue'>
+		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey] && !input.collapsed" class='blueIcon'>
 				<span class='icon icon-plus addProperty' title="Add Property to {{inputKey}}" ng-click="onEditImfv(mainType, false,true,isCommonField,endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx)"></span>
 				.....</span>
 	</div>
@@ -150,11 +150,11 @@
 								</td>
 								
 								<td>
-									<span class='blue' ng-if="access.regenerateService"><span class='icon icon-download2' title='Regenerate and Download' ng-click="onDownloadEndpoint(mainType, endpoint)"></span></span>
+									<span class='blueIcon' ng-if="access.regenerateService"><span class='icon icon-download2' title='Regenerate and Download' ng-click="onDownloadEndpoint(mainType, endpoint)"></span></span>
 								</td>
 								
 								<td>
-									<span class='blue' ng-if="access.getEndpoints && access.editEndpoints"><span class='icon icon-pencil2' title='Edit' ng-click="onEditEndpoint(mainType, endpoint._id)"></span></span>
+									<span class='blueIcon' ng-if="access.getEndpoints && access.editEndpoints"><span class='icon icon-pencil2' title='Edit' ng-click="onEditEndpoint(mainType, endpoint._id)"></span></span>
 								</td>
 								
 								<td>
@@ -201,30 +201,30 @@
 											<li class="blueLi" ng-repeat="(routeKey,routeObj) in schemaObj" class="row-list">
 												<fieldset>
 													<legend style="float:right;">
-														<span class='blue'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
+														<span class='blueIcon'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
 													
 													<legend>
 														Api : {{routeKey}}
-														<span class='blue'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
+														<span class='blueIcon'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
 													
 													
 													<div>
-														<span ng-if="access.updateEndpointSchema" class='blue'><span class='icon icon-pencil2' title='Edit' ng-click="onEnableEdit(endpoint._id,schemaKey,routeKey)">{{tempo.editEnabled[endpoint._id][schemaKey][routeKey]?' Disable editing ...':' Enable editing'}}</span></span>
+														<span ng-if="access.updateEndpointSchema" class='blueIcon'><span class='icon icon-pencil2' title='Edit' ng-click="onEnableEdit(endpoint._id,schemaKey,routeKey)">{{tempo.editEnabled[endpoint._id][schemaKey][routeKey]?' Disable editing ...':' Enable editing'}}</span></span>
 														<br>
 														<div>Common Fields</div>
 														<ul>
 															<li ng-init="isCommonField = true" ng-repeat="(inputKey,input) in routeObj.imfv.tempoCommonFields" ng-include="'imfv_renderer.html'"></li>
 														</ul>
-														<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue addMainProperty'>
+														<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blueIcon addMainProperty'>
 																<span class='icon icon-plus addProperty' title='Add Property' ng-click="onAddCommonField(mainType, false,false,true,endpoint,schemaKey,routeKey,null,null,null)"></span>.....</span>
 														
 														<div>Custom IMFV</div>
 														<ul>
 															<li ng-init="isCommonField = false" ng-repeat="(inputKey,input) in routeObj.imfv.custom" ng-include="'imfv_renderer.html'"></li>
 														</ul>
-														<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blue addMainProperty'>
+														<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='blueIcon addMainProperty'>
 																<span class='icon icon-plus addProperty' title='Add Property' ng-click="onEditImfv(mainType, false,false,false,endpoint,schemaKey,routeKey,null,null,null)"></span>.....</span>
 													</div>
 												

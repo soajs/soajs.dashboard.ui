@@ -6,6 +6,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 	let predefinedSchemaSteps = {
 		custom_registry: {
 			deploy: function (currentScope, context) {
+				currentScope.dynamictemplatestep = "Custom Registries";
 				function buildMyForms(counter, cb) {
 
 					let ci = entriesNames[counter];
@@ -92,6 +93,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		},
 		secrets: {
 			deploy: function (currentScope, context, fCb) {
+				currentScope.dynamictemplatestep = "Container Secrets";
 				function buildMyForms(counter, cb) {
 					let secretKey = entriesNames[counter];
 					let oneSecret = secretEntries[secretKey];
@@ -290,7 +292,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					oneRepo.type = templateDefaults.type; //enforce
 					oneRepo.category = templateDefaults.category; //enforce
-
+					
+					currentScope.dynamictemplatestep = `Deploy Source Code From Repository`;
+					
 					let service = {};
 					let record = {};
 					let version = {};
@@ -600,6 +604,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let key = entriesNames[counter];
 					let resource = resourceEntries[key];
 					let record = angular.copy(resource);
+					
+					currentScope.dynamictemplatestep = `Resource ${key}`;
+					
 					record.name = key;
 					let settings = {"type": record.type, category: record.category};
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
@@ -632,7 +639,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 						record.canBeDeployed = true;
 						resource.scope.context.envType = 'container';
-						resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.technology;
+						resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver;
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
 
@@ -708,6 +715,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								record.deployOptions.deployConfig.replication.replicas = deployFromTemplate.replicas;
 							}
 						}
+						
+						currentScope.dynamictemplatestep = "Deploy " + currentScope.dynamictemplatestep;
+					}
+					else{
+						currentScope.dynamictemplatestep = "Connect to " + currentScope.dynamictemplatestep;
 					}
 
 					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
@@ -1000,6 +1012,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		};
 
 		currentScope.back = function () {
+			jQuery("html, body").animate({scrollTop: 0 });
+			
 			currentScope.referringStep = "dynamicSrv";
 			currentScope.deploymentStackStep--;
 			if (currentScope.deploymentStackStep < 0) {
@@ -1014,6 +1028,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		};
 
 		currentScope.next = function () {
+			jQuery("html, body").animate({scrollTop: 0 });
+			
 			//update template in local storage
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
 			delete $localStorage.addEnv.template.content;

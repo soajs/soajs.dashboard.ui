@@ -1,20 +1,20 @@
 'use strict';
 
 var cdApp = soajsApp.components;
-cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, $cookies, ngDataApi, injectFiles) {
+cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'injectFiles', '$route', function ($scope, $timeout, $modal, $cookies, ngDataApi, injectFiles, $route) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.configuration = {};
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, cdAppConfig.permissions);
-
+	
 	$scope.cdData = {};
-	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-		$scope.myEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+		$scope.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 	}
 	$scope.upgradeSpaceLink = cdAppConfig.upgradeSpaceLink;
 	$scope.updateCount;
 	$scope.upgradeCount;
-
+	
 	$scope.cdShowHide = function (oneSrv) {
 		if ($scope.configuration[oneSrv].icon === 'minus') {
 			$scope.configuration[oneSrv].icon = 'plus';
@@ -25,9 +25,9 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			jQuery('#cdc_' + oneSrv).slideDown()
 		}
 	};
-
+	
 	$scope.getRecipe = function () {
-
+		
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -37,11 +37,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			}
-
+			
 			if (!response) {
 				response = {};
 			}
-
+			
 			$scope.cdData = response;
 			$scope.maxEntries = 0;
 			if ($scope.myEnv && response[$scope.myEnv.toUpperCase()]) {
@@ -59,11 +59,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							$scope.maxEntries++;
 							$scope.configuration[service].icon = 'minus';
 							$scope.configuration[service].versions = {};
-
+							
 							if ($scope.configuration[service].type === 'daemon') {
 								for (var i in $scope.configuration[service]) {
 									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options'].indexOf(i) === -1) {
-
+										
 										$scope.configuration[service].versions[i] = {};
 										for (var groupName in $scope.configuration[service][i]) {
 											$scope.configuration[service].versions[i][groupName] = angular.copy($scope.configuration[service][i][groupName]);
@@ -71,11 +71,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 										delete $scope.configuration[service][i];
 									}
 								}
-
+								
 							}
 							else {
 								for (var i in $scope.configuration[service]) {
-
+									
 									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options'].indexOf(i) === -1) {
 										$scope.configuration[service].versions[i] = angular.copy($scope.configuration[service][i]);
 										delete $scope.configuration[service][i];
@@ -91,7 +91,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
 	$scope.pauseRecipe = function (pause) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -116,22 +116,22 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
 	$scope.saveRecipe = function (service, version) {
 		var data = {
 			env: $scope.myEnv,
 			serviceName: service
 		};
-
+		
 		if (SOAJSRMS.indexOf("soajs." + service) !== -1) {
 			$scope.displayAlert('danger', "You cannot Apply Continuous Delivery on a SOAJS Ready Made Service.");
 		}
-
+		
 		if ($scope.configuration[service].versions && Object.keys($scope.configuration[service].versions).length > 0) {
 			data.version = {
 				v: version
 			};
-
+			
 			for (var i in $scope.configuration[service].versions[version]) {
 				data.version[i] = $scope.configuration[service].versions[version][i];
 			}
@@ -146,7 +146,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				data.default.options = $scope.configuration[service].options;
 			}
 		}
-
+		
 		overlayLoading.show();
 		if ($scope.configuration[service].type === 'daemon') {
 			var newData = {
@@ -154,7 +154,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				serviceName: data.serviceName,
 				version: {}
 			};
-
+			
 			var max = Object.keys(data.version).length;
 			updateDaemonsGroupCD(data.version, 0, function () {
 				overlayLoading.hide();
@@ -180,7 +180,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				}
 			});
 		}
-
+		
 		function updateDaemonsGroupCD(version, counter, cb) {
 			var groupName = Object.keys(version)[counter];
 			if (groupName === 'v') {
@@ -191,7 +191,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				var daemonGroupData = angular.copy(newData);
 				daemonGroupData.version = data.version[groupName];
 				daemonGroupData.version.v = data.version.v;
-
+				
 				getSendDataFromServer($scope, ngDataApi, {
 					method: 'post',
 					routeName: '/dashboard/cd',
@@ -216,7 +216,11 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		}
 	};
-
+	
+	/**
+	 * Updates & Upgrades
+	 */
+	
 	$scope.getUpdates = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -234,14 +238,14 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				parseMyResponse(response);
 			}
 		});
-
-
+		
+		
 		function parseMyResponse(list) {
 			$scope.imageLedger = [];
 			$scope.catalogLedger = [];
-
+			
 			$scope.upgradeCount = 0;
-
+			let notificationCount = 0;
 			list.forEach(function (oneEntry) {
 				$scope.upgradeCount++;
 				if ($scope.myEnv.toLowerCase() === 'dashboard') {
@@ -258,8 +262,14 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 						$scope.catalogLedger.push(oneEntry);
 						break;
 				}
+				if(!oneEntry.read){
+					notificationCount++;
+				}
 			});
-			if ($scope.upgradeCount > 0) {
+			
+			updateNotifications($scope.$parent.$parent, $scope.myEnv, ngDataApi, notificationCount);
+			
+			if (notificationCount > 0) {
 				$scope.upgradeCount = "(" + $scope.upgradeCount + ")";
 			}
 			else {
@@ -267,7 +277,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		}
 	};
-
+	
 	$scope.getLedger = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -282,14 +292,23 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				$scope.displayAlert('danger', error.message);
 			}
 			else {
-				$scope.ledger = response;
+				$scope.ledger = response.logs;
 				$scope.updateCount = 0;
-				$scope.ledger.forEach(function (oneLedgerEntry) {
-					if (oneLedgerEntry.notify && !oneLedgerEntry.manual && !oneLedgerEntry.read) {
-						$scope.updateCount++;
-					}
-				});
-				if ($scope.updateCount > 0) {
+				let notificationCount  = 0;
+				if(Array.isArray($scope.ledger)){
+					$scope.ledger.forEach(function (oneLedgerEntry) {
+						if (!oneLedgerEntry.manual && !oneLedgerEntry.read) {
+							$scope.updateCount++;
+						}
+						if(!oneLedgerEntry.read){
+							notificationCount++;
+						}
+					});
+				}
+				
+				updateNotifications($scope.$parent.$parent, $scope.myEnv, ngDataApi, notificationCount);
+				
+				if (notificationCount > 0) {
 					$scope.updateCount = "(" + $scope.updateCount + ")";
 				}
 				else {
@@ -298,7 +317,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
 	$scope.updateEntry = function (oneEntry, operation) {
 		if (operation === 'redeploy') {
 			doRebuild();
@@ -306,7 +325,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 		else {
 			$scope.$parent.go('#/deploy-repositories');
 		}
-
+		
 		function doRebuild() {
 			let params = {
 				data: {
@@ -337,7 +356,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			});
 		}
 	};
-
+	
 	$scope.deployEntry = function (oneEntry) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -351,7 +370,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 			else {
 				$scope.displayAlert('success', 'Service deployed successfully');
-
+				
 				if (operation === 'redeploy') {
 					$scope.getLedger();
 				}
@@ -361,16 +380,16 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
 	$scope.readAll = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'put',
 			routeName: '/dashboard/cd/ledger/read',
 			data: {
-				"data": { "all": true }
+				"data": {"all": true}
 			}
-
+			
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -382,16 +401,16 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
 	$scope.readOne = function (oneEntry) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'put',
 			routeName: '/dashboard/cd/ledger/read',
 			data: {
-				"data": { "id": oneEntry._id }
+				"data": {"id": oneEntry._id}
 			}
-
+			
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -403,12 +422,21 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			}
 		});
 	};
-
+	
+	$scope.openCloseEntry = function (oneEntry) {
+		oneEntry.open = !oneEntry.open;
+	};
+	
 	injectFiles.injectCss("modules/dashboard/cd/cd.css");
-
+	
 	// Start here
 	if ($scope.access.get && $scope.myEnv && $scope.$parent.currentDeployer.type !== 'manual') {
-		$scope.getLedger();
-		$scope.getUpdates();
+		if($route.current.originalPath === '/audit'){
+			$scope.getOtherLogs();
+		}
+		else{
+			$scope.getLedger();
+			$scope.getUpdates();
+		}
 	}
 }]);

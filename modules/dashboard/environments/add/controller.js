@@ -11,12 +11,15 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
 	$scope.addEnvCounter = 0;
 	
+	$scope.envType = '';
+
 	function triggerMethod(counter) {
 		let method = $scope.steps[counter];
 		$scope[method]();
 	}
 	
 	$scope.nextStep = function () {
+		jQuery("html, body").animate({scrollTop: 0 });
 		$scope.addEnvCounter++;
 		if ($scope.addEnvCounter >= $scope.steps.length - 1) {
 			$scope.addEnvCounter = $scope.steps.length - 1;
@@ -25,19 +28,16 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	};
 	
 	$scope.previousStep = function () {
+		jQuery("html, body").animate({scrollTop: 0 });
 		$scope.addEnvCounter--;
 		if ($scope.addEnvCounter <= 0) {
 			$scope.addEnvCounter = 0;
 		}
 		triggerMethod($scope.addEnvCounter);
 	};
-	
+
 	$scope.listTemplate = function () {
 		templateSrvDeploy.go($scope);
-	};
-	
-	$scope.chooseTemplate = function (template) {
-		templateSrvDeploy.chooseTemplate($scope, template);
 	};
 	
 	$scope.generalInfo = function () {
@@ -272,7 +272,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	}
 	
 	injectFiles.injectCss('modules/dashboard/environments/environments-add.css');
-	$scope.$parent.collapseExpandMainMenu();
+	$scope.$parent.collapseExpandMainMenu(true);
 	$scope.reRenderMenu('empty');
 	
 	if ($scope.access.addEnvironment) {

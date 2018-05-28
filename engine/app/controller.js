@@ -193,8 +193,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.collapseMainMenu = false;
 		
-		$scope.collapseExpandMainMenu = function () {
-			$scope.collapseMainMenu = !$scope.collapseMainMenu;
+		$scope.collapseExpandMainMenu = function (forcedFlag) {
+			if(arguments.length > 0){
+				$scope.collapseMainMenu = forcedFlag;
+			}
+			else{
+				$scope.collapseMainMenu = !$scope.collapseMainMenu;
+			}
 		};
 		
 		$scope.pillarChange = function (link) {
@@ -264,10 +269,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			
 			let hide = false;
 			if (currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
-				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'audit', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else if ($scope.currentDeployer.type === 'manual') {
-				hide = (['secrets', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'environments-platforms', 'repositories', 'audit', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else {
 				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)
@@ -556,6 +561,14 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.$on('$routeChangeSuccess', function () {
 			$scope.tracker = [];
 			doEnvPerNav();
+			
+			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
+				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+				if(updateNotifications){
+					updateNotifications($scope, envCode, ngDataApi);
+				}
+			}
+			
 			$scope.rebuildMenus(function () {
 				for (var i = 0; i < $scope.navigation.length; i++) {
 					if ($scope.navigation[i].url === '#' + $route.current.originalPath) {

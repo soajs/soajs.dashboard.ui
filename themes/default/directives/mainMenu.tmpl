@@ -18,6 +18,8 @@
 		<li ng-repeat="link in leftMenu.links" ng-class="{'first': $first, 'last': $last, selected:link.selected, active: link.url === leftMenu.selectedMenu}">
 			<a href="{{link.url}}" class="mainMenu{{$index}}" id="mainMenu-{{link.id}}">
 				<span class="icon icon-{{link.icon}}"></span>
+				<span ng-show="!collapseMainMenu && link.notification" class="red smallNotification" data-badge="{{link.notification}}"></span>
+				<span ng-show="collapseMainMenu && link.notification" class="red smallNotificationCollapsed" data-badge="{{link.notification}}"></span>
 				<span ng-show="!collapseMainMenu">{{link.label}}</span>
 			</a>
 		</li>
@@ -26,6 +28,8 @@
 		<li ng-repeat="link in leftMenu.links" ng-class="{'first': $first, 'last': $last, selected:link.selected, active: link.url === leftMenu.selectedMenu}" ng-hide="link.hideMe">
 			<a href="{{link.url}}" class="mainMenu{{$index}}" id="mainMenu-{{link.id}}">
 				<span class="icon icon-{{link.icon}}"></span>
+				<span ng-show="!collapseMainMenu && link.notification" class="red smallNotification" data-badge="{{link.notification}}"></span>
+				<span ng-show="collapseMainMenu && link.notification" class="red smallNotificationCollapsed" data-badge="{{link.notification}}"></span>
 				<span ng-show="!collapseMainMenu">{{link.label}}</span>
 			</a>
 		</li>

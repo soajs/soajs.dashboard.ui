@@ -21,8 +21,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	}
 
 	function injectFormInputs(id, value, form, data){
-		//reset form inputs to 3
-		form.entries.length = 3;
+		//reset form inputs to 4
+		form.entries.length = 4;
 
 		//check location value and inject accordingly new entries
 
@@ -80,28 +80,6 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			}
 		];
 
-		/*
-		* Handle Tags
-		*
-		* {
-				'name': 'tagName',
-				'label': 'Tag name',
-				'type': 'text',
-				'value': "",
-				'fieldMsg': '',
-				'required': false
-			},
-			{
-				'name': 'tagValue',
-				'label': 'Tag Value',
-				'type': 'text',
-				'value': "",
-				'fieldMsg': '',
-				'required': false
-			}
-
-		* */
-
 		if(value === 'local'){
 			additionalInputs[0].tabs[0].entries.push({
 				'name': 'content',
@@ -136,6 +114,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		if(oneInfra.templatesTypes.indexOf("external") !== -1){
 			entries[2].value.push({'v': 'external', 'l': "External"});
 		}
+
+		oneInfra.drivers.forEach(oneDriver => {
+			entries[3].value.push({'v': oneDriver, 'l': oneDriver});
+		});
 
 		entries[2].onAction = function(id, value, form){
 			injectFormInputs(id, value, form);
@@ -198,7 +180,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 										access_token: access_token,
 										tags: {
 											"type": "template"
-										}
+										},
+										driver: formData.driver
 									},
 									file: formData.file_0,
 									headers: {
@@ -270,12 +253,16 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		};
 
 		buildFormWithModal(currentScope, $modal, options, () => {
-			if(entries[2].value.length === 1){
+			if(entries[2].value.length === 1) {
 				entries[2].value[0].selected = true;
 				currentScope.form.formData.location = entries[2].value[0].v;
 				$timeout(() => {
 					injectFormInputs('location', currentScope.form.formData.location, currentScope.form);
 				}, 100);
+			}
+			if(entries[3].value.length === 1) {
+				entries[3].value[0].selected = true;
+				currentScope.form.formData.driver = entries[3].value[0].v;
 			}
 		});
 	}
@@ -431,10 +418,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}
 
 		buildFormWithModal(currentScope, $modal, options, () => {
-			inputsEditor = currentScope.form.entries[3].tabs[1].entries[0];
-			displayEditor = currentScope.form.entries[3].tabs[1].entries[1];
+			inputsEditor = currentScope.form.entries[4].tabs[1].entries[0];
+			displayEditor = currentScope.form.entries[4].tabs[1].entries[1];
 			if(oneTemplate.location === 'local'){
-				contentEditor = currentScope.form.entries[3].tabs[0].entries[1];
+				contentEditor = currentScope.form.entries[4].tabs[0].entries[1];
 			}
 		});
 

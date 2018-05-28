@@ -98,7 +98,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		currentScope.switchEnv = function (type) {
 			currentScope.envType = type;
 			$localStorage.envType = type;
-			currentScope.environmentTypes = false;
+			currentScope.environmentTypes = true;
 			filterTemplate(currentScope, type);
 		};
 		
@@ -107,10 +107,10 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		};
 		
 		currentScope.chooseEnvironmentType = function(){
+			currentScope.environmentTypes = true;
 			overlayLoading.show();
 			$timeout(() => {
 				overlayLoading.hide();
-				currentScope.environmentTypes = true;
 				currentScope.showTemplates = false;
 			}, 1000);
 		}

@@ -10,7 +10,7 @@ let infraConfig = {
 		removeTemplates: ['dashboard', '/infra/template', 'del'],
 		addTEmplate: ['dashboard', '/infra/template', 'post'],
 	},
-	
+
 	form: {
 		providers :[
 			{
@@ -104,7 +104,7 @@ let infraConfig = {
 				'required': true
 			}
 		],
-		
+
 		aws: [
 			{
 				'name': 'label',
@@ -211,7 +211,7 @@ let infraConfig = {
 				'required': true
 			}
 		],
-		
+
 		templates: [
 			{
 				'name': 'name',
@@ -234,6 +234,14 @@ let infraConfig = {
 			{
 				'name': 'location',
 				'label': 'Location',
+				'type': 'select',
+				'value': [],
+				'fieldMsg': 'Select where to store this template.',
+				'required': true
+			},
+			{
+				'name': 'driver',
+				'label': 'Driver',
 				'type': 'select',
 				'value': [],
 				'fieldMsg': 'Select where to store this template.',

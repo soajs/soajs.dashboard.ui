@@ -20,7 +20,7 @@ var resourcesNav = [
         'mainMenu': true,
         'tracker': true,
         'order': 5,
-        'scripts': ['modules/dashboard/resources/config.js', 'modules/dashboard/resources/controller.js', 'modules/dashboard/resources/services/configuration.js', 'modules/dashboard/resources/services/deploy.js'],
+        'scripts': ['modules/dashboard/resources/config.js', 'modules/dashboard/resources/controller.js', 'modules/dashboard/resources/services/configurationService.js', 'modules/dashboard/resources/services/deployService.js', 'modules/dashboard/resources/services/commonService.js', 'modules/dashboard/resources/services/addService.js'],
         'ancestor': [translation.home[LANG]]
     }
 ];

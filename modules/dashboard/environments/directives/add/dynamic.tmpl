@@ -1,6 +1,6 @@
 <div ng-switch="dynamicStep.predefinedStepFunction">
 	<div ng-switch-when="custom_registry">
-		<h4>Configuring Custom Registries</h4>
+		<!--<h4>Configuring Custom Registries</h4>-->
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>{{key}}</accordion-heading>
@@ -10,7 +10,7 @@
 	</div>
 	
 	<div ng-switch-when="resources">
-		<h4>Configuring Resources</h4>
+		<!--<h4>Configuring Resources</h4>-->
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>{{value.label}} {{$index + 1}}</accordion-heading>
@@ -20,7 +20,7 @@
 	</div>
 	
 	<div ng-switch-when="secrets">
-		<h4>Configuring Secrets</h4>
+		<!--<h4>Configuring Secrets</h4>-->
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>{{key}}</accordion-heading>
@@ -30,7 +30,7 @@
 	</div>
 	
 	<div ng-switch-when="repo">
-		<h4>Configuring Repositories</h4>
+		<!--<h4>Configuring Repositories</h4>-->
 		<accordion close-others="false">
 			<accordion-group ng-repeat="(key,value) in dynamicStep.inputs" is-open="true">
 				<accordion-heading>

@@ -193,8 +193,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.collapseMainMenu = false;
 		
-		$scope.collapseExpandMainMenu = function () {
-			$scope.collapseMainMenu = !$scope.collapseMainMenu;
+		$scope.collapseExpandMainMenu = function (forcedFlag) {
+			if(arguments.length > 0){
+				$scope.collapseMainMenu = forcedFlag;
+			}
+			else{
+				$scope.collapseMainMenu = !$scope.collapseMainMenu;
+			}
 		};
 		
 		$scope.pillarChange = function (link) {
@@ -559,7 +564,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			
 			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
 				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-				updateNotifications($scope, envCode, ngDataApi);
+				if(updateNotifications){
+					updateNotifications($scope, envCode, ngDataApi);
+				}
 			}
 			
 			$scope.rebuildMenus(function () {

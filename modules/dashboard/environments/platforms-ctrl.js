@@ -31,10 +31,6 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		envPlatforms.editDriverConfig($scope, driver);
 	};
 
-	$scope.updateDockerConfiguration = function(driver){
-		envPlatforms.updateDockerConfiguration($scope, driver);
-	};
-	
 	$scope.updateNamespaceConfig = function (driver) {
 		envPlatforms.updateNamespaceConfig($scope, driver);
 	};

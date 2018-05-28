@@ -3,29 +3,47 @@
 		<div ng-include="'modules/dashboard/environments/directives/add/template.tmpl'"></div>
 	</div>
 	<div ng-show="wizard.template">
-		<form>
-			<div class="header"><h3>Creating a New Environment</h3></div>
-		</form>
 		<div ng-switch="addEnvCounter">
 			<div ng-switch-when="1">
+				<form>
+					<div class="header"><h3>Environment Code & Template</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/gi.tmpl'"></div>
 			</div>
 			<div ng-switch-when="2">
+				<form>
+					<div class="header"><h3>Infra Cloud Providers</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/deploy.tmpl'"></div>
 			</div>
 			<div ng-switch-when="3">
+				<form>
+					<div class="header"><h3>Registry Information</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/registry.tmpl'"></div>
 			</div>
 			<div ng-switch-when="4">
+				<form>
+					<div class="header capitalize"><h3>{{dynamictemplatestep}}</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/dynamic.tmpl'"></div>
 			</div>
 			<div ng-switch-when="5">
+				<form>
+					<div class="header"><h3>Domain & Prefixes</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/nginx.tmpl'"></div>
 			</div>
 			<div ng-switch-when="6">
+				<form>
+					<div class="header"><h3>Overview</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/overview.tmpl'"></div>
 			</div>
 			<div ng-switch-when="7">
+				<form>
+					<div class="header"><h3>Progress</h3></div>
+				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/status.tmpl'"></div>
 			</div>
 		</div>

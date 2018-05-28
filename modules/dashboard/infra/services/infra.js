@@ -61,35 +61,44 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'required': false
 							}
 						]
-					},
-					{
-						"label": "Tags",
-						"entries": [
-							{
-								'name': 'tags',
-								'label': 'Additional Tags',
-								'type': 'jsoneditor',
-								'height': '200px',
-								'value': (data) ? data.tags : "",
-								'fieldMsg': '',
-								'required': false
-							}
-						]
 					}
 				]
 			}
 		];
 
 		if(value === 'local'){
-			additionalInputs[0].tabs[0].entries.push({
-				'name': 'content',
-				'type': 'jsoneditor',
-				'height': '400px',
-				'value': (data) ? data.content : "",
-				'tooltip': 'Enter the content of your Template',
-				'fieldMsg': 'Template Content is represented by a JSON configuration Object',
-				'required': true
-			});
+			additionalInputs[0].tabs[0].entries.push(
+				{
+					'name': 'textMode',
+					'label': 'I am adding a text value',
+					'fieldMsg': "Turn on this mode if the value you are about to enter is made up of text only (Default mode does not support text only)",
+					'type': 'buttonSlider',
+					'value': false,
+					'required': true,
+					'onAction': function (id, value, form) {
+						if (value) {
+							//text
+							form.entries[4].tabs[0].entries[2].type = 'textarea';
+							delete form.entries[4].tabs[0].entries[2].editor;
+						}
+						else {
+							//json
+							form.entries[4].tabs[0].entries[2].type = 'jsoneditor';
+							form.formData.content = '';
+
+						}
+					}
+				},
+				{
+					'name': 'content',
+					'type': 'jsoneditor',
+					'height': '400px',
+					'value': (data) ? data.content : "",
+					'tooltip': 'Enter the content of your Template',
+					'fieldMsg': 'Template Content is represented by a JSON configuration Object',
+					'required': true
+				}
+			);
 		}
 		else if(value === 'external'){
 			additionalInputs[0].tabs[0].entries.push({

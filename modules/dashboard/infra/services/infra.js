@@ -135,9 +135,6 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 		let options = {
 			timeout: $timeout,
-			// form: {
-			// 	"entries": entries
-			// },
 			entries: entries,
 			name: 'addTemplate',
 			label: 'Add Infra Code Template',

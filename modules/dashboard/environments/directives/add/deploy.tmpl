@@ -10,10 +10,9 @@
 	<accordion-group is-open="platforms.previous" ng-click="switchDriver('previous')" ng-show="restrictions.previousEnv && availableEnvironments.length > 0">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.previous" value="true" name="previous" disabled/>&nbsp;
-			I want to use the same deployer settings of a previous environment
+			Use an existing Infra Cloud Provider
 		</accordion-heading>
-		I want to deploy services, daemons & resources in this environment using the same deployment settings that i
-		have for
+		I want to deploy this environment on the same Infra Cloud Provider i used for environment
 		<select ng-change="changeLikeEnv()" ng-model="form.formData.deployment.previousEnvironment" class="form-control w30" style="display: inline-block">
 			<option value=""> -- Choose Environment --</option>
 			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
@@ -42,11 +41,11 @@
 	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')" ng-show="restrictions.docker">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
-			I want to use Docker as my Deployment Technology
+			Use Docker as my Container Deployment Technology
 		</accordion-heading>
 		
 		<div>
-			<div class="w100 c-both"><label>Select an Infra Provider</label><br></div>
+			<div class="w100 c-both"><label>Select an Infra Cloud Provider</label><br></div>
 			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
 				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
@@ -56,11 +55,11 @@
 	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')" ng-show="restrictions.kubernetes">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.kubernetes" value="true" name="kubernetes" disabled/>&nbsp;
-			I want to use Kubernetes as my Deployment Technology
+			Use Kubernetes as my Container Deployment Technology
 		</accordion-heading>
 		
 		<div>
-			<div class="w100 c-both"><label>Select an Infra Provider</label><br></div>
+			<div class="w100 c-both"><label>Select an Infra Cloud Provider</label><br></div>
 			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
 				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
@@ -70,14 +69,11 @@
 	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')" ng-show="restrictions.showManual">
 		<accordion-heading>
 			<input type="radio" ng-checked="platforms.manual" value="true" name="manual" disabled/>&nbsp;
-			I will Deploy Everything Manually on my Local Machine or a My Custom Server
+			Do not need any Container Deployment Technology
 		</accordion-heading>
 		<p>
-			I will not use any container technology to deploy my Service(s) and Daemon(s).<br/>
-			I will also handle pulling and applying updates on the machines of this Environment myself.
-		</p>
-		<p>
-		<a href="">Click here</a> for more details on the advantages of manual deployment.
+			I will Deploy Everything Myself on the Machine.<br />
+			I will also handle pulling and applying updates on the machine of this Environment.
 		</p>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tbody>
@@ -86,7 +82,7 @@
 						<div id="manualIP-wrapper">
 							<label class="f-left">Machine IP</label>
 							<input type="text" ng-required="platforms.manual" ng-model="form.formData.deployment.manual.nodes" class="form-control" placeholder="127.0.0.1"/>
-							<div class="fieldMsg hint">Provide the IP Address of one of your machine(s).</div>
+							<div class="fieldMsg hint">Provide the IP Address of your machine.</div>
 						</div>
 					</td>
 				</tr>
@@ -95,8 +91,7 @@
 		<hr/>
 		<alert type="warning">
 			<p>
-				Please make sure that the machines you will use for this environment will be reachable, otherwise this
-				dashboard will not be able to communicate with this environment.
+				Please make sure that the machine you will will be reachable so that the dashboard can communicate with your environment.
 			</p>
 		</alert>
 	</accordion-group>

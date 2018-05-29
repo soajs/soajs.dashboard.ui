@@ -48,7 +48,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.inputs : "",
-								'fieldMsg': "<div class='fieldMsg'>To learn more about our form library and the correct syntax to use for creating inputs click <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>Here</a></div>",
+								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template inputs using the SOAJS Form Library syntax. To learn more about the SOAJS Form Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>click here</a></div>",
 								'required': false
 							},
 							{
@@ -57,7 +57,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.display : "",
-								'fieldMsg': "<div class='fieldMsg'>To learn more about our grid display library and the correct syntax to use for creating a grid to display your inputs click <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>Here</a></div>",
+								'fieldMsg': "<div class='fieldMsg'>Provide the exposed inputs display using the SOAJS Grid Library syntax. To learn more about the SOAJS Grid Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>click here</a></div>",
 								'required': false
 							}
 						]
@@ -95,7 +95,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					'height': '400px',
 					'value': (data) ? data.content : "",
 					'tooltip': 'Enter the content of your Template',
-					'fieldMsg': 'Template Content is represented by a JSON configuration Object',
+					'fieldMsg': "<div class='fieldMsg'>Enter your infra as code template content as a JSON object. To learn more about infra code templates <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>click here</a></div>",
 					'required': true
 				}
 			);
@@ -104,7 +104,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			additionalInputs[0].tabs[0].entries.push({
 				'name': 'file',
 				'type': 'document',
-				'fieldMsg': 'Provide the document that contains your infra code template.'
+				'fieldMsg': "<div class='fieldMsg'>Upload your infra as code template. To learn more about infra code templates <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>click here</a></div>"
 			});
 		}
 

@@ -920,7 +920,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								imfv.deployOptions.custom.type = 'resource';
 								
 								//clean up any attached ui
-								if (imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo) {
+								if ((imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo) || (imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.configuration && imfv.deploy.options.custom.sourceCode.configuration.repo)) {
 									imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
 								}
 							}

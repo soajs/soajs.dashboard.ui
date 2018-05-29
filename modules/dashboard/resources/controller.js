@@ -43,6 +43,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					if (oneResource.name === 'dash_cluster') {
 						oneResource.sensitive = true;
 					}
+					if (oneResource.config && Object.keys(oneResource.config).length === 0) {
+						delete oneResource.config;
+					}
 					resources.types[oneResource.type][oneResource.category].push(oneResource);
 				});
 			}

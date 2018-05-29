@@ -319,14 +319,21 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		let entries = angular.copy(infraConfig.form.templates);
 		let options;
 		currentScope.showTemplateForm = true;
-
+		
+		oneInfra.drivers.forEach(oneDriver => {
+			entries[3].value.push({'v': oneDriver, 'l': oneDriver});
+		});
+		
+		
 		if(oneTemplate.location === 'local'){
 			entries[2].value.push({'v': 'local', 'l': "Local", 'selected': true});
 
+			let formData = angular.copy(oneTemplate);
+			delete formData.tags;
 			options = {
 				timeout: $timeout,
 				entries: entries,
-				data: oneTemplate,
+				data: formData,
 				name: 'editTemplate',
 				label: 'Modify Infra Code Template',
 				actions: [
@@ -377,15 +384,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				]
 			};
 
-			injectFormInputs('location', oneTemplate.location, options.form, oneTemplate);
+			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
 		else {
 			entries[2].value.push({'v': 'external', 'l': "external", 'selected': true});
-
+			
+			let formData = angular.copy(oneTemplate);
+			delete formData.tags;
 			options = {
 				timeout: $timeout,
 				entries: entries,
-				data: oneTemplate,
+				data: formData,
 				name: 'editTemplate',
 				label: 'Modify Infra Code Template',
 				actions: [
@@ -420,10 +429,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				]
 			};
 
-			injectFormInputs('location', oneTemplate.location, options.form, oneTemplate);
+			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
-
-		buildFormWithModal(currentScope, $modal, options, () => {
+		
+		buildForm(currentScope, $modal, options, () => {
 			inputsEditor = currentScope.form.entries[4].tabs[1].entries[0];
 			displayEditor = currentScope.form.entries[4].tabs[1].entries[1];
 			if(oneTemplate.location === 'local'){

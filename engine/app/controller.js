@@ -269,10 +269,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 			
 			let hide = false;
 			if (currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
-				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'audit', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else if ($scope.currentDeployer.type === 'manual') {
-				hide = (['secrets', 'environments-platforms', 'repositories', 'audit', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else {
 				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)

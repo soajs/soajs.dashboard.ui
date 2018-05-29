@@ -544,7 +544,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 		$scope.listCustomRegistry();
 	}
-	console.log($scope);
+	
 	$scope.$parent.$parent.collapseExpandMainMenu(false);
 }]);
 

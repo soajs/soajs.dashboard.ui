@@ -1557,7 +1557,6 @@ var environmentsNav = [
 			'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 
 			'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 
 			'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 
-			'modules/dashboard/environments/services/vm.js', 
 			'modules/dashboard/environments/services/metrics.js'
 		],
 		'ancestor': [translation.home[LANG]]

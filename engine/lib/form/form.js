@@ -248,13 +248,16 @@ function buildForm(context, modal, configuration, cb) {
 				_editor.clearSelection();
 				_editor.setShowPrintMargin(false);
 
-				var heightUpdateFunction = function () {
+				function heightUpdateFunction (computedHeightValue) {
 					var newHeight =
 						_editor.getSession().getScreenLength()
 						* _editor.renderer.lineHeight
 						+ _editor.renderer.scrollBar.getWidth() + 10;
 
-					if (oneEntry.fixedHeight) {
+					if(computedHeightValue){
+						newHeight = parseInt(computedHeightValue);
+					}
+					else if (oneEntry.fixedHeight) {
 						newHeight = parseInt(oneEntry.height);
 					}
 					else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
@@ -264,13 +267,13 @@ function buildForm(context, modal, configuration, cb) {
 					_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
 					_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
 					configuration.timeout(function () {
-						jQuery('#' + oneEntry.name).height(newHeight.toString());
-						_editor.resize(true);
+						jQuery('#' + oneEntry.name).height(newHeight.toString() + "px");
+						// _editor.resize(true);
 					}, 5);
-				};
+				}
 
 				context.form.timeout(function () {
-					oneEntry.editor.heightUpdate = heightUpdateFunction();
+					oneEntry.editor.heightUpdate = heightUpdateFunction;
 					// Set initial size to match initial content
 					heightUpdateFunction();
 
@@ -279,6 +282,18 @@ function buildForm(context, modal, configuration, cb) {
 					_editor.getSession().on('change', heightUpdateFunction);
 				}, 1000);
 			};
+			
+			oneEntry.onUpdate = function(_editore){
+				let newHeight = 50;
+				if(_editore[0].data && _editore[0].data.lines){
+					newHeight += _editore[0].data.lines.length *  16.5;
+					newHeight = Math.ceil(newHeight);
+					
+					context.form.timeout(function(){
+						_editore[1].heightUpdate(newHeight);
+					}, 1500);
+				}
+			}
 		}
 	}
 

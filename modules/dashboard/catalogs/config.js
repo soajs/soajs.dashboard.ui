@@ -106,7 +106,7 @@ var catalogAppConfig = {
 				'label': 'Category',
 				'type': 'text',
 				'value': '',
-                'fieldMsg' : 'To Learn more about Catalog Recipes, Click <a target="_blank" href = "https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes">Here</a>',
+                'fieldMsg' : 'To Learn more about Catalog Recipes, <a target="_blank" href = "https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes">Click Here</a>',
                 'disabled': true,
 				'readonly': true
 			},

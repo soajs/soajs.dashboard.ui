@@ -563,7 +563,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                 return cb();
             }
 
-            if (!currentScope.envPlatform) {
+            if (!context.options.envPlatform) {
                 return cb();
             }
 

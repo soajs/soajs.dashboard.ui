@@ -48,7 +48,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.inputs : "",
-								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template inputs using the SOAJS Form Library syntax. To learn more about the SOAJS Form Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>click here</a></div>",
+								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template inputs using the SOAJS Form Library syntax. To learn more about the SOAJS Form Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/63862512/UI+Form'>click here</a></div>",
 								'required': false
 							},
 							{
@@ -57,7 +57,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.display : "",
-								'fieldMsg': "<div class='fieldMsg'>Provide the exposed inputs display using the SOAJS Grid Library syntax. To learn more about the SOAJS Grid Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/479330491/Infra+As+Code+Templates'>click here</a></div>",
+								'fieldMsg': "<div class='fieldMsg'>Provide the exposed inputs display using the SOAJS Grid Library syntax. To learn more about the SOAJS Grid Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/63861622/UI+Listing+Grid'>click here</a></div>",
 								'required': false
 							}
 						]

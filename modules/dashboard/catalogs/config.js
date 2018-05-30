@@ -53,7 +53,6 @@ var catalogAppConfig = {
 					{'v': 'mongo', 'l': "Mongo", "group": "cluster"},
 					{'v': 'elasticsearch', 'l': "ElasticSearch", "cluster": "cluster"},
 					{'v': 'mysql', 'l': "MySQL", "group": "cluster"},
-					{'v': 'sql', 'l': "SQL", "group": "cluster"},
 					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
 					{'v': 'other', 'l': "Other", "group": "cluster"},
 
@@ -107,7 +106,8 @@ var catalogAppConfig = {
 				'label': 'Category',
 				'type': 'text',
 				'value': '',
-				'disabled': true,
+                'fieldMsg' : 'To Learn more about Catalog Recipes, Click <a target="_blank" href = "https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes">Here</a>',
+                'disabled': true,
 				'readonly': true
 			},
 			{

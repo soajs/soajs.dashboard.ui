@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'injectFiles', 'vmSrv', function ($scope, $cookies, $timeout, envHosts, injectFiles, vmSrv) {
+environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'injectFiles', function ($scope, $cookies, $timeout, envHosts, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -54,21 +54,8 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	$scope.listHosts = function (env, noPopulate) {
 		$scope.waitMessage.close();
 		$scope.getEnvironment(env, function () {
-			vmSrv.listServices($scope);
 			envHosts.listHosts($scope, env, noPopulate);
 		});
-	};
-	
-	$scope.inspectService = function(service){
-		vmSrv.inspectService($scope, service);
-	};
-	
-	$scope.maintenanceService = function(service, operation){
-		vmSrv.maintenanceService($scope, service, operation);
-	};
-	
-	$scope.deleteService = function(service){
-		vmSrv.deleteService($scope, service);
 	};
 	
 	$scope.executeHeartbeatTest = function (env, oneHost) {

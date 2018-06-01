@@ -12,7 +12,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
 				overlayLoading.hide();
-				result.forEach((oneResult) =>{
+				result.forEach((oneResult) => {
 					oneResult.open = (oneResult.deployments.length > 0 || (oneResult.templates && oneResult.templates.length > 0));
 				});
 				return cb(error, result);
@@ -20,7 +20,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}, 500);
 	}
 
-	function injectFormInputs(id, value, form, data){
+	function injectFormInputs(id, value, form, data) {
 		//reset form inputs to 4
 		form.entries.length = 4;
 
@@ -66,7 +66,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			}
 		];
 
-		if(value === 'local'){
+		if (value === 'local') {
 			additionalInputs[0].tabs[0].entries.push(
 				{
 					'name': 'textMode',
@@ -100,7 +100,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				}
 			);
 		}
-		else if(value === 'external'){
+		else if (value === 'external') {
 			additionalInputs[0].tabs[0].entries.push({
 				'name': 'file',
 				'type': 'document',
@@ -112,24 +112,24 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 	}
 
-	function addTemplate(currentScope, oneInfra){
+	function addTemplate(currentScope, oneInfra) {
 		currentScope.showTemplateForm = true;
 		let entries = angular.copy(infraConfig.form.templates);
 
 		//inject select infra type
-		if(oneInfra.templatesTypes.indexOf("local") !== -1){
-			entries[2].value.push({'v': 'local', 'l': "Local"});
+		if (oneInfra.templatesTypes.indexOf("local") !== -1) {
+			entries[2].value.push({ 'v': 'local', 'l': "Local" });
 		}
 
-		if(oneInfra.templatesTypes.indexOf("external") !== -1){
-			entries[2].value.push({'v': 'external', 'l': "External"});
+		if (oneInfra.templatesTypes.indexOf("external") !== -1) {
+			entries[2].value.push({ 'v': 'external', 'l': "External" });
 		}
 
 		oneInfra.drivers.forEach(oneDriver => {
-			entries[3].value.push({'v': oneDriver, 'l': oneDriver});
+			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
 
-		entries[2].onAction = function(id, value, form){
+		entries[2].onAction = function (id, value, form) {
 			injectFormInputs(id, value, form);
 		};
 
@@ -144,14 +144,14 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					'label': 'Submit',
 					'btn': 'primary',
 					'action': function (formData) {
-						if(oneInfra.templatesTypes.indexOf("local") !== -1){
+						if (oneInfra.templatesTypes.indexOf("local") !== -1) {
 							let options = {
 								"method": "post",
 								"routeName": "/dashboard/infra/template",
 								"params": {
 									"id": oneInfra._id
 								},
-								"data":{
+								"data": {
 									"template": formData
 								}
 							};
@@ -168,17 +168,28 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								}
 							});
 						}
-						else if(oneInfra.templatesTypes.indexOf("external") !== -1){
+						else if (oneInfra.templatesTypes.indexOf("external") !== -1) {
 							//need to upload in this case
-							if(Object.keys(formData).length < 4){
+							let keys = Object.keys(formData);
+							let foundFile = false;
+							for (let j = 0; j < keys.length; j++) {
+								if (keys[j].indexOf('file') !== -1) {
+									foundFile = true;
+									break;
+								}
+							}
+							if (!foundFile) {
+								$window.alert("Please provide a template to proceed!");
+							}
+							else if (Object.keys(formData).length < 6) {
 								$window.alert("Please fill out all the fields to proceed!");
 							}
-							else{
-								let soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
-								let dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
-								let access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+							else {
+								let soajsauthCookie = $cookies.get('soajs_auth', { 'domain': interfaceDomain });
+								let dashKeyCookie = $cookies.get('soajs_dashboard_key', { 'domain': interfaceDomain });
+								let access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 
-								let progress = {value: 0};
+								let progress = { value: 0 };
 								let options = {
 									url: apiConfiguration.domain + "/dashboard/infra/template/upload",
 									params: {
@@ -261,50 +272,50 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		};
 
 		buildForm(currentScope, $modal, options, () => {
-			if(entries[2].value.length === 1) {
+			if (entries[2].value.length === 1) {
 				entries[2].value[0].selected = true;
 				currentScope.form.formData.location = entries[2].value[0].v;
 				$timeout(() => {
 					injectFormInputs('location', currentScope.form.formData.location, currentScope.form);
 				}, 100);
 			}
-			if(entries[3].value.length === 1) {
+			if (entries[3].value.length === 1) {
 				entries[3].value[0].selected = true;
 				currentScope.form.formData.driver = entries[3].value[0].v;
 			}
 		});
 	}
 
-	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor){
+	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor) {
 		let inputs = inputsEditor.ngModel;
-		if(typeof(inputs) === 'string'){
-			try{
+		if (typeof(inputs) === 'string') {
+			try {
 				formData.inputs = JSON.parse(inputs);
 			}
-			catch(e){
+			catch (e) {
 				$window.alert("Please enter a valid JSON schema inside the templates inputs field.");
 				return false;
 			}
 		}
 
 		let display = displayEditor.ngModel;
-		if(typeof(display) === 'string'){
-			try{
+		if (typeof(display) === 'string') {
+			try {
 				formData.display = JSON.parse(display);
 			}
-			catch(e){
+			catch (e) {
 				$window.alert("Please enter a valid JSON schema inside the templates inputs display field.");
 				return false;
 			}
 		}
 
-		if(location === 'local'){
+		if (location === 'local') {
 			let content = contentEditor.ngModel;
-			if(typeof(content) === 'string'){
-				try{
+			if (typeof(content) === 'string') {
+				try {
 					formData.content = JSON.parse(content);
 				}
-				catch(e){
+				catch (e) {
 					$window.alert("Please enter a valid JSON schema inside the templates field.");
 					return false;
 				}
@@ -314,19 +325,19 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		return true;
 	}
 
-	function editTemplate(currentScope, oneInfra, oneTemplate){
+	function editTemplate(currentScope, oneInfra, oneTemplate) {
 		let contentEditor, inputsEditor, displayEditor;
 		let entries = angular.copy(infraConfig.form.templates);
 		let options;
 		currentScope.showTemplateForm = true;
 		
 		oneInfra.drivers.forEach(oneDriver => {
-			entries[3].value.push({'v': oneDriver, 'l': oneDriver});
+			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
 		
 		
-		if(oneTemplate.location === 'local'){
-			entries[2].value.push({'v': 'local', 'l': "Local", 'selected': true});
+		if (oneTemplate.location === 'local') {
+			entries[2].value.push({ 'v': 'local', 'l': "Local", 'selected': true });
 
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;
@@ -344,7 +355,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'action': function (formData) {
 
 							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
-							if(!status){
+							if (!status) {
 								return false;
 							}
 
@@ -354,7 +365,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								"params": {
 									"id": oneTemplate._id
 								},
-								"data":{
+								"data": {
 									"template": formData
 								}
 							};
@@ -387,7 +398,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
 		else {
-			entries[2].value.push({'v': 'external', 'l': "external", 'selected': true});
+			entries[2].value.push({ 'v': 'external', 'l': "external", 'selected': true });
 			
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;
@@ -405,14 +416,14 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'action': function (formData) {
 
 							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
-							if(!status){
+							if (!status) {
 								return false;
 							}
 
-							if(formData.file_0){
+							if (formData.file_0) {
 								uploadNewTemplateFile(formData);
 							}
-							else{
+							else {
 								updateTemplateCompletemntaryInfo(formData);
 							}
 						}
@@ -435,17 +446,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		buildForm(currentScope, $modal, options, () => {
 			inputsEditor = currentScope.form.entries[4].tabs[1].entries[0];
 			displayEditor = currentScope.form.entries[4].tabs[1].entries[1];
-			if(oneTemplate.location === 'local'){
+			if (oneTemplate.location === 'local') {
 				contentEditor = currentScope.form.entries[4].tabs[0].entries[1];
 			}
 		});
 
-		function uploadNewTemplateFile(formData){
-			let soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
-			let dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
-			let access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+		function uploadNewTemplateFile(formData) {
+			let soajsauthCookie = $cookies.get('soajs_auth', { 'domain': interfaceDomain });
+			let dashKeyCookie = $cookies.get('soajs_dashboard_key', { 'domain': interfaceDomain });
+			let access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
 
-			let progress = {value: 0};
+			let progress = { value: 0 };
 			let options = {
 				url: apiConfiguration.domain + "/dashboard/infra/template/upload",
 				params: {
@@ -484,7 +495,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			});
 		}
 
-		function updateTemplateCompletemntaryInfo(formData){
+		function updateTemplateCompletemntaryInfo(formData) {
 			if (formData.inputs.length > 0 || typeof(formData.display) === 'object') {
 				let compOptions = {
 					"method": "post",

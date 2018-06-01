@@ -181,7 +181,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if(!kubeEnv){
 						namespaces = [];
 						namespaceConfig.namespace = namespaceConfig.defaultValue.id;
-						
+
 						if(currentScope.wizard.deployment.selectedDriver === 'kubernetes'){
 							//check if previous
 							if(currentScope.wizard.deployment.previousEnvironment){
@@ -201,7 +201,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 							}
 						}
-						
+
 						return cb();
 					}
 
@@ -258,6 +258,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									if(oneSecret.scope.$valid){
 										imfv.name = secretName; //force the name back as it was
 										oneSecret = imfv;
+
+										if (typeof oneSecret.data === "object") {
+											oneSecret.data = JSON.stringify(oneSecret.data);
+										}
+
 										delete oneSecret.scope;
 										currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
 										defaultWizardSecretValues.push(oneSecret);
@@ -292,9 +297,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					oneRepo.type = templateDefaults.type; //enforce
 					oneRepo.category = templateDefaults.category; //enforce
-					
+
 					currentScope.dynamictemplatestep = `Deploy Source Code From Repository`;
-					
+
 					let service = {};
 					let record = {};
 					let version = {};
@@ -492,7 +497,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					if(isKubernetes){
 						currentScope.isAutoScalable = true;
-						
+
 						//check if previous
 						if(currentScope.wizard.deployment.previousEnvironment){
 							currentScope.availableEnvironments.forEach((onePreviousEnv) =>{
@@ -604,9 +609,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let key = entriesNames[counter];
 					let resource = resourceEntries[key];
 					let record = angular.copy(resource);
-					
+
 					currentScope.dynamictemplatestep = `Resource ${key}`;
-					
+
 					record.name = key;
 					let settings = {"type": record.type, category: record.category};
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
@@ -614,12 +619,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.context.envCode = currentScope.envCode;
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
-					
+
 					for(let type in currentScope.recipes){
 						currentScope.recipes[type].forEach((oneRecipe) =>{
 							if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
 								resource.scope.mainData.recipes.push(oneRecipe);
-								
+
 							}
 						});
 					}
@@ -715,7 +720,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								record.deployOptions.deployConfig.replication.replicas = deployFromTemplate.replicas;
 							}
 						}
-						
+
 						currentScope.dynamictemplatestep = "Deploy " + currentScope.dynamictemplatestep;
 					}
 					else{
@@ -796,7 +801,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 										};
 									}
 								}
-								
+
 								let driverConfiguration = {
 									"nodes" : deployment.nodes,
 									"namespace" : {
@@ -824,7 +829,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
-							
+
 							if(resource.scope.formData.deployOptions && resource.deployOptions){
 								resource.scope.formData.deployOptions.deployConfig = resource.deployOptions.deployConfig;
 								let deployConfig = resource.scope.formData.deployOptions.deployConfig;
@@ -832,7 +837,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									resource.scope.onDeploymentTechnologySelect();
 								}
 							}
-							
+
 							let element = angular.element(document.getElementById("resource_" + key));
 							element.append("<form name=\"addEditResource\" id=\"addEditResource\"><div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\"></div></form>");
 							$compile(element.contents())(resource.scope);
@@ -867,7 +872,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 
 				currentScope.saveData = function () {
-					
+
 					if (!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv) {
 						currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv = [];
 					}
@@ -879,12 +884,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					for (let key in resourceEntries) {
 						let resource = resourceEntries[key];
 						resourceConfiguration.mapConfigurationFormDataToConfig(resource.scope);
-						
+
 						let validDeploy = resourceDeploy.updateFormDataBeforeSave(resource.scope, resource.scope.formData.deployOptions);
 						if (!validDeploy) {
 							return;
 						}
-						
+
 						if (typeof(resource.formIsInvalid) === 'boolean' && !resource.formIsInvalid) {
 							//map the values back to custom registry
 							let imfv = angular.copy(resource.scope.formData);
@@ -906,19 +911,19 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									"deploy": true,
 									"type": "custom"
 								};
-								
+
 								if (imfv.deployOptions.sourceCode) {
 									imfv.deploy.options.custom.sourceCode = imfv.deployOptions.sourceCode;
 								}
-								
+
 								if (imfv.deployOptions.deployConfig.replication && imfv.deployOptions.deployConfig.replication.replicas) {
 									imfv.deploy.options.deployConfig.replication.replicas = imfv.deployOptions.deployConfig.replication.replicas;
 								}
-								
+
 								imfv.deploy.options.custom.name = key;
 								imfv.deployOptions.name = key;
 								imfv.deployOptions.custom.type = 'resource';
-								
+
 								//clean up any attached ui
 								if ((imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.custom && imfv.deploy.options.custom.sourceCode.custom.repo) || (imfv.deploy.options.custom.sourceCode && imfv.deploy.options.custom.sourceCode.configuration && imfv.deploy.options.custom.sourceCode.configuration.repo)) {
 									imfv.deploy.options.custom.sourceCode = resource.scope.reformatSourceCodeForCicd(imfv.deploy.options.custom.sourceCode);
@@ -927,7 +932,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							else {
 								delete imfv.deployOptions;
 							}
-							
+
 							resource = imfv;
 							delete resource.scope;
 							delete resource.formIsInvalid;
@@ -1013,7 +1018,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 		currentScope.back = function () {
 			jQuery("html, body").animate({scrollTop: 0 });
-			
+
 			currentScope.referringStep = "dynamicSrv";
 			currentScope.deploymentStackStep--;
 			if (currentScope.deploymentStackStep < 0) {
@@ -1029,7 +1034,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 		currentScope.next = function () {
 			jQuery("html, body").animate({scrollTop: 0 });
-			
+
 			//update template in local storage
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
 			delete $localStorage.addEnv.template.content;

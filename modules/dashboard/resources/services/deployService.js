@@ -963,9 +963,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if (!ports) {
 					recipe = true;
 					ports = selectedRecipe.recipe.deployOptions.ports;
-					if (context.form && context.form.formData && ports && ports[0]) { // applicable for resources with driver configuration only
-						context.form.formData.port0 = ports[0].published; // set port in drivers's configuration as well
-					}
 				}
 				if (!context.formData.deployOptions.custom) {
 					context.formData.deployOptions.custom = {};

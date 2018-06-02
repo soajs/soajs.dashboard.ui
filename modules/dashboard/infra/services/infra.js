@@ -328,6 +328,9 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	function editTemplate(currentScope, oneInfra, oneTemplate) {
 		let contentEditor, inputsEditor, displayEditor;
 		let entries = angular.copy(infraConfig.form.templates);
+		entries[0].readonly = true;
+		entries[0].disabled = true;
+		
 		let options;
 		currentScope.showTemplateForm = true;
 		
@@ -461,7 +464,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				url: apiConfiguration.domain + "/dashboard/infra/template/upload",
 				params: {
 					id: oneInfra._id,
-					name: formData.name,
+					name: oneTemplate.name,
 					description: formData.description,
 					access_token: access_token,
 					tags: {
@@ -504,11 +507,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						"id": oneInfra._id
 					},
 					"data": {
-						"name": formData.name,
+						"name": oneTemplate.name,
 						"inputs": formData.inputs,
 						"display": formData.display
 					}
 				};
+				overlayLoading.show();
 				getSendDataFromServer(currentScope, ngDataApi, compOptions, function (error, data) {
 					overlayLoading.hide();
 					if (error) {

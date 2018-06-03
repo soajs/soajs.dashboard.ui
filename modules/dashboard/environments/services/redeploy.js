@@ -34,7 +34,8 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 		});
 	}
 	
-	function rebuildService(currentScope, service) {
+	function rebuildService(currentScope, OriginalService) {
+		let service = angular.copy(OriginalService);
 		let sourceCode = {};
 		let serviceEnvs = {};
 		//get already selected values if any
@@ -92,13 +93,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 				
 				let nodePort =0, LoadBalancer=0;
+				if(service.catalogUpdate){
+					service.ports = catalogRecipe.recipe.deployOptions.ports;
+				}
 				
-				if (service.ports
-					&& Array.isArray(service.ports)
-					&& service.ports.length > 0){
+				if (service.ports && Array.isArray(service.ports) && service.ports.length > 0){
 					//let ports = [];
 					
-					let inpsectService = angular.copy(service);
 					catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
 						if (oneCatalogPort.isPublished || oneCatalogPort.published){
 							if (oneCatalogPort.published){
@@ -108,7 +109,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 								LoadBalancer++;
 							}
 						}
-						inpsectService.ports.forEach(function (oneServicePort) {
+						service.ports.forEach(function (oneServicePort) {
 							if (oneServicePort.published && oneServicePort.published > 30000){
 								oneServicePort.published -= 30000;
 							}
@@ -123,26 +124,25 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						"label": "Published Ports",
 						"entries": []
 					};
-					currentScope.loadBalancer = (inpsectService.servicePortType === 'loadBalancer');
 					
-					if (currentScope.loadBalancer){
+					if (LoadBalancer > 0){
 						publishedPortEntry.entries.push({
 							'type': 'html',
 							'value': '<label>Load Balancer</label> <label class="toggleSwitch f-right"><input type="checkbox"  disabled=true checked=true><span class="buttonSlider round"></span></label> <label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>'
 						});
 					}
-					
-					if (!currentScope.loadBalancer){
+					else {
 						if (!formConfig.data) {
 							formConfig.data = {};
 						}
 						formConfig.data.ports = [];
-						inpsectService.ports.forEach(function (onePort, key) {
+						service.ports.forEach(function (onePort, key) {
 							formConfig.data.ports.push({
 								"name": onePort.name,
 								"target": parseInt(onePort.target),
 								"preserveClientIP": onePort.preserveClientIP
 							});
+							
 							if(onePort.published) {
 								formConfig.data.ports[key].isPublished = true;
 								formConfig.data.ports[key].published = parseInt(onePort.published);
@@ -165,9 +165,9 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							
 						});
 					}
-					
 					formConfig.entries[0].entries.push(publishedPortEntry);
 				}
+				
 				if (LoadBalancer !== 0 && nodePort !== 0){
 					$modal.open({
 						templateUrl: "portConfigurationReDepoly.tmpl",

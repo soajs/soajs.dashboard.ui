@@ -131,7 +131,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							'value': '<label>Load Balancer</label> <label class="toggleSwitch f-right"><input type="checkbox"  disabled=true checked=true><span class="buttonSlider round"></span></label> <label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>'
 						});
 					}
-					else {
+					if(nodePort > 0) {
 						if (!formConfig.data) {
 							formConfig.data = {};
 						}
@@ -165,7 +165,9 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							
 						});
 					}
-					formConfig.entries[0].entries.push(publishedPortEntry);
+					if(nodePort > 0 || LoadBalancer > 0){
+						formConfig.entries[0].entries.push(publishedPortEntry);
+					}
 				}
 				
 				if (LoadBalancer !== 0 && nodePort !== 0){

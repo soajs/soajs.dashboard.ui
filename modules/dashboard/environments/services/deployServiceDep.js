@@ -557,11 +557,13 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					//get the type of the ports
 					formDataRoot.custom.ports = [];
 					ports.forEach(function (onePort) {
-						formDataRoot.custom.ports.push(onePort);
-						if(onePort.isPublished || onePort.published){
-							formDataRoot.custom.loadBalancer = true;
-							if (onePort.published){
-								formDataRoot.custom.loadBalancer = false;
+						if(onePort.name && onePort.target){
+							formDataRoot.custom.ports.push(onePort);
+							if(onePort.isPublished || onePort.published){
+								formDataRoot.custom.loadBalancer = true;
+								if (onePort.published){
+									formDataRoot.custom.loadBalancer = false;
+								}
 							}
 						}
 					});

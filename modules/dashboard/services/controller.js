@@ -318,6 +318,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 			$scope.envSelected = $scope.environments.value;
 			$scope.envDomain = $scope.serviceEnvironments[$scope.envSelected].domain;
 			$scope.envTenants = $scope.serviceEnvironments[$scope.envSelected].tenants;
+			$scope.serviceExposedPort = $scope.serviceEnvironments[$scope.envSelected].servicePortExposed || false;
 		}
 
 		//call fill ace editor
@@ -383,6 +384,9 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 			x[3].schemes[0] = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
 			x[3].basePath = x[3].basePath.toLowerCase();
 			if(parseInt($scope.servicePort) === parseInt(x[3].host.split(':')[1])) {
+				x[3].basePath = '';
+			}
+			if($scope.serviceExposedPort){
 				x[3].basePath = '';
 			}
 			

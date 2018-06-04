@@ -29,7 +29,9 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			}
 			else {
 				currentScope.displayAlert('success', 'Service redeployed successfully');
-				currentScope.listServices();
+				$timeout(() => {
+					currentScope.listServices();
+				}, 1500);
 			}
 		});
 	}
@@ -970,11 +972,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 				else {
 					currentScope.displayAlert('success', 'Service rebuilt successfully');
-					currentScope.listServices();
-					overlayLoading.hide();
 					if (currentScope.modalInstance) {
 						currentScope.modalInstance.dismiss();
 					}
+					$timeout(() => {
+						overlayLoading.hide();
+						currentScope.listServices();
+					}, 1500);
 				}
 			});
 		}

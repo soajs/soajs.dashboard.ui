@@ -344,7 +344,9 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			}
 			else {
 				currentScope.displayAlert('success', 'Service deleted successfully');
-				currentScope.listServices();
+				$timeout(() => {
+					currentScope.listServices();
+				}, 1500);
 			}
 		});
 	}

@@ -800,6 +800,14 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 											token: currentScope.wizard.selectedInfraProvider.api.token
 										};
 									}
+									else{
+										deployment = {
+											nodes: "",
+											NS: "soajs",
+											perService: false,
+											token: ""
+										};
+									}
 								}
 
 								let driverConfiguration = {

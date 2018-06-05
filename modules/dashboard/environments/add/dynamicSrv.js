@@ -557,7 +557,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 				}
-
 				let templateDefaults = currentScope.wizard.template.content.deployments.repo[context.section[context.section.length -1]];
 				//create a copy just in case
 				let repoEntries = angular.copy(context.inputs);

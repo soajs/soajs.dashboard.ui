@@ -216,6 +216,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				$window.alert("Select the environment your want to clone its deployment settings to proceed!");
 				return false;
 			}
+			
+			//on first run, formData.selectedDriver is not being set
+			//on refresh it works
+			formData.selectedDriver = currentScope.platform;
 			formData.previousEnvironment = currentScope.previousEnvironment;
 		}
 		else {

@@ -101,25 +101,26 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				
 				if (service.ports && Array.isArray(service.ports) && service.ports.length > 0){
 					//let ports = [];
-					
-					catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
-						if (oneCatalogPort.isPublished || oneCatalogPort.published){
-							if (oneCatalogPort.published){
-								nodePort++;
+					if(catalogRecipe.recipe.deployOptions && catalogRecipe.recipe.deployOptions.ports && Array.isArray(catalogRecipe.recipe.deployOptions.ports)){
+						catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
+							if (oneCatalogPort.isPublished || oneCatalogPort.published){
+								if (oneCatalogPort.published){
+									nodePort++;
+								}
+								else {
+									LoadBalancer++;
+								}
 							}
-							else {
-								LoadBalancer++;
-							}
-						}
-						service.ports.forEach(function (oneServicePort) {
-							if (oneServicePort.published && oneServicePort.published > 30000){
-								oneServicePort.published -= 30000;
-							}
-							if (oneCatalogPort.target === oneServicePort.target){
-								oneServicePort.name = oneCatalogPort.name;
-							}
+							service.ports.forEach(function (oneServicePort) {
+								if (oneServicePort.published && oneServicePort.published > 30000){
+									oneServicePort.published -= 30000;
+								}
+								if (oneCatalogPort.target === oneServicePort.target){
+									oneServicePort.name = oneCatalogPort.name;
+								}
+							});
 						});
-					});
+					}
 					
 					let publishedPortEntry = {
 						"type": "group",

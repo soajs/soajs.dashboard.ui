@@ -1293,7 +1293,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		
 		
 		context.options = {
-			deploymentModes: [],
+			deploymentModes: [
+				{
+					label: 'replicated - deploy the specified number of replicas based on the availability of resources',
+					value: 'replicated'
+				},
+				{
+					label: 'global - automatically deploy one replica of the service on each node in the cluster',
+					value: 'global'
+				}
+			],
 			envCode: currentScope.context.envCode,
 			envType: currentScope.context.envType,
 			envPlatform: currentScope.context.envPlatform,

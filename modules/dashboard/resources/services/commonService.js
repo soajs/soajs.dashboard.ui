@@ -83,7 +83,10 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 	    
 	    var options = {
 		    method: 'post',
-		    routeName: `/dashboard/resources/${id}`,
+		    routeName: `/dashboard/resources/`,
+		    params: {
+		    	id: id
+		    },
 		    data: {
 			    env: apiParams.envCode,             // add/edit resource    + deploy + rebuild
 			    resource: apiParams.saveOptions,    // add/edit resource    + cicd

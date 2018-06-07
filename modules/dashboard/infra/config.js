@@ -5,9 +5,9 @@ let infraConfig = {
 		list: ['dashboard', '/infra', 'get'],
 		activate: ['dashboard', '/infra', 'post'],
 		edit: ['dashboard', '/infra', 'put'],
-		deactivate: ['dashboard', '/infra', 'del'],
-		removeDeployment: ['dashboard', '/infra/deployment', 'del'],
-		removeTemplates: ['dashboard', '/infra/template', 'del'],
+		deactivate: ['dashboard', '/infra', 'delete'],
+		removeDeployment: ['dashboard', '/infra/deployment', 'delete'],
+		removeTemplates: ['dashboard', '/infra/template', 'delete'],
 		addTEmplate: ['dashboard', '/infra/template', 'post'],
 	},
 

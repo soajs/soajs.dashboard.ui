@@ -18,7 +18,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 	$scope.listResources = function (cb) {
 		let apiParams = {
 		    env : $scope.context.envCode,
-            envType : $scope.context.envType
+            envType: $scope.context.envType
         };
 
 		commonService.listResourcesApi($scope, apiParams, function (response) {
@@ -50,7 +50,9 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				});
 			}
 			
-			if (cb) return cb();
+			if (cb) {
+				return cb();
+			}
 		});
 		
 	};

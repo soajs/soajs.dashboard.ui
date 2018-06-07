@@ -6,8 +6,8 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/resources', // must edit the path
-			params: apiParams,
+			routeName: '/dashboard/resources',
+			params: apiParams
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -24,7 +24,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         getSendDataFromServer($scope, ngDataApi, {
             method: 'delete',
             routeName: '/dashboard/resources',
-            params: apiParams,
+            params: apiParams
         }, function (error) {
             overlayLoading.hide();
             if (error) {

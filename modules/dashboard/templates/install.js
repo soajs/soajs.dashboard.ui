@@ -6,7 +6,7 @@ var templatesNav = [
         'label': "Environment Templates",
         'checkPermission': {
             'service': 'dashboard',
-            'route': '/environment/templates',
+            'route': '/templates',
             'method': 'get'
         },
         'url': '#/templates',

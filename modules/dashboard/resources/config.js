@@ -69,7 +69,7 @@ var resourcesAppConfig = {
     },
 
     permissions: {
-        list: ['dashboard', '/resources/list', 'get'],
+        list: ['dashboard', '/resources', 'get'],
 		add: ['dashboard', '/resources/add', 'post'],
 		update: ['dashboard', '/resources/update', 'put'],
 		delete: ['dashboard', '/resources/delete', 'delete'],

@@ -7,7 +7,7 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
 				"routeName": "/dashboard/environment/dbs/list",
-				"params": {"env": env}
+				"params": { "env": env }
 			}, function (error, response) {
 				if (error) {
 					currentScope.$parent.displayAlert('danger', error.message);
@@ -28,7 +28,7 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/environment/dbs/delete",
-			"params": {"env": env, 'name': name}
+			"params": { "env": env, 'name': name }
 		}, function (error, response) {
 			if (error) {
 				currentScope.$parent.displayAlert('danger', error.message);
@@ -47,86 +47,89 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 
 	function addDatabase(currentScope, env, session) {
 		
-		getEnvironment(currentScope, env, function(){
+		getEnvironment(currentScope, env, function () {
 			
-			if(currentScope.myEnvironment.dbs.clusters && Object.keys(currentScope.myEnvironment.dbs.clusters).length > 0){
+			if (currentScope.myEnvironment.dbs.clusters && Object.keys(currentScope.myEnvironment.dbs.clusters).length > 0) {
 				openUpgradeModal(currentScope);
 			}
-			else{
-				getResources(currentScope, env, function(error, resources, mygroups){
-					
+			else {
+				getResources(currentScope, env, function (error, resources, mygroups) {
 					var formConfig = (session) ? environmentsConfig.form.session : environmentsConfig.form.database;
-					
-					formConfig.entries.forEach(function(oneEntry){
-						if(oneEntry.name === 'cluster'){
-							oneEntry.value = resources;
-							oneEntry.groups = mygroups;
-						}
-					});
-					
-					var options = {
-						timeout: $timeout,
-						form: formConfig,
-						name: 'addDatabase',
-						label: 'Add New Database',
-						actions: [
-							{
-								'type': 'submit',
-								'label': translation.submit[LANG],
-								'btn': 'primary',
-								'action': function (formData) {
-									var postData = {
-										'name': formData.name,
-										'cluster': formData.cluster
-									};
-									if(formData.prefix){
-										postData['prefix'] = formData.prefix;
-									}
-									if (session) {
-										postData['name'] = 'session';
-										postData['sessionInfo'] = {
-											'store': formData.store,
-											'dbName': formData.name,
-											'expireAfter': formData.expireAfter * 3600 * 1000,
-											'collection': formData.collection,
-											'stringify': formData.stringify
+
+					if (error) {
+						currentScope.$parent.displayAlert('danger', error.message);
+					}
+					else {
+						formConfig.entries.forEach(function (oneEntry) {
+							if (oneEntry.name === 'cluster') {
+								oneEntry.value = resources;
+								oneEntry.groups = mygroups;
+							}
+						});
+
+						var options = {
+							timeout: $timeout,
+							form: formConfig,
+							name: 'addDatabase',
+							label: 'Add New Database',
+							actions: [
+								{
+									'type': 'submit',
+									'label': translation.submit[LANG],
+									'btn': 'primary',
+									'action': function (formData) {
+										var postData = {
+											'name': formData.name,
+											'cluster': formData.cluster
 										};
-									}
-									else {
-										postData['tenantSpecific'] = formData.tenantSpecific;
-									}
-									
-									getSendDataFromServer(currentScope, ngDataApi, {
-										"method": "post",
-										"routeName": "/dashboard/environment/dbs/add",
-										"params": {"env": env},
-										"data": postData
-									}, function (error) {
-										if (error) {
-											currentScope.form.displayAlert('danger', error.message);
+										if (formData.prefix) {
+											postData['prefix'] = formData.prefix;
+										}
+										if (session) {
+											postData['name'] = 'session';
+											postData['sessionInfo'] = {
+												'store': formData.store,
+												'dbName': formData.name,
+												'expireAfter': formData.expireAfter * 3600 * 1000,
+												'collection': formData.collection,
+												'stringify': formData.stringify
+											};
 										}
 										else {
-											currentScope.$parent.displayAlert('success', translation.environmentDatabaseAddedSuccessfully[LANG]);
-											currentScope.modalInstance.close();
-											currentScope.form.formData = {};
-											currentScope.listDatabases(env);
+											postData['tenantSpecific'] = formData.tenantSpecific;
 										}
-									});
+
+										getSendDataFromServer(currentScope, ngDataApi, {
+											"method": "post",
+											"routeName": "/dashboard/environment/dbs/add",
+											"params": { "env": env },
+											"data": postData
+										}, function (error) {
+											if (error) {
+												currentScope.form.displayAlert('danger', error.message);
+											}
+											else {
+												currentScope.$parent.displayAlert('success', translation.environmentDatabaseAddedSuccessfully[LANG]);
+												currentScope.modalInstance.close();
+												currentScope.form.formData = {};
+												currentScope.listDatabases(env);
+											}
+										});
+									}
+								},
+								{
+									'type': 'reset',
+									'label': translation.cancel[LANG],
+									'btn': 'danger',
+									'action': function () {
+										currentScope.modalInstance.dismiss('cancel');
+										currentScope.form.formData = {};
+									}
 								}
-							},
-							{
-								'type': 'reset',
-								'label': translation.cancel[LANG],
-								'btn': 'danger',
-								'action': function () {
-									currentScope.modalInstance.dismiss('cancel');
-									currentScope.form.formData = {};
-								}
-							}
-						]
-					};
-					
-					buildFormWithModal(currentScope, $modal, options);
+							]
+						};
+						buildFormWithModal(currentScope, $modal, options);
+					}
 				});
 			}
 		});
@@ -160,14 +163,14 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 			});
 		}
 		
-		getEnvironment(currentScope, env, function(){
-			if(currentScope.myEnvironment.dbs.clusters && Object.keys(currentScope.myEnvironment.dbs.clusters).length > 0){
+		getEnvironment(currentScope, env, function () {
+			if (currentScope.myEnvironment.dbs.clusters && Object.keys(currentScope.myEnvironment.dbs.clusters).length > 0) {
 				openUpgradeModal(currentScope);
 			}
-			else{
-				getResources(currentScope, env, function(error, resources, mygroups){
-					formConfig.entries.forEach(function(oneEntry){
-						if(oneEntry.name === 'cluster'){
+			else {
+				getResources(currentScope, env, function (error, resources, mygroups) {
+					formConfig.entries.forEach(function (oneEntry) {
+						if (oneEntry.name === 'cluster') {
 							oneEntry.value = resources;
 							oneEntry.groups = mygroups;
 						}
@@ -189,7 +192,7 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 										'name': formData.name,
 										'cluster': formData.cluster
 									};
-									if(formData.prefix){
+									if (formData.prefix) {
 										postData['prefix'] = formData.prefix;
 									}
 									if (name === 'session') {
@@ -209,7 +212,7 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 									getSendDataFromServer(currentScope, ngDataApi, {
 										"method": "put",
 										"routeName": "/dashboard/environment/dbs/update",
-										"params": {"env": env},
+										"params": { "env": env },
 										"data": postData
 									}, function (error) {
 										if (error) {
@@ -242,14 +245,14 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 		});
 	}
 	
-	function openUpgradeModal(currentScope){
+	function openUpgradeModal(currentScope) {
 		$modal.open({
 			templateUrl: "oldResources.tmpl",
 			size: 'lg',
 			backdrop: true,
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
-				$scope.upgradeResources = function(){
+				$scope.upgradeResources = function () {
 					currentScope.$parent.go("#/resources");
 					$modalInstance.close();
 				}
@@ -261,8 +264,8 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "put",
 			"routeName": "/dashboard/environment/dbs/updatePrefix",
-			"params": {"env": env},
-			"data": {'prefix': prefix}
+			"params": { "env": env },
+			"data": { 'prefix': prefix }
 		}, function (error, response) {
 			if (error) {
 				currentScope.$parent.displayAlert('danger', translation.unableUpdateEnvironmentDatabasePrefix[LANG]);
@@ -273,11 +276,11 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 		});
 	}
 
-	function getEnvironment(currentScope, env, cb){
+	function getEnvironment(currentScope, env, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment",
-			"params":{
+			"params": {
 				"code": env
 			}
 		}, function (error, response) {
@@ -291,34 +294,38 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 		});
 	}
 	
-	function getResources(currentScope, env, cb){
+	function getResources(currentScope, env, cb) {
 		let resources = [];
 		let groups = [];
-		
+		let envType = 'manual';
+		if (currentScope.myEnvironment.deployer && currentScope.myEnvironment.deployer.type) {
+			envType = currentScope.myEnvironment.deployer.type;
+		}
 		//get resources of this environment
-		getEnvResources(function(error, response){
-			if(error) {
+		getEnvResources(function (error, response) {
+			if (error) {
 				return cb(error);
 			}
 			else {
 				currentScope.envResources = response;
-				currentScope.envResources.forEach(function(oneResource){
-					if(oneResource.type === 'cluster'){
-						if(groups.indexOf(oneResource.created) === -1){
+				currentScope.envResources.forEach(function (oneResource) {
+					if (oneResource.type === 'cluster') {
+						if (groups.indexOf(oneResource.created) === -1) {
 							groups.push(oneResource.created);
 						}
-						resources.push({'v': oneResource.name, 'l': oneResource.name, 'group': oneResource.created});
+						resources.push({ 'v': oneResource.name, 'l': oneResource.name, 'group': oneResource.created });
 					}
 				});
 				return cb(null, resources, groups);
 			}
 		});
 		
-		function getEnvResources(mCb){
+		function getEnvResources(mCb) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'get',
-				routeName: '/dashboard/resources/list',
+				routeName: '/dashboard/resources',
 				params: {
+					envType: envType,
 					env: env
 				}
 			}, mCb);

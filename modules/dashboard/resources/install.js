@@ -6,7 +6,7 @@ var resourcesNav = [
         'label': "Resources",
         'checkPermission': {
             'service': 'dashboard',
-            'route': '/resources/list',
+            'route': '/resources',
             'method': 'get'
         },
         'url': '#/resources',

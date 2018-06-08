@@ -76,7 +76,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     
     function addEditResourceApi($scope, apiParams, cb) {
 
-		let id = '';
+		let id = 'new';
 	    if ($scope.options.formAction !== 'add') { // on edit
 	    	id = apiParams.id;
 	    }

@@ -62,7 +62,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							
 							if ($scope.configuration[service].type === 'daemon') {
 								for (var i in $scope.configuration[service]) {
-									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options'].indexOf(i) === -1) {
+									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options', 'status'].indexOf(i) === -1) {
 										
 										$scope.configuration[service].versions[i] = {};
 										for (var groupName in $scope.configuration[service][i]) {
@@ -76,7 +76,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							else {
 								for (var i in $scope.configuration[service]) {
 									
-									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options'].indexOf(i) === -1) {
+									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options', 'status'].indexOf(i) === -1) {
 										$scope.configuration[service].versions[i] = angular.copy($scope.configuration[service][i]);
 										delete $scope.configuration[service][i];
 									}

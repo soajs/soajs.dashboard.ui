@@ -1299,6 +1299,9 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			if (Object.hasOwnProperty.call(swagger, 'tenant_access_token')) {
 				query.access_token = swagger.tenant_access_token;
 			}
+			else{
+				query.access_token = '';
+			}
 			
 			// add headers
 			headers.Accept = values.responseType;

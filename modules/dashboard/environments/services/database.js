@@ -53,9 +53,10 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 				openUpgradeModal(currentScope);
 			}
 			else {
+				overlayLoading.show();
 				getResources(currentScope, env, function (error, resources, mygroups) {
 					var formConfig = (session) ? environmentsConfig.form.session : environmentsConfig.form.database;
-
+					overlayLoading.hide();
 					if (error) {
 						currentScope.$parent.displayAlert('danger', error.message);
 					}
@@ -162,8 +163,9 @@ dbServices.service('envDB', ['ngDataApi', '$timeout', '$modal', function (ngData
 				}
 			});
 		}
-		
+		overlayLoading.show();
 		getEnvironment(currentScope, env, function () {
+			overlayLoading.hide();
 			if (currentScope.myEnvironment.dbs.clusters && Object.keys(currentScope.myEnvironment.dbs.clusters).length > 0) {
 				openUpgradeModal(currentScope);
 			}

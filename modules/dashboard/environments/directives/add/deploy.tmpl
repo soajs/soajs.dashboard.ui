@@ -6,6 +6,11 @@
 		<ngform></ngform>
 	</div>
 </script>
+
+<div ng-if="envType!== 'manual' && (!infraProviders || infraProviders.length === 0)">
+	<alert type="warning">No Infra providers detected <a href="#/infra">Add Infra Cloud Provider</a></alert>
+</div>
+
 <accordion close-others="true">
 	<accordion-group is-open="platforms.previous" ng-click="switchDriver('previous')" ng-show="restrictions.previousEnv && availableEnvironments.length > 0">
 		<accordion-heading>
@@ -49,6 +54,9 @@
 			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
 				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
+			<div ng-if="!showDockerAccordion">
+				<alert type="warning">No Infra providers detected <a href="#/infra">Add Infra Cloud Provider</a></alert>
+			</div>
 		</div>
 		<div ng-show="wizard.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
 	</accordion-group>
@@ -62,6 +70,9 @@
 			<div class="w100 c-both"><label>Select an Infra Cloud Provider</label><br></div>
 			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
 				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
+			</div>
+			<div ng-if="!showKubeAccordion">
+				<alert type="warning">No Infra providers detected, <a href="#/infra">Add Infra Cloud Provider</a></alert>
 			</div>
 		</div>
 		<div ng-show="wizard.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>

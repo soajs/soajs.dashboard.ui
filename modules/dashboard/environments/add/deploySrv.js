@@ -292,42 +292,44 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			]
 		};
 		
-		if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
-			options.actions.push({
-				'type': 'submit',
-				'label': 'OverView & Finalize',
-				'btn': 'primary',
-				'action': function (formData) {
-					currentScope.referringStep = 'deploy';
-					handleFormData(currentScope, formData);
-				}
-			});
-		}
-		else {
-			options.actions.push({
-				'type': 'submit',
-				'label': "Next",
-				'btn': 'primary',
-				'action': function (formData) {
-					currentScope.referringStep = 'deploy';
-					handleFormData(currentScope, formData);
-				}
-			});
-		}
-		
-		options.actions.push({
-			'type': 'reset',
-			'label': translation.cancel[LANG],
-			'btn': 'danger',
-			'action': function () {
-				delete $localStorage.addEnv;
-				delete currentScope.wizard;
-				currentScope.form.formData = {};
-				currentScope.$parent.go("/environments")
-			}
-		});
-		
 		listInfraProviders(currentScope, () => {
+			if(currentScope.envType === 'manual' || (currentScope.envType !== 'manual' && currentScope.infraProviders && currentScope.infraProviders.length > 0)){
+				if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
+					options.actions.push({
+						'type': 'submit',
+						'label': 'OverView & Finalize',
+						'btn': 'primary',
+						'action': function (formData) {
+							currentScope.referringStep = 'deploy';
+							handleFormData(currentScope, formData);
+						}
+					});
+				}
+				else {
+					options.actions.push({
+						'type': 'submit',
+						'label': "Next",
+						'btn': 'primary',
+						'action': function (formData) {
+							currentScope.referringStep = 'deploy';
+							handleFormData(currentScope, formData);
+						}
+					});
+				}
+			}
+			
+			options.actions.push({
+				'type': 'reset',
+				'label': translation.cancel[LANG],
+				'btn': 'danger',
+				'action': function () {
+					delete $localStorage.addEnv;
+					delete currentScope.wizard;
+					currentScope.form.formData = {};
+					currentScope.$parent.go("/environments")
+				}
+			});
+			
 			buildForm(currentScope, $modal, options, function () {
 				
 				currentScope.mapStorageToWizard($localStorage.addEnv);
@@ -495,7 +497,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		if (currentScope.envType && currentScope.envType === 'manual') {
 			return cb();
 		}
-
+		
+		currentScope.showDockerAccordion = false;
+		currentScope.showKubeAccordion = false;
+		
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
@@ -509,6 +514,13 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				currentScope.infraProviders = angular.copy(providers);
 				delete currentScope.infraProviders.soajsauth;
 				currentScope.infraProviders.forEach((oneProvider) => {
+					if(oneProvider.technologies.indexOf('docker') !== -1){
+						currentScope.showDockerAccordion = true;
+					}
+					if(oneProvider.technologies.indexOf('kubernetes') !== -1){
+						currentScope.showKubeAccordion = true;
+					}
+					
 					if (oneProvider.name === 'local') {
 						let technolog = oneProvider.technologies[0];
 						oneProvider.image = "themes/" + themeToUse + "/img/" + technolog + "_logo.png";

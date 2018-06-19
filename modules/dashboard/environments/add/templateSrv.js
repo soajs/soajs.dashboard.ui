@@ -17,81 +17,84 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 	function go(currentScope){
 		currentScope.showTemplates = false;
 		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
-			'method': 'get',
-			'routeName': '/dashboard/templates'
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error.message);
-			} else {
-				if (response) {
-					currentScope.allTemplates = angular.copy(response);
-					currentScope.templates = angular.copy(response);
-					currentScope.oldStyle = false;
-					
-					for(let i = currentScope.templates.length -1; i >=0; i--){
-						if(!currentScope.templates[i].type){
-							currentScope.templates.splice(i, 1);
-						}
-						else{
-							
-							if (currentScope.templates[i].type === '_BLANK') {
-								currentScope.oldStyle = true;
-							}
-							else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
-								delete currentScope.templates[i].content;
-							}
-							else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){
+		
+		listInfraProviders(currentScope, () => {
+			getSendDataFromServer(currentScope, ngDataApi, {
+				'method': 'get',
+				'routeName': '/dashboard/templates'
+			}, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+				} else {
+					if (response) {
+						currentScope.allTemplates = angular.copy(response);
+						currentScope.templates = angular.copy(response);
+						currentScope.oldStyle = false;
+						
+						for(let i = currentScope.templates.length -1; i >=0; i--){
+							if(!currentScope.templates[i].type){
 								currentScope.templates.splice(i, 1);
 							}
-						}
-					}
-					
-					if(currentScope.wizard.template){
-						let storedTemplateFound = false;
-						currentScope.templates.forEach(function (oneTemplate) {
-							if(currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id){
-								storedTemplateFound = true;
-								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
-								currentScope.nextStep();
-							}
-							else if(currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name){
-								storedTemplateFound = true;
-								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
-								currentScope.wizard.template._id = oneTemplate._id;
+							else{
 								
-								if(currentScope.goToStep === 'status'){
-									currentScope.checkStatus();
+								if (currentScope.templates[i].type === '_BLANK') {
+									currentScope.oldStyle = true;
 								}
-								else{
+								else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
+									delete currentScope.templates[i].content;
+								}
+								else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){
+									currentScope.templates.splice(i, 1);
+								}
+							}
+						}
+						
+						if(currentScope.wizard.template){
+							let storedTemplateFound = false;
+							currentScope.templates.forEach(function (oneTemplate) {
+								if(currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id){
+									storedTemplateFound = true;
+									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 									currentScope.nextStep();
 								}
+								else if(currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name){
+									storedTemplateFound = true;
+									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
+									currentScope.wizard.template._id = oneTemplate._id;
+									
+									if(currentScope.goToStep === 'status'){
+										currentScope.checkStatus();
+									}
+									else{
+										currentScope.nextStep();
+									}
+								}
+							});
+							
+							if(!storedTemplateFound){
+								// template not found // clear storage and redirect to main page
+								delete $localStorage.addEnv;
+								delete currentScope.wizard;
+								currentScope.$parent.go("/environments-add");
 							}
-						});
+						}
 						
-						if(!storedTemplateFound){
-							// template not found // clear storage and redirect to main page
-							delete $localStorage.addEnv;
-							delete currentScope.wizard;
-							currentScope.$parent.go("/environments-add");
+						if($routeParams.portal){
+							delete $localStorage.envType;
+							currentScope.templates.forEach(function (oneTemplate) {
+								if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
+									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
+									currentScope.nextStep();
+								}
+							});
 						}
 					}
-					
-					if($routeParams.portal){
-						delete $localStorage.envType;
-						currentScope.templates.forEach(function (oneTemplate) {
-							if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
-								currentScope.wizard.template.content = angular.copy(oneTemplate.content);
-								currentScope.nextStep();
-							}
-						});
+					else {
+						currentScope.displayAlert('danger', 'No templates found!');
 					}
 				}
-				else {
-					currentScope.displayAlert('danger', 'No templates found!');
-				}
-			}
+			});
 		});
 		
 		currentScope.switchEnv = function (type) {
@@ -213,6 +216,38 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 				}
 			}
 		}
+	}
+	
+	function listInfraProviders(currentScope, cb) {
+		if (currentScope.envType && currentScope.envType === 'manual') {
+			return cb();
+		}
+		
+		currentScope.showDockerAccordion = false;
+		currentScope.showKubeAccordion = false;
+		
+		//get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra"
+		}, function (error, providers) {
+			if (error) {
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				delete providers.soajsauth;
+				providers.forEach((oneProvider) => {
+					if(oneProvider.technologies.indexOf('docker') !== -1){
+						currentScope.showDockerAccordion = true;
+					}
+					if(oneProvider.technologies.indexOf('kubernetes') !== -1){
+						currentScope.showKubeAccordion = true;
+					}
+				});
+				return cb();
+			}
+		});
 	}
 	
 	return {

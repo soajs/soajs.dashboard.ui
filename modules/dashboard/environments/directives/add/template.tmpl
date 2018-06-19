@@ -42,7 +42,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
+			<div class="text-center table-cell environmentBox2" ng-class="{'noHover': (!showDockerAccordion && !showKubeAccordion), 'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
 				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
 					<span style="color: #337ab7;" class="icon icon-cloud"></span>
 				</div>

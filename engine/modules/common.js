@@ -458,6 +458,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 						//add infra to group details
 						if(!allVMs[oneProvider.name + "_" + oneVM.layer]){
 							allVMs[oneProvider.name + "_" + oneVM.layer] = {
+								name: oneVM.layer,
 								infraProvider: oneProvider,
 								list: [oneVM]
 							};

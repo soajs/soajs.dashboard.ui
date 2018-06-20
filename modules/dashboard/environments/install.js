@@ -1495,7 +1495,7 @@ var environmentsNav = [
 			'method': 'get'
 		},
 		"fallbackLocation": "#/environments",
-		'label': translation.platformsAndCertificates[LANG],
+		'label': "Infrastructure",
 		'url': '#/environments-platforms',
 		'tplPath': 'modules/dashboard/environments/infra/directives/list-platforms.tmpl',
 		'icon': 'drawer',

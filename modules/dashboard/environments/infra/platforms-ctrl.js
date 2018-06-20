@@ -65,10 +65,25 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	}
 	
 	/** VM Operations **/
-	$scope.listVMs = function() {
-		platformsVM.listVMs($scope);
+	$scope.listVMLayers = function() {
+		platformsVM.listVMLayers($scope);
 	};
 	
+	$scope.addVMLayer = function(){
+		platformsVM.addVMLayer($scope);
+	};
+	
+	$scope.inspectVMLayer = function(oneVMLayer){
+		platformsVM.inspectVMLayer($scope, oneVMLayer);
+	};
+	
+	$scope.editVMLayer = function(oneVMLayer){
+		platformsVM.editVMLayer($scope, oneVMLayer);
+	};
+	
+	$scope.deleteVMLayer = function(oneVMLayer){
+		platformsVM.deleteVMLayer($scope, oneVMLayer);
+	};
 	
 	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 		$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;

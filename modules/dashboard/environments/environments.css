@@ -691,3 +691,9 @@ input.secretMountPathRepo{
     float: none!important;
     width:96%!important;
 }
+
+.entryBox3{
+    width:31.3%;
+    margin:1%;
+    float:left;
+}

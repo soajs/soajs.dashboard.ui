@@ -13,7 +13,7 @@
 				</alert>
 			</div>
 		</tab>
-		<tab heading="Virtual Machines" ng-click="listVMs()">
+		<tab heading="Virtual Machines" ng-click="listVMLayers()" ng-if="access.vm.list">
 			<br />
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>

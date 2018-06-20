@@ -427,14 +427,22 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 		}
 		
 		if(infraProviders.length > 0){
+			let count = 0;
+			overlayLoading.show();
 			infraProviders.forEach((oneProvider) => {
-				getInfraProvidersVMS(oneProvider);
+				getInfraProvidersVMS(oneProvider, () => {
+					count++;
+					if(count === infraProviders.length){
+						overlayLoading.hide();
+						return callback(allVMs);
+					}
+				});
 			});
 		}
 		else return callback(allVMs);
 	}
 	
-	function getInfraProvidersVMS(oneProvider){
+	function getInfraProvidersVMS(oneProvider, cb){
 		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -469,7 +477,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 					});
 				}
 
-				return callback(allVMs);
+				return cb();
 			}
 		});
 	}

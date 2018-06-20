@@ -1,0 +1,31 @@
+<fieldset>
+	<legend>
+		<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
+		<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
+	</legend>
+	<br />
+	<div class="t-right">
+		<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-confirm-click="Are you sure you want to detach the associated container technology, this move is irreversible ?" ng-click="detachContainerTechnology()">
+	</div>
+	<div class="entryBoxes entryBoxesGrid">
+		<div class="entryBox driverEntryBox">
+			<div class="header">
+				{{driver|uppercase}}
+				<span class="rightActions">
+                        <a href="" ng-if="access.platforms.certs.upload && platform === 'docker' && driver ==='remote' && config.certs.length < 3" ng-click="uploadCerts(platform, driver)">
+                            <span class="icon icon-attachment" tooltip="{{translation.uploadCertificates[LANG]}}"></span>
+                        </a>
+                        <a href="" ng-if="platform === 'kubernetes'" ng-click="updateNamespaceConfig(driver)">
+                            <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
+                        </a>
+                    </span>
+			</div>
+			<div class="body">
+				<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+			</div>
+		</div>
+	</div>
+</fieldset>
+<script type="text/ng-template" id="updateNamespaceConfig.tmpl">
+	<div ng-include="'modules/dashboard/environments/directives/updateNamespaceConfig.tmpl'"></div>
+</script>

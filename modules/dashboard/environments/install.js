@@ -1497,7 +1497,7 @@ var environmentsNav = [
 		"fallbackLocation": "#/environments",
 		'label': translation.platformsAndCertificates[LANG],
 		'url': '#/environments-platforms',
-		'tplPath': 'modules/dashboard/environments/directives/list-platforms.tmpl',
+		'tplPath': 'modules/dashboard/environments/infra/directives/list-platforms.tmpl',
 		'icon': 'drawer',
 		'pillar': {
 			'name': 'deployment',
@@ -1507,7 +1507,7 @@ var environmentsNav = [
 		'order': 4,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/platforms-ctrl.js', 'modules/dashboard/environments/services/platforms.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/infra/platforms-ctrl.js', 'modules/dashboard/environments/infra/services/vms.js', 'modules/dashboard/environments/infra/services/platforms.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

@@ -395,3 +395,90 @@ function updateNotifications($scope, envCode, ngDataApi, notifications){
 		});
 	}
 }
+
+
+function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders, callback) {
+	
+	let allVMs = {};
+	
+	function listInfraProviders(cb) {
+		//get the available providers
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra"
+		}, function (error, providers) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				delete providers.soajsauth;
+				infraProviders = providers;
+			}
+			return cb();
+		});
+	}
+	
+	function getVMs() {
+		for (let i = infraProviders.length -1; i >=0; i--){
+			let oneProvider = infraProviders[i];
+			if(oneProvider.technologies.indexOf("vm") === -1){
+				infraProviders.splice(i, 1);
+			}
+		}
+		
+		if(infraProviders.length > 0){
+			infraProviders.forEach((oneProvider) => {
+				getInfraProvidersVMS(oneProvider);
+			});
+		}
+		else return callback(allVMs);
+	}
+	
+	function getInfraProvidersVMS(oneProvider){
+		
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/cloud/vm/list",
+			"params":{
+				"infraId": oneProvider._id,
+				"env": envCode
+			}
+		}, function (error, providerVMs) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				delete providerVMs.soajsauth;
+				
+				//aggregate response and generate layers from list returned
+				if(providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0){
+
+					providerVMs[oneProvider.name].forEach((oneVM) => {
+						//aggregate and populate groups
+						//add infra to group details
+						if(!allVMs[oneProvider.name + "_" + oneVM.layer]){
+							allVMs[oneProvider.name + "_" + oneVM.layer] = {
+								infraProvider: oneProvider,
+								list: [oneVM]
+							};
+						}
+						else{
+							allVMs[oneProvider.name + "_" + oneVM.layer].list.push(oneVM);
+						}
+					});
+				}
+
+				return callback(allVMs);
+			}
+		});
+	}
+	
+	if(!infraProviders || !Array.isArray(infraProviders) || infraProviders.length === 0){
+		listInfraProviders(() => {
+			getVMs();
+		});
+	}
+	else{
+		getVMs();
+	}
+}

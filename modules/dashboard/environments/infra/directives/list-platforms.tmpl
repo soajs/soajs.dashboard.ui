@@ -1,0 +1,22 @@
+<section ng-controller="platformsCtrl">
+	
+	<tabset>
+		<tab heading="Container Technology">
+			<br />
+			<div ng-if="environment.selected !== 'manual'" ng-include="'modules/dashboard/environments/infra/directives/container.tmpl'"></div>
+			<div ng-if="environment.selected === 'manual'">
+				<alert type="info">
+					<input type="button" class="btn btn-sm btn-primary f-right" value="Attach Container Technology" ng-click="attachContainerTechnology()">
+					<p>
+						The following environment does not have any container technology associated to it.
+					</p>
+				</alert>
+			</div>
+		</tab>
+		<tab heading="Virtual Machines" ng-click="listVMs()">
+			<br />
+			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
+		</tab>
+	</tabset>
+	
+</section>

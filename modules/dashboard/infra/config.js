@@ -23,11 +23,11 @@ let infraConfig = {
 				'type': 'html',
 				'value': "<img height='32' src=\"modules/dashboard/environments/images/aws.png\">&nbsp; Amazon Web Services"
 			},
-			// {
-			// 	'name': 'azure',
-			// 	'type': 'html',
-			// 	'value': "<img height='32' src=\"modules/dashboard/environments/images/azure.png\">&nbsp; Microsoft Azure"
-			// },
+			{
+				'name': 'azure',
+				'type': 'html',
+				'value': "<img height='32' src=\"modules/dashboard/environments/images/azure.png\">&nbsp; Microsoft Azure"
+			},
 			{
 				'name': 'docker',
 				'type': 'html',

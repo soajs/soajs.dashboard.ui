@@ -76,6 +76,30 @@ var serviceProviders = {
 			}
 		}
 	},
+	azure: {
+		terraform: {
+			ui: {
+				"form": {
+					"deploy": {
+						"grid": {
+							"columns": {}
+						},
+						"entries": [
+							{
+								'name': 'region',
+								'label': 'Select a Region',
+								'type': 'select',
+								'value': [],
+								'tooltip': 'Select Deployment Region',
+								'required': true,
+								"fieldMsg": "Microsoft Azure deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
+							}
+						]
+					}
+				}
+			}
+		}
+	},
 	local: {
 		kubernetes: {
 			ui: {

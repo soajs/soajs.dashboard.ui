@@ -28,8 +28,8 @@
 	</div>
 	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
 		<br />
-		<div class="entryBox3" ng-repeat="oneVMLayer in vmLayers">
-			<div class="entryBox">
+		<div ng-repeat="oneVMLayer in vmLayers">
+			<div class="entryBox mb20">
 				<div class="header table">
 					<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" />&nbsp;
 					<span class="serviceLabelBox">
@@ -70,39 +70,26 @@
 						<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 							<thead>
 								<tr class="header">
-									<td class="nameHeader">Property Name</td>
-									<td class="nameHeader">PropertyValue</td>
+									<td class="nameHeader">Instance Name</td>
+									<td class="nameHeader">OS Name</td>
+									<td class="nameHeader">DiskSize</td>
+									<td class="nameHeader">Instance Network</td>
+									<td class="nameHeader">Public IP</td>
+									<td class="nameHeader">Exposed Ports</td>
 								</tr>
 							</thead>
 							<tbody>
 								<tr class="cloud-tr-bgColor">
-									<td><b>Instance Name</b></td>
 									<td>{{instance.name}}</td>
-								</tr>
-								<tr class="cloud-tr-bgColor">
-									<td><b>OS Name</b></td>
 									<td>{{instance.tasks[0].ref.os.type}}</td>
-								</tr>
-								<tr class="cloud-tr-bgColor">
-									<td><b>Disk Size</b></td>
 									<td>{{instance.tasks[0].ref.os.diskSizeGB}} GB</td>
-								</tr>
-								<tr class="cloud-tr-bgColor">
-									<td><b>Instance Network</b></td>
 									<td>{{instance.network}}</td>
-								</tr>
-								<tr class="cloud-tr-bgColor" ng-if="instance.ip">
-									<td><b>Public IP</b></td>
-									<td>{{instance.ip}}</td>
-								</tr>
-								<tr class="cloud-tr-bgColor" ng-if="instance.ports">
-									<td valign="top"><b>Exposed Ports</b></td>
+									<td>{{instance.ip || "N/A"}}</td>
 									<td>
 										<div ng-repeat="onePort in instance.ports">
 											<label class="text-uppercase">{{onePort.protocol}}</label>: {{onePort.published}}
 										</div>
 									</td>
-								</tr>
 							</tbody>
 						</table>
 					</div>
@@ -111,3 +98,11 @@
 		</div>
 	</div>
 </div>
+<script type="text/ng-template" id="infraProvider.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-body">
+		<ngform></ngform>
+	</div>
+</script>

@@ -31,7 +31,7 @@
 		<div ng-repeat="oneVMLayer in vmLayers">
 			<div class="entryBox mb20">
 				<div class="header table">
-					<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" />&nbsp;
+					<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
 					<span class="serviceLabelBox">
 						<span>
 							<b style="margin:0;">{{oneVMLayer.name}}</b>

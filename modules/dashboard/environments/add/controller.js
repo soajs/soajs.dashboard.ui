@@ -1,14 +1,14 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrvDeploy', 'giSrv', 'deploymentSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrvDeploy, giSrv, deploymentSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrvDeploy', 'giSrv', 'deploymentSrv', 'vmSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrvDeploy, giSrv, deploymentSrv, vmSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
 	$scope.wizard = {};
-	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
+	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseVM', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
 	$scope.addEnvCounter = 0;
 	
 	$scope.envType = '';
@@ -46,6 +46,10 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	
 	$scope.chooseDeployment = function () {
 		deploymentSrv.go($scope);
+	};
+	
+	$scope.chooseVM = function () {
+		vmSrv.go($scope);
 	};
 	
 	$scope.chooseRegistry = function () {

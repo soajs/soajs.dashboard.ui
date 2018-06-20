@@ -8,100 +8,101 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		let restrictions = currentScope.wizard.template.restriction;
 		let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment // stronger then restrictions
 		let showonDemand = false; // only in case of a blank env, manual
-		let manual;
+		let manual = true;
 		
 		currentScope.restrictions = {
 			docker: false,
 			kubernetes: false,
+			vm: false,
 			previousEnv: false,
 			onDemand: showonDemand,
 			showManual: showManualDeploy
 		};
-
+		
 		if (currentScope.envType && currentScope.envType === 'manual') {
 			if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
 				showonDemand = true;
 			}
 			currentScope.restrictions.onDemand = showonDemand;
-			switchDriver('manual');
-			return;
+			if(switchDriver){
+				switchDriver('manual');
+			}
 		} else {
 			showManualDeploy = false;
 			manual = false;
 		}
-
-		// if (currentScope.wizard.template && currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
-		// 	let deployments = currentScope.wizard.template.deploy.deployments;
-		// 	let stepsKeys = Object.keys(deployments);
-		// 	stepsKeys.forEach(function (eachStep) {
-		// 		if (deployments[eachStep]) {
-		// 			let stagesKeys = Object.keys(deployments[eachStep]);
-		// 			stagesKeys.forEach(function (eachStage) {
-		// 				if (eachStage.includes('.repo.') || eachStage.includes('.resources.') || eachStage.includes('secrets')) {
-		// 					showManualDeploy = false;
-		// 				}
-		// 			});
-		// 		}
-		// 	});
-		// }
 		
-		let docker, kubernetes;
+		let docker = false, vm = false, kubernetes = false;
 		currentScope.infraProviders.forEach((oneInfra) => {
-			if (oneInfra.technologies.indexOf('kubernetes') !== -1) {
-				kubernetes = true;
-			}
-			
-			if (oneInfra.technologies.indexOf('docker') !== -1) {
-				docker = true;
+			if(!showonDemand){
+				if (oneInfra.technologies.indexOf('kubernetes') !== -1) {
+					kubernetes = true;
+				}
+				
+				if (oneInfra.technologies.indexOf('docker') !== -1) {
+					docker = true;
+				}
+				
+				if (oneInfra.technologies.indexOf('vm') !== -1) {
+					vm = true;
+				}
 			}
 		});
-
+		
 		// no restrictions obj
 		if (!restrictions || Object.keys(restrictions).length === 0) {
+			let myPrevious = (currentScope.envType !== 'manual');
 			currentScope.restrictions = {
+				vm: vm,
 				docker: docker,
 				kubernetes: kubernetes,
-				previousEnv: true,
+				previousEnv: myPrevious,
 				onDemand: showonDemand,
 				showManual: showManualDeploy
 			};
 			return;
 		}
 		
-		if (restrictions.deployment) {
-			if (restrictions.deployment.indexOf('container') !== -1) {
-				showonDemand = false; // todo
-				if (restrictions.driver) {
-					if (restrictions.driver.indexOf('container.docker') !== -1) {
-						docker = true;
+		if (restrictions && restrictions.deployment) {
+			vm = false;
+			docker = false;
+			kubernetes = false;
+			
+			if(!showonDemand) {
+				if (restrictions.deployment.indexOf('container') !== -1) {
+					showonDemand = false; // todo
+					if (restrictions.driver) {
+						if (restrictions.driver.indexOf('container.docker') !== -1) {
+							docker = true;
+						}
+						if (restrictions.driver.indexOf('container.kubernetes') !== -1) {
+							kubernetes = true;
+						}
 					}
-					if (restrictions.driver.indexOf('container.kubernetes') !== -1) {
+					else {
+						docker = true;
 						kubernetes = true;
 					}
 				}
-				else {
-					docker = true;
-					kubernetes = true;
+				
+				if(restrictions.deployment.indexOf('vm') !== -1){
+					vm = true;
 				}
-			}
-			else{
-				docker = false;
-				kubernetes = false;
 			}
 		}
 		
-		if (showManualDeploy && restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
+		if (showManualDeploy && restrictions && restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
 			manual = true;
 		}
-
+		
 		currentScope.restrictions = {
+			vm: vm,
 			docker: docker,
 			kubernetes: kubernetes,
 			previousEnv: (docker || kubernetes),
 			onDemand: showonDemand,
 			showManual: manual
 		};
-
 		if (restrictions && Object.hasOwnProperty.call(restrictions, 'allowInfraReuse')) {
 			if (restrictions.allowInfraReuse === false) {
 				currentScope.restrictions.previousEnv = false;
@@ -293,43 +294,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		};
 		
 		listInfraProviders(currentScope, () => {
-			if(currentScope.envType === 'manual' || (currentScope.envType !== 'manual' && currentScope.infraProviders && currentScope.infraProviders.length > 0)){
-				if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
-					options.actions.push({
-						'type': 'submit',
-						'label': 'OverView & Finalize',
-						'btn': 'primary',
-						'action': function (formData) {
-							currentScope.referringStep = 'deploy';
-							handleFormData(currentScope, formData);
-						}
-					});
-				}
-				else {
-					options.actions.push({
-						'type': 'submit',
-						'label': "Next",
-						'btn': 'primary',
-						'action': function (formData) {
-							currentScope.referringStep = 'deploy';
-							handleFormData(currentScope, formData);
-						}
-					});
-				}
-			}
-			
-			options.actions.push({
-				'type': 'reset',
-				'label': translation.cancel[LANG],
-				'btn': 'danger',
-				'action': function () {
-					delete $localStorage.addEnv;
-					delete currentScope.wizard;
-					currentScope.form.formData = {};
-					currentScope.$parent.go("/environments")
-				}
-			});
-			
 			buildForm(currentScope, $modal, options, function () {
 				
 				currentScope.mapStorageToWizard($localStorage.addEnv);
@@ -376,6 +340,71 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 				
 				calculateRestrictions(currentScope);
+				
+				if(currentScope.envType === 'manual' || (currentScope.envType !== 'manual' && currentScope.infraProviders && currentScope.infraProviders.length > 0)){
+					
+					if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
+						options.actions.push({
+							'type': 'submit',
+							'label': (currentScope.restrictions.vm) ? 'Next' : 'OverView & Finalize',
+							'btn': 'primary',
+							'action': function (formData) {
+								currentScope.referringStep = 'deploy';
+								handleFormData(currentScope, formData);
+							}
+						});
+					}
+					else {
+						//if no provider showin and vm is used, trigger next automatically
+						if(currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.docker){
+							
+							if(currentScope.restrictions.showManual){
+								options.actions.push({
+									'type': 'submit',
+									'label': "Next",
+									'btn': 'primary',
+									'action': function (formData) {
+										currentScope.referringStep = 'deploy';
+										handleFormData(currentScope, formData);
+									}
+								});
+							}
+							else{
+								if(currentScope.referringStep === 'vm'){
+									currentScope.referringStep = 'deploy';
+									currentScope.previousStep();
+								}
+								else {
+									currentScope.referringStep = 'deploy';
+									currentScope.nextStep();
+								}
+							}
+						}
+						else{
+							options.actions.push({
+								'type': 'submit',
+								'label': "Next",
+								'btn': 'primary',
+								'action': function (formData) {
+									currentScope.referringStep = 'deploy';
+									handleFormData(currentScope, formData);
+								}
+							});
+						}
+					}
+				}
+				
+				options.actions.push({
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						delete $localStorage.addEnv;
+						delete currentScope.wizard;
+						currentScope.form.formData = {};
+						currentScope.$parent.go("/environments")
+					}
+				});
 				
 				currentScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				overlayLoading.hide();
@@ -494,9 +523,9 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function listInfraProviders(currentScope, cb) {
-		if (currentScope.envType && currentScope.envType === 'manual') {
-			return cb();
-		}
+		// if (currentScope.envType && currentScope.envType === 'manual') {
+		// 	return cb();
+		// }
 		
 		currentScope.showDockerAccordion = false;
 		currentScope.showKubeAccordion = false;

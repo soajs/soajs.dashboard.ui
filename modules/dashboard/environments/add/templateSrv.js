@@ -37,7 +37,6 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 								currentScope.templates.splice(i, 1);
 							}
 							else{
-								
 								if (currentScope.templates[i].type === '_BLANK') {
 									currentScope.oldStyle = true;
 								}
@@ -202,18 +201,24 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		currentScope.showTemplates = true;
 		currentScope.templates = angular.copy(currentScope.allTemplates);
 		
-		if (type === 'manual') {
-			for (let i = currentScope.templates.length - 1; i >= 0; i--) {
-				let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment
-				if (currentScope.templates[i].restriction && currentScope.templates[i].restriction.deployment) {
+		for (let i = currentScope.templates.length - 1; i >= 0; i--) {
+			let removeTemplate = false; // show manual iff none of the stages is repos/resources/secrets deployment
+			if(currentScope.templates[i].restriction && currentScope.templates[i].restriction.deployment){
+				if (type === 'manual') {
 					if (currentScope.templates[i].restriction.deployment.indexOf('container') !== -1) {
-						showManualDeploy = false;
+						removeTemplate = true;
 					}
 				}
-				
-				if (!showManualDeploy) {
-					currentScope.templates.splice(i, 1);
+				else{
+					//remove templates that have restriction.deployment which does not include container
+					if (currentScope.templates[i].restriction.deployment.indexOf('container') === -1) {
+						removeTemplate = true;
+					}
 				}
+			}
+			
+			if (removeTemplate) {
+				currentScope.templates.splice(i, 1);
 			}
 		}
 	}

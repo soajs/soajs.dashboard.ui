@@ -54,6 +54,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 						'label': "Back",
 						'btn': 'success',
 						'action': function () {
+							currentScope.referringStep = 'registry';
 							if (currentScope.form && currentScope.form.formData) {
 								currentScope.form.formData = {};
 							}
@@ -69,6 +70,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 					'label': 'OverView & Finalize',
 					'btn': 'primary',
 					'action': function (formData) {
+						currentScope.referringStep = 'registry';
 						handleFormData(currentScope, formData);
 					}
 				});
@@ -90,6 +92,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 				'label': translation.cancel[LANG],
 				'btn': 'danger',
 				'action': function () {
+					currentScope.referringStep = 'registry';
 					delete $localStorage.addEnv;
 					delete currentScope.wizard;
 					currentScope.form.formData = {};

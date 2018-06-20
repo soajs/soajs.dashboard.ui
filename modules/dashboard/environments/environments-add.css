@@ -134,6 +134,15 @@ div.box-of-3{
     padding-bottom: 5px;
 }
 
+.serviceOpsDropdown {
+    float: right !important;
+    height: 28px !important;
+}
+
+.serviceOpsDropdown .btn {
+    font-size: 11px !important;
+}
+
 .addEnvImg div {
     width: 15%;
 }

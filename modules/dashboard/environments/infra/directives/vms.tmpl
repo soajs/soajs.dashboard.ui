@@ -1,3 +1,17 @@
+<div ng-if="environmentWizard" class="c-both w-100 table">
+	<alert type="info">
+		<p>
+			Detected Existing VM Layers that you can use to deploy resources in based on the template you have selected.<br />
+		</p>
+		<b><u>To proceed, you can:</u></b>
+		<ol>
+			<li>Either click next and use these VM Layers in the next step when deploying resources.</li>
+			<li>Or create new VM Layers and use these layers in the next steps when deploying resources.</li>
+		</ol>
+	</alert>
+	<br />
+</div>
+
 <div class="f-right">
 	<a class="btn btn-sm btn-success" ng-click="listVMLayers()" ng-if="access.vm.list">
 		<span class="icon icon-undo"></span>
@@ -52,12 +66,12 @@
 									<span class="icon icon-info"></span>&nbsp;Inspect VM Layer
 								</a>
 							</li>
-							<li ng-if="access.vm.modify">
+							<li ng-if="!environmentWizard && access.vm.modify">
 								<a href="" ng-click="editVMLayer(oneVMLayer)">
 									<span class="icon icon-pencil"></span>&nbsp;Modify VM Layer
 								</a>
 							</li>
-							<li ng-if="access.vm.delete">
+							<li ng-if="!environmentWizard && access.vm.delete">
 								<a href="" ng-click="deleteVMLayer(oneVMLayer)" ng-confirm-click="Are you sure you want to delete this VM Layer, this operation is irreversible?">
 									<span class="icon icon-cross"></span>&nbsp;Delete VM Layer
 								</a>

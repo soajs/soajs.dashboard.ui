@@ -17,6 +17,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 			platformsVM.addVMLayer(currentScope);
 		};
 		
+		currentScope.inspectVMLayer = function(oneVMLayer){
+			platformsVM.inspectVMLayer(currentScope, oneVMLayer);
+		};
+		
 		//hook the listeners
 		currentScope.listVMLayers = function() {
 			platformsVM.listVMLayers(currentScope);

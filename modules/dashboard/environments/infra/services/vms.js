@@ -45,6 +45,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
 		delete formConfig.entries[0].value.infraProvider.regions;
+		delete formConfig.entries[0].value.infraProvider.templates;
 		
 		let options = {
 			timeout: $timeout,

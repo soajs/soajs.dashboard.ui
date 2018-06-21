@@ -63,7 +63,7 @@
 						</button>
 						<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
 							<li>
-								<a href="" ng-click="inspectVMLayer(oneVMLayer)" ng-if="!listingClouds">
+								<a href="" ng-click="inspectVMLayer(oneVMLayer)">
 									<span class="icon icon-info"></span>&nbsp;Inspect VM Layer
 								</a>
 							</li>
@@ -167,5 +167,33 @@
 	</div>
 	<div class="modal-body">
 		<ngform></ngform>
+	</div>
+</script>
+<script type="text/ng-template" id="vmLogBox.html">
+	<div class="modal-header">
+		<table width="100%">
+			<tr>
+				<td width="80%">
+					<h3 class="modal-title">{{title}}</h3>
+				</td>
+				<td width="20%" align="center">
+					<span><text-size-slider min="10" max="36" unit="px" value="12" idt="code"></text-size-slider></span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="modal-body">
+		<alert type="warning" style="text-align:center;" ng-if="message.warning"><span ng-bind-html="message.warning|toTrustedHtml"></span></alert>
+		<div class="w-100 c-both t-right">
+			<a ng-click="refreshLogs()" class="btn btn-sm btn-success">
+				<span class="icon icon-undo"></span>
+				Refresh
+			</a>
+			<br />
+		</div>
+		<pre id="code" ng-if="!message || !message.warning" class="preBox" scroll-glue><code style="white-space: pre !important;" class="sh" ng-bind-html="data"></code></pre>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
 	</div>
 </script>

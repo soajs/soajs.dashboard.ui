@@ -298,6 +298,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		orchestrateVMS.listVMLayers($scope);
 	};
 	
+	$scope.inspectVMLayer = function(oneVMLayer){
+		orchestrateVMS.inspectVMLayer($scope, oneVMLayer);
+	};
+	
 	$scope.deleteVMLayer = function(oneVMLayer) {
 		orchestrateVMS.deleteVMLayer($scope, oneVMLayer);
 	};

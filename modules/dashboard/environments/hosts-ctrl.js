@@ -90,6 +90,10 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		orchestrateVMS.listVMLayers($scope);
 	};
 	
+	$scope.inspectVMLayer = function(oneVMLayer){
+		orchestrateVMS.inspectVMLayer($scope, oneVMLayer);
+	};
+	
 	$scope.deleteVMLayer = function(oneVMLayer) {
 		orchestrateVMS.deleteVMLayer($scope, oneVMLayer);
 	};

@@ -790,7 +790,7 @@ var envTranslation = {
 		"ENG": "Refresh Token Lifetime in seconds. Default is 14 days.",
 		"FRA": "Refresh Token Lifetime in seconds. Default is 14 days."
 	},
-	
+
 	"enterCommaSeparatedValues": {
 		"ENG": "Enter comma separated values",
 		"FRA": "Enter comma separated values"
@@ -952,7 +952,7 @@ var envTranslation = {
 	 You need to go to Multi-Tenancy and generate new keys for all your tenants
 	 Specify the algorithm to use and a password (minimum 5 characters) to encrypt tenant keys. More info on what options are supported is found at
 	 */
-	
+
 	"changingTenantKeySecurityEncryptionConfigurationDisablesTenantKeys": {
 		"ENG": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys.",
 		"FRA": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys."
@@ -1250,7 +1250,7 @@ var envTranslation = {
 		"ENG": "Private Key",
 		"FRA": "Private Key"
 	},
-	
+
 	//list-service-config
 	"reloadRegistry": {
 		"ENG": "Reload Registry",
@@ -1397,30 +1397,30 @@ var environmentsNav = [
 			'modules/dashboard/environments/add/controller.js',
 			'modules/dashboard/environments/add/templateSrv.js',
 			'modules/dashboard/environments/add/giSrv.js',
-			
+
 			'modules/dashboard/environments/add/deploySrv.js',
 			'modules/dashboard/environments/add/vmSrv.js',
 			'modules/dashboard/environments/add/registrySrv.js',
 			'modules/dashboard/environments/add/overviewSrv.js',
-			
+
 			'modules/dashboard/environments/add/nginxSrv.js',
 			'modules/dashboard/environments/add/dynamicSrv.js',
 			'modules/dashboard/environments/add/statusSrv.js',
 			'modules/dashboard/environments/add/statusAPISrv.js',
 			'modules/dashboard/environments/services/custom_registry.js',
-			
+
 			'modules/dashboard/environments/infra/services/vms.js',
-			
+
 			'modules/dashboard/resources/config.js',
 			'modules/dashboard/resources/services/deployService.js',
 			'modules/dashboard/resources/services/configurationService.js',
 			'modules/dashboard/resources/services/deployService.js',
 			'modules/dashboard/resources/services/commonService.js',
 			'modules/dashboard/resources/services/addService.js',
-			
+
 			'modules/dashboard/secrets/config.js',
 			'modules/dashboard/secrets/services/secretsService.js',
-			
+
 			'modules/dashboard/environments/services/repos.js',
 			'modules/dashboard/environments/services/deployServiceDep.js'
 		]
@@ -1555,12 +1555,12 @@ var environmentsNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'scripts': [
-			'modules/dashboard/environments/config.js', 
-			'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js', 
-			'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js', 
-			'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js', 
-			'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js', 
-			'modules/dashboard/environments/services/metrics.js'
+			'modules/dashboard/environments/config.js',
+			'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js',
+			'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js',
+			'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js',
+			'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js',
+			'modules/dashboard/environments/services/metrics.js', 'modules/dashboard/environments/services/vms.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	}

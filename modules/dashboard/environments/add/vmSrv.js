@@ -118,45 +118,18 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 						}
 					});
 					if(myProvider){
+						let vmSpecs = angular.copy(oneVM.data);
+						delete vmSpecs.name;
+						delete vmSpecs.region;
+						delete vmSpecs.infraCodeTemplate;
 						let myVM = {
 							forceEditDelete: true,
 							name: oneVM.data.name,
 							infraProvider: myProvider,
-							list: []
+							region: oneVM.data.region,
+							template: oneVM.data.infraCodeTemplate,
+							specs: vmSpecs
 						};
-						
-						for(let i =0; i < oneVM.data.workernumber; i++){
-							myVM.list.push({
-								'id': oneVM.data.name + '-instance-' + (i+1),
-								'name': oneVM.data.name + '-instance-' + (i+1),
-								"labels": {},
-								"ports": [],
-								"voluming": {},
-								"env": [],
-								"ip": "",
-								"layer" : oneVM.data.name,
-								"network": "N/A",
-								"tasks": [
-									{
-										"id": oneVM.data.name + '-instance-' + (i+1) + "-task",
-										"name": oneVM.data.name + '-instance-' + (i+1) + "-task",
-										"status": {
-											"state": "to be created",
-											"ts": new Date().getTime()
-										},
-										"ref": {
-											"os": {
-												"type": "N/A",
-												"diskSizeGB": 0
-											}
-										}
-									}
-								]
-							});
-						}
-						console.log(oneVM);
-						console.log(myVM);
-						
 						currentScope.vmLayers[myProvider.name + "_" + myVM.name] = myVM;
 					}
 				});

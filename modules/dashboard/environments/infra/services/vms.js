@@ -109,7 +109,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						'technology': 'vm',
 						"infraId": oneProvider._id
 					},
-					"data": formData
+					"data": {
+						"infraCodeTemplate" : formData.infraCodeTemplate,
+						"region" : formData.region,
+						"name" : formData.name,
+						"specs": formData
+					}
 				}, function (error, response) {
 					if (error) {
 						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -212,7 +217,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"infraId": oneProvider._id,
 						"layerName": oneVMLayer._id
 					},
-					"data": formData
+					"data": {
+						"infraCodeTemplate" : formData.infraCodeTemplate,
+						"region" : formData.region,
+						"name" : formData.name,
+						"specs": formData
+					}
 				}, function (error, response) {
 					if (error) {
 						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);

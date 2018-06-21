@@ -19,7 +19,12 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 					'technology': 'vm',
 					"infraId": oneProvider._id,
 				},
-				"data": formData
+				"data": {
+					"infraCodeTemplate" : formData.infraCodeTemplate,
+					"region" : formData.region,
+					"name" : formData.name,
+					"specs": formData
+				}
 			};
 			
 			//hook the vm to the wizard scope
@@ -48,7 +53,12 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 					'technology': 'vm',
 					"infraId": oneProvider._id,
 				},
-				"data": formData
+				"data": {
+					"infraCodeTemplate" : formData.infraCodeTemplate,
+					"region" : formData.region,
+					"name" : formData.name,
+					"specs": formData
+				}
 			};
 			
 			//hook the vm to the wizard scope

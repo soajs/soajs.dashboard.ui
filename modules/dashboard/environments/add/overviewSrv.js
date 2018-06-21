@@ -15,6 +15,35 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		
 		currentScope.overview = mapUserInputsToOverview(currentScope);
 		
+		if(currentScope.wizard.vms){
+			currentScope.overview.vms = [];
+			
+			currentScope.wizard.vms.forEach((oneVMLayerInputs) => {
+				
+				let specsData = angular.copy(oneVMLayerInputs.data);
+				delete specsData.name;
+				delete specsData.region;
+				delete specsData.infraCodeTemplate;
+				
+				let myProvider;
+				currentScope.infraProviders.forEach((oneProvider) => {
+					if(oneProvider._id === oneVMLayerInputs.params.infraId){
+						myProvider = oneProvider;
+					}
+				});
+				
+				let myVM = {
+					infraProvider: myProvider,
+					name: oneVMLayerInputs.data.name,
+					region: oneVMLayerInputs.data.region,
+					template: oneVMLayerInputs.data.infraCodeTemplate,
+					specs: specsData
+				};
+				
+				currentScope.overview.vms.push(myVM);
+			});
+		}
+		
 		currentScope.isObjEmpty = function (obj) {
 			return (!obj || Object.keys(obj).length === 0);
 		};

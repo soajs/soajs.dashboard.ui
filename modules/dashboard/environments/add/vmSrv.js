@@ -6,15 +6,83 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 		overlayLoading.show();
 		
 		//override default save action with what ui wizard needs
-		currentScope.saveActionMethod = function(modalScope, formData, modalInstance){
-			console.log("inside environment wizard ");
-			console.log(arguments);
-			//store information about vms that should be created.
+		currentScope.saveActionMethodAdd = function(modalScope, oneProvider, formData, modalInstance){
+			//formData should include
+			/*
+				1- template chosen
+				2- region to use
+				3- template inputs
+			 */
+			let vmLayerContext = {
+				"params":{
+					"env": currentScope.envCode,
+					'technology': 'vm',
+					"infraId": oneProvider._id,
+				},
+				"data": formData
+			};
+			
+			//hook the vm to the wizard scope
+			if(!currentScope.wizard.vms){
+				currentScope.wizard.vms = [];
+			}
+			currentScope.wizard.vms.push(vmLayerContext);
+			
+			appendVMsTotheList();
+			
+			if(modalInstance){
+				modalInstance.close();
+			}
+		};
+		
+		currentScope.saveActionMethodModify = function(modalScope, oneVMLayer, oneProvider, formData, modalInstance){
+			//formData should include
+			/*
+				1- template chosen
+				2- region to use
+				3- template inputs
+			 */
+			let vmLayerContext = {
+				"params":{
+					"env": currentScope.envCode,
+					'technology': 'vm',
+					"infraId": oneProvider._id,
+				},
+				"data": formData
+			};
+			
+			//hook the vm to the wizard scope
+			currentScope.wizard.vms.forEach((oneExistingTempVMLayer) => {
+				if(oneExistingTempVMLayer.params.infraId === vmLayerContext.params.infraId){
+					if(oneExistingTempVMLayer.data.name === vmLayerContext.data.name){
+						//this is the one
+						oneExistingTempVMLayer = vmLayerContext;
+					}
+				}
+			});
+			
+			if(modalInstance){
+				modalInstance.close();
+			}
 		};
 		
 		//hook the listeners
 		currentScope.addVMLayer = function(){
 			platformsVM.addVMLayer(currentScope);
+		};
+		
+		currentScope.editVMLayer = function(oneVMLayerFromList){
+			let oneVMLayer = angular.copy(oneVMLayerFromList);
+			currentScope.wizard.vms.forEach((oneExistingTempVMLayer) => {
+				if(oneExistingTempVMLayer.params.infraId === oneVMLayer.infraProvider._id){
+					if(oneExistingTempVMLayer.data.name === oneVMLayer.name){
+						//this is the one
+						oneVMLayer.formData = oneExistingTempVMLayer.data;
+					}
+				}
+			});
+			
+			platformsVM.editVMLayer(currentScope, oneVMLayer);
 		};
 		
 		currentScope.inspectVMLayer = function(oneVMLayer){
@@ -23,8 +91,50 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 		
 		//hook the listeners
 		currentScope.listVMLayers = function() {
-			platformsVM.listVMLayers(currentScope);
+			platformsVM.listVMLayers(currentScope, () => {
+				appendVMsTotheList();
+			});
 		};
+		
+		currentScope.deleteVMLayer = function(oneVMLayer) {
+			if(oneVMLayer.forceEditDelete){
+				for(let layerName in currentScope.vmLayers){
+					if(layerName === oneVMLayer.infraProvider.name + "_" + oneVMLayer.name){
+						delete currentScope.vmLayers[layerName];
+					}
+				}
+			}
+		};
+		
+		//if there are registered vms to be created by the wizard hook them to the scope
+		function appendVMsTotheList() {
+			if(currentScope.wizard.vms){
+				currentScope.wizard.vms.forEach((oneVM) => {
+					
+					let myProvider;
+					currentScope.infraProviders.forEach((oneProvider) => {
+						if(oneProvider._id === oneVM.params.infraId){
+							myProvider = oneProvider;
+						}
+					});
+					if(myProvider){
+						let vmSpecs = angular.copy(oneVM.data);
+						delete vmSpecs.name;
+						delete vmSpecs.region;
+						delete vmSpecs.infraCodeTemplate;
+						let myVM = {
+							forceEditDelete: true,
+							name: oneVM.data.name,
+							infraProvider: myProvider,
+							region: oneVM.data.region,
+							template: oneVM.data.infraCodeTemplate,
+							specs: vmSpecs
+						};
+						currentScope.vmLayers[myProvider.name + "_" + myVM.name] = myVM;
+					}
+				});
+			}
+		}
 		
 		if(!currentScope.restrictions.vm){
 			if(['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1){
@@ -40,6 +150,12 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 			//execute main function
 			delete currentScope.envCode;
 			platformsVM.listVMLayers(currentScope, () => {
+				
+				//if there are registered vms to be created by the wizard hook them to the scope
+				currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
+				appendVMsTotheList();
+				
+				//build the navigation buttons at the bottom of the page
 				let options = {
 					timeout: $timeout,
 					entries: [],
@@ -60,7 +176,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 						}
 					]
 				};
-				
 				buildForm(currentScope, $modal, options, function () {
 					
 					if(Object.keys(currentScope.vmLayers).length > 0){
@@ -68,11 +183,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 							'type': 'submit',
 							'label': "Next",
 							'btn': 'primary',
-							'action': function (formData) {
+							'action': function () {
 								currentScope.referringStep = 'vm';
-								
-								//todo: store the vms to be created only --> line 9
-								currentScope.wizard.vms = angular.copy(formData);
 								$localStorage.addEnv = angular.copy(currentScope.wizard);
 								currentScope.nextStep();
 							}

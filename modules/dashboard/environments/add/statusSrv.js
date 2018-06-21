@@ -85,6 +85,44 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 		return output;
 	}
 	
+	function mapVMInfra(currentScope, oneVMLayer){
+		
+		let providerName;
+		currentScope.infraProviders.forEach((oneProvider) => {
+			if(oneProvider._id === oneVMLayer.params.infraId){
+				providerName = oneProvider.name;
+			}
+		});
+		
+		let opts = oneVMLayer;
+		opts.params.env = currentScope.wizard.gi.code;
+		
+		let deployCluster = {
+			"type": "infra",
+			"name": providerName,
+			"command": "deployVM",
+			"options": opts
+		};
+		
+		let getDeployClusterStatus = {
+			"type": "infra",
+			"name": providerName,
+			"command": "getDeployVMStatus",
+			"options": {
+				"params": opts.params
+			}
+		};
+		
+		let output = {
+			imfv: [],
+		};
+		
+		output.imfv.push(deployCluster);
+		output.imfv.push(getDeployClusterStatus);
+		
+		return output;
+	}
+	
 	function go(currentScope){
 		
 		if(currentScope.wizard.selectedInfraProvider){
@@ -98,9 +136,7 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 			}
 			
 			let infraCluster = mapInfraClusterOnPre(currentScope);
-			
-			currentScope.wizard.template.deploy.deployments.pre =
-				insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.cluster.deploy', infraCluster);
+			currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.cluster.deploy', infraCluster);
 			
 			//if deployment has nginx, add dns
 			if (currentScope.wizard.selectedInfraProvider.name !== 'local' && currentScope.wizard.nginx && Object.keys(currentScope.wizard.nginx).length > 0 && currentScope.wizard.nginx.domain !== '' && currentScope.wizard.nginx.apiPrefix !== '' && currentScope.wizard.nginx.sitePrefix !== '') {
@@ -111,9 +147,16 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 			}
 		}
 		
+		//check for vms to create
+		if(currentScope.wizard.vms){
+			currentScope.wizard.vms.forEach((oneVMLayer) => {
+				let vmInfra = mapVMInfra(currentScope, oneVMLayer);
+				currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy', vmInfra);
+			});
+		}
+		
 		currentScope.overview = currentScope.mapUserInputsToOverview(false);
 		delete currentScope.overview.selectedInfraProvider;
-		
 		
 		statusAPISrv.go(currentScope);
 	}

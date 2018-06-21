@@ -18,7 +18,8 @@
 		Refresh
 	</a>
 </div>
-<div ng-if="!infraProviders && !listingClouds">
+<div ng-if="!infraProviders && !listingClouds" class="c-both w-100 table">
+	<br />
 	<alert type="warning">
 		<p>
 			No Cloud Providers Detected that support <b>Virtual Machines</b>.
@@ -43,7 +44,7 @@
 	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
 		<br />
 		<div ng-repeat="oneVMLayer in vmLayers">
-			<div class="entryBox mb20">
+			<div class="entryBox mb20" ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
 				<div class="header table">
 					<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
 					<span class="serviceLabelBox">
@@ -125,6 +126,36 @@
 											<label class="text-uppercase">{{onePort.protocol}}</label>: {{onePort.published}}
 										</div>
 									</td>
+							</tbody>
+						</table>
+					</div>
+					<div class="grid" ng-if="oneVMLayer.specs">
+						<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
+							<thead>
+								<tr class="header">
+									<td width="50%" class="nameHeader">Template</td>
+									<td class="nameHeader">Region</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="cloud-tr-bgColor">
+									<td>{{oneVMLayer.template}}</td>
+									<td>{{oneVMLayer.region}}</td>
+								</tr>
+							</tbody>
+						</table>
+						<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
+							<thead>
+								<tr class="header">
+									<td class="nameHeader">VM Layer Specs</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="cloud-tr-bgColor">
+									<td>
+										<div ng-bind-html="oneVMLayer.specs|object"></div>
+									</td>
+								</tr>
 							</tbody>
 						</table>
 					</div>

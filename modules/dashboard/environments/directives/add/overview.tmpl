@@ -300,6 +300,14 @@
 				</div>
 			</fieldset>
 		</accordion-group>
+		
+		<accordion-group is-open="true" ng-if="overview.vms">
+			<div>
+				<accordion-heading>Virtual Machines</accordion-heading>
+				<div ng-include="'modules/dashboard/environments/directives/add/overviewVMs.tmpl'"></div>
+			</div>
+			<br>
+		</accordion-group>
 		<br>
 		
 		<div ng-repeat="deployMain in ['database','deployments']">

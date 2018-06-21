@@ -49,20 +49,7 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	};
 	
 	function listInfraProviders(cb) {
-		//get the available providers
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/infra"
-		}, function (error, providers) {
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			}
-			else {
-				delete providers.soajsauth;
-				$scope.infraProviders = providers;
-			}
-		});
-		return cb();
+		platformsVM.listInfraProviders($scope, cb);
 	}
 	
 	/** VM Operations **/

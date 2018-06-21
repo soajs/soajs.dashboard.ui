@@ -1,16 +1,44 @@
 "use strict";
 var vmsServices = soajsApp.components;
-vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
+vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', function (ngDataApi, $timeout, $modal, $cookies, $window) {
 	
-	function listVMLayers(currentScope, cb) {
-		//call common function
-		getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
-			currentScope.vmLayers = vmLayers;
-			
-			if(cb && typeof cb === 'function'){
-				return cb();
+	function listInfraProviders(currentScope, cb) {
+		//get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra"
+		}, function (error, providers) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				delete providers.soajsauth;
+				currentScope.infraProviders = providers;
 			}
 		});
+		return cb();
+	}
+	
+	function listVMLayers(currentScope, cb) {
+		
+		if(!currentScope.infraProviders){
+			listInfraProviders(currentScope, () => {
+				nextStep();
+			});
+		}
+		else{
+			nextStep();
+		}
+		
+		function nextStep(){
+			//call common function
+			getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
+				currentScope.vmLayers = vmLayers;
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
+			});
+		}
 	}
 	
 	function inspectVMLayer(currentScope, oneVMLayer){
@@ -60,15 +88,43 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	
 	function addVMLayer (currentScope){
 		
-		function defaultSaveActionMethod(modalScope, formData, modalInstance) {
-			if(currentScope.saveActionMethod){
-				currentScope.saveActionMethod(modalScope, formData, modalInstance);
+		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
+			if(currentScope.saveActionMethodAdd){
+				currentScope.saveActionMethodAdd(modalScope, oneProvider, formData, modalInstance);
 			}
 			else{
-				console.log("inside the main module");
+				//collect the inputs from formData, formulate API call and trigger it
+				//formData should include
+				/*
+					1- template chosen
+					2- region to use
+					3- template inputs
+				 */
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/cloud/vm",
+					"params": {
+						"env": currentScope.envCode,
+						'technology': 'vm',
+						"infraId": oneProvider._id
+					},
+					"data": formData
+				}, function (error, response) {
+					if (error) {
+						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						currentScope.displayAlert('success', "Virtual Machine Layer created, the process will take few minutes before it shows up in the list.");
+						if(modalInstance){
+							modalInstance.close();
+						}
+						$timeout(() => {
+							listVMLayers(currentScope);
+						}, 1000);
+					}
+				});
 			}
 		}
-		
 		
 		let saveActionMethod = defaultSaveActionMethod;
 		
@@ -133,7 +189,76 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	
 	function editVMLayer(currentScope, oneVMLayer){
 		// oneVMLayerTemplateRecord --> retrieved from db
-		// populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0], oneVMLayerTemplateRecord, saveActionMethod);
+		
+		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
+			if(currentScope.saveActionMethodModify){
+				currentScope.saveActionMethodModify(modalScope, oneVMLayer, oneProvider, formData, modalInstance);
+			}
+			else{
+				//collect the inputs from formData, formulate API call and trigger it
+				//formData should include
+				/*
+					1- template chosen
+					2- region to use
+					3- template inputs
+				 */
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "put",
+					"routeName": "/dashboard/cloud/vm",
+					"params": {
+						"env": currentScope.envCode,
+						'technology': 'vm',
+						"infraId": oneProvider._id,
+						"vmLayerId": oneVMLayer._id
+					},
+					"data": formData
+				}, function (error, response) {
+					if (error) {
+						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						currentScope.displayAlert('success', "Virtual Machine Layer updated, the process will take few minutes before it shows up in the list.");
+						if(modalInstance){
+							modalInstance.close();
+						}
+						$timeout(() => {
+							listVMLayers(currentScope);
+						}, 1000);
+					}
+				});
+			}
+		}
+		
+		//if add environment made the call, this vm actually exists only in wizard scope
+		if(currentScope.saveActionMethodModify){
+			let oneVMLayerTemplateRecord = oneVMLayer.formData;
+			let saveActionMethod = defaultSaveActionMethod;
+			populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod);
+		}
+		else{
+			/**
+			 * call api and get how this vm layer was created
+			 */
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/cloud/vm/template",
+				"params": {
+					"env": currentScope.envCode,
+					'technology': 'vm',
+					"infraId": oneVMLayer.infraProvider._id,
+					"vmLayer": oneVMLayer.name
+				}
+			}, function (error, response) {
+				if (error) {
+					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					let oneVMLayerTemplateRecord = response;
+					let saveActionMethod = defaultSaveActionMethod;
+					populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod);
+				}
+			});
+		}
 	}
 	
 	function populateVMLayerForm(currentScope, oneProvider, technology, data, submitActionMethod) {
@@ -189,7 +314,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 								'label': "Save & Continue",
 								'btn': 'primary',
 								'action': function (formData) {
-									submitActionMethod($scope, formData, $modalInstance);
+									
+									let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
+									if(!myPattern.test(formData.name)){
+										$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
+									}
+									else{
+										submitActionMethod($scope, oneProvider, formData, $modalInstance);
+									}
 								}
 							},
 							{
@@ -205,8 +337,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					
 					buildForm($scope, null, formConfig, () => {
 						if(data){
-							updateFormEntries(data.template, $scope.form);
 							$scope.form.formData = data;
+							updateFormEntries(data.infraCodeTemplate, $scope.form);
 						}
 					});
 				}
@@ -223,6 +355,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	}
 	
 	return {
+		'listInfraProviders': listInfraProviders,
 		'listVMLayers': listVMLayers,
 		'inspectVMLayer': inspectVMLayer,
 		'addVMLayer': addVMLayer,

@@ -337,3 +337,8 @@ input.secretMountPathResource {
     top: 2px;
     left: 6%;
 }
+
+div.tempVMLayer .header{
+    background-color:#dff0d8;
+    border-color:#3c763d;
+}

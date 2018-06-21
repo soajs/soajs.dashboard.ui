@@ -2,15 +2,43 @@
 var vmsServices = soajsApp.components;
 vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', function (ngDataApi, $timeout, $modal, $cookies, $window) {
 	
-	function listVMLayers(currentScope, cb) {
-		//call common function
-		getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
-			currentScope.vmLayers = vmLayers;
-			
-			if(cb && typeof cb === 'function'){
-				return cb();
+	function listInfraProviders(currentScope, cb) {
+		//get the available providers
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra"
+		}, function (error, providers) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				delete providers.soajsauth;
+				currentScope.infraProviders = providers;
 			}
 		});
+		return cb();
+	}
+	
+	function listVMLayers(currentScope, cb) {
+		
+		if(!currentScope.infraProviders){
+			listInfraProviders(currentScope, () => {
+				nextStep();
+			});
+		}
+		else{
+			nextStep();
+		}
+		
+		function nextStep(){
+			//call common function
+			getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
+				currentScope.vmLayers = vmLayers;
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
+			});
+		}
 	}
 	
 	function inspectVMLayer(currentScope, oneVMLayer){
@@ -327,6 +355,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	}
 	
 	return {
+		'listInfraProviders': listInfraProviders,
 		'listVMLayers': listVMLayers,
 		'inspectVMLayer': inspectVMLayer,
 		'addVMLayer': addVMLayer,

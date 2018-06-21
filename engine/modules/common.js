@@ -419,10 +419,12 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 	}
 	
 	function getVMs() {
-		for (let i = infraProviders.length -1; i >=0; i--){
-			let oneProvider = infraProviders[i];
-			if(oneProvider.technologies.indexOf("vm") === -1){
-				infraProviders.splice(i, 1);
+		if(infraProviders && Array.isArray(infraProviders) && infraProviders.length > 0){
+			for (let i = infraProviders.length -1; i >=0; i--){
+				let oneProvider = infraProviders[i];
+				if(oneProvider.technologies.indexOf("vm") === -1){
+					infraProviders.splice(i, 1);
+				}
 			}
 		}
 		

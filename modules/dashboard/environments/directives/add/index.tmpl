@@ -18,29 +18,35 @@
 			</div>
 			<div ng-switch-when="3">
 				<form>
+					<div class="header"><h3>Infra Cloud Providers / Virtual Machines Technology</h3></div>
+				</form>
+				<div ng-include="'modules/dashboard/environments/directives/add/vm.tmpl'"></div>
+			</div>
+			<div ng-switch-when="4">
+				<form>
 					<div class="header"><h3>Registry Information</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/registry.tmpl'"></div>
 			</div>
-			<div ng-switch-when="4">
+			<div ng-switch-when="5">
 				<form>
 					<div class="header capitalize"><h3>{{dynamictemplatestep}}</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/dynamic.tmpl'"></div>
 			</div>
-			<div ng-switch-when="5">
+			<div ng-switch-when="6">
 				<form>
 					<div class="header"><h3>Domain & Prefixes</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/nginx.tmpl'"></div>
 			</div>
-			<div ng-switch-when="6">
+			<div ng-switch-when="7">
 				<form>
 					<div class="header"><h3>Overview</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/overview.tmpl'"></div>
 			</div>
-			<div ng-switch-when="7">
+			<div ng-switch-when="8">
 				<form>
 					<div class="header"><h3>Progress</h3></div>
 				</form>

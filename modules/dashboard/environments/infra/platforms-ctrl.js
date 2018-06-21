@@ -5,7 +5,8 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
-
+	
+	$scope.environmentWizard = false;
 	$scope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 

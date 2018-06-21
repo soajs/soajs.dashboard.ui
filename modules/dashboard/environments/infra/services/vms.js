@@ -2,10 +2,14 @@
 var vmsServices = soajsApp.components;
 vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
 	
-	function listVMLayers(currentScope) {
+	function listVMLayers(currentScope, cb) {
 		//call common function
 		getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
 			currentScope.vmLayers = vmLayers;
+			
+			if(cb && typeof cb === 'function'){
+				return cb();
+			}
 		});
 	}
 	
@@ -56,9 +60,17 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	
 	function addVMLayer (currentScope){
 		
-		function saveActionMethod() {
-		
+		function defaultSaveActionMethod(modalScope, formData, modalInstance) {
+			if(currentScope.saveActionMethod){
+				currentScope.saveActionMethod(modalScope, formData, modalInstance);
+			}
+			else{
+				console.log("inside the main module");
+			}
 		}
+		
+		
+		let saveActionMethod = defaultSaveActionMethod;
 		
 		let vmProviders = angular.copy(currentScope.infraProviders);
 		for (let i = vmProviders.length -1; i >=0; i--){
@@ -98,7 +110,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						'label': translation.submit[LANG],
 						'btn': 'primary',
 						'action': function (formData) {
-							populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), {}, saveActionMethod);
+							populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), null, saveActionMethod);
 						}
 					},
 					{
@@ -115,7 +127,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			buildFormWithModal(currentScope, $modal, options);
 		}
 		else if(vmProviders.length > 0){
-			populateVMLayerForm(currentScope, vmProviders[0], vmProviders[0].drivers[0].toLowerCase(), {}, saveActionMethod);
+			populateVMLayerForm(currentScope, vmProviders[0], vmProviders[0].drivers[0].toLowerCase(), null, saveActionMethod);
 		}
 	}
 	
@@ -165,6 +177,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				controller: function ($scope, $modalInstance) {
 					fixBackDrop();
 					$scope.title = 'Configuring Deployment on ' + selectedInfraProvider.label;
+					
 					let formConfig = {
 						timeout: $timeout,
 						data: data,

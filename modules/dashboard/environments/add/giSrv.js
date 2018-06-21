@@ -28,7 +28,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 					'label': "Next",
 					'btn': 'primary',
 					'action': function (formData) {
-						
+						currentScope.referringStep = 'gi';
 						//check mandatory fields
 						for (let fieldName in entries ) {
 							if (entries[fieldName].required) {

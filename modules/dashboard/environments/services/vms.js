@@ -13,7 +13,6 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 			if (Object.keys(currentScope.vmLayers).length > 0) {
 				//create a variable to indicate that there are VMs
 				currentScope.vmsAvailable = true;
-				console.log(currentScope);
 			}
 		});
 	}
@@ -174,6 +173,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
+					console.log(response);
 					$modal.open({
 						templateUrl: "vmLogBox.html",
 						size: 'lg',
@@ -207,7 +207,11 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 										currentScope.displayAlert('danger', error.message);
 									}
 									else {
-										$scope.data = remove_special(response.data).replace("undefined", "").toString();
+										let output = '';
+										response.output.forEach((oneOutput) => {
+											output += oneOutput.message + "\n";
+										});
+										$scope.data = remove_special(output).replace("undefined", "").toString();
 										if (!$scope.$$phase) {
 											$scope.$apply();
 										}
@@ -226,7 +230,11 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 								};
 							}
 							else {
-								$scope.data = remove_special(response.data);
+								let output = '';
+								response.output.forEach((oneOutput) => {
+									output += oneOutput.message + "\n";
+								});
+								$scope.data = remove_special(output);
 								$timeout(function () {
 									highlightMyCode()
 								}, 500);

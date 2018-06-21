@@ -85,34 +85,31 @@
 						<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 							<thead>
 								<tr class="header">
-									<td ng-if="listingClouds" class="">Logs</td>
-									<td ng-if="listingClouds" class="">Ops</td>
-									<td class="nameHeader">Instance Name</td>
-									<td class="nameHeader">OS Name</td>
-									<td class="nameHeader">DiskSize</td>
-									<td class="nameHeader">Instance Network</td>
-									<td class="nameHeader">Public IP</td>
-									<td class="nameHeader">Exposed Ports</td>
+									<td ng-if="listingClouds" class="">Operations</td>
+									<td ng-class="{'nameHeader': true }">Instance Name</td>
+									<td ng-class="nameHeader">OS Name</td>
+									<td ng-class="nameHeader">DiskSize</td>
+									<td ng-class="nameHeader">Instance Network</td>
+									<td ng-class="nameHeader">Public IP</td>
+									<td ng-class="nameHeader">Exposed Ports</td>
 								</tr>
 							</thead>
 							<tbody>
 								<tr class="cloud-tr-bgColor">
 									<td ng-if="listingClouds">
-										<a href="" ng-click="getVMLogs(currentScope, instance)" tooltip="Show VM Logs">
+										<a href="" ng-if="access.vm.logs" ng-click="getVMLogs(oneVMLayer, instance)" tooltip="Show VM Logs">
 											<span class="icon icon-terminal"></span>&nbsp;
 										</a>
-									</td>
-									<td ng-if="listingClouds">
-										<a href="" ng-click="maintenanceOp(currentScope, instance, powerOffVM)" tooltip="Start VM Instance">
+										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'powerOffVM')" tooltip="Start VM Instance">
 											<span class="icon icon-switch"></span>&nbsp;
 										</a>
-										<a href="" ng-click="maintenanceOp(currentScope, instance, startVM)" tooltip="Stop VM Instance">
+										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'startVM')" tooltip="Stop VM Instance">
 											<span class="icon icon-blocked"></span>&nbsp;
 										</a>
-										<a href="" ng-click="maintenanceOp(currentScope, instance, restartService)" tooltip="Restart VM Instance">
+										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'restartService')" tooltip="Restart VM Instance">
 											<span class="icon icon-loop2"></span>&nbsp;
 										</a>
-										<a class="btn btn-sm" ng-click="deleteVM(currentScope, instance)" ng-if="access.vm.delete && listingClouds" tooltip="Delete VM Instance">
+										<a ng-click="deleteVM(oneVMLayer, instance)" ng-if="access.vm.deleteInstance && listingClouds" tooltip="Delete VM Instance">
 											<span class="icon icon-cross"></span>
 										</a>
 									</td>

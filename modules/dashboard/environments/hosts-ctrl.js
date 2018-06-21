@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'deploymentVMs', 'injectFiles', function ($scope, $cookies, $timeout, envHosts, deploymentVMs, injectFiles) {
+environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'orchestrateVMS', 'injectFiles', function ($scope, $cookies, $timeout, envHosts, orchestrateVMS, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
@@ -87,7 +87,23 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	};
 
 	$scope.listVMLayers = function() {
-		deploymentVMs.listVMLayers($scope);
+		orchestrateVMS.listVMLayers($scope);
+	};
+	
+	$scope.deleteVMLayer = function(oneVMLayer) {
+		orchestrateVMS.deleteVMLayer($scope, oneVMLayer);
+	};
+	
+	$scope.maintenanceOp = function(oneVMLayer, oneVMInstance, operation) {
+		orchestrateVMS.listVMLayers($scope, oneVMLayer, oneVMInstance, operation);
+	};
+	
+	$scope.getVMLogs = function(oneVMLayer, oneVMInstance) {
+		orchestrateVMS.getVMLogs($scope, oneVMLayer, oneVMInstance);
+	};
+	
+	$scope.deleteVM = function(oneVMLayer, oneVMInstance) {
+		orchestrateVMS.deleteVM($scope, oneVMLayer, oneVMInstance);
 	};
 
 	if ($scope.access.listHosts) {
@@ -97,9 +113,7 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 			$scope.listHosts($scope.envCode);
 		}
 	}
-
-	//TODO: change to $scope.access.listVms for correct permissions
-	if (true) {
+	if ($scope.access.vm.list) {
 		$scope.listVMLayers();
 	}
 }]);

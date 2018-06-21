@@ -476,9 +476,9 @@
 				</accordion>
 			</div>
 		</tab>
-		<tab heading="Virtual Machines" ng-if="vms">
+		<tab heading="Virtual Machines" ng-if="vmsAvailable">
 			<br />
-			<div ng-include="'modules/dashboard/environments/directives/list-vms.tmpl'"></div>
+			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
 	</tabset>
 </section>

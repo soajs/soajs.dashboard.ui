@@ -585,7 +585,9 @@ var environmentsConfig = {
 			"create": ['dashboard', '/cloud/vm', 'post'],
 			"modify": ['dashboard', '/cloud/vm', 'put'],
 			"delete": ['dashboard', '/cloud/vm', 'delete'],
-			"deleteInstance": ['dashboard', '/cloud/vm/instance', 'delete']
+			"deleteInstance": ['dashboard', '/cloud/vm/instance', 'delete'],
+			"maintenance": ['dashboard', '/cloud/vm/maintenance', 'post'],
+			"logs": ['dashboard', '/cloud/vm/logs', 'post']
 		},
 		"platforms": {
 			"getEnvironment": ['dashboard', '/environment', 'get']

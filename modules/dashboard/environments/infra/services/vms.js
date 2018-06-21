@@ -72,7 +72,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
 				"env": currentScope.envCode,
-				"serviceId": oneVMLayer.name,
+				"layerName": oneVMLayer.name,
 				"infraId": oneVMLayer.infraProvider._id,
 				'technology': 'vm'
 			}
@@ -209,7 +209,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"env": currentScope.envCode,
 						'technology': 'vm',
 						"infraId": oneProvider._id,
-						"vmLayerId": oneVMLayer._id
+						"layerName": oneVMLayer._id
 					},
 					"data": formData
 				}, function (error, response) {

@@ -3,19 +3,19 @@ var catalogApp = soajsApp.components;
 
 catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles,) {
 	$scope.$parent.isUserLoggedIn();
-	
+
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, catalogAppConfig.permissions);
-	
+
 	$scope.catalogImage = './themes/' + themeToUse + '/img/catalog.png';
-	
+
 	function setEditorContent(id, value, height, currentScope) {
 		$timeout(function () {
 			var editor = ace.edit(id);
 			renderJSONEditor(editor, id, value, height, currentScope);
 		}, 1000);
 	}
-	
+
 	function renderJSONEditor(_editor, id, value, height, currentScope) {
 		if (value && value !== '') {
 			currentScope.form.formData[id] = value;
@@ -25,7 +25,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			currentScope.form.formData[id] = value;
 			_editor.setValue('');
 		}
-		
+
 		_editor.on('change', function () {
 			var editor = ace.edit(id);
 			let v = editor.getValue();
@@ -34,11 +34,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					currentScope.form.formData[id] = JSON.parse(v);
 				}
 				catch (err) {
-				
+
 				}
 			}
 		});
-		
+
 		_editor.setShowPrintMargin(false);
 		_editor.scrollToLine(0, true, true);
 		_editor.clearSelection();
@@ -47,29 +47,29 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				_editor.getSession().getScreenLength()
 				* _editor.renderer.lineHeight
 				+ _editor.renderer.scrollBar.getWidth() + 10;
-			
+
 			if (height) {
 				newHeight = parseInt(height);
 			}
-			
+
 			_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
 			_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
 			jQuery('#' + id).height(newHeight.toString());
 			_editor.resize(true);
 		};
-		
+
 		$timeout(function () {
 			_editor.heightUpdate = heightUpdateFunction();
 			// Set initial size to match initial content
 			heightUpdateFunction();
-			
+
 			// Whenever a change happens inside the ACE editor, update
 			// the size again
 			_editor.getSession().on('change', heightUpdateFunction);
 			_editor.setOption("highlightActiveLine", false);
 		}, 1000);
 	}
-	
+
 	function reRenderEnvVar(id, value, form) {
 		var counter = parseInt(id.replace('envVarType', ''));
 		var tmp;
@@ -87,7 +87,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				});
 				break;
 		}
-		
+
 		tmp.name += counter;
 		form.formData['envVarType' + counter] = value;
 		form.entries[7].tabs[1].entries.forEach(function (oneEnvVarGroup) {
@@ -95,12 +95,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				if (oneEnvVarGroup.entries.length >= 5) {
 					oneEnvVarGroup.entries.splice(3, 1);
 				}
-				
+
 				oneEnvVarGroup.entries.splice(3, 0, tmp);
 			}
 		});
 	}
-	
+
 	$scope.upgradeAll = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -117,7 +117,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
-	
+
 	$scope.listRecipes = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -130,31 +130,31 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 			else {
 				$scope.originalRecipes = $scope.recipes = response;
-				
+
 				$scope.oldStyle = false;
 				$scope.originalRecipes.forEach(function (oneRecipe) {
 					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming && oneRecipe.recipe.deployOptions.voluming.volumes) {
 						$scope.oldStyle = true;
 					}
 				});
-				
+
 				if (!$scope.oldStyle) {
 					$scope.recipeTypes = {};
-					
+
 					$scope.originalRecipes.forEach(function (oneRecipe) {
 						if (!oneRecipe.v) {
 							oneRecipe.v = 1;
 						}
-						
+
 						if (!$scope.recipeTypes[oneRecipe.type]) {
 							$scope.recipeTypes[oneRecipe.type] = {};
 						}
-						
+
 						if (!$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype]) {
 							$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype] = [];
 						}
 					});
-					
+
 					$scope.recipes.forEach(function (oneRecipe) {
 						if ($scope.recipeTypes[oneRecipe.type] && $scope.recipeTypes[oneRecipe.type][oneRecipe.subtype]) {
 							$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype].push(oneRecipe);
@@ -162,11 +162,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 				$scope.listArchives();
-				
+
 			}
 		});
 	};
-	
+
 	$scope.listArchives = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -182,7 +182,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 			else {
 				$scope.originalArchives = $scope.archives = response;
-				
+
 				if ($scope.oldStyle === false) {
 					$scope.originalArchives.forEach(function (oneRecipe) {
 						if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
@@ -190,21 +190,21 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						}
 					});
 				}
-				
+
 				if (!$scope.oldStyle) {
 					$scope.recipeTypesArchives = {};
-					
+
 					$scope.originalArchives.forEach(function (oneRecipe) {
-						
+
 						if (!$scope.recipeTypesArchives[oneRecipe.type]) {
 							$scope.recipeTypesArchives[oneRecipe.type] = {};
 						}
-						
+
 						if (!$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype]) {
 							$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype] = [];
 						}
 					});
-					
+
 					$scope.archives.forEach(function (oneRecipe) {
 						if ($scope.recipeTypesArchives[oneRecipe.type] && $scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype]) {
 							$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype].push(oneRecipe);
@@ -222,15 +222,15 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		if (data.type !== 'server' && mainFormConfig[5].tabs[1].entries[2]) {
 			mainFormConfig[5].tabs[1].entries.pop();
 		}
-		
+
 		if (data.type === 'server' && mainFormConfig[5].tabs[1].entries[2]) {
 			mainFormConfig[5].tabs[1].entries.pop();
 		}
-		
+
 		if (mainFormConfig[5].tabs[1].entries.length > 1) {
 			mainFormConfig[5].tabs[1].entries = [];
 		}
-		
+
 		mainFormConfig[5].tabs[1].entries.push({
 			'name': 'configButton',
 			'label': 'Attach Config Repository',
@@ -269,11 +269,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								'fieldMsg': 'Specify which repository to use',
 								onAction(id, data, form) {
 									if (form.formData.repo !== 'user specify') {
-										
+
 										if (form.entries[5].tabs[1].entries[1].entries.length === 3) {
 											form.entries[5].tabs[1].entries[1].entries.pop();
 										}
-										
+
 										if ($scope.accountInfo[data]) {
 											let multi = '';
 											let params = {
@@ -366,10 +366,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		});
-		
+
 		//case of custom repo
 		if (data.type === 'server' && !mainFormConfig[5].tabs[1].entries[3]) {
-			
+
 			mainFormConfig[5].tabs[1].entries[1] = {
 				'type': 'html'
 			};
@@ -481,7 +481,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 																			}
 																		);
 																	}
-																	
+
 																	form.entries[5].tabs[1].entries[3].entries[3].value = [];
 																	if (result) {
 																		result.branches.forEach((oneBranch) => {
@@ -503,7 +503,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 															form.entries[5].tabs[1].entries[3].entries.pop();
 														}
 														if (form.entries[5].tabs[1].entries[3].entries.length === 3) {
-															
+
 															form.entries[5].tabs[1].entries[3].entries.push({
 																'name': 'customRequired',
 																'label': 'Required',
@@ -525,7 +525,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 											'l': '-- User Specify --',
 											'selected': false
 										});
-										
+
 										for (let i = $scope.repos.length; i--; i > 0) {
 											if ($scope.repos[i].v !== 'user specify') {
 												if (form.formData['customType'] !== 'multi' && $scope.repos[i].type === form.formData['customType']) {
@@ -581,7 +581,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			};
 		}
-		
+
 		if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration) {
 			if (mainFormConfig[5].tabs[1].entries.length === 2) {
 				mainFormConfig[5].tabs[1].entries.pop();
@@ -618,11 +618,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'fieldMsg': 'Specify which repository to use',
 						onAction(id, data, form) {
 							if (form.formData.repo !== 'user specify') {
-								
+
 								if (form.entries[5].tabs[1].entries[1].entries.length === 3) {
 									form.entries[5].tabs[1].entries[1].entries.pop();
 								}
-								
+
 								if ($scope.accountInfo[data]) {
 									let multi = '';
 									let params = {
@@ -703,7 +703,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					},
 				]
 			};
-			
+
 			if (data.recipe.deployOptions.sourceCode.configuration.repo && data.recipe.deployOptions.sourceCode.configuration.repo !== '') {
 				if (mainFormConfig[5].tabs[1].entries[1] && mainFormConfig[5].tabs[1].entries[1].entries.length === 4) {
 					mainFormConfig[5].tabs[1].entries[1].entries.pop();
@@ -730,7 +730,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'fieldMsg': 'This field is required.'
 					}
 				);
-				
+
 			}
 			else {
 				if (mainFormConfig[5].tabs[1].entries[1] && mainFormConfig[5].tabs[1].entries[1].entries && mainFormConfig[5].tabs[1].entries[1].entries.length === 4) {
@@ -745,7 +745,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				if(mainFormConfig[5].tabs[1].entries[1].entries[1].value){
 					mainFormConfig[5].tabs[1].entries[1].entries[1].value[0].selected = true;
 				}
-				
+
 				mainFormConfig[5].tabs[1].entries[1].entries.push({
 					'name': 'required',
 					'label': 'Required',
@@ -757,7 +757,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				});
 			}
 		}
-		
+
 		if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom) {
 			$scope.customRepos = [];
 			$scope.customRepos.push({'v': 'user specify', 'l': '-- User Specify --'});
@@ -811,7 +811,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
                 }
 			}
-			
+
 			mainFormConfig[5].tabs[1].entries.push({
 				'name': 'custom',
 				"type": "group",
@@ -871,7 +871,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 										if (form.entries[5].tabs[1].entries[3].entries.length === 4) {
 											form.entries[5].tabs[1].entries[3].entries.pop();
 										}
-										
+
 										if ($scope.accountInfo[data]) {
 											let multi = '';
 											let params = {
@@ -914,7 +914,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 															}
 														);
 													}
-													
+
 													form.entries[5].tabs[1].entries[3].entries[3].value = [];
 													if (result) {
 														result.branches.forEach((oneBranch) => {
@@ -951,7 +951,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									}
 								}
 							});
-							
+
 							form.entries[5].tabs[1].entries[3].entries[2].value = [];
 							form.entries[5].tabs[1].entries[3].entries[2].value.push({
 								'v': 'user specify',
@@ -959,7 +959,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								'selected': false
 							});
 							for (let i = $scope.repos.length; i--; i > 0) {
-								
+
 								if ($scope.repos[i].v !== 'user specify') {
 									if (form.formData['customType'] !== 'multi' && $scope.repos[i].type === form.formData['customType']) {
 										form.entries[5].tabs[1].entries[3].entries[2].value.push({
@@ -1005,8 +1005,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					},
 				]
 			});
-			
-			
+
+
 			if (mainFormConfig[5].tabs[1].entries[3].entries.length === 5) {
 				mainFormConfig[5].tabs[1].entries[3].entries.pop();
 			}
@@ -1071,7 +1071,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 											}
 										);
 									}
-									
+
 									form.entries[5].tabs[1].entries[3].entries[3].value = [];
 									if (result) {
 										result.branches.forEach((oneBranch) => {
@@ -1135,7 +1135,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				if (mainFormConfig[5].tabs[1].entries[3].entries.length === 4) {
 					mainFormConfig[5].tabs[1].entries[3].entries.pop();
 				}
-				
+
 				mainFormConfig[5].tabs[1].entries[3].entries.push(
 					{
 						'name': 'customRequired',
@@ -1208,17 +1208,17 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					name: data.name
 				};
 				var formConfig = angular.copy(mainFormConfig);
-				
+
                 restrictionOnLoad($scope, currentScope, data);
-				
+
                 $scope.addNewEnvVar = function () {
 					var envVars = angular.copy(catalogAppConfig.form.envVars);
 					envVars.name += envCounter;
-					
+
 					envVars.entries[1].name += envCounter;
 					envVars.entries[2].name += envCounter;
 					envVars.entries[2].onAction = reRenderEnvVar;
-					
+
 					if (!submitAction) {
 						envVars.entries.pop();
 					}
@@ -1241,7 +1241,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						};
 					}
-					
+
 					if ($scope.form && $scope.form.entries) {
 						$scope.form.entries[7].tabs[1].entries.splice($scope.form.entries[7].tabs[1].entries.length - 1, 0, envVars);
 					}
@@ -1250,7 +1250,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 					envCounter++;
 				};
-				
+
 				$scope.addNewVolume = function (value, mountValue) {
 					var tmp = angular.copy(catalogAppConfig.form.volumeInput);
                     if ($scope.form.entries[5].tabs[5].entries.length >= 2) {
@@ -1259,7 +1259,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					tmp.name += volumeCounter;
 					tmp.entries[0].name += volumeCounter;
 					tmp.entries[1].name += volumeCounter;
-					
+
 					let defaultDockerVolume = {
 						volume : {}
 					};
@@ -1267,7 +1267,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						volume : {},
 						volumeMount : {}
 					};
-					
+
 					if (!submitAction) {
 						tmp.entries.pop()
 					}
@@ -1275,7 +1275,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						tmp.entries[2].name += volumeCounter;
 						tmp.entries[2].onAction = function (id, value, form) {
 							var count = parseInt(id.replace('rVolume', ''));
-							
+
 							for (let i = form.entries[5].tabs[5].entries.length - 1; i >= 0; i--) {
 								if (form.entries[5].tabs[5].entries[i].name === 'volumeGroup' + count) {
 									//remove from formData
@@ -1291,7 +1291,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						};
 					}
-					
+
 					if ($scope.form && $scope.form.entries) {
 						$scope.form.entries[5].tabs[5].entries.splice($scope.form.entries[5].tabs[5].entries.length - 1, 0, tmp);
 						if (value) {
@@ -1326,7 +1326,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 					volumeCounter++;
 				};
-				
+
 				$scope.addNewPort = function (value) {
 					var tmp = angular.copy(catalogAppConfig.form.portInput);
 					tmp.name += portCounter;
@@ -1338,7 +1338,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					else {
 						tmp.entries[1].onAction = function (id, value, form) {
 							var count = parseInt(id.replace('rPort', ''));
-							
+
 							for (let i = form.entries[5].tabs[6].entries.length - 1; i >= 0; i--) {
 								if (form.entries[5].tabs[6].entries[i].name === 'portGroup' + count) {
 									//remove from formData
@@ -1354,7 +1354,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						};
 					}
-					
+
 					if ($scope.form && $scope.form.entries) {
 						$scope.form.entries[5].tabs[6].entries.splice($scope.form.entries[5].tabs[6].entries.length - 1, 0, tmp);
 						//$scope.form.entries[11].entries.push(tmp);
@@ -1376,7 +1376,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 					portCounter++;
 				};
-				
+
 				$scope.addNewLabel = function (value) {
 					var tmp = angular.copy(catalogAppConfig.form.labelInput);
 					tmp.name += labelCounter;
@@ -1389,7 +1389,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					else {
 						tmp.entries[2].onAction = function (id, value, form) {
 							var count = parseInt(id.replace('rLabel', ''));
-							
+
 							for (let i = form.entries[5].tabs[7].entries.length - 1; i >= 0; i--) {
 								if (form.entries[5].tabs[7].entries[i].name === 'labelGroup' + count) {
 									//remove from formData
@@ -1405,7 +1405,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						};
 					}
-					
+
 					if ($scope.form && $scope.form.entries) {
 						$scope.form.entries[5].tabs[7].entries.splice($scope.form.entries[5].tabs[7].entries.length - 1, 0, tmp);
 					}
@@ -1414,20 +1414,20 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 					labelCounter++;
 				};
-				
+
 				if (submitAction) {
 					formConfig[5].tabs[5].entries[0].onAction = function (id, value, form) {
 						$scope.addNewVolume();
 					};
-					
+
 					formConfig[5].tabs[6].entries[0].onAction = function (id, value, form) {
 						$scope.addNewPort();
 					};
-					
+
 					formConfig[5].tabs[7].entries[0].onAction = function (id, value, form) {
 						$scope.addNewLabel();
 					};
-					
+
 					formConfig[7].tabs[1].entries[0].onAction = function (id, value, form) {
 						$scope.addNewEnvVar();
 					};
@@ -1438,7 +1438,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					formConfig[5].tabs[7].entries.pop();
 					formConfig[7].tabs[1].entries.pop();
 				}
-				
+
 				var formData = mapDataToForm($scope, false);
 				var options = {
 					timeout: $timeout,
@@ -1518,7 +1518,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				});
 			}
 		});
-		
+
 		function mapDataToForm(modalScope, postForm) {
 			var output = {
 				name: data.name,
@@ -1534,12 +1534,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				network: data.recipe.deployOptions.container.network,
 				workingDir: data.recipe.deployOptions.container.workingDir
 			};
-			
+
 			if (data.recipe.buildOptions.cmd
 				&& data.recipe.buildOptions.cmd.deploy
 				&& data.recipe.buildOptions.cmd.deploy.command) {
 				output.command = data.recipe.buildOptions.cmd.deploy.command[0];
-				
+
 				if (data.recipe.buildOptions.cmd.deploy.args) {
 					output.arguments = data.recipe.buildOptions.cmd.deploy.args.join("\n");
 				}
@@ -1556,9 +1556,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
             }
 
             if (data.restriction && data.restriction.deployment &&  data.restriction.deployment.length > 0) {
-				let deployment = [];
+				let deployment = {};
+
                 for (let i = 0; i < data.restriction.deployment.length ; i ++) {
-                    deployment.push({v: data.restriction.deployment[i], l : data.restriction.deployment[i]}) ;
+                    deployment = {v: data.restriction.deployment[i], l : data.restriction.deployment[i]};
                 }
                 output['deploymentType'] = deployment;
            }
@@ -1581,23 +1582,23 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                 }
                output['drivers'] = drivers;
            }
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.label) {
 				output['Label'] = data.recipe.deployOptions.sourceCode.configuration.label
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration) {
 				output['configButton'] = true
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom) {
 				output['customButton'] = true
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.label) {
 				output['customLabel'] = data.recipe.deployOptions.sourceCode.custom.label
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.repo && data.recipe.deployOptions.sourceCode.custom.repo !== '') {
 				output['customRepo'] = data.recipe.deployOptions.sourceCode.custom.repo;
 				if( data.recipe.deployOptions.sourceCode.custom.subName){
@@ -1607,8 +1608,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				output['customRepo'] = 'user specify';
 				output['customBranch'] = '';
 			}
-			
-			
+
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.type) {
 				output['customType'] = data.recipe.deployOptions.sourceCode.custom.type
 			}
@@ -1616,26 +1617,26 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom && data.recipe.deployOptions.sourceCode.custom.branch) {
 				output['customBranch'] = data.recipe.deployOptions.sourceCode.custom.branch
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.custom) {
 				output['customRequired'] = data.recipe.deployOptions.sourceCode.custom.required
 			}
-			
-			
+
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.repo) {
 				output['repo'] = data.recipe.deployOptions.sourceCode.configuration.repo
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.repo === '') {
 				output['repo'] = 'user specify';
 				output['branch'] = '';
 				output['required'] = data.recipe.deployOptions.sourceCode.configuration.required
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.branch && data.recipe.deployOptions.sourceCode.configuration.branch.length !== 0) {
 				output['branch'] = data.recipe.deployOptions.sourceCode.configuration.branch
 			}
-			
+
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.required) {
 				output['required'] = data.recipe.deployOptions.sourceCode.configuration.required
 			}
@@ -1651,7 +1652,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			else {
 				output.accelerateDeployment = 'false';
 			}
-			
+
 			if (postForm) {
 				output["readinessProbe"] = data.recipe.deployOptions.readinessProbe;
 				setEditorContent("readinessProbe", output['readinessProbe'], mainFormConfig[5].tabs[2].entries[0].height, modalScope);
@@ -1659,7 +1660,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				//volumes
 				if (data.recipe.deployOptions.voluming && (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.length > 0)) {
 					data.recipe.deployOptions.voluming.forEach(function (oneVolume) {
-						
+
 						let dockerVolume = {};
 						if(oneVolume.docker && oneVolume.docker.volume){
 							dockerVolume = oneVolume.docker;
@@ -1667,7 +1668,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						}else{
 							output['volume' + volumeCounter] = {};
 						}
-						
+
 						let mountVolume;
 						if(oneVolume.kubernetes && oneVolume.kubernetes.volume){
 							output['kubernetes' + volumeCounter] = oneVolume.kubernetes; // will have both volume & mount
@@ -1676,7 +1677,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							output['kubernetes' + volumeCounter] = {};
 							mountVolume = {};
 						}
-						
+
 						modalScope.addNewVolume(dockerVolume, mountVolume);
 					});
 				}
@@ -1730,7 +1731,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'value': "<br /><div class='alert alert-warning'>No Environment Variables Configured for this Recipe.</div><br />"
 					});
 				}
-				
+
 				//service labels
 				if (data.recipe.deployOptions.labels && Object.keys(data.recipe.deployOptions.labels).length > 0) {
 					for (let oneLabel in data.recipe.deployOptions.labels) {
@@ -1746,11 +1747,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 			}
-			
+
 			return output;
 		}
 	}
-	
+
 	function getAccounts(cb) {
 		$scope.accountInfo = [];
 		$scope.repos = [];
@@ -1787,11 +1788,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								'type': oneRepo.type,
 								'configSHA': oneRepo.configSHA
 							});
-							
+
 							if (oneRepo.configSHA) {
 								$scope.repos['configSHA'] = oneRepo.configSHA
 							}
-							
+
 							$scope.accountInfo[oneRepo.name] = {
 								'provider': oneAccount.provider,
 								'_id': oneAccount['_id']
@@ -1808,7 +1809,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						});
 					});
-					
+
 				} else {
 					$scope.displayAlert('danger', 'No repositories found');
 				}
@@ -1816,7 +1817,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	}
-	
+
 	function fromToAPI(formData, envCounter, volumeCounter, portCounter, labelCounter) {
 		var apiData = {
 			name: formData.name,
@@ -1853,12 +1854,14 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		};
 
+		formData.deploymentType = [formData.deploymentType];
 		if (formData.deploymentType && formData.deploymentType.length > 0) {
 			for (let i = 0; i < formData.deploymentType.length ; i ++) {
                 formData.deploymentType[i] = formData.deploymentType[i].v
 			}
             apiData['restriction']["deployment"] = formData.deploymentType
 		}
+
 		if (formData.drivers && formData.drivers.length > 0) {
             for (let i = 0; i < formData.drivers.length ; i ++) {
                 formData.drivers[i] = formData.drivers[i].v
@@ -1880,21 +1883,21 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				'branch': (formData.branch || ''),
 				'required': (formData.required),
 			};
-			
+
 			if (formData.required === false !== apiData.recipe.deployOptions.sourceCode.configuration.required) {
 				apiData.recipe.deployOptions.sourceCode.configuration.required = formData.required;
 			}
 			if (apiData.recipe.deployOptions.sourceCode.configuration && (apiData.recipe.deployOptions.sourceCode.configuration.repo === 'user specify' || apiData.recipe.deployOptions.sourceCode.configuration.repo === '')) {
 				apiData.recipe.deployOptions.sourceCode.configuration.repo = '';
 				apiData.recipe.deployOptions.sourceCode.configuration.branch = '';
-				
+
 			}
-			
+
 			if (apiData.recipe.deployOptions.sourceCode.configuration && apiData.recipe.deployOptions.sourceCode.configuration.repo !== '') {
 				apiData.recipe.deployOptions.sourceCode.configuration.required = true;
 			}
 		}
-		
+
 		if (apiData.type === 'server' && formData.customButton && formData.customButton === true) {
 			apiData.recipe.deployOptions.sourceCode.custom = {
 				"label": formData.customLabel,
@@ -1908,16 +1911,16 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (formData.customRequired && formData.customRequired !== apiData.recipe.deployOptions.sourceCode.custom.required) {
 				apiData.recipe.deployOptions.sourceCode.custom.required = formData.customRequired;
 			}
-			
+
 			if (apiData.recipe.deployOptions.sourceCode.custom && (apiData.recipe.deployOptions.sourceCode.custom.repo === 'user specify' || apiData.recipe.deployOptions.sourceCode.custom.repo === '')) {
 				apiData.recipe.deployOptions.sourceCode.custom.repo = '';
 				apiData.recipe.deployOptions.sourceCode.custom.branch = '';
 			}
-			
+
 			if (apiData.recipe.deployOptions.sourceCode.custom && apiData.recipe.deployOptions.sourceCode.custom.repo !== '') {
 				apiData.recipe.deployOptions.sourceCode.custom.required = true;
 			}
-			
+
 			if (formData.customType && formData.customType === 'multi') {
 				$scope.repos.forEach((oneRepo) => {
 					if (oneRepo.type === 'multi') {
@@ -1943,22 +1946,22 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                     }
                 })
 			}
-			
+
 		}
-		
+
 		if (formData.accelerateDeployment) {
 			if (!apiData.recipe.buildOptions.settings) {
 				apiData.recipe.buildOptions.settings = {};
 			}
 			apiData.recipe.buildOptions.settings.accelerateDeployment = (formData.accelerateDeployment === 'true');
 		}
-		
-		
+
+
 		if (apiData.recipe.deployOptions.sourceCode.custom && apiData.recipe.deployOptions.sourceCode.custom.repo === 'user specify') {
 			apiData.recipe.deployOptions.sourceCode.custom.repo = '';
 		}
-		
-		
+
+
 		if (!apiData.recipe.buildOptions.cmd) {
 			apiData.recipe.buildOptions.cmd = {
 				deploy: {
@@ -1969,12 +1972,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		}
 		if (formData.command) {
 			apiData.recipe.buildOptions.cmd.deploy.command = [formData.command];
-			
+
 			if (formData.arguments) {
 				apiData.recipe.buildOptions.cmd.deploy.args = formData.arguments.split("\n");
 			}
 		}
-		
+
 		if (volumeCounter > 0) {
 			for (let i = 0; i < volumeCounter; i++) {
 				let currentVolume = {
@@ -1986,7 +1989,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				if (volume && Object.keys(volume).length > 0) {
 					currentVolume.docker = volume; // will probably have volume
 				}
-				
+
 				let volumeMount = formData['kubernetes' + i];
 				if (volumeMount && Object.keys(volumeMount).length > 0) {
 					currentVolume.kubernetes = volumeMount; // will probably have volume and volumeMount
@@ -1997,7 +2000,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		}
-		
+
 		if (portCounter > 0) {
 			for (let i = 0; i < portCounter; i++) {
 				let port = formData['port' + i];
@@ -2006,7 +2009,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		}
-		
+
 		if (envCounter > 0) {
 			for (let i = 0; i < envCounter; i++) {
 				if (!formData['envVarName' + i] || !formData['envVarType' + i]) {
@@ -2034,7 +2037,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		}
-		
+
 		if (labelCounter > 0) {
 			apiData.recipe.deployOptions.labels = {};
 			for (let i = 0; i < labelCounter; i++) {
@@ -2042,7 +2045,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					continue;
 				}
 				apiData.recipe.deployOptions.labels[formData['labelName' + i]] = formData['labelValue' + i];
-				
+
 				//nothing to push
 				if (!apiData.recipe.deployOptions.labels[formData['labelName' + i]]) {
 					delete apiData.recipe.deployOptions.labels[formData['labelName' + i]];
@@ -2055,19 +2058,19 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
         }
 		return apiData;
 	}
-	
+
 	$scope.addRecipe = function (type) {
 		$scope.add = true;
 		var formConfig;
 		var data;
-		
+
 		var submitAction = {
 			method: 'post',
 			routeName: '/dashboard/catalog/recipes/add',
 			params: {}
 		};
 		var currentScope = $scope;
-		
+
 		if (type === 'blank') {
 			$modal.open({
 				templateUrl: "newRecipe.tmpl",
@@ -2083,7 +2086,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								categories.value.splice(i, 1);
 							}
 						}
-						
+
 						if (form.entries.length > 1) {
 							form.entries.splice(form.entries.length - 1, 1);
 						}
@@ -2091,7 +2094,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							form.entries.push(categories);
 						}
 					};
-					
+
 					var options = {
 						timeout: $timeout,
 						entries: formConfig,
@@ -2105,7 +2108,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									data = angular.copy(catalogAppConfig.templates.recipe);
 									data.type = formData.type;
 									data.subtype = formData.subtype;
-									
+
 									$modalInstance.close();
 									$scope.form.formData = {};
 									$timeout(function () {
@@ -2118,7 +2121,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 											else if (data.subtype === 'other') {
 												delete formEntries[3].disabled;
 											}
-											
+
 											proceedWithForm(currentScope, formEntries, data, submitAction);
 										});
 									}, 100);
@@ -2135,9 +2138,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						]
 					};
-					
+
 					buildForm($scope, $modalInstance, options, function () {
-					
+
 					});
 				}
 			});
@@ -2151,7 +2154,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					label += " (" + oneRecipe.subtype + ")";
 				}
 				formConfig.entries[0].value.push({l: label, v: oneRecipe, group: oneRecipe.type});
-				
+
 				if (groups.indexOf(oneRecipe.type) === -1) {
 					groups.push(oneRecipe.type);
 				}
@@ -2171,7 +2174,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					proceedWithForm(currentScope, formConfig, recipeTemplate, submitAction);
 				}, 100);
 			};
-			
+
 			var options = {
 				timeout: $timeout,
 				form: formConfig,
@@ -2183,7 +2186,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			})
 		}
 	};
-	
+
 	$scope.updateRecipe = function (recipe) {
 		$scope.add = false;
 		var submitAction = {
@@ -2191,7 +2194,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			routeName: '/dashboard/catalog/recipes/update',
 			params: {id: recipe._id}
 		};
-		
+
 		getAccounts(function (response, error) {
 			if (recipe.recipe.deployOptions.sourceCode && recipe.recipe.deployOptions.sourceCode.configuration && recipe.recipe.deployOptions.sourceCode.configuration.repo && recipe.recipe.deployOptions.sourceCode.configuration.repo !== '' && recipe.recipe.deployOptions.sourceCode.configuration.branch !== '') {
 				let options = {
@@ -2200,12 +2203,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					'provider': $scope.accountInfo[recipe.recipe.deployOptions.sourceCode.configuration.repo]['provider'],
 					'selected': recipe.recipe.deployOptions.sourceCode.configuration.branch
 				};
-				
+
 				let array = 'array';
 				$scope.getBranches(options, array, recipe, function (err, branches) {
-					
+
 					if (recipe.recipe.deployOptions.sourceCode && recipe.recipe.deployOptions.sourceCode.custom && recipe.recipe.deployOptions.sourceCode.custom.repo && recipe.recipe.deployOptions.sourceCode.custom.repo !== '') {
-						
+
 						let customOptions = {
 							'name': recipe.recipe.deployOptions.sourceCode.custom.repo,
 							'id': $scope.accountInfo[recipe.recipe.deployOptions.sourceCode.custom.repo]['_id'],
@@ -2221,7 +2224,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 				});
 			} else {
-				
+
 				if (recipe.recipe.deployOptions.sourceCode && recipe.recipe.deployOptions.sourceCode.custom && recipe.recipe.deployOptions.sourceCode.custom.repo && recipe.recipe.deployOptions.sourceCode.custom.repo !== '') {
 					let customOptions = {
 						'name': recipe.recipe.deployOptions.sourceCode.custom.repo,
@@ -2230,7 +2233,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'selected': recipe.recipe.deployOptions.sourceCode.custom.branch
 					};
 					let array = 'custom';
-					
+
 					$scope.getBranches(customOptions, array, recipe, function (err, branches) {
 						proceedWithForm($scope, catalogAppConfig.form.entries, recipe, submitAction);
 					});
@@ -2240,7 +2243,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
-	
+
 	$scope.getBranches = function (data, array, recipe, cb) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -2265,7 +2268,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			return cb()
 		});
 	};
-	
+
 	$scope.viewRecipe = function (recipe) {
 		proceedWithForm($scope, catalogAppConfig.form.entries, recipe, null);
 	};
@@ -2341,6 +2344,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
         if (type && type.length === 1 &&  type[0].v === 'vm' ) {
             form.formData.infra = [];
+
+			if (form.formData.drivers) {
+				form.formData.drivers = [];
+			}
             if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
                 form.entries.pop();
                 form.entries.pop();
@@ -2465,7 +2472,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			params.id = recipe.refId;
 			params.version = recipe.v;
 		}
-		
+
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
@@ -2482,14 +2489,14 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
-	
+
 	injectFiles.injectCss("modules/dashboard/catalogs/catalog.css");
-	
+
 	// Start here
 	if ($scope.access.list) {
 		$scope.listRecipes();
 	}
-	
+
 }]);
 
 // fix the drivers issue

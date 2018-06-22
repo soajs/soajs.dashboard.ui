@@ -1169,7 +1169,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                                     'name': 'deploymentType',
                                     'label': 'Deployment Type',
                                     'type': 'uiselect',
-                                    "multiple" : true,
+                                    "multiple" : false,
                                     'value' : currentScope.infraProviders.deploymentTypes,
 									"required" : true,
                                     'fieldMsg' : "Choose the type of deployment",
@@ -2337,7 +2337,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
     }
 
     function restrictionBehavior (id, data, form, currentScope) {
-        let type = form.formData.deploymentType;
+        let type = [form.formData.deploymentType];
+
         if (type && type.length === 1 &&  type[0].v === 'vm' ) {
             form.formData.infra = [];
             if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
@@ -2356,7 +2357,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
             }
         }
         else {
-            if (type.length === 0) {
+            if (type && type.length === 1 && type[0].v === 'container') {
                 form.formData.infra = [];
                 form.formData.drivers = [];
                 if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
@@ -2364,14 +2365,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                     form.entries.pop();
                 }
                 if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name !== 'drivers') {
-                    form.entries.pop();
-                }
-            }
-            if (type && type.length === 1 && type[0].v === 'container') {
-                form.formData.infra = [];
-                form.formData.drivers = [];
-                if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
-                    form.entries.pop();
                     form.entries.pop();
                 }
                 if (form.entries[form.entries.length - 1].name === 'deploymentType') {
@@ -2392,43 +2385,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                         'fieldMsg' : "Please provide the infra(s)",
                     });
                 }
-            } else {
-                if (type && type.length === 2) {
-                    form.formData.infra = [];
-                    form.formData.drivers = [];
-                    let container = angular.copy(currentScope.infraProviders.containerInfra);
-                    let infra = angular.copy(currentScope.infraProviders.vmInfra);
-                    let infras = container.concat(infra);
-                    if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
-                        form.entries.pop();
-                        form.entries.pop();
-                    }
-
-                    if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name !== 'drivers') {
-                        form.entries.pop();
-                    }
-
-                    form.entries.push({
-                        'name': 'drivers',
-                        'label': 'Drivers',
-                        'type': 'uiselect',
-                        "multiple": true,
-                        "value": currentScope.infraProviders.drivers,
-                        'fieldMsg' : "Please provide the driver(s)",
-                    });
-                    form.entries.push({
-                        'name': 'infra',
-                        'label': 'Infra',
-                        'type': 'uiselect',
-                        "multiple": true,
-                        "value": infras,
-                        'fieldMsg' : "Please provide the infra(s)",
-                    })
-                }
             }
         }
 	}
-	
+
 	function restrictionOnLoad ($scope, currentScope, data) {
         if (data.restriction && Object.keys(data.restriction).length > 0) {
             listInfraProviders(currentScope, () => {
@@ -2437,7 +2397,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                         'name': 'deploymentType',
                         'label': 'Deployment Type',
                         'type': 'uiselect',
-                        "multiple": true,
+                        "multiple": false,
                         'value': currentScope.infraProviders.deploymentTypes,
                         "required" : true,
                         'fieldMsg': "Please provide the type(s) of deployment",

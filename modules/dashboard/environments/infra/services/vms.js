@@ -158,13 +158,31 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'value': value.regions,
 					'tooltip': 'Select Deployment Region',
 					'required': true,
-					"fieldMsg": "Microsoft Azure deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
+					"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
 				};
 				
 				if(region.value && region.value.length > 0){
 					region.value[0].selected = true;
 				}
 				form.entries.push(region);
+				
+				let groups = {
+					'name': 'group',
+					'label': 'Select a Group',
+					'type': 'select',
+					'value': [],
+					'tooltip': 'Select Resource Group',
+					'required': true
+				};
+				
+				value.groups.forEach((oneGroup) =>{
+					groups.value.push({v: oneGroup.name, l: oneGroup.name})
+				});
+				
+				if(groups.value && groups.value.length > 0){
+					groups.value[0].selected = true;
+				}
+				form.entries.push(groups);
 			}
 		}];
 		
@@ -189,7 +207,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'btn': 'primary',
 					'action': function (formData) {
 						currentScope.modalInstance.close();
-						let data = {region: formData.region };
+						let data = {region: formData.region, group: formData.group };
 						populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
 					}
 				},
@@ -297,6 +315,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"envCode": currentScope.envCode,
 					"id": oneProvider._id,
 					"region": data.region,
+					"group": data.group,
 					"extras": [ 'osDisks', 'dataDisks', 'loadBalancers', 'networks', 'publicIps', 'securityGroups', 'vmSizes' ]
 				}
 			}, function (error, response) {

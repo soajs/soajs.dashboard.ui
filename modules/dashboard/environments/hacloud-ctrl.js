@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv','metricsSrv', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, metricsSrv, injectFiles, ngDataApi) {
+environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'nodeSrv', 'hacloudSrv', 'deploySrv','metricsSrv', 'orchestrateVMS', 'injectFiles', 'ngDataApi', function ($scope, $cookies, $timeout, nodeSrv, hacloudSrv, deploySrv, metricsSrv, orchestrateVMS, injectFiles, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
@@ -292,6 +292,31 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.showHideMetrics = function(containerName){
 		$scope.ShowMetrics[containerName] = !($scope.ShowMetrics[containerName]);
 	};
+	
+	/** VM Operations **/
+	$scope.listVMLayers = function() {
+		orchestrateVMS.listVMLayers($scope);
+	};
+	
+	$scope.inspectVMLayer = function(oneVMLayer){
+		orchestrateVMS.inspectVMLayer($scope, oneVMLayer);
+	};
+	
+	$scope.deleteVMLayer = function(oneVMLayer) {
+		orchestrateVMS.deleteVMLayer($scope, oneVMLayer);
+	};
+	
+	$scope.maintenanceOp = function(oneVMLayer, oneVMInstance, operation) {
+		orchestrateVMS.listVMLayers($scope, oneVMLayer, oneVMInstance, operation);
+	};
+	
+	$scope.getVMLogs = function(oneVMLayer, oneVMInstance) {
+		orchestrateVMS.getVMLogs($scope, oneVMLayer, oneVMInstance);
+	};
+	
+	$scope.deleteVM = function(oneVMLayer, oneVMInstance) {
+		orchestrateVMS.deleteVM($scope, oneVMLayer, oneVMInstance);
+	};
 
 	injectFiles.injectCss('modules/dashboard/environments/environments.css');
 	if($cookies.getObject('myEnv', {'domain': interfaceDomain})){
@@ -324,6 +349,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 				$scope.autoRefreshMetrics();
 			});
 		});
+	}
+	
+	if ($scope.access.vm.list) {
+		$scope.listVMLayers();
 	}
 	
 	$scope.$on("$destroy", function () {

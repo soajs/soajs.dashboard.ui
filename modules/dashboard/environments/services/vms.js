@@ -1,7 +1,7 @@
 "use strict";
 var vmsServices = soajsApp.components;
-vmsServices.service('deploymentVMs', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
-
+vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
+	
 	function listVMLayers(currentScope) {
 		//create variable to indicate that we listing VMLayers in Clouds & Deployments
 		currentScope.listingClouds = true;
@@ -9,22 +9,21 @@ vmsServices.service('deploymentVMs', ['ngDataApi', '$timeout', '$modal', '$cooki
 		//call common function
 		getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
 			currentScope.vmLayers = vmLayers;
-
+			
 			if (Object.keys(currentScope.vmLayers).length > 0) {
 				//create a variable to indicate that there are VMs
 				currentScope.vmsAvailable = true;
-				console.log(currentScope);
 			}
 		});
 	}
-
-	function deleteVMLayer (currentScope, oneVMLayer) {
+	
+	function deleteVMLayer(currentScope, oneVMLayer) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
 				"env": currentScope.envCode,
-				"serviceId": oneVMLayer.name,
+				"layerName": oneVMLayer.name,
 				"infraId": oneVMLayer.infraProvider._id,
 				'technology': 'vm'
 			}
@@ -37,17 +36,17 @@ vmsServices.service('deploymentVMs', ['ngDataApi', '$timeout', '$modal', '$cooki
 			}
 		});
 	}
-
-	//TODO: finalize maintenance operation parameters
-	function maintenanceOp (currentScope, oneVMInstance, action) {
+	
+	function maintenanceOp(currentScope, oneVMLayer, oneVMInstance, action) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/vm/maintenance",
 			"params": {
-				"infraId": "",
-				// "env": "",
-				"technology": "",
-				"vmName": oneVMInstance.name,
+				"env": currentScope.envCode,
+				"group": oneVMInstance.labels['soajs.service.vm.group'],
+				"serviceId": oneVMInstance.name,
+				"infraId": oneVMLayer.infraProvider._id,
+				"technology": "vm",
 				"operation": action
 			}
 		}, function (error, response) {
@@ -59,17 +58,17 @@ vmsServices.service('deploymentVMs', ['ngDataApi', '$timeout', '$modal', '$cooki
 			}
 		});
 	}
-
-	//TODO: finalize delete parameters
-	function deleteVM (currentScope, oneVMInstance) {
+	
+	function deleteVM(currentScope, oneVMLayer, oneVMInstance) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/cloud/vm",
+			"routeName": "/dashboard/cloud/vm/instance",
 			"params": {
-				"infraId": "",
-				// "env": "",
-				"serviceId": "",
-				"technology": ""
+				"env": currentScope.envCode,
+				"group": oneVMInstance.labels['soajs.service.vm.group'],
+				"serviceId": oneVMInstance.name,
+				"infraId": oneVMLayer.infraProvider._id,
+				"technology": "vm"
 			}
 		}, function (error, response) {
 			if (error) {
@@ -80,119 +79,172 @@ vmsServices.service('deploymentVMs', ['ngDataApi', '$timeout', '$modal', '$cooki
 			}
 		});
 	}
-
-	//TODO: Make sure params are filled.
-	function getVMLogs (currentScope, oneVMInstance) {
-		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "delete",
-			"routeName": "/dashboard/cloud/vm/logs",
-			"params": {
-				"infraId": "",
-				// "env": "",
-				"technology": "",
-				"vmName": oneVMInstance.name,
-				// "numberOfLines": , //optional
-			}
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				//TODO: open modal to show logs
-			}
-		});
-
-		//get logs function from dashboard
-		/* overlayLoading.show();
-		currentScope.pauseRefresh = true;
-		getSendDataFromServer(currentScope, ngDataApi, {
-			method: "get",
-			routeName: "/dashboard/cloud/services/instances/logs",
-			params: {
-				env: currentScope.envCode,
-				namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
-				serviceId: task.ref.service.id,
-				taskId: task.id
-			}
-		}, function (error, response) {
-			overlayLoading.hide();
-			var autoRefreshPromise;
-
-			var mInstance = $modal.open({
-				templateUrl: "logBox.html",
-				size: 'lg',
-				backdrop: true,
-				keyboard: false,
-				windowClass: 'large-Modal',
-				controller: function ($scope, $modalInstance) {
-					$scope.title = "Host Logs of " + task.name;
-					fixBackDrop();
-
-					$scope.ok = function () {
-						$modalInstance.dismiss('ok');
-					};
-
-					if(error) {
-						$scope.message = {
-							warning: 'Instance logs are not available at the moment. Make sure that the instance is <strong style="color:green;">running</strong> and healthy.<br> If this is a newly deployed instance, please try again in a few moments.'
-						};
-					}
-					else {
-						$scope.data = remove_special(response.data);
-						$timeout(function () {
-							highlightMyCode()
-						}, 500);
-
-						$scope.refreshLogs = function () {
-							getSendDataFromServer(currentScope, ngDataApi, {
-								method: "get",
-								routeName: "/dashboard/cloud/services/instances/logs",
-								params: {
-									env: currentScope.envCode,
-									namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
-									serviceId: task.ref.service.id,
-									taskId: task.id
-								}
-							}, function (error, response) {
-								if (error) {
-									currentScope.displayAlert('danger', error.message);
-								}
-								else {
-									$scope.data = remove_special(response.data).replace("undefined", "").toString();
-									if (!$scope.$$phase) {
-										$scope.$apply();
-									}
-
-									fixBackDrop();
-									$timeout(function () {
-										highlightMyCode()
-									}, 500);
-
-									autoRefreshPromise = $timeout(function () {
-										$scope.refreshLogs();
-									}, 5000);
-								}
-							});
-						};
-
-						$scope.refreshLogs();
+	
+	function inspectVMLayer(currentScope, oneVMLayer) {
+		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
+		formConfig.entries[0].value = angular.copy(oneVMLayer);
+		delete formConfig.entries[0].value.infraProvider.regions;
+		delete formConfig.entries[0].value.infraProvider.templates;
+		
+		let options = {
+			timeout: $timeout,
+			form: formConfig,
+			name: 'serviceInfo',
+			label: oneVMLayer.name + ' | Layer Inspection',
+			actions: [
+				{
+					'type': 'reset',
+					'label': translation.ok[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						currentScope.modalInstance.dismiss('cancel');
+						currentScope.form.formData = {};
 					}
 				}
+			]
+		};
+		buildFormWithModal(currentScope, $modal, options);
+	}
+	
+	function getVMLogs(currentScope, oneVMLayer, oneVMInstance) {
+		
+		//open form, ask the user to provide the numberOfLines
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": [
+					{
+						type: 'html',
+						value: "<alert type='info'><p><b>Note:</b>&nbsp;Be advised that this operation might take around 30 seconds to complete.</p></alert>"
+					},
+					{
+						type: 'number',
+						label: "Maximum Number of Lines",
+						name: "numberOfLines",
+						placeholder: 200,
+						required: true,
+						fieldMsg: "Provide the Maximum number of lines (1 - 1000) to retrieve from the Virtual Machine Instance.",
+						min: 1,
+						max: 1000
+					}
+				]
+			},
+			name: 'numberOfLines',
+			label: 'Retrieving VM Instance Log Messages',
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.submit[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						showVMLogs(formData);
+						currentScope.modalInstance.close();
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						currentScope.modalInstance.dismiss('cancel');
+						currentScope.form.formData = {};
+					}
+				}
+			]
+		};
+		buildFormWithModal(currentScope, $modal, options);
+		
+		function showVMLogs(formData) {
+			overlayLoading.show();
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "post",
+				"routeName": "/dashboard/cloud/vm/logs",
+				"params": {
+					"env": currentScope.envCode,
+					"group": oneVMInstance.labels['soajs.service.vm.group'],
+					"serviceId": oneVMInstance.name,
+					"infraId": oneVMLayer.infraProvider._id,
+					"technology": "vm",
+					"numberOfLines": formData.numberOfLines
+				}
+			}, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+				}
+				else {
+					console.log(response);
+					$modal.open({
+						templateUrl: "vmLogBox.html",
+						size: 'lg',
+						backdrop: true,
+						keyboard: false,
+						windowClass: 'large-Modal',
+						controller: function ($scope, $modalInstance) {
+							$scope.title = "VM Instance Logs of " + oneVMInstance.name;
+							fixBackDrop();
+							
+							$scope.ok = function () {
+								$modalInstance.dismiss('ok');
+							};
+							
+							$scope.refreshLogs = function () {
+								overlayLoading.show();
+								getSendDataFromServer(currentScope, ngDataApi, {
+									"method": "post",
+									"routeName": "/dashboard/cloud/vm/logs",
+									"params": {
+										"env": currentScope.envCode,
+										"group": oneVMInstance.labels['soajs.service.vm.group'],
+										"serviceId": oneVMInstance.name,
+										"infraId": oneVMLayer.infraProvider._id,
+										"technology": "vm",
+										"numberOfLines": formData.numberOfLines
+									}
+								}, function (error, response) {
+									overlayLoading.hide();
+									if (error) {
+										currentScope.displayAlert('danger', error.message);
+									}
+									else {
+										let output = '';
+										response.output.forEach((oneOutput) => {
+											output += oneOutput.message + "\n";
+										});
+										$scope.data = remove_special(output).replace("undefined", "").toString();
+										if (!$scope.$$phase) {
+											$scope.$apply();
+										}
+										
+										fixBackDrop();
+										$timeout(function () {
+											highlightMyCode()
+										}, 500);
+									}
+								});
+							};
+							
+							if (error) {
+								$scope.message = {
+									warning: 'Instance logs are not available at the moment. Make sure that the instance is <strong style="color:green;">running</strong> and healthy.<br> If this is a newly deployed instance, please try again in a few moments.'
+								};
+							}
+							else {
+								let output = '';
+								response.output.forEach((oneOutput) => {
+									output += oneOutput.message + "\n";
+								});
+								$scope.data = remove_special(output);
+								$timeout(function () {
+									highlightMyCode()
+								}, 500);
+							}
+						}
+					});
+				}
 			});
-
-			mInstance.result.then(function () {
-				//Get triggers when modal is closed
-				currentScope.pauseRefresh = false;
-				$timeout.cancel(autoRefreshPromise);
-			}, function () {
-				//gets triggers when modal is dismissed.
-				currentScope.pauseRefresh = false;
-				$timeout.cancel(autoRefreshPromise);
-			});
-		});
-
+		}
+		
 		function remove_special(str) {
 			if (!str) {
 				return 'No logs found for this instance'; //in case container has no logs, return message to display
@@ -221,14 +273,15 @@ vmsServices.service('deploymentVMs', ['ngDataApi', '$timeout', '$modal', '$cooki
 				}
 			}
 			return str;
-		} */
+		}
 	}
-
+	
 	return {
 		'listVMLayers': listVMLayers,
 		'deleteVM': deleteVM,
 		'deleteVMLayer': deleteVMLayer,
 		'maintenanceOp': maintenanceOp,
-		'getVMLogs': getVMLogs
+		'getVMLogs': getVMLogs,
+		'inspectVMLayer': inspectVMLayer
 	}
 }]);

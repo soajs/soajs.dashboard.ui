@@ -45,6 +45,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
 		delete formConfig.entries[0].value.infraProvider.regions;
+		delete formConfig.entries[0].value.infraProvider.templates;
 		
 		let options = {
 			timeout: $timeout,
@@ -72,7 +73,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
 				"env": currentScope.envCode,
-				"serviceId": oneVMLayer.name,
+				"layerName": oneVMLayer.name,
 				"infraId": oneVMLayer.infraProvider._id,
 				'technology': 'vm'
 			}
@@ -108,7 +109,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						'technology': 'vm',
 						"infraId": oneProvider._id
 					},
-					"data": formData
+					"data": {
+						"infraCodeTemplate" : formData.infraCodeTemplate,
+						"region" : formData.region,
+						"name" : formData.name,
+						"specs": formData
+					}
 				}, function (error, response) {
 					if (error) {
 						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -209,9 +215,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"env": currentScope.envCode,
 						'technology': 'vm',
 						"infraId": oneProvider._id,
-						"vmLayerId": oneVMLayer._id
+						"layerName": oneVMLayer._id
 					},
-					"data": formData
+					"data": {
+						"infraCodeTemplate" : formData.infraCodeTemplate,
+						"region" : formData.region,
+						"name" : formData.name,
+						"specs": formData
+					}
 				}, function (error, response) {
 					if (error) {
 						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);

@@ -467,13 +467,17 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 						//aggregate and populate groups
 						//add infra to group details
 						if(!allVMs[oneProvider.name + "_" + oneVM.layer]){
+							let vmTemplate = angular.copy(oneVM.template);
+							delete oneVM.template;
 							allVMs[oneProvider.name + "_" + oneVM.layer] = {
 								name: oneVM.layer,
 								infraProvider: oneProvider,
-								list: [oneVM]
+								list: [oneVM],
+								template: vmTemplate
 							};
 						}
 						else{
+							delete oneVM.template;
 							allVMs[oneProvider.name + "_" + oneVM.layer].list.push(oneVM);
 						}
 					});

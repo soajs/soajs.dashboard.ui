@@ -93,15 +93,6 @@ var serviceProviders = {
 								'tooltip': 'Provide a name for your VM Layer',
 								'required': true,
 								"fieldMsg": "Enter a name that will be used as a reference for this VM Layer"
-							},
-							{
-								'name': 'region',
-								'label': 'Select a Region',
-								'type': 'select',
-								'value': [],
-								'tooltip': 'Select Deployment Region',
-								'required': true,
-								"fieldMsg": "Microsoft Azure deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
 							}
 						]
 					}

@@ -12,15 +12,15 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 	if (Object.hasOwnProperty.call(opts, 'backdrop')) {
 		formConfig.backdrop = opts.backdrop;
 	}
-
+	
 	var m = ($modal && $modal !== null) ? true : false;
-
+	
 	buildForm($scope, m, formConfig, function () {
 		if (opts.postBuild && (typeof(opts.postBuild) === 'function')) {
 			opts.postBuild();
 		}
 	});
-
+	
 	if ($modal && $modal !== null) {
 		var formContext = $scope;
 		$scope.form.openForm = function () {
@@ -40,7 +40,7 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 					}
 				}
 			});
-
+			
 			newModal.result.then(function () {
 				//Get triggers when modal is closed
 			}, function () {
@@ -51,11 +51,11 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 			});
 		};
 		$scope.form.openForm();
-
+		
 		$scope.form.closeModal = function () {
 			$scope.modalInstance.close();
 		};
-
+		
 	}
 }
 
@@ -74,14 +74,14 @@ function buildForm(context, modal, configuration, cb) {
 		labels: {},
 		formData: {}
 	};
-
+	
 	context.form.closeNote = function () {
 		context.form.submitted = false;
 	};
 	context.form.closeAlert = function (i) {
 		context.form.alerts.splice(i, 1);
 	};
-
+	
 	context.form.displayAlert = function (type, msg, isCode, service, orgMesg) {
 		context.form.alerts = [];
 		if (isCode) {
@@ -90,10 +90,10 @@ function buildForm(context, modal, configuration, cb) {
 				msg = msgT;
 			}
 		}
-		context.form.alerts.push({ 'type': type, 'msg': msg });
+		context.form.alerts.push({'type': type, 'msg': msg});
 		context.form.closeAllAlerts();
 	};
-
+	
 	context.form.closeAllAlerts = function (instant) {
 		if (instant) {
 			context.form.alerts = [];
@@ -104,7 +104,7 @@ function buildForm(context, modal, configuration, cb) {
 			}, 7000);
 		}
 	};
-
+	
 	function rebuildData(fieldEntry, parentGroup) {
 		var keys = Object.keys(configuration.data);
 		for (var x = 0; x < keys.length; x++) {
@@ -112,6 +112,7 @@ function buildForm(context, modal, configuration, cb) {
 			if (fieldEntry.name === inputName) {
 				internalDataMap(fieldEntry, inputName);
 			}
+			//check here ...
 			else if (!Array.isArray(configuration.data[inputName]) && typeof(configuration.data[inputName]) === 'object') {
 				for (let i in configuration.data[inputName]) {
 					if (i === fieldEntry.name) {
@@ -121,11 +122,13 @@ function buildForm(context, modal, configuration, cb) {
 				}
 			}
 		}
-
+		
 		function internalDataMap(fieldEntry, inputName) {
 			if (Array.isArray(fieldEntry.value)) {
 				for (let i = 0; i < fieldEntry.value.length; i++) {
 					let oneValue = fieldEntry.value[i];
+					
+					//check here ...
 					if (Array.isArray(configuration.data[inputName])) {
 						if (configuration.data[inputName].indexOf(oneValue.v) !== -1) {
 							oneValue.selected = true;
@@ -137,12 +140,14 @@ function buildForm(context, modal, configuration, cb) {
 						}
 					}
 					else {
+						//check here ...
 						if (fieldEntry.type === 'uiselect' && configuration.data[inputName] !== undefined && configuration.data[inputName] !== null) {
 							if (!Object.hasOwnProperty.call(configuration.data, inputName) || (oneValue.v.toString() === configuration.data[inputName].toString())) {
 								context.form.formData[inputName] = oneValue;
 								break;
 							}
 						}
+						//check here ...
 						else if (fieldEntry.type !== 'uiselect' && configuration.data[inputName] !== undefined && configuration.data[inputName] !== null) {
 							if (!Object.hasOwnProperty.call(configuration.data, inputName) || (oneValue.v.toString() === configuration.data[inputName].toString())) {
 								oneValue.selected = true;
@@ -164,7 +169,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	}
-
+	
 	function updateFormData(oneEntry, reload) {
 		if (!reload) {
 			if (oneEntry.value) {
@@ -178,16 +183,20 @@ function buildForm(context, modal, configuration, cb) {
 						});
 					}
 					else {
+						if(oneEntry.type === 'buttonSlider' && typeof oneEntry.value === 'string'){
+							oneEntry.value = (oneEntry.value === 'true');
+						}
 						context.form.formData[oneEntry.name] = oneEntry.value;
 					}
 				}
 			}
+			
 			else if (oneEntry.type === 'number') {
 				if (oneEntry.value === 0) {
 					context.form.formData[oneEntry.name] = oneEntry.value;
 				}
 			}
-
+			
 			if (['document', 'audio', 'image', 'video'].indexOf(oneEntry.type) !== -1) {
 				if (oneEntry.limit === undefined) {
 					oneEntry.limit = 0;
@@ -195,26 +204,27 @@ function buildForm(context, modal, configuration, cb) {
 				else if (oneEntry.limit === 0) {
 					oneEntry.addMore = true;
 				}
-
+				
 				if (oneEntry.value && Array.isArray(oneEntry.value) && oneEntry.value.length > 0) {
 					if (oneEntry.limit < oneEntry.value.length) {
 						oneEntry.limit = oneEntry.value.length;
 					}
 				}
 			}
-
+			
 			if (oneEntry.type === 'date-picker') {
 				if (typeof(oneEntry.min) === 'object') {
 					oneEntry.min = oneEntry.min.getTime();
 				}
-
+				
 				oneEntry.openDate = function ($event, index) {
 					$event.preventDefault();
 					$event.stopPropagation();
 					context.form.entries[index].opened = true;
 				};
 			}
-
+			
+			//check here ....
 			if (oneEntry.type === 'select') {
 				for (var x = 0; x < oneEntry.value.length; x++) {
 					if (oneEntry.value[x].selected) {
@@ -222,7 +232,7 @@ function buildForm(context, modal, configuration, cb) {
 						break;
 					}
 				}
-
+				
 				if (oneEntry.onChange && typeof(oneEntry.onChange.action) === 'function') {
 					oneEntry.action = oneEntry.onChange;
 				}
@@ -231,30 +241,30 @@ function buildForm(context, modal, configuration, cb) {
 				}
 			}
 		}
-
+		
 		if (oneEntry.type === 'jsoneditor') {
 			oneEntry.onLoad = function (_editor) {
 				oneEntry.editor = _editor;
 				_editor.$blockScrolling = Infinity;
-
+				
 				if (!oneEntry.value) {
 					oneEntry.value = {};
 				}
 				oneEntry.ngModel = JSON.stringify(oneEntry.value, null, 2);
 				_editor.setValue(JSON.stringify(oneEntry.value, null, 2));
-
+				
 				_editor.scrollToLine(0, true, true);
 				_editor.scrollPageUp();
 				_editor.clearSelection();
 				_editor.setShowPrintMargin(false);
-
-				function heightUpdateFunction (computedHeightValue) {
+				
+				function heightUpdateFunction(computedHeightValue) {
 					var newHeight =
 						_editor.getSession().getScreenLength()
 						* _editor.renderer.lineHeight
 						+ _editor.renderer.scrollBar.getWidth() + 10;
-
-					if(computedHeightValue){
+					
+					if (computedHeightValue) {
 						newHeight = parseInt(computedHeightValue);
 					}
 					else if (oneEntry.fixedHeight) {
@@ -263,7 +273,7 @@ function buildForm(context, modal, configuration, cb) {
 					else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
 						newHeight = parseInt(oneEntry.height);
 					}
-
+					
 					_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
 					_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
 					configuration.timeout(function () {
@@ -271,32 +281,32 @@ function buildForm(context, modal, configuration, cb) {
 						// _editor.resize(true);
 					}, 5);
 				}
-
+				
 				context.form.timeout(function () {
 					oneEntry.editor.heightUpdate = heightUpdateFunction;
 					// Set initial size to match initial content
 					heightUpdateFunction();
-
+					
 					// Whenever a change happens inside the ACE editor, update
 					// the size again
 					_editor.getSession().on('change', heightUpdateFunction);
 				}, 1000);
 			};
 			
-			oneEntry.onUpdate = function(_editore){
+			oneEntry.onUpdate = function (_editore) {
 				let newHeight = 50;
-				if(_editore[0].data && _editore[0].data.lines){
-					newHeight += _editore[0].data.lines.length *  16.5;
+				if (_editore[0].data && _editore[0].data.lines) {
+					newHeight += _editore[0].data.lines.length * 16.5;
 					newHeight = Math.ceil(newHeight);
 					
-					context.form.timeout(function(){
+					context.form.timeout(function () {
 						_editore[1].heightUpdate(newHeight);
 					}, 1500);
 				}
 			}
 		}
 	}
-
+	
 	if (configuration.data) {
 		for (var i = 0; i < context.form.entries.length; i++) {
 			if (['group', 'accordion'].indexOf(context.form.entries[i].type) !== -1) {
@@ -317,7 +327,7 @@ function buildForm(context, modal, configuration, cb) {
 		}
 		context.form.refData = configuration.data;
 	}
-
+	
 	context.form.refresh = function (reload) {
 		for (var i = 0; i < context.form.entries.length; i++) {
 			if (['group', 'accordion'].indexOf(context.form.entries[i].type) !== -1) {
@@ -338,15 +348,15 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.refresh(false);
-
+	
 	function assignListener(elementName) {
 		context.$watchCollection(elementName, function (newCol, oldCol) {
 			if (newCol && oldCol && newCol.length !== oldCol.length) {
 				context.form.refresh(true);
 			}
-
+			
 			if (oldCol && oldCol.length > 0) {
 				for (var i = 0; i < oldCol.length; i++) {
 					if (oldCol[i].type === 'group') {
@@ -356,26 +366,26 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		});
 	}
-
+	
 	assignListener('form.entries');
-
+	
 	context.form.do = function (functionObj) {
 		context.form.submitted = false;
-
-		if(!context.form.formData){
+		
+		if (!context.form.formData) {
 			context.form.formData = {};
 		}
-
+		
 		var formDataKeys = Object.keys(context.form.formData);
 		var fileTypes = ['document', 'image', 'audio', 'video'];
 		var customData = [];
-
+		
 		findEditorSchema(context.form.entries);
-
+		
 		for (var j = 0; j < formDataKeys.length; j++) {
 			findFileInputSchema(context.form.entries, formDataKeys[j], fileTypes);
 		}
-
+		
 		if (functionObj.type === 'submit') {
 			var data = angular.copy(context.form.formData);
 			if (context.form.itemsAreValid(data)) {
@@ -391,38 +401,38 @@ function buildForm(context, modal, configuration, cb) {
 		else {
 			functionObj.action();
 		}
-
-		function findEditorSchema(entries){
+		
+		function findEditorSchema(entries) {
 			for (var i = 0; i < entries.length; i++) {
-
-				if(entries[i].tabs){
-					entries[i].tabs.forEach((oneTab) =>{
+				
+				if (entries[i].tabs) {
+					entries[i].tabs.forEach((oneTab) => {
 						findEditorSchema(oneTab.entries)
 					});
 				}
-				else if(entries[i].entries){
+				else if (entries[i].entries) {
 					findEditorSchema(entries[i].entries)
 				}
-				else{
+				else {
 					if (entries[i].type === 'jsoneditor') {
 						context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
 					}
 				}
 			}
 		}
-
-		function findFileInputSchema(entries, labelName, fileTypes){
+		
+		function findFileInputSchema(entries, labelName, fileTypes) {
 			let count = 0;
 			for (let i = 0; i < entries.length; i++) {
-				if(entries[i].tabs){
-					entries[i].tabs.forEach((oneTab) =>{
+				if (entries[i].tabs) {
+					entries[i].tabs.forEach((oneTab) => {
 						findFileInputSchema(oneTab.entries, labelName, fileTypes)
 					});
 				}
-				if(entries[i].entries){
+				if (entries[i].entries) {
 					findFileInputSchema(entries[i].entries, labelName, fileTypes)
 				}
-				else{
+				else {
 					var pattern = new RegExp(entries[i].name + "_[0-9]+");
 					if (pattern.test(labelName) && fileTypes.indexOf(entries[i].type) !== -1) {
 						customData.push({
@@ -434,8 +444,8 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
-
+	
+	
 	context.form.callObj = function (functionObj) {
 		if (functionObj) {
 			if (functionObj.action) {
@@ -443,7 +453,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.call = function (action, id, data, form) {
 		if (action) {
 			if (typeof(action) == 'function') {
@@ -451,7 +461,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	function doValidateItems(entries, data) {
 		for (var i = 0; i < entries.length; i++) {
 			var oneEntry = entries[i];
@@ -476,7 +486,7 @@ function buildForm(context, modal, configuration, cb) {
 					data[oneEntry.name] = data[oneEntry.name][0];
 				}
 			}
-
+			
 			if (data[oneEntry.name] === 'false') {
 				data[oneEntry.name] = false;
 			}
@@ -491,13 +501,13 @@ function buildForm(context, modal, configuration, cb) {
 		}
 		return true;
 	}
-
+	
 	// testAction
 	context.form.itemsAreValid = function (data) {
 		var entries = context.form.entries;
 		return doValidateItems(entries, data);
 	};
-
+	
 	context.form.toggleSelectValues = function (fieldName, value) {
 		for (var i = 0; i < context.form.entries.length; i++) {
 			if (context.form.entries[i].name === fieldName) {
@@ -517,12 +527,12 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.toggleSelection = function (fieldName, value) {
 		if (!context.form.formData[fieldName]) {
 			context.form.formData[fieldName] = [];
 		}
-
+		
 		if (context.form.formData[fieldName].indexOf(value) === -1) {
 			context.form.formData[fieldName].push(value);
 		}
@@ -531,7 +541,7 @@ function buildForm(context, modal, configuration, cb) {
 			context.form.formData[fieldName].splice(idx, 1);
 		}
 	};
-
+	
 	context.form.markSelected = function (entry) {
 		if (entry && entry.value && Array.isArray(entry.value)) {
 			if (!context.form.formData[entry.name]) {
@@ -547,7 +557,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 	};
-
+	
 	context.form.showHide = function (oneEntry) {
 		if (oneEntry.collapsed) {
 			oneEntry.collapsed = false;
@@ -558,7 +568,7 @@ function buildForm(context, modal, configuration, cb) {
 			oneEntry.icon = "plus";
 		}
 	};
-
+	
 	context.form.addNewInput = function (input) {
 		if (input.limit === 0) {
 			input.limit = 1;
@@ -566,7 +576,7 @@ function buildForm(context, modal, configuration, cb) {
 		input.limit++;
 		input.addMore = true;
 	};
-
+	
 	context.form.downloadFile = function (config, mediaType) {
 		var options = {
 			routeName: config.routeName,
@@ -578,7 +588,7 @@ function buildForm(context, modal, configuration, cb) {
 		getSendDataFromServer(context, configuration.ngDataApi, options, function (error, data) {
 			switch (mediaType) {
 				case 'image':
-					var blob = new Blob([data], { type: config.metadata.mime });
+					var blob = new Blob([data], {type: config.metadata.mime});
 					var URL = window.URL || window.webkitURL;
 					config.src = URL.createObjectURL(blob);
 					break;
@@ -588,7 +598,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		});
 	};
-
+	
 	context.form.removeFile = function (entry, i) {
 		getSendDataFromServer(context, configuration.ngDataApi, {
 			"method": "get",
@@ -606,7 +616,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		});
 	};
-
+	
 	context.form.uploadFileToUrl = function (Upload, config, cb) {
 		var options = {
 			url: apiConfiguration.domain + config.uploadUrl,
@@ -621,7 +631,7 @@ function buildForm(context, modal, configuration, cb) {
 				options.headers[i] = config.headers[i];
 			}
 		}
-
+		
 		Upload.upload(options).progress(function (evt) {
 			var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 			config.progress.value = progressPercentage;
@@ -636,7 +646,111 @@ function buildForm(context, modal, configuration, cb) {
 			return cb(new Error("Error Occured while uploading file: " + config.file));
 		});
 	};
-
+	
+	context.form.buildDisabledRulesIndexer = function () {
+		
+		let processed = {};
+		
+		function checkAndUpdateIndexer(oneEntry, cb) {
+			if (oneEntry.disableRule && oneEntry.disableRule.fields && Array.isArray(oneEntry.disableRule.fields) && oneEntry.disableRule.fields.length > 0) {
+				let operator = "";
+				if(oneEntry.disableRule.fields.length > 1){
+					operator = (oneEntry.disableRule.operator === 'AND') ? " && " : " || ";
+				}
+				
+				let listenerConfig = {
+					expression : []
+				};
+				for(let i =0; i < oneEntry.disableRule.fields.length; i++){
+					let oneEntryName = oneEntry.disableRule.fields[i];
+					
+					let expression = '=';
+					if(oneEntryName.charAt(0) === '!'){
+						expression = oneEntryName.charAt(0);
+						oneEntryName = oneEntryName.substr(1);
+					}
+					if(expression === '!'){
+						oneEntry.negate = true;
+						listenerConfig.expression.push("form.formData." + oneEntryName);
+					}
+					else{
+						listenerConfig.expression.push("form.formData." + oneEntryName);
+					}
+				}
+				
+				listenerConfig.rule = listenerConfig.expression.join(operator);
+				
+				if(!processed[listenerConfig.rule]){
+					processed[listenerConfig.rule] = {
+						method: (newValue, oldValue) => {
+							if(newValue !== undefined){
+								if(typeof newValue === 'string'){
+									newValue = (newValue === 'true');
+								}
+								
+								processed[listenerConfig.rule].inputs.forEach((indexedEntry) => {
+									if(indexedEntry.negate){
+										indexedEntry.disabled = !newValue;
+									}
+									else{
+										indexedEntry.disabled = newValue;
+									}
+									
+									if(indexedEntry.disabled){
+										indexedEntry.tempRequired = indexedEntry.required;
+										
+										indexedEntry.required = false;
+									}
+									else{
+										indexedEntry.required = indexedEntry.tempRequired;
+										delete indexedEntry.tempRequired;
+									}
+								});
+							}
+						},
+						inputs: [oneEntry]
+					};
+				}
+				else{
+					processed[listenerConfig.rule].inputs.push(oneEntry);
+				}
+				
+				return cb();
+			}
+			else{
+				return cb();
+			}
+		}
+		
+		function recursiveLooper(entries, count, cb) {
+			entries.forEach((oneEntry) => {
+				checkAndUpdateIndexer(oneEntry, () => {
+					if (oneEntry.entries) {
+						recursiveLooper(oneEntry.entries, 0, () => {
+							count++;
+							if(count === entries.length){
+								return cb();
+							}
+						});
+					}
+					else{
+						count++;
+						if(count === entries.length){
+							return cb();
+						}
+					}
+				});
+			});
+		}
+		
+		//launch it
+		recursiveLooper(context.form.entries, 0, () => {
+			for(let rule in processed){
+				context.$watch(rule, processed[rule].method);
+			}
+		});
+	};
+	
 	if (cb && (typeof(cb) == 'function')) {
 		context.form.timeout(function () {
 			cb();
@@ -650,7 +764,6 @@ soajsApp.directive('ngformInputs', function () {
 		templateUrl: 'engine/lib/form/inputs.tmpl'
 	};
 });
-
 
 soajsApp.directive('ngformActions', function () {
 	return {
@@ -672,7 +785,7 @@ soajsApp.directive('fileModel', ['$parse', function ($parse) {
 		link: function (scope, element, attrs) {
 			var model = $parse(attrs.fileModel);
 			var modelSetter = model.assign;
-
+			
 			element.bind('change', function () {
 				scope.$apply(function () {
 					modelSetter(scope, element[0].files[0]);
@@ -688,7 +801,7 @@ soajsApp.directive('fileModelMulti', ['$parse', function ($parse) {
 		link: function (scope, element, attrs) {
 			var model = $parse(attrs.fileModelMulti);
 			var modelSetter = model.assign;
-
+			
 			element.bind('change', function () {
 				scope.$apply(function () {
 					modelSetter(scope, element[0].files);

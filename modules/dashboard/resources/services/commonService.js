@@ -62,7 +62,8 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
             "method": "get",
             "routeName": "/dashboard/cloud/vm/list",
             "params": {
-                "env": $scope.context.envCode
+                "env": $scope.context.envCode,
+				"infraId": apiParams.infraId
             }
         }, function (error, response) {
             if (error) {
@@ -73,14 +74,14 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
             }
         });
     }
-    
+
     function addEditResourceApi($scope, apiParams, cb) {
 
 		let id = 'new';
 	    if ($scope.options.formAction !== 'add') { // on edit
 	    	id = apiParams.id;
 	    }
-	    
+
 	    var options = {
 		    method: 'post',
 		    routeName: `/dashboard/resources/`,
@@ -97,11 +98,11 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    }
 		    }
 	    };
-	    
+
 	    if(apiParams.deployType === 'saveAndDeploy'){
 	    	options.data["recipe"] = apiParams.deployOptions.recipe;
 	    	options.data["custom"] = apiParams.deployOptions.custom;
-		
+
 	    }
 	    if(apiParams.deployType === 'saveAndRebuild'){
 	    	options.data["serviceId"] = apiParams.serviceId;
@@ -120,7 +121,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    return cb(result);
 		    }
 	    });
-		
+
 	    // var options = {};
 	    // if ($scope.options.formAction === 'add') {
 		 //    options = {
@@ -286,5 +287,5 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         getInfraProviders,
         deployResource
 	};
-	
+
 }]);

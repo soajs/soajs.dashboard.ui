@@ -225,10 +225,23 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		else {
 			delete formData.previousEnvironment;
-			formData = angular.copy(currentScope.wizard.selectedInfraProvider.deploy);
-			delete formData.grid;
 			
-			formData.selectedDriver = formData.technology;
+			//check and switch on demand if template requires not deployment for containers
+			if(!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0){
+				delete formData.kubernetes;
+				delete formData.docker;
+				delete formData.previousEnvironment;
+				formData.selectedDriver = 'ondemand';
+			}
+			else{
+				if(!currentScope.wizard.selectedInfraProvider){
+					$window.alert("Please select a cloud provider to proceed.");
+					return false;
+				}
+				formData = angular.copy(currentScope.wizard.selectedInfraProvider.deploy);
+				delete formData.grid;
+				formData.selectedDriver = formData.technology;
+			}
 		}
 		
 		currentScope.wizard.deployment = angular.copy(formData);

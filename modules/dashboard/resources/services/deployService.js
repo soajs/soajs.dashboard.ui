@@ -1125,7 +1125,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					if (oneVMProvider._id === context.formData.deployOptions.deployConfig.infra) {
 						if (vms[oneVMProvider.name]) {
 							vms[oneVMProvider.name].forEach((vmInstance) => {
-								if (vmInstance.labels['soajs.env.code'] && vmInstance.labels['soajs.env.code'].toLowerCase() === context.myEnv.toLowerCase()) {
+								if (!vmInstance.labels['soajs.env.code'] || (vmInstance.labels['soajs.env.code'] && vmInstance.labels['soajs.env.code'].toLowerCase() === context.myEnv.toLowerCase())) {
 									if (context.mainData.deploymentData.vmLayers[vmInstance.layer]) {
 										context.mainData.deploymentData.vmLayers[vmInstance.layer].push(vmInstance);
 									}

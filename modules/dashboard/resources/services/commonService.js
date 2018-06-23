@@ -58,6 +58,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     }
 
     function listVmsApi ($scope, apiParams, cb) {
+	    overlayLoading.show();
         getSendDataFromServer($scope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/cloud/vm/list",
@@ -66,6 +67,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 				"infraId": apiParams.infraId
             }
         }, function (error, response) {
+	        overlayLoading.hide();
             if (error) {
                 $scope.displayAlert('danger', error.message);
             }

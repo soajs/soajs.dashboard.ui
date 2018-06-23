@@ -22,7 +22,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 	function injectFormInputs(id, value, form, data) {
 		//reset form inputs to 4
-		form.entries.length = 4;
+		form.entries.length = 5;
 
 		//check location value and inject accordingly new entries
 
@@ -78,14 +78,13 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					'onAction': function (id, value, form) {
 						if (value) {
 							//text
-							form.entries[4].tabs[0].entries[2].type = 'textarea';
-							delete form.entries[4].tabs[0].entries[2].editor;
+							form.entries[5].tabs[0].entries[2].type = 'textarea';
+							form.entries[5].tabs[0].entries[2].rows = 30;
+							delete form.entries[5].tabs[0].entries[2].editor;
 						}
 						else {
 							//json
-							form.entries[4].tabs[0].entries[2].type = 'jsoneditor';
-							form.formData.content = '';
-
+							form.entries[5].tabs[0].entries[2].type = 'jsoneditor';
 						}
 					}
 				},
@@ -118,15 +117,19 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 		//inject select infra type
 		if (oneInfra.templatesTypes.indexOf("local") !== -1) {
-			entries[2].value.push({ 'v': 'local', 'l': "Local" });
+			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console" });
 		}
 
 		if (oneInfra.templatesTypes.indexOf("external") !== -1) {
-			entries[2].value.push({ 'v': 'external', 'l': "External" });
+			entries[2].value.push({ 'v': 'external', 'l': "Cloud Provider" });
 		}
 
 		oneInfra.drivers.forEach(oneDriver => {
 			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
+		});
+		
+		oneInfra.technologies.forEach(oneTech => {
+			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
 		});
 
 		entries[2].onAction = function (id, value, form) {
@@ -199,7 +202,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 										description: formData.description,
 										tags: {
 											"type": "template",
-											"driver": formData.driver
+											"driver": formData.driver,
+											"technology": formData.technology
 										}
 									},
 									file: formData.file_0,
@@ -283,6 +287,11 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				entries[3].value[0].selected = true;
 				currentScope.form.formData.driver = entries[3].value[0].v;
 			}
+			
+			if (entries[4].value.length === 1) {
+				entries[4].value[0].selected = true;
+				currentScope.form.formData.technology = entries[4].value[0].v;
+			}
 		});
 	}
 
@@ -313,7 +322,9 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			let content = contentEditor.ngModel;
 			if (typeof(content) === 'string') {
 				try {
-					formData.content = JSON.parse(content);
+					if(!formData.textMode){
+						formData.content = JSON.parse(content);
+					}
 				}
 				catch (e) {
 					$window.alert("Please enter a valid JSON schema inside the templates field.");
@@ -338,9 +349,12 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
 		
+		oneInfra.technologies.forEach(oneTech => {
+			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
+		});
 		
 		if (oneTemplate.location === 'local') {
-			entries[2].value.push({ 'v': 'local', 'l': "Local", 'selected': true });
+			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console", 'selected': true });
 
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;
@@ -401,7 +415,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
 		else {
-			entries[2].value.push({ 'v': 'external', 'l': "external", 'selected': true });
+			entries[2].value.push({ 'v': 'external', 'l': "Cloud Provider", 'selected': true });
 			
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;
@@ -447,10 +461,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}
 		
 		buildForm(currentScope, $modal, options, () => {
-			inputsEditor = currentScope.form.entries[4].tabs[1].entries[0];
-			displayEditor = currentScope.form.entries[4].tabs[1].entries[1];
+			inputsEditor = currentScope.form.entries[5].tabs[1].entries[0];
+			displayEditor = currentScope.form.entries[5].tabs[1].entries[1];
 			if (oneTemplate.location === 'local') {
-				contentEditor = currentScope.form.entries[4].tabs[0].entries[1];
+				contentEditor = currentScope.form.entries[5].tabs[0].entries[1];
+			}
+			
+			if(oneTemplate.textMode){
+				//text
+				currentScope.form.entries[5].tabs[0].entries[2].type = 'textarea';
+				currentScope.form.entries[5].tabs[0].entries[2].rows = 30;
+				delete currentScope.form.entries[5].tabs[0].entries[2].editor;
 			}
 		});
 
@@ -469,7 +490,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					access_token: access_token,
 					tags: {
 						"type": "template",
-						"driver": formData.driver
+						"driver": formData.driver,
+						"technology": formData.technology
 					}
 				},
 				file: formData.file_0,

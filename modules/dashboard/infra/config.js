@@ -246,6 +246,14 @@ let infraConfig = {
 				'value': [],
 				'fieldMsg': 'Select which supported infra cloud driver this template is compatible with.',
 				'required': true
+			},
+			{
+				'name': 'technology',
+				'label': 'Technology',
+				'type': 'select',
+				'value': [],
+				'fieldMsg': 'Select which supported technology this template is compatible with.',
+				'required': true
 			}
 		]
 	}

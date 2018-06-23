@@ -375,8 +375,15 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 									currentScope.previousStep();
 								}
 								else {
+									currentScope.platforms.ondemand = true;
 									currentScope.referringStep = 'deploy';
-									currentScope.nextStep();
+									handleFormData(currentScope, {
+										deployment :{
+											manual :{
+												nodes: "127.0.0.1"
+											}
+										}
+									});
 								}
 							}
 						}

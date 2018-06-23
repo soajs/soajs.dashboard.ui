@@ -614,10 +614,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					record.name = key;
 					let settings = {"type": record.type, category: record.category};
 					resource.scope = currentScope.$new(true); //true means detached from main currentScope
+					resource.scope.environmentWizard = true;
 					resource.scope.context= {};
 					resource.scope.context.envCode = currentScope.envCode;
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
+					
+					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
+						resource.scope.wizardVMs = currentScope.wizard.vms;
+					}
 
 					for(let type in currentScope.recipes){
 						currentScope.recipes[type].forEach((oneRecipe) =>{
@@ -860,11 +865,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							});
 
 							resource.scope.$watch('catalogConflictingPorts', (value) => {
-								currentScope.loadingDynamicSection = false;
-								if(value && value !==''){
-									currentScope.loadingDynamicSection = true;
-
-								}
+								currentScope.loadingDynamicSection = value && value !== '';
 							});
 
 							counter++;

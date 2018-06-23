@@ -59,19 +59,50 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 
     function listVmsApi ($scope, apiParams, cb) {
 	    overlayLoading.show();
+	    let params = {
+		    "env": $scope.context.envCode,
+		    "infraId": apiParams.infraId
+	    };
+	    if($scope.environmentWizard){
+	    	delete params.env;
+	    }
+	    
         getSendDataFromServer($scope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/cloud/vm/list",
-            "params": {
-                "env": $scope.context.envCode,
-				"infraId": apiParams.infraId
-            }
+            "params": params
         }, function (error, response) {
 	        overlayLoading.hide();
             if (error) {
                 $scope.displayAlert('danger', error.message);
             }
             else {
+            	
+            	if($scope.wizardVMs){
+		            $scope.wizardVMs.forEach((oneVM) => {
+			            
+		            	let infraProviders = $scope.mainData.deploymentData.selectedRestrictionsInfra;
+			            let myProvider;
+			            infraProviders.forEach((oneProvider) => {
+				            if(oneProvider._id === oneVM.params.infraId){
+					            myProvider = oneProvider;
+				            }
+			            });
+			            
+			            if(myProvider){
+				            let myVM = {
+					            id: oneVM.data.name,
+					            name: oneVM.data.name,
+					            layer: oneVM.data.name,
+					            labels: {
+						            'soajs.env.code': params.env
+					            }
+				            };
+				            response[myProvider.name].push(myVM);
+			            }
+		            });
+	            }
+            	
                 return cb(response)
             }
         });

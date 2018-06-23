@@ -1,6 +1,6 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, commonService) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', '$timeout', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, $timeout, commonService) {
 
 	function confirmMainData(context, currentScope) {
 		if(!context.mainData){
@@ -1092,6 +1092,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                     context.mainData.deploymentData.regions = oneProvider.regions;
 				}
 			});
+            
+            if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.region){
+	            $timeout(() => {
+	            	context.listVmsApi();
+	            }, 10);
+            }
 		};
 
 		/*
@@ -1122,20 +1128,22 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.mainData.deploymentData.vmLayers = {};
 
 				context.mainData.deploymentData.infraProviders.forEach((oneVMProvider) => {
-					if (oneVMProvider._id === context.formData.deployOptions.deployConfig.infra) {
-						if (vms[oneVMProvider.name]) {
-							vms[oneVMProvider.name].forEach((vmInstance) => {
-								if (!vmInstance.labels['soajs.env.code'] || (vmInstance.labels['soajs.env.code'] && vmInstance.labels['soajs.env.code'].toLowerCase() === context.myEnv.toLowerCase())) {
-									if (context.mainData.deploymentData.vmLayers[vmInstance.layer]) {
-										context.mainData.deploymentData.vmLayers[vmInstance.layer].push(vmInstance);
-									}
-									else {
-										context.mainData.deploymentData.vmLayers[vmInstance.layer] = [];
-										context.mainData.deploymentData.vmLayers[vmInstance.layer].push(vmInstance);
-									}
+					if (oneVMProvider._id === context.formData.deployOptions.deployConfig.infra && vms[oneVMProvider.name]) {
+						vms[oneVMProvider.name].forEach((vmInstance) => {
+							
+							//happens when wizard makes the call
+							let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
+							
+							if (!vmInstance.labels['soajs.env.code'] || (vmInstance.labels['soajs.env.code'] && vmInstance.labels['soajs.env.code'].toLowerCase() === envCode.toLowerCase())) {
+								if (context.mainData.deploymentData.vmLayers[vmInstance.layer]) {
+									context.mainData.deploymentData.vmLayers[vmInstance.layer].push(vmInstance);
 								}
-							});
-						}
+								else {
+									context.mainData.deploymentData.vmLayers[vmInstance.layer] = [];
+									context.mainData.deploymentData.vmLayers[vmInstance.layer].push(vmInstance);
+								}
+							}
+						});
 					}
 				});
 			});

@@ -1,16 +1,20 @@
 "use strict";
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms', 'platformsVM', 'ngDataApi', 'injectFiles', function ($scope, $cookies, envPlatforms, platformsVM, ngDataApi, injectFiles) {
+environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms', 'platformsVM', 'platformCntnr', 'ngDataApi', 'injectFiles', function ($scope, $cookies, envPlatforms, platformsVM, platformCntnr, ngDataApi, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
 	$scope.environmentWizard = false;
+	$scope.containerWizard = false;
 	$scope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 
-	$scope.getEnvPlatform = function(){
+	$scope.getEnvPlatform = function(overlay){
+		if(overlay){
+			overlayLoading.show();
+		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/platforms/list",
@@ -18,6 +22,9 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 				"env": $scope.envCode
 			}
 		}, function (error, response) {
+			if(overlay){
+				overlayLoading.hide();
+			}
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
@@ -39,13 +46,16 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	};
 	
 	$scope.attachContainerTechnology = function(){
-		console.log("need to load the same ui that the add environment wizard is using and ask the user for details.");
-		console.log("call api to deploy the infra and update the environment deployer object once done.");
+		$scope.containerWizard = true;
+		platformCntnr.openContainerWizard($scope);
 	};
 	
 	$scope.detachContainerTechnology = function(){
-		console.log('call api and switch the deployer config object to manual');
-		console.log('if no previous manual was configured, set the ip to 127.0.0.1');
+		platformCntnr.detachContainerTechnology($scope);
+	};
+	
+	$scope.checkAttachContainerProgress = function(autoRefresh){
+		platformCntnr.checkAttachContainerProgress($scope, autoRefresh);
 	};
 	
 	function listInfraProviders(cb) {

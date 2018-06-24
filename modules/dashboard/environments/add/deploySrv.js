@@ -245,12 +245,14 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		
 		currentScope.wizard.deployment = angular.copy(formData);
-		$localStorage.addEnv = angular.copy(currentScope.wizard);
-		delete $localStorage.addEnv.template.content;
-		currentScope.nextStep();
+		if(!currentScope.containerWizard){
+			$localStorage.addEnv = angular.copy(currentScope.wizard);
+			delete $localStorage.addEnv.template.content;
+			currentScope.nextStep();
+		}
 	}
 	
-	function go(currentScope) {
+	function go(currentScope, cb) {
 		if (!currentScope.envType) {
 			if ($localStorage.envType) {
 				currentScope.envType = $localStorage.envType;
@@ -428,6 +430,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				
 				currentScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				overlayLoading.hide();
+				
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
 			});
 		});
 	}
@@ -543,10 +549,6 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function listInfraProviders(currentScope, cb) {
-		// if (currentScope.envType && currentScope.envType === 'manual') {
-		// 	return cb();
-		// }
-		
 		currentScope.showDockerAccordion = false;
 		currentScope.showKubeAccordion = false;
 		
@@ -584,6 +586,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	return {
-		"go": go
+		"go": go,
+		"handleFormData": handleFormData
 	}
 }]);

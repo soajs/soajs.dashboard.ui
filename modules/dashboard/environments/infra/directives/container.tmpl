@@ -1,17 +1,38 @@
-<fieldset>
-	<legend>
-		<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
-		<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
-	</legend>
-	<br />
-	<div class="t-right">
-		<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-confirm-click="Are you sure you want to detach the associated container technology, this move is irreversible ?" ng-click="detachContainerTechnology()">
+<div ng-if="environment.pending">
+	<div class="w-100 c-both t-right">
+		<a class="btn btn-sm btn-success" ng-click="checkAttachContainerProgress(false)">
+			<span class="icon icon-redo"></span> Refresh
+		</a>
+		<br /><br />
 	</div>
-	<div class="entryBoxes entryBoxesGrid">
-		<div class="entryBox driverEntryBox">
-			<div class="header">
-				{{driver|uppercase}}
-				<span class="rightActions">
+	<alert type="info">
+		<h4><span class="icon icon-spinner4"></span>Attaching Container Technology</h4>
+		<hr>
+		<p style="color:black;">
+			The Container Technology is being created and will be attached to this environment.
+		</p>
+		<p style="color:black;">
+			This operation takes a few minutes and the container configuration will be displayed once completed.
+		</p>
+	</alert>
+	<br />
+	<progressbar class="progress-striped active" value="100 * 100" type="info"></progressbar>
+
+</div>
+<div ng-if="!environment.pending">
+	<fieldset>
+		<legend>
+			<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
+			<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
+		</legend>
+		<div class="t-right">
+			<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="detachContainerTechnology()">
+		</div>
+		<div class="entryBoxes entryBoxesGrid">
+			<div class="entryBox driverEntryBox">
+				<div class="header">
+					{{driver|uppercase}}
+					<span class="rightActions">
                         <a href="" ng-if="access.platforms.certs.upload && platform === 'docker' && driver ==='remote' && config.certs.length < 3" ng-click="uploadCerts(platform, driver)">
                             <span class="icon icon-attachment" tooltip="{{translation.uploadCertificates[LANG]}}"></span>
                         </a>
@@ -19,13 +40,35 @@
                             <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
                         </a>
                     </span>
-			</div>
-			<div class="body">
-				<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+				</div>
+				<div class="body">
+					<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+				</div>
 			</div>
 		</div>
-	</div>
-</fieldset>
+	</fieldset>
+</div>
 <script type="text/ng-template" id="updateNamespaceConfig.tmpl">
 	<div ng-include="'modules/dashboard/environments/directives/updateNamespaceConfig.tmpl'"></div>
+</script>
+<script type="text/ng-template" id="detachContainerTechnology.tmpl">
+	<div class="modal-body">
+		<alert type="danger">
+			<h2>Warning !</h2>
+			<hr>
+			<p style="color:black;">
+				Detaching the container technology from this environment will automatically remove all the deployments & secrets associated to this environment.
+			</p>
+			<p style="color:black;">
+				You can always reattach a new container technology back to this environment, but the deployments & secrets will not be available.
+			</p>
+			<p>
+				<b>This operation is irreversible and might cause the environment to become unreachable!</b>
+			</p>
+		</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="proceed()">Proceed</button>
+		<button class="btn btn-danger" ng-click="cancel()">{{translation.cancel[LANG]}}</button>
+	</div>
 </script>

@@ -1510,7 +1510,14 @@ var environmentsNav = [
 		'order': 4,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/infra/platforms-ctrl.js', 'modules/dashboard/environments/infra/services/vms.js', 'modules/dashboard/environments/infra/services/platforms.js'],
+		'scripts': [
+			'modules/dashboard/environments/config.js',
+			'modules/dashboard/environments/infra/platforms-ctrl.js',
+			'modules/dashboard/environments/infra/services/platforms.js',
+			'modules/dashboard/environments/infra/services/vms.js',
+			'modules/dashboard/environments/infra/services/container.js',
+			'modules/dashboard/environments/add/deploySrv.js'
+		],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

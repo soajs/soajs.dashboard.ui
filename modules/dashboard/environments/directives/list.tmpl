@@ -233,12 +233,23 @@
 		<h3 ng-if="deleteEnv !== 'PORTAL'" class="modal-title">Delete {{deleteEnv}} Environment</h3>
 	</div>
 	<div class="modal-body">
-		<p ng-if="deleteEnv=== 'PORTAL'" >The following Environment has a product and a tenant associated to it.
+		<p ng-if="!deleteEnvError && deleteEnv=== 'PORTAL'" >The following Environment has a product and a tenant associated to it.
 			<br>Do you want to remove them as well ?</p>
 		
-		<p ng-if="deleteEnv!== 'PORTAL'" >Are you sure you want to delete {{deleteEnv}} Environment?</p>
+		<p ng-if="!deleteEnvError && deleteEnv!== 'PORTAL'" >Are you sure you want to delete {{deleteEnv}} Environment?</p>
 		
-		<alert type="danger" ng-if="deleteEnvError">{{deleteEnvError}}</alert>
+		<alert type="danger" ng-if="deleteEnvError">
+			<h4>Warning</h4>
+			<hr>
+			<p>
+				<b>{{deleteEnvError}}</b>
+			</p>
+			<p style="color:black" ng-if="container">
+				<label>Note:</label><br />
+				- Removing the environment will automatically delete all deployments associated with it.<br />
+				- The infra cloud provider <b>cluster</b> will also be removed if this environment is the only one using it.
+			</p>
+		</alert>
 	</div>
 	<div class="modal-footer">
 		<div ng-if="deleteEnvError">

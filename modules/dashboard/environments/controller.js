@@ -365,6 +365,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.deleteEnv = row.code.toUpperCase();
+				$scope.container = (row.deployer.type === 'container');
+				
 				fixBackDrop();
 				$scope.confirmDeleteProductsAndTenants = function (flag) {
 					overlayLoading.show();

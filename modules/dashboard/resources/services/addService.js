@@ -1,7 +1,7 @@
 "use strict";
 var addService = soajsApp.components;
 addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDeploy', 'commonService', 'resourceConfiguration', function ($timeout, ngDataApi, $modal, resourceDeploy, commonService, resourceConfiguration) {
-	
+
 	function manageResource($scope, resource, action, settings) {
 		var currentScope = $scope;
 		$modal.open({
@@ -12,7 +12,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
-                
+
 				$scope.save = function (type) {
                     let formData = $scope.formData;
                     let deployOptions = {};
@@ -66,7 +66,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         if (saveOptions.config && saveOptions.config.ports) {
                             delete saveOptions.config.ports;
                         }
-						
+
 						apiParams.saveOptions = saveOptions;
 
                         let deployOptions = {};
@@ -156,14 +156,21 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
                         formData.deployOptions.custom.type = 'resource';
                     }
 
+					if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+						formData.vms = [];
+						$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].forEach((oneInstance) => {
+							formData.vms.push(oneInstance.name);
+						});
+					}
+
                     let validDeploy = resourceDeploy.updateFormDataBeforeSave($scope, formData.deployOptions);
                     if (!validDeploy) {
                         return;
                     }
-                    
+
                     resourceConfiguration.mapConfigurationFormDataToConfig($scope);
                     updateApiParamsBeforeSave();
-                    
+
                     if (type === 'saveAndDeploy') {
                         updateApiParams('saveAndDeploy');
                     }
@@ -199,7 +206,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 			}
 		});
 	}
-	
+
 	function addNewPopUp($scope) {
 		var formConfig = angular.copy(resourcesAppConfig.form.addResource);
 		formConfig.entries[0].value = formConfig.data.types;
@@ -212,7 +219,7 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 			});
 			form.entries[1].hidden = false;
 		};
-		
+
 		var currentScope = $scope;
 		var options = {
 			timeout: $timeout,
@@ -241,13 +248,13 @@ addService.service('addService', ['$timeout','ngDataApi', '$modal', 'resourceDep
 				}
 			]
 		};
-		
+
 		buildFormWithModal(currentScope, $modal, options);
 	}
-	
+
 	return {
 		addNewPopUp,
 		manageResource
 	};
-	
+
 }]);

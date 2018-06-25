@@ -38,7 +38,9 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 								"params": {
 									"env": postedData.gi.code
 								},
-								"data": postedData
+								"data": {
+									"data": postedData
+								}
 							}, function (error) {
 								if (error) {
 									currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);

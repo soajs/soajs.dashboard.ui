@@ -72,11 +72,11 @@
 			</td>
 			<td>{{config.nodes}}</td>
 		</tr>
-		<tr class="even">
+		<tr class="even" ng-class="{ 'red' : !config.namespace.default}">
 			<td width="50%">
 				<b>Namespace Configuration</b>
 			</td>
-			<td>{{config.namespace.default}}</td>
+			<td>{{config.namespace.default || "N/A"}}</td>
 		</tr>
 		<tr class="odd">
 			<td><b>Namespace Type</b></td>

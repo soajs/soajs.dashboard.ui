@@ -854,6 +854,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 										let firstPort = context.formData.deployOptions.custom.ports[0];
 										oneSubEntry.value = firstPort.published || firstPort.target;
 									}
+									else {
+										oneSubEntry.disabled = false;
+									}
 								}
 								oneSubEntry.value = oneSubEntry.value.toString();
 								context.form.formData[oneSubEntry.name] = oneSubEntry.value;

@@ -131,7 +131,9 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    }
 		    }
 	    };
-
+		if (apiParams.vms && apiParams.vms.length > 0){
+			options.data.vms = apiParams.vms;
+		}
 	    if(apiParams.deployType === 'saveAndDeploy'){
 	    	options.data["recipe"] = apiParams.deployOptions.recipe;
 	    	options.data["custom"] = apiParams.deployOptions.custom;

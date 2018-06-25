@@ -774,10 +774,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			context.setSourceCodeData(selectedRecipe);
 			context.setExposedPorts(selectedRecipe, ui, cb);
 
-			// forcing deployment technology to be container; todo:
-			if(context.formData.deployOptions.deployConfig){
-				context.formData.deployOptions.deployConfig.type = 'container';
-			}
 			context.onDeploymentTechnologySelect(refresh);
 		};
 

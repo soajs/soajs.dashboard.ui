@@ -1,7 +1,7 @@
 "use strict";
 var vmsServices = soajsApp.components;
 vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', function (ngDataApi, $timeout, $modal, $cookies, $window) {
-	
+
 	function listInfraProviders(currentScope, cb) {
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -18,9 +18,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		});
 		return cb();
 	}
-	
+
 	function listVMLayers(currentScope, cb) {
-		
+
 		if(!currentScope.infraProviders){
 			listInfraProviders(currentScope, () => {
 				nextStep();
@@ -29,7 +29,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		else{
 			nextStep();
 		}
-		
+
 		function nextStep(){
 			//call common function
 			getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
@@ -40,14 +40,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			});
 		}
 	}
-	
+
 	function inspectVMLayer(currentScope, oneVMLayer){
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
 		delete formConfig.entries[0].value.infraProvider.regions;
 		delete formConfig.entries[0].value.infraProvider.templates;
 		delete formConfig.entries[0].value.infraProvider.groups;
-		
+
 		let options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -67,7 +67,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		};
 		buildFormWithModal(currentScope, $modal, options);
 	}
-	
+
 	function deleteVMLayer(currentScope, oneVMLayer){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
@@ -87,9 +87,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 		});
 	}
-	
+
 	function addVMLayer (currentScope){
-		
+
 		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
 			if(currentScope.saveActionMethodAdd){
 				currentScope.saveActionMethodAdd(modalScope, oneProvider, formData, modalInstance);
@@ -132,9 +132,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				});
 			}
 		}
-		
+
 		let saveActionMethod = defaultSaveActionMethod;
-		
+
 		let vmProviders = angular.copy(currentScope.infraProviders);
 		for (let i = vmProviders.length -1; i >=0; i--){
 			let oneProvider = vmProviders[i];
@@ -142,7 +142,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				vmProviders.splice(i, 1);
 			}
 		}
-		
+
 		let formEntries = [{
 			type: 'select',
 			label: "Select Infra Provider",
@@ -160,12 +160,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'required': true,
 					"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
 				};
-				
+
 				if(region.value && region.value.length > 0){
 					region.value[0].selected = true;
 				}
 				form.entries.push(region);
-				
+
 				let groups = {
 					'name': 'group',
 					'label': 'Select a Group',
@@ -174,25 +174,25 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'tooltip': 'Select Resource Group',
 					'required': true
 				};
-				
+
 				value.groups.forEach((oneGroup) =>{
 					groups.value.push({v: oneGroup.name, l: oneGroup.name})
 				});
-				
+
 				if(groups.value && groups.value.length > 0){
 					groups.value[0].selected = true;
 				}
 				form.entries.push(groups);
 			}
 		}];
-		
+
 		vmProviders.forEach((oneProvider) => {
 			formEntries[0].value.push({
 				v: oneProvider,
 				l: oneProvider.label
 			});
 		});
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -207,7 +207,11 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'btn': 'primary',
 					'action': function (formData) {
 						currentScope.modalInstance.close();
-						let data = {region: formData.region, group: formData.group };
+						let data = {
+							inputs: {
+								region: formData.region, group: formData.group
+							}
+						};
 						populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
 					}
 				},
@@ -224,10 +228,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		};
 		buildFormWithModal(currentScope, $modal, options);
 	}
-	
+
 	function editVMLayer(currentScope, oneVMLayer){
 		// oneVMLayerTemplateRecord --> retrieved from db
-		
+
 		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
 			if(currentScope.saveActionMethodModify){
 				currentScope.saveActionMethodModify(modalScope, oneVMLayer, oneProvider, formData, modalInstance);
@@ -271,7 +275,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				});
 			}
 		}
-		
+
 		//if add environment made the call, this vm actually exists only in wizard scope
 		if(currentScope.saveActionMethodModify){
 			let oneVMLayerTemplateRecord = oneVMLayer.formData;
@@ -284,12 +288,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			 */
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
-				"routeName": "/dashboard/cloud/vm/template",
+				"routeName": "/dashboard/cloud/vm/layer/status",
 				"params": {
 					"env": currentScope.envCode,
 					'technology': 'vm',
 					"infraId": oneVMLayer.infraProvider._id,
-					"vmLayer": oneVMLayer.name
+					"layerName": oneVMLayer.name
 				}
 			}, function (error, response) {
 				if (error) {
@@ -303,9 +307,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			});
 		}
 	}
-	
+
 	function populateVMLayerForm(currentScope, oneProvider, technology, data, submitActionMethod) {
-		
+
 		//call the api that ameer will do
 		function getInfraExtras(cb){
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -314,8 +318,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				"params": {
 					"envCode": currentScope.envCode,
 					"id": oneProvider._id,
-					"region": data.region,
-					"group": data.group,
+					"region": data.inputs.region,
+					"group": data.inputs.group,
 					"extras": [ 'osDisks', 'dataDisks', 'loadBalancers', 'networks', 'publicIps', 'securityGroups', 'vmSizes' ]
 				}
 			}, function (error, response) {
@@ -327,11 +331,11 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				}
 			});
 		}
-		
+
 		function renderForm(computedValues){
 			let selectedInfraProvider = angular.copy(oneProvider);
 			let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
-			
+
 			if(formEntries && formEntries.length > 0){
 				let infraTemplates =[];
 				oneProvider.templates.forEach((oneTmpl) => {
@@ -341,7 +345,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 					infraTemplates.push({'v': oneTmpl.name, 'l': label});
 				});
-				
+
 				formEntries.push({
 					type: 'select',
 					name: 'infraCodeTemplate',
@@ -353,7 +357,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						updateFormEntries(computedValues, value, form);
 					}
 				});
-				
+
 				$modal.open({
 					templateUrl: "infraProvider.tmpl",
 					size: 'lg',
@@ -362,10 +366,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					controller: function ($scope, $modalInstance) {
 						fixBackDrop();
 						$scope.title = 'Configuring Deployment on ' + selectedInfraProvider.label;
-						
+
 						let formConfig = {
 							timeout: $timeout,
-							data: data,
+							data: data.inputs,
 							"entries": formEntries,
 							name: 'vmdeployon' + selectedInfraProvider.name,
 							"actions": [
@@ -374,7 +378,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 									'label': "Save & Continue",
 									'btn': 'primary',
 									'action': function (formData) {
-										
+
 										let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
 										if(!myPattern.test(formData.name)){
 											$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
@@ -394,7 +398,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 								}
 							]
 						};
-						
+
 						buildForm($scope, null, formConfig, () => {
 							if(data && data.infraCodeTemplate){
 								$scope.form.formData = data;
@@ -405,16 +409,16 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				});
 			}
 		}
-		
+
 		function updateFormEntries(computedValues, value, form){
 			overlayLoading.show();
 			oneProvider.templates.forEach((oneTmpl) => {
 				if(oneTmpl.name === value && oneTmpl.inputs && Array.isArray(oneTmpl.inputs)){
 					form.entries = form.entries.concat(oneTmpl.inputs);
-					
+
 					//map computed inputs
 					mapComputedInputs(form.entries, computedValues)
-					
+
 					form.refresh(false);
 					$timeout(() => {
 						form.buildDisabledRulesIndexer();
@@ -423,7 +427,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				}
 			});
 		}
-		
+
 		function mapComputedInputs(entries, computedValues){
 			function mapOneEntry(oneEntry){
 				if(oneEntry.type === 'select' && oneEntry.value && oneEntry.value.key && oneEntry.value.fields){
@@ -439,7 +443,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 				}
 			}
-			
+
 			function scanEntries(entries){
 				entries.forEach((oneEntry) => {
 					if(oneEntry.entries){
@@ -449,18 +453,18 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						mapOneEntry(oneEntry)
 					}
 				});
-				
+
 			}
 			scanEntries(entries);
 		}
-		
+
 		overlayLoading.show();
 		getInfraExtras((computedValues) => {
 			overlayLoading.hide();
 			renderForm(computedValues);
 		});
 	}
-	
+
 	return {
 		'listInfraProviders': listInfraProviders,
 		'listVMLayers': listVMLayers,

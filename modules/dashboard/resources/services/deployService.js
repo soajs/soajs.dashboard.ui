@@ -850,8 +850,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							if (oneSubEntry.name.includes("port")) {
 								oneSubEntry.disabled = context.vmExposedPortsDisabled;
 								if (context.vmExposedPortsDisabled) {
-									let firstPort = context.formData.deployOptions.custom.ports[0];
-									oneSubEntry.value = firstPort.published || firstPort.target;
+									if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.ports && context.formData.deployOptions.custom.ports.length > 0) {
+										let firstPort = context.formData.deployOptions.custom.ports[0];
+										oneSubEntry.value = firstPort.published || firstPort.target;
+									}
 								}
 								oneSubEntry.value = oneSubEntry.value.toString();
 								context.form.formData[oneSubEntry.name] = oneSubEntry.value;
@@ -1092,7 +1094,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                     context.mainData.deploymentData.regions = oneProvider.regions;
 				}
 			});
-            
+
             if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.region){
 	            $timeout(() => {
 	            	context.listVmsApi();
@@ -1130,10 +1132,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.mainData.deploymentData.infraProviders.forEach((oneVMProvider) => {
 					if (oneVMProvider._id === context.formData.deployOptions.deployConfig.infra && vms[oneVMProvider.name]) {
 						vms[oneVMProvider.name].forEach((vmInstance) => {
-							
+
 							//happens when wizard makes the call
 							let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
-							
+
 							if (!vmInstance.labels['soajs.env.code'] || (vmInstance.labels['soajs.env.code'] && vmInstance.labels['soajs.env.code'].toLowerCase() === envCode.toLowerCase())) {
 								if (context.mainData.deploymentData.vmLayers[vmInstance.layer]) {
 									context.mainData.deploymentData.vmLayers[vmInstance.layer].push(vmInstance);

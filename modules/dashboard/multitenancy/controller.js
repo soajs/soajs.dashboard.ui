@@ -161,12 +161,15 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				response.forEach(function (oneEnv) {
 					$scope.availableEnv.push(oneEnv.code.toLowerCase());
 				});
-				return cb();
+				
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
 			}
 		});
 	};
 	
-	$scope.listTenants = function () {
+	$scope.listTenants = function (cb) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -208,6 +211,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							}
 						}
 					};
+					
+					if(cb && typeof cb === 'function'){
+						return cb();
+					}
 				});
 			}
 		});
@@ -262,6 +269,24 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					$scope.tenantTabs[i].tenants.push(oneTenant);
 				}
 			}
+			
+			//re-render allowed environments
+			oneTenant.applications.forEach((oneApplication) => {
+				$scope.availablePackages.forEach((onePackage) => {
+					if(onePackage.pckCode === oneApplication.package) {
+						if(!oneApplication.availableEnvs){
+							oneApplication.availableEnvs = [];
+						}
+						
+						let packAclEnv = Object.keys(onePackage.acl);
+						packAclEnv.forEach((onePackAclEnv) => {
+							if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
+								oneApplication.availableEnvs.push(onePackAclEnv);
+							}
+						});
+					}
+				});
+			});
 		});
 		$scope.originalTenants = angular.copy($scope.tenantTabs);
 		callback();
@@ -1548,8 +1573,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 
 //default operation
 	if ($scope.access.tenant.list && $scope.access.product.list && $scope.access.environment.list) {
-		$scope.getProds(function () {
-			$scope.getEnvironments(function () {
+		$scope.getProds(() => {
+			$scope.getEnvironments(() => {
 				$scope.listTenants();
 			});
 		});

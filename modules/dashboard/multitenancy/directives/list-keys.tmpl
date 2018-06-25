@@ -17,7 +17,7 @@
                         <br/>
                         <div class="entryBoxes entryBoxesGrid" id="keyConfig{{$index}}">
                             <br/>
-                            <div ng-repeat="enCode in availableEnv">
+                            <div ng-repeat="enCode in application.availableEnvs">
                                 <div class="entryBox greyBox" ng-class="{ blueBox: key.config[enCode] }">
                                     <b>{{enCode}} {{translation.environment[LANG]}}</b>&nbsp;&nbsp;
                                     <a ng-if="access.tenant.appKeys.updateConfig" href="" ng-click="updateConfiguration(row['_id'], application['appId'], key.key, enCode, key.config[enCode]);">

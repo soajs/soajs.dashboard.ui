@@ -32,12 +32,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		
 		function nextStep(){
 			//call common function
-			getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
-				currentScope.vmLayers = vmLayers;
-				if(cb && typeof cb === 'function'){
-					return cb();
-				}
-			});
+			// getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
+			// 	currentScope.vmLayers = vmLayers;
+			// 	if(cb && typeof cb === 'function'){
+			// 		return cb();
+			// 	}
+			// });
 		}
 	}
 	
@@ -350,6 +350,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					required: true,
 					fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
 					onAction: function(id, value, form){
+						form.entries.length = 2;
 						updateFormEntries(computedValues, value, form);
 					}
 				});
@@ -380,7 +381,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 											$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
 										}
 										else{
-											submitActionMethod($scope, oneProvider, formData, $modalInstance);
+											remapFormDataBeforeSubmission($scope, formData, () => {
+												submitActionMethod($scope, oneProvider, formData, $modalInstance);
+											});
 										}
 									}
 								},
@@ -406,6 +409,48 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 		}
 		
+		function remapFormDataBeforeSubmission(modalScope, formData, cb) {
+			
+			function mapEntryToFormData(oneEntry){
+				if(oneEntry.entries && oneEntry.multi && oneEntry.limit){
+					
+					let tempData = [];
+					oneEntry.entries.forEach((oneSubEntry) =>{
+						let tempObj = {};
+						if(oneSubEntry.entries){
+							oneSubEntry.entries.forEach((level2Entries) => {
+								tempObj[level2Entries.name.replace(/_c_[0-9]+/, '')] = formData[level2Entries.name];
+								delete formData[level2Entries.name];
+								
+								mapEntryToFormData(level2Entries)
+							});
+						}
+						else{
+							tempObj[oneSubEntry.name] = formData[oneSubEntry.name];
+						}
+						tempData.push(tempObj);
+					});
+					
+					formData[oneEntry.name] = tempData;
+				}
+			}
+			
+			function recursiveMapping(oneEntry){
+				
+				mapEntryToFormData(oneEntry);
+				if(oneEntry.entries){
+					oneEntry.entries.forEach((oneEntry) => {
+						recursiveMapping(oneEntry);
+					});
+				}
+			}
+			
+			modalScope.form.entries.forEach((oneEntry) => {
+				recursiveMapping(oneEntry);
+			});
+			return cb();
+		}
+		
 		function updateFormEntries(computedValues, value, form){
 			overlayLoading.show();
 			oneProvider.templates.forEach((oneTmpl) => {
@@ -413,7 +458,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					form.entries = form.entries.concat(oneTmpl.inputs);
 					
 					//map computed inputs
-					mapComputedInputs(form.entries, computedValues)
+					mapComputedInputs(form.entries, computedValues);
 					
 					form.refresh(false);
 					$timeout(() => {
@@ -425,6 +470,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}
 		
 		function mapComputedInputs(entries, computedValues){
+			
 			function mapOneEntry(oneEntry){
 				if(oneEntry.type === 'select' && oneEntry.value && oneEntry.value.key && oneEntry.value.fields){
 					if(computedValues[oneEntry.value.key] && Array.isArray(computedValues[oneEntry.value.key])){
@@ -443,14 +489,134 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			function scanEntries(entries){
 				entries.forEach((oneEntry) => {
 					if(oneEntry.entries){
-						scanEntries(oneEntry.entries);
+						if(oneEntry.multi){
+							if(oneEntry.limit && oneEntry.limit !== 0){
+								//fixed multi limit
+								replicateInput(oneEntry, oneEntry.limit);
+							}
+							else{
+								//add another la yenfezir
+								replicateInput(oneEntry, null);
+							}
+						}
+						else {
+							scanEntries(oneEntry.entries);
+						}
 					}
 					else{
 						mapOneEntry(oneEntry)
 					}
 				});
-				
 			}
+			
+			function replicateInput(original, limit) {
+				
+				if (!original.counter) {
+					original.counter = 0;
+				}
+				
+				if (!limit || limit === 0) {
+					limit = 1;
+					original.limit = 1;
+				}
+				
+				//no limit, add another
+				if(!limit){
+					// 	let arraycount = 1; // ma btozbat bel edit heyde
+					// 	original.template = angular.copy(original.entries);
+					// 	for(let i =0; i < arraycount; i++){
+					// 		pushOneDynamicEntry(finalEntries, original.counter, original.entries[i]);
+					// 	}
+					//
+					// 	//hook add another
+					// 	finalEntries.push({
+					// 		"type": "html",
+					// 		"name": "another" + original.name,
+					// 		"value": "<input type='button' value='Add Another' class='btn btn-primary'/>",
+					// 		"onAction": function(id, value, form){
+					// 			let another = angular.copy(original);
+					// 			another.entries = angular.copy(another.template);
+					// 			delete another.template;
+					//
+					// 			original.counter++;
+					// 			another.name += original.counter;
+					// 			allMyEntries(another.entries, original.counter, original.name);
+					//
+					// 			//hook the remove entry input
+					// 			another.entries.push({
+					// 				"type": "html",
+					// 				"name": "remove" + another.name,
+					// 				"value": "<span class='icon icon-cross red'></span>",
+					// 				"onAction": function(id, value, form){
+					// 					let currentEntryCount = parseInt(id.replace("remove" + original.name, ''));
+					// 					console.log(currentEntryCount);
+					// 				}
+					// 			});
+					//
+					// 			for(let i = another.entries.length -1; i >= 0; i--){
+					// 				if(another.entries[i].name.includes("another" + another.name)){
+					// 					another.entries.splice(i, 1);
+					// 				}
+					// 			}
+					//
+					// 			another.entries.forEach((anotherEntry) => {
+					// 				original.entries.splice(original.entries -1, 0, anotherEntry);
+					// 			});
+					// 			console.log(another);
+					// 		}
+					// 	});
+				}
+				//yes limit only populate based on count
+				else {
+					original.template = angular.copy(original.entries);
+					let finalEntries = [];
+					for (let i = 0; i < limit; i++) {
+						pushOneDynamicEntry(finalEntries, i, original.template);
+						original.counter ++;
+					}
+					original.entries = finalEntries;
+				}
+			}
+			
+			function pushOneDynamicEntry(finalEntries, counter, templateEntries) {
+				let inputs = angular.copy(templateEntries);
+				inputs.forEach((oneInput) => {
+					oneInput.name += "_c_" + counter;
+					
+					if (oneInput.entries) {
+						allMyEntries(oneInput.entries, counter);
+					}
+					counter++;
+					finalEntries.push(oneInput);
+				});
+			}
+			
+			function allMyEntries(entries, countValue, parentName) {
+				entries.forEach(function (oneEntry) {
+					if (oneEntry.entries) {
+						allMyEntries(oneEntry.entries, countValue, oneEntry.name);
+					}
+					
+					// if edit
+					// if(resource && resource.config && resource.config[parentName] && Array.isArray(resource.config[parentName])){
+					// 	if(resource.config[parentName][countValue]){
+					// 		if(oneEntry.type === 'text'){
+					// 			oneEntry.value = resource.config[parentName][countValue][oneEntry.name];
+					// 			oneEntry.value = oneEntry.value.toString();
+					//
+					// 			if(currentScope.form && currentScope.form.formData){
+					// 				currentScope.form.formData[oneEntry.name + countValue] = oneEntry.value;
+					// 			}
+					// 		}
+					// 	}
+					// }
+					
+					if (oneEntry.name) {
+						oneEntry.name += "_c_" + countValue;
+					}
+				});
+			}
+			
 			scanEntries(entries);
 		}
 		

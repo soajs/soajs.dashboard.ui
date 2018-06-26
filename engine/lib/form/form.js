@@ -486,6 +486,11 @@ function buildForm(context, modal, configuration, cb) {
 					data[oneEntry.name] = data[oneEntry.name][0];
 				}
 			}
+			else if(oneEntry.type === 'buttonSlider'){
+				if(!data[oneEntry.name] && oneEntry.value){
+					data[oneEntry.name] = oneEntry.value;
+				}
+			}
 			
 			if (data[oneEntry.name] === 'false') {
 				data[oneEntry.name] = false;
@@ -723,6 +728,9 @@ function buildForm(context, modal, configuration, cb) {
 		}
 		
 		function recursiveLooper(entries, count, cb) {
+			if(!entries || !Array.isArray(entries) || entries.length === 0){
+				return cb();
+			}
 			entries.forEach((oneEntry) => {
 				checkAndUpdateIndexer(oneEntry, () => {
 					if (oneEntry.entries) {

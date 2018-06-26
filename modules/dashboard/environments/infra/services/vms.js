@@ -541,7 +541,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 				//no limit, add another
 				if(!limit){
-					let arraycount = 1; // ma btozbat bel edit heyde
+					let arraycount = 0; // ma btozbat bel edit heyde
 					original.template = angular.copy(original.entries);
 
 					let finalEntries = [];

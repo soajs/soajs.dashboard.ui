@@ -25,7 +25,7 @@ platformsServices.service('envPlatforms', ['ngDataApi', '$timeout', '$modal', '$
 		}
 		
 		currentScope.oldDocker = false;
-		if(currentScope.config.certs && currentScope.config.certs.length > 0){
+		if(!currentScope.config.auth && !currentScope.config.auth.token && currentScope.config.certs && currentScope.config.certs.length > 0){
 			currentScope.oldDocker = true;
 		}
 	}

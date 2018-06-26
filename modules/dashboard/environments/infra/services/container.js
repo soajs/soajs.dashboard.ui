@@ -16,7 +16,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		delete currentScope.platforms;
 		delete currentScope.previousEnvironment;
 		currentScope.mapStorageToWizard = function(){};
-		currentScope.envType = '';
+		// currentScope.envType = '';
 		deploymentSrv.go(currentScope, () => {
 			let options = {
 				timeout: $timeout,
@@ -52,7 +52,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 									currentScope.containerWizard = false;
 									
 									$timeout(() => {
-										checkAttachContainerProgress(currentScope);
+										checkAttachContainerProgress(currentScope, true);
 									}, 1000);
 								}
 							});
@@ -123,7 +123,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				else{
 					checkAttachContainerProgress(currentScope, autoRefresh);
 				}
-			}, 1000);
+			}, 10 * 1000);
 		}
 	}
 	

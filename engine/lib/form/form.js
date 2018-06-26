@@ -666,6 +666,7 @@ function buildForm(context, modal, configuration, cb) {
 				let listenerConfig = {
 					expression : []
 				};
+				
 				for(let i =0; i < oneEntry.disableRule.fields.length; i++){
 					let oneEntryName = oneEntry.disableRule.fields[i];
 					
@@ -683,11 +684,22 @@ function buildForm(context, modal, configuration, cb) {
 					}
 				}
 				
-				listenerConfig.rule = listenerConfig.expression.join(operator);
+				if(listenerConfig.expression.length > 1){
+					listenerConfig.rule = "[" + listenerConfig.expression.join(",") + "]";
+				}
+				else{
+					listenerConfig.rule = listenerConfig.expression.join(operator);
+				}
 				
 				if(!processed[listenerConfig.rule]){
 					processed[listenerConfig.rule] = {
 						method: (newValue, oldValue) => {
+							//join the values on the operator and evaluate the expression the assign it as the final value to check on
+							if(Array.isArray(newValue)){
+								let t = newValue.join(processed[listenerConfig.rule].operator);
+								newValue = context.$eval(t);
+							}
+							
 							if(newValue !== undefined){
 								if(typeof newValue === 'string'){
 									newValue = (newValue === 'true');
@@ -713,7 +725,8 @@ function buildForm(context, modal, configuration, cb) {
 								});
 							}
 						},
-						inputs: [oneEntry]
+						inputs: [oneEntry],
+						operator: operator
 					};
 				}
 				else{

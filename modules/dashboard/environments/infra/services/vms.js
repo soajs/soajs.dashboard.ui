@@ -416,23 +416,28 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		function remapFormDataBeforeSubmission(modalScope, formData, cb) {
 			
 			function mapEntryToFormData(oneEntry){
-				if(oneEntry.entries && oneEntry.multi && oneEntry.limit){
-					
+				if(oneEntry.entries && oneEntry.multi && Object.hasOwnProperty.call(oneEntry, 'limit')){
 					let tempData = [];
 					oneEntry.entries.forEach((oneSubEntry) =>{
 						let tempObj = {};
 						if(oneSubEntry.entries){
 							oneSubEntry.entries.forEach((level2Entries) => {
-								tempObj[level2Entries.name.replace(/_c_[0-9]+/, '')] = formData[level2Entries.name];
-								delete formData[level2Entries.name];
+								if(!level2Entries.name.includes("add_another") && !level2Entries.name.includes("remove_another")) {
+									tempObj[level2Entries.name.replace(/_c_[0-9]+/, '')] = formData[level2Entries.name];
+									delete formData[level2Entries.name];
+								}
 								
 								mapEntryToFormData(level2Entries)
 							});
 						}
 						else{
-							tempObj[oneSubEntry.name] = formData[oneSubEntry.name];
+							if(!oneSubEntry.name.includes("add_another") && !oneSubEntry.name.includes("remove_another")){
+								tempObj[oneSubEntry.name] = formData[oneSubEntry.name];
+							}
 						}
-						tempData.push(tempObj);
+						if(Object.keys(tempObj).length > 0){
+							tempData.push(tempObj);
+						}
 					});
 					
 					formData[oneEntry.name] = tempData;
@@ -452,6 +457,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			modalScope.form.entries.forEach((oneEntry) => {
 				recursiveMapping(oneEntry);
 			});
+			
 			return cb();
 		}
 		
@@ -474,6 +480,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}
 		
 		function mapComputedInputs(entries, computedValues){
+			
 			function mapOneEntry(oneEntry){
 				if(oneEntry.type === 'select' && oneEntry.value && oneEntry.value.key && oneEntry.value.fields){
 					if(computedValues[oneEntry.value.key] && Array.isArray(computedValues[oneEntry.value.key])){
@@ -518,56 +525,62 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					original.counter = 0;
 				}
 				
-				if (!limit || limit === 0) {
-					limit = 1;
-					original.limit = 1;
-				}
-				
 				//no limit, add another
 				if(!limit){
-					// 	let arraycount = 1; // ma btozbat bel edit heyde
-					// 	original.template = angular.copy(original.entries);
-					// 	for(let i =0; i < arraycount; i++){
-					// 		pushOneDynamicEntry(finalEntries, original.counter, original.entries[i]);
-					// 	}
-					//
-					// 	//hook add another
-					// 	finalEntries.push({
-					// 		"type": "html",
-					// 		"name": "another" + original.name,
-					// 		"value": "<input type='button' value='Add Another' class='btn btn-primary'/>",
-					// 		"onAction": function(id, value, form){
-					// 			let another = angular.copy(original);
-					// 			another.entries = angular.copy(another.template);
-					// 			delete another.template;
-					//
-					// 			original.counter++;
-					// 			another.name += original.counter;
-					// 			allMyEntries(another.entries, original.counter, original.name);
-					//
-					// 			//hook the remove entry input
-					// 			another.entries.push({
-					// 				"type": "html",
-					// 				"name": "remove" + another.name,
-					// 				"value": "<span class='icon icon-cross red'></span>",
-					// 				"onAction": function(id, value, form){
-					// 					let currentEntryCount = parseInt(id.replace("remove" + original.name, ''));
-					// 					console.log(currentEntryCount);
-					// 				}
-					// 			});
-					//
-					// 			for(let i = another.entries.length -1; i >= 0; i--){
-					// 				if(another.entries[i].name.includes("another" + another.name)){
-					// 					another.entries.splice(i, 1);
-					// 				}
-					// 			}
-					//
-					// 			another.entries.forEach((anotherEntry) => {
-					// 				original.entries.splice(original.entries -1, 0, anotherEntry);
-					// 			});
-					// 			console.log(another);
-					// 		}
-					// 	});
+					let arraycount = 1; // ma btozbat bel edit heyde
+					original.template = angular.copy(original.entries);
+					
+					let finalEntries = [];
+					for(let i =0; i < arraycount; i++){
+						pushOneDynamicEntry(finalEntries, i, original.template);
+						original.counter++;
+					}
+					original.entries = finalEntries;
+					
+					//hook add another
+					original.entries.push({
+						"type": "html",
+						"name": "add_another" + original.name,
+						"value": "<a class='btn btn-sm btn-primary f-right'><span class='icon icon-plus'></span> Add Another</a>",
+						"onAction": function(id, value, form){
+							let another = angular.copy(original.template);
+							//hook the remove entry input
+							let removeButon = {
+								"type": "html",
+								"name": "remove_another" + original.name,
+								"value": "<a class='btn btn-sm btn-danger f-right'><span class='icon icon-cross'></span> Remove</a>",
+								"onAction": function(id, value, form){
+									let currentCounter = parseInt(id.split("_c_")[1]);
+									for(let i = original.entries.length -1; i >= 0; i--){
+										if(original.entries[i].name.includes("_c_" + currentCounter)){
+											original.entries.splice(i, 1);
+											for(let inputName in form.formData){
+												if(inputName.includes("_c_" + currentCounter)){
+													delete form.formData[inputName];
+												}
+											}
+										}
+									}
+								}
+							};
+							
+							if(another[0].entries){
+								another[0].entries.unshift(removeButon);
+							}
+							else{
+								another.unshift(removeButon);
+							}
+							
+							let finalEntries = [];
+							pushOneDynamicEntry(finalEntries, original.counter, another);
+							
+							original.counter++;
+							let anotherButton = original.entries[original.entries.length -1];
+							original.entries.splice(original.entries.length -1, 1);
+							original.entries = original.entries.concat(finalEntries);
+							original.entries.push(anotherButton);
+						}
+					});
 				}
 				//yes limit only populate based on count
 				else {

@@ -676,15 +676,15 @@ function buildForm(context, modal, configuration, cb) {
 						oneEntryName = oneEntryName.substr(1);
 					}
 					if(expression === '!'){
-						oneEntry.negate = true;
-						listenerConfig.expression.push("form.formData." + oneEntryName);
+						listenerConfig.expression.push("form.formData." + oneEntryName + "=== false");
 					}
 					else{
-						listenerConfig.expression.push("form.formData." + oneEntryName);
+						listenerConfig.expression.push("form.formData." + oneEntryName + "=== true");
 					}
 				}
 				
 				if(listenerConfig.expression.length > 1){
+					delete oneEntry.negate;
 					listenerConfig.rule = "[" + listenerConfig.expression.join(",") + "]";
 				}
 				else{

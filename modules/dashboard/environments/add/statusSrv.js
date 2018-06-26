@@ -149,9 +149,11 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 		
 		//check for vms to create
 		if(currentScope.wizard.vms){
+			let vmCount = 0;
 			currentScope.wizard.vms.forEach((oneVMLayer) => {
 				let vmInfra = mapVMInfra(currentScope, oneVMLayer);
-				currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy', vmInfra);
+				currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy.' + vmCount, vmInfra);
+				vmCount++;
 			});
 		}
 		

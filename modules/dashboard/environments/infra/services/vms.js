@@ -380,6 +380,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 									'btn': 'primary',
 									'action': function (formData) {
 
+										// add region and group to formData
+										formData = Object.assign(formData, data.inputs);
 										let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
 										if(!myPattern.test(formData.name)){
 											$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");

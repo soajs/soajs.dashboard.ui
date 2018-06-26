@@ -1,8 +1,9 @@
 "use strict";
 var platformContainerServices = soajsApp.components;
-platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', 'deploymentSrv', function (ngDataApi, $timeout, $modal, $cookies, $window, deploymentSrv) {
+platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', 'deploymentSrv', '$localStorage', function (ngDataApi, $timeout, $modal, $cookies, $window, deploymentSrv, $localStorage) {
 	
 	function openContainerWizard(currentScope){
+		delete $localStorage.envType;
 		
 		currentScope.wizard = {
 			gi: {
@@ -15,7 +16,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		delete currentScope.platforms;
 		delete currentScope.previousEnvironment;
 		currentScope.mapStorageToWizard = function(){};
-		
+		currentScope.envType = '';
 		deploymentSrv.go(currentScope, () => {
 			let options = {
 				timeout: $timeout,

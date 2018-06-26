@@ -1,7 +1,7 @@
 "use strict";
 var vmsServices = soajsApp.components;
 vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', function (ngDataApi, $timeout, $modal, $cookies, $window) {
-	
+
 	function listInfraProviders(currentScope, cb) {
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -18,9 +18,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		});
 		return cb();
 	}
-	
+
 	function listVMLayers(currentScope, cb) {
-		
+
 		if(!currentScope.infraProviders){
 			listInfraProviders(currentScope, () => {
 				nextStep();
@@ -29,25 +29,25 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		else{
 			nextStep();
 		}
-		
+
 		function nextStep(){
 			//call common function
-			// getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
-			// 	currentScope.vmLayers = vmLayers;
-			// 	if(cb && typeof cb === 'function'){
-			// 		return cb();
-			// 	}
-			// });
+			getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
+				currentScope.vmLayers = vmLayers;
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
+			});
 		}
 	}
-	
+
 	function inspectVMLayer(currentScope, oneVMLayer){
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
 		delete formConfig.entries[0].value.infraProvider.regions;
 		delete formConfig.entries[0].value.infraProvider.templates;
 		delete formConfig.entries[0].value.infraProvider.groups;
-		
+
 		let options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -67,7 +67,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		};
 		buildFormWithModal(currentScope, $modal, options);
 	}
-	
+
 	function deleteVMLayer(currentScope, oneVMLayer){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
@@ -207,7 +207,11 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'btn': 'primary',
 					'action': function (formData) {
 						currentScope.modalInstance.close();
-						let data = {region: formData.region, group: formData.group };
+						let data = {
+							inputs: {
+								region: formData.region, group: formData.group
+							}
+						};
 						populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
 					}
 				},
@@ -284,12 +288,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			 */
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
-				"routeName": "/dashboard/cloud/vm/template",
+				"routeName": "/dashboard/cloud/vm/layer/status",
 				"params": {
 					"env": currentScope.envCode,
 					'technology': 'vm',
 					"infraId": oneVMLayer.infraProvider._id,
-					"vmLayer": oneVMLayer.name
+					"layerName": oneVMLayer.name
 				}
 			}, function (error, response) {
 				if (error) {
@@ -314,8 +318,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				"params": {
 					"envCode": currentScope.envCode,
 					"id": oneProvider._id,
-					"region": data.region,
-					"group": data.group,
+					"region": data.inputs.region,
+					"group": data.inputs.group,
 					"extras": [ 'osDisks', 'dataDisks', 'loadBalancers', 'networks', 'publicIps', 'securityGroups', 'vmSizes' ]
 				}
 			}, function (error, response) {
@@ -366,7 +370,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						
 						let formConfig = {
 							timeout: $timeout,
-							data: data,
+							data: data.inputs,
 							"entries": formEntries,
 							name: 'vmdeployon' + selectedInfraProvider.name,
 							"actions": [
@@ -470,7 +474,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}
 		
 		function mapComputedInputs(entries, computedValues){
-			
 			function mapOneEntry(oneEntry){
 				if(oneEntry.type === 'select' && oneEntry.value && oneEntry.value.key && oneEntry.value.fields){
 					if(computedValues[oneEntry.value.key] && Array.isArray(computedValues[oneEntry.value.key])){
@@ -616,7 +619,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 				});
 			}
-			
 			scanEntries(entries);
 		}
 		

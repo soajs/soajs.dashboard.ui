@@ -940,8 +940,32 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							else {
 								delete imfv.deployOptions;
 							}
-
+							
 							resource = imfv;
+							if (resource.deployOptions && resource.deployOptions.deployConfig
+								&& resource.deployOptions.deployConfig.vmConfiguration
+								&& resource.deployOptions.deployConfig.vmConfiguration.vmLayer){
+								resource.deployOptions.vms = [];
+								var vmLayer;
+								
+								currentScope.infraProviders.forEach(function (oneProvider) {
+									if (oneProvider._id.toString() === resource.deployOptions.deployConfig.infra.toString()){
+										vmLayer = oneProvider.name;
+									}
+								});
+								if (vmLayer){
+									vmLayer = vmLayer  + "_" + resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
+								}
+								if (vmLayer && currentScope.vmLayers[vmLayer] && currentScope.vmLayers[vmLayer].list &&
+									currentScope.vmLayers[vmLayer].list.length > 0){
+									currentScope.vmLayers[vmLayer].list.forEach(function (oneVM) {
+										resource.deployOptions.vms.push(oneVM.name);
+										if (!resource.deployOptions.deployConfig.vmConfiguration.group){
+											resource.deployOptions.deployConfig.vmConfiguration.group = oneVM.labels['soajs.service.vm.group'];
+										}
+									});
+								}
+							}
 							delete resource.scope;
 							delete resource.formIsInvalid;
 							currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(resource);

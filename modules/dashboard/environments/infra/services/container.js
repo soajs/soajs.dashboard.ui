@@ -96,6 +96,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 						}
 						else {
+							$modalInstance.close();
 							currentScope.displayAlert('success', "Container Technology has been detached from this environment.");
 							$timeout(() => {
 								checkAttachContainerProgress(currentScope);

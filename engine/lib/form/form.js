@@ -487,7 +487,7 @@ function buildForm(context, modal, configuration, cb) {
 				}
 			}
 			else if(oneEntry.type === 'buttonSlider'){
-				if(!data[oneEntry.name] && oneEntry.value){
+				if(!data.hasOwnProperty(oneEntry.name) && oneEntry.value){
 					data[oneEntry.name] = oneEntry.value;
 				}
 			}

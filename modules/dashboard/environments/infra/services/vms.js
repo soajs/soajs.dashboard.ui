@@ -84,6 +84,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
+				currentScope.displayAlert('success', "Virtual Machine Layer deleted, changes will be available soon.");
+				
 				listVMLayers(currentScope);
 			}
 		});

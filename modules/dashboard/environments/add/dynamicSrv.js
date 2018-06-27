@@ -956,14 +956,20 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								if (vmLayer){
 									vmLayer = vmLayer  + "_" + resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								}
-								if (vmLayer && currentScope.vmLayers[vmLayer] && currentScope.vmLayers[vmLayer].list &&
-									currentScope.vmLayers[vmLayer].list.length > 0){
-									currentScope.vmLayers[vmLayer].list.forEach(function (oneVM) {
-										resource.deployOptions.vms.push(oneVM.name);
+								if (vmLayer && currentScope.vmLayers[vmLayer]){
+									if(currentScope.vmLayers[vmLayer].list && currentScope.vmLayers[vmLayer].list.length > 0){
+										currentScope.vmLayers[vmLayer].list.forEach(function (oneVM) {
+											resource.deployOptions.vms.push(oneVM.name);
+											if (!resource.deployOptions.deployConfig.vmConfiguration.group){
+												resource.deployOptions.deployConfig.vmConfiguration.group = oneVM.labels['soajs.service.vm.group'];
+											}
+										});
+									}
+									else {
 										if (!resource.deployOptions.deployConfig.vmConfiguration.group){
-											resource.deployOptions.deployConfig.vmConfiguration.group = oneVM.labels['soajs.service.vm.group'];
+											resource.deployOptions.deployConfig.vmConfiguration.group = currentScope.vmLayers[vmLayer].group;
 										}
-									});
+									}
 								}
 							}
 							delete resource.scope;

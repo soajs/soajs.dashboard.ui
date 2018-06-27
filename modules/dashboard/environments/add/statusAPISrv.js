@@ -78,7 +78,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 							let parent = path[path.length -1];
 							
 							if(step.includes("infra.vms.deploy")){
-								child = "Deploying Virtual Machine Layer " + child;
+								child = "Virtual Machine Layer " + ( child + 1 );
 							}
 							
 							if(!currentScope.response[parent]){

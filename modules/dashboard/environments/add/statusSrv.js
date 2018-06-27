@@ -88,7 +88,6 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 	function mapVMInfra(currentScope, oneVMLayer){
 		
 		let providerName;
-		//todo: on refresh currentScope.infraProviders --> null
 		currentScope.infraProviders.forEach((oneProvider) => {
 			if(oneProvider._id === oneVMLayer.params.infraId){
 				providerName = oneProvider.name;
@@ -126,57 +125,88 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 		return output;
 	}
 	
+	function listInfraProviders(currentScope, cb) {
+		//get the available providers
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/infra"
+		}, function (error, providers) {
+			if (error) {
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				currentScope.infraProviders = providers;
+				return cb();
+			}
+		});
+	}
+	
 	function go(currentScope){
 		
-		if(currentScope.wizard.selectedInfraProvider){
-			let deployments = currentScope.wizard.template.deploy;
-			
-			if(!deployments.deployments){
-				currentScope.wizard.template.deploy.deployments = {};
-				deployments = currentScope.wizard.template.deploy.deployments;
-			}
-			
-			if (!deployments.pre) {
-				currentScope.wizard.template.deploy.deployments.pre = {};
-			}
-			
-			let infraCluster = mapInfraClusterOnPre(currentScope);
-			currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.cluster.deploy', infraCluster);
-			
-			//if deployment has nginx, add dns
-			if (currentScope.wizard.selectedInfraProvider.name !== 'local' && currentScope.wizard.nginx && Object.keys(currentScope.wizard.nginx).length > 0 && currentScope.wizard.nginx.domain !== '' && currentScope.wizard.nginx.apiPrefix !== '' && currentScope.wizard.nginx.sitePrefix !== '') {
-				if (!deployments.post) {
-					currentScope.wizard.template.deploy.deployments.post = {};
-				}
-				currentScope.wizard.template.deploy.deployments.post['infra.dns'] = mapInfraDnsOnPost(currentScope);
-			}
-		}
-		
-		//check for vms to create
-		if(currentScope.wizard.vms){
-			let deployments = currentScope.wizard.template.deploy;
-			
-			if(!deployments.deployments){
-				currentScope.wizard.template.deploy.deployments = {};
-				deployments = currentScope.wizard.template.deploy.deployments;
-			}
-			
-			if (!deployments.pre) {
-				currentScope.wizard.template.deploy.deployments.pre = {};
-			}
-			
-			let vmCount = 0;
-			currentScope.wizard.vms.forEach((oneVMLayer) => {
-				let vmInfra = mapVMInfra(currentScope, oneVMLayer);
-				currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy.' + vmCount, vmInfra);
-				vmCount++;
+		if(!currentScope.infraProviders){
+			listInfraProviders(currentScope, () => {
+				resumeDeployment();
 			});
 		}
+		else{
+			resumeDeployment();
+		}
 		
-		currentScope.overview = currentScope.mapUserInputsToOverview(false);
-		delete currentScope.overview.selectedInfraProvider;
-		
-		statusAPISrv.go(currentScope);
+		function resumeDeployment(){
+			if(currentScope.wizard.selectedInfraProvider){
+				let deployments = currentScope.wizard.template.deploy;
+				
+				if(!deployments.deployments){
+					currentScope.wizard.template.deploy.deployments = {};
+					deployments = currentScope.wizard.template.deploy.deployments;
+				}
+				
+				if (!deployments.pre) {
+					currentScope.wizard.template.deploy.deployments.pre = {};
+				}
+				
+				let infraCluster = mapInfraClusterOnPre(currentScope);
+				currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.cluster.deploy', infraCluster);
+				
+				//if deployment has nginx, add dns
+				if (currentScope.wizard.selectedInfraProvider.name !== 'local' && currentScope.wizard.nginx && Object.keys(currentScope.wizard.nginx).length > 0 && currentScope.wizard.nginx.domain !== '' && currentScope.wizard.nginx.apiPrefix !== '' && currentScope.wizard.nginx.sitePrefix !== '') {
+					if (!deployments.post) {
+						currentScope.wizard.template.deploy.deployments.post = {};
+					}
+					currentScope.wizard.template.deploy.deployments.post['infra.dns'] = mapInfraDnsOnPost(currentScope);
+				}
+			}
+			
+			//check for vms to create
+			if(currentScope.wizard.vms){
+				let deployments = currentScope.wizard.template.deploy;
+				
+				if(!deployments.deployments){
+					currentScope.wizard.template.deploy.deployments = {};
+					deployments = currentScope.wizard.template.deploy.deployments;
+				}
+				
+				if (!deployments.pre) {
+					currentScope.wizard.template.deploy.deployments.pre = {};
+				}
+				
+				let vmCount = 0;
+				//backwards so they work upwards!
+				for(let i = currentScope.wizard.vms.length -1; i >=0; i--){
+					let oneVMLayer = currentScope.wizard.vms[i];
+					let vmInfra = mapVMInfra(currentScope, oneVMLayer);
+					currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy.' + vmCount, vmInfra);
+					vmCount++;
+				}
+			}
+			
+			currentScope.overview = currentScope.mapUserInputsToOverview(false);
+			delete currentScope.overview.selectedInfraProvider;
+			
+			statusAPISrv.go(currentScope);
+		}
 	}
 	
 	return {

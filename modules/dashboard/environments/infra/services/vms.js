@@ -47,6 +47,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		delete formConfig.entries[0].value.infraProvider.regions;
 		delete formConfig.entries[0].value.infraProvider.templates;
 		delete formConfig.entries[0].value.infraProvider.groups;
+		delete formConfig.entries[0].value.infraProvider.api;
 
 		let options = {
 			timeout: $timeout,
@@ -424,7 +425,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						let tempObj = {};
 						if(oneSubEntry.entries){
 							oneSubEntry.entries.forEach((level2Entries) => {
-								if(!level2Entries.name.includes("add_another") && !level2Entries.name.includes("remove_another")) {
+								if(level2Entries.name.indexOf("add_another") === -1 && level2Entries.name.indexOf("remove_another") === -1) {
 									tempObj[level2Entries.name.replace(/_c_[0-9]+/, '')] = formData[level2Entries.name];
 									delete formData[level2Entries.name];
 								}
@@ -433,7 +434,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							});
 						}
 						else{
-							if(!oneSubEntry.name.includes("add_another") && !oneSubEntry.name.includes("remove_another")){
+							if(oneSubEntry.name.indexOf("add_another") === -1 && oneSubEntry.name.indexOf("remove_another") === -1){
 								tempObj[oneSubEntry.name] = formData[oneSubEntry.name];
 							}
 						}
@@ -443,6 +444,11 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					});
 
 					formData[oneEntry.name] = tempData;
+				}
+				else{
+					if(oneEntry.name.indexOf("add_another") !== -1 && oneEntry.name.indexOf("remove_another") !== -1){
+						delete formData[oneEntry.name];
+					}
 				}
 			}
 

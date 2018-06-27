@@ -215,20 +215,31 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 					{
 						'type':'html',
 						'value': "<p>" + oneTemplate.description+ "</p>"
-					},
-					{
-						'name': 'jsonData',
-						'label': '',
-						'type': 'jsoneditor',
-						'options': {
-							'mode': 'view',
-							'availableModes': []
-						},
-						'height': '500px',
-						"value": {}
 					}
 				]
 			});
+			
+			if(!oneTemplate.textMode){
+				formConfig.entries.push({
+					'name': 'jsonData',
+					'label': '',
+					'type': 'jsoneditor',
+					'options': {
+						'mode': 'view',
+						'availableModes': []
+					},
+					'height': '500px',
+					"value": {}
+				});
+			}
+			else{
+				formConfig.entries.push({
+					'name': 'jsonData',
+					'label': '',
+					'type': 'textarea',
+					'rows': '30'
+				})
+			}
 			formConfig.entries[1].value = oneTemplate.content;
 			let options = {
 				timeout: $timeout,

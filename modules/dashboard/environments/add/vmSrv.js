@@ -17,6 +17,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			tempScope.add = currentScope.$new(true);
 			tempScope.add.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.add.envCode = envCode;
+			tempScope.displayAlert = currentScope.displayAlert;
 			
 			//override default save action with what ui wizard needs
 			tempScope.add.saveActionMethodAdd = function(modalScope, oneProvider, formData, modalInstance){
@@ -26,6 +27,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					2- region to use
 					3- template inputs
 				 */
+				
+				for(let i in formData){
+					if(i.indexOf("add_another") !== -1){
+						delete formData[i];
+					}
+					else if(i.indexOf("remove_another") !== -1){
+						delete formData[i];
+					}
+				}
+				
 				let vmLayerContext = {
 					"params":{
 						"env": currentScope.wizard.gi.code,
@@ -35,6 +46,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					"data": {
 						"infraCodeTemplate" : formData.infraCodeTemplate,
 						"region" : formData.region,
+						"group" : formData.group,
 						"name" : formData.name,
 						"specs": formData
 					}
@@ -63,6 +75,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			tempScope.edit = currentScope.$new(true);
 			tempScope.edit.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.edit.envCode = envCode;
+			tempScope.displayAlert = currentScope.displayAlert;
 			
 			tempScope.edit.saveActionMethodModify = function(modalScope, oneVMLayer, oneProvider, formData, modalInstance){
 				//formData should include
@@ -71,6 +84,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					2- region to use
 					3- template inputs
 				 */
+				
+				for(let i in formData){
+					if(i.indexOf("add_another") !== -1){
+						delete formData[i];
+					}
+					else if(i.indexOf("remove_another") !== -1){
+						delete formData[i];
+					}
+				}
+				
 				let vmLayerContext = {
 					"params":{
 						"env": currentScope.wizard.gi.code,
@@ -80,11 +103,13 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					"data": {
 						"infraCodeTemplate" : formData.infraCodeTemplate,
 						"region" : formData.region,
+						"group" : formData.group,
 						"name" : formData.name,
 						"specs": formData
 					}
 				};
 				
+				console.log(vmLayerContext);
 				//hook the vm to the wizard scope
 				currentScope.wizard.vms.forEach((oneExistingTempVMLayer) => {
 					if(oneExistingTempVMLayer.params.infraId === vmLayerContext.params.infraId){
@@ -109,10 +134,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					if(oneExistingTempVMLayer.data.name === oneVMLayer.name){
 						//this is the one
 						oneVMLayer.formData = oneExistingTempVMLayer.data;
+						oneVMLayer.formData.infraCodeTemplate = oneVMLayer.template;
+						oneVMLayer.formData.inputs = {
+							region: oneVMLayer.region,
+							group: oneVMLayer.group
+						};
 					}
 				}
 			});
 			
+			console.log(oneVMLayer);
 			platformsVM.editVMLayer(tempScope.edit, oneVMLayer);
 		};
 		
@@ -132,6 +163,15 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				for(let layerName in currentScope.vmLayers){
 					if(layerName === oneVMLayer.infraProvider.name + "_" + oneVMLayer.name){
 						delete currentScope.vmLayers[layerName];
+					}
+				}
+				
+				for(let i = currentScope.wizard.vms.length -1; i >= 0; i--){
+					let oneVM = currentScope.wizard.vms[i]
+					if(oneVM.params.infraId === oneVMLayer.infraProvider._id){
+						if(oneVM.data.name === oneVMLayer.name){
+							currentScope.wizard.vms.splice(i, 1);
+						}
 					}
 				}
 			}
@@ -158,6 +198,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							name: oneVM.data.name,
 							infraProvider: myProvider,
 							region: oneVM.data.region,
+							group: oneVM.data.group,
 							template: oneVM.data.infraCodeTemplate,
 							specs: vmSpecs
 						};

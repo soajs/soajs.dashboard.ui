@@ -342,3 +342,9 @@ div.tempVMLayer .header{
     background-color:#dff0d8;
     border-color:#3c763d;
 }
+
+.vmSpecsBox{
+    height: 100px;
+    overflow: scroll;
+    padding: 5px 0 10px 0;
+}

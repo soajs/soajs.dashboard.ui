@@ -88,6 +88,7 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 	function mapVMInfra(currentScope, oneVMLayer){
 		
 		let providerName;
+		//todo: on refresh currentScope.infraProviders --> null
 		currentScope.infraProviders.forEach((oneProvider) => {
 			if(oneProvider._id === oneVMLayer.params.infraId){
 				providerName = oneProvider.name;
@@ -103,6 +104,7 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 			"command": "deployVM",
 			"options": opts
 		};
+		deployCluster.options.params.layerName = opts.data.name;
 		
 		let getDeployClusterStatus = {
 			"type": "infra",
@@ -112,6 +114,7 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 				"params": opts.params
 			}
 		};
+		getDeployClusterStatus.options.params.layerName = opts.data.name;
 		
 		let output = {
 			imfv: [],
@@ -126,11 +129,13 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 	function go(currentScope){
 		
 		if(currentScope.wizard.selectedInfraProvider){
-			let deployments = currentScope.wizard.template.deploy.deployments;
-			if (!deployments) {
+			let deployments = currentScope.wizard.template.deploy;
+			
+			if(!deployments.deployments){
 				currentScope.wizard.template.deploy.deployments = {};
 				deployments = currentScope.wizard.template.deploy.deployments;
 			}
+			
 			if (!deployments.pre) {
 				currentScope.wizard.template.deploy.deployments.pre = {};
 			}
@@ -149,6 +154,17 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 		
 		//check for vms to create
 		if(currentScope.wizard.vms){
+			let deployments = currentScope.wizard.template.deploy;
+			
+			if(!deployments.deployments){
+				currentScope.wizard.template.deploy.deployments = {};
+				deployments = currentScope.wizard.template.deploy.deployments;
+			}
+			
+			if (!deployments.pre) {
+				currentScope.wizard.template.deploy.deployments.pre = {};
+			}
+			
 			let vmCount = 0;
 			currentScope.wizard.vms.forEach((oneVMLayer) => {
 				let vmInfra = mapVMInfra(currentScope, oneVMLayer);

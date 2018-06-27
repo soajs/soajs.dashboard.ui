@@ -706,3 +706,9 @@ input.secretMountPathRepo{
     background-color: #C1DDEC;
     cursor: pointer;
 }
+
+.vmSpecsBox{
+    height: 100px;
+    overflow: scroll;
+    padding: 5px 0 10px 0;
+}

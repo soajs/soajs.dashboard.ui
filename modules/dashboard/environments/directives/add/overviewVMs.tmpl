@@ -22,12 +22,14 @@
 							<tr class="header">
 								<td width="50%" class="nameHeader">Template</td>
 								<td class="nameHeader">Region</td>
+								<td class="nameHeader">Group</td>
 							</tr>
 						</thead>
 						<tbody>
 							<tr class="cloud-tr-bgColor">
 								<td>{{oneVMLayer.template}}</td>
 								<td>{{oneVMLayer.region}}</td>
+								<td>{{oneVMLayer.group}}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -39,7 +41,9 @@
 						</thead>
 						<tbody>
 							<tr class="cloud-tr-bgColor">
-								<td ng-bind-html="oneVMLayer.specs | object"></td>
+								<td>
+									<div ng-bind-html="oneVMLayer.specs|object" class="vmSpecsBox"></div>
+								</td>
 							</tr>
 						</tbody>
 					</table>

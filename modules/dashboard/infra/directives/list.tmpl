@@ -36,10 +36,10 @@
 								<table width="100%">
 									<thead>
 										<tr>
-											<th></th>
-											<th>ID</th>
-											<th>Name</th>
-											<th>Environments</th>
+											<th width="10%"></th>
+											<th width="20%">ID</th>
+											<th width="40%">Name</th>
+											<th width="30%">Environments</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -64,10 +64,12 @@
 								<table width="100%">
 									<thead>
 										<tr>
-											<th></th>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Location</th>
+											<th width="10%"></th>
+											<th width="20%">Name</th>
+											<th width="40%">Description</th>
+											<th width="10%">Driver</th>
+											<th width="10%">Technology</th>
+											<th width="10%">Location</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -80,6 +82,8 @@
 											</td>
 											<td>{{oneTmpl.name}}</td>
 											<td>{{oneTmpl.description}}</td>
+											<td>{{oneTmpl.driver}}</td>
+											<td>{{oneTmpl.technology}}</td>
 											<td>{{(oneTmpl.location === 'local') ? "SOAJS Console" : "Cloud Provider" }}</td>
 										</tr>
 									</tbody>

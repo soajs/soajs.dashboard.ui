@@ -445,7 +445,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 	}
 	
 	function getInfraProvidersVMS(oneProvider, cb){
-		
+		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/vm/list",
@@ -454,6 +454,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 				"env": envCode
 			}
 		}, function (error, providerVMs) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			}

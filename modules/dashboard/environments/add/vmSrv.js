@@ -18,7 +18,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			tempScope.add.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.add.envCode = envCode;
 			tempScope.displayAlert = currentScope.displayAlert;
-			
+			if(currentScope.reusableData){
+				tempScope.add.reusableData = currentScope.reusableData;
+			}
 			//override default save action with what ui wizard needs
 			tempScope.add.saveActionMethodAdd = function(modalScope, oneProvider, formData, modalInstance){
 				//formData should include
@@ -27,6 +29,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					2- region to use
 					3- template inputs
 				 */
+				if(tempScope.add.reusableData){
+					currentScope.reusableData = tempScope.add.reusableData;
+				}
 				
 				for(let i in formData){
 					if(i.indexOf("add_another") !== -1){
@@ -76,6 +81,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			tempScope.edit.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.edit.envCode = envCode;
 			tempScope.displayAlert = currentScope.displayAlert;
+			if(currentScope.reusableData){
+				tempScope.edit.reusableData = currentScope.reusableData;
+			}
 			
 			tempScope.edit.saveActionMethodModify = function(modalScope, oneVMLayer, oneProvider, formData, modalInstance){
 				//formData should include
@@ -84,6 +92,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					2- region to use
 					3- template inputs
 				 */
+				if(tempScope.edit.reusableData){
+					currentScope.reusableData = tempScope.edit.reusableData;
+				}
 				
 				for(let i in formData){
 					if(i.indexOf("add_another") !== -1){
@@ -109,7 +120,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					}
 				};
 				
-				console.log(vmLayerContext);
 				//hook the vm to the wizard scope
 				currentScope.wizard.vms.forEach((oneExistingTempVMLayer) => {
 					if(oneExistingTempVMLayer.params.infraId === vmLayerContext.params.infraId){
@@ -143,7 +153,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				}
 			});
 			
-			console.log(oneVMLayer);
 			platformsVM.editVMLayer(tempScope.edit, oneVMLayer);
 		};
 		

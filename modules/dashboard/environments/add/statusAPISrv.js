@@ -78,7 +78,8 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 							let parent = path[path.length -1];
 							
 							if(step.includes("infra.vms.deploy")){
-								child = "Virtual Machine Layer " + ( child + 1 );
+								let tempCount = parseInt(child) + 1
+								child = "Virtual Machine Layer " + tempCount;
 							}
 							
 							if(!currentScope.response[parent]){
@@ -247,6 +248,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 					'label': "Finalize & Proceed",
 					'btn': 'primary',
 					'action': function () {
+						delete currentScope.reusableData;
 						currentScope.showProgress = true;
 						currentScope.status = {};
 						finalResponse(currentScope);
@@ -274,6 +276,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 								displayStickError(currentScope, error);
 							}
 							else {
+								delete currentScope.reusableData;
 								currentScope.showProgress = true;
 								currentScope.status = {};
 								finalResponse(currentScope);

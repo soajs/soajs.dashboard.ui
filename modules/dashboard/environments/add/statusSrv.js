@@ -192,13 +192,11 @@ statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 					currentScope.wizard.template.deploy.deployments.pre = {};
 				}
 				
-				let vmCount = 0;
 				//backwards so they work upwards!
 				for(let i = currentScope.wizard.vms.length -1; i >=0; i--){
 					let oneVMLayer = currentScope.wizard.vms[i];
 					let vmInfra = mapVMInfra(currentScope, oneVMLayer);
-					currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy.' + vmCount, vmInfra);
-					vmCount++;
+					currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy.' + i, vmInfra);
 				}
 			}
 			

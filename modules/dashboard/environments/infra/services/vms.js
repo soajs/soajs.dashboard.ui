@@ -125,6 +125,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 					else {
 						currentScope.displayAlert('success', "Virtual Machine Layer created, the process will take few minutes before it shows up in the list.");
+						delete currentScope.reusableData;
 						if(modalInstance){
 							modalInstance.close();
 						}
@@ -268,6 +269,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 					else {
 						currentScope.displayAlert('success', "Virtual Machine Layer updated, the process will take few minutes before it shows up in the list.");
+						
+						delete currentScope.reusableData;
 						if(modalInstance){
 							modalInstance.close();
 						}
@@ -341,6 +344,11 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 			if(formEntries && formEntries.length > 0){
 				let infraTemplates =[];
+				
+				if(!currentScope.reusableData){
+					currentScope.reusableData = [];
+				}
+				
 				oneProvider.templates.forEach((oneTmpl) => {
 					let label = oneTmpl.name;
 					if(oneTmpl.description && oneTmpl.description !== ''){
@@ -450,6 +458,16 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				else{
 					if(oneEntry.name.indexOf("add_another") !== -1 && oneEntry.name.indexOf("remove_another") !== -1){
 						delete formData[oneEntry.name];
+					}
+					if(oneEntry.reusable){
+						let tmpObj = {
+							"key": oneEntry.reusable.as,
+							"formData": {}
+						};
+						if(formData[oneEntry.name]){
+							tmpObj.formData[oneEntry.reusable.via] = formData[oneEntry.name];
+							currentScope.reusableData.push(tmpObj);
+						}
 					}
 				}
 			}
@@ -657,12 +675,25 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 				});
 			}
+			
 			scanEntries(entries);
 		}
 
 		overlayLoading.show();
 		getInfraExtras((computedValues) => {
 			overlayLoading.hide();
+			
+			if(currentScope.reusableData && currentScope.reusableData.length > 0){
+				currentScope.reusableData.forEach((oneReusableEntry) => {
+					if(computedValues[oneReusableEntry.key]){
+						computedValues[oneReusableEntry.key] = computedValues[oneReusableEntry.key].concat(oneReusableEntry.formData);
+					}
+					else{
+						computedValues[oneReusableEntry.key] = [oneReusableEntry.formData];
+					}
+				});
+			}
+			
 			renderForm(computedValues);
 		});
 	}

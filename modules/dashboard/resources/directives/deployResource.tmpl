@@ -238,7 +238,7 @@
 
 		<div class="alert alert-warning" ng-if="formData.deployOptions.deployConfig.vmConfiguration.vmLayer">
 			<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length === 1">This resource will be deployed in <strong>1</strong> instance.</span>
-			<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length > 1">This resource will be deployed in <strong>{{mainData.deploymentData.vmLayers[layerName].length}}</strong> instances.</span>
+			<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length}}</strong> instances.</span>
 		</div>
 
 		<fieldset class="custom-fieldset" ng-if="mainData.deploymentData.selectedRecipe.recipe.deployOptions.image.override">

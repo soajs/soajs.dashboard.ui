@@ -92,6 +92,8 @@
 									<td ng-class="nameHeader">Instance Network</td>
 									<td ng-class="nameHeader">Public IP</td>
 									<td ng-class="nameHeader">Exposed Ports</td>
+									<td ng-class="nameHeader">Status</td>
+									<td ng-class="nameHeader">Last Check</td>
 								</tr>
 							</thead>
 							<tbody>
@@ -100,10 +102,10 @@
 										<a href="" ng-if="access.vm.logs" ng-click="getVMLogs(oneVMLayer, instance)" tooltip="Show VM Logs">
 											<span class="icon icon-terminal"></span>&nbsp;
 										</a>
-										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'powerOffVM')" tooltip="Start VM Instance">
+										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'startVM')" tooltip="Start VM Instance">
 											<span class="icon icon-switch"></span>&nbsp;
 										</a>
-										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'startVM')" tooltip="Stop VM Instance">
+										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'powerOffVM')" tooltip="Stop VM Instance">
 											<span class="icon icon-blocked"></span>&nbsp;
 										</a>
 										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'restartService')" tooltip="Restart VM Instance">
@@ -123,6 +125,8 @@
 											<label class="text-uppercase">{{onePort.protocol}}</label>: {{onePort.published}}
 										</div>
 									</td>
+									<td>{{instance.tasks[0].status.state}}</td>
+									<td>{{instance.tasks[0].status.ts|date}}</td>
 							</tbody>
 						</table>
 					</div>

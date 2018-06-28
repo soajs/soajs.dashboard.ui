@@ -47,7 +47,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		delete formConfig.entries[0].value.infraProvider.regions;
 		delete formConfig.entries[0].value.infraProvider.templates;
 		delete formConfig.entries[0].value.infraProvider.groups;
+		delete formConfig.entries[0].value.infraProvider.deployments;
 		delete formConfig.entries[0].value.infraProvider.api;
+		delete formConfig.entries[0].value.template;
 
 		let options = {
 			timeout: $timeout,
@@ -74,6 +76,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			"method": "delete",
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
+				"id": oneVMLayer.template.id,
 				"env": currentScope.envCode,
 				"layerName": oneVMLayer.name,
 				"infraId": oneVMLayer.infraProvider._id,
@@ -255,7 +258,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"env": currentScope.envCode,
 						'technology': 'vm',
 						"infraId": oneProvider._id,
-						"layerName": oneVMLayer._id
+						"layerName": oneVMLayer._id,
+						"id": oneVMLayer.template.id
 					},
 					"data": {
 						"infraCodeTemplate" : formData.infraCodeTemplate,
@@ -296,6 +300,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				"method": "get",
 				"routeName": "/dashboard/cloud/vm/layer/status",
 				"params": {
+					"id": oneVMLayer.template.id,
 					"env": currentScope.envCode,
 					'technology': 'vm',
 					"infraId": oneVMLayer.infraProvider._id,

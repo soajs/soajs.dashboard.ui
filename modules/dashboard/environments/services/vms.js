@@ -18,6 +18,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 	}
 	
 	function deleteVMLayer(currentScope, oneVMLayer) {
+		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/cloud/vm",
@@ -28,6 +29,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 				'technology': 'vm'
 			}
 		}, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
@@ -38,6 +40,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 	}
 	
 	function maintenanceOp(currentScope, oneVMLayer, oneVMInstance, action) {
+		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/cloud/vm/maintenance",
@@ -46,10 +49,13 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 				"group": oneVMInstance.labels['soajs.service.vm.group'],
 				"serviceId": oneVMInstance.name,
 				"infraId": oneVMLayer.infraProvider._id,
-				"technology": "vm",
+				"technology": "vm"
+			},
+			"data":{
 				"operation": action
 			}
 		}, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
@@ -85,6 +91,10 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
 		delete formConfig.entries[0].value.infraProvider.regions;
 		delete formConfig.entries[0].value.infraProvider.templates;
+		delete formConfig.entries[0].value.infraProvider.api;
+		delete formConfig.entries[0].value.infraProvider.groups;
+		delete formConfig.entries[0].value.infraProvider.deployments;
+		delete formConfig.entries[0].value.template;
 		
 		let options = {
 			timeout: $timeout,
@@ -173,7 +183,6 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
-					console.log(response);
 					$modal.open({
 						templateUrl: "vmLogBox.html",
 						size: 'lg',

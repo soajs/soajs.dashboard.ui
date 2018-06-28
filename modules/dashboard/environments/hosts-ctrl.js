@@ -99,7 +99,7 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	};
 	
 	$scope.maintenanceOp = function(oneVMLayer, oneVMInstance, operation) {
-		orchestrateVMS.listVMLayers($scope, oneVMLayer, oneVMInstance, operation);
+		orchestrateVMS.maintenanceOp($scope, oneVMLayer, oneVMInstance, operation);
 	};
 	
 	$scope.getVMLogs = function(oneVMLayer, oneVMInstance) {

@@ -403,10 +403,12 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 	
 	function listInfraProviders(cb) {
 		//get the available providers
+		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/infra"
 		}, function (error, providers) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			}
@@ -430,12 +432,10 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 		
 		if(infraProviders.length > 0){
 			let count = 0;
-			overlayLoading.show();
 			infraProviders.forEach((oneProvider) => {
 				getInfraProvidersVMS(oneProvider, () => {
 					count++;
 					if(count === infraProviders.length){
-						overlayLoading.hide();
 						return callback(allVMs);
 					}
 				});

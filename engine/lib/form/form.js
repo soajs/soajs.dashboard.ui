@@ -183,8 +183,13 @@ function buildForm(context, modal, configuration, cb) {
 						});
 					}
 					else {
-						if(oneEntry.type === 'buttonSlider' && typeof oneEntry.value === 'string'){
-							oneEntry.value = (oneEntry.value === 'true');
+						if(oneEntry.type === 'buttonSlider'){
+							if(typeof oneEntry.value === 'string'){
+								oneEntry.value = (oneEntry.value === 'true');
+							}
+						}
+						else if(oneEntry.type === 'number' && typeof(oneEntry.value) !== 'number'){
+							oneEntry.value = parseFloat(oneEntry.value);
 						}
 						context.form.formData[oneEntry.name] = oneEntry.value;
 					}
@@ -192,6 +197,9 @@ function buildForm(context, modal, configuration, cb) {
 			}
 			
 			else if (oneEntry.type === 'number') {
+				if(typeof oneEntry.value !== 'number'){
+					oneEntry.value = parseFloat(oneEntry.value);
+				}
 				if (oneEntry.value === 0) {
 					context.form.formData[oneEntry.name] = oneEntry.value;
 				}
@@ -445,7 +453,6 @@ function buildForm(context, modal, configuration, cb) {
 		}
 	};
 	
-	
 	context.form.callObj = function (functionObj) {
 		if (functionObj) {
 			if (functionObj.action) {
@@ -489,6 +496,9 @@ function buildForm(context, modal, configuration, cb) {
 			else if(oneEntry.type === 'buttonSlider'){
 				if(!data.hasOwnProperty(oneEntry.name) && oneEntry.value){
 					data[oneEntry.name] = oneEntry.value;
+				}
+				else{
+					data[oneEntry.name] = false;
 				}
 			}
 			
@@ -676,15 +686,14 @@ function buildForm(context, modal, configuration, cb) {
 						oneEntryName = oneEntryName.substr(1);
 					}
 					if(expression === '!'){
-						listenerConfig.expression.push("form.formData." + oneEntryName + "=== false");
+						listenerConfig.expression.push("!form.formData." + oneEntryName);
 					}
 					else{
-						listenerConfig.expression.push("form.formData." + oneEntryName + "=== true");
+						listenerConfig.expression.push("form.formData." + oneEntryName);
 					}
 				}
 				
 				if(listenerConfig.expression.length > 1){
-					delete oneEntry.negate;
 					listenerConfig.rule = "[" + listenerConfig.expression.join(",") + "]";
 				}
 				else{
@@ -694,6 +703,7 @@ function buildForm(context, modal, configuration, cb) {
 				if(!processed[listenerConfig.rule]){
 					processed[listenerConfig.rule] = {
 						method: (newValue, oldValue) => {
+							
 							//join the values on the operator and evaluate the expression the assign it as the final value to check on
 							if(Array.isArray(newValue)){
 								let t = newValue.join(processed[listenerConfig.rule].operator);
@@ -706,21 +716,23 @@ function buildForm(context, modal, configuration, cb) {
 								}
 								
 								processed[listenerConfig.rule].inputs.forEach((indexedEntry) => {
-									if(indexedEntry.negate){
-										indexedEntry.disabled = !newValue;
-									}
-									else{
-										indexedEntry.disabled = newValue;
-									}
+									indexedEntry.disabled = newValue;
+									
 									
 									if(indexedEntry.disabled){
 										indexedEntry.tempRequired = indexedEntry.required;
-										
+										delete context.form.formData[indexedEntry.name];
 										indexedEntry.required = false;
 									}
 									else{
-										indexedEntry.required = indexedEntry.tempRequired;
+										if(typeof(indexedEntry.tempRequired) === 'boolean'){
+											indexedEntry.required = indexedEntry.tempRequired;
+										}
 										delete indexedEntry.tempRequired;
+										
+										if(!context.form.formData[indexedEntry.name] && indexedEntry.value){
+											context.form.formData[indexedEntry.name] = indexedEntry.value;
+										}
 									}
 								});
 							}

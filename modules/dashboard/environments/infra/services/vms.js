@@ -697,11 +697,20 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		overlayLoading.show();
 		getInfraExtras((computedValues) => {
 			overlayLoading.hide();
-			
 			if(currentScope.reusableData && currentScope.reusableData.length > 0){
 				currentScope.reusableData.forEach((oneReusableEntry) => {
 					if(computedValues[oneReusableEntry.key]){
-						computedValues[oneReusableEntry.key] = computedValues[oneReusableEntry.key].concat(oneReusableEntry.formData);
+						//only unique values
+						let addIt = true;
+						computedValues[oneReusableEntry.key].forEach((oneComputed) => {
+							if(JSON.stringify(oneReusableEntry.formData) === JSON.stringify(oneComputed)){
+								addIt = false;
+							}
+						});
+						
+						if(addIt){
+							computedValues[oneReusableEntry.key].push(oneReusableEntry.formData);
+						}
 					}
 					else{
 						computedValues[oneReusableEntry.key] = [oneReusableEntry.formData];

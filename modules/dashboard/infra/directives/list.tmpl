@@ -80,8 +80,8 @@
 												<a href="" ng-click="downloadTemplate(oneTmpl, oneInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
 												<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, oneInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>
 											</td>
-											<td>{{oneTmpl.name}}</td>
-											<td>{{oneTmpl.description}}</td>
+											<td style="word-break: break-word;">{{oneTmpl.name}}</td>
+											<td style="word-break: break-word;">{{oneTmpl.description}}</td>
 											<td>{{oneTmpl.driver}}</td>
 											<td>{{oneTmpl.technology}}</td>
 											<td>{{(oneTmpl.location === 'local') ? "SOAJS Console" : "Cloud Provider" }}</td>

@@ -165,31 +165,55 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'value': value.regions,
 					'tooltip': 'Select Deployment Region',
 					'required': true,
-					"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
+					"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges.",
+					"onAction" : (id, value2, form) => {
+						form.entries.length = 2;
+						if(form.actions.length > 1){
+							form.actions.shift();
+						}
+						
+						let groups = {
+							'name': 'group',
+							'label': 'Select a Group',
+							'type': 'select',
+							'value': [],
+							'tooltip': 'Select Resource Group',
+							'required': true
+						};
+						
+						value.groups.forEach((oneGroup) =>{
+							if(oneGroup.region === value2){
+								groups.value.push({v: oneGroup.name, l: oneGroup.name})
+							}
+						});
+						
+						if(groups.value && groups.value.length > 0){
+							groups.value[0].selected = true;
+						}
+						form.entries.push(groups);
+						
+						form.actions.unshift({
+							'type': 'submit',
+							'label': translation.submit[LANG],
+							'btn': 'primary',
+							'action': function (formData) {
+								currentScope.modalInstance.close();
+								let data = {
+									inputs: {
+										region: formData.region, group: formData.group
+									}
+								};
+								populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
+							}
+						});
+						
+					}
 				};
 
 				if(region.value && region.value.length > 0){
 					region.value[0].selected = true;
 				}
 				form.entries.push(region);
-
-				let groups = {
-					'name': 'group',
-					'label': 'Select a Group',
-					'type': 'select',
-					'value': [],
-					'tooltip': 'Select Resource Group',
-					'required': true
-				};
-
-				value.groups.forEach((oneGroup) =>{
-					groups.value.push({v: oneGroup.name, l: oneGroup.name})
-				});
-
-				if(groups.value && groups.value.length > 0){
-					groups.value[0].selected = true;
-				}
-				form.entries.push(groups);
 			}
 		}];
 
@@ -208,20 +232,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			name: 'selectProvider',
 			label: 'Select Infra Cloud Provider',
 			actions: [
-				{
-					'type': 'submit',
-					'label': translation.submit[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						currentScope.modalInstance.close();
-						let data = {
-							inputs: {
-								region: formData.region, group: formData.group
-							}
-						};
-						populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
-					}
-				},
 				{
 					'type': 'reset',
 					'label': translation.cancel[LANG],

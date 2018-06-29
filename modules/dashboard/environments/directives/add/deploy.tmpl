@@ -10,6 +10,17 @@
 <div ng-if="envType!== 'manual' && (!infraProviders || infraProviders.length === 0)">
 	<alert type="warning">No Infra providers detected <a href="#/infra">Add Infra Cloud Provider</a></alert>
 </div>
+<div ng-if="infraProviders && !platforms.docker && !platforms.kubernetes && !platforms.manual && !platforms.ondemand">
+	<alert type="info">
+		<p>
+			Attach a container technology to this environment by selecting from the options below.
+		</p>
+		<p>
+			If you do not want to attach any container technology at the moment, just click on next to skip.
+		</p>
+	</alert>
+	<br />
+</div>
 
 <accordion close-others="true">
 	<accordion-group is-open="platforms.previous" ng-click="switchDriver('previous')" ng-show="restrictions.previousEnv && availableEnvironments.length > 0">

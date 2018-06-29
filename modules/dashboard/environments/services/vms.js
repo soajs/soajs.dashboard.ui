@@ -23,6 +23,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 			"method": "delete",
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
+				"id": oneVMLayer.template.id,
 				"env": currentScope.envCode,
 				"layerName": oneVMLayer.name,
 				"infraId": oneVMLayer.infraProvider._id,

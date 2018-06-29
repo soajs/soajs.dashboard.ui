@@ -121,7 +121,7 @@
 									<td>{{instance.network}}</td>
 									<td>
 										<div ng-repeat="oneIP in instance.ip">
-											{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )
+											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
 										</div>
 									</td>
 									<td>

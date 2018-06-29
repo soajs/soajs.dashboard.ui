@@ -497,3 +497,15 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 		getVMs();
 	}
 }
+
+function insertObjFirst(mainObj, key, newObj) {
+	let oldKeys = Object.keys(mainObj);
+	let output = {};
+	output[key] = newObj;
+	
+	oldKeys.forEach(function (eachKey) {
+		output[eachKey] = mainObj[eachKey];
+	});
+	
+	return output;
+}

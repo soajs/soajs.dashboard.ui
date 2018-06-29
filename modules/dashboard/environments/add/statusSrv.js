@@ -2,18 +2,6 @@
 var statusServices = soajsApp.components;
 statusServices.service('statusSrv', ['statusAPISrv', function (statusAPISrv) {
 	
-	function insertObjFirst(mainObj, key, newObj) {
-		let oldKeys = Object.keys(mainObj);
-		let output = {};
-		output[key] = newObj;
-		
-		oldKeys.forEach(function (eachKey) {
-			output[eachKey] = mainObj[eachKey];
-		});
-		
-		return output;
-	}
-	
 	function mapInfraDnsOnPost(currentScope) {
 		let selectedInfraProvider = currentScope.wizard.selectedInfraProvider;
 		let providerName = selectedInfraProvider.name;

@@ -4,10 +4,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 	function listInfraProviders(currentScope, cb) {
 		//get the available providers
+		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/infra"
 		}, function (error, providers) {
+			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			}

@@ -124,22 +124,12 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				delete vmLayerContext.data.specs.inputs;
 				delete vmLayerContext.data.specs.specs;
 				
-				//hook the vm to the wizard scope
-				for(let i = 0; i < currentScope.wizard.vms.length; i++){
-					let oneExistingTempVMLayer = currentScope.wizard.vms[i];
-					if(oneExistingTempVMLayer.params.infraId === vmLayerContext.params.infraId){
-						if(oneExistingTempVMLayer.data.name === vmLayerContext.data.name){
-							//this is the one
-							currentScope.wizard.vms[i] = oneExistingTempVMLayer = vmLayerContext;
-						}
-					}
-				}
+				//update the entry
+				oneVMLayerFromList.specs.specs = formData;
 				
 				if(tempScope.edit){
 					delete tempScope.edit;
 				}
-				
-				appendVMsTotheList();
 				
 				if(modalInstance){
 					modalInstance.close();
@@ -223,7 +213,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							specs: vmSpecs
 						};
 						
-						currentScope.vmLayers[myProvider.name + "_" + myVM.name] = myVM;
+						currentScope.vmLayers = insertObjFirst(currentScope.vmLayers, myProvider.name + "_" + myVM.name, myVM);
 						appendNextButton(currentScope, formButtonOptions);
 					}
 				});

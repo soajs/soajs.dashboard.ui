@@ -300,7 +300,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		if(currentScope.saveActionMethodModify){
 			let oneVMLayerTemplateRecord = oneVMLayer.formData;
 			let saveActionMethod = defaultSaveActionMethod;
-			populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod);
+			populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
 		}
 		else{
 			/**
@@ -323,13 +323,13 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				else {
 					let oneVMLayerTemplateRecord = response;
 					let saveActionMethod = defaultSaveActionMethod;
-					populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod);
+					populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
 				}
 			});
 		}
 	}
 
-	function populateVMLayerForm(currentScope, oneProvider, technology, data, submitActionMethod) {
+	function populateVMLayerForm(currentScope, oneProvider, technology, data, submitActionMethod, editMode) {
 
 		//call the api that ameer will do
 		function getInfraExtras(cb){
@@ -369,7 +369,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					if(oneTmpl.description && oneTmpl.description !== ''){
 						label += " | " + oneTmpl.description;
 					}
-					infraTemplates.push({'v': oneTmpl.name, 'l': label});
+					let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
+					infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
 				});
 
 				formEntries.push({
@@ -511,18 +512,26 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					form.entries = form.entries.concat(oneTmpl.inputs);
 
 					//map computed inputs
-					mapComputedInputs(form.entries, computedValues);
+					mapComputedInputs(form.entries, computedValues, form);
 
 					form.refresh(false);
 					$timeout(() => {
 						form.buildDisabledRulesIndexer();
+						$timeout(() => {
+							if(editMode && data && data.inputs && Object.keys(data.inputs).length > 0){
+								console.log(data.inputs);
+								for(let i in data.inputs){
+									form.formData[i] = data.inputs[i];
+								}
+							}
+						}, 10);
 						overlayLoading.hide();
 					}, 1000)
 				}
 			});
 		}
 
-		function mapComputedInputs(entries, computedValues){
+		function mapComputedInputs(entries, computedValues, form){
 
 			function mapOneEntry(oneEntry){
 				if(oneEntry.type === 'select' && oneEntry.value && oneEntry.value.key && oneEntry.value.fields){
@@ -581,13 +590,22 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				}
 
 				//no limit, add another
+				let defaultData;
+				if(editMode && data && data.inputs && data.inputs[original.name] && Array.isArray(data.inputs[original.name])){
+					defaultData = data.inputs[original.name];
+				}
+				
 				if(!limit){
-					let arraycount = 0; // ma btozbat bel edit heyde
+					let arraycount = 0;
+					if(editMode && data && data.inputs && data.inputs[original.name] && Array.isArray(data.inputs[original.name])){
+						arraycount = data.inputs[original.name].length;
+					}
+					
 					original.template = angular.copy(original.entries);
 
 					let finalEntries = [];
 					for(let i =0; i < arraycount; i++){
-						pushOneDynamicEntry(finalEntries, i, original.template);
+						pushOneDynamicEntry(finalEntries, i, original.template, defaultData);
 						original.counter++;
 					}
 					original.entries = finalEntries;
@@ -644,7 +662,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					original.template = angular.copy(original.entries);
 					let finalEntries = [];
 					for (let i = 0; i < limit; i++) {
-						pushOneDynamicEntry(finalEntries, i, original.template);
+						pushOneDynamicEntry(finalEntries, i, original.template, defaultData);
 						original.counter ++;
 					}
 					original.entries = finalEntries;
@@ -652,39 +670,34 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				scanEntries(original.entries);
 			}
 
-			function pushOneDynamicEntry(finalEntries, counter, templateEntries) {
+			function pushOneDynamicEntry(finalEntries, counter, templateEntries, defaultData) {
 				let inputs = angular.copy(templateEntries);
 				inputs.forEach((oneInput) => {
 					oneInput.name += "_c_" + counter;
 
 					if (oneInput.entries) {
-						allMyEntries(oneInput.entries, counter);
+						allMyEntries(oneInput.entries, counter, defaultData);
 					}
 					counter++;
 					finalEntries.push(oneInput);
 				});
 			}
 
-			function allMyEntries(entries, countValue, parentName) {
+			function allMyEntries(entries, countValue, defaultData) {
 				entries.forEach(function (oneEntry) {
 					if (oneEntry.entries) {
-						allMyEntries(oneEntry.entries, countValue, oneEntry.name);
+						allMyEntries(oneEntry.entries, countValue, oneEntry.name, defaultData);
 					}
-
+					
 					// if edit
-					// if(resource && resource.config && resource.config[parentName] && Array.isArray(resource.config[parentName])){
-					// 	if(resource.config[parentName][countValue]){
-					// 		if(oneEntry.type === 'text'){
-					// 			oneEntry.value = resource.config[parentName][countValue][oneEntry.name];
-					// 			oneEntry.value = oneEntry.value.toString();
-					//
-					// 			if(currentScope.form && currentScope.form.formData){
-					// 				currentScope.form.formData[oneEntry.name + countValue] = oneEntry.value;
-					// 			}
-					// 		}
-					// 	}
-					// }
-
+					if(editMode && defaultData){
+						let thisEntryDefaultData = defaultData[countValue];
+						form.formData[oneEntry.name + "_c_" + countValue] = thisEntryDefaultData[oneEntry.name];
+						console.log(oneEntry.name + "_c_" + countValue, form.formData[oneEntry.name + "_c_" + countValue]);
+						
+						//todo: case of json editor
+					}
+					
 					if (oneEntry.name) {
 						oneEntry.name += "_c_" + countValue;
 					}

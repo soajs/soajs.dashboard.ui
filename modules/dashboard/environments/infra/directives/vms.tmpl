@@ -90,7 +90,7 @@
 									<td ng-class="nameHeader">OS Name</td>
 									<td ng-class="nameHeader">DiskSize</td>
 									<td ng-class="nameHeader">Instance Network</td>
-									<td ng-class="nameHeader">Public IP</td>
+									<td ng-class="nameHeader">IP Addresses</td>
 									<td ng-class="nameHeader">Exposed Ports</td>
 									<td ng-class="nameHeader">Status</td>
 									<td ng-class="nameHeader">Last Check</td>
@@ -119,14 +119,19 @@
 									<td>{{instance.tasks[0].ref.os.type}}</td>
 									<td>{{instance.tasks[0].ref.os.diskSizeGB}} GB</td>
 									<td>{{instance.network}}</td>
-									<td>{{instance.ip || "N/A"}}</td>
 									<td>
+										<div ng-repeat="oneIP in instance.ip">
+											{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )
+										</div>
+									</td>
+									<td>
+										<div ng-if="!instance.ports || instance.ports.length === 0">N/A</div>
 										<div ng-repeat="onePort in instance.ports">
 											<label class="text-uppercase">{{onePort.protocol}}</label>: {{onePort.published}}
 										</div>
 									</td>
 									<td>{{instance.tasks[0].status.state}}</td>
-									<td>{{instance.tasks[0].status.ts|date}}</td>
+									<td>{{instance.tasks[0].status.ts|fulldate}}</td>
 							</tbody>
 						</table>
 					</div>

@@ -7,6 +7,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		
 		let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 		
+		let formButtonOptions;
+		
 		let tempScope = {
 			add: null,
 			edit: null
@@ -143,7 +145,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				if(oneExistingTempVMLayer.params.infraId === oneVMLayer.infraProvider._id){
 					if(oneExistingTempVMLayer.data.name === oneVMLayer.name){
 						//this is the one
-						oneVMLayer.formData = oneExistingTempVMLayer.data;
+						oneVMLayer.formData = angular.copy(oneExistingTempVMLayer.data);
 						oneVMLayer.formData.infraCodeTemplate = oneVMLayer.template;
 						oneVMLayer.formData.inputs = {
 							region: oneVMLayer.region,
@@ -153,6 +155,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				}
 			});
 			
+			for(let i in oneVMLayer.formData.specs){
+				oneVMLayer.formData.inputs[i] = oneVMLayer.formData.specs[i];
+			}
 			platformsVM.editVMLayer(tempScope.edit, oneVMLayer);
 		};
 		
@@ -211,9 +216,37 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							template: oneVM.data.infraCodeTemplate,
 							specs: vmSpecs
 						};
+						
 						currentScope.vmLayers[myProvider.name + "_" + myVM.name] = myVM;
+						appendNextButton(currentScope, formButtonOptions);
 					}
 				});
+			}
+		}
+		
+		function appendNextButton(currentScope, options){
+			if(Object.keys(currentScope.vmLayers).length > 0){
+				if(options && options.actions){
+					options.actions.splice(1 , 0 , {
+						'type': 'submit',
+						'label': "Next",
+						'btn': 'primary',
+						'action': function () {
+							currentScope.referringStep = 'vm';
+							$localStorage.addEnv = angular.copy(currentScope.wizard);
+							currentScope.envCode = envCode;
+							currentScope.nextStep();
+						}
+					});
+				}
+			}
+			else{
+				//if the next button exists, remove it
+				for(let i = options.actions.length -1; i >=0; i--){
+					if(options.actions[i].label === 'Next'){
+						options.actions.splice(i, 1);
+					}
+				}
 			}
 		}
 		
@@ -259,19 +292,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				};
 				buildForm(currentScope, $modal, options, function () {
 					
-					if(Object.keys(currentScope.vmLayers).length > 0){
-						options.actions.push({
-							'type': 'submit',
-							'label': "Next",
-							'btn': 'primary',
-							'action': function () {
-								currentScope.referringStep = 'vm';
-								$localStorage.addEnv = angular.copy(currentScope.wizard);
-								currentScope.envCode = envCode;
-								currentScope.nextStep();
-							}
-						});
-					}
+					appendNextButton(currentScope, options);
 					
 					options.actions.push({
 						'type': 'reset',
@@ -286,6 +307,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							currentScope.$parent.go("/environments");
 						}
 					});
+					
+					formButtonOptions = options;
 					
 					overlayLoading.hide();
 				});

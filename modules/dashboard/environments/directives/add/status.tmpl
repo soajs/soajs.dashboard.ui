@@ -1,19 +1,19 @@
 <div id="progressAddEnv" ng-show="showProgress">
 	<alert ng-if="statusMsg" type="{{statusType}}">
-		{{statusMsg}}
+		<div ng-bind-html="statusMsg"></div>
 	</alert>
 	<br/>
 	<progressbar ng-show="response && response.current > 0" class="progress-striped active" value="response.overall * 100" type="info">
 		{{(response.overall * 100).toFixed(2)}}%
 	</progressbar>
-	
+
 	<div ng-repeat="(key, oneResponse) in response">
-		
+
 		<div ng-if="oneResponse.multi" style="margin-bottom: 10px;">
 			<span ng-repeat="oneChild in oneResponse.children">
 				<div ng-if="oneChild.data && oneChild.data.done" style="margin-bottom: 10px;" class="capitalize">
 					<span class="icon icon-checkmark green"></span>{{key}} {{oneChild.child}} Created ...<br>
-					
+
 					<div ng-if="oneChild.child === 'deploy'">
 						<alert type="success">
 							<p>
@@ -41,7 +41,7 @@
 				</div>
 			</span>
 		</div>
-		
+
 		<div ng-if="!oneResponse.multi && oneResponse.done" class="capitalize" style="margin-bottom: 10px;">
 			<span class="icon icon-checkmark green"></span> {{key}} Completed ...<br>
 		</div>

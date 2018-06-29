@@ -1,18 +1,19 @@
 "use strict";
 var statusServices = soajsApp.components;
 statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$compile', '$cookies', function (ngDataApi, $timeout, $modal, $localStorage, $compile, $cookies) {
-	
+
 	function displayStickError(currentScope, error){
 		currentScope.statusType = "danger";
-		currentScope.statusMsg = error.message;
+		let patt = new RegExp("\n", "g");
+		currentScope.statusMsg = error.message.replace(patt, "<br />");
 	}
-	
+
 	function addEnvironment(currentScope){
 		currentScope.statusType = "info";
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = true;
 		currentScope.response = {};
-		
+
 		let options = {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
@@ -21,7 +22,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				template: currentScope.overview.template
 			}
 		};
-		
+
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			if(error){
 				displayStickError(currentScope, error);
@@ -39,7 +40,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 			}
 		});
 	}
-	
+
 	function checkDeploymentStatus(currentScope, params, cb) {
 		let opts = {
 			method: 'get',
@@ -55,10 +56,10 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		}
 		getSendDataFromServer(currentScope, ngDataApi, opts, cb);
 	}
-	
+
 	function checkEnvironmentStatus(currentScope, params, cb){
 		currentScope.showProgress = true;
-		
+
 		let autoRefreshTimeoutProgress = $timeout(() => {
 			checkDeploymentStatus(currentScope, params, (error, response) => {
 				if (error) {
@@ -66,29 +67,29 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				}
 				else {
 					delete response.soajsauth;
-					
+
 					currentScope.response = response;
 					for(let step in currentScope.response){
 						if(step.indexOf(".") !== -1){
 							let path = step.split(".");
-							
+
 							let child = path[path.length -1];
 							path.pop();
-							
+
 							let parent = path[path.length -1];
-							
+
 							if(step.includes("infra.vms.deploy")){
 								let tempCount = parseInt(child) + 1
 								child = "Virtual Machine Layer " + tempCount;
 							}
-							
+
 							if(!currentScope.response[parent]){
 								currentScope.response[parent] = {
 									multi: true,
 									children: []
 								};
 							}
-							
+
 							if (currentScope.response[step].data && currentScope.response[step].data.length > 0) {
 								let finalData = {};
 								currentScope.response[step].data.forEach((oneData) => {
@@ -101,7 +102,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 								});
 								currentScope.response[step].data = [finalData];
 							}
-							
+
 							currentScope.response[parent].children.push({
 								child: child,
 								data: angular.copy(currentScope.response[step])
@@ -109,7 +110,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 							delete currentScope.response[step];
 						}
 					}
-					
+
 					if (response.error) {
 						return cb(response.error);
 					}
@@ -128,12 +129,12 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				}
 			});
 		}, 15000);
-		
+
 		currentScope.$on("$destroy", function () {
 			$timeout.cancel(autoRefreshTimeoutProgress);
 		});
 	}
-	
+
 	function rollbackEnvironment(currentScope, cb){
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "delete",
@@ -147,7 +148,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 			return cb();
 		});
 	}
-	
+
 	function finalResponse(currentScope) {
 		function getPermissions(cb) {
 			var options = {
@@ -165,7 +166,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 					response.forEach(function (oneEnv) {
 						if (oneEnv.code.toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) {
 							currentScope.$parent.currentDeployer.type = oneEnv.deployer.type;
-							
+
 							var data = {
 								"_id": oneEnv._id,
 								"code": oneEnv.code,
@@ -191,7 +192,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				}
 			});
 		}
-		
+
 		getPermissions(() => {
 			delete $localStorage.addEnv;
 			currentScope.form.formData = {};
@@ -202,10 +203,10 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 			}, 1000);
 		});
 	}
-	
+
 	function renderButtonDisplay(currentScope, type){
 		//default
-		
+
 		let actions = [
 			{
 				'type': 'button',
@@ -240,7 +241,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				}
 			}
 		];
-		
+
 		//if all ok
 		if (type === 2) {
 			actions = [
@@ -257,7 +258,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				}
 			];
 		}
-		
+
 		// if error during deployment
 		if (type === 3) {
 			actions = [
@@ -296,7 +297,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 								overlayLoading.hide();
 								displayStickError(currentScope, error);
 							}
-							
+
 							rollbackEnvironment(currentScope, (error) => {
 								overlayLoading.hide();
 								if (error) {
@@ -308,20 +309,20 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 									currentScope.previousStep();
 								}
 							});
-							
+
 						});
 					}
 				}
 			];
 		}
-		
+
 		return actions;
 	}
-	
+
 	function mapUserInputsToOverview(currentScope) {
 		return currentScope.mapUserInputsToOverview(false);
 	}
-	
+
 	function go(currentScope){
 		currentScope.addEnvCounter = currentScope.steps.length -1;
 		/**
@@ -362,12 +363,12 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		currentScope.statusType = "info";
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = true;
-		
+
 		//only available if an error or pending or refresh were triggered
 		if(currentScope.environmentId){
 			currentScope.overview = mapUserInputsToOverview(currentScope);
 			currentScope.envId = currentScope.environmentId;
-			
+
 			//resume deployment
 			checkDeploymentStatus(currentScope, {'resume': true}, (error) => {
 				if (error) {
@@ -389,9 +390,9 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 			addEnvironment(currentScope);
 		}
 	}
-	
+
 	return {
 		"go": go
 	}
-	
+
 }]);

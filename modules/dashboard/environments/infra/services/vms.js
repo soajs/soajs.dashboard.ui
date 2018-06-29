@@ -270,13 +270,13 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"env": currentScope.envCode,
 						'technology': 'vm',
 						"infraId": oneProvider._id,
-						"layerName": oneVMLayer._id,
+						"layerName": formData.name,
 						"id": oneVMLayer.template.id
 					},
 					"data": {
 						"infraCodeTemplate" : formData.infraCodeTemplate,
 						"region" : formData.region,
-						"name" : formData.name,
+						"layerName" : formData.name,
 						"specs": formData
 					}
 				}, function (error, response) {
@@ -323,6 +323,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else {
+					response.infraCodeTemplate = response.template;
 					let oneVMLayerTemplateRecord = response;
 					let saveActionMethod = defaultSaveActionMethod;
 					populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
@@ -332,7 +333,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	}
 
 	function populateVMLayerForm(currentScope, oneProvider, technology, data, submitActionMethod, editMode) {
-
 		//call the api that ameer will do
 		function getInfraExtras(cb){
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -413,7 +413,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 											formData = Object.assign(formData, data.inputs);
 										}
 										else{
-											delete formData.specs.specs;
+											if(formData.specs && formData.specs.specs){
+												delete formData.specs.specs;
+											}
 										}
 										
 										let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;

@@ -232,6 +232,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				'btn': 'danger',
 				'action': function () {
 					delete $localStorage.addEnv;
+					delete currentScope.reusableData;
 					currentScope.form.formData = {};
 					currentScope.remoteCertificates = {};
 					delete currentScope.wizard;

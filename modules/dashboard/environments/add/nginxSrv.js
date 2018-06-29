@@ -86,6 +86,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 				'action': function () {
 					delete $localStorage.addEnv;
 					delete currentScope.wizard;
+					delete currentScope.reusableData;
 					currentScope.form.formData = {};
 					currentScope.$parent.go("/environments")
 				}

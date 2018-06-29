@@ -280,6 +280,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						'action': function () {
 							delete $localStorage.addEnv;
 							delete currentScope.wizard;
+							delete currentScope.reusableData;
 							currentScope.form.formData = {};
 							$location.url($location.path());
 							currentScope.$parent.go("/environments");

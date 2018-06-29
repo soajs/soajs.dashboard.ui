@@ -99,6 +99,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			'action': function () {
 				delete $localStorage.addEnv;
 				delete currentScope.wizard;
+				delete currentScope.reusableData;
 				currentScope.form.formData = {};
 				currentScope.$parent.go("/environments")
 			}

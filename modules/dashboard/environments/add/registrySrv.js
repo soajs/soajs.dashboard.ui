@@ -95,6 +95,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 					currentScope.referringStep = 'registry';
 					delete $localStorage.addEnv;
 					delete currentScope.wizard;
+					delete currentScope.reusableData;
 					currentScope.form.formData = {};
 					currentScope.$parent.go("/environments")
 				}

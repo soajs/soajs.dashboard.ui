@@ -53,6 +53,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 					'action': function () {
 						delete $localStorage.addEnv;
 						delete currentScope.wizard;
+						delete currentScope.reusableData;
 						currentScope.form.formData = {};
 						$location.url($location.path());
 						currentScope.$parent.go("/environments");

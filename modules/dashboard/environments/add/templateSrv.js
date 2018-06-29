@@ -133,6 +133,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 					'action': function () {
 						delete $localStorage.addEnv;
 						delete currentScope.wizard;
+						delete currentScope.reusableData;
 						currentScope.form.formData = {};
 						currentScope.$parent.go("/environments")
 					}

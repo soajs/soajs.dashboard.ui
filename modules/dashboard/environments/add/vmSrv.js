@@ -127,6 +127,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				//update the entry
 				oneVMLayerFromList.specs.specs = formData;
 				
+				//update copy in wizard
+				for(let i = 0; i < currentScope.wizard.vms.length; i++){
+					let oneExistingTempVMLayer = currentScope.wizard.vms[i];
+					if(oneExistingTempVMLayer.params.infraId === oneVMLayerFromList.infraProvider._id){
+						if(oneExistingTempVMLayer.data.name === oneVMLayerFromList.name){
+							currentScope.wizard.vms[i] = vmLayerContext;
+						}
+					}
+				}
+				
 				if(tempScope.edit){
 					delete tempScope.edit;
 				}
@@ -194,7 +204,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					
 					let myProvider;
 					currentScope.infraProviders.forEach((oneProvider) => {
-						if(oneProvider._id === oneVM.params.infraId){
+						if(oneVM.params && oneProvider._id === oneVM.params.infraId){
 							myProvider = oneProvider;
 						}
 					});

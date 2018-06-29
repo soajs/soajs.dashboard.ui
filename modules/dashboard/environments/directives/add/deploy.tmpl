@@ -10,7 +10,7 @@
 <div ng-if="envType!== 'manual' && (!infraProviders || infraProviders.length === 0)">
 	<alert type="warning">No Infra providers detected <a href="#/infra">Add Infra Cloud Provider</a></alert>
 </div>
-<div ng-if="infraProviders && !platforms.docker && !platforms.kubernetes && !platforms.manual && !platforms.ondemand">
+<div ng-show="infraProviders && !platforms.docker && !platforms.kubernetes && !platforms.manual">
 	<alert type="info">
 		<p>
 			Attach a container technology to this environment by selecting from the options below.

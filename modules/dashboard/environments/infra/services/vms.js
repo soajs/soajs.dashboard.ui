@@ -403,12 +403,17 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							"actions": [
 								{
 									'type': 'submit',
-									'label': "Save & Continue",
+									'label': (editMode) ? "Modify" : "Save & Continue",
 									'btn': 'primary',
 									'action': function (formData) {
-
-										// add region and group to formData
-										formData = Object.assign(formData, data.inputs);
+										if(!editMode){
+											// add region and group to formData
+											formData = Object.assign(formData, data.inputs);
+										}
+										else{
+											delete formData.specs.specs;
+										}
+										
 										let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
 										if(!myPattern.test(formData.name)){
 											$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
@@ -519,7 +524,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						form.buildDisabledRulesIndexer();
 						$timeout(() => {
 							if(editMode && data && data.inputs && Object.keys(data.inputs).length > 0){
-								console.log(data.inputs);
 								for(let i in data.inputs){
 									form.formData[i] = data.inputs[i];
 								}
@@ -693,7 +697,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					if(editMode && defaultData){
 						let thisEntryDefaultData = defaultData[countValue];
 						form.formData[oneEntry.name + "_c_" + countValue] = thisEntryDefaultData[oneEntry.name];
-						console.log(oneEntry.name + "_c_" + countValue, form.formData[oneEntry.name + "_c_" + countValue]);
+						//console.log(oneEntry.name + "_c_" + countValue, form.formData[oneEntry.name + "_c_" + countValue]);
 						
 						//todo: case of json editor
 					}

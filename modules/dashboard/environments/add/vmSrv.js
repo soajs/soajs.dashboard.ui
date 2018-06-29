@@ -121,20 +121,26 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						"specs": formData
 					}
 				};
+				delete vmLayerContext.data.specs.inputs;
+				delete vmLayerContext.data.specs.specs;
 				
 				//hook the vm to the wizard scope
-				currentScope.wizard.vms.forEach((oneExistingTempVMLayer) => {
+				for(let i = 0; i < currentScope.wizard.vms.length; i++){
+					let oneExistingTempVMLayer = currentScope.wizard.vms[i];
 					if(oneExistingTempVMLayer.params.infraId === vmLayerContext.params.infraId){
 						if(oneExistingTempVMLayer.data.name === vmLayerContext.data.name){
 							//this is the one
-							oneExistingTempVMLayer = vmLayerContext;
+							currentScope.wizard.vms[i] = oneExistingTempVMLayer = vmLayerContext;
 						}
 					}
-				});
+				}
 				
 				if(tempScope.edit){
 					delete tempScope.edit;
 				}
+				
+				appendVMsTotheList();
+				
 				if(modalInstance){
 					modalInstance.close();
 				}
@@ -225,8 +231,18 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 		
 		function appendNextButton(currentScope, options){
+			
+			//if the next button exists, remove it
+			if(options && options.actions){
+				for(let i = options.actions.length -1; i >=0; i--){
+					if(options.actions[i].label === 'Next'){
+						options.actions.splice(i, 1);
+					}
+				}
+			}
+			
 			if(Object.keys(currentScope.vmLayers).length > 0){
-				if(options && options.actions){
+				if(options && options.actions && options.actions.length < 3){
 					options.actions.splice(1 , 0 , {
 						'type': 'submit',
 						'label': "Next",
@@ -238,14 +254,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							currentScope.nextStep();
 						}
 					});
-				}
-			}
-			else{
-				//if the next button exists, remove it
-				for(let i = options.actions.length -1; i >=0; i--){
-					if(options.actions[i].label === 'Next'){
-						options.actions.splice(i, 1);
-					}
 				}
 			}
 		}

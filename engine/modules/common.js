@@ -396,7 +396,6 @@ function updateNotifications($scope, envCode, ngDataApi, notifications){
 	}
 }
 
-
 function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders, callback) {
 	
 	let allVMs = {};

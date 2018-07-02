@@ -107,7 +107,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 						delete deployOptions.sourceCode;
 						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 							formData.vms = [];
-							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].forEach((oneInstance) => {
+							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
 								formData.vms.push(oneInstance.name);
 							});
 						}
@@ -142,7 +142,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							apiParams["deployOptions"] = deployOptions;
 							if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 								apiParams["vms"] = [];
-								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].forEach((oneInstance) => {
+								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
 									apiParams.vms.push(oneInstance.name);
 
 									if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {

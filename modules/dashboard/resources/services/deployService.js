@@ -602,7 +602,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			
 			//wizard mode only
 			let alreadySelectedRecipe;
-			if(context.formData.deployOptions.recipe && currentScope.environmentWizard){
+			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.recipe && currentScope.environmentWizard){
 				alreadySelectedRecipe = context.formData.deployOptions.recipe;
 			}
 			
@@ -618,6 +618,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	                    if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
 		                    if (deploymentType === 'manual' && (!oneRecipe.restriction || (oneRecipe.restriction.deployment && oneRecipe.restriction.deployment.indexOf("vm") !== -1))) {
 			                    context.mainData.recipes.push(oneRecipe);
+			                    
+			                    //todo: restrict on infra check
 		                    }
 		                    else {
 			                    if(context.formData.deployOptions){
@@ -630,6 +632,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						                    if (oneRecipe.restriction.deployment.indexOf(selectedDeploymentPlatform) !== -1) { // vm supported
 							                    context.mainData.recipes.push(oneRecipe);
 						                    }
+						                    //todo: restrict on infra check
 					                    }
 				                    }
 				                    //match the deployment type
@@ -637,12 +640,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					                    if (!oneRecipe.restriction || (oneRecipe.restriction.deployment && oneRecipe.restriction.deployment.indexOf(deploymentType) !== -1)) { // vm supported
 						                    context.mainData.recipes.push(oneRecipe);
 					                    }
+					                    //todo: restrict on infra check
 				                    }
 			                    }
 			                    else{
 				                    if (!oneRecipe.restriction  || (oneRecipe.restriction.deployment && oneRecipe.restriction.deployment.indexOf(deploymentType) !== -1)) { // vm supported
 					                    context.mainData.recipes.push(oneRecipe);
 				                    }
+				                    //todo: restrict on infra check
 			                    }
 		                    }
 	                    }
@@ -836,7 +841,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							context.formData.deployOptions.deployConfig.type = 'container';
 						}
 						else{
-							context.displayPlatformPicker = true;
+							//if wizard, and template container only, do not show the platform picker !
+							if(currentScope.environmentWizard && currentScope.restrictions){
+								if(currentScope.restrictions.vm && (currentScope.restrictions.docker || currentScope.restrictions.kubernetes) ){
+									context.displayPlatformPicker = true;
+								}
+							}
+							else{
+								context.displayPlatformPicker = true;
+							}
 						}
 					}
 					

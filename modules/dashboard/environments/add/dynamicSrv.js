@@ -619,6 +619,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.context.envCode = currentScope.envCode;
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
+					resource.scope.restrictions = currentScope.restrictions;
 					
 					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
 						resource.scope.wizardVMs = currentScope.wizard.vms;

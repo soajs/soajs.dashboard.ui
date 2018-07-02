@@ -42,6 +42,7 @@
 			<label class="fieldMsg">Memory limit per instance (in MBytes)</label>
 			<br/>
 		</div>
+		
 		<div ng-if="options.envPlatform === 'kubernetes'">
 			<label>CPU Limit Per Instance</label>
 			<input type="text" class="form-control" placeholder="100m or 0.1" ng-model="formData.deployOptions.deployConfig.cpuLimit" ng-required="formData.deployOptions.autoScale"/>

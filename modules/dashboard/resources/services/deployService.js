@@ -600,6 +600,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			
 			context.mainData.recipes = [];
 			
+			//wizard mode only
+			let alreadySelectedRecipe;
+			if(context.formData.deployOptions.recipe && currentScope.environmentWizard){
+				alreadySelectedRecipe = context.formData.deployOptions.recipe;
+			}
+			
 			let apiParams = {};
 			commonService.getCatalogRecipes(currentScope, apiParams, function (recipes)  {
 				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
@@ -641,8 +647,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		                    }
 	                    }
                     });
-                    
-                    context.displayRecipeInputs(false, false, function (err) {
+	                
+	                //wizard mode only
+	                if(alreadySelectedRecipe){
+		                context.formData.deployOptions.recipe = alreadySelectedRecipe;
+	                }
+                 
+	                context.displayRecipeInputs(false, false, function (err) {
                         if (err) {
                             context.displayAlert('danger', err.message);
                         }
@@ -1147,6 +1158,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		context.listVmsApi = function (cb) {
 			let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
 			context.getInfraProviders(() => {
+				if(currentScope.environmentWizard){
+					envCode = null;
+				}
 				getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
 					context.mainData.deploymentData.vmLayers = vms;
 					

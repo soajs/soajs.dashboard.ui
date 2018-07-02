@@ -635,6 +635,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					//if default values
 					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+						
+						//get the infra
+						//currentScope.mainData.deploymentData.infraProviders
+						if(!resource.scope.mainData.deploymentData){
+							resource.scope.mainData.deploymentData = {}
+						}
+						resource.scope.mainData.deploymentData.infraProviders = currentScope.infraProviders
+						
+						//get the recipes
 						resource.scope.mainData.recipes = [];
 						for(let type in currentScope.recipes){
 							if(type === record.type){
@@ -649,6 +658,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						record.canBeDeployed = true;
 						resource.scope.context.envType = 'container';
 						resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver;
+						if(resource.scope.context.envPlatform === 'ondemand'){
+							resource.scope.context.envType = 'manual';
+						}
+						
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
 
@@ -946,13 +959,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								&& resource.deployOptions.deployConfig.vmConfiguration
 								&& resource.deployOptions.deployConfig.vmConfiguration.vmLayer){
 								resource.deployOptions.vms = [];
-								var vmLayer;
+								let vmLayer = resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								
-								currentScope.infraProviders.forEach(function (oneProvider) {
-									if (oneProvider._id.toString() === resource.deployOptions.deployConfig.infra.toString()){
-										vmLayer = oneProvider.name;
-									}
-								});
 								if (vmLayer){
 									vmLayer = vmLayer  + "_" + resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								}

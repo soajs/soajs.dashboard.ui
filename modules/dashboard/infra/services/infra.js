@@ -403,6 +403,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console", 'selected': true });
 
 			let formData = angular.copy(oneTemplate);
+
+			if (typeof(formData.inputs) === "string") {
+				formData.inputs = JSON.parse(formData.inputs)
+			}
+			if (typeof(formData.display) === "string") {
+				formData.display = JSON.parse(formData.display)
+			}
+			if (typeof(formData.imfv) === "string") {
+				formData.imfv = JSON.parse(formData.imfv)
+			}
+
 			delete formData.tags;
 			options = {
 				timeout: $timeout,

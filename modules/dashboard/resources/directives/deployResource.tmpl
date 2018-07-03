@@ -30,7 +30,12 @@
 		<div>
 			<br />
 			<label>Catalog Recipe</label>
-			<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)"></select>
+			<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)" ng-show="mainData.recipes.length > 0"></select>
+			<alert type="warning" ng-show="mainData.recipes.length === 0">
+				<p>
+					No Catalog Recipes found that can be used to deploy this resource on the platform you have selected, <a href="#/catalog-recipes">Click Here</a> to create a new recipe.
+				</p>
+			</alert>
 			<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
 			<br>
 			<br>
@@ -238,7 +243,12 @@
 		<div ng-show="(formData.deployOptions.deployConfig.type ==='vm' && formData.deployOptions.deployConfig.vmConfiguration.vmLayer)">
 			<br />
 			<label>Catalog Recipe</label>
-			<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)"></select>
+			<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)" ng-show="mainData.recipes.length > 0"></select>
+			<alert type="warning" ng-show="mainData.recipes.length === 0">
+				<p>
+					No Catalog Recipes found that can be used to deploy this resource on the platform you have selected, <a href="#/catalog-recipes">Click Here</a> to create a new recipe.
+				</p>
+			</alert>
 			<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
 			<br>
 			<br>

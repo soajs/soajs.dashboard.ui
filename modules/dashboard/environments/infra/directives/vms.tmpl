@@ -1,13 +1,21 @@
 <div ng-if="environmentWizard" class="c-both w-100 table">
+	<!--<alert type="info">-->
+		<!--<p>-->
+			<!--Detected Existing VM Layers that you can use to deploy resources in based on the template you have selected.<br />-->
+		<!--</p>-->
+		<!--<b><u>To proceed, you can:</u></b>-->
+		<!--<ol>-->
+			<!--<li>Either click next and use these VM Layers in the next step when deploying resources.</li>-->
+			<!--<li>Or create new VM Layers and use these layers in the next steps when deploying resources.</li>-->
+		<!--</ol>-->
+	<!--</alert>-->
 	<alert type="info">
 		<p>
-			Detected Existing VM Layers that you can use to deploy resources in based on the template you have selected.<br />
+			Create Virtual Machine Layers and attach them to this environment and later on, you can deploy resources in them.
 		</p>
-		<b><u>To proceed, you can:</u></b>
-		<ol>
-			<li>Either click next and use these VM Layers in the next step when deploying resources.</li>
-			<li>Or create new VM Layers and use these layers in the next steps when deploying resources.</li>
-		</ol>
+		<p ng-if="!restrictions.vm">
+			If you do not want to attach any virtual machine at the moment, just click on next to skip.
+		</p>
 	</alert>
 	<br />
 </div>

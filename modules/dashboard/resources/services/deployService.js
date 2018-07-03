@@ -200,6 +200,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
+		
+		context.gotorecipes = function(){
+			if($modalInstance){
+				$modalInstance.close();
+			}
+			currentScope.go("#/catalog-recipes");
+		};
+		
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
 

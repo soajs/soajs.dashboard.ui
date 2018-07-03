@@ -679,6 +679,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	                    }
                     });
 	                
+	                if(recipes.length === 0){
+	                	alreadySelectedRecipe = null;
+		                context.formData.deployOptions.recipe = null;
+	                }
+	                
 	                //wizard mode only
 	                if(alreadySelectedRecipe){
 		                context.formData.deployOptions.recipe = alreadySelectedRecipe;
@@ -1233,7 +1238,33 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					envCode = null;
 				}
 				getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
-					context.mainData.deploymentData.vmLayers = vms;
+					if(currentScope.environmentWizard){
+						for(let i in vms){
+							context.mainData.deploymentData.vmLayers[i] = vms[i];
+						}
+					}
+					else{
+						context.mainData.deploymentData.vmLayers = vms;
+					}
+					
+					//todo: remove this validation in the next sprints
+					for(let i in context.mainData.deploymentData.vmLayers){
+						let compatibleVM = false;
+						if(context.mainData.deploymentData.vmLayers[i].list){
+							context.mainData.deploymentData.vmLayers[i].list.forEach((onevmInstance) =>{
+								if(onevmInstance.labels && onevmInstance.labels['soajs.env.code'] && onevmInstance.labels['soajs.env.code'] === envCode){
+									compatibleVM = true;
+								}
+							});
+						}
+						else if (context.mainData.deploymentData.vmLayers[i].specs){
+							compatibleVM = true;
+						}
+						
+						if(!compatibleVM){
+							delete context.mainData.deploymentData.vmLayers[i];
+						}
+					}
 					
 					if(cb && typeof cb === 'function'){
 						return cb();

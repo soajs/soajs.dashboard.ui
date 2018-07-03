@@ -233,9 +233,11 @@
 				<label class="fieldMsg">Choose the VM layer</label>
 			</div>
 
-			<div class="alert alert-warning" ng-if="formData.deployOptions.deployConfig.vmConfiguration.vmLayer">
-				<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length === 1">This resource will be deployed in <strong>1</strong> instance.</span>
-				<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length}}</strong> instances.</span>
+			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.vmLayer">
+				<alert type="warning" ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list">
+					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length === 1">This resource will be deployed in <strong>1</strong> instance.</span>
+					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length}}</strong> instances.</span>
+				</alert>
 			</div>
 			
 		</div>

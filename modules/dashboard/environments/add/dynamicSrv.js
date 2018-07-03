@@ -623,6 +623,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					
 					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
 						resource.scope.wizardVMs = currentScope.wizard.vms;
+						
+						if(!resource.scope.mainData.deploymentData){
+							resource.scope.mainData.deploymentData = {}
+						}
+						
+						resource.scope.mainData.deploymentData.vmLayers = currentScope.vmLayers;
 					}
 
 					for(let type in currentScope.recipes){

@@ -1,6 +1,6 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', '$timeout', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, $timeout, commonService) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', '$timeout', '$location', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, $timeout, $location, commonService) {
 
 	function confirmMainData(context, currentScope) {
 		if(!context.mainData){
@@ -205,7 +205,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			if($modalInstance){
 				$modalInstance.close();
 			}
-			currentScope.go("#/catalog-recipes");
+			$location.path("/catalog-recipes");
 		};
 		
 		// adding the api call to commonService

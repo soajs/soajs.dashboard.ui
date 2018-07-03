@@ -118,7 +118,10 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/infra"
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": [ "groups", "regions", "templates" ]
+			}
 		}, function (error, providers) {
 			overlayLoading.hide();
 			if (error) {
@@ -133,14 +136,14 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 
 	function go(currentScope){
 
-		if(!currentScope.infraProviders){
+		// if(!currentScope.infraProviders){
 			listInfraProviders(currentScope, () => {
 				resumeDeployment();
 			});
-		}
-		else{
-			resumeDeployment();
-		}
+		// }
+		// else{
+		// 	resumeDeployment();
+		// }
 
 		function resumeDeployment(){
 			if(currentScope.wizard.selectedInfraProvider){

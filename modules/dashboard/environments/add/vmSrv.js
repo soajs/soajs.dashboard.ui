@@ -11,7 +11,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		
 		let tempScope = {
 			add: null,
-			edit: null
+			edit: null,
+			inspect: null
 		};
 		
 		//hook the listeners
@@ -168,7 +169,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		};
 		
 		currentScope.inspectVMLayer = function(oneVMLayer){
-			platformsVM.inspectVMLayer(currentScope, oneVMLayer);
+			tempScope.inspect = currentScope.$new(true);
+			platformsVM.inspectVMLayer(tempScope.inspect, oneVMLayer, () => {
+				delete tempScope.inspect;
+			});
 		};
 		
 		//hook the listeners
@@ -258,6 +262,26 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 		}
 		
+		function listInfraProviders(currentScope, cb) {
+			//get the available providers
+			overlayLoading.show();
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/infra"
+			}, function (error, providers) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+				}
+				else {
+					delete providers.soajsauth;
+					currentScope.infraProviders = providers;
+				}
+			});
+			return cb();
+		}
+		
+		currentScope.form.actions = [];
 		if(!currentScope.restrictions.vm){
 			if(['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1){
 				currentScope.referringStep = 'vm';
@@ -271,54 +295,55 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		else{
 			//execute main function
 			delete currentScope.envCode;
-			platformsVM.listVMLayers(currentScope, () => {
-				
-				//if there are registered vms to be created by the wizard hook them to the scope
-				currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
-				appendVMsTotheList();
-				
-				//build the navigation buttons at the bottom of the page
-				let options = {
-					timeout: $timeout,
-					entries: [],
-					name: 'addEnvironment',
-					label: translation.addNewEnvironment[LANG],
-					actions: [
-						{
-							'type': 'button',
-							'label': "Back",
-							'btn': 'success',
-							'action': function () {
-								currentScope.referringStep = 'vm';
-								if (currentScope.form && currentScope.form.formData) {
-									currentScope.form.formData = {};
+			listInfraProviders(currentScope, () => {
+				platformsVM.listVMLayers(currentScope, () => {
+					//if there are registered vms to be created by the wizard hook them to the scope
+					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
+					appendVMsTotheList();
+					
+					//build the navigation buttons at the bottom of the page
+					let options = {
+						timeout: $timeout,
+						entries: [],
+						name: 'addEnvironment',
+						label: translation.addNewEnvironment[LANG],
+						actions: [
+							{
+								'type': 'button',
+								'label': "Back",
+								'btn': 'success',
+								'action': function () {
+									currentScope.referringStep = 'vm';
+									if (currentScope.form && currentScope.form.formData) {
+										currentScope.form.formData = {};
+									}
+									currentScope.previousStep();
 								}
-								currentScope.previousStep();
 							}
-						}
-					]
-				};
-				buildForm(currentScope, $modal, options, function () {
-					
-					appendNextButton(currentScope, options);
-					
-					options.actions.push({
-						'type': 'reset',
-						'label': translation.cancel[LANG],
-						'btn': 'danger',
-						'action': function () {
-							delete $localStorage.addEnv;
-							delete currentScope.wizard;
-							delete currentScope.reusableData;
-							currentScope.form.formData = {};
-							$location.url($location.path());
-							currentScope.$parent.go("/environments");
-						}
+						]
+					};
+					buildForm(currentScope, $modal, options, function () {
+						
+						appendNextButton(currentScope, options);
+						
+						options.actions.push({
+							'type': 'reset',
+							'label': translation.cancel[LANG],
+							'btn': 'danger',
+							'action': function () {
+								delete $localStorage.addEnv;
+								delete currentScope.wizard;
+								delete currentScope.reusableData;
+								currentScope.form.formData = {};
+								$location.url($location.path());
+								currentScope.$parent.go("/environments");
+							}
+						});
+						
+						formButtonOptions = options;
+						
+						overlayLoading.hide();
 					});
-					
-					formButtonOptions = options;
-					
-					overlayLoading.hide();
 				});
 			});
 		}

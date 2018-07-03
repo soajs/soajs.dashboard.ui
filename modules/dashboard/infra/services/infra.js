@@ -476,9 +476,6 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
-							console.log(formData);
-							return false;
-
 							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor);
 							if (!status) {
 								return false;

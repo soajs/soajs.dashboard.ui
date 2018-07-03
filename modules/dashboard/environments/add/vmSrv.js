@@ -21,6 +21,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			tempScope.add.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.add.envCode = envCode;
 			tempScope.displayAlert = currentScope.displayAlert;
+			
 			if(currentScope.reusableData){
 				tempScope.add.reusableData = currentScope.reusableData;
 			}
@@ -249,13 +250,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 			
 			let addNextButton = false;
-			// if(Object.keys(currentScope.vmLayers).length > 0){
-			
-			// }
-			console.log(currentScope);
-			if(currentScope.restrictions.vm && Object.keys(currentScope.vmLayers).length > 0){
+			if(!currentScope.restrictions.vm){
 				addNextButton = true;
 			}
+			else if(currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && Object.keys(currentScope.vmLayers).length > 0){
+				addNextButton = true;
+			}
+			else if(!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0){
+				addNextButton = true;
+			}
+			currentScope.optionalVMLayer = addNextButton;
 			
 			if(addNextButton && options && options.actions && options.actions.length < 3){
 				options.actions.splice(1 , 0 , {

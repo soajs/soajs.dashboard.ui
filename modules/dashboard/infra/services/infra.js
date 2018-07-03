@@ -505,9 +505,9 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}
 
 		buildForm(currentScope, $modal, options, () => {
-			inputsEditor = currentScope.form.entries[5].tabs[1].entries[0];
-			displayEditor = currentScope.form.entries[5].tabs[1].entries[1];
-			imfvEditor = currentScope.form.entries[5].tabs[2].entries[0];
+			inputsEditor = currentScope.form.entries[5].tabs[1].entries[1];
+			displayEditor = currentScope.form.entries[5].tabs[2].entries[1];
+			imfvEditor = currentScope.form.entries[5].tabs[3].entries[1];
 			if (oneTemplate.location === 'local') {
 				contentEditor = currentScope.form.entries[5].tabs[0].entries[1];
 			}

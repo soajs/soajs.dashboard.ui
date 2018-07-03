@@ -307,6 +307,10 @@ function buildForm(context, modal, configuration, cb) {
 					newHeight += _editore[0].data.lines.length * 16.5;
 					newHeight = Math.ceil(newHeight);
 					
+					if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
+						newHeight = parseInt(oneEntry.height);
+					}
+					
 					context.form.timeout(function () {
 						_editore[1].heightUpdate(newHeight);
 					}, 1500);

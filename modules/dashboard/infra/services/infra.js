@@ -46,16 +46,29 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						"label": "Inputs & Display Options",
 						"entries": [
 							{
-								'label': 'Inputs',
+								"type": "html",
+								"value": "<br />"
+							},
+							{
+								// 'label': 'Inputs',
 								'name': 'inputs',
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.inputs : "",
 								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template inputs using the SOAJS Form Library syntax. To learn more about the SOAJS Form Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/63862512/UI+Form'>click here</a></div>",
 								'required': false
+							}
+						]
+					},
+					{
+						"label": "Input Display Options",
+						"entries": [
+							{
+								"type": "html",
+								"value": "<br />"
 							},
 							{
-								'label': 'Inputs Display Options',
+								// 'label': 'Inputs Display Options',
 								'name': 'display',
 								'type': 'jsoneditor',
 								'height': '200px',
@@ -66,15 +79,19 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						]
 					},
 					{
-						"label": "Template Custom IMFV",
+						"label": "Input Validation Rules",
 						"entries": [
 							{
-								'label': 'IMFV',
+								"type": "html",
+								"value": "<br />"
+							},
+							{
+								// 'label': 'Inputs Display Options',
 								'name': 'imfv',
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.imfv : "",
-								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template custom IMFV using the SOAJS IMFV syntax. To learn more about the SOAJS IMFV <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV'>click here</a></div>",
+								'fieldMsg': "<div class='fieldMsg'>Provide the <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>IMFV</a> validation schema that SOAJS should use during deployment to ensure that the entries provided match the schema of your template inputs.</div>",
 								'required': false
 							}
 						]
@@ -313,7 +330,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		});
 	}
 
-	function grabEditorContent(location, formData, inputsEditor, displayEditor, imfvEditor, contentEditor) {
+	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor) {
 		let inputs = inputsEditor.ngModel;
 		if (typeof(inputs) === 'string') {
 			try {
@@ -399,8 +416,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
-
-							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, imfvEditor contentEditor);
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor);
 							if (!status) {
 								return false;
 							}
@@ -460,8 +476,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
+							console.log(formData);
+							return false;
 
-							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, imfvEditor contentEditor);
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor);
 							if (!status) {
 								return false;
 							}

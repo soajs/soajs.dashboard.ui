@@ -51,8 +51,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	 * update deployConfig.infra account using provider
 	 */
 	function updateFormDataBeforeSave(context, deployOptions) {
-		let deployConfig = deployOptions.deployConfig;
-
+		let deployConfig;
+		if(deployOptions){
+			deployConfig = deployOptions.deployConfig;
+		}
+		
 		// clean
 		if (deployConfig && deployConfig.type === "vm") {
 			if (deployConfig.memoryLimit) {
@@ -611,43 +614,58 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
                     context.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
                 }
-                
+				
                 let deploymentType = context.options.envType;
+				let selectedInfraProvider;
+				try{
+					if ((deploymentType === 'manual') || (context.displayPlatformPicker && context.formData.deployOptions.deployConfig.type === 'vm')){
+						selectedInfraProvider = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider.name;
+					}
+					else{
+						let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
+						if(context.originalInfraProviders && envCode){
+							context.originalInfraProviders.forEach((oneProvider) => {
+								oneProvider.deployments.forEach((oneDeployment) => {
+									if(oneDeployment.environments.indexOf(context.myEnv.toUpperCase()) !== -1){
+										selectedInfraProvider = oneProvider.name;
+									}
+								});
+							});
+						}
+					}
+				}
+				catch(e){
+					// console.log(e);
+				}
+				
                 if (recipes && Array.isArray(recipes)) {
 	                recipes.forEach(function (oneRecipe) {
 	                    if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
-		                    if (deploymentType === 'manual' && (!oneRecipe.restriction || (oneRecipe.restriction.deployment && oneRecipe.restriction.deployment.indexOf("vm") !== -1))) {
-			                    context.mainData.recipes.push(oneRecipe);
-			                    
-			                    //todo: restrict on infra check
+		                    if (deploymentType === 'manual') {
+			                    if(calculateRestriction(oneRecipe, 'vm', selectedInfraProvider)){
+				                    context.mainData.recipes.push(oneRecipe);
+			                    }
 		                    }
 		                    else {
-			                    if(context.formData.deployOptions){
+		                    	if(context.formData.deployOptions){
 			                         // check the platform deployment selected mode
 				                    if (context.displayPlatformPicker) {
-					                    if (!oneRecipe.restriction || Object.keys(oneRecipe.restriction).length === 0) { // no restrictions / ALL
+					                    let selectedDeploymentPlatform = context.formData.deployOptions.deployConfig.type;
+					                    if(calculateRestriction(oneRecipe, selectedDeploymentPlatform, selectedInfraProvider)){
 						                    context.mainData.recipes.push(oneRecipe);
-					                    } else {
-						                    let selectedDeploymentPlatform = context.formData.deployOptions.deployConfig.type;
-						                    if (oneRecipe.restriction.deployment.indexOf(selectedDeploymentPlatform) !== -1) { // vm supported
-							                    context.mainData.recipes.push(oneRecipe);
-						                    }
-						                    //todo: restrict on infra check
 					                    }
 				                    }
 				                    //match the deployment type
 				                    else {
-					                    if (!oneRecipe.restriction || (oneRecipe.restriction.deployment && oneRecipe.restriction.deployment.indexOf(deploymentType) !== -1)) { // vm supported
+					                    if(calculateRestriction(oneRecipe, deploymentType, selectedInfraProvider)){
 						                    context.mainData.recipes.push(oneRecipe);
 					                    }
-					                    //todo: restrict on infra check
 				                    }
 			                    }
 			                    else{
-				                    if (!oneRecipe.restriction  || (oneRecipe.restriction.deployment && oneRecipe.restriction.deployment.indexOf(deploymentType) !== -1)) { // vm supported
+				                    if(calculateRestriction(oneRecipe, deploymentType, selectedInfraProvider)){
 					                    context.mainData.recipes.push(oneRecipe);
 				                    }
-				                    //todo: restrict on infra check
 			                    }
 		                    }
 	                    }
@@ -668,6 +686,37 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                 if (cb) return cb();
             });
 
+			function calculateRestriction(oneRecipe, deploymentType, selectedInfraProvider){
+				if (!oneRecipe.restriction  || Object.keys(oneRecipe.restriction).length === 0){
+					return true;
+				}
+				else {
+					if(oneRecipe.restriction.deployment) {
+						if(oneRecipe.restriction.deployment.indexOf(deploymentType) !== -1){
+							if(selectedInfraProvider && oneRecipe.restriction.infra && oneRecipe.restriction.infra.length > 0){
+								if(oneRecipe.restriction.infra.indexOf(selectedInfraProvider) !== -1){
+									return true
+								}
+							}
+							else{
+								context.mainData.recipes.push(oneRecipe);
+							}
+						}
+					}
+					else {
+						if(selectedInfraProvider && oneRecipe.restriction.infra && oneRecipe.restriction.infra.length > 0){
+							if(oneRecipe.restriction.infra.indexOf(selectedInfraProvider) !== -1){
+								return true;
+							}
+						}
+						else{
+							context.mainData.recipes.push(oneRecipe);
+						}
+					}
+				}
+				
+				return false;
+			}
 		};
 
 		context.upgradeRecipes = function () {
@@ -820,8 +869,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.formData.deployOptions.custom.name = resourceName;
 			}
 
-			let deployConfig = context.formData.deployOptions.deployConfig;
-			context.vmExposedPortsDisabled = (deployConfig && deployConfig.type === 'vm');
+			let deployConfig = context.formData.deployOptions;
+			context.vmExposedPortsDisabled = (deployConfig && deployConfig.deployConfig && deployConfig.deployConfig.type === 'vm');
 			
 			if(context.formData.canBeDeployed){
 				if(!context.formData.deployOptions.deployConfig){
@@ -1153,15 +1202,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		 */
 		//moved to commonService
 		context.getInfraProviders = function (cb) {
+			overlayLoading.show();
 			let apiParams = {};
 			commonService.getInfraProviders(currentScope, apiParams, function (providers) {
 				delete providers.soajsauth;
+				context.originalInfraProviders = angular.copy(providers);
 				context.mainData.deploymentData.infraProviders = providers;
+				overlayLoading.hide();
 				
-				//todo: mike you are here ....
-				// if (resource && resource.deployOptions) {
-				// 	context.formData.deployOptions.deployConfig.infra = resource.deployOptions.deployConfig.infra;
-				// }
 				if (cb) {
 					cb();
 				}
@@ -1169,8 +1217,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 
 		context.listVmsApi = function (cb) {
-			let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
-			context.getInfraProviders(() => {
+			if (!vmDataLoaded) {
+				vmDataLoaded = true;
+				
+				let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
 				if(currentScope.environmentWizard){
 					envCode = null;
 				}
@@ -1181,7 +1231,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						return cb();
 					}
 				});
-			});
+			}
+			else{
+				if(cb && typeof cb === 'function')
+					return cb();
+			}
 		};
 
 		// listeners
@@ -1192,16 +1246,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 
 		context.loadVmData = function (cb) {
-			if (!vmDataLoaded) {
-				vmDataLoaded = true;
-				overlayLoading.show();
-				context.listVmsApi(function () {
-					overlayLoading.hide();
-					cb();
-				});
-			} else {
+			overlayLoading.show();
+			context.listVmsApi(function () {
+				overlayLoading.hide();
 				cb();
-			}
+			});
 		};
 
 		context.onAuthTypeChange = function () {
@@ -1247,8 +1296,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.mainData.categoryLabel = oneCategory.l;
 			}
 		});
-
-
+		
 		context.options = {
 			deploymentModes: [
 				{
@@ -1311,25 +1359,29 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		}
 
 		if (!context.noCDoverride) {
-			context.getSecrets(function (cb) {
-				context.getCatalogRecipes(cb);
+			context.getInfraProviders(() => {
+				context.getSecrets((cb) => {
+					context.getCatalogRecipes(cb);
+				});
+				if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
+					setTimeout(() => {
+						context.updateDeploymentName(resource.name);
+					}, 200);
+				}
 			});
-			if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
-				setTimeout(() => {
-					context.updateDeploymentName(resource.name);
-				}, 200);
-			}
 		}
 		else {
-			//this is called by add env wizard.
-			updateCustomRepoName();
-			context.getSecrets(function () {
-				context.displayRecipeInputs(true, false, (error, response) => {
-					if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
-						setTimeout(() => {
-							context.updateDeploymentName(resource.name);
-						}, 200);
-					}
+			context.getInfraProviders(() => {
+				//this is called by add env wizard.
+				updateCustomRepoName();
+				context.getSecrets(function () {
+					context.displayRecipeInputs(true, false, (error, response) => {
+						if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
+							setTimeout(() => {
+								context.updateDeploymentName(resource.name);
+							}, 200);
+						}
+					});
 				});
 			});
 		}

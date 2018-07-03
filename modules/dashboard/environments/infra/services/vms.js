@@ -7,7 +7,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/infra"
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": [ "extra", "templates" ]
+			}
 		}, function (error, providers) {
 			overlayLoading.hide();
 			if (error) {
@@ -43,7 +46,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}
 	}
 
-	function inspectVMLayer(currentScope, oneVMLayer){
+	function inspectVMLayer(currentScope, oneVMLayer, cb){
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
 		delete formConfig.entries[0].value.infraProvider.regions;
@@ -66,6 +69,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'action': function (formData) {
 						currentScope.modalInstance.dismiss('cancel');
 						currentScope.form.formData = {};
+						
+						if(cb && typeof cb === 'function'){
+							return cb();
+						}
 					}
 				}
 			]

@@ -5,7 +5,10 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	function getInfra(currentScope, cb) {
 		let options = {
 			"method": "get",
-			"routeName": "/dashboard/infra"
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": [ "groups", "regions"]
+			}
 		};
 
 		$timeout(() => {

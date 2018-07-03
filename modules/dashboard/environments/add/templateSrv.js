@@ -232,7 +232,10 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/infra"
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": ["regions", "groups", "templates"]
+			}
 		}, function (error, providers) {
 			if (error) {
 				overlayLoading.hide();

@@ -564,7 +564,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/infra"
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": [ "groups", "extra" ]
+			}
 		}, function (error, providers) {
 			if (error) {
 				overlayLoading.hide();

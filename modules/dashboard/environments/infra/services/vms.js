@@ -7,10 +7,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/infra",
-			"params":{
-				"exclude": [ "extra", "templates" ]
-			}
+			"routeName": "/dashboard/infra"
 		}, function (error, providers) {
 			overlayLoading.hide();
 			if (error) {

@@ -64,6 +64,20 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								'required': false
 							}
 						]
+					},
+					{
+						"label": "Template Custom IMFV",
+						"entries": [
+							{
+								'label': 'IMFV',
+								'name': 'imfv',
+								'type': 'jsoneditor',
+								'height': '200px',
+								'value': (data) ? data.imfv : "",
+								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template custom IMFV using the SOAJS IMFV syntax. To learn more about the SOAJS IMFV <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV'>click here</a></div>",
+								'required': false
+							}
+						]
 					}
 				]
 			}
@@ -130,7 +144,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		oneInfra.drivers.forEach(oneDriver => {
 			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
-		
+
 		oneInfra.technologies.forEach(oneTech => {
 			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
 		});
@@ -235,7 +249,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 											"data": {
 												"name": formData.name,
 												"inputs": formData.inputs,
-												"display": formData.display
+												"display": formData.display,
+												"imfv": formData.imfv
 											}
 										};
 										getSendDataFromServer(currentScope, ngDataApi, compOptions, function (error, data) {
@@ -290,7 +305,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				entries[3].value[0].selected = true;
 				currentScope.form.formData.driver = entries[3].value[0].v;
 			}
-			
+
 			if (entries[4].value.length === 1) {
 				entries[4].value[0].selected = true;
 				currentScope.form.formData.technology = entries[4].value[0].v;
@@ -298,7 +313,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		});
 	}
 
-	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor) {
+	function grabEditorContent(location, formData, inputsEditor, displayEditor, imfvEditor, contentEditor) {
 		let inputs = inputsEditor.ngModel;
 		if (typeof(inputs) === 'string') {
 			try {
@@ -317,6 +332,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			}
 			catch (e) {
 				$window.alert("Please enter a valid JSON schema inside the templates inputs display field.");
+				return false;
+			}
+		}
+
+		let imfv = imfvEditor.ngModel;
+		if (typeof(imfv) === 'string') {
+			try {
+				formData.imfv = JSON.parse(imfv);
+			}
+			catch (e) {
+				$window.alert("Please enter a valid JSON schema inside the templates imfv field.");
 				return false;
 			}
 		}
@@ -340,22 +366,22 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	}
 
 	function editTemplate(currentScope, oneInfra, oneTemplate) {
-		let contentEditor, inputsEditor, displayEditor;
+		let contentEditor, inputsEditor, displayEditor, imfvEditor;
 		let entries = angular.copy(infraConfig.form.templates);
 		entries[0].readonly = true;
 		entries[0].disabled = true;
-		
+
 		let options;
 		currentScope.showTemplateForm = true;
-		
+
 		oneInfra.drivers.forEach(oneDriver => {
 			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
-		
+
 		oneInfra.technologies.forEach(oneTech => {
 			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
 		});
-		
+
 		if (oneTemplate.location === 'local') {
 			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console", 'selected': true });
 
@@ -374,7 +400,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'btn': 'primary',
 						'action': function (formData) {
 
-							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, imfvEditor contentEditor);
 							if (!status) {
 								return false;
 							}
@@ -419,7 +445,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}
 		else {
 			entries[2].value.push({ 'v': 'external', 'l': "Cloud Provider", 'selected': true });
-			
+
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;
 			options = {
@@ -435,7 +461,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'btn': 'primary',
 						'action': function (formData) {
 
-							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, imfvEditor contentEditor);
 							if (!status) {
 								return false;
 							}
@@ -462,14 +488,15 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
-		
+
 		buildForm(currentScope, $modal, options, () => {
 			inputsEditor = currentScope.form.entries[5].tabs[1].entries[0];
 			displayEditor = currentScope.form.entries[5].tabs[1].entries[1];
+			imfvEditor = currentScope.form.entries[5].tabs[2].entries[0];
 			if (oneTemplate.location === 'local') {
 				contentEditor = currentScope.form.entries[5].tabs[0].entries[1];
 			}
-			
+
 			if(oneTemplate.textMode){
 				//text
 				currentScope.form.entries[5].tabs[0].entries[2].type = 'textarea';
@@ -534,7 +561,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					"data": {
 						"name": oneTemplate.name,
 						"inputs": formData.inputs,
-						"display": formData.display
+						"display": formData.display,
+						"imfv": formData.imfv
 					}
 				};
 				overlayLoading.show();

@@ -405,13 +405,28 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			let formData = angular.copy(oneTemplate);
 
 			if (typeof(formData.inputs) === "string") {
-				formData.inputs = JSON.parse(formData.inputs)
+				try {
+					formData.inputs = JSON.parse(formData.inputs)
+				} catch (e) {
+					formData.inputs = {};
+					currentScope.displayAlert('danger', "There was an error parsing the template Inputs. Please make sure the Inputs follow a valid JSON schema.");
+				}
 			}
 			if (typeof(formData.display) === "string") {
-				formData.display = JSON.parse(formData.display)
+				try {
+					formData.display = JSON.parse(formData.display)
+				} catch (e) {
+					formData.display = {};
+					currentScope.displayAlert('danger', "There was an error parsing the template Display Options. Please make sure the Display Options follow a valid JSON schema.");
+				}
 			}
 			if (typeof(formData.imfv) === "string") {
-				formData.imfv = JSON.parse(formData.imfv)
+				try {
+					formData.imfv = JSON.parse(formData.imfv)
+				} catch (e) {
+					formData.imfv = {};
+					currentScope.displayAlert('danger', "There was an error parsing the template Input Validation Rules. Please make sure the Input Validation Rules follow a valid JSON schema.");
+				}
 			}
 
 			delete formData.tags;

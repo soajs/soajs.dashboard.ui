@@ -12,24 +12,42 @@
 	<label class="fieldMsg">Choose a name for the new deployment, deployment name should be small letters only</label>
 	<br/>
 </div>
-<div>
-	<label>Catalog Recipe</label>
-	<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)"></select>
-	<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
-	<br>
-	<br>
+
+<div ng-if="displayPlatformPicker">
+	<label>Deployment Platform</label>
+	<select class="form-control"  ng-required="true" ng-model="formData.deployOptions.deployConfig.type" ng-change="updateDeploymentName(formData.name, true)">
+		<option value="vm">Bare Metal Virtual Machine</option>
+		<option value="container">Container Technology</option>
+	</select>
+	<label class="fieldMsg">Choose how you want to deploy this resource.</label>
 </div>
 
 <fieldset class="custom-fieldset" ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''">
 	<legend>Deployment Options</legend>
-
+	
 	<div ng-if="formData.deployOptions.deployConfig.type === 'container'">
+		
+		<div>
+			<br />
+			<label>Catalog Recipe</label>
+			<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)" ng-show="mainData.recipes.length > 0"></select>
+			<alert type="warning" ng-show="mainData.recipes.length === 0" class="c-both">
+				<p>
+					No Catalog Recipes found that can be used to deploy this resource on the platform you have selected, <a href="" ng-click="gotorecipes();">Click Here</a> to create a new recipe.
+				</p>
+			</alert>
+			<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
+			<br>
+			<br>
+		</div>
+		
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
 			<label class="fieldMsg">Memory limit per instance (in MBytes)</label>
 			<br/>
 		</div>
+		
 		<div ng-if="options.envPlatform === 'kubernetes'">
 			<label>CPU Limit Per Instance</label>
 			<input type="text" class="form-control" placeholder="100m or 0.1" ng-model="formData.deployOptions.deployConfig.cpuLimit" ng-required="formData.deployOptions.autoScale"/>
@@ -207,26 +225,35 @@
 	</div>
 
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
-		<label>Infra</label>
-		<select class="form-control" ng-disabled="mainData.resourceDeployed" ng-required="true" ng-options="tech._id as tech.label for tech in mainData.deploymentData.selectedRestrictionsInfra" ng-model="formData.deployOptions.deployConfig.infra" ng-change="repopulateRegions()"></select>
-		<label class="fieldMsg">Choose a deployment technology</label>
-
-		<label>Region</label>
-		<select name="region" class="form-control"  ng-required="true" ng-options="region.v as region.l for region in mainData.deploymentData.regions"  ng-model="formData.deployOptions.deployConfig.region" ng-change="listVmsApi()"></select>
-		<label class="fieldMsg">Choose the region</label>
-
-		<div ng-if="formData.deployOptions.deployConfig.region && mainData.deploymentData.vmLayers">
-			<!-- TODO: add ng-if to make sure that vmlayers has at least 1 entry -->
+		
+		<div ng-if="mainData.deploymentData.vmLayers">
 			<div>
 				<label>VM Layer</label>
-				<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer"></select>
+				<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers"  ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes()"></select>
 				<label class="fieldMsg">Choose the VM layer</label>
 			</div>
 
-			<!-- TODO: fix ng-if in case vmlayers is of length 0 -->
-			<!-- <div  class="alert alert-danger" ng-if="false">
-				There were no VM Layers found for this Infra Region.
-			</div> -->
+			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.vmLayer">
+				<alert type="warning" ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list">
+					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length === 1">This resource will be deployed in <strong>1</strong> instance.</span>
+					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length}}</strong> instances.</span>
+				</alert>
+			</div>
+			
+		</div>
+		
+		<div ng-show="(formData.deployOptions.deployConfig.type ==='vm' && formData.deployOptions.deployConfig.vmConfiguration.vmLayer)">
+			<br />
+			<label>Catalog Recipe</label>
+			<select class="form-control" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe" ng-required="true" ng-options="recipe._id as recipe.name group by recipe.type for recipe in mainData.recipes" ng-model="formData.deployOptions.recipe" ng-change="displayRecipeInputs(true, true)" ng-show="mainData.recipes.length > 0"></select>
+			<alert type="warning" ng-show="mainData.recipes.length === 0" class="c-both">
+				<p>
+					No Catalog Recipes found that can be used to deploy this resource on the platform you have selected, <a href="" ng-click="gotorecipes();">Click Here</a> to create a new recipe.
+				</p>
+			</alert>
+			<label class="fieldMsg">Choose a catalog recipe to use when deploying this resource</label>
+			<br>
+			<br>
 		</div>
 
 		<div ng-repeat="(env, envData) in mainData.recipeUserInput.envs" ng-init="formData.deployOptions.custom.env[env] = envData.default">
@@ -234,11 +261,6 @@
 			<input type="text" class="form-control" ng-model="formData.deployOptions.custom.env[env]" ng-required="envData.required"/>
 			<div class="fieldMsg">{{envData.fieldMsg}}</div>
 			<br/>
-		</div>
-
-		<div class="alert alert-warning" ng-if="formData.deployOptions.deployConfig.vmConfiguration.vmLayer">
-			<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length === 1">This resource will be deployed in <strong>1</strong> instance.</span>
-			<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].length}}</strong> instances.</span>
 		</div>
 
 		<fieldset class="custom-fieldset" ng-if="mainData.deploymentData.selectedRecipe.recipe.deployOptions.image.override">

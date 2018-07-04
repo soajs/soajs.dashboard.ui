@@ -619,9 +619,16 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.context.envCode = currentScope.envCode;
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
+					resource.scope.restrictions = currentScope.restrictions;
 					
 					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
 						resource.scope.wizardVMs = currentScope.wizard.vms;
+						
+						if(!resource.scope.mainData.deploymentData){
+							resource.scope.mainData.deploymentData = {}
+						}
+						
+						resource.scope.mainData.deploymentData.vmLayers = currentScope.vmLayers;
 					}
 
 					for(let type in currentScope.recipes){
@@ -635,6 +642,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					//if default values
 					if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+						
+						//get the infra
+						//currentScope.mainData.deploymentData.infraProviders
+						if(!resource.scope.mainData.deploymentData){
+							resource.scope.mainData.deploymentData = {}
+						}
+						resource.scope.mainData.deploymentData.infraProviders = currentScope.infraProviders
+						
+						//get the recipes
 						resource.scope.mainData.recipes = [];
 						for(let type in currentScope.recipes){
 							if(type === record.type){
@@ -649,6 +665,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						record.canBeDeployed = true;
 						resource.scope.context.envType = 'container';
 						resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver;
+						if(resource.scope.context.envPlatform === 'ondemand'){
+							resource.scope.context.envType = 'manual';
+						}
+						
 						resource.scope.access = {deploy: true};
 						resource.scope.noCDoverride = true;
 
@@ -946,13 +966,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								&& resource.deployOptions.deployConfig.vmConfiguration
 								&& resource.deployOptions.deployConfig.vmConfiguration.vmLayer){
 								resource.deployOptions.vms = [];
-								var vmLayer;
+								let vmLayer = resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								
-								currentScope.infraProviders.forEach(function (oneProvider) {
-									if (oneProvider._id.toString() === resource.deployOptions.deployConfig.infra.toString()){
-										vmLayer = oneProvider.name;
-									}
-								});
 								if (vmLayer){
 									vmLayer = vmLayer  + "_" + resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								}

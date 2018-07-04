@@ -21,6 +21,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			tempScope.add.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.add.envCode = envCode;
 			tempScope.displayAlert = currentScope.displayAlert;
+			
 			if(currentScope.reusableData){
 				tempScope.add.reusableData = currentScope.reusableData;
 			}
@@ -177,9 +178,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		
 		//hook the listeners
 		currentScope.listVMLayers = function() {
-			platformsVM.listVMLayers(currentScope, () => {
+			//turned off first vm support release
+			// platformsVM.listVMLayers(currentScope, () => {
 				appendVMsTotheList();
-			});
+			// });
 		};
 		
 		currentScope.deleteVMLayer = function(oneVMLayer) {
@@ -198,7 +200,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						}
 					}
 				}
+				$localStorage.addEnv = angular.copy(currentScope.wizard);
 			}
+			appendNextButton(currentScope, formButtonOptions);
 		};
 		
 		//if there are registered vms to be created by the wizard hook them to the scope
@@ -245,24 +249,55 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				}
 			}
 			
-			if(Object.keys(currentScope.vmLayers).length > 0){
-				if(options && options.actions && options.actions.length < 3){
-					options.actions.splice(1 , 0 , {
-						'type': 'submit',
-						'label': "Next",
-						'btn': 'primary',
-						'action': function () {
+			let addNextButton = false;
+			if(!currentScope.restrictions.vm){
+				addNextButton = true;
+			}
+			else if(currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && Object.keys(currentScope.vmLayers).length > 0){
+				addNextButton = true;
+			}
+			else if(!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0){
+				addNextButton = true;
+			}
+			currentScope.optionalVMLayer = addNextButton;
+			
+			if(addNextButton && options && options.actions && options.actions.length < 3){
+				options.actions.splice(1 , 0 , {
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function () {
+						
+						//if no container and no vm, do not proceed
+						let noContainerSelected = false, noVMLayer = false;
+						if(currentScope.wizard.deployment){
+							if(!currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.selectedDriver === 'ondemand'){
+								noContainerSelected = true;
+							}
+						}
+						
+						if(!currentScope.wizard.vms || currentScope.wizard.vms.length === 0){
+							noVMLayer = true;
+						}
+						
+						if(noContainerSelected && noVMLayer){
+							$window.alert("You need to attach a container technology or create at least one virtual machine layer to proceed.");
+						}
+						else{
 							currentScope.referringStep = 'vm';
 							$localStorage.addEnv = angular.copy(currentScope.wizard);
 							currentScope.envCode = envCode;
 							currentScope.nextStep();
 						}
-					});
-				}
+					}
+				});
 			}
 		}
 		
+		currentScope.form.actions = [];
+		
 		function listInfraProviders(currentScope, cb) {
+			currentScope.infraProviders = [];
 			//get the available providers
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -277,8 +312,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					delete providers.soajsauth;
 					currentScope.infraProviders = providers;
 				}
+				return cb();
 			});
-			return cb();
 		}
 		
 		currentScope.form.actions = [];
@@ -294,9 +329,14 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 		else{
 			//execute main function
-			delete currentScope.envCode;
 			listInfraProviders(currentScope, () => {
-				platformsVM.listVMLayers(currentScope, () => {
+				if(!currentScope.vmLayers){
+					currentScope.vmLayers = {};
+				}
+				delete currentScope.envCode;
+				
+				//turned off first vm support release
+				// platformsVM.listVMLayers(currentScope, () => {
 					//if there are registered vms to be created by the wizard hook them to the scope
 					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
 					appendVMsTotheList();
@@ -344,7 +384,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						
 						overlayLoading.hide();
 					});
-				});
+				// });
 			});
 		}
 	}

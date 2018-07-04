@@ -57,57 +57,6 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
         });
     }
 
-    function listVmsApi ($scope, apiParams, cb) {
-	    overlayLoading.show();
-	    let params = {
-		    "env": $scope.context.envCode,
-		    "infraId": apiParams.infraId
-	    };
-	    if($scope.environmentWizard){
-	    	delete params.env;
-	    }
-	    
-        getSendDataFromServer($scope, ngDataApi, {
-            "method": "get",
-            "routeName": "/dashboard/cloud/vm/list",
-            "params": params
-        }, function (error, response) {
-	        overlayLoading.hide();
-            if (error) {
-                $scope.displayAlert('danger', error.message);
-            }
-            else {
-            	
-            	if($scope.wizardVMs){
-		            $scope.wizardVMs.forEach((oneVM) => {
-			            
-		            	let infraProviders = $scope.mainData.deploymentData.selectedRestrictionsInfra;
-			            let myProvider;
-			            infraProviders.forEach((oneProvider) => {
-				            if(oneProvider._id === oneVM.params.infraId){
-					            myProvider = oneProvider;
-				            }
-			            });
-			            
-			            if(myProvider){
-				            let myVM = {
-					            id: oneVM.data.name,
-					            name: oneVM.data.name,
-					            layer: oneVM.data.name,
-					            labels: {
-						            'soajs.env.code': params.env
-					            }
-				            };
-				            response[myProvider.name].push(myVM);
-			            }
-		            });
-	            }
-            	
-                return cb(response)
-            }
-        });
-    }
-
     function addEditResourceApi($scope, apiParams, cb) {
 
 		let id = 'new';
@@ -156,46 +105,6 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 			    return cb(result);
 		    }
 	    });
-
-	    // var options = {};
-	    // if ($scope.options.formAction === 'add') {
-		 //    options = {
-			//     method: 'post',
-			//     routeName: '/dashboard/resources/add',
-			//     data: {
-			// 	    env: apiParams.envCode,
-			// 	    resource: apiParams.saveOptions
-         //            //add input for cd records apiParams.options
-         //            // add input for deploy apiParams.deployOptions
-			//     }
-		 //    };
-	    // }
-	    // else {
-		 //    options = {
-			//     method: 'put',
-			//     routeName: '/dashboard/resources/update',
-			//     params: {
-			// 	    env: apiParams.envCode,
-			// 	    id: apiParams.id
-         //            // add inputs for cd records apiParams.options
-         //            // add input for rebuild apiParmas.rebuildOptions
-			//     },
-			//     data: {
-			// 	    resource: apiParams.saveOptions
-         //            //add input for cd records [apiParams.deployOptions]
-			//     }
-		 //    };
-	    // }
-	    //
-	    // getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
-		 //    if (error) {
-			//     overlayLoading.hide();
-			//     $scope.displayAlert('danger', error.message);
-		 //    }
-		 //    else {
-			//     return cb(result);
-		 //    }
-	    // });
     }
 
     function getCatalogRecipes ($scope, apiParams, cb) {
@@ -312,7 +221,6 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 		listResourcesApi,
         deleteResourceApi,
         togglePlugResourceApi,
-		listVmsApi,
 		addEditResourceApi,
         getCatalogRecipes,
         getSecrets,

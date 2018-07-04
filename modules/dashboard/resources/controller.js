@@ -141,20 +141,39 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 
 	};
 	
+	$scope.getEnvPlatform = function(cb){
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment/platforms/list",
+			"params": {
+				"env": $scope.context.envCode
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$scope.context.envDeployer = response;
+				return cb();
+			}
+		});
+	};
+	
 	//start here
 	if ($scope.access.list) {
 		injectFiles.injectCss("modules/dashboard/resources/resources.css");
 		if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 			$scope.context.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
-			$scope.context.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-			$scope.context.envType = $scope.context.envDeployer.type;
-			$scope.context.envPlatform = '';
-			if ($scope.context.envType !== 'manual') {
-				$scope.context.envPlatform = $scope.context.envDeployer.selected.split('.')[1];
-			}
-			//$scope.listVms(function (){
-			$scope.listResources();
-			// });
+			$scope.getEnvPlatform(() => {
+				$scope.context.envType = $scope.context.envDeployer.type;
+				$scope.context.envPlatform = '';
+				if ($scope.context.envType !== 'manual') {
+					$scope.context.envPlatform = $scope.context.envDeployer.selected.split('.')[1];
+				}
+				$scope.listResources();
+			});
 		}
 	}
 }]);

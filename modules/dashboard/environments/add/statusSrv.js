@@ -179,7 +179,7 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 					deployments = currentScope.wizard.template.deploy.deployments;
 				}
 
-				if (!deployments.pre) {
+				if (!deployments.deployments.pre) {
 					currentScope.wizard.template.deploy.deployments.pre = {};
 				}
 

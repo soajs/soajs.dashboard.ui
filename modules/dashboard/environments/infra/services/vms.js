@@ -66,7 +66,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'action': function (formData) {
 						currentScope.modalInstance.dismiss('cancel');
 						currentScope.form.formData = {};
-						
+
 						if(cb && typeof cb === 'function'){
 							return cb();
 						}
@@ -94,7 +94,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 			else {
 				currentScope.displayAlert('success', "Virtual Machine Layer deleted, changes will be available soon.");
-				
+
 				listVMLayers(currentScope);
 			}
 		});
@@ -177,7 +177,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						if(form.actions.length > 1){
 							form.actions.shift();
 						}
-						
+
 						let groups = {
 							'name': 'group',
 							'label': 'Select a Group',
@@ -186,18 +186,18 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							'tooltip': 'Select Resource Group',
 							'required': true
 						};
-						
+
 						value.groups.forEach((oneGroup) =>{
 							if(oneGroup.region === value2){
 								groups.value.push({v: oneGroup.name, l: oneGroup.name})
 							}
 						});
-						
+
 						if(groups.value && groups.value.length > 0){
 							groups.value[0].selected = true;
 						}
 						form.entries.push(groups);
-						
+
 						form.actions.unshift({
 							'type': 'submit',
 							'label': translation.submit[LANG],
@@ -212,7 +212,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 								populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
 							}
 						});
-						
+
 					}
 				};
 
@@ -289,7 +289,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 					else {
 						currentScope.displayAlert('success', "Virtual Machine Layer updated, the process will take few minutes before it shows up in the list.");
-						
+
 						delete currentScope.reusableData;
 						if(modalInstance){
 							modalInstance.close();
@@ -365,11 +365,11 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 			if(formEntries && formEntries.length > 0){
 				let infraTemplates =[];
-				
+
 				if(!currentScope.reusableData){
 					currentScope.reusableData = [];
 				}
-				
+
 				oneProvider.templates.forEach((oneTmpl) => {
 					let label = oneTmpl.name;
 					if(oneTmpl.description && oneTmpl.description !== ''){
@@ -421,7 +421,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 												delete formData.specs.specs;
 											}
 										}
-										
+
 										let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
 										if(!myPattern.test(formData.name)){
 											$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
@@ -521,24 +521,34 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		function updateFormEntries(computedValues, value, form){
 			overlayLoading.show();
 			oneProvider.templates.forEach((oneTmpl) => {
-				if(oneTmpl.name === value && oneTmpl.inputs && Array.isArray(oneTmpl.inputs)){
-					form.entries = form.entries.concat(oneTmpl.inputs);
+				if (oneTmpl.name === value) {
+					if (typeof(oneTmpl.inputs) === "string") {
+						try {
+							oneTmpl.inputs = JSON.parse(oneTmpl.inputs);
+						} catch (e) {
+							overlayLoading.hide();
+							currentScope.displayAlert("dnager", "The Infra as Code Template inputs do not have a valid JSON schema.")
+						}
+					}
+					if (oneTmpl.inputs && Array.isArray(oneTmpl.inputs)) {
+						form.entries = form.entries.concat(oneTmpl.inputs);
 
-					//map computed inputs
-					mapComputedInputs(form.entries, computedValues, form);
+						//map computed inputs
+						mapComputedInputs(form.entries, computedValues, form);
 
-					form.refresh(false);
-					$timeout(() => {
-						form.buildDisabledRulesIndexer();
+						form.refresh(false);
 						$timeout(() => {
-							if(editMode && data && data.inputs && Object.keys(data.inputs).length > 0){
-								for(let i in data.inputs){
-									form.formData[i] = data.inputs[i];
+							form.buildDisabledRulesIndexer();
+							$timeout(() => {
+								if(editMode && data && data.inputs && Object.keys(data.inputs).length > 0){
+									for(let i in data.inputs){
+										form.formData[i] = data.inputs[i];
+									}
 								}
-							}
-						}, 10);
-						overlayLoading.hide();
-					}, 1000)
+							}, 10);
+							overlayLoading.hide();
+						}, 1000)
+					}
 				}
 			});
 		}
@@ -606,13 +616,13 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				if(editMode && data && data.inputs && data.inputs[original.name] && Array.isArray(data.inputs[original.name])){
 					defaultData = data.inputs[original.name];
 				}
-				
+
 				if(!limit){
 					let arraycount = 0;
 					if(editMode && data && data.inputs && data.inputs[original.name] && Array.isArray(data.inputs[original.name])){
 						arraycount = data.inputs[original.name].length;
 					}
-					
+
 					original.template = angular.copy(original.entries);
 
 					let finalEntries = [];
@@ -700,22 +710,22 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					if (oneEntry.entries) {
 						allMyEntries(oneEntry.entries, countValue, oneEntry.name, defaultData);
 					}
-					
+
 					// if edit
 					if(editMode && defaultData){
 						let thisEntryDefaultData = defaultData[countValue];
 						form.formData[oneEntry.name + "_c_" + countValue] = thisEntryDefaultData[oneEntry.name];
 						//console.log(oneEntry.name + "_c_" + countValue, form.formData[oneEntry.name + "_c_" + countValue]);
-						
+
 						//todo: case of json editor
 					}
-					
+
 					if (oneEntry.name) {
 						oneEntry.name += "_c_" + countValue;
 					}
 				});
 			}
-			
+
 			scanEntries(entries);
 		}
 
@@ -732,7 +742,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 								addIt = false;
 							}
 						});
-						
+
 						if(addIt){
 							computedValues[oneReusableEntry.key].push(oneReusableEntry.formData);
 						}
@@ -742,7 +752,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 				});
 			}
-			
+
 			renderForm(computedValues);
 		});
 	}

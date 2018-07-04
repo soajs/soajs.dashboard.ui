@@ -267,10 +267,28 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					'label': "Next",
 					'btn': 'primary',
 					'action': function () {
-						currentScope.referringStep = 'vm';
-						$localStorage.addEnv = angular.copy(currentScope.wizard);
-						currentScope.envCode = envCode;
-						currentScope.nextStep();
+						
+						//if no container and no vm, do not proceed
+						let noContainerSelected = false, noVMLayer = false;
+						if(currentScope.wizard.deployment){
+							if(!currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.selectedDriver === 'ondemand'){
+								noContainerSelected = true;
+							}
+						}
+						
+						if(!currentScope.wizard.vms || currentScope.wizard.vms.length === 0){
+							noVMLayer = true;
+						}
+						
+						if(noContainerSelected && noVMLayer){
+							$window.alert("You need to attach a container technology or create at least one virtual machine layer to proceed.");
+						}
+						else{
+							currentScope.referringStep = 'vm';
+							$localStorage.addEnv = angular.copy(currentScope.wizard);
+							currentScope.envCode = envCode;
+							currentScope.nextStep();
+						}
 					}
 				});
 			}

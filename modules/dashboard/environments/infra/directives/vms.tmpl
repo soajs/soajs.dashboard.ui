@@ -36,7 +36,7 @@
 </div>
 <div ng-if="infraProviders || vmsAvailable">
 	<div class="f-left">
-		<a class="btn btn-sm btn-primary" ng-click="addVMLayer()" ng-if="access.vm.create && !listingClouds">
+		<a class="btn btn-sm btn-primary" ng-click="addVMLayer()" ng-if="infraProviders && access.vm.create && !listingClouds">
 			<span class="icon icon-plus"></span>
 			Create New Virtual Machine Layer
 		</a>

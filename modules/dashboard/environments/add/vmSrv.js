@@ -276,28 +276,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 		}
 		
-		function listInfraProviders(currentScope, cb) {
-			//get the available providers
-			overlayLoading.show();
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/infra"
-			}, function (error, providers) {
-				overlayLoading.hide();
-				if (error) {
-					currentScope.displayAlert('danger', error.message);
-				}
-				else {
-					delete providers.soajsauth;
-					currentScope.infraProviders = providers;
-				}
-			});
-			return cb();
-		}
-		
 		currentScope.form.actions = [];
 		
 		function listInfraProviders(currentScope, cb) {
+			currentScope.infraProviders = [];
 			//get the available providers
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -312,8 +294,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					delete providers.soajsauth;
 					currentScope.infraProviders = providers;
 				}
+				return cb();
 			});
-			return cb();
 		}
 		
 		currentScope.form.actions = [];
@@ -329,11 +311,11 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 		else{
 			//execute main function
-			delete currentScope.envCode;
 			listInfraProviders(currentScope, () => {
 				if(!currentScope.vmLayers){
 					currentScope.vmLayers = {};
 				}
+				delete currentScope.envCode;
 				
 				//turned off first vm support release
 				// platformsVM.listVMLayers(currentScope, () => {

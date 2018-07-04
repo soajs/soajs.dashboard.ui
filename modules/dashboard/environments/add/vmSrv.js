@@ -297,6 +297,26 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		
 		currentScope.form.actions = [];
 		
+		function listInfraProviders(currentScope, cb) {
+			//get the available providers
+			overlayLoading.show();
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/infra"
+			}, function (error, providers) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert('danger', error.message);
+				}
+				else {
+					delete providers.soajsauth;
+					currentScope.infraProviders = providers;
+				}
+			});
+			return cb();
+		}
+		
+		currentScope.form.actions = [];
 		if(!currentScope.restrictions.vm){
 			if(['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1){
 				currentScope.referringStep = 'vm';

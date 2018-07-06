@@ -16,7 +16,6 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		delete currentScope.platforms;
 		delete currentScope.previousEnvironment;
 		currentScope.mapStorageToWizard = function(){};
-		// currentScope.envType = '';
 		deploymentSrv.go(currentScope, () => {
 			let options = {
 				timeout: $timeout,
@@ -31,6 +30,12 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						'action': function (formData) {
 							deploymentSrv.handleFormData(currentScope, formData);
 							let postedData = angular.copy(currentScope.wizard);
+
+							if(postedData.deployment.selectedDriver === 'ondemand'){
+								$window.alert("Select the container technology you want to attach to this environment!");
+								return false;
+							}
+
 							delete postedData.template;
 
 							getSendDataFromServer(currentScope, ngDataApi, {
@@ -136,16 +141,18 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	function getEnvRecord(currentScope) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/environment",
-			"params": {
-				"code": currentScope.envCode
-			}
+			"routeName": "/dashboard/environment/list"
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				putMyEnv(response);
+				$localStorage.environments = angular.copy(response);
+				for (var i = response.length - 1; i >= 0; i--) {
+					if (response[i].code === currentScope.envCode) {
+						putMyEnv(response[i]);
+					}
+				}
 			}
 		});
 

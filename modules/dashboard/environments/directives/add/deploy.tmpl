@@ -15,7 +15,7 @@
 		<p>
 			Attach a container technology to this environment by selecting from the options below.
 		</p>
-		<p>
+		<p ng-if="environmentWizard">
 			If you do not want to attach any container technology at the moment, just click on next to skip.
 		</p>
 	</alert>
@@ -59,7 +59,7 @@
 			<input type="radio" ng-checked="platforms.docker" value="true" name="docker" disabled/>&nbsp;
 			Use Docker as my Container Deployment Technology
 		</accordion-heading>
-		
+
 		<div>
 			<div class="w100 c-both"><label>Select an Infra Cloud Provider</label><br></div>
 			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
@@ -76,7 +76,7 @@
 			<input type="radio" ng-checked="platforms.kubernetes" value="true" name="kubernetes" disabled/>&nbsp;
 			Use Kubernetes as my Container Deployment Technology
 		</accordion-heading>
-		
+
 		<div>
 			<div class="w100 c-both"><label>Select an Infra Cloud Provider</label><br></div>
 			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">

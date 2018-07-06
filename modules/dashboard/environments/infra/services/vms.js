@@ -23,14 +23,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 	function listVMLayers(currentScope, cb) {
 
-		if(!currentScope.infraProviders){
+		// if(!currentScope.infraProviders){
 			listInfraProviders(currentScope, () => {
 				nextStep();
 			});
-		}
-		else{
-			nextStep();
-		}
+		// }
+		// else{
+		// 	nextStep();
+		// }
 
 		function nextStep(){
 			//call common function

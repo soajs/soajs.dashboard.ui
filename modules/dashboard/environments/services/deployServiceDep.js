@@ -222,7 +222,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			$scope.services[$scope.oneSrv] = version;
 		}
 		
-		if (($scope.services[$scope.oneSrv].deployed && $scope.serviceType !== 'daemon') || (daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf] && $scope.services[$scope.oneSrv].deploySettings[daemonGrpConf].deploy)) {
+		if (($scope.services[$scope.oneSrv].deployed && $scope.serviceType !== 'daemon') || ($scope.services[$scope.oneSrv].deployed && daemonGrpConf && $scope.services[$scope.oneSrv].deploySettings && $scope.services[$scope.oneSrv].deploySettings[daemonGrpConf] && $scope.services[$scope.oneSrv].deploySettings[daemonGrpConf].deploy)) {
 			$scope.serviceId = ($scope.serviceType === 'daemon' && daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf]) ? $scope.services[$scope.oneSrv][daemonGrpConf].serviceId : $scope.services[$scope.oneSrv].serviceId;
 			$scope.deployed = true;
 		}

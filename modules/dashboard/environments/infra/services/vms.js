@@ -24,6 +24,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	function listVMLayers(currentScope, cb) {
 
 		// if(!currentScope.infraProviders){
+		//clear infraProviders array
+		currentScope.infraProviders = [];
 			listInfraProviders(currentScope, () => {
 				nextStep();
 			});

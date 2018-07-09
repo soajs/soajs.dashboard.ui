@@ -1,21 +1,50 @@
+/*
+ *  **********************************************************************************
+ *   (C) Copyright Herrontech (www.herrontech.com)
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   Contributors:
+ *   -
+ *  **********************************************************************************
+ */
+
 "use strict";
 var infraApp = soajsApp.components;
-infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraSrv', 'Upload', function ($scope, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraSrv, Upload) {
+infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$localStorage', '$cookies', 'injectFiles', 'ngDataApi', 'infraSrv', function ($scope, $window, $modal, $timeout, $localStorage, $cookies, injectFiles, ngDataApi, infraSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
 
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraConfig.permissions);
+	
+	if($cookies.getObject('myInfra', { 'domain': interfaceDomain })){
+		$scope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', { 'domain': interfaceDomain });
+	}
 
 	$scope.getProviders = function () {
+		overlayLoading.show();
 		infraSrv.getInfra($scope, (error, infras) => {
+			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert("danger", error);
 			}
 			else {
 				$scope.infraProviders = infras;
+				$localStorage.infraProviders = angular.copy($scope.infraProviders);
+				$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
+				if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.$parent.$parent.switchInfra(infras[0]);
+				}
 			}
 		});
+	};
+	
+	$scope.$parent.$parent.switchInfra = function(oneInfra){
+		$scope.$parent.$parent.currentSelectedInfra = oneInfra;
+		$cookies.putObject('myInfra', oneInfra, { 'domain': interfaceDomain });
+	};
+	
+	$scope.$parent.$parent.activateProvider = function(){
+		$scope.activateProvider();
 	};
 
 	$scope.activateProvider = function () {
@@ -184,142 +213,6 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$c
 				$scope.getProviders();
 			}
 		});
-	};
-
-	$scope.deleteDeployment = function (oneDeployment, oneInfra) {
-		let options = {
-			"method": "delete",
-			"routeName": "/dashboard/infra/deployment",
-			"params": {
-				"id": oneInfra._id,
-				"deploymentId": oneDeployment.id
-			}
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert("danger", error);
-			}
-			else {
-				$scope.displayAlert("success", "Deployment deleted successfully.");
-				$scope.getProviders();
-			}
-		});
-	};
-
-	$scope.previewTemplate = function(oneTemplate){
-		if(oneTemplate.location === 'local') {
-			let formConfig = angular.copy({
-				'entries': [
-					{
-						'type':'html',
-						'value': "<p>" + oneTemplate.description+ "</p>"
-					}
-				]
-			});
-			
-			if(!oneTemplate.textMode){
-				formConfig.entries.push({
-					'name': 'jsonData',
-					'label': '',
-					'type': 'jsoneditor',
-					'options': {
-						'mode': 'view',
-						'availableModes': []
-					},
-					'height': '500px',
-					"value": {}
-				});
-			}
-			else{
-				formConfig.entries.push({
-					'name': 'jsonData',
-					'label': '',
-					'type': 'textarea',
-					'rows': '30'
-				})
-			}
-			formConfig.entries[1].value = oneTemplate.content;
-			let options = {
-				timeout: $timeout,
-				form: formConfig,
-				name: 'infraTemplateInfo',
-				label: oneTemplate.name,
-				actions: [
-					{
-						'type': 'reset',
-						'label': "Close",
-						'btn': 'primary',
-						'action': function () {
-							$scope.modalInstance.dismiss('cancel');
-							$scope.form.formData = {};
-						}
-					}
-				]
-			};
-			buildFormWithModal($scope, $modal, options);
-		}
-	};
-
-	$scope.deleteTemplate = function(oneTemplate, oneInfra){
-		let options = {
-			"method": "delete",
-			"routeName": "/dashboard/infra/template",
-			"params": {
-				"id": oneInfra._id,
-				"templateId": oneTemplate._id,
-				"templateName": oneTemplate.name
-			}
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert("danger", error);
-			}
-			else {
-				$scope.displayAlert("success", "Template deleted successfully.");
-				$scope.getProviders();
-			}
-		});
-	};
-	
-	$scope.downloadTemplate = function(oneTemplate, oneInfra){
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/infra/template/download",
-			"params": {
-				"id": oneInfra._id,
-				"templateId": oneTemplate._id
-			},
-			"headers": {
-				"Accept": "binary/octet-stream"
-			},
-			"responseType": 'arraybuffer'
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error, data) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert("danger", error);
-			}
-			else {
-				openSaveAsDialog('template.zip', data, "binary/octet-stream");
-			}
-		});
-	};
-	
-	$scope.addTemplate = function(oneInfra){
-		if(oneInfra.templates){
-			infraSrv.addTemplate($scope, oneInfra);
-		}
-	};
-
-	$scope.editTemplate = function(oneTemplate, oneInfra){
-		if(oneInfra.templates){
-			infraSrv.editTemplate($scope, oneInfra, oneTemplate);
-		}
 	};
 
 	if ($scope.access.list) {

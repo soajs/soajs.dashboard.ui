@@ -1,0 +1,42 @@
+<section ng-controller="infraIACCtrl">
+	<div style="padding:10px;" ng-if="!showTemplateForm">
+		<br>
+		<a class="btn btn-sm btn-primary" ng-if="access.addTEmplate" ng-click="addTemplate(currentSelectedInfra)">
+			<span class="icon icon-plus"></span> Add New Template
+		</a>
+		<br /><br />
+		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">No Templates available, please add.</alert>
+		<div ng-if="currentSelectedInfra.templates && currentSelectedInfra.templates.length > 0" class="grid">
+			<table width="100%">
+				<thead>
+					<tr>
+						<th width="10%"></th>
+						<th width="20%">Name</th>
+						<th width="40%">Description</th>
+						<th width="10%">Driver</th>
+						<th width="10%">Technology</th>
+						<th width="10%">Location</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="oneTmpl in currentSelectedInfra.templates" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
+						<td>
+							<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;
+							<a href="" ng-click="editTemplate(oneTmpl, currentSelectedInfra)" ><span class="icon icon-pencil"></span></a>&nbsp;
+							<a href="" ng-click="downloadTemplate(oneTmpl, currentSelectedInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
+							<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, currentSelectedInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>
+						</td>
+						<td style="word-break: break-word;">{{oneTmpl.name}}</td>
+						<td style="word-break: break-word;">{{oneTmpl.description}}</td>
+						<td>{{oneTmpl.driver}}</td>
+						<td>{{oneTmpl.technology}}</td>
+						<td>{{(oneTmpl.location === 'local') ? "SOAJS Console" : "Cloud Provider" }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div ng-if="showTemplateForm">
+		<ngForm></ngForm>
+	</div>
+</section>

@@ -1,3 +1,12 @@
+/*
+ *  **********************************************************************************
+ *   (C) Copyright Herrontech (www.herrontech.com)
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   Contributors:
+ *   -
+ *  **********************************************************************************
+ */
+
 'use strict';
 
 let infraConfig = {
@@ -5,10 +14,7 @@ let infraConfig = {
 		list: ['dashboard', '/infra', 'get'],
 		activate: ['dashboard', '/infra', 'post'],
 		edit: ['dashboard', '/infra', 'put'],
-		deactivate: ['dashboard', '/infra', 'delete'],
-		removeDeployment: ['dashboard', '/infra/deployment', 'delete'],
-		removeTemplates: ['dashboard', '/infra/template', 'delete'],
-		addTEmplate: ['dashboard', '/infra/template', 'post'],
+		deactivate: ['dashboard', '/infra', 'delete']
 	},
 
 	form: {
@@ -208,51 +214,6 @@ let infraConfig = {
 				'value': "",
 				'placeholder': 'Subscription ID',
 				'fieldMsg': 'Provide the ID of the subscription you want to use',
-				'required': true
-			}
-		],
-
-		templates: [
-			{
-				'name': 'name',
-				'label': 'Name',
-				'type': 'text',
-				'value': "",
-				'placeholder': 'My Template',
-				'fieldMsg': 'Enter a name for your template',
-				'required': true
-			},
-			{
-				'name': 'description',
-				'label': 'Description',
-				'type': 'textarea',
-				'value': "",
-				'placeholder': 'My Template Description',
-				'fieldMsg': 'Provide  a description for your template',
-				'required': false
-			},
-			{
-				'name': 'location',
-				'label': 'Location',
-				'type': 'select',
-				'value': [],
-				'fieldMsg': 'Select where to store this template.',
-				'required': true
-			},
-			{
-				'name': 'driver',
-				'label': 'Driver',
-				'type': 'select',
-				'value': [],
-				'fieldMsg': 'Select which supported infra cloud driver this template is compatible with.',
-				'required': true
-			},
-			{
-				'name': 'technology',
-				'label': 'Technology',
-				'type': 'select',
-				'value': [],
-				'fieldMsg': 'Select which supported technology this template is compatible with.',
 				'required': true
 			}
 		]

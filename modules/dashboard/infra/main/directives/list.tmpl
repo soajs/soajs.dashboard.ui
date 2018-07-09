@@ -1,0 +1,36 @@
+<section ng-controller="infraCtrl">
+	<div>
+		<div class="w100 t-right">
+			<a href="" ng-click="editProvider(currentSelectedInfra)" class="btn btn-sm btn-success" ng-if="access.edit">
+				<span class="icon icon-pencil"></span> Reconfigure
+			</a>&nbsp;
+			<a href="" ng-confirm-click="Are you sure you want to deactivate this Provider ?" ng-click="deactivateProvider(currentSelectedInfra)" class="btn btn-sm btn-danger" ng-if="access.deactivate">
+				<span class="icon icon-cross"></span> Deactivate
+			</a>
+		</div>
+		<div class="w-100 c-both entryBoxes">
+			<br>
+			<div class="entryBox" ng-if="currentSelectedInfra.technologies">
+				<div class="header"><label>Technologies</label></div>
+				<div class="body">
+					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneTechnology in currentSelectedInfra.technologies">{{oneTechnology}}</span>
+				</div>
+			</div>
+			<div class="entryBox" ng-if="currentSelectedInfra.drivers">
+				<div class="header"><label>Infra Code Template Drivers</label></div>
+				<div class="body">
+					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneDriver in currentSelectedInfra.drivers">{{oneDriver}}</span>
+				</div>
+			</div>
+			<div class="entryBox" ng-if="currentSelectedInfra.templates">
+				<div class="header"><label>Infra Code Template Storage Location</label></div>
+				<div class="body">
+					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneLocation in currentSelectedInfra.templates">
+						{{(oneLocation === 'local') ? 'SOAJS Console' : 'Cloud Provider'}}
+					</span>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</section>

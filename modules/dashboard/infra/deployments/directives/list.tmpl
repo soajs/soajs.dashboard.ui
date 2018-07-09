@@ -1,0 +1,48 @@
+<section ng-controller="infraDepCtrl">
+	<div style="padding:10px;">
+		<br>
+		<div ng-if="!currentSelectedInfra.deployments || currentSelectedInfra.deployments.length === 0">
+			<alert type="warning">
+				No deployed found for this provider <a href="#/environments-add" class="btn btn-warning btn-sm f-right" style="position:relative; top:-5px;">Deploy New Environment</a>
+			</alert>
+		</div>
+		<div ng-if="currentSelectedInfra.deployments && currentSelectedInfra.deployments.length > 0" class="entryBoxes">
+			<div class="entryBox" ng-repeat="oneDeployment in currentSelectedInfra.deployments">
+				<div class="header">
+					<a href="" class="f-right" title="Remove Deployment" ng-confirm-click="Are you sure you want to remove this deployment ?" ng-click="deleteDeployment(oneDeployment, currentSelectedInfra)">
+						<span class="icon icon-cross"></span>
+					</a>
+					{{oneDeployment.name}}
+				</div>
+				<div class="body grid" style="padding:20px;">
+					<table width="100%">
+						<tbody>
+							<tr class="rows first odd">
+								<td><label>ID</label></td>
+								<td>{{oneDeployment.id}}</td>
+							</tr>
+							<tr class="rows even">
+								<td><label>Technology</label></td>
+								<td class="capitalize">{{oneDeployment.technology}}</td>
+							</tr>
+							<tr class="rows odd">
+								<td valign="top"><label>Options</label></td>
+								<td ng-bind-html="oneDeployment.options|object"></td>
+							</tr>
+							<tr class="rows even" ng-class="{'last': (!oneDeployment.loadBalancers)}">
+								<td><label>Environments</label></td>
+								<td>{{oneDeployment.environments}}</td>
+							</tr>
+							<tr ng-if="oneDeployment.loadBalancers && Object.keys(oneDeployment.loadBalancers).length > 0" class="rows last odd">
+								<td><label>Load Balancers</label></td>
+								<td>
+									{{oneDeployment.loadBalancers}}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

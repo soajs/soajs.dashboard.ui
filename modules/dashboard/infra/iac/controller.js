@@ -1,67 +1,70 @@
 "use strict";
 var infraIACApp = soajsApp.components;
-infraIACApp.controller('infraIACCtrl', ['$scope', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraIACSrv', function ($scope, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraIACSrv) {
+infraIACApp.controller('infraIACCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIACSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIACSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraIACConfig.permissions);
 	
-	if($cookies.getObject('myInfra', { 'domain': interfaceDomain })){
-		$scope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', { 'domain': interfaceDomain });
-	}
+	infraCommonSrv.getInfraFromCookie($scope);
 	
-	$scope.$parent.$parent.switchInfra = function(oneInfra){
-		$scope.$parent.$parent.currentSelectedInfra = oneInfra;
+	$scope.$parent.$parent.switchInfra = function (oneInfra) {
+		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions"]);
 	};
 	
-	function getMyProvider(){
-		overlayLoading.show();
-		//get one infra for module
-		infraIACSrv.getMyInfra($scope, (error, infra) => {
-			overlayLoading.hide();
-			if(error){
-				$scope.displayAlert("danger", error);
-			}
-			else{
-				if(!$scope.$parent.$parent.currentSelectedInfra){
-					$scope.go("/infra");
-				}
-				else{
-					$scope.$parent.$parent.switchInfra(infra);
-				}
-			}
-		});
-	}
+	$scope.$parent.$parent.activateProvider = function () {
+		infraCommonSrv.activateProvider($scope);
+	};
 	
 	$scope.getProviders = function () {
-		//list infras to build sidebar
-		infraIACSrv.getInfra($scope, (error, infras) => {
-			
-			if (error) {
-				$scope.displayAlert("danger", error);
+		if($localStorage.infraProviders){
+			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
+			if(!$scope.$parent.$parent.currentSelectedInfra){
+				$scope.go("/infra");
 			}
-			else {
-				$scope.infraProviders = infras;
-				$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
-				
-				getMyProvider();
+			else{
+				delete $scope.$parent.$parent.currentSelectedInfra.templates;
+				$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
 			}
-		});
+		}
+		else{
+			//list infras to build sidebar
+			infraCommonSrv.getInfra($scope, {
+				id: null,
+				exclude: ["groups", "regions", "templates"]
+			}, (error, infras) => {
+				if (error) {
+					$scope.displayAlert("danger", error);
+				}
+				else {
+					$scope.infraProviders = infras;
+					$localStorage.infraProviders = angular.copy($scope.infraProviders);
+					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
+					if(!$scope.$parent.$parent.currentSelectedInfra){
+						$scope.go("/infra");
+					}
+					else{
+						delete $scope.$parent.$parent.currentSelectedInfra.templates;
+						$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+					}
+				}
+			});
+		}
 	};
-
-	$scope.previewTemplate = function(oneTemplate){
-		if(oneTemplate.location === 'local') {
+	
+	$scope.previewTemplate = function (oneTemplate) {
+		if (oneTemplate.location === 'local') {
 			let formConfig = angular.copy({
 				'entries': [
 					{
-						'type':'html',
-						'value': "<p>" + oneTemplate.description+ "</p>"
+						'type': 'html',
+						'value': "<p>" + oneTemplate.description + "</p>"
 					}
 				]
 			});
 			
-			if(!oneTemplate.textMode){
+			if (!oneTemplate.textMode) {
 				formConfig.entries.push({
 					'name': 'jsonData',
 					'label': '',
@@ -74,7 +77,7 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$window', '$modal', '$timeout
 					"value": {}
 				});
 			}
-			else{
+			else {
 				formConfig.entries.push({
 					'name': 'jsonData',
 					'label': '',
@@ -103,8 +106,8 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$window', '$modal', '$timeout
 			buildFormWithModal($scope, $modal, options);
 		}
 	};
-
-	$scope.deleteTemplate = function(oneTemplate, oneInfra){
+	
+	$scope.deleteTemplate = function (oneTemplate, oneInfra) {
 		let options = {
 			"method": "delete",
 			"routeName": "/dashboard/infra/template",
@@ -127,7 +130,7 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$window', '$modal', '$timeout
 		});
 	};
 	
-	$scope.downloadTemplate = function(oneTemplate, oneInfra){
+	$scope.downloadTemplate = function (oneTemplate, oneInfra) {
 		let options = {
 			"method": "get",
 			"routeName": "/dashboard/infra/template/download",
@@ -152,18 +155,18 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$window', '$modal', '$timeout
 		});
 	};
 	
-	$scope.addTemplate = function(oneInfra){
-		if(oneInfra.templates){
+	$scope.addTemplate = function (oneInfra) {
+		if (oneInfra.templates) {
 			infraIACSrv.addTemplate($scope, oneInfra);
 		}
 	};
-
-	$scope.editTemplate = function(oneTemplate, oneInfra){
-		if(oneInfra.templates){
+	
+	$scope.editTemplate = function (oneTemplate, oneInfra) {
+		if (oneInfra.templates) {
 			infraIACSrv.editTemplate($scope, oneInfra, oneTemplate);
 		}
 	};
-
+	
 	if ($scope.access.list) {
 		$scope.getProviders();
 	}

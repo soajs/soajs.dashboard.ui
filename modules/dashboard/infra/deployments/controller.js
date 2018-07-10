@@ -1,28 +1,20 @@
 "use strict";
 var infraDepApp = soajsApp.components;
-infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', 'injectFiles', 'ngDataApi', 'infraDepSrv', function ($scope, $localStorage, $cookies, injectFiles, ngDataApi, infraDepSrv) {
+infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', function ($scope, $localStorage, $cookies, injectFiles, ngDataApi, infraCommonSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraDepConfig.permissions);
 	
-	if($cookies.getObject('myInfra', { 'domain': interfaceDomain })){
-		$scope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', { 'domain': interfaceDomain });
-	}
+	infraCommonSrv.getInfraFromCookie($scope);
 	
-	$scope.$parent.$parent.switchInfra = function(oneInfra){
-		$scope.$parent.$parent.currentSelectedInfra = oneInfra;
-		overlayLoading.show();
-		infraDepSrv.getInfra($scope, oneInfra._id, (error, myInfra) => {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert("danger", error);
-			}
-			else {
-				$scope.$parent.$parent.currentSelectedInfra = myInfra;
-			}
-		});
+	$scope.$parent.$parent.switchInfra = function (oneInfra) {
+		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"]);
+	};
+	
+	$scope.$parent.$parent.activateProvider = function () {
+		infraCommonSrv.activateProvider($scope);
 	};
 	
 	$scope.getProviders = function () {
@@ -31,11 +23,16 @@ infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', '
 			if(!$scope.$parent.$parent.currentSelectedInfra){
 				$scope.go("/infra");
 			}
+			else{
+				infraCommonSrv.hideSidebarMenusForUnwantedProviders($scope, $scope.$parent.$parent.currentSelectedInfra);
+			}
 		}
 		else{
-			overlayLoading.show();
-			infraDepSrv.getInfra($scope, null, (error, infras) => {
-				overlayLoading.hide();
+			//list infras to build sidebar
+			infraCommonSrv.getInfra($scope, {
+				id: null,
+				exclude: ["groups", "regions", "templates"]
+			}, (error, infras) => {
 				if (error) {
 					$scope.displayAlert("danger", error);
 				}
@@ -45,6 +42,9 @@ infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', '
 					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
 					if(!$scope.$parent.$parent.currentSelectedInfra){
 						$scope.go("/infra");
+					}
+					else{
+						infraCommonSrv.hideSidebarMenusForUnwantedProviders($scope, $scope.$parent.$parent.currentSelectedInfra);
 					}
 				}
 			});

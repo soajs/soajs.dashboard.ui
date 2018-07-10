@@ -20,7 +20,7 @@ let infraNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'order': 1,
-		'scripts': [ 'modules/dashboard/infra/main/config.js', 'modules/dashboard/infra/main/services/infra.js', 'modules/dashboard/infra/main/controller.js' ],
+		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/main/controller.js' ],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -43,7 +43,7 @@ let infraNav = [
 		'tracker': true,
 		'order': 2,
 		"fallbackLocation": "#/infra",
-		'scripts': [ 'modules/dashboard/infra/deployments/config.js', 'modules/dashboard/infra/deployments/services/infra.js', 'modules/dashboard/infra/deployments/controller.js' ],
+		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/deployments/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/deployments/controller.js' ],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -66,7 +66,7 @@ let infraNav = [
 		'tracker': true,
 		'order': 3,
 		"fallbackLocation": "#/infra",
-		'scripts': [ 'modules/dashboard/infra/iac/config.js', 'modules/dashboard/infra/iac/services/infra.js', 'modules/dashboard/infra/iac/controller.js' ],
+		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/iac/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/iac/services/infra.js', 'modules/dashboard/infra/iac/controller.js' ],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

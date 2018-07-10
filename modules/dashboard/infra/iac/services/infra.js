@@ -1,22 +1,6 @@
 "use strict";
 var infraIACSrv = soajsApp.components;
 infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-
-	function getInfra(currentScope, id, cb) {
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/infra",
-			"params":{
-				"exclude": [ "groups", "regions", "templates"]
-			}
-		};
-		
-		if(id){
-			options.routeName += "/" + id;
-		}
-		
-		getSendDataFromServer(currentScope, ngDataApi, options, cb);
-	}
 	
 	function injectFormInputs(id, value, form, data) {
 		//reset form inputs to 4
@@ -624,7 +608,6 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 	}
 
 	return {
-		'getInfra': getInfra,
 		'addTemplate': addTemplate,
 		'editTemplate': editTemplate
 	};

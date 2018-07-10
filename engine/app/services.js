@@ -16,6 +16,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
 		$cookies.remove("soajs_dashboard_login", { 'domain': interfaceDomain });
 		
+		$localStorage.infraProviders = null;
 		$localStorage.soajs_user = null;
 		$localStorage.acl_access = null;
 		$localStorage.environments = null;

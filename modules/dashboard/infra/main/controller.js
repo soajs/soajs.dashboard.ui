@@ -29,7 +29,6 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			else {
 				//no infra providers to list
 				$scope.noInfraProvidersConfigured = true;
-
 				if (infras.length > 0) {
 					$scope.noInfraProvidersConfigured = false;
 					$scope.infraProviders = infras;
@@ -37,6 +36,9 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
 					if (!$scope.$parent.$parent.currentSelectedInfra) {
 						infraCommonSrv.switchInfra($scope, infras[0]);
+					}
+					else{
+						infraCommonSrv.switchInfra($scope, $scope.$parent.$parent.currentSelectedInfra);
 					}
 				}
 

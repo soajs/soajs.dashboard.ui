@@ -24,7 +24,7 @@ let infraNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
-		'id': 'infra-providers',
+		'id': 'infra-deployments',
 		'label': 'Deployments',
 		'checkPermission': {
 			'service': 'dashboard',

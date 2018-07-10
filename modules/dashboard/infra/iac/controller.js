@@ -10,7 +10,9 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$localStorage', '$window', '$
 	infraCommonSrv.getInfraFromCookie($scope);
 	
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions"]);
+		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions"], () => {
+			infraIACSrv.rerenderTemplates($scope);
+		});
 	};
 	
 	$scope.$parent.$parent.activateProvider = function () {

@@ -196,7 +196,6 @@ soajsApp.filter('tel', function () {
 	};
 });
 
-
 soajsApp.filter('translateFields', [function () {
 	return function (value, lang) {
 		if (typeof(value) === 'undefined') {
@@ -213,6 +212,22 @@ soajsApp.filter('translateFields', [function () {
 		return value;
 	}
 }]);
+
+soajsApp.filter('capitalize', function() {
+	return function(input, scope) {
+		if (input){
+			input = input.toLowerCase();
+		}
+		
+		let combo = input.split(" ");
+		for(let i =0; i < combo.length; i++){
+			combo[i] = combo[i].substring(0,1).toUpperCase() + combo[i].substring(1);
+		}
+		
+		return combo.join(" ");
+	}
+});
+
 
 function highlightMyCode() {
 	hljs.configure({"tabReplace": "    "});

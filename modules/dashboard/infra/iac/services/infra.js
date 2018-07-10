@@ -2,6 +2,27 @@
 var infraIACSrv = soajsApp.components;
 infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
 	
+	function rerenderTemplates(currentScope) {
+		if(currentScope.currentSelectedInfra.templates && Array.isArray(currentScope.currentSelectedInfra.templates) && currentScope.currentSelectedInfra.templates.length > 0){
+			let renderedTemplates = {};
+			
+			currentScope.currentSelectedInfra.templates.forEach((oneTemplates) => {
+				oneTemplates.technology = (oneTemplates.technology === 'vm') ? "Vitural Machines" : oneTemplates.technology;
+				if(!renderedTemplates[oneTemplates.technology]){
+					renderedTemplates[oneTemplates.technology] = {};
+				}
+				
+				if(!renderedTemplates[oneTemplates.technology][oneTemplates.driver]){
+					renderedTemplates[oneTemplates.technology][oneTemplates.driver] = [];
+				}
+				
+				renderedTemplates[oneTemplates.technology][oneTemplates.driver].push(oneTemplates);
+			});
+			
+			currentScope.currentSelectedInfra.templates = renderedTemplates;
+		}
+	}
+	
 	function injectFormInputs(id, value, form, data) {
 		//reset form inputs to 4
 		form.entries.length = 5;
@@ -608,6 +629,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 	}
 
 	return {
+		'rerenderTemplates': rerenderTemplates,
 		'addTemplate': addTemplate,
 		'editTemplate': editTemplate
 	};

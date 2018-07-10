@@ -44,7 +44,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		});
 	}
 	
-	function switchInfra(currentScope, oneInfra, exclude) {
+	function switchInfra(currentScope, oneInfra, exclude, cb) {
 		$timeout(() => {
 			overlayLoading.show();
 			getInfra(currentScope, {
@@ -72,6 +72,10 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					delete infraCookieCopy.api;
 					$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
 					hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
+					
+					if(cb && typeof cb === 'function'){
+						return cb();
+					}
 				}
 			});
 		}, 500);

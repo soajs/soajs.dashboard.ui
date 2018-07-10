@@ -41,7 +41,14 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}, 300);
 			}
 			else {
-				// TODO: add function that will hide the sidebar items "Deployments" and "Infra Code Template" when response.length === 0
+				// TODO: fix code because it's not behaving properly
+				if (response.length === 0) {
+					currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
+						if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
+							oneNavigationEntry.hideMe = true;
+						}
+					});
+				}
 			}
 			return cb(null, response);
 		});

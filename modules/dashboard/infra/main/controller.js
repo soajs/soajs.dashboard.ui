@@ -16,6 +16,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraConfig.permissions);
 
+	// TODO: need to modify this call to not get infra from cookies when the last infra is deleted
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.getProviders = function () {

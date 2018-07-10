@@ -1,7 +1,7 @@
 "use strict";
 let infraCommonCSrv = soajsApp.components;
 infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-	
+
 	function getInfraFromCookie(currentScope) {
 		if ($cookies.getObject('myInfra', {'domain': interfaceDomain})) {
 			currentScope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
@@ -10,7 +10,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}, 200);
 		}
 	}
-	
+
 	function getInfra(currentScope, opts, cb) {
 		let options = {
 			"method": "get",
@@ -19,31 +19,34 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				"exclude": ["groups", "regions", "templates"]
 			}
 		};
-		
+
 		if (opts.id) {
 			options.routeName += "/" + opts.id;
 		}
-		
+
 		if(opts.exclude){
 			options.params.exclude = opts.exclude;
 		}
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			overlayLoading.hide();
 			if(error){
 				return cb(error);
 			}
-			
+
 			if(opts.id){
 				$timeout(() => {
 					hideSidebarMenusForUnwantedProviders(currentScope, response);
 				}, 300);
 			}
+			else {
+				// TODO: add function that will hide the sidebar items "Deployments" and "Infra Code Template" when response.length === 0
+			}
 			return cb(null, response);
 		});
 	}
-	
+
 	function switchInfra(currentScope, oneInfra, exclude) {
 		$timeout(() => {
 			overlayLoading.show();
@@ -59,11 +62,11 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					if(currentScope.$parent && currentScope.$parent.$parent){
 						currentScope.$parent.$parent.currentSelectedInfra = myInfra;
 					}
-					
+
 					if (!currentScope.$parent.$parent.currentSelectedInfra) {
 						currentScope.go("/infra");
 					}
-					
+
 					let infraCookieCopy = angular.copy(myInfra);
 					delete infraCookieCopy.templates;
 					delete infraCookieCopy.groups;
@@ -76,30 +79,30 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			});
 		}, 500);
 	}
-	
+
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
-		
+
 		let excludedInfras = ['infra-templates'];
-		
+
 		//fix the menu; local driver has not templates
 		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){
 			currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
 				if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
 					oneNavigationEntry.hideMe = false;
-					
+
 					if(myInfra.name === 'local'){
 						oneNavigationEntry.hideMe = true;
-						
+
 						if(oneNavigationEntry.url === $window.location.hash){
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
-					
+
 				}
 			});
 		}
 	}
-	
+
 	function activateProvider(currentScope) {
 		let providersList = angular.copy(infraConfig.form.providers);
 		providersList.forEach((oneProvider) => {
@@ -110,7 +113,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}, 10);
 			}
 		});
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -130,9 +133,9 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			]
 		};
-		
+
 		buildFormWithModal(currentScope, $modal, options);
-		
+
 		function step2(selectedProvider) {
 			let options = {
 				timeout: $timeout,
@@ -183,11 +186,11 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				]
 			};
-			
+
 			buildFormWithModal(currentScope, $modal, options);
 		}
 	}
-	
+
 	return {
 		"hideSidebarMenusForUnwantedProviders": hideSidebarMenusForUnwantedProviders,
 		"activateProvider": activateProvider,

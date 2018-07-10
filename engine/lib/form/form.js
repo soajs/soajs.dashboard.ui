@@ -312,7 +312,9 @@ function buildForm(context, modal, configuration, cb) {
 					}
 					
 					context.form.timeout(function () {
-						_editore[1].heightUpdate(newHeight);
+						if(_editore[1].heightUpdate && typeof(_editore[1].heightUpdate) === 'function'){
+							_editore[1].heightUpdate(newHeight);
+						}
 					}, 1500);
 				}
 			}
@@ -427,7 +429,9 @@ function buildForm(context, modal, configuration, cb) {
 				}
 				else {
 					if (entries[i].type === 'jsoneditor') {
-						context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
+						if(entries[i].ngModel){
+							context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
+						}
 					}
 				}
 			}

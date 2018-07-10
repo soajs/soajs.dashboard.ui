@@ -25,12 +25,12 @@
 			<ul class="dropdown-menu w100" role="menu" aria-labelledby="split-button">
 				<li role="menuitem" ng-repeat="oneInfra in infraProviders" ng-click="switchInfra(oneInfra)">{{oneInfra.label}}</li>
 				<li role="menuitem" ng-click="activateProvider()">
-					<span class="icon icon-plus"></span>&nbsp;connect New Infra Provider
+					<span class="icon icon-plus"></span>&nbsp;Connect New Infra Provider
 				</li>
 			</ul>
 		</div>
 	</div>
-	
+
 	<ul ng-if="pillar ==='operate'">
 		<li ng-repeat="link in leftMenu.links" ng-class="{'first': $first, 'last': $last, selected:link.selected, active: link.url === leftMenu.selectedMenu}">
 			<a href="{{link.url}}" class="mainMenu{{$index}}" id="mainMenu-{{link.id}}">

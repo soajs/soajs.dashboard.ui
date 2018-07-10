@@ -11,8 +11,13 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
 	function setEditorContent(id, value, height, currentScope) {
 		$timeout(function () {
-			var editor = ace.edit(id);
-			renderJSONEditor(editor, id, value, height, currentScope);
+			try{
+				var editor = ace.edit(id);
+				renderJSONEditor(editor, id, value, height, currentScope);
+			}
+			catch(e){
+			
+			}
 		}, 1000);
 	}
 

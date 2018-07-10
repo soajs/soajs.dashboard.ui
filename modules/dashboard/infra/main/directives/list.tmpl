@@ -1,5 +1,5 @@
 <section ng-controller="infraCtrl">
-	<div>
+	<div ng-if="!noInfraProvidersConfigured">
 		<div class="w100 t-right">
 			<a href="" ng-click="editProvider(currentSelectedInfra)" class="btn btn-sm btn-success" ng-if="access.edit">
 				<span class="icon icon-pencil"></span> Reconfigure
@@ -30,7 +30,11 @@
 					</span>
 				</div>
 			</div>
-			
+
 		</div>
+	</div>
+
+	<div ng-if="noInfraProvidersConfigured">
+		<alert type="warning">No infra providers detected. <br /> <a href="" ng-click="activateProvider()">Click here</a> to connect your first infra cloud provider.</alert>
 	</div>
 </section>

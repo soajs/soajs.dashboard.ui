@@ -165,8 +165,9 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 								}
 								else {
 									currentScope.form.displayAlert('success', "Provider Connected & Activated");
-									currentScope.getProviders();
 									currentScope.modalInstance.close();
+									currentScope.go("#/infra");
+									//todo: switch the infra to the one that was just added
 								}
 							});
 						}

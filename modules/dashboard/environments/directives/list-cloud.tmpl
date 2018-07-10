@@ -209,7 +209,7 @@
 									{{groupName}} ( {{ (oneGroup.list | filter:namespaceConfig.namespace:true).length }} )
 								</legend>
 								<div class="entryBoxes" ng-show="oneGroup.list && oneGroup.expanded">
-									<div class="entryBox mb20" ng-repeat="service in oneGroup.list | filter:namespaceConfig.namespace:true" ng-class="{'redEntryBox': !service.deployment }">
+									<div class="entryBox mb20" ng-repeat="service in oneGroup.list | filter:namespaceConfig.namespace:true" ng-class="{'redEntryBox': !service.deployment && service.labels['soajs.content'], 'yellowEntryBox': !service.deployment && !service.labels['soajs.content'] }">
 										<div class="header table">
 											<span class="serviceLabelBox">
 												<span ng-show="service.labels['soajs.service.name'] !== 'controller'">{{service.labels['soajs.service.name']}}</span>

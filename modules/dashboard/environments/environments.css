@@ -722,3 +722,13 @@ input.secretMountPathRepo{
 .redEntryBox{
     border-color:#a94442 !important;
 }
+
+.yellowEntryBox .header{
+    border-color: #8a6d3b !important;
+    background-color: #fcf8e3 !important;;
+    color:#8a6d3b !important;;
+}
+
+.yellowEntryBox{
+    border-color:#8a6d3b !important;
+}

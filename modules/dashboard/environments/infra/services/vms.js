@@ -17,8 +17,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				delete providers.soajsauth;
 				currentScope.infraProviders = providers;
 			}
+			return cb();
 		});
-		return cb();
 	}
 
 	function listVMLayers(currentScope, cb) {
@@ -26,9 +26,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		// if(!currentScope.infraProviders){
 		//clear infraProviders array
 		currentScope.infraProviders = [];
-			listInfraProviders(currentScope, () => {
-				nextStep();
-			});
+		listInfraProviders(currentScope, () => {
+			nextStep();
+		});
 		// }
 		// else{
 		// 	nextStep();

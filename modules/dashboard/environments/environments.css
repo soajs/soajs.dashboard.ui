@@ -712,3 +712,13 @@ input.secretMountPathRepo{
     overflow: scroll;
     padding: 5px 0 10px 0;
 }
+
+.redEntryBox .header{
+    border-color: #a94442 !important;
+    background-color: #f2dede !important;;
+    color:#a94442 !important;;
+}
+
+.redEntryBox{
+    border-color:#a94442 !important;
+}

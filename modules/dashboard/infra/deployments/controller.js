@@ -24,7 +24,8 @@ infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', '
 				$scope.go("/infra");
 			}
 			else{
-				infraCommonSrv.hideSidebarMenusForUnwantedProviders($scope, $scope.$parent.$parent.currentSelectedInfra);
+				delete $scope.$parent.$parent.currentSelectedInfra.deployments;
+				$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
 			}
 		}
 		else{
@@ -44,7 +45,8 @@ infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', '
 						$scope.go("/infra");
 					}
 					else{
-						infraCommonSrv.hideSidebarMenusForUnwantedProviders($scope, $scope.$parent.$parent.currentSelectedInfra);
+						delete $scope.$parent.$parent.currentSelectedInfra.deployments;
+						$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
 					}
 				}
 			});
@@ -67,8 +69,13 @@ infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', '
 				$scope.displayAlert("danger", error);
 			}
 			else {
+				for(let i = oneInfra.deployments.length -1; i >=0; i--){
+					if(oneInfra.deployments[i].id === oneDeployment.id){
+						oneInfra.deployments.splice(i, 1);
+					}
+				}
 				$scope.displayAlert("success", "Deployment deleted successfully.");
-				$scope.getProviders();
+				$scope.getProviders(true);
 			}
 		});
 	};

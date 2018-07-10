@@ -561,8 +561,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.$on('$routeChangeSuccess', function () {
 			$scope.tracker = [];
 			doEnvPerNav();
-			
-			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
+			if($scope.pillar === 'deployment' && $cookies.getObject('myEnv', { 'domain': interfaceDomain })){
 				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 				if(updateNotifications){
 					updateNotifications($scope, envCode, ngDataApi);

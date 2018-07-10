@@ -16,10 +16,12 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraConfig.permissions);
 
-	// TODO: need to modify this call to not get infra from cookies when the last infra is deleted
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.getProviders = function () {
+		$localStorage.infraProviders =[];
+		$scope.$parent.$parent.infraProviders = [];
+		
 		infraCommonSrv.getInfra($scope, {
 			id: null,
 			exclude: ["groups", "regions", "templates"]
@@ -42,7 +44,10 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 						infraCommonSrv.switchInfra($scope, $scope.$parent.$parent.currentSelectedInfra);
 					}
 				}
-
+				else{
+					delete $scope.$parent.$parent.currentSelectedInfra;
+					$cookies.remove('myInfra', { 'domain': interfaceDomain });
+				}
 			}
 		});
 	};

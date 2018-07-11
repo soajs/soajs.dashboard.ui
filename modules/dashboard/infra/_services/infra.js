@@ -44,7 +44,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				if (response.length === 0) {
 					$timeout(() => {
 						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
-							if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
+							if(['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'].indexOf(oneNavigationEntry.id) !== -1){
 								oneNavigationEntry.hideMe = true;
 							}
 						});
@@ -104,7 +104,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
 
-		let excludedInfras = ['infra-templates'];
+		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
 
 		//fix the menu; local driver has not templates
 		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){

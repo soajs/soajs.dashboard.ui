@@ -91,7 +91,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 		context.form.alerts.push({'type': type, 'msg': msg});
-		context.form.closeAllAlerts();
+		// context.form.closeAllAlerts();
 	};
 	
 	context.form.closeAllAlerts = function (instant) {

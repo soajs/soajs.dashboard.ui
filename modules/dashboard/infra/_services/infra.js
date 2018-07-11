@@ -42,11 +42,13 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}
 			else {
 				if (response.length === 0) {
-					currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
-						if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
-							oneNavigationEntry.hideMe = true;
-						}
-					});
+					$timeout(() => {
+						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
+							if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
+								oneNavigationEntry.hideMe = true;
+							}
+						});
+					}, 200);
 				}
 			}
 			return cb(null, response);

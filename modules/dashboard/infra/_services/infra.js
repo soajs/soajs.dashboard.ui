@@ -180,7 +180,17 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 									currentScope.form.displayAlert('success', "Provider Connected & Activated");
 									currentScope.modalInstance.close();
 									currentScope.go("#/infra");
-									//todo: switch the infra to the one that was just added
+
+									//get infras and switch to the latest that was added
+									getInfra(currentScope, {}, (error, infras) => {
+										if (error) {
+											currentScope.displayAlert('danger', error);
+										} else {
+											currentScope.infraProviders = infras;
+											currentScope.$parent.$parent.infraProviders = angular.copy(currentScope.infraProviders);
+											switchInfra(currentScope, infras[infras.length - 1]);
+										}
+									});
 								}
 							});
 						}

@@ -254,7 +254,14 @@
 											</span>
 										</div>
 										<div class="body">
-											<div class="grid">
+											<div ng-if="!service.deployment">
+												<alert ng-if="service.labels['soajs.content']" type="danger"><span>No Deployments found for this Service!</span></alert>
+												<alert ng-if="!service.labels['soajs.content']" type="warning"><span>No Deployments found for this Service!</span></alert>
+											</div>
+											<div ng-if="service.deployment && service.tasks.length === 0">
+												<alert type="warning"><span>No Deployments found for this Service!</span></alert>
+											</div>
+											<div class="grid" ng-if="service.deployment && service.tasks.length > 0">
 												<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 													<thead>
 														<tr class="header">

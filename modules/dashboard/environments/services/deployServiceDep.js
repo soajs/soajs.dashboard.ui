@@ -256,7 +256,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		};
 		
 		$scope.closeAlert = function (index) {
-			$scope.alerts.splice(index, 1);
+			//$scope.alerts.splice(index, 1);
 		};
 		
 		$scope.showHide = function (oneService, name) {

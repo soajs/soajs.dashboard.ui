@@ -67,6 +67,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 										$scope.configuration[service].versions[i] = {};
 										for (var groupName in $scope.configuration[service][i]) {
 											$scope.configuration[service].versions[i][groupName] = angular.copy($scope.configuration[service][i][groupName]);
+											delete $scope.configuration[service].versions[i].branch;
 										}
 										delete $scope.configuration[service][i];
 									}

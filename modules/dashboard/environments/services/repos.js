@@ -632,7 +632,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if(external || !controllerScope) {
 				controllerScope = currentScope
 			}
-			if (params.custom && params.custom.version) {
+			if (params && params.custom && params.custom.version) {
 				params.custom.version = parseInt(params.custom.version);
 			}
 			var config = {

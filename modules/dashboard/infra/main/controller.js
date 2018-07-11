@@ -136,6 +136,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			}
 			else {
 				$scope.displayAlert("success", "Provider deactivated successfully.");
+				delete $scope.$parent.$parent.currentSelectedInfra;
 				$scope.getProviders();
 			}
 		});

@@ -41,13 +41,14 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}, 300);
 			}
 			else {
-				// TODO: fix code because it's not behaving properly
 				if (response.length === 0) {
-					currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
-						if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
-							oneNavigationEntry.hideMe = true;
-						}
-					});
+					$timeout(() => {
+						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
+							if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
+								oneNavigationEntry.hideMe = true;
+							}
+						});
+					}, 200);
 				}
 			}
 			return cb(null, response);
@@ -181,7 +182,17 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 									currentScope.form.displayAlert('success', "Provider Connected & Activated");
 									currentScope.modalInstance.close();
 									currentScope.go("#/infra");
-									//todo: switch the infra to the one that was just added
+
+									//get infras and switch to the latest that was added
+									getInfra(currentScope, {}, (error, infras) => {
+										if (error) {
+											currentScope.displayAlert('danger', error);
+										} else {
+											currentScope.infraProviders = infras;
+											currentScope.$parent.$parent.infraProviders = angular.copy(currentScope.infraProviders);
+											switchInfra(currentScope, infras[infras.length - 1]);
+										}
+									});
 								}
 							});
 						}

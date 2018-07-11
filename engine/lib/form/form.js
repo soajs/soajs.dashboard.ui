@@ -291,7 +291,9 @@ function buildForm(context, modal, configuration, cb) {
 				}
 				
 				context.form.timeout(function () {
-					oneEntry.editor.heightUpdate = heightUpdateFunction;
+					if(oneEntry.editor){
+						oneEntry.editor.heightUpdate = heightUpdateFunction;
+					}
 					// Set initial size to match initial content
 					heightUpdateFunction();
 					

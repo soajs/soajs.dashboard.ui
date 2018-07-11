@@ -295,7 +295,24 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	
 	/** VM Operations **/
 	$scope.listVMLayers = function() {
-		orchestrateVMS.listVMLayers($scope);
+		let options = {
+			"method": "get",
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": [ "groups", "regions", 'templates']
+			}
+		};
+		
+		getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
+			if(error){
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else{
+				$scope.infraProviders = result;
+				orchestrateVMS.listVMLayers($scope);
+			}
+		});
+		
 	};
 	
 	$scope.inspectVMLayer = function(oneVMLayer){

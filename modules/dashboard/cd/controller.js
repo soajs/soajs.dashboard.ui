@@ -128,6 +128,7 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			$scope.displayAlert('danger', "You cannot Apply Continuous Delivery on a SOAJS Ready Made Service.");
 		}
 		
+		//service
 		if ($scope.configuration[service].versions && Object.keys($scope.configuration[service].versions).length > 0) {
 			data.version = {
 				v: version
@@ -136,8 +137,13 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			for (var i in $scope.configuration[service].versions[version]) {
 				data.version[i] = $scope.configuration[service].versions[version][i];
 			}
+			
+			if(data.version && data.version.options && data.version.options.custom && data.version.options.custom.version){
+				data.version.options.custom.version = data.version.options.custom.version.toString();
+			}
 		}
 		else {
+			//controller or other
 			data.default = {
 				branch: $scope.configuration[service].branch,
 				strategy: $scope.configuration[service].strategy
@@ -145,6 +151,10 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			if ($scope.configuration[service].deploy) {
 				data.default.deploy = $scope.configuration[service].deploy;
 				data.default.options = $scope.configuration[service].options;
+			}
+			
+			if(data.default && data.default.options && data.version.default.custom && data.version.default.custom.version){
+				data.default.options.custom.version = data.version.default.custom.version.toString();
 			}
 		}
 		

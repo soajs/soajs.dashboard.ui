@@ -41,9 +41,8 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}, 300);
 			}
 			else {
-				// TODO: fix code because it's not behaving properly
 				if (response.length === 0) {
-					currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
+					currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
 						if(['infra-deployments', 'infra-templates'].indexOf(oneNavigationEntry.id) !== -1){
 							oneNavigationEntry.hideMe = true;
 						}

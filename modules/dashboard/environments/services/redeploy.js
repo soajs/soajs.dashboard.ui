@@ -645,9 +645,11 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					};
 					
 					if(sourceCode.custom.repo !== ''){
+						let found = false;
 						accounts.forEach((oneAccount) => {
 							oneAccount.repos.forEach((oneRepo) => {
 								if(oneRepo.name === sourceCode.custom.repo){
+									found = true;
 									let opts = {
 										id: oneAccount._id,
 										name: sourceCode.custom.repo,
@@ -664,6 +666,9 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 								}
 							});
 						});
+						if(!found){
+							currentScope.displayAlert('danger', 'You need to activate the custom UI repo');
+						}
 					}
 					else{
 						prefilForm(sourceCodeConfig);

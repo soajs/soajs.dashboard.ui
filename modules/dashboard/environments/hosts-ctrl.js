@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'orchestrateVMS', 'injectFiles', function ($scope, $cookies, $timeout, envHosts, orchestrateVMS, injectFiles) {
+environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envHosts', 'orchestrateVMS', 'ngDataApi', 'injectFiles', function ($scope, $cookies, $timeout, envHosts, orchestrateVMS, ngDataApi, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
@@ -85,7 +85,35 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	$scope.downloadProfile = function (env) {
 		envHosts.downloadProfile($scope, env);
 	};
-
+	
+	/** VM Operations **/
+	$scope.listInfraProviders = function() {
+		let options = {
+			"method": "get",
+			"routeName": "/dashboard/infra",
+			"params":{
+				"exclude": [ "groups", "regions", 'templates']
+			}
+		};
+		
+		getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
+			if(error){
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else{
+				$scope.showVMs = false;
+				$scope.infraProviders = result;
+				//check for vm
+				$scope.infraProviders.forEach((oneProvider) => {
+					if(oneProvider.technologies.includes("vm")){
+						$scope.showVMs = true;
+					}
+				});
+			}
+		});
+		
+	};
+	
 	$scope.listVMLayers = function() {
 		orchestrateVMS.listVMLayers($scope);
 	};
@@ -118,6 +146,6 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		}
 	}
 	if ($scope.access.vm.list) {
-		$scope.listVMLayers();
+		$scope.listInfraProviders();
 	}
 }]);

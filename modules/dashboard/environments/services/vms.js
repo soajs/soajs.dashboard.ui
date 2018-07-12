@@ -14,6 +14,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 				//create a variable to indicate that there are VMs
 				currentScope.vmsAvailable = true;
 			}
+			else currentScope.vmLayers = null;
 		});
 	}
 	

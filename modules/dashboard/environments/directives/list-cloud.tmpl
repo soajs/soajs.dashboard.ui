@@ -381,7 +381,7 @@
 			</div>
 			<div class="entryBoxes nodes">
 				<accordion>
-					<accordion-group is-open="true" ng-repeat="providerInfo in infraProviders">
+					<accordion-group is-open="true" ng-repeat="providerInfo in infraCloudProviders">
 						<accordion-heading>
 							<img border="0" ng-src="{{providerInfo.image}}" height="16" alt=""/>&nbsp;{{providerInfo.label}}
 						</accordion-heading>
@@ -483,7 +483,7 @@
 				</accordion>
 			</div>
 		</tab>
-		<tab heading="Virtual Machines" ng-if="vmsAvailable">
+		<tab heading="Virtual Machines" ng-if="showVMs" ng-click="listVMLayers()">
 			<br />
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>

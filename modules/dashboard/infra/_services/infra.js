@@ -72,7 +72,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 
 					if (!currentScope.$parent.$parent.currentSelectedInfra) {
-						currentScope.go("/infra");
+						currentScope.$parent.$parent.go("/infra");
 					}
 
 					let infraCookieCopy = angular.copy(myInfra);
@@ -82,8 +82,18 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					delete infraCookieCopy.deployments;
 					delete infraCookieCopy.api;
 					$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
+
+					//check if infraProviders more than 0 and then unhide the leftMenu items that were hidden when there were no infra providers configured
+					if (currentScope.infraProviders.length > 0) {
+						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavItem) => {
+							if (['infra-deployments', 'infra-templates'].indexOf(oneNavItem.id) !== -1) {
+								oneNavItem.hideMe = false;
+							}
+						});
+					}
+
 					hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
-					
+
 					if(cb && typeof cb === 'function'){
 						return cb();
 					}
@@ -183,13 +193,19 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 									currentScope.modalInstance.close();
 									currentScope.go("#/infra");
 
-									//get infras and switch to the latest that was added
+									//get all infras
 									getInfra(currentScope, {}, (error, infras) => {
 										if (error) {
 											currentScope.displayAlert('danger', error);
 										} else {
+											//reset flag to hide "no infras" warning
+											currentScope.noInfraProvidersConfigured = false;
+
+											//copy infras to scope and parent scope
 											currentScope.infraProviders = infras;
 											currentScope.$parent.$parent.infraProviders = angular.copy(currentScope.infraProviders);
+
+											//switch to the latest added infra
 											switchInfra(currentScope, infras[infras.length - 1]);
 										}
 									});

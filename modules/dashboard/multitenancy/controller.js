@@ -180,9 +180,30 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.splitTenantsByType(response, function () {
+					
+					if($scope.tenantsList && $scope.tenantsList.rows){
+						response.forEach((tenantFromAPI) => {
+							$scope.tenantsList.rows.forEach((tenantInUI) => {
+								if(tenantInUI.code === tenantFromAPI.code){
+									tenantFromAPI.showKeys = tenantInUI.showKeys;
+									
+									tenantInUI.applications.forEach((oneAppInUI) => {
+										tenantFromAPI.applications.forEach((oneAppFromAPI) => {
+											if(oneAppInUI.appId === oneAppFromAPI.appId){
+												oneAppFromAPI.showKeys = oneAppInUI.showKeys;
+											}
+										});
+									});
+								}
+							});
+						});
+					}
+					
+					
 					$scope.tenantsList = {
 						rows: response
 					};
+					
 					$scope.tenantsList.actions = {
 						'editTenant': {
 							'label': translation.editTenant[LANG],
@@ -470,7 +491,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.$parent.displayAlert('success', translation.TenantInfoUpdatedSuccessfully[LANG]);
-				$scope.form.formData = {};
+				if($scope.form && $scope.form.formData){
+					$scope.form.formData = {};
+				}
 				$scope.listTenants();
 			}
 		});

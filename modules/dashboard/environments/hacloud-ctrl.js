@@ -294,7 +294,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 	
 	/** VM Operations **/
-	$scope.listVMLayers = function() {
+	$scope.listInfraProviders = function() {
 		let options = {
 			"method": "get",
 			"routeName": "/dashboard/infra",
@@ -308,11 +308,21 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else{
+				$scope.showVMs = false;
 				$scope.infraProviders = result;
-				orchestrateVMS.listVMLayers($scope);
+				//check for vm
+				$scope.infraProviders.forEach((oneProvider) => {
+					if(oneProvider.technologies.includes("vm")){
+						$scope.showVMs = true;
+					}
+				});
 			}
 		});
 		
+	};
+	
+	$scope.listVMLayers = function() {
+		orchestrateVMS.listVMLayers($scope);
 	};
 	
 	$scope.inspectVMLayer = function(oneVMLayer){
@@ -369,7 +379,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	}
 	
 	if ($scope.access.vm.list) {
-		$scope.listVMLayers();
+		$scope.listInfraProviders();
 	}
 	
 	$scope.$on("$destroy", function () {

@@ -209,7 +209,7 @@
 					</div>
 				</div>
 		</tab>
-		<tab heading="Virtual Machines" ng-if="listingClouds && vmsAvailable">
+		<tab heading="Virtual Machines" ng-if="showVMs" ng-click="listVMLayers()">
 			<br />
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>

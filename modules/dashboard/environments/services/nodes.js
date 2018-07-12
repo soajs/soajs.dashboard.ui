@@ -19,7 +19,7 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 			}
 			else {
 				delete response.soajsauth;
-				currentScope.infraProviders = response;
+				currentScope.infraCloudProviders = response;
 			}
 		});
 	}

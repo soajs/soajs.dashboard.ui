@@ -1,3 +1,26 @@
 <section ng-controller="infraGroupCtrl">
-	<h3>groups</h3>
+	<div>
+		<br />
+		<a class="btn btn-sm btn-primary" ng-if="access.addGroup" ng-click="addGroup(currentSelectedInfra)">
+			<span class="icon icon-plus"></span> Add New Group
+		</a>
+	</div>
+
+	<div class="f-right w8 searchBoxContainer">
+		<button class="btn btn-success f-right" ng-click="listGroups(selectedRegion, currentSelectedInfra)">
+			Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+		</button>
+	</div>
+
+	<div style="width:500px" class="f-right" ng-if="infraRegions.length > 0">
+		Select region to list resource groups:
+		<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listGroups(selectedRegion, currentSelectedInfra)" ng-options="region as region.l for region in infraRegions">
+		</select>
+	</div>
+
+	<div ng-if="access.list">
+		<div ng-if="infraResourceGroups && infraResourceGroups.length > 0" class="entryBoxes">
+			<nglist></nglist>
+		</div>
+	</div>
 </section>

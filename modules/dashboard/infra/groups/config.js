@@ -7,9 +7,9 @@ let infraGroupConfig = {
 		addGroup: ['dashboard', '/infra/extra', 'post'],
 		editGroup: ['dashboard', '/infra/extra', 'put']
 	},
-	
+
 	form: {
-		network: [
+		addGroup: [
 			{
 				'name': 'name',
 				'label': 'Name',
@@ -37,5 +37,17 @@ let infraGroupConfig = {
 				'required': true
 			}
 		]
-	}
+	},
+
+	grid: {
+		recordsPerPageArray: [5, 10, 50, 100],
+		'columns': [
+			{ 'label': 'Resource Group Name', 'field': 'name' },
+			{ 'label': 'Resource Group ID', 'field': 'id' },
+		],
+		'leftActions': [],
+		'topActions': [],
+		'defaultSortField': '',
+		'defaultLimit': 10
+	},
 };

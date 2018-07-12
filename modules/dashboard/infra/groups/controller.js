@@ -54,40 +54,42 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window'
 			});
 		}
 	};
-	
-	$scope.deleteGroup = function (oneGroup, oneInfra) {
-		// let options = {
-		// 	"method": "delete",
-		// 	"routeName": "/dashboard/infra/template",
-		// 	"params": {
-		// 		"id": oneInfra._id,
-		// 		"templateId": oneTemplate._id,
-		// 		"templateName": oneTemplate.name
-		// 	}
-		// };
-		// overlayLoading.show();
-		// getSendDataFromServer($scope, ngDataApi, options, function (error) {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		$scope.displayAlert("danger", error);
-		// 	}
-		// 	else {
-		// 		$scope.displayAlert("success", "Template deleted successfully.");
-		// 		$scope.getProviders();
-		// 	}
-		// });
-	};
-	
+
 	$scope.addGroup = function (oneInfra) {
 		infraGroupSrv.addGroup($scope, oneInfra);
 	};
-	
+
 	$scope.editGroup = function (oneGroup, oneInfra) {
 		infraGroupSrv.editGroup($scope, oneInfra, oneGroup);
 	};
-	
+
+	$scope.deleteGroup = function (oneGroup) {
+		infraGroupSrv.deleteGroup($scope, oneGroup);
+	};
+
+	$scope.listGroups = function (oneRegion, oneInfra) {
+		infraGroupSrv.listGroups($scope, oneInfra, oneRegion);
+	};
+
 	if ($scope.access.list) {
 		$scope.getProviders();
+
+		let getInfraOpts = {
+			'id': $scope.$parent.$parent.currentSelectedInfra._id,
+			'exclude': ['templates', 'groups']
+		};
+		//get infra with groups to populate dropdown menu
+		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
+			if (error) {
+				$scope.displayAlert('danger', error);
+			}
+			else {
+				if (response.regions && response.regions.length > 0) {
+					$scope.infraRegions = response.regions;
+				}
+				// QUESTION: do we need an else state in case no regions? there will never be a case with no regions
+			}
+		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

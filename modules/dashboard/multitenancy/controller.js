@@ -93,7 +93,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			else {
 				$scope.mt.displayAlert('success', translation.applicationKeyRemovedSuccessfully[LANG], id);
 				$scope.listKeys(id, app.appId);
-				$scope.listTenants(); // -=-=-=-=-=-
 			}
 		});
 		if (event && event.stopPropagation) {
@@ -1106,8 +1105,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.mt.displayAlert('success', translation.selectedAppRemoved[LANG], tId);
-				// $scope.reloadApplications(tId);
-				$scope.listTenants(); // -=-=-=-=-=-
+				$scope.reloadApplications(tId);
 			}
 		});
 	};
@@ -1123,7 +1121,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.mt.displayAlert('success', translation.applicationKeyAddedSuccessfully[LANG], tId);
-				$scope.listTenants(); // -=-=-=-=-=-
 				$scope.listKeys(tId, appId);
 			}
 		});
@@ -1571,7 +1568,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}
 	};
 
-//default operation
+	//default operation
 	if ($scope.access.tenant.list && $scope.access.product.list && $scope.access.environment.list) {
 		$scope.getProds(() => {
 			$scope.getEnvironments(() => {

@@ -66,6 +66,10 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	$scope.listVMLayers = function() {
 		platformsVM.listVMLayers($scope);
 	};
+
+	$scope.getOnBoard = function(vmLayer) {
+		platformsVM.getOnBoard($scope, vmLayer);
+	};
 	
 	$scope.addVMLayer = function(){
 		platformsVM.addVMLayer($scope);

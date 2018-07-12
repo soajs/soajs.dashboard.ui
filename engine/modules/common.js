@@ -397,9 +397,8 @@ function updateNotifications($scope, envCode, ngDataApi, notifications){
 }
 
 function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders, callback) {
-	
 	let allVMs = {};
-	
+
 	function listInfraProviders(cb) {
 		//get the available providers
 		overlayLoading.show();
@@ -428,7 +427,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 				}
 			}
 		}
-		
+
 		if(infraProviders.length > 0){
 			let count = 0;
 			infraProviders.forEach((oneProvider) => {
@@ -440,7 +439,8 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 				});
 			});
 		}
-		else return callback(allVMs);
+		else {
+			return callback(allVMs)}
 	}
 	
 	function getInfraProvidersVMS(oneProvider, cb){
@@ -470,7 +470,6 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 						if(!allVMs[oneProvider.name + "_" + oneVM.layer]){
 							let vmTemplate = angular.copy(oneVM.template);
 							delete oneVM.template;
-							
 							if(envCode){
 								if(oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode){
 									allVMs[oneProvider.name + "_" + oneVM.layer] = {
@@ -479,6 +478,16 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 										list: [oneVM],
 										template: vmTemplate
 									};
+								} else {
+                                    if (vmTemplate === undefined || !vmTemplate) {
+                                    	if (oneVM.labels && !oneVM.labels['soajs.env.code']) {
+                                            allVMs[oneProvider.name + "_" + oneVM.layer] = {
+                                                name: oneVM.layer,
+                                                infraProvider: oneProvider,
+                                                list: [oneVM]
+                                            }
+										}
+                                    }
 								}
 							}
 							else{

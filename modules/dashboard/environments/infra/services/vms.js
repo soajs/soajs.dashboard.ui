@@ -22,7 +22,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	}
 
 	function listVMLayers(currentScope, cb) {
-
 		if(!currentScope.infraProviders){
 			listInfraProviders(currentScope, () => {
 				nextStep();
@@ -66,7 +65,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					'action': function (formData) {
 						currentScope.modalInstance.dismiss('cancel');
 						currentScope.form.formData = {};
-						
+
 						if(cb && typeof cb === 'function'){
 							return cb();
 						}
@@ -747,6 +746,33 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		});
 	}
 
+	function getOnBoard (currentScope, vmLayer){
+        if (confirm('Are you sure you want to on-board this vm?')) {
+            overlayLoading.show();
+            getSendDataFromServer(currentScope, ngDataApi, {
+                "method": "post",
+                "routeName": "/dashboard/cloud/vm/onboard",
+                "params": {
+                    "env": currentScope.envCode,
+                    "infraId": vmLayer.infraProvider._id
+                },
+				"data" : {
+                    'layer': vmLayer,
+                    "group" : vmLayer.list[0].labels['soajs.service.vm.group']
+				}
+            }, function (error) {
+                overlayLoading.hide();
+                if (error) {
+                    currentScope.displayAlert('danger', error.message);
+                }
+                else {
+                    listVMLayers(currentScope);
+                    currentScope.displayAlert('success', "Virtual Machine updated");
+                }
+            });
+        }
+	}
+	
 	return {
 		'listInfraProviders': listInfraProviders,
 		'listVMLayers': listVMLayers,
@@ -754,6 +780,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		'addVMLayer': addVMLayer,
 		'editVMLayer': editVMLayer,
 		'populateVMLayerForm': populateVMLayerForm,
-		'deleteVMLayer': deleteVMLayer
+		'deleteVMLayer': deleteVMLayer,
+		'getOnBoard' : getOnBoard
 	}
 }]);

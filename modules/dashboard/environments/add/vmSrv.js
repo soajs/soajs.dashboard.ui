@@ -175,7 +175,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				delete tempScope.inspect;
 			});
 		};
-		
+
 		//hook the listeners
 		currentScope.listVMLayers = function() {
 			//turned off first vm support release
@@ -336,7 +336,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				delete currentScope.envCode;
 				
 				//turned off first vm support release
-				// platformsVM.listVMLayers(currentScope, () => {
+				 platformsVM.listVMLayers(currentScope, () => {
 					//if there are registered vms to be created by the wizard hook them to the scope
 					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
 					appendVMsTotheList();
@@ -384,7 +384,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						
 						overlayLoading.hide();
 					});
-				// });
+				 });
 			});
 		}
 	}

@@ -34,7 +34,7 @@
 		</p>
 	</alert>
 </div>
-<div ng-if="infraProviders || vmsAvailable">
+<div ng-if="(infraProviders && infraProviders.length > 0) || vmsAvailable">
 	<div class="f-left">
 		<a class="btn btn-sm btn-primary" ng-click="addVMLayer()" ng-if="infraProviders && access.vm.create && !listingClouds">
 			<span class="icon icon-plus"></span>

@@ -46,21 +46,52 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						"label": "Inputs & Display Options",
 						"entries": [
 							{
-								'label': 'Inputs',
+								"type": "html",
+								"value": "<br />"
+							},
+							{
+								// 'label': 'Inputs',
 								'name': 'inputs',
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.inputs : "",
 								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template inputs using the SOAJS Form Library syntax. To learn more about the SOAJS Form Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/63862512/UI+Form'>click here</a></div>",
 								'required': false
+							}
+						]
+					},
+					{
+						"label": "Input Display Options",
+						"entries": [
+							{
+								"type": "html",
+								"value": "<br />"
 							},
 							{
-								'label': 'Inputs Display Options',
+								// 'label': 'Inputs Display Options',
 								'name': 'display',
 								'type': 'jsoneditor',
 								'height': '200px',
 								'value': (data) ? data.display : "",
 								'fieldMsg': "<div class='fieldMsg'>Provide the exposed inputs display using the SOAJS Grid Library syntax. To learn more about the SOAJS Grid Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/63861622/UI+Listing+Grid'>click here</a></div>",
+								'required': false
+							}
+						]
+					},
+					{
+						"label": "Input Validation Rules",
+						"entries": [
+							{
+								"type": "html",
+								"value": "<br />"
+							},
+							{
+								// 'label': 'Inputs Display Options',
+								'name': 'imfv',
+								'type': 'jsoneditor',
+								'height': '200px',
+								'value': (data) ? data.imfv : "",
+								'fieldMsg': "<div class='fieldMsg'>Provide the <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>IMFV</a> validation schema that SOAJS should use during deployment to ensure that the entries provided match the schema of your template inputs.</div>",
 								'required': false
 							}
 						]
@@ -130,7 +161,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		oneInfra.drivers.forEach(oneDriver => {
 			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
-		
+
 		oneInfra.technologies.forEach(oneTech => {
 			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
 		});
@@ -235,7 +266,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 											"data": {
 												"name": formData.name,
 												"inputs": formData.inputs,
-												"display": formData.display
+												"display": formData.display,
+												"imfv": formData.imfv
 											}
 										};
 										getSendDataFromServer(currentScope, ngDataApi, compOptions, function (error, data) {
@@ -290,7 +322,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 				entries[3].value[0].selected = true;
 				currentScope.form.formData.driver = entries[3].value[0].v;
 			}
-			
+
 			if (entries[4].value.length === 1) {
 				entries[4].value[0].selected = true;
 				currentScope.form.formData.technology = entries[4].value[0].v;
@@ -298,7 +330,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		});
 	}
 
-	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor) {
+	function grabEditorContent(location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor) {
 		let inputs = inputsEditor.ngModel;
 		if (typeof(inputs) === 'string') {
 			try {
@@ -317,6 +349,17 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 			}
 			catch (e) {
 				$window.alert("Please enter a valid JSON schema inside the templates inputs display field.");
+				return false;
+			}
+		}
+
+		let imfv = imfvEditor.ngModel;
+		if (typeof(imfv) === 'string') {
+			try {
+				formData.imfv = JSON.parse(imfv);
+			}
+			catch (e) {
+				$window.alert("Please enter a valid JSON schema inside the templates imfv field.");
 				return false;
 			}
 		}
@@ -340,26 +383,52 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	}
 
 	function editTemplate(currentScope, oneInfra, oneTemplate) {
-		let contentEditor, inputsEditor, displayEditor;
+		let contentEditor, inputsEditor, displayEditor, imfvEditor;
 		let entries = angular.copy(infraConfig.form.templates);
 		entries[0].readonly = true;
 		entries[0].disabled = true;
-		
+
 		let options;
 		currentScope.showTemplateForm = true;
-		
+
 		oneInfra.drivers.forEach(oneDriver => {
 			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
-		
+
 		oneInfra.technologies.forEach(oneTech => {
 			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
 		});
-		
+
 		if (oneTemplate.location === 'local') {
 			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console", 'selected': true });
 
 			let formData = angular.copy(oneTemplate);
+
+			if (typeof(formData.inputs) === "string") {
+				try {
+					formData.inputs = JSON.parse(formData.inputs)
+				} catch (e) {
+					formData.inputs = {};
+					currentScope.displayAlert('danger', "There was an error parsing the template Inputs. Please make sure the Inputs follow a valid JSON schema.");
+				}
+			}
+			if (typeof(formData.display) === "string") {
+				try {
+					formData.display = JSON.parse(formData.display)
+				} catch (e) {
+					formData.display = {};
+					currentScope.displayAlert('danger', "There was an error parsing the template Display Options. Please make sure the Display Options follow a valid JSON schema.");
+				}
+			}
+			if (typeof(formData.imfv) === "string") {
+				try {
+					formData.imfv = JSON.parse(formData.imfv)
+				} catch (e) {
+					formData.imfv = {};
+					currentScope.displayAlert('danger', "There was an error parsing the template Input Validation Rules. Please make sure the Input Validation Rules follow a valid JSON schema.");
+				}
+			}
+
 			delete formData.tags;
 			options = {
 				timeout: $timeout,
@@ -373,8 +442,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
-
-							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor);
 							if (!status) {
 								return false;
 							}
@@ -419,7 +487,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 		}
 		else {
 			entries[2].value.push({ 'v': 'external', 'l': "Cloud Provider", 'selected': true });
-			
+
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;
 			options = {
@@ -434,8 +502,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						'label': 'Submit',
 						'btn': 'primary',
 						'action': function (formData) {
-
-							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor);
+							let status = grabEditorContent(oneTemplate.location, formData, inputsEditor, displayEditor, contentEditor, imfvEditor);
 							if (!status) {
 								return false;
 							}
@@ -462,14 +529,15 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
-		
+
 		buildForm(currentScope, $modal, options, () => {
-			inputsEditor = currentScope.form.entries[5].tabs[1].entries[0];
-			displayEditor = currentScope.form.entries[5].tabs[1].entries[1];
+			inputsEditor = currentScope.form.entries[5].tabs[1].entries[1];
+			displayEditor = currentScope.form.entries[5].tabs[2].entries[1];
+			imfvEditor = currentScope.form.entries[5].tabs[3].entries[1];
 			if (oneTemplate.location === 'local') {
 				contentEditor = currentScope.form.entries[5].tabs[0].entries[1];
 			}
-			
+
 			if(oneTemplate.textMode){
 				//text
 				currentScope.form.entries[5].tabs[0].entries[2].type = 'textarea';
@@ -534,7 +602,8 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 					"data": {
 						"name": oneTemplate.name,
 						"inputs": formData.inputs,
-						"display": formData.display
+						"display": formData.display,
+						"imfv": formData.imfv
 					}
 				};
 				overlayLoading.show();

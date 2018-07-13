@@ -253,12 +253,16 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 									oneService.deployedVersionsCounter = 0;
 									oneService.deployedConfigCounter = {};
 									response.forEach(function (oneDeployedEntry) {
-										if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name'] && oneDeployedEntry.labels['soajs.service.name'] === oneService.name) {
-											oneService.deployed = true;
-											if (oneService.versions && oneService.versions.length > 0) {
-												oneService.versions.forEach(function (oneVersion) {
-													if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.version'] && oneDeployedEntry.labels['soajs.service.version'] === oneVersion.v) {
-														if(oneDeployedEntry.env && oneDeployedEntry.labels['soajs.service.type'] === 'daemon'){
+										if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name']) {
+											if(
+												(oneService.type === 'daemon' && oneDeployedEntry.labels['soajs.service.name'] === oneService.name + "-" + oneDeployedEntry.labels['soajs.daemon.group']) ||
+												oneDeployedEntry.labels['soajs.service.name'] === oneService.name
+											){
+												oneService.deployed = true;
+												if (oneService.versions && oneService.versions.length > 0) {
+													oneService.versions.forEach(function (oneVersion) {
+														if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.version'] && oneDeployedEntry.labels['soajs.service.version'] === oneVersion.v) {
+															if(oneDeployedEntry.env && oneDeployedEntry.labels['soajs.service.type'] === 'daemon'){
 																oneDeployedEntry.env.forEach(function (oneEnv) {
 																	if(oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1){
 																		oneVersion.deployed = true;
@@ -280,30 +284,31 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 																		}
 																	}
 																});
-														}else{
-															oneVersion.deployed = true;
-															oneVersion.serviceId = oneDeployedEntry.id;
-															oneService.deployedVersionsCounter++;
-															if(!oneVersion.deploySettings){
-																getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
-																	if(Object.keys(deploySettings).length > 0){
-																		oneVersion.deploySettings = deploySettings;
-																	}
-																});
+															}else{
+																oneVersion.deployed = true;
+																oneVersion.serviceId = oneDeployedEntry.id;
+																oneService.deployedVersionsCounter++;
+																if(!oneVersion.deploySettings){
+																	getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
+																		if(Object.keys(deploySettings).length > 0){
+																			oneVersion.deploySettings = deploySettings;
+																		}
+																	});
+																}
 															}
 														}
-													}
-												});
-											}
-											else {
-												oneService.deployed = true;
-												oneService.serviceId = oneDeployedEntry.id;
-												if(!oneService.deploySettings){
-													getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
-														if(Object.keys(deploySettings).length > 0){
-															oneService.deploySettings = deploySettings;
-														}
 													});
+												}
+												else {
+													oneService.deployed = true;
+													oneService.serviceId = oneDeployedEntry.id;
+													if(!oneService.deploySettings){
+														getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
+															if(Object.keys(deploySettings).length > 0){
+																oneService.deploySettings = deploySettings;
+															}
+														});
+													}
 												}
 											}
 										}
@@ -632,7 +637,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if(external || !controllerScope) {
 				controllerScope = currentScope
 			}
-			if (params.custom && params.custom.version) {
+			if (params && params.custom && params.custom.version) {
 				params.custom.version = parseInt(params.custom.version);
 			}
 			var config = {
@@ -769,6 +774,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				deploySettings.options.custom.image.tag = oneDeployedEntry.labels['service.image.tag'];
 			}
 		}
+		
 		if(oneDeployedEntry.autoscaler){
 			deploySettings.options.autoScale = oneDeployedEntry.autoscaler;
 		}

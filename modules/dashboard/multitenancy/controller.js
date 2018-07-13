@@ -93,7 +93,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			else {
 				$scope.mt.displayAlert('success', translation.applicationKeyRemovedSuccessfully[LANG], id);
 				$scope.listKeys(id, app.appId);
-				$scope.listTenants(); // -=-=-=-=-=-
 			}
 		});
 		if (event && event.stopPropagation) {
@@ -181,9 +180,30 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.splitTenantsByType(response, function () {
+					
+					if($scope.tenantsList && $scope.tenantsList.rows){
+						response.forEach((tenantFromAPI) => {
+							$scope.tenantsList.rows.forEach((tenantInUI) => {
+								if(tenantInUI.code === tenantFromAPI.code){
+									tenantFromAPI.showKeys = tenantInUI.showKeys;
+									
+									tenantInUI.applications.forEach((oneAppInUI) => {
+										tenantFromAPI.applications.forEach((oneAppFromAPI) => {
+											if(oneAppInUI.appId === oneAppFromAPI.appId){
+												oneAppFromAPI.showKeys = oneAppInUI.showKeys;
+											}
+										});
+									});
+								}
+							});
+						});
+					}
+					
+					
 					$scope.tenantsList = {
 						rows: response
 					};
+					
 					$scope.tenantsList.actions = {
 						'editTenant': {
 							'label': translation.editTenant[LANG],
@@ -471,7 +491,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.$parent.displayAlert('success', translation.TenantInfoUpdatedSuccessfully[LANG]);
-				$scope.form.formData = {};
+				if($scope.form && $scope.form.formData){
+					$scope.form.formData = {};
+				}
 				$scope.listTenants();
 			}
 		});
@@ -1106,8 +1128,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.mt.displayAlert('success', translation.selectedAppRemoved[LANG], tId);
-				// $scope.reloadApplications(tId);
-				$scope.listTenants(); // -=-=-=-=-=-
+				$scope.reloadApplications(tId);
 			}
 		});
 	};
@@ -1123,7 +1144,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				$scope.mt.displayAlert('success', translation.applicationKeyAddedSuccessfully[LANG], tId);
-				$scope.listTenants(); // -=-=-=-=-=-
 				$scope.listKeys(tId, appId);
 			}
 		});
@@ -1571,7 +1591,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}
 	};
 
-//default operation
+	//default operation
 	if ($scope.access.tenant.list && $scope.access.product.list && $scope.access.environment.list) {
 		$scope.getProds(() => {
 			$scope.getEnvironments(() => {

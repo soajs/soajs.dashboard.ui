@@ -561,8 +561,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		$scope.$on('$routeChangeSuccess', function () {
 			$scope.tracker = [];
 			doEnvPerNav();
-			
-			if($cookies.getObject('myEnv', { 'domain': interfaceDomain })){
+			if($scope.pillar === 'deployment' && $cookies.getObject('myEnv', { 'domain': interfaceDomain })){
 				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 				if(updateNotifications){
 					updateNotifications($scope, envCode, ngDataApi);
@@ -1022,7 +1021,7 @@ soajsApp.directive('textSizeSlider', ['$document', function ($document) {
 		link: function (scope, element, attr) {
 			scope.textSize = scope.value;
 			scope.$watch('textSize', function (size) {
-				if (scope.idt) {
+				if (scope.idt && document.getElementById(scope.idt)) {
 					document.getElementById(scope.idt).style.fontSize = size + scope.unit;
 				}
 				else {

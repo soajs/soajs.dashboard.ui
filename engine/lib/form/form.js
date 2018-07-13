@@ -91,7 +91,7 @@ function buildForm(context, modal, configuration, cb) {
 			}
 		}
 		context.form.alerts.push({'type': type, 'msg': msg});
-		context.form.closeAllAlerts();
+		// context.form.closeAllAlerts();
 	};
 	
 	context.form.closeAllAlerts = function (instant) {
@@ -291,7 +291,9 @@ function buildForm(context, modal, configuration, cb) {
 				}
 				
 				context.form.timeout(function () {
-					oneEntry.editor.heightUpdate = heightUpdateFunction;
+					if(oneEntry.editor){
+						oneEntry.editor.heightUpdate = heightUpdateFunction;
+					}
 					// Set initial size to match initial content
 					heightUpdateFunction();
 					
@@ -307,8 +309,14 @@ function buildForm(context, modal, configuration, cb) {
 					newHeight += _editore[0].data.lines.length * 16.5;
 					newHeight = Math.ceil(newHeight);
 					
+					if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
+						newHeight = parseInt(oneEntry.height);
+					}
+					
 					context.form.timeout(function () {
-						_editore[1].heightUpdate(newHeight);
+						if(_editore[1].heightUpdate && typeof(_editore[1].heightUpdate) === 'function'){
+							_editore[1].heightUpdate(newHeight);
+						}
 					}, 1500);
 				}
 			}
@@ -423,7 +431,9 @@ function buildForm(context, modal, configuration, cb) {
 				}
 				else {
 					if (entries[i].type === 'jsoneditor') {
-						context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
+						if(entries[i].ngModel){
+							context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
+						}
 					}
 				}
 			}

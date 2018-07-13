@@ -63,7 +63,7 @@ let infraConfig = {
 				'label': 'Docker Token',
 				'type': 'textarea',
 				'value': "",
-				'fieldMsg': 'Provide the docker token and allow SOAJS to communicate with your docker deployment',
+				'fieldMsg': 'Provide the docker token and allow SOAJS to communicate with your docker deployment. <a href=\'https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/600539248/How+to+Get+Docker+Token\' target=\'_blank\'>Click Here</a> to learn how to create & get an authentication token for docker swarm',
 				'required': true
 			}
 		],

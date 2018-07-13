@@ -19,6 +19,27 @@
 	<progressbar class="progress-striped active" value="100 * 100" type="info"></progressbar>
 
 </div>
+<div ng-if="environment.error && !environment.pending">
+	<alert type="danger">
+		<h4>Problem Attaching Container Technology</h4>
+		<hr>
+		<p style="color:black;">
+			An error occured while attaching container technology to this environment.<br / >
+		</p>
+		<p style="color:black;" ng-if="environment.error.code === 173">
+			The inputs you provided while attaching the container technology are invalid according to the validation rules of the template you have selected.
+		</p>
+		<p style="color:black;">
+			<b><u>Details:</u></b><br / >
+			<ul>
+				<li style="color:black;">
+					<label>Error {{environment.error.code}} :</label>&nbsp;{{environment.error.msg}}
+				</li>
+			</ul>
+		</p>
+	</alert>
+	<br />
+</div>
 <div ng-if="!environment.pending">
 	<fieldset>
 		<legend>

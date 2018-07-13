@@ -58,10 +58,6 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		platformCntnr.checkAttachContainerProgress($scope, autoRefresh);
 	};
 	
-	function listInfraProviders(cb) {
-		platformsVM.listInfraProviders($scope, cb);
-	}
-	
 	/** VM Operations **/
 	$scope.listVMLayers = function() {
 		platformsVM.listVMLayers($scope);
@@ -92,9 +88,7 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	}
 	
 	if($scope.access.platforms.getEnvironment){
-		listInfraProviders(() => {
-			$scope.getEnvPlatform();
-		});
+		$scope.getEnvPlatform();
 	}
 	
 	injectFiles.injectCss("modules/dashboard/environments/environments.css");

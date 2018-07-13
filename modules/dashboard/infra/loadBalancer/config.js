@@ -7,7 +7,7 @@ let infraLoadBalancerConfig = {
 		addLoadBalancer: ['dashboard', '/infra/extra', 'post'],
 		editLoadBalancer: ['dashboard', '/infra/extra', 'put']
 	},
-	
+
 	form: {
 		network: [
 			{
@@ -37,5 +37,22 @@ let infraLoadBalancerConfig = {
 				'required': true
 			}
 		]
-	}
+	},
+
+	grid: {
+		recordsPerPageArray: [5, 10, 50, 100],
+		'columns': [
+			{ 'label': 'Load Balancer Name', 'field': 'name' },
+			{ 'label': 'Load Balancer Region', 'field': 'region' },
+			{ 'label': 'Load Balancer Ports', 'field': 'ports' },
+			{ 'label': 'Load Balancer Ports', 'field': 'ipAddresses' },
+			{ 'label': 'Load Balancer Ports', 'field': 'ipConfigs' },
+			{ 'label': 'Load Balancer Ports', 'field': 'natPools' },
+			{ 'label': 'Load Balancer Ports', 'field': 'natRules' },
+		],
+		'leftActions': [],
+		'topActions': [],
+		'defaultSortField': '',
+		'defaultLimit': 10
+	},
 };

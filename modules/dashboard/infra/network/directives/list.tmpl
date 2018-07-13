@@ -1,3 +1,26 @@
 <section ng-controller="infraNetworkCtrl">
-	<h3>network</h3>
+	<div>
+		<br />
+		<a class="btn btn-sm btn-primary" ng-if="access.addNetwork" ng-click="addNetwork(currentSelectedInfra)">
+			<span class="icon icon-plus"></span> Add New Network
+		</a>
+	</div>
+
+	<div class="f-right w8 searchBoxContainer">
+		<button class="btn btn-success f-right" ng-click="listNetworks(selectedGroup, currentSelectedInfra)">
+			Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+		</button>
+	</div>
+
+	<div style="width:500px" class="f-right" ng-if="infraGroups.length > 0">
+		Select group to list networks:
+		<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listNetworks(selectedGroup, currentSelectedInfra)" ng-options="group as group.name for group in infraGroups">
+		</select>
+	</div>
+
+	<div ng-if="access.list">
+		<div ng-if="infraNetworks && infraNetworks.length > 0" class="entryBoxes">
+			<nglist></nglist>
+		</div>
+	</div>
 </section>

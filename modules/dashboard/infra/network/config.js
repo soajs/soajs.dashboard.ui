@@ -7,7 +7,7 @@ let infraNetworkConfig = {
 		addNetwork: ['dashboard', '/infra/extra', 'post'],
 		editNetwork: ['dashboard', '/infra/extra', 'put']
 	},
-	
+
 	form: {
 		network: [
 			{
@@ -37,5 +37,18 @@ let infraNetworkConfig = {
 				'required': true
 			}
 		]
-	}
+	},
+
+	grid: {
+		recordsPerPageArray: [5, 10, 50, 100],
+		'columns': [
+			{ 'label': 'Network Name', 'field': 'name' },
+			{ 'label': 'Network Region', 'field': 'region' },
+			{ 'label': 'Network ID', 'field': 'id' },
+		],
+		'leftActions': [],
+		'topActions': [],
+		'defaultSortField': '',
+		'defaultLimit': 10
+	},
 };

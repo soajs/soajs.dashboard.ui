@@ -1238,6 +1238,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					envCode = null;
 				}
 				getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
+					// TODO
+					if(!context.mainData.deploymentData.vmLayers){
+						context.mainData.deploymentData.vmLayers={};
+					}
 					if(currentScope.environmentWizard){
 						for(let i in vms){
 							context.mainData.deploymentData.vmLayers[i] = vms[i];

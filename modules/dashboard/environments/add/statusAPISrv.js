@@ -28,7 +28,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 
 			});
 		}
-		
+
 		currentScope.statusType = "info";
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = true;

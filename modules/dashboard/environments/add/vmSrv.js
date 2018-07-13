@@ -177,8 +177,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		};
 		
 		currentScope.getOnBoard = function (vmLayer, release) {
-			if (!currentScope.wizard.vms) {
-				currentScope.wizard.vms = [];
+			if (!currentScope.wizard.vmOnBoard) {
+				currentScope.wizard.vmOnBoard = [];
 			}
 			
 			let obj;
@@ -205,7 +205,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					}
 				};
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
-				currentScope.wizard.vms.push(obj);
+				currentScope.wizard.vmOnBoard.push(obj);
 			}
 		};
 		
@@ -240,6 +240,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		
 		//if there are registered vms to be created by the wizard hook them to the scope
 		function appendVMsTotheList() {
+			// TODO: if onboarded
+
 			if (currentScope.wizard.vms) {
 				currentScope.wizard.vms.forEach((oneVM) => {
 					
@@ -309,7 +311,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							}
 						}
 						
-						if (!currentScope.wizard.vms || currentScope.wizard.vms.length === 0) {
+						// TODO
+						if ((!currentScope.wizard.vms || currentScope.wizard.vms.length === 0)
+							&& (!currentScope.wizard.vmOnBoard || currentScope.wizard.vmOnBoard.length === 0)) {
 							noVMLayer = true;
 						}
 						
@@ -320,6 +324,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							currentScope.referringStep = 'vm';
 							$localStorage.addEnv = angular.copy(currentScope.wizard);
 							currentScope.envCode = envCode;
+							// TODO
 							currentScope.nextStep();
 						}
 					}

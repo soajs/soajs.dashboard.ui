@@ -608,7 +608,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let key = entriesNames[counter];
 					let resource = resourceEntries[key];
 					let record = angular.copy(resource);
-
 					currentScope.dynamictemplatestep = `Resource ${key}`;
 
 					record.name = key;
@@ -620,14 +619,15 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
 					resource.scope.restrictions = currentScope.restrictions;
-					
-					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
-						resource.scope.wizardVMs = currentScope.wizard.vms;
-						
+
+					// TODO
+					if(currentScope.wizard.vms || currentScope.wizard.vmOnBoard){
 						if(!resource.scope.mainData.deploymentData){
 							resource.scope.mainData.deploymentData = {}
 						}
-						
+					}
+					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
+						resource.scope.wizardVMs = currentScope.wizard.vms;
 						resource.scope.mainData.deploymentData.vmLayers = currentScope.vmLayers;
 					}
 
@@ -635,7 +635,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.recipes[type].forEach((oneRecipe) =>{
 							if(oneRecipe.type === record.type && oneRecipe.subtype === record.category){
 								resource.scope.mainData.recipes.push(oneRecipe);
-
 							}
 						});
 					}
@@ -648,7 +647,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						if(!resource.scope.mainData.deploymentData){
 							resource.scope.mainData.deploymentData = {}
 						}
-						resource.scope.mainData.deploymentData.infraProviders = currentScope.infraProviders
+						resource.scope.mainData.deploymentData.infraProviders = currentScope.infraProviders;
 						
 						//get the recipes
 						resource.scope.mainData.recipes = [];
@@ -752,13 +751,17 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					}
 
 					if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-						record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
-						record.label = resource.label;
+						// TODO: check
+						if(currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter]){
 
-						if(record.config && record.config.servers){
-							record.config.servers.forEach((oneServer) =>{
-								oneServer.port = oneServer.port.toString();
-							});
+							record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
+							record.label = resource.label;
+
+							if(record.config && record.config.servers){
+								record.config.servers.forEach((oneServer) =>{
+									oneServer.port = oneServer.port.toString();
+								});
+							}
 						}
 					}
 

@@ -21,7 +21,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		};
 
 		if (opts.id) {
-			options.routeName += "/" + opts.id;
+			options.params.id = opts.id;
 		}
 
 		if(opts.exclude){

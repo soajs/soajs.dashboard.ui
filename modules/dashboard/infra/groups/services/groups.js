@@ -103,8 +103,10 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 
 						buildGrid(currentScope, gridOptions);
 					}
-					else {
-						currentScope.displayAlert('danger', `The region "${oneRegion.l}" does not have any resource groups to be list`);
+
+					if (currentScope.infraResourceGroups.length === 0) {
+						// BUG: doesn't show "No Records Found" in case of no groups in selected region
+						currentScope.displayAlert('danger', `The region "${oneRegion.l}" does not have any resource groups to be listed`);
 					}
 				}
 		});

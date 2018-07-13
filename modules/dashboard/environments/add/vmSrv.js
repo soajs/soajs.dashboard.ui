@@ -182,19 +182,26 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 			
 			let obj;
-			if(release){
+			if (release) {
 				delete vmLayer.list[0].labels['soajs.env.code'];
+				// remove from array
+			}
+			let myLayer = angular.copy(vmLayer);
+			if (myLayer.template) {
+				myLayer.template = {
+					_id: myLayer.template._id
+				};
 			}
 			if (!release) {
 				obj = {
 					"params": {
 						"env": currentScope.wizard.gi.code,
-						"infraId": vmLayer.infraProvider._id,
+						"infraId": myLayer.infraProvider._id,
 						"release": release
 					},
 					"data": {
-						'layer': vmLayer,
-						"group": vmLayer.list[0].labels['soajs.service.vm.group']
+						'layer': myLayer,
+						"group": myLayer.list[0].labels['soajs.service.vm.group']
 					}
 				};
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
@@ -419,3 +426,4 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		"go": go
 	}
 }]);
+

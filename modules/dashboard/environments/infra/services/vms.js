@@ -747,31 +747,45 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
     }
 
 	function getOnBoard (currentScope, vmLayer, release){
-        if (confirm('Are you sure you want to on-board this vm?')) {
-            overlayLoading.show();
-            getSendDataFromServer(currentScope, ngDataApi, {
-                "method": "post",
-                "routeName": "/dashboard/cloud/vm/onboard",
-                "params": {
-                    "env": currentScope.envCode,
-                    "infraId": vmLayer.infraProvider._id,
-                    "release" : release
-                },
-				"data" : {
-                    'layer': vmLayer,
-                    "group" : vmLayer.list[0].labels['soajs.service.vm.group']
-				}
-            }, function (error) {
-                overlayLoading.hide();
-                if (error) {
-                    currentScope.displayAlert('danger', error.message);
-                }
-                else {
-                    listVMLayers(currentScope);
-                    currentScope.displayAlert('success', "Virtual Machine updated");
-                }
-            });
-        }
+        $modal.open({
+            templateUrl: !release ? "onboardVM.tmpl": 'releaseVM.tmpl',
+            size: 'lg',
+            backdrop: true,
+            keyboard: true,
+            controller: function ($scope, $modalInstance) {
+                $scope.proceed = function () {
+                    $modalInstance.close();
+                    overlayLoading.show();
+                    getSendDataFromServer(currentScope, ngDataApi, {
+                        "method": "post",
+                        "routeName": "/dashboard/cloud/vm/onboard",
+                        "params": {
+                            "env": currentScope.envCode,
+                            "infraId": vmLayer.infraProvider._id,
+                            "release": release
+                        },
+                        "data": {
+                            'layer': vmLayer,
+                            "group": vmLayer.list[0].labels['soajs.service.vm.group']
+                        }
+                    }, function (error) {
+                        overlayLoading.hide();
+                        if (error) {
+                            currentScope.displayAlert('danger', error.message);
+                        }
+                        else {
+                            listVMLayers(currentScope);
+                            currentScope.displayAlert('success', "Virtual Machine updated");
+                        }
+                    });
+
+                };
+
+                $scope.cancel = function () {
+                    $modalInstance.close();
+                };
+            }
+        });
     }
 
     return {

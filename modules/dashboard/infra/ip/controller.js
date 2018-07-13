@@ -3,22 +3,22 @@ var infraIPApp = soajsApp.components;
 infraIPApp.controller('infraIPCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIPSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIPSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-	
+
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraIPConfig.permissions);
-	
+
 	infraCommonSrv.getInfraFromCookie($scope);
-	
+
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"], () => {
 			// infraIACSrv.rerenderTemplates($scope);
 		});
 	};
-	
+
 	$scope.$parent.$parent.activateProvider = function () {
 		infraCommonSrv.activateProvider($scope);
 	};
-	
+
 	$scope.getProviders = function () {
 		if($localStorage.infraProviders){
 			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
@@ -54,40 +54,46 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$localStorage', '$window', '$mo
 			});
 		}
 	};
-	
-	$scope.deleteIP = function (oneIP, oneInfra) {
-		// let options = {
-		// 	"method": "delete",
-		// 	"routeName": "/dashboard/infra/template",
-		// 	"params": {
-		// 		"id": oneInfra._id,
-		// 		"templateId": oneTemplate._id,
-		// 		"templateName": oneTemplate.name
-		// 	}
-		// };
-		// overlayLoading.show();
-		// getSendDataFromServer($scope, ngDataApi, options, function (error) {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		$scope.displayAlert("danger", error);
-		// 	}
-		// 	else {
-		// 		$scope.displayAlert("success", "Template deleted successfully.");
-		// 		$scope.getProviders();
-		// 	}
-		// });
+
+	$scope.deleteIP = function (oneIP) {
+		infraIPSrv.deleteIP($scope, oneIP);
 	};
-	
+
 	$scope.addIP = function (oneInfra) {
 		infraIPSrv.addIP($scope, oneInfra);
 	};
-	
+
 	$scope.editIP = function (oneIP, oneInfra) {
 		infraIPSrv.editIP($scope, oneInfra, oneIP);
 	};
-	
+
+	$scope.listIPs = function (oneGroup, oneInfra) {
+		infraIPSrv.listIPs($scope, oneInfra, oneGroup);
+	};
+
 	if ($scope.access.list) {
 		$scope.getProviders();
+
+		let getInfraOpts = {
+			'id': $scope.$parent.$parent.currentSelectedInfra._id,
+			'exclude': ['templates', 'regions']
+		};
+		//get infra with groups to populate dropdown menu
+		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
+			if (error) {
+				$scope.displayAlert('danger', error);
+			}
+			else {
+				if (response.groups && response.groups.length > 0) {
+					//flag that infra doesn't have any resource groups
+					$scope.noResourceGroups = false;
+					$scope.infraGroups = response.groups;
+				}
+				else if (response.groups && response.groups.length === 0) {
+					$scope.noResourceGroups = true;
+				}
+			}
+		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

@@ -13,7 +13,7 @@
 	</div>
 
 	<div style="width:500px" class="f-right" ng-if="infraGroups.length > 0">
-		Select group to list firewalls:
+		Select group to list Load Balancers:
 		<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listLoadBalancers(selectedGroup, currentSelectedInfra)" ng-options="group as group.name for group in infraGroups">
 		</select>
 	</div>

@@ -7,7 +7,7 @@ let infraIPConfig = {
 		addIP: ['dashboard', '/infra/extra', 'post'],
 		editIP: ['dashboard', '/infra/extra', 'put']
 	},
-	
+
 	form: {
 		network: [
 			{
@@ -37,5 +37,19 @@ let infraIPConfig = {
 				'required': true
 			}
 		]
-	}
+	},
+
+	grid: {
+		recordsPerPageArray: [5, 10, 50, 100],
+		'columns': [
+			{ 'label': 'Public IP Name', 'field': 'name' },
+			{ 'label': 'Public IP Region', 'field': 'region' },
+			{ 'label': 'Public IP Address Version', 'field': 'ipAddressVersion' },
+			{ 'label': 'Public IP Allocation Method', 'field': 'publicIPAllocationMethod' }
+		],
+		'leftActions': [],
+		'topActions': [],
+		'defaultSortField': '',
+		'defaultLimit': 10
+	},
 };

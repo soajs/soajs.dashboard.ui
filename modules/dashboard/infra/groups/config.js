@@ -42,8 +42,7 @@ let infraGroupConfig = {
 	grid: {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
-			{ 'label': 'Resource Group Name', 'field': 'name' },
-			{ 'label': 'Resource Group ID', 'field': 'id' },
+			{ 'label': 'Resource Group Name', 'field': 'name' }
 		],
 		'leftActions': [],
 		'topActions': [],

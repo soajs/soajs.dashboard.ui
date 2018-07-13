@@ -44,7 +44,9 @@ let infraNetworkConfig = {
 		'columns': [
 			{ 'label': 'Network Name', 'field': 'name' },
 			{ 'label': 'Network Region', 'field': 'region' },
-			{ 'label': 'Network ID', 'field': 'id' },
+			{ 'label': 'Network Address Prefixes', 'field': 'addressPrefixes' },
+			{ 'label': 'Network DNS Servers', 'field': 'dnsServers' },
+			{ 'label': 'Network Subnets', 'field': 'subnets' }
 		],
 		'leftActions': [],
 		'topActions': [],

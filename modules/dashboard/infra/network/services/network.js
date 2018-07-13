@@ -29,7 +29,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
+				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
 
 				//trigger listNetworks to fetch changes
 				// NOTE: this is useless since deleting will take a long time and the UI won't show any changes immediately

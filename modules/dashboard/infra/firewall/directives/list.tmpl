@@ -1,3 +1,26 @@
 <section ng-controller="infraFirewallCtrl">
-	<h3>firewall</h3>
+	<div>
+		<br />
+		<a class="btn btn-sm btn-primary" ng-if="access.addFirewall" ng-click="addFirewall(currentSelectedInfra)">
+			<span class="icon icon-plus"></span> Add New Firewall
+		</a>
+	</div>
+
+	<div class="f-right w8 searchBoxContainer">
+		<button class="btn btn-success f-right" ng-click="listFirewalls(selectedGroup, currentSelectedInfra)">
+			Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+		</button>
+	</div>
+
+	<div style="width:500px" class="f-right" ng-if="infraGroups.length > 0">
+		Select group to list firewalls:
+		<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listFirewalls(selectedGroup, currentSelectedInfra)" ng-options="group as group.name for group in infraGroups">
+		</select>
+	</div>
+
+	<div ng-if="access.list">
+		<div ng-if="infraSecurityGroups && infraSecurityGroups.length > 0" class="entryBoxes">
+			<br /><nglist></nglist>
+		</div>
+	</div>
 </section>

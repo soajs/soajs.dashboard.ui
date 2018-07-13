@@ -7,7 +7,7 @@ let infraFirewallConfig = {
 		addFirewall: ['dashboard', '/infra/extra', 'post'],
 		editFirewall: ['dashboard', '/infra/extra', 'put']
 	},
-	
+
 	form: {
 		network: [
 			{
@@ -37,5 +37,18 @@ let infraFirewallConfig = {
 				'required': true
 			}
 		]
-	}
+	},
+
+	grid: {
+		recordsPerPageArray: [5, 10, 50, 100],
+		'columns': [
+			{ 'label': 'Firewall Name', 'field': 'name' },
+			{ 'label': 'Firewall Region', 'field': 'region' },
+			{ 'label': 'Firewall Ports', 'field': 'ports' },
+		],
+		'leftActions': [],
+		'topActions': [],
+		'defaultSortField': '',
+		'defaultLimit': 10
+	},
 };

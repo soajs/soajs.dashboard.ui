@@ -3,22 +3,22 @@ var infraFirewallApp = soajsApp.components;
 infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraFirewallSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraFirewallSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-	
+
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraFirewallConfig.permissions);
-	
+
 	infraCommonSrv.getInfraFromCookie($scope);
-	
+
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"], () => {
 			// infraIACSrv.rerenderTemplates($scope);
 		});
 	};
-	
+
 	$scope.$parent.$parent.activateProvider = function () {
 		infraCommonSrv.activateProvider($scope);
 	};
-	
+
 	$scope.getProviders = function () {
 		if($localStorage.infraProviders){
 			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
@@ -54,40 +54,46 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$localStorage', '$w
 			});
 		}
 	};
-	
-	$scope.deleteFirewall = function (oneFirewall, oneInfra) {
-		// let options = {
-		// 	"method": "delete",
-		// 	"routeName": "/dashboard/infra/template",
-		// 	"params": {
-		// 		"id": oneInfra._id,
-		// 		"templateId": oneTemplate._id,
-		// 		"templateName": oneTemplate.name
-		// 	}
-		// };
-		// overlayLoading.show();
-		// getSendDataFromServer($scope, ngDataApi, options, function (error) {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		$scope.displayAlert("danger", error);
-		// 	}
-		// 	else {
-		// 		$scope.displayAlert("success", "Template deleted successfully.");
-		// 		$scope.getProviders();
-		// 	}
-		// });
+
+	$scope.deleteFirewall = function (oneFirewall) {
+		infraFirewallSrv.deleteFirewall($scope, oneFirewall);
 	};
-	
+
 	$scope.addFirewall = function (oneInfra) {
 		infraFirewallSrv.addFirewall($scope, oneInfra);
 	};
-	
-	$scope.editFirewall = function (oneFirewall, oneInfra) {
-		infraFirewallSrv.editFirewall($scope, oneInfra, oneFirewall);
+
+	$scope.editFirewall = function (oneFirewall) {
+		infraFirewallSrv.editFirewall($scope, oneFirewall);
 	};
-	
+
+	$scope.listFirewalls = function (oneGroup, oneInfra) {
+		infraFirewallSrv.listFirewalls($scope, oneGroup, oneInfra);
+	};
+
 	if ($scope.access.list) {
 		$scope.getProviders();
+
+		let getInfraOpts = {
+			'id': $scope.$parent.$parent.currentSelectedInfra._id,
+			'exclude': ['templates', 'regions']
+		};
+		//get infra with groups to populate dropdown menu
+		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
+			if (error) {
+				$scope.displayAlert('danger', error);
+			}
+			else {
+				if (response.groups && response.groups.length > 0) {
+					//flag that infra doesn't have any resource groups
+					$scope.noResourceGroups = false;
+					$scope.infraGroups = response.groups;
+				}
+				else if (response.groups && response.groups.length === 0) {
+					$scope.noResourceGroups = true;
+				}
+			}
+		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

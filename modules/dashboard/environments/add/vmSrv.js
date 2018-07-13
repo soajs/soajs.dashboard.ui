@@ -1,7 +1,7 @@
 "use strict";
 var vmServices = soajsApp.components;
 vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$localStorage', '$window', '$location', 'platformsVM', function (ngDataApi, $timeout, $modal, $cookies, $localStorage, $window, $location, platformsVM) {
-		
+
 	function go(currentScope) {
 		overlayLoading.show();
 		
@@ -16,63 +16,63 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		};
 		
 		//hook the listeners
-		currentScope.addVMLayer = function(){
+		currentScope.addVMLayer = function () {
 			tempScope.add = currentScope.$new(true);
 			tempScope.add.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.add.envCode = envCode;
 			tempScope.displayAlert = currentScope.displayAlert;
 			
-			if(currentScope.reusableData){
+			if (currentScope.reusableData) {
 				tempScope.add.reusableData = currentScope.reusableData;
 			}
 			//override default save action with what ui wizard needs
-			tempScope.add.saveActionMethodAdd = function(modalScope, oneProvider, formData, modalInstance){
+			tempScope.add.saveActionMethodAdd = function (modalScope, oneProvider, formData, modalInstance) {
 				//formData should include
 				/*
-					1- template chosen
-					2- region to use
-					3- template inputs
+				 1- template chosen
+				 2- region to use
+				 3- template inputs
 				 */
-				if(tempScope.add.reusableData){
+				if (tempScope.add.reusableData) {
 					currentScope.reusableData = tempScope.add.reusableData;
 				}
 				
-				for(let i in formData){
-					if(i.indexOf("add_another") !== -1){
+				for (let i in formData) {
+					if (i.indexOf("add_another") !== -1) {
 						delete formData[i];
 					}
-					else if(i.indexOf("remove_another") !== -1){
+					else if (i.indexOf("remove_another") !== -1) {
 						delete formData[i];
 					}
 				}
 				
 				let vmLayerContext = {
-					"params":{
+					"params": {
 						"env": currentScope.wizard.gi.code,
 						'technology': 'vm',
 						"infraId": oneProvider._id,
 					},
 					"data": {
-						"infraCodeTemplate" : formData.infraCodeTemplate,
-						"region" : formData.region,
-						"group" : formData.group,
-						"name" : formData.name,
+						"infraCodeTemplate": formData.infraCodeTemplate,
+						"region": formData.region,
+						"group": formData.group,
+						"name": formData.name,
 						"specs": formData
 					}
 				};
 				
 				//hook the vm to the wizard scope
-				if(!currentScope.wizard.vms){
+				if (!currentScope.wizard.vms) {
 					currentScope.wizard.vms = [];
 				}
 				currentScope.wizard.vms.push(vmLayerContext);
 				
 				appendVMsTotheList();
 				
-				if(tempScope.add){
+				if (tempScope.add) {
 					delete tempScope.add;
 				}
-				if(modalInstance){
+				if (modalInstance) {
 					modalInstance.close();
 				}
 			};
@@ -80,46 +80,46 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			platformsVM.addVMLayer(tempScope.add);
 		};
 		
-		currentScope.editVMLayer = function(oneVMLayerFromList){
+		currentScope.editVMLayer = function (oneVMLayerFromList) {
 			tempScope.edit = currentScope.$new(true);
 			tempScope.edit.infraProviders = angular.copy(currentScope.infraProviders);
 			tempScope.edit.envCode = envCode;
 			tempScope.displayAlert = currentScope.displayAlert;
-			if(currentScope.reusableData){
+			if (currentScope.reusableData) {
 				tempScope.edit.reusableData = currentScope.reusableData;
 			}
 			
-			tempScope.edit.saveActionMethodModify = function(modalScope, oneVMLayer, oneProvider, formData, modalInstance){
+			tempScope.edit.saveActionMethodModify = function (modalScope, oneVMLayer, oneProvider, formData, modalInstance) {
 				//formData should include
 				/*
-					1- template chosen
-					2- region to use
-					3- template inputs
+				 1- template chosen
+				 2- region to use
+				 3- template inputs
 				 */
-				if(tempScope.edit.reusableData){
+				if (tempScope.edit.reusableData) {
 					currentScope.reusableData = tempScope.edit.reusableData;
 				}
 				
-				for(let i in formData){
-					if(i.indexOf("add_another") !== -1){
+				for (let i in formData) {
+					if (i.indexOf("add_another") !== -1) {
 						delete formData[i];
 					}
-					else if(i.indexOf("remove_another") !== -1){
+					else if (i.indexOf("remove_another") !== -1) {
 						delete formData[i];
 					}
 				}
 				
 				let vmLayerContext = {
-					"params":{
+					"params": {
 						"env": currentScope.wizard.gi.code,
 						'technology': 'vm',
 						"infraId": oneProvider._id,
 					},
 					"data": {
-						"infraCodeTemplate" : formData.infraCodeTemplate,
-						"region" : formData.region,
-						"group" : formData.group,
-						"name" : formData.name,
+						"infraCodeTemplate": formData.infraCodeTemplate,
+						"region": formData.region,
+						"group": formData.group,
+						"name": formData.name,
 						"specs": formData
 					}
 				};
@@ -130,28 +130,28 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				oneVMLayerFromList.specs.specs = formData;
 				
 				//update copy in wizard
-				for(let i = 0; i < currentScope.wizard.vms.length; i++){
+				for (let i = 0; i < currentScope.wizard.vms.length; i++) {
 					let oneExistingTempVMLayer = currentScope.wizard.vms[i];
-					if(oneExistingTempVMLayer.params.infraId === oneVMLayerFromList.infraProvider._id){
-						if(oneExistingTempVMLayer.data.name === oneVMLayerFromList.name){
+					if (oneExistingTempVMLayer.params.infraId === oneVMLayerFromList.infraProvider._id) {
+						if (oneExistingTempVMLayer.data.name === oneVMLayerFromList.name) {
 							currentScope.wizard.vms[i] = vmLayerContext;
 						}
 					}
 				}
 				
-				if(tempScope.edit){
+				if (tempScope.edit) {
 					delete tempScope.edit;
 				}
 				
-				if(modalInstance){
+				if (modalInstance) {
 					modalInstance.close();
 				}
 			};
 			
 			let oneVMLayer = angular.copy(oneVMLayerFromList);
 			currentScope.wizard.vms.forEach((oneExistingTempVMLayer) => {
-				if(oneExistingTempVMLayer.params.infraId === oneVMLayer.infraProvider._id){
-					if(oneExistingTempVMLayer.data.name === oneVMLayer.name){
+				if (oneExistingTempVMLayer.params.infraId === oneVMLayer.infraProvider._id) {
+					if (oneExistingTempVMLayer.data.name === oneVMLayer.name) {
 						//this is the one
 						oneVMLayer.formData = angular.copy(oneExistingTempVMLayer.data);
 						oneVMLayer.formData.infraCodeTemplate = oneVMLayer.template;
@@ -163,39 +163,65 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				}
 			});
 			
-			for(let i in oneVMLayer.formData.specs){
+			for (let i in oneVMLayer.formData.specs) {
 				oneVMLayer.formData.inputs[i] = oneVMLayer.formData.specs[i];
 			}
 			platformsVM.editVMLayer(tempScope.edit, oneVMLayer);
 		};
 		
-		currentScope.inspectVMLayer = function(oneVMLayer){
+		currentScope.inspectVMLayer = function (oneVMLayer) {
 			tempScope.inspect = currentScope.$new(true);
 			platformsVM.inspectVMLayer(tempScope.inspect, oneVMLayer, () => {
 				delete tempScope.inspect;
 			});
 		};
-
+		
+		currentScope.getOnBoard = function (vmLayer, release) {
+			if (!currentScope.wizard.vms) {
+				currentScope.wizard.vms = [];
+			}
+			
+			let obj;
+			if(release){
+				delete vmLayer.list[0].labels['soajs.env.code'];
+			}
+			if (!release) {
+				obj = {
+					"params": {
+						"env": currentScope.wizard.gi.code,
+						"infraId": vmLayer.infraProvider._id,
+						"release": release
+					},
+					"data": {
+						'layer': vmLayer,
+						"group": vmLayer.list[0].labels['soajs.service.vm.group']
+					}
+				};
+				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
+				currentScope.wizard.vms.push(obj);
+			}
+		};
+		
 		//hook the listeners
-		currentScope.listVMLayers = function() {
+		currentScope.listVMLayers = function () {
 			//turned off first vm support release
 			// platformsVM.listVMLayers(currentScope, () => {
-				appendVMsTotheList();
+			appendVMsTotheList();
 			// });
 		};
 		
-		currentScope.deleteVMLayer = function(oneVMLayer) {
-			if(oneVMLayer.forceEditDelete){
-				for(let layerName in currentScope.vmLayers){
-					if(layerName === oneVMLayer.infraProvider.name + "_" + oneVMLayer.name){
+		currentScope.deleteVMLayer = function (oneVMLayer) {
+			if (oneVMLayer.forceEditDelete) {
+				for (let layerName in currentScope.vmLayers) {
+					if (layerName === oneVMLayer.infraProvider.name + "_" + oneVMLayer.name) {
 						delete currentScope.vmLayers[layerName];
 					}
 				}
 				
-				for(let i = currentScope.wizard.vms.length -1; i >= 0; i--){
-					let oneVM = currentScope.wizard.vms[i]
-					if(oneVM.params.infraId === oneVMLayer.infraProvider._id){
-						if(oneVM.data.name === oneVMLayer.name){
+				for (let i = currentScope.wizard.vms.length - 1; i >= 0; i--) {
+					let oneVM = currentScope.wizard.vms[i];
+					if (oneVM.params.infraId === oneVMLayer.infraProvider._id) {
+						if (oneVM.data.name === oneVMLayer.name) {
 							currentScope.wizard.vms.splice(i, 1);
 						}
 					}
@@ -207,16 +233,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		
 		//if there are registered vms to be created by the wizard hook them to the scope
 		function appendVMsTotheList() {
-			if(currentScope.wizard.vms){
+			if (currentScope.wizard.vms) {
 				currentScope.wizard.vms.forEach((oneVM) => {
 					
 					let myProvider;
 					currentScope.infraProviders.forEach((oneProvider) => {
-						if(oneVM.params && oneProvider._id === oneVM.params.infraId){
+						if (oneVM.params && oneProvider._id === oneVM.params.infraId) {
 							myProvider = oneProvider;
 						}
 					});
-					if(myProvider){
+					if (myProvider) {
 						let vmSpecs = angular.copy(oneVM.data);
 						delete vmSpecs.name;
 						delete vmSpecs.region;
@@ -238,31 +264,31 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 		}
 		
-		function appendNextButton(currentScope, options){
+		function appendNextButton(currentScope, options) {
 			
 			//if the next button exists, remove it
-			if(options && options.actions){
-				for(let i = options.actions.length -1; i >=0; i--){
-					if(options.actions[i].label === 'Next'){
+			if (options && options.actions) {
+				for (let i = options.actions.length - 1; i >= 0; i--) {
+					if (options.actions[i].label === 'Next') {
 						options.actions.splice(i, 1);
 					}
 				}
 			}
 			
 			let addNextButton = false;
-			if(!currentScope.restrictions.vm){
+			if (!currentScope.restrictions.vm) {
 				addNextButton = true;
 			}
-			else if(currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && Object.keys(currentScope.vmLayers).length > 0){
+			else if (currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && Object.keys(currentScope.vmLayers).length > 0) {
 				addNextButton = true;
 			}
-			else if(!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0){
+			else if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
 				addNextButton = true;
 			}
 			currentScope.optionalVMLayer = addNextButton;
 			
-			if(addNextButton && options && options.actions && options.actions.length < 3){
-				options.actions.splice(1 , 0 , {
+			if (addNextButton && options && options.actions && options.actions.length < 3) {
+				options.actions.splice(1, 0, {
 					'type': 'submit',
 					'label': "Next",
 					'btn': 'primary',
@@ -270,20 +296,20 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						
 						//if no container and no vm, do not proceed
 						let noContainerSelected = false, noVMLayer = false;
-						if(currentScope.wizard.deployment){
-							if(!currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.selectedDriver === 'ondemand'){
+						if (currentScope.wizard.deployment) {
+							if (!currentScope.wizard.deployment.selectedDriver || currentScope.wizard.deployment.selectedDriver === 'ondemand') {
 								noContainerSelected = true;
 							}
 						}
 						
-						if(!currentScope.wizard.vms || currentScope.wizard.vms.length === 0){
+						if (!currentScope.wizard.vms || currentScope.wizard.vms.length === 0) {
 							noVMLayer = true;
 						}
 						
-						if(noContainerSelected && noVMLayer){
+						if (noContainerSelected && noVMLayer) {
 							$window.alert("You need to attach a container technology or create at least one virtual machine layer to proceed.");
 						}
-						else{
+						else {
 							currentScope.referringStep = 'vm';
 							$localStorage.addEnv = angular.copy(currentScope.wizard);
 							currentScope.envCode = envCode;
@@ -317,26 +343,26 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 		
 		currentScope.form.actions = [];
-		if(!currentScope.restrictions.vm){
-			if(['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1){
+		if (!currentScope.restrictions.vm) {
+			if (['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1) {
 				currentScope.referringStep = 'vm';
 				currentScope.previousStep();
 			}
-			else{
+			else {
 				currentScope.referringStep = 'vm';
 				currentScope.nextStep();
 			}
 		}
-		else{
+		else {
 			//execute main function
 			listInfraProviders(currentScope, () => {
-				if(!currentScope.vmLayers){
+				if (!currentScope.vmLayers) {
 					currentScope.vmLayers = {};
 				}
 				delete currentScope.envCode;
 				
 				//turned off first vm support release
-				 platformsVM.listVMLayers(currentScope, () => {
+				platformsVM.listVMLayers(currentScope, () => {
 					//if there are registered vms to be created by the wizard hook them to the scope
 					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
 					appendVMsTotheList();
@@ -384,7 +410,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						
 						overlayLoading.hide();
 					});
-				 });
+				});
 			});
 		}
 	}

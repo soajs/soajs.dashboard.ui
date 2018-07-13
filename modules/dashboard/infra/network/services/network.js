@@ -55,8 +55,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '
 			params: {
 				'id': oneInfra._id,
 				'group': oneGroup.name,
-				'extras[]': ['networks'],
-
+				'extras[]': ['networks']
 			}
 		};
 
@@ -103,7 +102,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '
 					buildGrid(currentScope, gridOptions);
 				}
 				else {
-					currentScope.displayAlert('danger', `The group "${oneGroup.name}" does not have any networks to be listed`);
+					currentScope.displayAlert('danger', `The group "${oneGroup.name}" does not have any networks to be listed.`);
 				}
 			}
 		});

@@ -42,7 +42,14 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 		//save selected region in scope
 		// NOTE: we are using this value to trigger listGroups from deleteGroup
 		//no need to save this value in the scope if we decide to NOT listGroups from deleteGroup
-		currentScope.selectedRegion = oneRegion
+		currentScope.selectedRegion = oneRegion;
+
+		//clean grid from previous list if any
+		if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
+			currentScope.grid.rows = [];
+			currentScope.grid.filteredRows = [];
+			currentScope.grid.original = [];
+		}
 
 		let getInfraOpts = {
 			'id': oneInfra._id,

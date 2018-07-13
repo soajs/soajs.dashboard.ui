@@ -52,7 +52,7 @@
 	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
 		<br />
 		<div ng-repeat="oneVMLayer in vmLayers">
-			<div ng-if="oneVMLayer.template" >
+			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code']) " >
 				<div class="entryBox mb20" ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
 					<div class="header table">
 						<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
@@ -87,6 +87,9 @@
 									</a>
 								</li>
 							</ul>
+							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code']"  ng-if="!environmentWizard && !listingClouds" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
+								Release
+							</button>
 						</div>
 					</div>
 					<div class="body">
@@ -180,10 +183,10 @@
 				</div>
 			</div>
 
-			<div ng-if="!oneVMLayer.template" ng-hide="!oneVMLayer.list[0].labels['soajs.env.code'] && listingClouds">
+			<div ng-if="!oneVMLayer.template && !oneVMLayer.list[0].labels['soajs.env.code']" ng-hide="listingClouds">
 				<div class="entryBox mb20"
 					 ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
-					<div class="header table" style="background-color: #B0C4DE">
+					<div class="header table" style="background-color: #d9edf7">
 						<img height="26"
 							 ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png"
 							 alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
@@ -195,7 +198,6 @@
 						</span>
 						&nbsp;&nbsp;
 					</span>
-
 
 						<div class="dropdown serviceOpsDropdown">
 
@@ -211,7 +213,7 @@
 									</a>
 								</li>
 							</ul>
-							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code']" ng-if="!environmentWizard && !listingClouds" class="btn btn-default" ng-click="getOnBoard(oneVMLayer)">
+							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code']" ng-if="!environmentWizard && !listingClouds" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>
@@ -315,7 +317,6 @@
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </div>

@@ -90,6 +90,18 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							apiParams['deploy'] = formData.canBeDeployed || false;
 							apiParams['options'] = deployOptions;
 
+                            if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+                                apiParams["vms"] = [];
+                                $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
+                                    apiParams.vms.push(oneInstance.name);
+
+                                    if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
+                                        if(!apiParams.options.deployConfig.vmConfiguration.group) {
+                                            apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
+                                        }
+                                    }
+                                });
+                            }
 							if (!formData.canBeDeployed) {
 								delete apiParams['options'];
 							}
@@ -140,18 +152,18 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								}
 							}
 							apiParams["deployOptions"] = deployOptions;
-							if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
-								apiParams["vms"] = [];
-								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-									apiParams.vms.push(oneInstance.name);
-
-									if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
-										if(!apiParams.options.deployConfig.vmConfiguration.group) {
-											apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
-										}
-									}
-								});
-							}
+							// if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+							// 	apiParams["vms"] = [];
+							// 	$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
+							// 		apiParams.vms.push(oneInstance.name);
+                            //
+							// 		if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
+							// 			if(!apiParams.options.deployConfig.vmConfiguration.group) {
+							// 				apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
+							// 			}
+							// 		}
+							// 	});
+							// }
 						}
 					}
 

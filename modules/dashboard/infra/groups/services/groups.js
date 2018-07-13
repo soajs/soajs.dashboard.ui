@@ -90,7 +90,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								'label': 'Delete Group(s)',
 								'icon': 'bin',
 								'handler': 'deleteGroup',
-								'msg': "Are you sure you want to delete the selected secret(s)?"
+								'msg': "Are you sure you want to delete the selected resource group(s)?"
 							});
 						}
 

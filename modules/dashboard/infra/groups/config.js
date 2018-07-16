@@ -15,28 +15,63 @@ let infraGroupConfig = {
 				'label': 'Name',
 				'type': 'text',
 				'value': "",
-				'placeholder': 'My Template',
-				'fieldMsg': 'Enter a name for your template',
+				'placeholder': ' My Resource Group',
+				'fieldMsg': 'Enter a name for the resource group',
 				'required': true
 			},
 			{
-				'name': 'description',
-				'label': 'Description',
-				'type': 'textarea',
+				'name': 'region',
+				'label': 'Region',
+				'type': 'readonly',
 				'value': "",
-				'placeholder': 'My Template Description',
-				'fieldMsg': 'Provide  a description for your template',
-				'required': false
+				'fieldMsg': 'Region where the resource group will be located',
+				'required': true
 			},
 			{
-				'name': 'location',
-				'label': 'Location',
-				'type': 'select',
-				'value': [],
-				'fieldMsg': 'Select where to store this template.',
-				'required': true
+				'type': 'group',
+				'label': 'Labels',
+				'entries': [
+					{
+						'type': 'html',
+						'name': 'addLabel',
+						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
+					}
+				]
 			}
-		]
+		],
+
+		labelInput : {
+			'name': 'labelGroup',
+			'type': 'group',
+			'label': 'New Label',
+			'entries': [
+				{
+					'name': 'labelName',
+					'label': 'Label Name',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the name of the label',
+					'fieldMsg': 'Enter the name of the label',
+					'placeholder': "My label name"
+				},
+				{
+					'name': 'labelValue',
+					'label': 'Label Value',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the value of the label',
+					'fieldMsg': 'Enter the value of the label',
+					'placeholder': "My label Value"
+				},
+				{
+					'type': 'html',
+					'name': 'rLabel',
+					'value': '<span class="icon icon-cross"></span>'
+				}
+			]
+		}
 	},
 
 	grid: {

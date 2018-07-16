@@ -2,7 +2,116 @@
 var infraGroupSrv = soajsApp.components;
 infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', 'infraCommonSrv', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload, infraCommonSrv) {
 
-	function addGroup(currentScope) {}
+	function addGroup(currentScope) {
+		currentScope.labelCounter = 0;
+
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": infraGroupConfig.form.addGroup
+			},
+			name: 'addResourceGroup',
+			label: 'Add New Resource Group',
+			actions: [
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				},
+				{
+					'type': 'submit',
+					'label': "Create Resource Group",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let labels = {};
+						for (let i = 0; i < currentScope.labelCounter; i ++) {
+							labels[data['labelName'+i]] = data['labelValue'+i];
+						}
+
+						let postOpts = {
+							"method": "post",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "group",
+									"region": currentScope.selectedRegion.v,
+									"labels": labels,
+									"name": data.name
+								}
+							}
+						};
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.form.displayAlert('success', "Resource Group created successfully.");
+								currentScope.modalInstance.close();
+								currentScope.go("#/infra-groups");
+							}
+						});
+					}
+				}
+			]
+		};
+
+		options.form.entries[2].entries[0].onAction = function (id, value, form) {
+			addNewLabel(currentScope);
+		};
+
+		//set value of region to selectedRegion
+		options.form.entries[1].value = currentScope.selectedRegion.l;
+
+		buildFormWithModal(currentScope, $modal, options);
+	}
+
+	function addNewLabel(currentScope) {
+		let labelCounter = currentScope.labelCounter;
+		let tmp = angular.copy(infraGroupConfig.form.labelInput);
+		tmp.name += labelCounter;
+		tmp.entries[0].name += labelCounter;
+		tmp.entries[1].name += labelCounter;
+		tmp.entries[2].name += labelCounter;
+
+		tmp.entries[2].onAction = function (id, value, form) {
+			let count = parseInt(id.replace('rLabel', ''));
+
+			for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
+				if (form.entries[2].entries[i].name === 'labelGroup' + count) {
+					//remove from formData
+					for (var fieldname in form.formData) {
+						if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+							delete form.formData[fieldname];
+						}
+					}
+					//remove from formEntries
+					form.entries[2].entries.splice(i, 1);
+					break;
+				}
+			}
+		};
+
+		if (currentScope.form && currentScope.form.entries) {
+			currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
+		}
+		else {
+			// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
+		}
+		currentScope.labelCounter ++;
+	}
 
 	function editGroup(currentScope, oneGroup) {}
 
@@ -34,7 +143,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 	}
 
 	function listGroups(currentScope, oneRegion) {
-		
+
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
 		//save selected region in scope
 		// NOTE: we are using this value to trigger listGroups from deleteGroup

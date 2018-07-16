@@ -68,6 +68,13 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 				if (response.publicIps && response.publicIps.length > 0) {
 					currentScope.infraPublicIps = response.publicIps;
 					
+					currentScope.infraPublicIps.forEach((onePublicIP) =>{
+						if(onePublicIP.associated){
+							onePublicIP.associated = onePublicIP.associated.type + " / " + onePublicIP.associated.name;
+						}
+					});
+					
+					
 					let gridOptions = {
 						grid: infraIPConfig.grid,
 						data: currentScope.infraPublicIps,

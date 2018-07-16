@@ -43,9 +43,11 @@ let infraIPConfig = {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
 			{ 'label': 'Name', 'field': 'name' },
-			{ 'label': 'Address', 'field': 'ipAddress' },
-			{ 'label': 'Allocation Method', 'field': 'publicIPAllocationMethod' },
-			{ 'label': 'Used By (VM)', 'field': 'vm' }
+			{ 'label': 'Address', 'field': 'address' },
+			{ 'label': 'Allocation Method', 'field': 'allocationMethod' },
+			{ 'label': 'Idle Timeout', 'field': 'idleTimeout' },
+			{ 'label': 'IP Version', 'field': 'version' },
+			{ 'label': 'Associated To', 'field': 'associated' }
 		],
 		'leftActions': [],
 		'topActions': [],

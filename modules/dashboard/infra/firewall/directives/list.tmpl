@@ -46,7 +46,7 @@
 						<p>No Ports Configuration Detected.</p>
 					</alert>
 					
-					<fieldset>
+					<fieldset ng-if="oneGroups.networks && oneGroups.networks.length > 0">
 						<legend>Networks</legend>
 						<div class="entryBoxes entryBoxesGrid">
 							<div ng-repeat="oneNetwork in oneGroups.networks">

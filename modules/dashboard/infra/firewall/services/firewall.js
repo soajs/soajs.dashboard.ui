@@ -4,7 +4,7 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 
 	function addFirewall(currentScope, oneInfra) {}
 
-	function editFirewall(currentScope, oneInfra, oneFirewall) {}
+	function editFirewall(currentScope, oneFirewall) {}
 
 	function deleteFirewall(currentScope, oneFirewall) {
 
@@ -30,16 +30,13 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 			else {
 				overlayLoading.hide();
 				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
-
-				//trigger listFirewalls to fetch changes
-				// NOTE: this is useless since deleting will take a long time and the UI won't show any changes immediately
-				listFirewalls(currentScope, currentScope.$parent.$parent.currentSelectedInfra, currentScope.selectedGroup);
 			}
 		});
 	}
 
-	function listFirewalls(currentScope, oneGroup, oneInfra) {
-
+	function listFirewalls(currentScope, oneGroup) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 
@@ -67,43 +64,9 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 				currentScope.displayAlert('danger', error);
 			}
 			else {
+				currentScope.infraSecurityGroups = [];
 				if (response.securityGroups && response.securityGroups.length > 0) {
 					currentScope.infraSecurityGroups = response.securityGroups;
-
-					let gridOptions = {
-						grid: infraFirewallConfig.grid,
-						data: currentScope.infraSecurityGroups,
-						left: [],
-						top: []
-					};
-
-					if (currentScope.access.editFirewall) {
-						gridOptions.left.push({
-							'label': 'Edit Firewall',
-							'icon': 'pencil',
-							'handler': 'editFirewall'
-						});
-					}
-
-					if (currentScope.access.removeFirewall) {
-						gridOptions.left.push({
-							'label': 'Delete Firewall',
-							'icon': 'bin',
-							'handler': 'deleteFirewall',
-							'msg': "Are you sure you want to delete this firewall?"
-						});
-						gridOptions.top.push({
-							'label': 'Delete Firewall(s)',
-							'icon': 'bin',
-							'handler': 'deleteFirewall',
-							'msg': "Are you sure you want to delete the selected firewall(s)?"
-						});
-					}
-
-					buildGrid(currentScope, gridOptions);
-				}
-				else {
-					currentScope.displayAlert('danger', `The group "${oneGroup.name}" does not have any firewalls to be listed.`);
 				}
 			}
 		});

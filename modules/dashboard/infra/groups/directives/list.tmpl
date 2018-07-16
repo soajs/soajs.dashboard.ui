@@ -1,26 +1,33 @@
 <section ng-controller="infraGroupCtrl">
-	<div>
-		<br />
-		<a class="btn btn-sm btn-primary" ng-if="access.addGroup" ng-click="addGroup(currentSelectedInfra)">
-			<span class="icon icon-plus"></span> Add New Group
-		</a>
+	<div class="w-100 c-both">
+		<div class="f-left w20">
+			<a class="btn btn-sm btn-primary" ng-if="access.addGroup" ng-click="addGroup()">
+				<span class="icon icon-plus"></span> Add New Group
+			</a>
+		</div>
+		
+		<div class="f-right w30">
+			<div class="searchBoxContainer">
+				<button class="btn btn-success f-right" ng-click="listGroups(selectedRegion)">
+					Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+				</button>
+			</div>
+			
+			<div ng-if="infraRegions.length > 0">
+				Region:
+				<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listGroups(selectedRegion)" ng-options="region as region.l for region in infraRegions"></select>
+			</div>
+		</div>
+		<br /><br />
 	</div>
-
-	<div class="f-right w8 searchBoxContainer">
-		<button class="btn btn-success f-right" ng-click="listGroups(selectedRegion, currentSelectedInfra)">
-			Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
-		</button>
-	</div>
-
-	<div style="width:500px" class="f-right" ng-if="infraRegions.length > 0">
-		Select region to list resource groups:
-		<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listGroups(selectedRegion, currentSelectedInfra)" ng-options="region as region.l for region in infraRegions">
-		</select>
-	</div>
-
+	
 	<div ng-if="access.list">
+		<alert type="warning" ng-if="!infraResourceGroups || infraResourceGroups.length === 0">
+			No Resource Groups found in this region.
+		</alert>
 		<div ng-if="infraResourceGroups && infraResourceGroups.length > 0" class="entryBoxes">
-			<br /><nglist></nglist>
+			<br/>
+			<nglist></nglist>
 		</div>
 	</div>
 </section>

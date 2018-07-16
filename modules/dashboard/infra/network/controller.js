@@ -10,8 +10,19 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$localStorage', '$win
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"], () => {
-			// infraIACSrv.rerenderTemplates($scope);
+		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
+			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
+				//flag that infra doesn't have any resource groups
+				$scope.noResourceGroups = false;
+				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
+				$scope.selectedGroup = $scope.infraGroups[0];
+				$timeout(() => {
+					infraNetworkSrv.listNetworks($scope, $scope.selectedGroup);
+				}, 500);
+			}
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
+				$scope.noResourceGroups = true;
+			}
 		});
 	};
 
@@ -59,41 +70,20 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$localStorage', '$win
 		infraNetworkSrv.deleteNetwork($scope, oneNetwork);
 	};
 
-	$scope.addNetwork = function (oneInfra) {
-		infraNetworkSrv.addNetwork($scope, oneInfra);
+	$scope.addNetwork = function () {
+		infraNetworkSrv.addNetwork($scope);
 	};
 
-	$scope.editNetwork = function (oneNetwork, oneInfra) {
-		infraNetworkSrv.editNetwork($scope, oneInfra, oneNetwork);
+	$scope.editNetwork = function (oneNetwork) {
+		infraNetworkSrv.editNetwork($scope, oneNetwork);
 	};
 
-	$scope.listNetworks = function (oneGroup, oneInfra) {
-		infraNetworkSrv.listNetworks($scope, oneInfra, oneGroup);
+	$scope.listNetworks = function (oneGroup) {
+		infraNetworkSrv.listNetworks($scope, oneGroup);
 	};
 
 	if ($scope.access.list) {
 		$scope.getProviders();
-
-		let getInfraOpts = {
-			'id': $scope.$parent.$parent.currentSelectedInfra._id,
-			'exclude': ['templates', 'regions']
-		};
-		//get infra with groups to populate dropdown menu
-		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
-			if (error) {
-				$scope.displayAlert('danger', error);
-			}
-			else {
-				if (response.groups && response.groups.length > 0) {
-					//flag that infra doesn't have any resource groups
-					$scope.noResourceGroups = false;
-					$scope.infraGroups = response.groups;
-				}
-				else if (response.groups && response.groups.length === 0) {
-					$scope.noResourceGroups = true;
-				}
-			}
-		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

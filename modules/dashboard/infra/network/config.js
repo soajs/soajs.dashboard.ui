@@ -43,7 +43,6 @@ let infraNetworkConfig = {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
 			{ 'label': 'Network Name', 'field': 'name' },
-			{ 'label': 'Network Region', 'field': 'region' },
 			{ 'label': 'Network Address Prefixes', 'field': 'addressPrefixes' },
 			{ 'label': 'Network DNS Servers', 'field': 'dnsServers' },
 			{ 'label': 'Network Subnets', 'field': 'subnets' }

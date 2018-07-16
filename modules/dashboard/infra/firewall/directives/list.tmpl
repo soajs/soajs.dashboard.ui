@@ -1,26 +1,95 @@
 <section ng-controller="infraFirewallCtrl">
-	<div>
-		<br />
-		<a class="btn btn-sm btn-primary" ng-if="access.addFirewall" ng-click="addFirewall(currentSelectedInfra)">
-			<span class="icon icon-plus"></span> Add New Firewall
-		</a>
-	</div>
+	<div class="w-100 c-both">
+		<div class="f-left w20">
+			<a class="btn btn-sm btn-primary" ng-if="access.addFirewall" ng-click="addFirewall()">
+				<span class="icon icon-plus"></span> Add New Firewall
+			</a>
+		</div>
+		
+		<div class="f-right w30">
+			<div class="searchBoxContainer">
+				<button class="btn btn-success f-right" ng-click="listFirewalls(selectedGroup)">
+					Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+				</button>
+			</div>
 
-	<div class="f-right w8 searchBoxContainer">
-		<button class="btn btn-success f-right" ng-click="listFirewalls(selectedGroup, currentSelectedInfra)">
-			Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
-		</button>
-	</div>
-
-	<div style="width:500px" class="f-right" ng-if="infraGroups.length > 0">
-		Select group to list firewalls:
-		<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listFirewalls(selectedGroup, currentSelectedInfra)" ng-options="group as group.name for group in infraGroups">
-		</select>
+			<div ng-if="infraGroups.length > 0">
+				Group:
+				<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listFirewalls(selectedGroup)" ng-options="group as group.name group by group.region for group in infraGroups">
+				</select>
+			</div>
+		</div>
+		<br /><br />
 	</div>
 
 	<div ng-if="access.list">
+		<alert type="warning" ng-if="!infraSecurityGroups || infraSecurityGroups.length === 0">
+			No Security Groups in this Group.
+		</alert>
 		<div ng-if="infraSecurityGroups && infraSecurityGroups.length > 0" class="entryBoxes">
-			<br /><nglist></nglist>
+			<br />
+			
+			<accordion close-others="false">
+				<accordion-group ng-repeat="oneGroups in infraSecurityGroups">
+					<accordion-heading>
+						{{oneGroups.name}}
+					</accordion-heading>
+					<div class="w-100 c-both t-right">
+							<a href="" ng-click="editFirewall(oneGroups)" class="btn btn-sm btn-primary">
+								<span class="icon icon-pencil2"></span>&nbsp;Modify
+							</a>&nbsp;&nbsp;
+							<a class="btn btn-sm btn-danger" href="" ng-click="deleteFirewall(oneGroups)" ng-confirm-click="Are you sure you want to delete this Security Group ?">
+								<span class="icon icon-cross"></span>&nbsp;Delete
+							</a>
+					</div>
+					<alert ng-if="!oneGroups.ports || oneGroups.ports.length === 0" type="warning">
+						<p>No Ports Configuration Detected.</p>
+					</alert>
+					
+					<fieldset>
+						<legend>Networks</legend>
+						<div class="entryBoxes entryBoxesGrid">
+							<div ng-repeat="oneNetwork in oneGroups.networks">
+								<div class="entryBox blueBox" style="padding: 3px 5px;">
+									<b>Network:</b>&nbsp;{{oneNetwork.name}}
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset ng-if="oneGroups.ports && oneGroups.ports.length > 0">
+						<legend>Ports Configuration</legend>
+						<div class="grid">
+							<table width="100%">
+								<thead>
+									<tr>
+										<th>Priority</th>
+										<th>Name</th>
+										<th>Protocol</th>
+										<th>Port</th>
+										<th>Source Range</th>
+										<th>Direction</th>
+										<th>Access</th>
+										<th>Published</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="onePort in oneGroups.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
+										<td>{{onePort.priority}}</td>
+										<td>{{onePort.name}}</td>
+										<td>{{onePort.protocol}}</td>
+										<td>{{onePort.published}}</td>
+										<td>{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>
+										<td>{{onePort.direction}}</td>
+										<td>{{onePort.access}}</td>
+										<td>{{(onePort.isPublished) ? "YES" : "NO"}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</fieldset>
+				</accordion-group>
+			</accordion>
 		</div>
 	</div>
 </section>

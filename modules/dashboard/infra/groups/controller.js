@@ -10,8 +10,13 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window'
 	infraCommonSrv.getInfraFromCookie($scope);
 	
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"], () => {
+		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "templates"], () => {
 			// infraIACSrv.rerenderTemplates($scope);
+			if ($scope.$parent.$parent.currentSelectedInfra.regions && $scope.$parent.$parent.currentSelectedInfra.regions.length > 0) {
+				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
+				
+				$scope.selectedRegion = $scope.infraRegions[0]
+			}
 		});
 	};
 	
@@ -55,41 +60,24 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window'
 		}
 	};
 
-	$scope.addGroup = function (oneInfra) {
-		infraGroupSrv.addGroup($scope, oneInfra);
+	$scope.addGroup = function () {
+		infraGroupSrv.addGroup($scope);
 	};
 
-	$scope.editGroup = function (oneGroup, oneInfra) {
-		infraGroupSrv.editGroup($scope, oneInfra, oneGroup);
+	$scope.editGroup = function (oneGroup) {
+		infraGroupSrv.editGroup($scope, oneGroup);
 	};
 
 	$scope.deleteGroup = function (oneGroup) {
 		infraGroupSrv.deleteGroup($scope, oneGroup);
 	};
 
-	$scope.listGroups = function (oneRegion, oneInfra) {
-		infraGroupSrv.listGroups($scope, oneInfra, oneRegion);
+	$scope.listGroups = function (oneRegion) {
+		infraGroupSrv.listGroups($scope, oneRegion);
 	};
 
 	if ($scope.access.list) {
 		$scope.getProviders();
-
-		let getInfraOpts = {
-			'id': $scope.$parent.$parent.currentSelectedInfra._id,
-			'exclude': ['templates', 'groups']
-		};
-		//get infra with groups to populate dropdown menu
-		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
-			if (error) {
-				$scope.displayAlert('danger', error);
-			}
-			else {
-				if (response.regions && response.regions.length > 0) {
-					$scope.infraRegions = response.regions;
-				}
-				// QUESTION: do we need an else state in case no regions? there will never be a case with no regions
-			}
-		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

@@ -2,9 +2,9 @@
 var infraIPSrv = soajsApp.components;
 infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
 
-	function addIP(currentScope, oneInfra) {}
+	function addIP(currentScope) {}
 
-	function editIP(currentScope, oneInfra, oneIP) {}
+	function editIP(currentScope, oneIP) {}
 
 	function deleteIP(currentScope, oneIP) {
 
@@ -30,16 +30,13 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 			else {
 				overlayLoading.hide();
 				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
-
-				//trigger listLoadBalancers to fetch changes
-				// NOTE: this is useless since deleting will take a long time and the UI won't show any changes immediately
-				listIPs(currentScope, currentScope.$parent.$parent.currentSelectedInfra, currentScope.selectedGroup);
 			}
 		});
 	}
 
-	function listIPs(currentScope, oneInfra, oneGroup) {
-
+	function listIPs(currentScope, oneGroup) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 
@@ -67,16 +64,17 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 				currentScope.displayAlert('danger', error);
 			}
 			else {
+				currentScope.infraPublicIps = [];
 				if (response.publicIps && response.publicIps.length > 0) {
 					currentScope.infraPublicIps = response.publicIps;
-
+					
 					let gridOptions = {
 						grid: infraIPConfig.grid,
 						data: currentScope.infraPublicIps,
 						left: [],
 						top: []
 					};
-
+					
 					if (currentScope.access.editIP) {
 						gridOptions.left.push({
 							'label': 'Edit Public IP',
@@ -84,7 +82,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 							'handler': 'editIP'
 						});
 					}
-
+					
 					if (currentScope.access.removeIP) {
 						gridOptions.left.push({
 							'label': 'Delete Public IP',
@@ -99,11 +97,8 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 							'msg': "Are you sure you want to delete the selected public IP(s)?"
 						});
 					}
-
+					
 					buildGrid(currentScope, gridOptions);
-				}
-				else {
-					currentScope.displayAlert('danger', `The group "${oneGroup.name}" does not have any public IP addresses to be listed.`);
 				}
 			}
 		});

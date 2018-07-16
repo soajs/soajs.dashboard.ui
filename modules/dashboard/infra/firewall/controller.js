@@ -10,8 +10,19 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$localStorage', '$w
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"], () => {
-			// infraIACSrv.rerenderTemplates($scope);
+		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
+			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
+				//flag that infra doesn't have any resource groups
+				$scope.noResourceGroups = false;
+				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
+				$scope.selectedGroup = $scope.infraGroups[0];
+				$timeout(() => {
+					infraFirewallSrv.listFirewalls($scope, $scope.selectedGroup);
+				}, 500);
+			}
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
+				$scope.noResourceGroups = true;
+			}
 		});
 	};
 
@@ -59,41 +70,20 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$localStorage', '$w
 		infraFirewallSrv.deleteFirewall($scope, oneFirewall);
 	};
 
-	$scope.addFirewall = function (oneInfra) {
-		infraFirewallSrv.addFirewall($scope, oneInfra);
+	$scope.addFirewall = function () {
+		infraFirewallSrv.addFirewall($scope);
 	};
 
 	$scope.editFirewall = function (oneFirewall) {
 		infraFirewallSrv.editFirewall($scope, oneFirewall);
 	};
 
-	$scope.listFirewalls = function (oneGroup, oneInfra) {
-		infraFirewallSrv.listFirewalls($scope, oneGroup, oneInfra);
+	$scope.listFirewalls = function (oneGroup) {
+		infraFirewallSrv.listFirewalls($scope, oneGroup);
 	};
 
 	if ($scope.access.list) {
 		$scope.getProviders();
-
-		let getInfraOpts = {
-			'id': $scope.$parent.$parent.currentSelectedInfra._id,
-			'exclude': ['templates', 'regions']
-		};
-		//get infra with groups to populate dropdown menu
-		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
-			if (error) {
-				$scope.displayAlert('danger', error);
-			}
-			else {
-				if (response.groups && response.groups.length > 0) {
-					//flag that infra doesn't have any resource groups
-					$scope.noResourceGroups = false;
-					$scope.infraGroups = response.groups;
-				}
-				else if (response.groups && response.groups.length === 0) {
-					$scope.noResourceGroups = true;
-				}
-			}
-		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

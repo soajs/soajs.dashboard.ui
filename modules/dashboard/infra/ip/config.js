@@ -42,10 +42,10 @@ let infraIPConfig = {
 	grid: {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
-			{ 'label': 'Public IP Name', 'field': 'name' },
-			{ 'label': 'Public IP Region', 'field': 'region' },
-			{ 'label': 'Public IP Address Version', 'field': 'ipAddressVersion' },
-			{ 'label': 'Public IP Allocation Method', 'field': 'publicIPAllocationMethod' }
+			{ 'label': 'Name', 'field': 'name' },
+			{ 'label': 'Address', 'field': 'ipAddress' },
+			{ 'label': 'Allocation Method', 'field': 'publicIPAllocationMethod' },
+			{ 'label': 'Used By (VM)', 'field': 'vm' }
 		],
 		'leftActions': [],
 		'topActions': [],

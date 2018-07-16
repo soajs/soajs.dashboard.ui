@@ -2,9 +2,9 @@
 var infraGroupSrv = soajsApp.components;
 infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', 'infraCommonSrv', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload, infraCommonSrv) {
 
-	function addGroup(currentScope, oneInfra) {}
+	function addGroup(currentScope) {}
 
-	function editGroup(currentScope, oneInfra, oneGroup) {}
+	function editGroup(currentScope, oneGroup) {}
 
 	function deleteGroup(currentScope, oneGroup) {
 
@@ -28,17 +28,14 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
-
-				//trigger listGroups to fetch changes
-				// NOTE: this is useless since deleting will take a long time and the UI won't show any changes immediately
-				listGroups(currentScope, currentScope.$parent.$parent.currentSelectedInfra, currentScope.selectedRegion);
+				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`);
 			}
 		});
 	}
 
-	function listGroups(currentScope, oneInfra, oneRegion) {
-
+	function listGroups(currentScope, oneRegion) {
+		
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
 		//save selected region in scope
 		// NOTE: we are using this value to trigger listGroups from deleteGroup
 		//no need to save this value in the scope if we decide to NOT listGroups from deleteGroup
@@ -66,7 +63,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 					if (response.groups && response.groups.length > 0) {
 						//loop over groups and push to the array the ones with matching region
 						response.groups.forEach((oneGroup) => {
-							if (oneGroup.region === oneRegion.v) {
+							if (oneRegion && oneGroup.region === oneRegion.v) {
 								currentScope.infraResourceGroups.push(oneGroup);
 							}
 						});

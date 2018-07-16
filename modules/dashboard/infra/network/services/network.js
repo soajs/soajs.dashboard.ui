@@ -2,9 +2,9 @@
 var infraNetworkSrv = soajsApp.components;
 infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', 'infraCommonSrv', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload, infraCommonSrv) {
 
-	function addNetwork(currentScope, oneInfra) {}
+	function addNetwork(currentScope) {}
 
-	function editNetwork(currentScope, oneInfra, oneNetwork) {}
+	function editNetwork(currentScope, oneNetwork) {}
 
 	function deleteNetwork(currentScope, oneNetwork) {
 
@@ -29,16 +29,14 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
-
-				//trigger listNetworks to fetch changes
-				// NOTE: this is useless since deleting will take a long time and the UI won't show any changes immediately
-				listNetworks(currentScope, currentScope.$parent.$parent.currentSelectedInfra, currentScope.selectedGroup);
+				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`);
 			}
 		});
 	}
 
-	function listNetworks(currentScope, oneInfra, oneGroup) {
+	function listNetworks(currentScope, oneGroup) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 
@@ -66,43 +64,9 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '
 				currentScope.displayAlert('danger', error);
 			}
 			else {
+				currentScope.infraNetworks = [];
 				if (response.networks && response.networks.length > 0) {
 					currentScope.infraNetworks = response.networks;
-
-					let gridOptions = {
-						grid: infraNetworkConfig.grid,
-						data: currentScope.infraNetworks,
-						left: [],
-						top: []
-					};
-
-					if (currentScope.access.editNetwork) {
-						gridOptions.left.push({
-							'label': 'Edit Network',
-							'icon': 'pencil',
-							'handler': 'editNetwork'
-						});
-					}
-
-					if (currentScope.access.removeNetwork) {
-						gridOptions.left.push({
-							'label': 'Delete Network',
-							'icon': 'bin',
-							'handler': 'deleteNetwork',
-							'msg': "Are you sure you want to delete this network?"
-						});
-						gridOptions.top.push({
-							'label': 'Delete Network(s)',
-							'icon': 'bin',
-							'handler': 'deleteNetwork',
-							'msg': "Are you sure you want to delete the selected network(s)?"
-						});
-					}
-
-					buildGrid(currentScope, gridOptions);
-				}
-				else {
-					currentScope.displayAlert('danger', `The group "${oneGroup.name}" does not have any networks to be listed.`);
 				}
 			}
 		});

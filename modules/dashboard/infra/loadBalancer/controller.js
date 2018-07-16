@@ -10,8 +10,19 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$localStora
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"], () => {
-			// infraIACSrv.rerenderTemplates($scope);
+		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
+			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
+				//flag that infra doesn't have any resource groups
+				$scope.noResourceGroups = false;
+				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
+				$scope.selectedGroup = $scope.infraGroups[0];
+				$timeout(() => {
+					infraLoadBalancerSrv.listLoadBalancers($scope, $scope.selectedGroup);
+				}, 500);
+			}
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
+				$scope.noResourceGroups = true;
+			}
 		});
 	};
 
@@ -59,41 +70,20 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$localStora
 		infraLoadBalancerSrv.deleteLoadBalancer($scope, oneLoadBalancer);
 	};
 
-	$scope.addLoadBalancer = function (oneInfra) {
-		infraLoadBalancerSrv.addLoadBalancer($scope, oneInfra);
+	$scope.addLoadBalancer = function () {
+		infraLoadBalancerSrv.addLoadBalancer($scope);
 	};
 
-	$scope.editLoadBalancer = function (oneLoadBalancer, oneInfra) {
-		infraLoadBalancerSrv.editLoadBalancer($scope, oneInfra, oneLoadBalancer);
+	$scope.editLoadBalancer = function (oneLoadBalancer) {
+		infraLoadBalancerSrv.editLoadBalancer($scope, oneLoadBalancer);
 	};
 
-	$scope.listLoadBalancers = function (oneGroup, oneInfra) {
-		infraLoadBalancerSrv.listLoadBalancers($scope, oneGroup, oneInfra);
+	$scope.listLoadBalancers = function (oneGroup) {
+		infraLoadBalancerSrv.listLoadBalancers($scope, oneGroup);
 	};
 
 	if ($scope.access.list) {
 		$scope.getProviders();
-
-		let getInfraOpts = {
-			'id': $scope.$parent.$parent.currentSelectedInfra._id,
-			'exclude': ['templates', 'regions']
-		};
-		//get infra with groups to populate dropdown menu
-		infraCommonSrv.getInfra($scope, getInfraOpts, (error, response) => {
-			if (error) {
-				$scope.displayAlert('danger', error);
-			}
-			else {
-				if (response.groups && response.groups.length > 0) {
-					//flag that infra doesn't have any resource groups
-					$scope.noResourceGroups = false;
-					$scope.infraGroups = response.groups;
-				}
-				else if (response.groups && response.groups.length === 0) {
-					$scope.noResourceGroups = true;
-				}
-			}
-		});
 	}
 	injectFiles.injectCss("modules/dashboard/infra/infra.css");
 }]);

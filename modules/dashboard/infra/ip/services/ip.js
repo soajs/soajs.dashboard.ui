@@ -70,7 +70,20 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 					
 					currentScope.infraPublicIps.forEach((onePublicIP) =>{
 						if(onePublicIP.associated){
-							onePublicIP.associated = onePublicIP.associated.type + " / " + onePublicIP.associated.name;
+							let label = onePublicIP.associated.type + " / " + onePublicIP.associated.name;
+							let html;
+							switch (onePublicIP.associated.type){
+								case "networkInterface":
+									html = "<a href='#/infra-networks/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";
+									break;
+								case "loadBalancer":
+									html = "<a href='#/infra-lb/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";
+									break;
+								default:
+									html = label;
+									break;
+							}
+							onePublicIP.associated = html;
 						}
 					});
 					

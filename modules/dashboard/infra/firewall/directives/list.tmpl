@@ -52,6 +52,9 @@
 							<div ng-repeat="oneNetwork in oneGroups.networks">
 								<div class="entryBox blueBox" style="padding: 3px 5px;">
 									<b>Network:</b>&nbsp;{{oneNetwork.name}}
+									<a href="#/infra-network/?group={{oneNetwork.group}}">
+										<span class="icon icon-search"></span>
+									</a>
 								</div>
 							</div>
 						</div>

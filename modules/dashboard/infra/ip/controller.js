@@ -1,6 +1,6 @@
 "use strict";
 var infraIPApp = soajsApp.components;
-infraIPApp.controller('infraIPCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIPSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIPSrv) {
+infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIPSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIPSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
 
@@ -15,7 +15,16 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$localStorage', '$window', '$mo
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
 				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
-				$scope.selectedGroup = $scope.infraGroups[0];
+				if($routeParams.group){
+					$scope.infraGroups.forEach((oneInfraGroup) => {
+						if(oneInfraGroup.name === $routeParams.group){
+							$scope.selectedGroup = oneInfraGroup;
+						}
+					});
+				}
+				else{
+					$scope.selectedGroup = $scope.infraGroups[0];
+				}
 				$timeout(() => {
 					infraIPSrv.listIPs($scope, $scope.selectedGroup);
 				}, 500);

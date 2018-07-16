@@ -33,6 +33,9 @@
 				<accordion-group ng-repeat="oneNetwork in infraNetworks">
 					<accordion-heading>
 						{{oneNetwork.name}}
+						<span class="f-right">
+							Address: {{oneNetwork.address[0]}}
+						</span>
 					</accordion-heading>
 					<div class="w-100 c-both t-right">
 						<a href="" ng-click="editNetwork(oneNetwork)" class="btn btn-sm btn-primary">
@@ -42,16 +45,6 @@
 							<span class="icon icon-cross"></span>&nbsp;Delete
 						</a>
 					</div>
-					<fieldset>
-						<legend>Addresses</legend>
-						<div class="entryBoxes entryBoxesGrid">
-							<div ng-repeat="oneAddress in oneNetwork.addressPrefixes">
-								<div class="entryBox blueBox" style="padding: 3px 5px;">
-									<b>Network Ranger</b>&nbsp;{{oneAddress}}
-								</div>
-							</div>
-						</div>
-					</fieldset>
 					
 					<fieldset ng-if="oneNetwork.dnsServers && oneNetwork.dnsServers.length > 0">
 						<legend>DNS Servers</legend>
@@ -77,44 +70,44 @@
 								<tbody>
 									<tr ng-repeat="oneSubnet in oneNetwork.subnets" ng-class-even="'even'" ng-class-odd="'odd'">
 										<td>{{oneSubnet.name}}</td>
-										<td>{{oneSubnet.addressPrefix}}</td>
+										<td>{{oneSubnet.address}}</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 					</fieldset>
 					
-					<fieldset>
-						<legend>Firewall Rules</legend>
-						<div class="grid">
-							<table width="100%">
-								<thead>
-									<tr>
-										<th>Priority</th>
-										<th>Name</th>
-										<th>Protocol</th>
-										<th>Port</th>
-										<th>Source Range</th>
-										<th>Direction</th>
-										<th>Access</th>
-										<th>Published</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr ng-repeat="onePort in oneNetwork.firewall.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
-										<td>{{onePort.priority}}</td>
-										<td>{{onePort.name}}</td>
-										<td>{{onePort.protocol}}</td>
-										<td>{{onePort.published}}</td>
-										<td>{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>
-										<td>{{onePort.direction}}</td>
-										<td>{{onePort.access}}</td>
-										<td>{{(onePort.isPublished) ? "YES" : "NO"}}</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</fieldset>
+					<!--<fieldset>-->
+						<!--<legend>Firewall Rules</legend>-->
+						<!--<div class="grid">-->
+							<!--<table width="100%">-->
+								<!--<thead>-->
+									<!--<tr>-->
+										<!--<th>Priority</th>-->
+										<!--<th>Name</th>-->
+										<!--<th>Protocol</th>-->
+										<!--<th>Port</th>-->
+										<!--<th>Source Range</th>-->
+										<!--<th>Direction</th>-->
+										<!--<th>Access</th>-->
+										<!--<th>Published</th>-->
+									<!--</tr>-->
+								<!--</thead>-->
+								<!--<tbody>-->
+									<!--<tr ng-repeat="onePort in oneNetwork.firewall.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">-->
+										<!--<td>{{onePort.priority}}</td>-->
+										<!--<td>{{onePort.name}}</td>-->
+										<!--<td>{{onePort.protocol}}</td>-->
+										<!--<td>{{onePort.published}}</td>-->
+										<!--<td>{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>-->
+										<!--<td>{{onePort.direction}}</td>-->
+										<!--<td>{{onePort.access}}</td>-->
+										<!--<td>{{(onePort.isPublished) ? "YES" : "NO"}}</td>-->
+									<!--</tr>-->
+								<!--</tbody>-->
+							<!--</table>-->
+						<!--</div>-->
+					<!--</fieldset>-->
 				</accordion-group>
 			</accordion>
 		</div>

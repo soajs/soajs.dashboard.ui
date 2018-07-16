@@ -67,7 +67,14 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.infraResourceGroups.push(oneGroup);
 							}
 						});
-
+						
+						currentScope.infraResourceGroups.forEach((oneGroup) => {
+							oneGroup.networks = "<a href='#/infra-networks?group=" + oneGroup.name + "'>Networks</a>";
+							oneGroup.firewalls = "<a href='#/infra-firewall?group=" + oneGroup.name + "'>Firewalls</a>";
+							oneGroup.ips = "<a href='#/infra-ip?group=" + oneGroup.name + "'>Public IPs</a>";
+							oneGroup.lbs = "<a href='#/infra-lb?group=" + oneGroup.name + "'>Load Balancers</a>";
+						});
+						
 						let gridOptions = {
 							grid: infraGroupConfig.grid,
 							data: currentScope.infraResourceGroups,

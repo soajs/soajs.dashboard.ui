@@ -1,6 +1,6 @@
 "use strict";
 var infraLoadBalancerApp = soajsApp.components;
-infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraLoadBalancerSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraLoadBalancerSrv) {
+infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraLoadBalancerSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraLoadBalancerSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
 
@@ -15,7 +15,16 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$localStora
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
 				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
-				$scope.selectedGroup = $scope.infraGroups[0];
+				if($routeParams.group){
+					$scope.infraGroups.forEach((oneInfraGroup) => {
+						if(oneInfraGroup.name === $routeParams.group){
+							$scope.selectedGroup = oneInfraGroup;
+						}
+					});
+				}
+				else{
+					$scope.selectedGroup = $scope.infraGroups[0];
+				}
 				$timeout(() => {
 					infraLoadBalancerSrv.listLoadBalancers($scope, $scope.selectedGroup);
 				}, 500);

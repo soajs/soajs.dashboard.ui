@@ -68,6 +68,26 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 				if (response.publicIps && response.publicIps.length > 0) {
 					currentScope.infraPublicIps = response.publicIps;
 					
+					currentScope.infraPublicIps.forEach((onePublicIP) =>{
+						if(onePublicIP.associated){
+							let label = onePublicIP.associated.type + " / " + onePublicIP.associated.name;
+							let html;
+							switch (onePublicIP.associated.type){
+								case "networkInterface":
+									html = "<a href='#/infra-networks/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";
+									break;
+								case "loadBalancer":
+									html = "<a href='#/infra-lb/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";
+									break;
+								default:
+									html = label;
+									break;
+							}
+							onePublicIP.associated = html;
+						}
+					});
+					
+					
 					let gridOptions = {
 						grid: infraIPConfig.grid,
 						data: currentScope.infraPublicIps,

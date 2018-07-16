@@ -1,6 +1,6 @@
 "use strict";
 var infraFirewallApp = soajsApp.components;
-infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraFirewallSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraFirewallSrv) {
+infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraFirewallSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraFirewallSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
 
@@ -15,7 +15,16 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$localStorage', '$w
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
 				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
-				$scope.selectedGroup = $scope.infraGroups[0];
+				if($routeParams.group){
+					$scope.infraGroups.forEach((oneInfraGroup) => {
+						if(oneInfraGroup.name === $routeParams.group){
+							$scope.selectedGroup = oneInfraGroup;
+						}
+					});
+				}
+				else{
+					$scope.selectedGroup = $scope.infraGroups[0];
+				}
 				$timeout(() => {
 					infraFirewallSrv.listFirewalls($scope, $scope.selectedGroup);
 				}, 500);

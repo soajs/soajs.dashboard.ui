@@ -77,7 +77,11 @@ let infraGroupConfig = {
 	grid: {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
-			{ 'label': 'Resource Group Name', 'field': 'name' }
+			{ 'label': 'Resource Group Name', 'field': 'name' },
+			{'label': '', 'field': 'networks' },
+			{'label': '', 'field': 'firewalls' },
+			{'label': '', 'field': 'ips' },
+			{'label': '', 'field': 'lbs' },
 		],
 		'leftActions': [],
 		'topActions': [],

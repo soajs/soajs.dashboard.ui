@@ -8,7 +8,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 		let options = {
 			timeout: $timeout,
 			form: {
-				"entries": infraGroupConfig.form.addGroup
+				"entries": angular.copy(infraGroupConfig.form.addGroup)
 			},
 			name: 'addResourceGroup',
 			label: 'Add New Resource Group',
@@ -58,8 +58,11 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.form.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.displayAlert('success', "Resource Group created successfully. Changes will appear soon.");
+								currentScope.displayAlert('success', "Resource Group created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
 								currentScope.modalInstance.close();
+								$timeout(() => {
+									listGroups(currentScope, currentScope.selectedRegion);
+								}, 2000);
 							}
 						});
 					}
@@ -120,7 +123,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 		let options = {
 			timeout: $timeout,
 			form: {
-				"entries": infraGroupConfig.form.editGroup
+				"entries": angular.copy(infraGroupConfig.form.editGroup)
 			},
 			data: oneGroup,
 			name: 'editResourceGroup',
@@ -171,8 +174,11 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.form.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.displayAlert('success', "Resource Group Updated successfully. Changes will appear soon.");
+								currentScope.displayAlert('success', "Resource Group Updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
 								currentScope.modalInstance.close();
+								$timeout(() => {
+									listGroups(currentScope, currentScope.selectedRegion);
+								}, 2000);
 							}
 						});
 					}
@@ -249,7 +255,10 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`);
+				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listGroups(currentScope, currentScope.selectedRegion);
+				}, 2000);
 			}
 		});
 	}

@@ -112,7 +112,7 @@ let infraIPConfig = {
 			{ 'label': 'Name', 'field': 'name' },
 			{ 'label': 'Address', 'field': 'address' },
 			{ 'label': 'Allocation Method', 'field': 'allocationMethod' },
-			{ 'label': 'Idle Timeout', 'field': 'idleTimeout' },
+			{ 'label': 'Idle Timeout (seconds)', 'field': 'idleTimeout' },
 			{ 'label': 'IP Version', 'field': 'version' },
 			{ 'label': 'Associated To', 'field': 'associated' }
 		],

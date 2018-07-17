@@ -14,15 +14,6 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			label: 'Add New Resource Group',
 			actions: [
 				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				},
-				{
 					'type': 'submit',
 					'label': "Create Resource Group",
 					'btn': 'primary',
@@ -65,6 +56,15 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								}, 2000);
 							}
 						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
 					}
 				}
 			]
@@ -130,15 +130,6 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			label: 'Edit Resource Group',
 			actions: [
 				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				},
-				{
 					'type': 'submit',
 					'label': "Update Resource Group",
 					'btn': 'primary',
@@ -181,6 +172,15 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								}, 2000);
 							}
 						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
 					}
 				}
 			]

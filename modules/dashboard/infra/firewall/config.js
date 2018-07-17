@@ -7,44 +7,136 @@ let infraFirewallConfig = {
 		addFirewall: ['dashboard', '/infra/extra', 'post'],
 		editFirewall: ['dashboard', '/infra/extra', 'put']
 	},
-
+	
 	form: {
-		network: [
+		firewall: [
 			{
 				'name': 'name',
 				'label': 'Name',
-				'type': 'text',
+				'type': 'readonly',
 				'value': "",
-				'placeholder': 'My Template',
-				'fieldMsg': 'Enter a name for your template',
+				'placeholder': ' My Firewall',
 				'required': true
 			},
 			{
-				'name': 'description',
-				'label': 'Description',
-				'type': 'textarea',
+				'name': 'region',
+				'label': 'Region',
+				'type': 'readonly',
 				'value': "",
-				'placeholder': 'My Template Description',
-				'fieldMsg': 'Provide  a description for your template',
-				'required': false
+				'required': true
 			},
 			{
-				'name': 'location',
-				'label': 'Location',
-				'type': 'select',
-				'value': [],
-				'fieldMsg': 'Select where to store this template.',
-				'required': true
+				'type': 'group',
+				'label': 'Ports',
+				'entries': [
+					{
+						'type': 'html',
+						'name': 'addPort',
+						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add New Port'/>"
+					}
+				]
 			}
-		]
+		],
+		portInput: {
+			'name': 'portGroup',
+			'type': 'group',
+			'label': 'New Port',
+			'entries': [
+				{
+					'name': 'name',
+					'label': 'Port Name',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the name of the Port',
+					'fieldMsg': 'Enter the name of the Port',
+					'placeholder': "My Port"
+				},
+				{
+					'name': 'protocol',
+					'label': 'Protocol',
+					'type': 'select',
+					'value': [
+						{'v': 'TCP', 'l': "TCP", 'selected': true},
+						{'v': 'UDP', 'l': "UCP"},
+						{'v': '*', 'l': "TCP/UCP"}
+					],
+					'required': true,
+					'tooltip': 'Select Port Protocol',
+					'fieldMsg': 'Select Port Protocol'
+				},
+				{
+					'name': 'access',
+					'label': 'Access',
+					'type': 'select',
+					'value': [
+						{'v': 'allow', 'l': "Allow", 'selected': true},
+						{'v': 'deny', 'l': "Deny"}
+					],
+					'required': true
+				},
+				{
+					'name': 'direction',
+					'label': 'Direction',
+					'type': 'select',
+					'value': [
+						{'v': 'inbound', 'l': "Inbound", 'selected': true},
+						{'v': 'outbound', 'l': "Outbound"}
+					],
+					'required': true
+				},
+				{
+					'name': 'target',
+					'label': 'Source Port',
+					'type': 'text',
+					'value': "0",
+					'required': true,
+					'placeholder': "0"
+				},
+				{
+					'name': 'sourceAddress',
+					'label': 'Source Address',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'fieldMsg': 'Source IP address or CIDR (example: 0.0.0.0/0), Asterix \'*\' can also be used to match all source IPs'
+				},
+				{
+					'name': 'destinationAddress',
+					'label': 'Destination Address',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'fieldMsg': 'Destination IP address or CIDR (example: 0.0.0.0/0), Asterix \'*\' can also be used to match all destination IPs'
+				},
+				{
+					'name': 'published',
+					'label': 'Destination Port',
+					'type': 'text',
+					'value': 0,
+					'required': true,
+					'placeholder': "0"
+				},
+				{
+					'name': 'priority',
+					'label': 'Priority',
+					'type': 'number',
+					'value': 0,
+					'required': true,
+					'tooltip': 'Enter the port priority',
+					'fieldMsg': 'Enter the port priority',
+					'placeholder': "0"
+				}
+			]
+		}
 	},
-
+	
 	grid: {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
-			{ 'label': 'Firewall Name', 'field': 'name' },
-			{ 'label': 'Firewall Region', 'field': 'region' },
-			{ 'label': 'Firewall Ports', 'field': 'ports' },
+			{'label': 'Firewall Name', 'field': 'name'},
+			{'label': 'Firewall Region', 'field': 'region'},
+			{'label': 'Firewall Ports', 'field': 'ports'},
 		],
 		'leftActions': [],
 		'topActions': [],

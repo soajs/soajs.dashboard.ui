@@ -96,3 +96,18 @@
 		</div>
 	</div>
 </section>
+
+<script type="text/ng-template" id="addFirewall.tmpl">
+	<div class="modal-header">
+		<h3 class="modal-title">Add New Firewall</h3>
+	</div>
+	<div class="modal-body text-align-center">
+		<alert type="info">
+			<p>A firewall is automatically created when a new network is created.</p>
+		</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="createNetwork()">Create New Network</button>
+		<button class="btn btn-danger" ng-click="close()">Cancel</button>
+	</div>
+</script>

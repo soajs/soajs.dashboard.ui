@@ -58,9 +58,8 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.form.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.form.displayAlert('success', "Resource Group created successfully.");
+								currentScope.displayAlert('success', "Resource Group created successfully. Changes will appear soon.");
 								currentScope.modalInstance.close();
-								currentScope.go("#/infra-groups");
 							}
 						});
 					}
@@ -114,7 +113,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 	}
 
 	function editGroup(currentScope, oneGroup) {
-		currentScope.labelCounter = Object.keys(oneGroup.labels).length;
+		currentScope.labelCounter = (oneGroup.labels && typeof oneGroup.labels === 'object') ? Object.keys(oneGroup.labels).length : 0;
 
 		oneGroup.region = currentScope.selectedRegion.l;
 
@@ -172,9 +171,8 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.form.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.form.displayAlert('success', "Resource Group created successfully.");
+								currentScope.displayAlert('success', "Resource Group Updated successfully. Changes will appear soon.");
 								currentScope.modalInstance.close();
-								currentScope.go("#/infra-groups");
 							}
 						});
 					}
@@ -329,11 +327,6 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 						}
 
 						buildGrid(currentScope, gridOptions);
-					}
-
-					if (currentScope.infraResourceGroups.length === 0) {
-						// BUG: doesn't show "No Records Found" in case of no groups in selected region
-						currentScope.displayAlert('danger', `The region "${oneRegion.l}" does not have any resource groups to be listed`);
 					}
 				}
 		});

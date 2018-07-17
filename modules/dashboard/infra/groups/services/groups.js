@@ -174,7 +174,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.form.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.displayAlert('success', "Resource Group Updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								currentScope.displayAlert('success', "Resource Group Updated successfully. Changes take a bit of time to be populated and might require you to refresh in the list after a few seconds.");
 								currentScope.modalInstance.close();
 								$timeout(() => {
 									listGroups(currentScope, currentScope.selectedRegion);
@@ -255,7 +255,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				currentScope.displayAlert('success', `The resource group "${oneGroup.name}" has been successfully deleted. Changes take a bit of time to be populated and might require you to refresh in the list after a few seconds.`);
 				$timeout(() => {
 					listGroups(currentScope, currentScope.selectedRegion);
 				}, 2000);
@@ -266,9 +266,9 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 	function listGroups(currentScope, oneRegion) {
 
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+
 		//save selected region in scope
 		// NOTE: we are using this value to trigger listGroups from deleteGroup
-		//no need to save this value in the scope if we decide to NOT listGroups from deleteGroup
 		currentScope.selectedRegion = oneRegion;
 
 		//clean grid from previous list if any

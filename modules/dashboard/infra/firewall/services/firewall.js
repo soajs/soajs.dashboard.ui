@@ -44,43 +44,59 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 					'btn': 'primary',
 					'action': function (formData) {
 						let data = angular.copy(formData);
+						let firewallPorts = [];
+						for (let i = 0; i < currentScope.form.entries[2].entries.length; i++) {
+							let oneEntry = currentScope.form.entries[2].entries[i];
+							let countValue = parseInt(oneEntry.name.replace("portGroup", ""));
+							if(typeof countValue === 'number' && data['name' + countValue]){
+								let portEntry = {
+									name: data['name' + countValue],
+									protocol: data['protocol' + countValue],
+									access: data['access' + countValue],
+									direction: data['direction' + countValue],
+									target: data['target' + countValue],
+									sourceAddress: data['sourceAddress' + countValue],
+									destinationAddress: data['destinationAddress' + countValue],
+									published: data['published' + countValue],
+									priority: data['priority' + countValue]
+								};
+								
+								firewallPorts.push(portEntry);
+							}
+						}
 						
-						// let labels = {};
-						// for (let i = 0; i < currentScope.labelCounter; i ++) {
-						// 	labels[data['labelName'+i]] = data['labelValue'+i];
-						// }
-						//
-						// let postOpts = {
-						// 	"method": "put",
-						// 	"routeName": "/dashboard/infra/extras",
-						// 	"params": {
-						// 		"infraId": currentScope.currentSelectedInfra._id,
-						// 		"technology": "vm"
-						// 	},
-						// 	"data": {
-						// 		"params": {
-						// 			"section": "group",
-						// 			"region": currentScope.selectedRegion.v,
-						// 			"labels": labels,
-						// 			"name": data.name
-						// 		}
-						// 	}
-						// };
-						//
-						// overlayLoading.show();
-						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-						// 	overlayLoading.hide();
-						// 	if (error) {
-						// 		currentScope.form.displayAlert('danger', error.message);
-						// 	}
-						// 	else {
-						// 		currentScope.displayAlert('success', "Resource Group Updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-						// 		currentScope.modalInstance.close();
-						// 		$timeout(() => {
-						// 			listGroups(currentScope, currentScope.selectedRegion);
-						// 		}, 2000);
-						// 	}
-						// });
+						let postOpts = {
+							"method": "put",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "securityGroup",
+									"region": currentScope.selectedGroup.region,
+									"group": currentScope.selectedGroup.name,
+									"name": data.name,
+									"ports": firewallPorts
+								}
+							}
+						};
+						
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.modalInstance.close();
+								currentScope.displayAlert('success', `The firewall has been successfully updated. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+								$timeout(() => {
+									listFirewalls(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
 					}
 				},
 				{
@@ -102,13 +118,14 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 			let tmp = angular.copy(infraFirewallConfig.form.portInput);
 			
 			tmp.name += i;
+			tmp.label = "Port " + oneFirewall.ports[i].name;
 			tmp.entries.forEach((onePortDetail) => {
 				let originalName = onePortDetail.name;
 				onePortDetail.name += i;
 				oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
 			});
 			
-			tmp.entries.push({
+			tmp.entries.unshift({
 				'type': 'html',
 				'name': 'rLabel' + i,
 				'value': '<span class="icon icon-cross"></span>',
@@ -134,7 +151,7 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 		}
 		
 		//attach the add another button
-		options.form.entries[2].entries[options.form.entries[2].entries.length -1].onAction = function (id, value, form) {
+		options.form.entries[2].entries[options.form.entries[2].entries.length - 1].onAction = function (id, value, form) {
 			addNewPort(currentScope);
 		};
 		
@@ -148,12 +165,14 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 		let counter = currentScope.labelCounter || 0;
 		let tmp = angular.copy(infraFirewallConfig.form.portInput);
 		tmp.name += counter;
+		tmp.collapsed = false;
+		tmp.icon = "minus";
 		tmp.entries.forEach((onePortDetail) => {
 			onePortDetail.name += counter;
 			
 		});
 		
-		tmp.entries.push({
+		tmp.entries.unshift({
 			'type': 'html',
 			'name': 'rLabel' + counter,
 			'value': '<span class="icon icon-cross"></span>',
@@ -201,7 +220,10 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
+				currentScope.displayAlert('success', `The firewall has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listFirewalls(currentScope, currentScope.selectedGroup);
+				}, 2000);
 			}
 		});
 	}

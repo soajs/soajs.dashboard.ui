@@ -26,7 +26,8 @@ let infraFirewallConfig = {
 				'required': true
 			},
 			{
-				'type': 'group',
+				'type': 'accordion',
+				'name': 'firewallPorts',
 				'label': 'Ports',
 				'entries': [
 					{
@@ -41,6 +42,8 @@ let infraFirewallConfig = {
 			'name': 'portGroup',
 			'type': 'group',
 			'label': 'New Port',
+			'collapsed': true,
+			'icon': 'plus',
 			'entries': [
 				{
 					'name': 'name',
@@ -99,7 +102,7 @@ let infraFirewallConfig = {
 					'type': 'text',
 					'value': '',
 					'required': true,
-					'fieldMsg': 'Source IP address or CIDR (example: 0.0.0.0/0), Asterix \'*\' can also be used to match all source IPs'
+					'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
 				},
 				{
 					'name': 'destinationAddress',
@@ -107,7 +110,7 @@ let infraFirewallConfig = {
 					'type': 'text',
 					'value': '',
 					'required': true,
-					'fieldMsg': 'Destination IP address or CIDR (example: 0.0.0.0/0), Asterix \'*\' can also be used to match all destination IPs'
+					'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
 				},
 				{
 					'name': 'published',

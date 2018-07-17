@@ -68,3 +68,38 @@ table tr[class^="form-group tr-labelGroup"] {
     clear: both;
     position:relative;
 }
+
+#editFirewall .tr-region-wrapper td{
+    padding-bottom:30px;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr{
+    float: left;
+    width: 24%;
+    height: 70px;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-name"]{
+    float: left;
+    width: 98%;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] {
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-rLabel"]{
+    float: none;
+    height: 24px;
+    position: absolute;
+    top: -5%;
+    right: 1%;
+    width:2%;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr td{
+    width:97% !important;
+    display: table;
+}

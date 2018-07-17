@@ -1264,7 +1264,15 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						else if (context.mainData.deploymentData.vmLayers[i].specs){
 							compatibleVM = true;
 						}
-						
+
+                        if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
+                            for (let j in currentScope.onboardNames) {
+                                if (currentScope.onboardNames[j] === context.mainData.deploymentData.vmLayers[i].name) {
+                                    compatibleVM = true;
+                                }
+                            }
+                        }
+
 						if(!compatibleVM){
 							delete context.mainData.deploymentData.vmLayers[i];
 						}

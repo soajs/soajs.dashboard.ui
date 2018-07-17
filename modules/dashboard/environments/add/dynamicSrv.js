@@ -619,7 +619,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
 					resource.scope.restrictions = currentScope.restrictions;
-
+					if (currentScope.wizard.onboardNames) {
+                        resource.scope.onboardNames = currentScope.wizard.onboardNames;
+					}
 					// TODO
 					if(currentScope.wizard.vms || currentScope.wizard.vmOnBoard){
 						if(!resource.scope.mainData.deploymentData){
@@ -970,7 +972,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								&& resource.deployOptions.deployConfig.vmConfiguration.vmLayer){
 								resource.deployOptions.vms = [];
 								let vmLayer = resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
-								
+
 								if (vmLayer){
 									vmLayer = vmLayer  + "_" + resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								}

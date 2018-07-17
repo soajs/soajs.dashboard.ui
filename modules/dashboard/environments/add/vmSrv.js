@@ -180,12 +180,21 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			if (!currentScope.wizard.vmOnBoard) {
 				currentScope.wizard.vmOnBoard = [];
 			}
-			
+            if (!currentScope.wizard.onboardNames) {
+                currentScope.wizard.onboardNames = [];
+            }
 			let obj;
-			if (release) {
-				delete vmLayer.list[0].labels['soajs.env.code'];
-				// remove from array
-			}
+			let index;
+            if (release) {
+                if (currentScope.wizard.onboardNames && currentScope.wizard.onboardNames.length > 0) {
+                    index = currentScope.wizard.onboardNames.indexOf(vmLayer.name);
+                    if (index !== -1) {
+                        currentScope.wizard.onboardNames.splice(index, 1)
+                    }
+                }
+                delete vmLayer.list[0].labels['soajs.env.code'];
+            }
+
 			let myLayer = angular.copy(vmLayer);
 			if (myLayer.template) {
 				myLayer.template = {
@@ -204,14 +213,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						"group": myLayer.list[0].labels['soajs.service.vm.group']
 					}
 				};
+
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
 				currentScope.wizard.vmOnBoard.push(obj);
+				// for resource list
+                currentScope.wizard.onboardNames.push(vmLayer.name);
 			}
 		};
 		
 		//hook the listeners
 		currentScope.listVMLayers = function () {
-			//turned off first vm support release
 			// platformsVM.listVMLayers(currentScope, () => {
 			appendVMsTotheList();
 			// });
@@ -224,7 +235,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						delete currentScope.vmLayers[layerName];
 					}
 				}
-				
+
 				for (let i = currentScope.wizard.vms.length - 1; i >= 0; i--) {
 					let oneVM = currentScope.wizard.vms[i];
 					if (oneVM.params.infraId === oneVMLayer.infraProvider._id) {
@@ -368,15 +379,18 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		else {
 			//execute main function
 			listInfraProviders(currentScope, () => {
+                currentScope.wizard.onboardNames = [];
 				if (!currentScope.vmLayers) {
 					currentScope.vmLayers = {};
 				}
 				delete currentScope.envCode;
 				
 				//turned off first vm support release
-				platformsVM.listVMLayers(currentScope, () => {
+				 platformsVM.listVMLayers(currentScope, () => {
+                     // currentScope.wizard.onboardNames = [];
 					//if there are registered vms to be created by the wizard hook them to the scope
 					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
+
 					appendVMsTotheList();
 					
 					//build the navigation buttons at the bottom of the page

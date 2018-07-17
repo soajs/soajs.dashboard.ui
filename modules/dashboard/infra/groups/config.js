@@ -40,6 +40,37 @@ let infraGroupConfig = {
 			}
 		],
 
+		editGroup: [
+			{
+				'name': 'name',
+				'label': 'Name',
+				'type': 'readonly',
+				'value': "",
+				'placeholder': ' My Resource Group',
+				'fieldMsg': 'Enter a name for the resource group',
+				'required': true
+			},
+			{
+				'name': 'region',
+				'label': 'Region',
+				'type': 'readonly',
+				'value': "",
+				'fieldMsg': 'Region where the resource group will be located',
+				'required': true
+			},
+			{
+				'type': 'group',
+				'label': 'Labels',
+				'entries': [
+					{
+						'type': 'html',
+						'name': 'addLabel',
+						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
+					}
+				]
+			}
+		],
+
 		labelInput : {
 			'name': 'labelGroup',
 			'type': 'group',

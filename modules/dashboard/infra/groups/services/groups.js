@@ -113,7 +113,121 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 		currentScope.labelCounter ++;
 	}
 
-	function editGroup(currentScope, oneGroup) {}
+	function editGroup(currentScope, oneGroup) {
+		currentScope.labelCounter = Object.keys(oneGroup.labels).length;
+
+		oneGroup.region = currentScope.selectedRegion.l;
+
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": infraGroupConfig.form.editGroup
+			},
+			data: oneGroup,
+			name: 'editResourceGroup',
+			label: 'Edit Resource Group',
+			actions: [
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				},
+				{
+					'type': 'submit',
+					'label': "Update Resource Group",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let labels = {};
+						for (let i = 0; i < currentScope.labelCounter; i ++) {
+							labels[data['labelName'+i]] = data['labelValue'+i];
+						}
+
+						let postOpts = {
+							"method": "put",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "group",
+									"region": currentScope.selectedRegion.v,
+									"labels": labels,
+									"name": data.name
+								}
+							}
+						};
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.form.displayAlert('success', "Resource Group created successfully.");
+								currentScope.modalInstance.close();
+								currentScope.go("#/infra-groups");
+							}
+						});
+					}
+				}
+			]
+		};
+
+		// OPTIMIZE: to avoid redundant code
+		//assertion to avoid splicing label entries more than once
+		if (options.form.entries[2].entries.length !== currentScope.labelCounter + 1) {
+			//set labels
+			for (let i = 0; i < currentScope.labelCounter; i++) {
+				// change the labels to formData style
+				oneGroup['labelName'+i] = Object.keys(oneGroup.labels)[i];
+				oneGroup['labelValue'+i] = oneGroup.labels[Object.keys(oneGroup.labels)[i]];
+
+				//add labels to the form based on label counters
+				let tmp = angular.copy(infraGroupConfig.form.labelInput);
+				tmp.name += i;
+				tmp.entries[0].name += i;
+				tmp.entries[1].name += i;
+				tmp.entries[2].name += i;
+
+				tmp.entries[2].onAction = function (id, value, form) {
+					let count = parseInt(id.replace('rLabel', ''));
+
+					for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
+						if (form.entries[2].entries[i].name === 'labelGroup' + count) {
+							//remove from formData
+							for (var fieldname in form.formData) {
+								if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+									delete form.formData[fieldname];
+								}
+							}
+							//remove from formEntries
+							form.entries[2].entries.splice(i, 1);
+							break;
+						}
+					}
+				};
+				options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
+			}
+		}
+
+		options.form.entries[2].entries[currentScope.labelCounter].onAction = function (id, value, form) {
+			addNewLabel(currentScope);
+		};
+
+		buildFormWithModal(currentScope, $modal, options, () => {
+			//fill in labels after form is rendered
+			currentScope.form.formData = oneGroup;
+		});
+	}
 
 	function deleteGroup(currentScope, oneGroup) {
 
@@ -176,14 +290,14 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								currentScope.infraResourceGroups.push(oneGroup);
 							}
 						});
-						
+
 						currentScope.infraResourceGroups.forEach((oneGroup) => {
 							oneGroup.networks = "<a href='#/infra-networks?group=" + oneGroup.name + "'>Networks</a>";
 							oneGroup.firewalls = "<a href='#/infra-firewall?group=" + oneGroup.name + "'>Firewalls</a>";
 							oneGroup.ips = "<a href='#/infra-ip?group=" + oneGroup.name + "'>Public IPs</a>";
 							oneGroup.lbs = "<a href='#/infra-lb?group=" + oneGroup.name + "'>Load Balancers</a>";
 						});
-						
+
 						let gridOptions = {
 							grid: infraGroupConfig.grid,
 							data: currentScope.infraResourceGroups,

@@ -52,7 +52,7 @@
 	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
 		<br />
 		<div ng-repeat="oneVMLayer in vmLayers">
-			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code']) " >
+			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'])" ng-hide="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.layer.name'] && environmentWizard">
 				<div class="entryBox mb20" ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
 					<div class="header table">
 						<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;

@@ -760,6 +760,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	}
 
 	function getOnBoard (currentScope, vmLayer, release){
+		let names = [];
+        for (let i in vmLayer.list) {
+            names.push(vmLayer.list[i].name)
+        }
         $modal.open({
             templateUrl: !release ? "onboardVM.tmpl": 'releaseVM.tmpl',
             size: 'lg',
@@ -778,10 +782,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                             "release": release
                         },
                         "data": {
-                            'layer': vmLayer,
-                            "group": vmLayer.list[0].labels['soajs.service.vm.group']
+                            'names': names,
+                            "group": vmLayer.list[0].labels['soajs.service.vm.group'],
+							"networkName" : vmLayer.list[0].network,
+							"layerName": vmLayer.list[0].layer
                         }
-                    }, function (error) {
+                    }, function (error, vmId) {
                         overlayLoading.hide();
                         if (error) {
                             currentScope.displayAlert('danger', error.message);
@@ -791,7 +797,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                             currentScope.displayAlert('success', "Virtual Machine updated");
                         }
                     });
-
                 };
 
                 $scope.cancel = function () {

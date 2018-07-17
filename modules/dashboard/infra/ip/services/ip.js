@@ -69,6 +69,12 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 					currentScope.infraPublicIps = response.publicIps;
 					
 					currentScope.infraPublicIps.forEach((onePublicIP) =>{
+						
+						if(onePublicIP.idleTimeout && parseInt(onePublicIP.idleTimeout) < 60){
+							//change timeout to seconds
+							onePublicIP.idleTimeout *= 60;
+						}
+						
 						if(onePublicIP.associated){
 							let label = onePublicIP.associated.type + " / " + onePublicIP.associated.name;
 							let html;

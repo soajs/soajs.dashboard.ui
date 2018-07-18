@@ -213,11 +213,13 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						"group": myLayer.list[0].labels['soajs.service.vm.group']
 					}
 				};
-
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
+
 				currentScope.wizard.vmOnBoard.push(obj);
-				// for resource list
-                currentScope.wizard.onboardNames.push(vmLayer.name);
+
+				if (currentScope.wizard.onboardNames.indexOf(vmLayer.name) === -1) {
+                    currentScope.wizard.onboardNames.push(vmLayer.name);
+				}
 			}
 		};
 		
@@ -227,7 +229,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			appendVMsTotheList();
 			// });
 		};
-		
+
 		currentScope.deleteVMLayer = function (oneVMLayer) {
 			if (oneVMLayer.forceEditDelete) {
 				for (let layerName in currentScope.vmLayers) {
@@ -342,6 +344,18 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				});
 			}
 		}
+
+		function onBoard(currentScope, vmLayers, vmOnBoards) {
+			for ( let i in vmLayers) {
+				for (let j in vmOnBoards) {
+					if (vmLayers[i].name === vmOnBoards[j]) {
+						if (!vmLayers[i].list[0].labels['soajs.env.code']) {
+                            vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code
+						}
+					}
+				}
+			}
+		}
 		
 		currentScope.form.actions = [];
 		
@@ -379,7 +393,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		else {
 			//execute main function
 			listInfraProviders(currentScope, () => {
-                currentScope.wizard.onboardNames = [];
 				if (!currentScope.vmLayers) {
 					currentScope.vmLayers = {};
 				}
@@ -387,10 +400,12 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				
 				//turned off first vm support release
 				 platformsVM.listVMLayers(currentScope, () => {
-                     // currentScope.wizard.onboardNames = [];
 					//if there are registered vms to be created by the wizard hook them to the scope
-					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
+					 if(currentScope.wizard.onboardNames && currentScope.vmLayers) {
+                         onBoard(currentScope, currentScope.vmLayers, currentScope.wizard.onboardNames);
+					 }
 
+					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
 					appendVMsTotheList();
 					
 					//build the navigation buttons at the bottom of the page
@@ -433,7 +448,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						});
 						
 						formButtonOptions = options;
-						
+                         // currentScope.wizard.onboardNames = [];
 						overlayLoading.hide();
 					});
 				});

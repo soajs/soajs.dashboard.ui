@@ -92,15 +92,16 @@ let infraFirewallConfig = {
 					'name': 'target',
 					'label': 'Source Port',
 					'type': 'text',
-					'value': "0",
+					'value': "*",
 					'required': true,
-					'placeholder': "0"
+					'placeholder': "*",
+					'fieldMsg': 'example: 80 OR * for Any'
 				},
 				{
 					'name': 'sourceAddress',
 					'label': 'Source Address',
 					'type': 'text',
-					'value': '',
+					'value': '*',
 					'required': true,
 					'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
 				},
@@ -108,7 +109,7 @@ let infraFirewallConfig = {
 					'name': 'destinationAddress',
 					'label': 'Destination Address',
 					'type': 'text',
-					'value': '',
+					'value': '*',
 					'required': true,
 					'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
 				},
@@ -116,19 +117,22 @@ let infraFirewallConfig = {
 					'name': 'published',
 					'label': 'Destination Port',
 					'type': 'text',
-					'value': 0,
+					'value': "",
 					'required': true,
-					'placeholder': "0"
+					'placeholder': "0",
+					'fieldMsg': 'example: 80 OR * for Any'
 				},
 				{
 					'name': 'priority',
 					'label': 'Priority',
 					'type': 'number',
-					'value': 0,
+					'value': 1000,
 					'required': true,
 					'tooltip': 'Enter the port priority',
 					'fieldMsg': 'Enter the port priority',
-					'placeholder': "0"
+					'placeholder': "100 - 4096",
+					"min": 100,
+					"max": 4096
 				}
 			]
 		}

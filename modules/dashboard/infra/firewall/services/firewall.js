@@ -45,20 +45,18 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 					'action': function (formData) {
 						let data = angular.copy(formData);
 						let firewallPorts = [];
-						for (let i = 0; i < currentScope.form.entries[2].entries.length; i++) {
-							let oneEntry = currentScope.form.entries[2].entries[i];
-							let countValue = parseInt(oneEntry.name.replace("portGroup", ""));
-							if(typeof countValue === 'number' && data['name' + countValue]){
+						for (let i = 0; i < currentScope.portsCounter; i++) {
+							if(data['name' + i]){
 								let portEntry = {
-									name: data['name' + countValue],
-									protocol: data['protocol' + countValue],
-									access: data['access' + countValue],
-									direction: data['direction' + countValue],
-									target: data['target' + countValue],
-									sourceAddress: data['sourceAddress' + countValue],
-									destinationAddress: data['destinationAddress' + countValue],
-									published: data['published' + countValue],
-									priority: data['priority' + countValue]
+									name: data['name' + i],
+									protocol: data['protocol' + i],
+									access: data['access' + i],
+									direction: data['direction' + i],
+									target: data['target' + i],
+									sourceAddress: data['sourceAddress' + i],
+									destinationAddress: data['destinationAddress' + i],
+									published: data['published' + i],
+									priority: data['priority' + i]
 								};
 								
 								firewallPorts.push(portEntry);
@@ -112,42 +110,45 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 		};
 		
 		//build ui to modify and configure ports
+		currentScope.portsCounter = 0;
 		for (let i = 0; i < oneFirewall.ports.length; i++) {
-			
-			//add labels to the form based on label counters
-			let tmp = angular.copy(infraFirewallConfig.form.portInput);
-			
-			tmp.name += i;
-			tmp.label = "Port " + oneFirewall.ports[i].name;
-			tmp.entries.forEach((onePortDetail) => {
-				let originalName = onePortDetail.name;
-				onePortDetail.name += i;
-				oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
-			});
-			
-			tmp.entries.unshift({
-				'type': 'html',
-				'name': 'rLabel' + i,
-				'value': '<span class="icon icon-cross"></span>',
-				'onAction': function (id, value, form) {
-					let count = parseInt(id.replace('rLabel', ''));
-					for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
-						if (form.entries[2].entries[i].name === 'portGroup' + count) {
-							//remove from formData
-							tmp.entries.forEach((fieldName) => {
-								delete form.formData[fieldName + i];
-							});
-							
-							//remove from formEntries
-							form.entries[2].entries.splice(i, 1);
-							break;
+			if(!oneFirewall.ports[i].readonly){
+				currentScope.portsCounter++;
+				//add labels to the form based on label counters
+				let tmp = angular.copy(infraFirewallConfig.form.portInput);
+				
+				tmp.name += i;
+				tmp.label = "Port " + oneFirewall.ports[i].name;
+				tmp.entries.forEach((onePortDetail) => {
+					let originalName = onePortDetail.name;
+					onePortDetail.name += i;
+					oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
+				});
+				
+				tmp.entries.unshift({
+					'type': 'html',
+					'name': 'rLabel' + i,
+					'value': '<span class="icon icon-cross"></span>',
+					'onAction': function (id, value, form) {
+						let count = parseInt(id.replace('rLabel', ''));
+						for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
+							if (form.entries[2].entries[i].name === 'portGroup' + count) {
+								//remove from formData
+								tmp.entries.forEach((field) => {
+									delete form.formData[field.name];
+								});
+								
+								//remove from formEntries
+								form.entries[2].entries.splice(i, 1);
+								break;
+							}
 						}
 					}
-				}
-			});
-			
-			//push new entry before the last one, making sure add button remains at the bottom
-			options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
+				});
+				
+				//push new entry before the last one, making sure add button remains at the bottom
+				options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
+			}
 		}
 		
 		//attach the add another button
@@ -162,7 +163,8 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 	}
 	
 	function addNewPort(currentScope) {
-		let counter = currentScope.labelCounter || 0;
+		let counter = currentScope.portsCounter || 0;
+		
 		let tmp = angular.copy(infraFirewallConfig.form.portInput);
 		tmp.name += counter;
 		tmp.collapsed = false;
@@ -170,6 +172,24 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 		tmp.entries.forEach((onePortDetail) => {
 			onePortDetail.name += counter;
 			
+			if(!currentScope.form.formData[onePortDetail.name]){
+				
+				let defaultValue;
+				if(Array.isArray(onePortDetail.value)){
+					onePortDetail.value.forEach((oneV) => {
+						if(oneV.selected){
+							defaultValue = oneV.v;
+						}
+					});
+					if(!defaultValue){
+						defaultValue = onePortDetail.value[0].v;
+					}
+				}
+				else{
+					defaultValue = onePortDetail.value
+				}
+				currentScope.form.formData[onePortDetail.name] = defaultValue;
+			}
 		});
 		
 		tmp.entries.unshift({
@@ -181,8 +201,8 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 				for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
 					if (form.entries[2].entries[i].name === 'portGroup' + count) {
 						//remove from formData
-						tmp.entries.forEach((fieldName) => {
-							delete form.formData[fieldName + i];
+						tmp.entries.forEach((field) => {
+							delete form.formData[field.name];
 						});
 						
 						//remove from formEntries
@@ -194,7 +214,7 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$timeout', '$modal',
 		});
 		
 		currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		currentScope.labelCounter++;
+		currentScope.portsCounter ++;
 	}
 	
 	function deleteFirewall(currentScope, oneFirewall) {

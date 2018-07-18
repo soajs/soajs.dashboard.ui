@@ -80,7 +80,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 							let html;
 							switch (onePublicIP.associated.type){
 								case "networkInterface":
-									html = "<a href='#/infra-networks/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";
+									html = "<b>" + label + "</b>";
 									break;
 								case "loadBalancer":
 									html = "<a href='#/infra-lb/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";

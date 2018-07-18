@@ -120,7 +120,8 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 		currentScope.labelCounter ++;
 	}
 
-	function editIP(currentScope, oneIP) {
+	function editIP(currentScope, originalIP) {
+		let oneIP = angular.copy(originalIP);
 		currentScope.labelCounter = (oneIP.labels && typeof oneIP.labels === 'object') ? Object.keys(oneIP.labels).length : 0;
 
 		let options = {

@@ -202,6 +202,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				};
 			}
 			if (!release) {
+				let names = [];
+				for (let i in myLayer.list) {
+					names.push(myLayer.list[i].name);
+				}
 				obj = {
 					"params": {
 						"env": currentScope.wizard.gi.code,
@@ -209,8 +213,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						"release": release
 					},
 					"data": {
-						'layer': myLayer,
-						"group": myLayer.list[0].labels['soajs.service.vm.group']
+						'names': names,
+						"group": myLayer.list[0].labels['soajs.service.vm.group'],
+						"networkName" : myLayer.list[0].network,
+						"layerName": myLayer.list[0].layer
 					}
 				};
 

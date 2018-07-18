@@ -180,20 +180,20 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			if (!currentScope.wizard.vmOnBoard) {
 				currentScope.wizard.vmOnBoard = [];
 			}
-            if (!currentScope.wizard.onboardNames) {
-                currentScope.wizard.onboardNames = [];
-            }
+			if (!currentScope.wizard.onboardNames) {
+				currentScope.wizard.onboardNames = [];
+			}
 			let obj;
 			let index;
-            if (release) {
-                if (currentScope.wizard.onboardNames && currentScope.wizard.onboardNames.length > 0) {
-                    index = currentScope.wizard.onboardNames.indexOf(vmLayer.name);
-                    if (index !== -1) {
-                        currentScope.wizard.onboardNames.splice(index, 1)
-                    }
-                }
-                delete vmLayer.list[0].labels['soajs.env.code'];
-            }
+			if (release) {
+				if (currentScope.wizard.onboardNames && currentScope.wizard.onboardNames.length > 0) {
+					index = currentScope.wizard.onboardNames.indexOf(vmLayer.name);
+					if (index !== -1) {
+						currentScope.wizard.onboardNames.splice(index, 1)
+					}
+				}
+				delete vmLayer.list[0].labels['soajs.env.code'];
+			}
 
 			let myLayer = angular.copy(vmLayer);
 			if (myLayer.template) {
@@ -215,7 +215,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					"data": {
 						'names': names,
 						"group": myLayer.list[0].labels['soajs.service.vm.group'],
-						"networkName" : myLayer.list[0].network,
+						"networkName": myLayer.list[0].network,
 						"layerName": myLayer.list[0].layer
 					}
 				};
@@ -224,16 +224,16 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				currentScope.wizard.vmOnBoard.push(obj);
 
 				if (currentScope.wizard.onboardNames.indexOf(vmLayer.name) === -1) {
-                    currentScope.wizard.onboardNames.push(vmLayer.name);
+					currentScope.wizard.onboardNames.push(vmLayer.name);
 				}
 			}
 		};
 		
 		//hook the listeners
 		currentScope.listVMLayers = function () {
-			// platformsVM.listVMLayers(currentScope, () => {
-			appendVMsTotheList();
-			// });
+			platformsVM.listVMLayers(currentScope, () => {
+				appendVMsTotheList();
+			});
 		};
 
 		currentScope.deleteVMLayer = function (oneVMLayer) {
@@ -260,7 +260,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		//if there are registered vms to be created by the wizard hook them to the scope
 		function appendVMsTotheList() {
 			// TODO: if onboarded
-
 			if (currentScope.wizard.vms) {
 				currentScope.wizard.vms.forEach((oneVM) => {
 					
@@ -352,11 +351,11 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 
 		function onBoard(currentScope, vmLayers, vmOnBoards) {
-			for ( let i in vmLayers) {
+			for (let i in vmLayers) {
 				for (let j in vmOnBoards) {
 					if (vmLayers[i].name === vmOnBoards[j]) {
 						if (!vmLayers[i].list[0].labels['soajs.env.code']) {
-                            vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code
+							vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code
 						}
 					}
 				}
@@ -405,11 +404,11 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				delete currentScope.envCode;
 				
 				//turned off first vm support release
-				 platformsVM.listVMLayers(currentScope, () => {
+				platformsVM.listVMLayers(currentScope, () => {
 					//if there are registered vms to be created by the wizard hook them to the scope
-					 if(currentScope.wizard.onboardNames && currentScope.vmLayers) {
-                         onBoard(currentScope, currentScope.vmLayers, currentScope.wizard.onboardNames);
-					 }
+					if (currentScope.wizard.onboardNames && currentScope.vmLayers) {
+						onBoard(currentScope, currentScope.vmLayers, currentScope.wizard.onboardNames);
+					}
 
 					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
 					appendVMsTotheList();
@@ -454,7 +453,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						});
 						
 						formButtonOptions = options;
-                         // currentScope.wizard.onboardNames = [];
+						// currentScope.wizard.onboardNames = [];
 						overlayLoading.hide();
 					});
 				});

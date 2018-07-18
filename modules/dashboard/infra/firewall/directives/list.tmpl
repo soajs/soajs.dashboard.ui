@@ -64,14 +64,14 @@
 								</thead>
 								<tbody>
 									<tr ng-repeat="onePort in oneGroups.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
-										<td>{{onePort.priority}}</td>
-										<td>{{onePort.name}}</td>
-										<td>{{onePort.protocol}}</td>
-										<td>{{onePort.published}}</td>
-										<td>{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>
-										<td>{{onePort.direction}}</td>
-										<td>{{onePort.access}}</td>
-										<td>{{(onePort.isPublished) ? "YES" : "NO"}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.priority}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.name}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.protocol}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.published}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.direction}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.access}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{(onePort.isPublished) ? "YES" : "NO"}}</td>
 									</tr>
 								</tbody>
 							</table>

@@ -111,9 +111,9 @@ let infraIPConfig = {
 		'columns': [
 			{ 'label': 'Name', 'field': 'name' },
 			{ 'label': 'Address', 'field': 'address' },
-			{ 'label': 'Allocation Method', 'field': 'allocationMethod' },
+			{ 'label': 'Allocation Method', 'field': 'publicIPAllocationMethod' },
 			{ 'label': 'Idle Timeout (seconds)', 'field': 'idleTimeout' },
-			{ 'label': 'IP Version', 'field': 'version' },
+			{ 'label': 'IP Version', 'field': 'ipAddressVersion' },
 			{ 'label': 'Associated To', 'field': 'associated' }
 		],
 		'leftActions': [],

@@ -15,7 +15,11 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 			if ($scope.$parent.$parent.currentSelectedInfra.regions && $scope.$parent.$parent.currentSelectedInfra.regions.length > 0) {
 				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
 				
-				$scope.selectedRegion = $scope.infraRegions[0]
+				$scope.selectedRegion = $scope.infraRegions[0];
+				$timeout(() => {
+					overlayLoading.show();
+					infraGroupSrv.listGroups($scope, $scope.selectedRegion);
+				}, 500);
 			}
 		});
 	};

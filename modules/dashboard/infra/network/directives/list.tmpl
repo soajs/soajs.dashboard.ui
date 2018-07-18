@@ -30,7 +30,7 @@
 			<br />
 			
 			<accordion close-others="false">
-				<accordion-group ng-repeat="oneNetwork in infraNetworks">
+				<accordion-group is-open="oneNetwork.open"  ng-repeat="oneNetwork in infraNetworks">
 					<accordion-heading>
 						{{oneNetwork.name}}
 						<span class="f-right">
@@ -65,54 +65,47 @@
 									<tr>
 										<th>Name</th>
 										<th>Address</th>
+										<th>Virtual Machines</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr ng-repeat="oneSubnet in oneNetwork.subnets" ng-class-even="'even'" ng-class-odd="'odd'">
 										<td>{{oneSubnet.name}}</td>
 										<td>{{oneSubnet.address}}</td>
-										<!--<td>-->
-											<!--<a href="#/infra-ip/?group={{one}}">-->
-												<!--<span class="icon icon-search"></span>-->
-											<!--</a>-->
-										<!--</td>-->
+										<td>
+											<div ng-if="!oneSubnet.vm">N/A</div>
+											<div ng-if="oneSubnet.vm.link">
+												<a href="#/environments-platforms?envCode={{oneSubnet.vm.envCode}}&tab=vm&layer={{oneSubnet.vm.vmLayer}}">
+													<span class="icon icon-stack"></span>&nbsp;<b>{{oneSubnet.vm.vmLayer}}</b>&nbsp;
+												</a>
+											</div>
+											<div ng-if="!oneSubnet.vm.link">
+												<b>
+													<span class="icon icon-stack"></span>&nbsp;<b>{{oneSubnet.vm.vmLayer}}</b>&nbsp;
+												</b>
+											</div>
+										</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 					</fieldset>
 					
-					<!--<fieldset>-->
-						<!--<legend>Firewall Rules</legend>-->
-						<!--<div class="grid">-->
-							<!--<table width="100%">-->
-								<!--<thead>-->
-									<!--<tr>-->
-										<!--<th>Priority</th>-->
-										<!--<th>Name</th>-->
-										<!--<th>Protocol</th>-->
-										<!--<th>Port</th>-->
-										<!--<th>Source Range</th>-->
-										<!--<th>Direction</th>-->
-										<!--<th>Access</th>-->
-										<!--<th>Published</th>-->
-									<!--</tr>-->
-								<!--</thead>-->
-								<!--<tbody>-->
-									<!--<tr ng-repeat="onePort in oneNetwork.firewall.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">-->
-										<!--<td>{{onePort.priority}}</td>-->
-										<!--<td>{{onePort.name}}</td>-->
-										<!--<td>{{onePort.protocol}}</td>-->
-										<!--<td>{{onePort.published}}</td>-->
-										<!--<td>{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>-->
-										<!--<td>{{onePort.direction}}</td>-->
-										<!--<td>{{onePort.access}}</td>-->
-										<!--<td>{{(onePort.isPublished) ? "YES" : "NO"}}</td>-->
-									<!--</tr>-->
-								<!--</tbody>-->
-							<!--</table>-->
-						<!--</div>-->
-					<!--</fieldset>-->
+					<div ng-if="oneNetwork.firewall && oneNetwork.firewall.length > 0">
+						<fieldset >
+							<legend>Firewall</legend>
+							<div class="entryBoxes entryBoxesGrid">
+								<div ng-repeat="oneFirewall in oneNetwork.firewall">
+									<div class="entryBox blueBox" style="padding: 3px 5px;">
+										<a href="#/infra-firewall/?group={{oneFirewall.group}}">
+											<span class="icon icon-shield"></span>&nbsp;<b>{{oneFirewall.name}}</b>
+										</a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					
 				</accordion-group>
 			</accordion>
 		</div>

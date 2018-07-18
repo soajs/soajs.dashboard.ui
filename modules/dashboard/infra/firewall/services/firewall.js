@@ -282,8 +282,10 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$localStorage', '$ti
 				if (response.securityGroups && response.securityGroups.length > 0) {
 					currentScope.infraSecurityGroups = response.securityGroups;
 				}
+				currentScope.infraSecurityGroups[0].open = true;
 				
 				if (currentScope.vmlayers) {
+					let processedNetworks = [];
 					currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
 						currentScope.vmlayers.forEach((oneVmLayer) => {
 							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()) {
@@ -321,10 +323,13 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$localStorage', '$ti
 										oneSecurityGroup.networks = [];
 									}
 									
-									oneSecurityGroup.networks.push({
-										group: oneGroup.name,
-										name: oneVmLayer.network
-									});
+									if(processedNetworks.indexOf(oneVmLayer.network) === -1){
+										processedNetworks.push(oneVmLayer.network);
+										oneSecurityGroup.networks.push({
+											group: oneGroup.name,
+											name: oneVmLayer.network
+										});
+									}
 								}
 							}
 						});

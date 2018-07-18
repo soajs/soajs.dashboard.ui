@@ -43,7 +43,19 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 		if($localStorage.infraProviders){
 			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
 			if(!$scope.$parent.$parent.currentSelectedInfra){
-				$scope.go("/infra");
+				if($routeParams.infraId){
+					$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+						if(oneProvider._id === $routeParams.infraId){
+							$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+							delete $scope.$parent.$parent.currentSelectedInfra.templates;
+							$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+						}
+					});
+				}
+				
+				if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.go("/infra");
+				}
 			}
 			else{
 				delete $scope.$parent.$parent.currentSelectedInfra.templates;
@@ -64,7 +76,19 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
 					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
 					if(!$scope.$parent.$parent.currentSelectedInfra){
-						$scope.go("/infra");
+						if($routeParams.infraId){
+							$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+								if(oneProvider._id === $routeParams.infraId){
+									$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+									delete $scope.$parent.$parent.currentSelectedInfra.templates;
+									$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+								}
+							});
+						}
+						
+						if(!$scope.$parent.$parent.currentSelectedInfra){
+							$scope.go("/infra");
+						}
 					}
 					else{
 						delete $scope.$parent.$parent.currentSelectedInfra.templates;

@@ -2,8 +2,7 @@
 var infraFirewallApp = soajsApp.components;
 infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraFirewallSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraFirewallSrv) {
 	$scope.$parent.isUserNameLoggedIn();
-	$scope.showTemplateForm = false;
-
+	$scope.vmlayers = [];
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraFirewallConfig.permissions);
 
@@ -26,7 +25,12 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$lo
 					$scope.selectedGroup = $scope.infraGroups[0];
 				}
 				$timeout(() => {
-					infraFirewallSrv.listFirewalls($scope, $scope.selectedGroup);
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						$scope.vmlayers = vmlayers;
+					
+						infraFirewallSrv.listFirewalls($scope, $scope.selectedGroup);
+					});
 				}, 500);
 			}
 			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
@@ -43,7 +47,19 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$lo
 		if($localStorage.infraProviders){
 			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
 			if(!$scope.$parent.$parent.currentSelectedInfra){
-				$scope.go("/infra");
+				if($routeParams.infraId){
+					$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+						if(oneProvider._id === $routeParams.infraId){
+							$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+							delete $scope.$parent.$parent.currentSelectedInfra.templates;
+							$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+						}
+					});
+				}
+				
+				if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.go("/infra");
+				}
 			}
 			else{
 				delete $scope.$parent.$parent.currentSelectedInfra.templates;
@@ -64,7 +80,19 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$lo
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
 					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
 					if(!$scope.$parent.$parent.currentSelectedInfra){
-						$scope.go("/infra");
+						if($routeParams.infraId){
+							$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+								if(oneProvider._id === $routeParams.infraId){
+									$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+									delete $scope.$parent.$parent.currentSelectedInfra.templates;
+									$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+								}
+							});
+						}
+						
+						if(!$scope.$parent.$parent.currentSelectedInfra){
+							$scope.go("/infra");
+						}
 					}
 					else{
 						delete $scope.$parent.$parent.currentSelectedInfra.templates;
@@ -88,7 +116,11 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$lo
 	};
 
 	$scope.listFirewalls = function (oneGroup) {
-		infraFirewallSrv.listFirewalls($scope, oneGroup);
+		overlayLoading.show();
+		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			$scope.vmlayers = vmlayers;
+			infraFirewallSrv.listFirewalls($scope, oneGroup);
+		});
 	};
 
 	if ($scope.access.list) {

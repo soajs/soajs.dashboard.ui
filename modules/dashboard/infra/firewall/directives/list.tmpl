@@ -46,20 +46,6 @@
 						<p>No Ports Configuration Detected.</p>
 					</alert>
 					
-					<fieldset ng-if="oneGroups.networks && oneGroups.networks.length > 0">
-						<legend>Networks</legend>
-						<div class="entryBoxes entryBoxesGrid">
-							<div ng-repeat="oneNetwork in oneGroups.networks">
-								<div class="entryBox blueBox" style="padding: 3px 5px;">
-									<b>Network:</b>&nbsp;{{oneNetwork.name}}
-									<a href="#/infra-network/?group={{oneNetwork.group}}">
-										<span class="icon icon-search"></span>
-									</a>
-								</div>
-							</div>
-						</div>
-					</fieldset>
-					
 					<fieldset ng-if="oneGroups.ports && oneGroups.ports.length > 0">
 						<legend>Ports Configuration</legend>
 						<div class="grid">
@@ -91,6 +77,38 @@
 							</table>
 						</div>
 					</fieldset>
+					
+					<div ng-if="oneGroups.networks && oneGroups.networks.length > 0">
+						<hr>
+						<fieldset >
+							<legend>Networks</legend>
+							<div class="entryBoxes entryBoxesGrid">
+								<div ng-repeat="oneNetwork in oneGroups.networks">
+									<div class="entryBox blueBox" style="padding: 3px 5px;">
+										<a href="#/infra-networks/?group={{oneNetwork.group}}">
+											<span class="icon icon-connection"></span>&nbsp;<b>{{oneNetwork.name}}</b>
+										</a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					
+					<div ng-if="oneGroups.vmLayers && oneGroups.vmLayers.length > 0">
+						<hr>
+						<fieldset >
+							<legend>Virtual Machine Layers</legend>
+							<div class="entryBoxes entryBoxesGrid">
+								<div ng-repeat="oneVMLayer in oneGroups.vmLayers">
+									<div class="entryBox blueBox" style="padding: 3px 5px;">
+										<a href="#/environments-platforms?envCode={{oneVMLayer.envCode}}&tab=vm&layer={{oneVMLayer.vmLayer}}">
+											<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
+										</a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
 				</accordion-group>
 			</accordion>
 		</div>

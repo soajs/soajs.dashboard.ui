@@ -1,6 +1,6 @@
 "use strict";
 var infraIPSrv = soajsApp.components;
-infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', function (ngDataApi, $localStorage) {
+infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', function (ngDataApi, $localStorage, $timeout, $modal) {
 
 	function addIP(currentScope) {
 		currentScope.labelCounter = 0;

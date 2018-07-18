@@ -95,9 +95,17 @@ let infraIPConfig = {
 			{
 				'name': 'ipAddressVersion',
 				'label': 'IP Address Version',
-				'type': 'uiselect',
-				'value': [{'v': 'IPv4', 'l': 'IPv4'}, {'v': 'IPv6', 'l': 'IPv6'}],
+				'type': 'readonly',
+				'value': "",
 				'fieldMsg': 'The IP Address Version',
+				'required': true
+			},
+			{
+				'name': 'type',
+				'label': 'Type',
+				'type': 'readonly',
+				'value': "",
+				'fieldMsg': 'The IP Address Type',
 				'required': true
 			},
 			{
@@ -116,14 +124,6 @@ let infraIPConfig = {
 				'min': 240,
 				'max':1800,
 				'fieldMsg': 'The Idle Timeout between 240s and 1800s (in the case of Azure, this value will be converted to minutes)',
-				'required': true
-			},
-			{
-				'name': 'type',
-				'label': 'Type',
-				'type': 'uiselect',
-				'value': [{'v': 'basic', 'l': 'Basic'}, {'v': 'standard', 'l': 'Standard'}],
-				'fieldMsg': 'The IP Address Type',
 				'required': true
 			},
 			{

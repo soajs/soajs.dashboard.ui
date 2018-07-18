@@ -2,8 +2,7 @@
 var infraNetworkApp = soajsApp.components;
 infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraNetworkSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraNetworkSrv) {
 	$scope.$parent.isUserNameLoggedIn();
-	$scope.showTemplateForm = false;
-
+	$scope.vmlayers = [];
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraNetworkConfig.permissions);
 
@@ -26,7 +25,12 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 					$scope.selectedGroup = $scope.infraGroups[0];
 				}
 				$timeout(() => {
-					infraNetworkSrv.listNetworks($scope, $scope.selectedGroup);
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						$scope.vmlayers = vmlayers;
+					
+						infraNetworkSrv.listNetworks($scope, $scope.selectedGroup);
+					});
 				}, 500);
 			}
 			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
@@ -112,7 +116,11 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 	};
 
 	$scope.listNetworks = function (oneGroup) {
-		infraNetworkSrv.listNetworks($scope, oneGroup);
+		overlayLoading.show();
+		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			$scope.vmlayers = vmlayers;
+			infraNetworkSrv.listNetworks($scope, oneGroup);
+		});
 	};
 
 	if ($scope.access.list) {

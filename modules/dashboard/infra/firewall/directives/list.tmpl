@@ -30,7 +30,7 @@
 			<br />
 			
 			<accordion close-others="false">
-				<accordion-group ng-repeat="oneGroups in infraSecurityGroups">
+				<accordion-group is-open="oneGroups.open" ng-repeat="oneGroups in infraSecurityGroups">
 					<accordion-heading>
 						{{oneGroups.name}}
 					</accordion-heading>
@@ -79,7 +79,6 @@
 					</fieldset>
 					
 					<div ng-if="oneGroups.networks && oneGroups.networks.length > 0">
-						<hr>
 						<fieldset >
 							<legend>Networks</legend>
 							<div class="entryBoxes entryBoxesGrid">
@@ -95,15 +94,21 @@
 					</div>
 					
 					<div ng-if="oneGroups.vmLayers && oneGroups.vmLayers.length > 0">
-						<hr>
 						<fieldset >
 							<legend>Virtual Machine Layers</legend>
 							<div class="entryBoxes entryBoxesGrid">
 								<div ng-repeat="oneVMLayer in oneGroups.vmLayers">
 									<div class="entryBox blueBox" style="padding: 3px 5px;">
-										<a href="#/environments-platforms?envCode={{oneVMLayer.envCode}}&tab=vm&layer={{oneVMLayer.vmLayer}}">
-											<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
-										</a>
+										<div ng-if="oneVMLayer.link">
+											<a href="#/environments-platforms?envCode={{oneVMLayer.envCode}}&tab=vm&layer={{oneVMLayer.vmLayer}}">
+												<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
+											</a>
+										</div>
+										<div ng-if="!oneVMLayer.link">
+											<b>
+												<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
+											</b>
+										</div>
 									</div>
 								</div>
 							</div>

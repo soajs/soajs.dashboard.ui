@@ -11,7 +11,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
+                overlayLoading.show();
 				resourceDeploy.buildDeployForm(currentScope, $scope, $modalInstance, resource, action, settings);
+                overlayLoading.hide();
 
 				$scope.save = function (type) {
 					let formData = $scope.formData;
@@ -78,6 +80,8 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								deployOptions.custom = {};
 							}
 
+                            deployOptions.custom.env = $scope.options.envCode;
+
 							deployOptions.custom.type = 'resource';
 
 							deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
@@ -86,6 +90,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 							}
+
 							apiParams['resourceName'] = formData.name;
 							apiParams['deploy'] = formData.canBeDeployed || false;
 							apiParams['options'] = deployOptions;
@@ -95,8 +100,8 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
                                 $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
                                     apiParams.vms.push(oneInstance.name);
 
-                                    if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
-                                        if(!apiParams.options.deployConfig.vmConfiguration.group) {
+                                    if (apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
+                                        if (!apiParams.options.deployConfig.vmConfiguration.group) {
                                             apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
                                         }
                                     }

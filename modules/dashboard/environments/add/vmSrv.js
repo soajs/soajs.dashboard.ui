@@ -344,7 +344,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				});
 			}
 		}
-
+		//on back
 		function onBoard(currentScope, vmLayers, vmOnBoards) {
 			for ( let i in vmLayers) {
 				for (let j in vmOnBoards) {

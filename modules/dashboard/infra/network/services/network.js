@@ -38,24 +38,30 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 							}
 						};
 
-						// TODO: pass the below items through a regex validation
-						postOpts.data.params.address = splitAndTrim(data.address);
-						postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
 
-						overlayLoading.show();
-						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-							overlayLoading.hide();
-							if (error) {
-								currentScope.form.displayAlert('danger', error.message);
-							}
-							else {
-								currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-								currentScope.modalInstance.close();
-								$timeout(() => {
-									listNetworks(currentScope, currentScope.selectedGroup);
-								}, 2000);
-							}
-						});
+						let myPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
+						if(!myPattern.test(formData.address)){
+							$window.alert("Make sure the address you entered follows the correct CIDR format.");
+						}
+
+						// // TODO: pass the below items through a regex validation
+						// postOpts.data.params.address = splitAndTrim(data.address);
+						// postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+						//
+						// overlayLoading.show();
+						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+						// 	overlayLoading.hide();
+						// 	if (error) {
+						// 		currentScope.form.displayAlert('danger', error.message);
+						// 	}
+						// 	else {
+						// 		currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+						// 		currentScope.modalInstance.close();
+						// 		$timeout(() => {
+						// 			listNetworks(currentScope, currentScope.selectedGroup);
+						// 		}, 2000);
+						// 	}
+						// });
 					}
 				},
 				{
@@ -229,15 +235,17 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 				if (response.networks && response.networks.length > 0) {
 					currentScope.infraNetworks = response.networks;
 				}
-				currentScope.infraNetworks[0].open = true;
-				
+				if (currentScope.infraNetworks.length > 0) {
+					currentScope.infraNetworks[0].open = true;
+				}
+
 				if (currentScope.vmlayers) {
 					let processedFirewalls = [];
 					currentScope.infraNetworks.forEach((oneNetwork) => {
 						oneNetwork.subnets.forEach((oneSubnet) => {
 							currentScope.vmlayers.forEach((oneVmLayer) => {
 								if (oneVmLayer.network && oneVmLayer.network.toLowerCase() === oneNetwork.name.toLowerCase() && oneSubnet.name === oneVmLayer.layer) {
-									
+
 									if(oneVmLayer.labels&& oneVmLayer.labels['soajs.env.code']){
 										let found = false;
 										$localStorage.environments.forEach((oneEnv) => {
@@ -245,7 +253,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 												found = true;
 											}
 										});
-										
+
 										oneSubnet.vm = {
 											vmLayer: oneVmLayer.layer,
 											group: oneGroup.name,
@@ -261,11 +269,11 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 											link: false
 										};
 									}
-									
+
 									if(!oneNetwork.firewall){
 										oneNetwork.firewall = [];
 									}
-									
+
 									if(processedFirewalls.indexOf(oneVmLayer.securityGroup) === -1){
 										processedFirewalls.push(oneVmLayer.securityGroup);
 										oneNetwork.firewall.push({

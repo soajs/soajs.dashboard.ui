@@ -1,7 +1,7 @@
 "use strict";
 let infraCommonCSrv = soajsApp.components;
 infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-	
+
 	function getInfraFromCookie(currentScope) {
 		if ($cookies.getObject('myInfra', {'domain': interfaceDomain})) {
 			currentScope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
@@ -10,7 +10,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}, 200);
 		}
 	}
-	
+
 	function getInfra(currentScope, opts, cb) {
 		let options = {
 			"method": "get",
@@ -19,32 +19,43 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				"exclude": ["groups", "regions", "templates"]
 			}
 		};
-		
+
 		if (opts.id) {
-			options.routeName += "/" + opts.id;
+			options.params.id = opts.id;
 		}
-		
+
 		if(opts.exclude){
 			options.params.exclude = opts.exclude;
 		}
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			overlayLoading.hide();
 			if(error){
 				return cb(error);
 			}
-			
+
 			if(opts.id){
 				$timeout(() => {
 					hideSidebarMenusForUnwantedProviders(currentScope, response);
 				}, 300);
 			}
+			else {
+				if (response.length === 0) {
+					$timeout(() => {
+						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
+							if(['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'].indexOf(oneNavigationEntry.id) !== -1){
+								oneNavigationEntry.hideMe = true;
+							}
+						});
+					}, 200);
+				}
+			}
 			return cb(null, response);
 		});
 	}
-	
-	function switchInfra(currentScope, oneInfra, exclude) {
+
+	function switchInfra(currentScope, oneInfra, exclude, cb) {
 		$timeout(() => {
 			overlayLoading.show();
 			getInfra(currentScope, {
@@ -59,11 +70,11 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					if(currentScope.$parent && currentScope.$parent.$parent){
 						currentScope.$parent.$parent.currentSelectedInfra = myInfra;
 					}
-					
+
 					if (!currentScope.$parent.$parent.currentSelectedInfra) {
-						currentScope.go("/infra");
+						currentScope.$parent.$parent.go("/infra");
 					}
-					
+
 					let infraCookieCopy = angular.copy(myInfra);
 					delete infraCookieCopy.templates;
 					delete infraCookieCopy.groups;
@@ -71,35 +82,59 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					delete infraCookieCopy.deployments;
 					delete infraCookieCopy.api;
 					$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
+
+					//check if infraProviders more than 0 and then unhide the leftMenu items that were hidden when there were no infra providers configured
+					if (currentScope.infraProviders.length > 0) {
+						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavItem) => {
+							if (['infra-deployments', 'infra-templates'].indexOf(oneNavItem.id) !== -1) {
+								oneNavItem.hideMe = false;
+							}
+						});
+					}
+
 					hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
+
+					if(cb && typeof cb === 'function'){
+						return cb();
+					}
 				}
 			});
 		}, 500);
 	}
-	
+
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
+
+		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
 		
-		let excludedInfras = ['infra-templates'];
-		
+		let excludedVms = ['infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
+
 		//fix the menu; local driver has not templates
 		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){
 			currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
-				if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
-					oneNavigationEntry.hideMe = false;
-					
-					if(myInfra.name === 'local'){
+				
+				oneNavigationEntry.hideMe = false;
+				if(myInfra.name === 'local'){
+					if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 						
 						if(oneNavigationEntry.url === $window.location.hash){
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
-					
+				}
+				else if(['aws', 'google'].indexOf(myInfra.name) !== -1){
+					if(excludedVms.indexOf(oneNavigationEntry.id) !== -1){
+						oneNavigationEntry.hideMe = true;
+						
+						if(oneNavigationEntry.url === $window.location.hash){
+							currentScope.go(oneNavigationEntry.fallbackLocation);
+						}
+					}
 				}
 			});
 		}
 	}
-	
+
 	function activateProvider(currentScope) {
 		let providersList = angular.copy(infraConfig.form.providers);
 		providersList.forEach((oneProvider) => {
@@ -110,7 +145,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}, 10);
 			}
 		});
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -130,9 +165,9 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			]
 		};
-		
+
 		buildFormWithModal(currentScope, $modal, options);
-		
+
 		function step2(selectedProvider) {
 			let options = {
 				timeout: $timeout,
@@ -167,7 +202,23 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 									currentScope.form.displayAlert('success', "Provider Connected & Activated");
 									currentScope.modalInstance.close();
 									currentScope.go("#/infra");
-									//todo: switch the infra to the one that was just added
+
+									//get all infras
+									getInfra(currentScope, {}, (error, infras) => {
+										if (error) {
+											currentScope.displayAlert('danger', error);
+										} else {
+											//reset flag to hide "no infras" warning
+											currentScope.noInfraProvidersConfigured = false;
+
+											//copy infras to scope and parent scope
+											currentScope.infraProviders = infras;
+											currentScope.$parent.$parent.infraProviders = angular.copy(currentScope.infraProviders);
+
+											//switch to the latest added infra
+											switchInfra(currentScope, infras[infras.length - 1]);
+										}
+									});
 								}
 							});
 						}
@@ -183,9 +234,38 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				]
 			};
-			
+
 			buildFormWithModal(currentScope, $modal, options);
 		}
+	}
+
+	function getVMLayers(currentScope, cb){
+		let oneProvider = currentScope.$parent.$parent.currentSelectedInfra;
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/cloud/vm/list",
+			"params":{
+				"infraId": oneProvider._id
+			}
+		}, function (error, providerVMs) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				let allVMs = [];
+				
+				delete providerVMs.soajsauth;
+				
+				//aggregate response and generate layers from list returned
+				if(providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0){
+					providerVMs[oneProvider.name].forEach((oneVM) => {
+						delete oneVM.template;
+						allVMs.push(oneVM);
+					});
+				}
+				return cb(null, allVMs);
+			}
+		});
 	}
 	
 	return {
@@ -193,6 +273,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		"activateProvider": activateProvider,
 		"getInfraFromCookie": getInfraFromCookie,
 		"getInfra": getInfra,
-		"switchInfra": switchInfra
+		"switchInfra": switchInfra,
+		"getVMLayers": getVMLayers
 	}
 }]);

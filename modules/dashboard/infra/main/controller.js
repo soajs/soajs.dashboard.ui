@@ -12,13 +12,16 @@ var infraApp = soajsApp.components;
 infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$localStorage', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', function ($scope, $window, $modal, $timeout, $localStorage, $cookies, injectFiles, ngDataApi, infraCommonSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-	
+
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraConfig.permissions);
-	
+
 	infraCommonSrv.getInfraFromCookie($scope);
-	
+
 	$scope.getProviders = function () {
+		$localStorage.infraProviders =[];
+		$scope.$parent.$parent.infraProviders = [];
+		
 		infraCommonSrv.getInfra($scope, {
 			id: null,
 			exclude: ["groups", "regions", "templates"]
@@ -27,24 +30,36 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 				$scope.displayAlert("danger", error);
 			}
 			else {
-				$scope.infraProviders = infras;
-				$localStorage.infraProviders = angular.copy($scope.infraProviders);
-				$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
-				if (!$scope.$parent.$parent.currentSelectedInfra) {
-					infraCommonSrv.switchInfra($scope, infras[0]);
+				//no infra providers to list
+				$scope.noInfraProvidersConfigured = true;
+				if (infras.length > 0) {
+					$scope.noInfraProvidersConfigured = false;
+					$scope.infraProviders = infras;
+					$localStorage.infraProviders = angular.copy($scope.infraProviders);
+					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
+					if (!$scope.$parent.$parent.currentSelectedInfra) {
+						infraCommonSrv.switchInfra($scope, infras[0]);
+					}
+					else{
+						infraCommonSrv.switchInfra($scope, $scope.$parent.$parent.currentSelectedInfra);
+					}
+				}
+				else{
+					delete $scope.$parent.$parent.currentSelectedInfra;
+					$cookies.remove('myInfra', { 'domain': interfaceDomain });
 				}
 			}
 		});
 	};
-	
+
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"]);
 	};
-	
+
 	$scope.$parent.$parent.activateProvider = function () {
 		infraCommonSrv.activateProvider($scope);
 	};
-	
+
 	$scope.editProvider = function (oneProvider) {
 		let providerName = oneProvider.name;
 		if (oneProvider.name === 'local') {
@@ -52,7 +67,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 		}
 		let editEntriesList = angular.copy(infraConfig.form[providerName]);
 		editEntriesList.shift();
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -101,10 +116,10 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 				}
 			]
 		};
-		
+
 		buildFormWithModal($scope, $modal, options);
 	};
-	
+
 	$scope.deactivateProvider = function (oneProvider) {
 		let options = {
 			"method": "delete",
@@ -121,11 +136,12 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			}
 			else {
 				$scope.displayAlert("success", "Provider deactivated successfully.");
+				delete $scope.$parent.$parent.currentSelectedInfra;
 				$scope.getProviders();
 			}
 		});
 	};
-	
+
 	if ($scope.access.list) {
 		$scope.getProviders();
 	}

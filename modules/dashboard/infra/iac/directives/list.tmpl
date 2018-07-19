@@ -5,35 +5,42 @@
 			<span class="icon icon-plus"></span> Add New Template
 		</a>
 		<br /><br />
-		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">No Templates available, please add.</alert>
-		<div ng-if="currentSelectedInfra.templates && currentSelectedInfra.templates.length > 0" class="grid">
-			<table width="100%">
-				<thead>
-					<tr>
-						<th width="10%"></th>
-						<th width="20%">Name</th>
-						<th width="40%">Description</th>
-						<th width="10%">Driver</th>
-						<th width="10%">Technology</th>
-						<th width="10%">Location</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="oneTmpl in currentSelectedInfra.templates" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
-						<td>
-							<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;
-							<a href="" ng-click="editTemplate(oneTmpl, currentSelectedInfra)" ><span class="icon icon-pencil"></span></a>&nbsp;
-							<a href="" ng-click="downloadTemplate(oneTmpl, currentSelectedInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
-							<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, currentSelectedInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>
-						</td>
-						<td style="word-break: break-word;">{{oneTmpl.name}}</td>
-						<td style="word-break: break-word;">{{oneTmpl.description}}</td>
-						<td>{{oneTmpl.driver}}</td>
-						<td>{{oneTmpl.technology}}</td>
-						<td>{{(oneTmpl.location === 'local') ? "SOAJS Console" : "Cloud Provider" }}</td>
-					</tr>
-				</tbody>
-			</table>
+		<alert type="warning" ng-if="!currentSelectedInfra.templates">No Templates available, please add.</alert>
+		<div ng-if="currentSelectedInfra.templates" class="grid">
+			
+			<tabset>
+				<tab heading="{{oneTechnology|capitalize}}" ng-repeat="(oneTechnology, tmpls) in currentSelectedInfra.templates">
+					<br />
+					<tabset>
+						<tab heading="{{driver|capitalize}}" ng-repeat="(driver, list) in tmpls">
+							<table width="100%" ng-if="list.length > 0">
+								<br />
+								<thead>
+									<tr>
+										<th width="10%"></th>
+										<th width="20%">Name</th>
+										<th width="40%">Description</th>
+										<th width="10%">Storage Location</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="oneTmpl in list" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
+										<td ng-if="oneTmpl.technology === oneTechnology">
+											<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;
+											<a href="" ng-click="editTemplate(oneTmpl, currentSelectedInfra)" ><span class="icon icon-pencil"></span></a>&nbsp;
+											<a href="" ng-click="downloadTemplate(oneTmpl, currentSelectedInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
+											<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, currentSelectedInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>
+										</td>
+										<td ng-if="oneTmpl.technology === oneTechnology" style="word-break: break-word;">{{oneTmpl.name}}</td>
+										<td ng-if="oneTmpl.technology === oneTechnology" style="word-break: break-word;">{{oneTmpl.description}}</td>
+										<td ng-if="oneTmpl.technology === oneTechnology">{{(oneTmpl.location === 'local') ? "SOAJS Console" : "Cloud Provider" }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</tab>
+					</tabset>
+				</tab>
+			</tabset>
 		</div>
 	</div>
 	<div ng-if="showTemplateForm">

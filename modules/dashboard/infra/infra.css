@@ -1,46 +1,110 @@
-.tr-docker-wrapper ,
-.tr-kubernetes-wrapper ,
-.tr-google-wrapper ,
-.tr-aws-wrapper ,
+.tr-docker-wrapper,
+.tr-kubernetes-wrapper,
+.tr-google-wrapper,
+.tr-aws-wrapper,
 .tr-azure-wrapper {
-    width:30%;
-    float:left;
-    margin:1%;
+    width: 30%;
+    float: left;
+    margin: 1%;
     border: solid 1px #cccccc;
     border-radius: 8px;
 }
 
-.tr-docker-wrapper:hover ,
-.tr-kubernetes-wrapper:hover ,
+.tr-docker-wrapper:hover,
+.tr-kubernetes-wrapper:hover,
 .tr-google-wrapper:hover,
 .tr-aws-wrapper:hover,
 .tr-azure-wrapper:hover {
     border: solid 1px #bbbbbb;
-    cursor:pointer;
-    background-color:#efefef;
+    cursor: pointer;
+    background-color: #efefef;
 }
 
 .tr-docker-wrapper td,
 .tr-kubernetes-wrapper td,
 .tr-google-wrapper td,
 .tr-aws-wrapper td,
-.tr-azure-wrapper td{
-    width:100%;
-    display:block;
+.tr-azure-wrapper td {
+    width: 100%;
+    display: block;
 }
 
 .tr-docker-wrapper #docker,
 .tr-kubernetes-wrapper #kubernetes,
 .tr-google-wrapper #google,
 .tr-aws-wrapper #aws,
-.tr-azure-wrapper #azure{
-    padding:10px;
-    text-align:center;
+.tr-azure-wrapper #azure {
+    padding: 10px;
+    text-align: center;
 }
 
-.techTag{
+.techTag {
     background: #DFF1F7;
-    border:solid 1px #337ab7;
-    padding:2px 6px;
+    border: solid 1px #337ab7;
+    padding: 2px 6px;
     border-radius: 5px;
+}
+
+table tr[class^="form-group tr-label"] {
+    float: left;
+    width: 47%;
+}
+
+table tr[class^="form-group tr-label"] td{
+    width:97% !important;
+    display: table;
+}
+
+table tr[class^="form-group tr-rLabel"] {
+    float: left;
+    width: 6%;
+    color:red;
+    margin-top:5%;
+}
+
+table tr[class^="form-group tr-labelGroup"] {
+    float: none;
+    width: 100%;
+    clear: both;
+    position:relative;
+}
+
+#editFirewall .tr-region-wrapper td{
+    padding-bottom:30px;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr{
+    float: left;
+    width: 24%;
+    height: 70px;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-name"]{
+    float: left;
+    width: 98%;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] {
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-rLabel"]{
+    float: none;
+    height: 24px;
+    position: absolute;
+    top: -5%;
+    right: 1%;
+    width:2%;
+}
+
+#editFirewall table tr [class^="form-group tr-portGroup"] tr td{
+    width:97% !important;
+    display: table;
+}
+
+td.readonly{
+    opacity: 0.7;
+    font-style:italic;
 }

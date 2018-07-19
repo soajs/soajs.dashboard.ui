@@ -1,0 +1,53 @@
+<section ng-controller="infraLoadBalancerCtrl">
+	<div class="w-100 c-both">
+		<div class="f-left w20">
+			<a class="btn btn-sm btn-primary" ng-if="access.addLoadBalancer" ng-click="addLoadBalancer()">
+				<span class="icon icon-plus"></span> Add New Load Balancer
+			</a>
+		</div>
+		
+		<div class="f-right w30">
+			<div class="searchBoxContainer">
+			<button class="btn btn-success f-right" ng-click="listLoadBalancers(selectedGroup)">
+				Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+			</button>
+		</div>
+
+		<div ng-if="infraGroups.length > 0">
+			Group:
+			<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listLoadBalancers(selectedGroup)" ng-options="group as group.name group by group.region for group in infraGroups"></select>
+		</div>
+		</div>
+		<br /><br />
+	</div>
+	
+	<div ng-if="access.list">
+		<alert type="warning" ng-if="!infraLoadBalancers || infraLoadBalancers.length === 0">
+			No Load Balancers found in this Group.
+		</alert>
+		<div ng-if="infraLoadBalancers && infraLoadBalancers.length > 0" class="entryBoxes">
+			<br />
+			
+			<accordion close-others="false">
+				<accordion-group ng-repeat="oneLoadBalancer in infraLoadBalancers">
+					<accordion-heading>
+						{{oneLoadBalancer.name}}
+					</accordion-heading>
+					<div class="w-100 c-both t-right">
+							<a href="" ng-click="editNetwork(oneLoadBalancer)" class="btn btn-sm btn-primary">
+								<span class="icon icon-pencil2"></span>&nbsp;Modify
+							</a>&nbsp;&nbsp;
+							<a class="btn btn-sm btn-danger" href="" ng-click="deleteNetwork(oneLoadBalancer)" ng-confirm-click="Are you sure you want to delete this network ?">
+								<span class="icon icon-cross"></span>&nbsp;Delete
+							</a>
+					</div>
+					
+					<div>
+						<pre ng-bind-html="oneLoadBalancer | json"></pre>
+					</div>
+					
+				</accordion-group>
+			</accordion>
+		</div>
+	</div>
+</section>

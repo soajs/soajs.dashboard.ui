@@ -33,11 +33,9 @@
 								<td><label>Environments</label></td>
 								<td>{{oneDeployment.environments}}</td>
 							</tr>
-							<tr ng-if="oneDeployment.loadBalancers && Object.keys(oneDeployment.loadBalancers).length > 0" class="rows last odd">
+							<tr ng-if="oneDeployment.loadBalancers" class="rows last odd">
 								<td><label>Load Balancers</label></td>
-								<td>
-									{{oneDeployment.loadBalancers}}
-								</td>
+								<td ng-bind-html="oneDeployment.loadBalancers|object"></td>
 							</tr>
 						</tbody>
 					</table>

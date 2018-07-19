@@ -2,9 +2,170 @@
 var infraNetworkSrv = soajsApp.components;
 infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', 'infraCommonSrv', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload, infraCommonSrv) {
 
-	function addNetwork(currentScope) {}
+	function addNetwork(currentScope) {
 
-	function editNetwork(currentScope, oneNetwork) {}
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraNetworkConfig.form.network)
+			},
+			name: 'addNetwork',
+			label: 'Add New Network',
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Create Network",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let postOpts = {
+							"method": "post",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "network",
+									"region": currentScope.selectedGroup.region,
+									"labels": {},
+									"name": data.name,
+									"group": currentScope.selectedGroup.name,
+									"subnets": data.subnets
+								}
+							}
+						};
+
+						// TODO: pass the below items through a regex validation
+						postOpts.data.params.address = splitAndTrim(data.address);
+						postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								currentScope.modalInstance.close();
+								$timeout(() => {
+									listNetworks(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+
+		//set value of region to selectedRegion
+		options.form.entries[1].value = currentScope.selectedGroup.region;
+
+		buildFormWithModal(currentScope, $modal, options);
+	}
+
+	function splitAndTrim(string) {
+		let x = string.split(',');
+
+		for (let i = 0; i < x.length; i++) {
+			x[i] = x[i].trim();
+		};
+
+		return x;
+	}
+
+	function editNetwork(currentScope, oneNetwork) {
+
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraNetworkConfig.form.network)
+			},
+			data: oneNetwork,
+			name: 'editNetwork',
+			label: 'Edit Network',
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Update Network",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let postOpts = {
+							"method": "put",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "network",
+									"region": currentScope.selectedGroup.region,
+									"labels": {},
+									"name": data.name,
+									"group": currentScope.selectedGroup.name,
+									"subnets": data.subnets
+								}
+							}
+						};
+
+						// TODO: pass the below items through a regex validation
+						postOpts.data.params.address = splitAndTrim(data.address);
+						postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.displayAlert('success', "Network Updated successfully. Changes take a bit of time to be populated and might require you to refresh in the list after a few seconds.");
+								currentScope.modalInstance.close();
+								$timeout(() => {
+									listNetworks(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+
+		buildFormWithModal(currentScope, $modal, options, () => {
+			currentScope.form.formData = oneNetwork;
+			currentScope.form.entries[0].type = 'readonly';
+
+			currentScope.form.formData.address = oneNetwork.address.join().replace(",", ", ");
+
+			currentScope.form.formData.dnsServers = oneNetwork.dnsServers.join().replace(",", ", ");
+
+
+		});
+	}
 
 	function deleteNetwork(currentScope, oneNetwork) {
 
@@ -36,7 +197,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$timeout', '$modal', '
 
 	function listNetworks(currentScope, oneGroup) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		
+
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 

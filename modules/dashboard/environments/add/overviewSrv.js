@@ -71,26 +71,14 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			]
 		};
 		
-		if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
-			options.actions.push({
-				'type': 'submit',
-				'label': 'Next',
-				'btn': 'primary',
-				'action': function (formData) {
-					handleFormData(currentScope);
-				}
-			});
-		}
-		else {
-			options.actions.push({
-				'type': 'submit',
-				'label': "Next",
-				'btn': 'primary',
-				'action': function (formData) {
-					handleFormData(currentScope);
-				}
-			});
-		}
+		options.actions.push({
+			'type': 'submit',
+			'label': "Create Environment",
+			'btn': 'primary',
+			'action': function (formData) {
+				handleFormData(currentScope);
+			}
+		});
 		
 		options.actions.push({
 			'type': 'reset',

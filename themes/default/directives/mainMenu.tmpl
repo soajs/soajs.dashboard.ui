@@ -14,6 +14,23 @@
 			</ul>
 		</div>
 	</div>
+	
+	<div ng-show="pillar === 'infra' && !collapseMainMenu" class="infraMenu">
+		<div class="btn-group w100" dropdown>
+			<button id="split-button" type="button" class="btn btn-info t-left" style="width:83%">{{currentSelectedInfra.label || "N/A"}}</button>
+			<button type="button" class="btn btn-info" dropdown-toggle  style="width:17%">
+				<span class="caret"></span>
+				<span class="sr-only">Split button!</span>
+			</button>
+			<ul class="dropdown-menu w100" role="menu" aria-labelledby="split-button">
+				<li role="menuitem" ng-repeat="oneInfra in infraProviders" ng-click="switchInfra(oneInfra)">{{oneInfra.label}}</li>
+				<li role="menuitem" ng-click="activateProvider()">
+					<span class="icon icon-plus"></span>&nbsp;connect New Infra Provider
+				</li>
+			</ul>
+		</div>
+	</div>
+	
 	<ul ng-if="pillar ==='operate'">
 		<li ng-repeat="link in leftMenu.links" ng-class="{'first': $first, 'last': $last, selected:link.selected, active: link.url === leftMenu.selectedMenu}">
 			<a href="{{link.url}}" class="mainMenu{{$index}}" id="mainMenu-{{link.id}}">

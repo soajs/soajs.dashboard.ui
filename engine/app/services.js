@@ -9,12 +9,14 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		$cookies.remove('refresh_token', { 'domain': interfaceDomain });
 		$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
 		$cookies.remove('myEnv', { 'domain': interfaceDomain });
+		$cookies.remove('myInfra', { 'domain': interfaceDomain });
 		$cookies.remove('soajsID', { 'domain': interfaceDomain });
 		$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
 		$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
 		$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
 		$cookies.remove("soajs_dashboard_login", { 'domain': interfaceDomain });
 		
+		$localStorage.infraProviders = null;
 		$localStorage.soajs_user = null;
 		$localStorage.acl_access = null;
 		$localStorage.environments = null;

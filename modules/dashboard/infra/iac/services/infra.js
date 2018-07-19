@@ -1,28 +1,7 @@
 "use strict";
-var infraSrv = soajsApp.components;
-infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-
-	function getInfra(currentScope, cb) {
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/infra",
-			"params":{
-				"exclude": [ "groups", "regions"]
-			}
-		};
-
-		$timeout(() => {
-			overlayLoading.show();
-			getSendDataFromServer(currentScope, ngDataApi, options, function (error, result) {
-				overlayLoading.hide();
-				result.forEach((oneResult) => {
-					oneResult.open = (oneResult.deployments.length > 0 || (oneResult.templates && oneResult.templates.length > 0));
-				});
-				return cb(error, result);
-			});
-		}, 500);
-	}
-
+var infraIACSrv = soajsApp.components;
+infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
+	
 	function injectFormInputs(id, value, form, data) {
 		//reset form inputs to 4
 		form.entries.length = 5;
@@ -147,7 +126,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 	function addTemplate(currentScope, oneInfra) {
 		currentScope.showTemplateForm = true;
-		let entries = angular.copy(infraConfig.form.templates);
+		let entries = angular.copy(infraIACConfig.form.templates);
 
 		//inject select infra type
 		if (oneInfra.templatesTypes.indexOf("local") !== -1) {
@@ -384,7 +363,7 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 
 	function editTemplate(currentScope, oneInfra, oneTemplate) {
 		let contentEditor, inputsEditor, displayEditor, imfvEditor;
-		let entries = angular.copy(infraConfig.form.templates);
+		let entries = angular.copy(infraIACConfig.form.templates);
 		entries[0].readonly = true;
 		entries[0].disabled = true;
 
@@ -629,7 +608,6 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 	}
 
 	return {
-		'getInfra': getInfra,
 		'addTemplate': addTemplate,
 		'editTemplate': editTemplate
 	};

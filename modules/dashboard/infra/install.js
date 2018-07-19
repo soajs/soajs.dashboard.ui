@@ -3,24 +3,70 @@
 let infraNav = [
 	{
 		'id': 'infra-providers',
-		'label': 'Infra Providers',
+		'label': 'Settings',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/infra',
 			'method': 'get'
 		},
 		'url': '#/infra',
-		'tplPath': 'modules/dashboard/infra/directives/list.tmpl',
+		'tplPath': 'modules/dashboard/infra/main/directives/list.tmpl',
 		'icon': 'codepen',
 		'pillar': {
-			'name': 'development',
-			'label': translation.develop[LANG],
-			'position': 1
+			'name': 'infra',
+			'label': "Infrastructure",
+			'position': 0
 		},
 		'mainMenu': true,
 		'tracker': true,
-		'order': 7,
-		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/services/infra.js', 'modules/dashboard/infra/controller.js' ],
+		'order': 1,
+		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/main/controller.js' ],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'infra-providers',
+		'label': 'Deployments',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/infra',
+			'method': 'get'
+		},
+		'url': '#/infra-deployments',
+		'tplPath': 'modules/dashboard/infra/deployments/directives/list.tmpl',
+		'icon': 'codepen',
+		'pillar': {
+			'name': 'infra',
+			'label': "Infrastructure",
+			'position': 0
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 2,
+		"fallbackLocation": "#/infra",
+		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/deployments/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/deployments/controller.js' ],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'infra-templates',
+		'label': 'Infra Code Templates',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/infra',
+			'method': 'get'
+		},
+		'url': '#/infra-templates',
+		'tplPath': 'modules/dashboard/infra/iac/directives/list.tmpl',
+		'icon': 'codepen',
+		'pillar': {
+			'name': 'infra',
+			'label': "Infrastructure",
+			'position': 0
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 3,
+		"fallbackLocation": "#/infra",
+		'scripts': [ 'modules/dashboard/infra/config.js', 'modules/dashboard/infra/iac/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/iac/services/infra.js', 'modules/dashboard/infra/iac/controller.js' ],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

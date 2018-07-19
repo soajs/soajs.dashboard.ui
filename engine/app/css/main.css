@@ -255,10 +255,12 @@ em {
     width: 45px;
 }
 
+#mainMenu .infraMenu,
 #mainMenu .environmentsMenu {
     margin: 5px;
 }
 
+#mainMenu .infraMenu input,
 #mainMenu .environmentsMenu input {
     margin: 0 1px;
 }

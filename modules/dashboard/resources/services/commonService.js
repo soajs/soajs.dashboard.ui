@@ -189,7 +189,10 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     function getInfraProviders ($scope, apiParams, cb) {
         getSendDataFromServer($scope, ngDataApi, {
             "method": "get",
-            "routeName": "/dashboard/infra"
+            "routeName": "/dashboard/infra",
+	        "params":{
+		        "exclude": ["templates", "regions", "groups"]
+	        }
         }, function (error, providers) {
             if (error) {
                 $scope.displayAlert('danger', error.message);

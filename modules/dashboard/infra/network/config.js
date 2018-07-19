@@ -29,7 +29,7 @@ let infraNetworkConfig = {
 			},
 			{
 				'name': 'address',
-				'label': 'Addresses',
+				'label': 'Address',
 				'type': 'text',
 				'value': "",
 				"placeholder": "10.0.0.1/16",

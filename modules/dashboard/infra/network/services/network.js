@@ -1,6 +1,6 @@
 "use strict";
 var infraNetworkSrv = soajsApp.components;
-infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', function (ngDataApi, $localStorage) {
+infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', function (ngDataApi, $localStorage, $timeout, $modal, $window) {
 
 	function addNetwork(currentScope) {
 
@@ -39,29 +39,45 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 						};
 
 
-						let myPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
-						if(!myPattern.test(formData.address)){
-							$window.alert("Make sure the address you entered follows the correct CIDR format.");
+						let addressPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}\/[0-20-4]{1,2}$/;
+						if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
+							return $window.alert("Make sure the address you entered follows the correct CIDR format.");
 						}
 
-						// // TODO: pass the below items through a regex validation
-						// postOpts.data.params.address = splitAndTrim(data.address);
-						// postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
-						//
-						// overlayLoading.show();
-						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-						// 	overlayLoading.hide();
-						// 	if (error) {
-						// 		currentScope.form.displayAlert('danger', error.message);
-						// 	}
-						// 	else {
-						// 		currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-						// 		currentScope.modalInstance.close();
-						// 		$timeout(() => {
-						// 			listNetworks(currentScope, currentScope.selectedGroup);
-						// 		}, 2000);
-						// 	}
-						// });
+						if (data.address) {
+							postOpts.data.params.address = splitAndTrim(data.address);
+						}
+
+						if (data.dnsServers) {
+							let dnsPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
+							postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+
+							let valid = true;
+							postOpts.data.params.dnsServers.forEach((oneDNS) => {
+								if (!dnsPattern.test(oneDNS)) {
+									valid = false;
+								}
+							});
+
+							if (!valid) {
+								return $window.alert("Make sure the DNS addresses you entered follow the correct CIDR format.");
+							}
+						}
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								currentScope.modalInstance.close();
+								$timeout(() => {
+									listNetworks(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
 					}
 				},
 				{
@@ -93,6 +109,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 	}
 
 	function editNetwork(currentScope, oneNetwork) {
+		console.log(oneNetwork);
 
 		let options = {
 			timeout: $timeout,
@@ -129,9 +146,30 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 							}
 						};
 
-						// TODO: pass the below items through a regex validation
-						postOpts.data.params.address = splitAndTrim(data.address);
-						postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+						let addressPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}\/[0-20-4]{1,2}$/;
+						if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
+							return $window.alert("Make sure the address you entered follows the correct CIDR format.");
+						}
+
+						if (data.address) {
+							postOpts.data.params.address = splitAndTrim(data.address);
+						}
+
+						if (data.dnsServers) {
+							let dnsPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
+							postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+
+							let valid = true;
+							postOpts.data.params.dnsServers.forEach((oneDNS) => {
+								if (!dnsPattern.test(oneDNS)) {
+									valid = false;
+								}
+							});
+
+							if (!valid) {
+								return $window.alert("Make sure the DNS addresses you entered follow the correct CIDR format.");
+							}
+						}
 
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
@@ -167,7 +205,14 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 
 			currentScope.form.formData.address = oneNetwork.address.join().replace(",", ", ");
 
-			currentScope.form.formData.dnsServers = oneNetwork.dnsServers.join().replace(",", ", ");
+			currentScope.form.entries[3].value = oneNetwork.dnsServers.join().replace(",", ", ");
+
+			oneNetwork.subnets.forEach((oneSub) => {
+				currentScope.form.entries[4].value.push({
+					"name": oneSub.name,
+					"address": oneSub.address
+				});
+			});
 
 
 		});

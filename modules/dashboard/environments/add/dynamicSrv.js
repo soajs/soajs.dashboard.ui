@@ -968,10 +968,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								resource.deployOptions.vms = [];
 								let vmLayer = resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 								
-								if (vmLayer){
-									vmLayer = vmLayer  + "_" + resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
-								}
 								if (vmLayer && currentScope.vmLayers[vmLayer]){
+									resource.deployOptions.deployConfig.infra = currentScope.vmLayers[vmLayer].infraProvider._id;
 									if(currentScope.vmLayers[vmLayer].list && currentScope.vmLayers[vmLayer].list.length > 0){
 										currentScope.vmLayers[vmLayer].list.forEach(function (oneVM) {
 											resource.deployOptions.vms.push(oneVM.name);

@@ -3,7 +3,7 @@ var infraIPSrv = soajsApp.components;
 infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', function (ngDataApi, $localStorage, $timeout, $modal) {
 
 	function addIP(currentScope) {
-		currentScope.labelCounter = 0;
+		// currentScope.labelCounter = 0;
 
 		let options = {
 			timeout: $timeout,
@@ -20,10 +20,10 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 					'action': function (formData) {
 						let data = angular.copy(formData);
 
-						let labels = {};
-						for (let i = 0; i < currentScope.labelCounter; i ++) {
-							labels[data['labelName'+i]] = data['labelValue'+i];
-						}
+						// let labels = {};
+						// for (let i = 0; i < currentScope.labelCounter; i ++) {
+						// 	labels[data['labelName'+i]] = data['labelValue'+i];
+						// }
 
 						let postOpts = {
 							"method": "post",
@@ -36,7 +36,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 								"params": {
 									"section": "publicIp",
 									"region": currentScope.selectedGroup.region,
-									"labels": labels,
+									"labels": {},
 									"name": data.name,
 									"group": currentScope.selectedGroup.name,
 									"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
@@ -75,9 +75,9 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 			]
 		};
 
-		options.form.entries[6].entries[0].onAction = function (id, value, form) {
-			addNewLabel(currentScope);
-		};
+		// options.form.entries[6].entries[0].onAction = function (id, value, form) {
+		// 	addNewLabel(currentScope);
+		// };
 
 		//set value of region to selectedRegion
 		options.form.entries[1].value = currentScope.selectedGroup.region;
@@ -85,44 +85,44 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 		buildFormWithModal(currentScope, $modal, options);
 	}
 
-	function addNewLabel(currentScope) {
-		let labelCounter = currentScope.labelCounter;
-		let tmp = angular.copy(infraIPConfig.form.labelInput);
-		tmp.name += labelCounter;
-		tmp.entries[0].name += labelCounter;
-		tmp.entries[1].name += labelCounter;
-		tmp.entries[2].name += labelCounter;
-
-		tmp.entries[2].onAction = function (id, value, form) {
-			let count = parseInt(id.replace('rLabel', ''));
-
-			for (let i = form.entries[6].entries.length - 1; i >= 0; i--) {
-				if (form.entries[6].entries[i].name === 'labelGroup' + count) {
-					//remove from formData
-					for (var fieldname in form.formData) {
-						if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
-							delete form.formData[fieldname];
-						}
-					}
-					//remove from formEntries
-					form.entries[6].entries.splice(i, 1);
-					break;
-				}
-			}
-		};
-
-		if (currentScope.form && currentScope.form.entries) {
-			currentScope.form.entries[6].entries.splice(currentScope.form.entries[6].entries.length - 1, 0, tmp);
-		}
-		else {
-			// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		}
-		currentScope.labelCounter ++;
-	}
+	// function addNewLabel(currentScope) {
+	// 	let labelCounter = currentScope.labelCounter;
+	// 	let tmp = angular.copy(infraIPConfig.form.labelInput);
+	// 	tmp.name += labelCounter;
+	// 	tmp.entries[0].name += labelCounter;
+	// 	tmp.entries[1].name += labelCounter;
+	// 	tmp.entries[2].name += labelCounter;
+	//
+	// 	tmp.entries[2].onAction = function (id, value, form) {
+	// 		let count = parseInt(id.replace('rLabel', ''));
+	//
+	// 		for (let i = form.entries[6].entries.length - 1; i >= 0; i--) {
+	// 			if (form.entries[6].entries[i].name === 'labelGroup' + count) {
+	// 				//remove from formData
+	// 				for (var fieldname in form.formData) {
+	// 					if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+	// 						delete form.formData[fieldname];
+	// 					}
+	// 				}
+	// 				//remove from formEntries
+	// 				form.entries[6].entries.splice(i, 1);
+	// 				break;
+	// 			}
+	// 		}
+	// 	};
+	//
+	// 	if (currentScope.form && currentScope.form.entries) {
+	// 		currentScope.form.entries[6].entries.splice(currentScope.form.entries[6].entries.length - 1, 0, tmp);
+	// 	}
+	// 	else {
+	// 		// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
+	// 	}
+	// 	currentScope.labelCounter ++;
+	// }
 
 	function editIP(currentScope, originalIP) {
 		let oneIP = angular.copy(originalIP);
-		currentScope.labelCounter = (oneIP.labels && typeof oneIP.labels === 'object') ? Object.keys(oneIP.labels).length : 0;
+		// currentScope.labelCounter = (oneIP.labels && typeof oneIP.labels === 'object') ? Object.keys(oneIP.labels).length : 0;
 
 		let options = {
 			timeout: $timeout,
@@ -134,25 +134,16 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 			label: 'Edit Public IP',
 			actions: [
 				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				},
-				{
 					'type': 'submit',
 					'label': "Update Public IP",
 					'btn': 'primary',
 					'action': function (formData) {
 						let data = angular.copy(formData);
 
-						let labels = {};
-						for (let i = 0; i < currentScope.labelCounter; i ++) {
-							labels[data['labelName'+i]] = data['labelValue'+i];
-						}
+						// let labels = {};
+						// for (let i = 0; i < currentScope.labelCounter; i ++) {
+						// 	labels[data['labelName'+i]] = data['labelValue'+i];
+						// }
 
 						let postOpts = {
 							"method": "put",
@@ -165,7 +156,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 								"params": {
 									"section": "publicIp",
 									"region": currentScope.selectedGroup.region,
-									"labels": labels,
+									"labels": {},
 									"name": data.name,
 									"group": currentScope.selectedGroup.name,
 									"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
@@ -191,49 +182,58 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 							}
 						});
 					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
 				}
 			]
 		};
 
-		//assertion to avoid splicing label entries more than once
-		if (options.form.entries[6].entries.length !== currentScope.labelCounter + 1) {
-			//set labels
-			for (let i = 0; i < currentScope.labelCounter; i++) {
-				// change the labels to formData style
-				oneIP['labelName'+i] = Object.keys(oneIP.labels)[i];
-				oneIP['labelValue'+i] = oneIP.labels[Object.keys(oneIP.labels)[i]];
+		// //assertion to avoid splicing label entries more than once
+		// if (options.form.entries[6].entries.length !== currentScope.labelCounter + 1) {
+		// 	//set labels
+		// 	for (let i = 0; i < currentScope.labelCounter; i++) {
+		// 		// change the labels to formData style
+		// 		oneIP['labelName'+i] = Object.keys(oneIP.labels)[i];
+		// 		oneIP['labelValue'+i] = oneIP.labels[Object.keys(oneIP.labels)[i]];
+		//
+		// 		//add labels to the form based on label counters
+		// 		let tmp = angular.copy(infraIPConfig.form.labelInput);
+		// 		tmp.name += i;
+		// 		tmp.entries[0].name += i;
+		// 		tmp.entries[1].name += i;
+		// 		tmp.entries[2].name += i;
+		//
+		// 		tmp.entries[2].onAction = function (id, value, form) {
+		// 			let count = parseInt(id.replace('rLabel', ''));
+		//
+		// 			for (let i = form.entries[6].entries.length - 1; i >= 0; i--) {
+		// 				if (form.entries[6].entries[i].name === 'labelGroup' + count) {
+		// 					//remove from formData
+		// 					for (var fieldname in form.formData) {
+		// 						if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+		// 							delete form.formData[fieldname];
+		// 						}
+		// 					}
+		// 					//remove from formEntries
+		// 					form.entries[6].entries.splice(i, 1);
+		// 					break;
+		// 				}
+		// 			}
+		// 		};
+		// 		options.form.entries[6].entries.splice(options.form.entries[6].entries.length - 1, 0, tmp);
+		// 	}
+		// }
 
-				//add labels to the form based on label counters
-				let tmp = angular.copy(infraIPConfig.form.labelInput);
-				tmp.name += i;
-				tmp.entries[0].name += i;
-				tmp.entries[1].name += i;
-				tmp.entries[2].name += i;
-
-				tmp.entries[2].onAction = function (id, value, form) {
-					let count = parseInt(id.replace('rLabel', ''));
-
-					for (let i = form.entries[6].entries.length - 1; i >= 0; i--) {
-						if (form.entries[6].entries[i].name === 'labelGroup' + count) {
-							//remove from formData
-							for (var fieldname in form.formData) {
-								if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
-									delete form.formData[fieldname];
-								}
-							}
-							//remove from formEntries
-							form.entries[6].entries.splice(i, 1);
-							break;
-						}
-					}
-				};
-				options.form.entries[6].entries.splice(options.form.entries[6].entries.length - 1, 0, tmp);
-			}
-		}
-
-		options.form.entries[6].entries[currentScope.labelCounter].onAction = function (id, value, form) {
-			addNewLabel(currentScope);
-		};
+		// options.form.entries[6].entries[currentScope.labelCounter].onAction = function (id, value, form) {
+		// 	addNewLabel(currentScope);
+		// };
 
 		buildFormWithModal(currentScope, $modal, options, () => {
 			Object.keys(oneIP).forEach((oneKey) => {
@@ -298,7 +298,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 
 	function listIPs(currentScope, oneGroup) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		
+
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 
@@ -318,7 +318,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 				'extras[]': ['publicIps']
 			}
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 			overlayLoading.hide();
@@ -343,7 +343,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 							switch (onePublicIP.associated.type){
 								case "networkInterface":
 									html = "<span title='" + onePublicIP.associated.type + "'><b>" + label + "</b></span>";
-									
+
 									if(currentScope.vmlayers){
 										currentScope.vmlayers.forEach((oneVmLayer) => {
 											if(oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()){
@@ -351,7 +351,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 													oneVmLayer.ip.forEach((oneIPValue) => {
 														if(oneIPValue.type === 'public' && oneIPValue.allocatedTo === 'instance' && oneIPValue.address === onePublicIP.address){
 															html = ``;
-															
+
 															//check environment
 															let found = false;
 															$localStorage.environments.forEach((oneEnv) => {
@@ -371,7 +371,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 											}
 										});
 									}
-									
+
 									break;
 								case "loadBalancer":
 									html = "<span title='Load Balancer'><a href='#/infra-lb/?group=" + onePublicIP.associated.group + "'><span class='icon icon-tree'></span>&nbsp;" + label + "</a></span>";
@@ -380,7 +380,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 									html = label;
 									break;
 							}
-							
+
 							if(!html){
 								html = "N/A";
 							}
@@ -418,7 +418,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 							'msg': "Are you sure you want to delete the selected public IP(s)?"
 						});
 					}
-					
+
 					buildGrid(currentScope, gridOptions);
 				}
 			}

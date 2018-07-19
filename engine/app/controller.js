@@ -1022,7 +1022,7 @@ soajsApp.directive('textSizeSlider', ['$document', function ($document) {
 		link: function (scope, element, attr) {
 			scope.textSize = scope.value;
 			scope.$watch('textSize', function (size) {
-				if (scope.idt) {
+				if (scope.idt && document.getElementById(scope.idt)) {
 					document.getElementById(scope.idt).style.fontSize = size + scope.unit;
 				}
 				else {

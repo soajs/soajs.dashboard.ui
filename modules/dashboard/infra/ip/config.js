@@ -61,17 +61,17 @@ let infraIPConfig = {
 				'fieldMsg': 'The IP Address Type',
 				'required': true
 			},
-			{
-				'type': 'group',
-				'label': 'Labels',
-				'entries': [
-					{
-						'type': 'html',
-						'name': 'addLabel',
-						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
-					}
-				]
-			}
+			// {
+			// 	'type': 'group',
+			// 	'label': 'Labels',
+			// 	'entries': [
+			// 		{
+			// 			'type': 'html',
+			// 			'name': 'addLabel',
+			// 			'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
+			// 		}
+			// 	]
+			// }
 		],
 
 		editIP: [
@@ -126,17 +126,17 @@ let infraIPConfig = {
 				'fieldMsg': 'The Idle Timeout between 240s and 1800s (in the case of Azure, this value will be converted to minutes)',
 				'required': true
 			},
-			{
-				'type': 'group',
-				'label': 'Labels',
-				'entries': [
-					{
-						'type': 'html',
-						'name': 'addLabel',
-						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
-					}
-				]
-			}
+			// {
+			// 	'type': 'group',
+			// 	'label': 'Labels',
+			// 	'entries': [
+			// 		{
+			// 			'type': 'html',
+			// 			'name': 'addLabel',
+			// 			'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
+			// 		}
+			// 	]
+			// }
 		],
 
 		labelInput : {

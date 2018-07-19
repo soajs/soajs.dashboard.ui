@@ -43,14 +43,13 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 						]
 					},
 					{
-						"label": "Inputs & Display Options",
+						"label": "Inputs",
 						"entries": [
 							{
 								"type": "html",
 								"value": "<br />"
 							},
 							{
-								// 'label': 'Inputs',
 								'name': 'inputs',
 								'type': 'jsoneditor',
 								'height': '200px',
@@ -68,7 +67,6 @@ infraSrv.service('infraSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$co
 								"value": "<br />"
 							},
 							{
-								// 'label': 'Inputs Display Options',
 								'name': 'display',
 								'type': 'jsoneditor',
 								'height': '200px',

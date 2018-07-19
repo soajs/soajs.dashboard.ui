@@ -109,7 +109,6 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 	}
 
 	function editNetwork(currentScope, oneNetwork) {
-		console.log(oneNetwork);
 
 		let options = {
 			timeout: $timeout,

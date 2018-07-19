@@ -108,8 +108,8 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 		return x;
 	}
 
-	function editNetwork(currentScope, oneNetwork) {
-
+	function editNetwork(currentScope, originalNetwork) {
+		let oneNetwork = angular.copy(originalNetwork);
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -202,9 +202,9 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 			currentScope.form.formData = oneNetwork;
 			currentScope.form.entries[0].type = 'readonly';
 
-			currentScope.form.formData.address = oneNetwork.address.join().replace(",", ", ");
+			currentScope.form.formData.address = oneNetwork.address.join(",");
 
-			currentScope.form.entries[3].value = oneNetwork.dnsServers.join().replace(",", ", ");
+			currentScope.form.entries[3].value = oneNetwork.dnsServers.join(",");
 
 			oneNetwork.subnets.forEach((oneSub) => {
 				currentScope.form.entries[4].value.push({

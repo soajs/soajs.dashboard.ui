@@ -50,6 +50,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							});
 						}
 
+
 						if (formData.deployOptions.custom && formData.deployOptions.custom.secrets && formData.deployOptions.custom.secrets.length > 0) {
 							saveOptions.config.secrets = formData.deployOptions.custom.secrets
 						}
@@ -80,7 +81,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								deployOptions.custom = {};
 							}
 
-                            deployOptions.custom.env = $scope.options.envCode;
+                            if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
+                                deployOptions.custom.env = formData.deployOptions.custom.env
+                            }
 
 							deployOptions.custom.type = 'resource';
 
@@ -142,7 +145,6 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								if ($scope.newResource && Object.keys($scope.newResource).length > 0) {
 									deployOptions.custom.resourceId = $scope.newResource._id;
 								}
-
 								deployOptions.env = $scope.options.envCode;
 								if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 									deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
@@ -157,18 +159,6 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								}
 							}
 							apiParams["deployOptions"] = deployOptions;
-							// if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
-							// 	apiParams["vms"] = [];
-							// 	$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-							// 		apiParams.vms.push(oneInstance.name);
-                            //
-							// 		if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
-							// 			if(!apiParams.options.deployConfig.vmConfiguration.group) {
-							// 				apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
-							// 			}
-							// 		}
-							// 	});
-							// }
 						}
 					}
 

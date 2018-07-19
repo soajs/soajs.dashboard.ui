@@ -81,38 +81,37 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								deployOptions.custom = {};
 							}
 
-                            if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
-                                deployOptions.custom.env = formData.deployOptions.custom.env
-                            }
-
 							deployOptions.custom.type = 'resource';
-
+							if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
+								deployOptions.custom.env = formData.deployOptions.custom.env
+							}
 							deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 							delete deployOptions.sourceCode;
 
 							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 							}
-
 							apiParams['resourceName'] = formData.name;
 							apiParams['deploy'] = formData.canBeDeployed || false;
 							apiParams['options'] = deployOptions;
 
-                            if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
-                                apiParams["vms"] = [];
-                                $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-                                    apiParams.vms.push(oneInstance.name);
-
-                                    if (apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
-                                        if (!apiParams.options.deployConfig.vmConfiguration.group) {
-                                            apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
-                                        }
-                                    }
-                                });
-                            }
 							if (!formData.canBeDeployed) {
 								delete apiParams['options'];
 							}
+						}
+
+						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+							apiParams["vms"] = [];
+							apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
+							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
+								apiParams.vms.push(oneInstance.name);
+
+								if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
+									if(!apiParams.options.deployConfig.vmConfiguration.group) {
+										apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
+									}
+								}
+							});
 						}
 					}
 
@@ -159,6 +158,19 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								}
 							}
 							apiParams["deployOptions"] = deployOptions;
+							if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+								apiParams["vms"] = [];
+								apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
+								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
+									apiParams.vms.push(oneInstance.name);
+
+									if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
+										if(!apiParams.options.deployConfig.vmConfiguration.group) {
+											apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
+										}
+									}
+								});
+							}
 						}
 					}
 

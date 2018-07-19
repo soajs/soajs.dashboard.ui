@@ -325,13 +325,13 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								'label': 'Delete Resource Group',
 								'icon': 'bin',
 								'handler': 'deleteGroup',
-								'msg': "Are you sure you want to delete this resource group?"
+								'msg': "Deleting a resource group will remove all components attached to it. Are you sure you want to delete this resource group?"
 							});
 							gridOptions.top.push({
 								'label': 'Delete Group(s)',
 								'icon': 'bin',
 								'handler': 'deleteGroup',
-								'msg': "Are you sure you want to delete the selected resource group(s)?"
+								'msg': "Deleting a resource group will remove all components attached to it. Are you sure you want to delete the selected resource group(s)?"
 							});
 						}
 

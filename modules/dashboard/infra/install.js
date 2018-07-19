@@ -11,7 +11,7 @@ let infraNav = [
 		},
 		'url': '#/infra',
 		'tplPath': 'modules/dashboard/infra/main/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'cog',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",
@@ -56,7 +56,7 @@ let infraNav = [
 		},
 		'url': '#/infra-templates',
 		'tplPath': 'modules/dashboard/infra/iac/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'file-text',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",
@@ -79,7 +79,7 @@ let infraNav = [
 		},
 		'url': '#/infra-groups',
 		'tplPath': 'modules/dashboard/infra/groups/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'make-group',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",
@@ -102,7 +102,7 @@ let infraNav = [
 		},
 		'url': '#/infra-networks',
 		'tplPath': 'modules/dashboard/infra/network/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'connection',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",
@@ -125,7 +125,7 @@ let infraNav = [
 		},
 		'url': '#/infra-firewall',
 		'tplPath': 'modules/dashboard/infra/firewall/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'shield',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",
@@ -148,7 +148,7 @@ let infraNav = [
 		},
 		'url': '#/infra-lb',
 		'tplPath': 'modules/dashboard/infra/loadBalancer/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'tree',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",
@@ -171,7 +171,7 @@ let infraNav = [
 		},
 		'url': '#/infra-ip',
 		'tplPath': 'modules/dashboard/infra/ip/directives/list.tmpl',
-		'icon': 'codepen',
+		'icon': 'power-cord',
 		'pillar': {
 			'name': 'infra',
 			'label': "Infrastructure",

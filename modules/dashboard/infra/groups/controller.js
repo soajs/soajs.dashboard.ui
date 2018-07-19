@@ -1,6 +1,6 @@
 "use strict";
 var infraGroupApp = soajsApp.components;
-infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraGroupSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraGroupSrv) {
+infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraGroupSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraGroupSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
 	
@@ -15,7 +15,11 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window'
 			if ($scope.$parent.$parent.currentSelectedInfra.regions && $scope.$parent.$parent.currentSelectedInfra.regions.length > 0) {
 				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
 				
-				$scope.selectedRegion = $scope.infraRegions[0]
+				$scope.selectedRegion = $scope.infraRegions[0];
+				$timeout(() => {
+					overlayLoading.show();
+					infraGroupSrv.listGroups($scope, $scope.selectedRegion);
+				}, 500);
 			}
 		});
 	};
@@ -28,7 +32,19 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window'
 		if($localStorage.infraProviders){
 			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
 			if(!$scope.$parent.$parent.currentSelectedInfra){
-				$scope.go("/infra");
+				if($routeParams.infraId){
+					$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+						if(oneProvider._id === $routeParams.infraId){
+							$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+							delete $scope.$parent.$parent.currentSelectedInfra.templates;
+							$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+						}
+					});
+				}
+				
+				if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.go("/infra");
+				}
 			}
 			else{
 				delete $scope.$parent.$parent.currentSelectedInfra.templates;
@@ -49,7 +65,19 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$localStorage', '$window'
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
 					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
 					if(!$scope.$parent.$parent.currentSelectedInfra){
-						$scope.go("/infra");
+						if($routeParams.infraId){
+							$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+								if(oneProvider._id === $routeParams.infraId){
+									$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+									delete $scope.$parent.$parent.currentSelectedInfra.templates;
+									$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+								}
+							});
+						}
+						
+						if(!$scope.$parent.$parent.currentSelectedInfra){
+							$scope.go("/infra");
+						}
 					}
 					else{
 						delete $scope.$parent.$parent.currentSelectedInfra.templates;

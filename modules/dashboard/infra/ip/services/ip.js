@@ -1,6 +1,6 @@
 "use strict";
 var infraIPSrv = soajsApp.components;
-infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
+infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', function (ngDataApi, $localStorage, $timeout, $modal) {
 
 	function addIP(currentScope) {
 		currentScope.labelCounter = 0;
@@ -120,7 +120,8 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 		currentScope.labelCounter ++;
 	}
 
-	function editIP(currentScope, oneIP) {
+	function editIP(currentScope, originalIP) {
+		let oneIP = angular.copy(originalIP);
 		currentScope.labelCounter = (oneIP.labels && typeof oneIP.labels === 'object') ? Object.keys(oneIP.labels).length : 0;
 
 		let options = {
@@ -297,7 +298,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 
 	function listIPs(currentScope, oneGroup) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-
+		
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 
@@ -317,7 +318,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 				'extras[]': ['publicIps']
 			}
 		};
-
+		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 			overlayLoading.hide();
@@ -337,18 +338,51 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 						}
 
 						if(onePublicIP.associated){
-							let label = onePublicIP.associated.type + " / " + onePublicIP.associated.name;
+							let label = onePublicIP.associated.name;
 							let html;
 							switch (onePublicIP.associated.type){
 								case "networkInterface":
-									html = "<b>" + label + "</b>";
+									html = "<span title='" + onePublicIP.associated.type + "'><b>" + label + "</b></span>";
+									
+									if(currentScope.vmlayers){
+										currentScope.vmlayers.forEach((oneVmLayer) => {
+											if(oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()){
+												if(oneVmLayer.ip){
+													oneVmLayer.ip.forEach((oneIPValue) => {
+														if(oneIPValue.type === 'public' && oneIPValue.allocatedTo === 'instance' && oneIPValue.address === onePublicIP.address){
+															html = ``;
+															
+															//check environment
+															let found = false;
+															$localStorage.environments.forEach((oneEnv) => {
+																if(oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()){
+																	found = true;
+																}
+															});
+															if(found){
+																html += `<span title="Virtual Machine"><a href="#/environments-platforms?envCode=${oneVmLayer.labels['soajs.env.code']}&tab=vm&layer=${oneVmLayer.layer}"><span class="icon icon-stack"></span>&nbsp;<b>${oneVmLayer.layer}</b></a></span>`;
+															}
+															else{
+																html += `<span title="Virtual Machine"><span class="icon icon-stack"></span>&nbsp;<b>${oneVmLayer.layer}</b></span>`;
+															}
+														}
+													});
+												}
+											}
+										});
+									}
+									
 									break;
 								case "loadBalancer":
-									html = "<a href='#/infra-lb/?group=" + onePublicIP.associated.group + "'>" + label + "</a>";
+									html = "<span title='Load Balancer'><a href='#/infra-lb/?group=" + onePublicIP.associated.group + "'><span class='icon icon-tree'></span>&nbsp;" + label + "</a></span>";
 									break;
 								default:
 									html = label;
 									break;
+							}
+							
+							if(!html){
+								html = "N/A";
 							}
 							onePublicIP.associated = html;
 						}
@@ -384,7 +418,7 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 							'msg': "Are you sure you want to delete the selected public IP(s)?"
 						});
 					}
-
+					
 					buildGrid(currentScope, gridOptions);
 				}
 			}

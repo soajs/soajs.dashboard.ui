@@ -103,3 +103,8 @@ table tr[class^="form-group tr-labelGroup"] {
     width:97% !important;
     display: table;
 }
+
+td.readonly{
+    opacity: 0.7;
+    font-style:italic;
+}

@@ -2,8 +2,7 @@
 var infraIPApp = soajsApp.components;
 infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIPSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIPSrv) {
 	$scope.$parent.isUserNameLoggedIn();
-	$scope.showTemplateForm = false;
-
+	$scope.vmlayers = [];
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraIPConfig.permissions);
 
@@ -26,7 +25,12 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					$scope.selectedGroup = $scope.infraGroups[0];
 				}
 				$timeout(() => {
-					infraIPSrv.listIPs($scope, $scope.selectedGroup);
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						$scope.vmlayers = vmlayers;
+					
+						infraIPSrv.listIPs($scope, $scope.selectedGroup);
+					});
 				}, 500);
 			}
 			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
@@ -43,7 +47,19 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 		if($localStorage.infraProviders){
 			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
 			if(!$scope.$parent.$parent.currentSelectedInfra){
-				$scope.go("/infra");
+				if($routeParams.infraId){
+					$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+						if(oneProvider._id === $routeParams.infraId){
+							$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+							delete $scope.$parent.$parent.currentSelectedInfra.templates;
+							$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+						}
+					});
+				}
+				
+				if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.go("/infra");
+				}
 			}
 			else{
 				delete $scope.$parent.$parent.currentSelectedInfra.templates;
@@ -64,7 +80,19 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
 					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
 					if(!$scope.$parent.$parent.currentSelectedInfra){
-						$scope.go("/infra");
+						if($routeParams.infraId){
+							$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+								if(oneProvider._id === $routeParams.infraId){
+									$scope.$parent.$parent.currentSelectedInfra = oneProvider;
+									delete $scope.$parent.$parent.currentSelectedInfra.templates;
+									$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+								}
+							});
+						}
+						
+						if(!$scope.$parent.$parent.currentSelectedInfra){
+							$scope.go("/infra");
+						}
 					}
 					else{
 						delete $scope.$parent.$parent.currentSelectedInfra.templates;
@@ -88,7 +116,11 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 	};
 
 	$scope.listIPs = function (oneGroup) {
-		infraIPSrv.listIPs($scope, oneGroup);
+		overlayLoading.show();
+		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			$scope.vmlayers = vmlayers;
+			infraIPSrv.listIPs($scope, oneGroup);
+		});
 	};
 
 	if ($scope.access.list) {

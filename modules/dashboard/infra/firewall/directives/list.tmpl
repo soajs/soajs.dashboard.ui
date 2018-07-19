@@ -30,7 +30,7 @@
 			<br />
 			
 			<accordion close-others="false">
-				<accordion-group ng-repeat="oneGroups in infraSecurityGroups">
+				<accordion-group is-open="oneGroups.open" ng-repeat="oneGroups in infraSecurityGroups">
 					<accordion-heading>
 						{{oneGroups.name}}
 					</accordion-heading>
@@ -45,20 +45,6 @@
 					<alert ng-if="!oneGroups.ports || oneGroups.ports.length === 0" type="warning">
 						<p>No Ports Configuration Detected.</p>
 					</alert>
-					
-					<fieldset ng-if="oneGroups.networks && oneGroups.networks.length > 0">
-						<legend>Networks</legend>
-						<div class="entryBoxes entryBoxesGrid">
-							<div ng-repeat="oneNetwork in oneGroups.networks">
-								<div class="entryBox blueBox" style="padding: 3px 5px;">
-									<b>Network:</b>&nbsp;{{oneNetwork.name}}
-									<a href="#/infra-network/?group={{oneNetwork.group}}">
-										<span class="icon icon-search"></span>
-									</a>
-								</div>
-							</div>
-						</div>
-					</fieldset>
 					
 					<fieldset ng-if="oneGroups.ports && oneGroups.ports.length > 0">
 						<legend>Ports Configuration</legend>
@@ -78,19 +64,56 @@
 								</thead>
 								<tbody>
 									<tr ng-repeat="onePort in oneGroups.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
-										<td>{{onePort.priority}}</td>
-										<td>{{onePort.name}}</td>
-										<td>{{onePort.protocol}}</td>
-										<td>{{onePort.published}}</td>
-										<td>{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>
-										<td>{{onePort.direction}}</td>
-										<td>{{onePort.access}}</td>
-										<td>{{(onePort.isPublished) ? "YES" : "NO"}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.priority}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.name}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.protocol}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.published}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{(onePort.target === '*') ? "All Interfaces" : onePort.target }}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.direction}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{onePort.access}}</td>
+										<td ng-class="{'readonly': onePort.readonly}">{{(onePort.isPublished) ? "YES" : "NO"}}</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 					</fieldset>
+					
+					<div ng-if="oneGroups.networks && oneGroups.networks.length > 0">
+						<fieldset >
+							<legend>Networks</legend>
+							<div class="entryBoxes entryBoxesGrid">
+								<div ng-repeat="oneNetwork in oneGroups.networks">
+									<div class="entryBox blueBox" style="padding: 3px 5px;">
+										<a href="#/infra-networks/?group={{oneNetwork.group}}">
+											<span class="icon icon-connection"></span>&nbsp;<b>{{oneNetwork.name}}</b>
+										</a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					
+					<div ng-if="oneGroups.vmLayers && oneGroups.vmLayers.length > 0">
+						<fieldset >
+							<legend>Virtual Machine Layers</legend>
+							<div class="entryBoxes entryBoxesGrid">
+								<div ng-repeat="oneVMLayer in oneGroups.vmLayers">
+									<div class="entryBox blueBox" style="padding: 3px 5px;">
+										<div ng-if="oneVMLayer.link">
+											<a href="#/environments-platforms?envCode={{oneVMLayer.envCode}}&tab=vm&layer={{oneVMLayer.vmLayer}}">
+												<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
+											</a>
+										</div>
+										<div ng-if="!oneVMLayer.link">
+											<b>
+												<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
+											</b>
+										</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
 				</accordion-group>
 			</accordion>
 		</div>

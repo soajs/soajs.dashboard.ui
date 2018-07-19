@@ -239,11 +239,41 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		}
 	}
 
+	function getVMLayers(currentScope, cb){
+		let oneProvider = currentScope.$parent.$parent.currentSelectedInfra;
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/cloud/vm/list",
+			"params":{
+				"infraId": oneProvider._id
+			}
+		}, function (error, providerVMs) {
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				let allVMs = [];
+				
+				delete providerVMs.soajsauth;
+				
+				//aggregate response and generate layers from list returned
+				if(providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0){
+					providerVMs[oneProvider.name].forEach((oneVM) => {
+						delete oneVM.template;
+						allVMs.push(oneVM);
+					});
+				}
+				return cb(null, allVMs);
+			}
+		});
+	}
+	
 	return {
 		"hideSidebarMenusForUnwantedProviders": hideSidebarMenusForUnwantedProviders,
 		"activateProvider": activateProvider,
 		"getInfraFromCookie": getInfraFromCookie,
 		"getInfra": getInfra,
-		"switchInfra": switchInfra
+		"switchInfra": switchInfra,
+		"getVMLayers": getVMLayers
 	}
 }]);

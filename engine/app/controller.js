@@ -86,8 +86,8 @@ soajsApp.run(function ($rootScope) {
 	$rootScope.translation = translation;
 });
 
-soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers', 'myAccountAccess',
-	function ($window, $scope, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers, myAccountAccess) {
+soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers', 'myAccountAccess',
+	function ($window, $scope, $routeParams, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers, myAccountAccess) {
 		document.title = titlePrefix;
 		$scope.appNavigation = navigation;
 		$scope.navigation = [];
@@ -324,6 +324,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$location', '$t
 		
 		$scope.switchEnvironment = function (envRecord) {
 			if (envRecord) {
+				delete $routeParams.envCode;
 				$scope.currentSelectedEnvironment = envRecord.code.toLowerCase();
 				if (!$cookies.getObject('myEnv', { 'domain': interfaceDomain }) || $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase() !== envRecord.code.toLowerCase()) {
 					putMyEnv(envRecord);
@@ -1021,7 +1022,7 @@ soajsApp.directive('textSizeSlider', ['$document', function ($document) {
 		link: function (scope, element, attr) {
 			scope.textSize = scope.value;
 			scope.$watch('textSize', function (size) {
-				if (scope.idt) {
+				if (scope.idt && document.getElementById(scope.idt)) {
 					document.getElementById(scope.idt).style.fontSize = size + scope.unit;
 				}
 				else {

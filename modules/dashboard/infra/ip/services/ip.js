@@ -133,15 +133,6 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 			label: 'Edit Public IP',
 			actions: [
 				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				},
-				{
 					'type': 'submit',
 					'label': "Update Public IP",
 					'btn': 'primary',
@@ -189,6 +180,15 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$timeout', '$modal', '$window', 
 								}, 2000);
 							}
 						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
 					}
 				}
 			]

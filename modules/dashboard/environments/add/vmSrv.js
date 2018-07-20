@@ -227,6 +227,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					currentScope.wizard.onboardNames.push(vmLayer.name);
 				}
 			}
+			// append
+			appendNextButton(currentScope, formButtonOptions);
 		};
 		
 		//hook the listeners
@@ -292,7 +294,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 		
 		function appendNextButton(currentScope, options) {
-			
 			//if the next button exists, remove it
 			if (options && options.actions) {
 				for (let i = options.actions.length - 1; i >= 0; i--) {
@@ -313,7 +314,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				addNextButton = true;
 			}
 			currentScope.optionalVMLayer = addNextButton;
-			
+
 			if (addNextButton && options && options.actions && options.actions.length < 3) {
 				options.actions.splice(1, 0, {
 					'type': 'submit',
@@ -435,7 +436,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						]
 					};
 					buildForm(currentScope, $modal, options, function () {
-						
 						appendNextButton(currentScope, options);
 						
 						options.actions.push({

@@ -1,8 +1,10 @@
 "use strict";
 var infraGroupApp = soajsApp.components;
-infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraGroupSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraGroupSrv) {
+infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localStorage', '$timeout', 'injectFiles', 'infraCommonSrv', 'infraGroupSrv', function ($scope, $routeParams, $localStorage, $timeout, injectFiles, infraCommonSrv, infraGroupSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
+	
+	
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraGroupConfig.permissions);
@@ -10,6 +12,7 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 	infraCommonSrv.getInfraFromCookie($scope);
 	
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
+		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "templates"], () => {
 			// infraIACSrv.rerenderTemplates($scope);
 			if ($scope.$parent.$parent.currentSelectedInfra.regions && $scope.$parent.$parent.currentSelectedInfra.regions.length > 0) {

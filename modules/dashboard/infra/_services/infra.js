@@ -1,7 +1,13 @@
 "use strict";
 let infraCommonCSrv = soajsApp.components;
 infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-
+	
+	function getInfraDriverName(currentScope) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let name = oneInfra.name; // -> azure
+		return name;
+	}
+	
 	function getInfraFromCookie(currentScope) {
 		if ($cookies.getObject('myInfra', {'domain': interfaceDomain})) {
 			currentScope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
@@ -269,6 +275,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 	}
 	
 	return {
+		"getInfraDriverName": getInfraDriverName,
 		"hideSidebarMenusForUnwantedProviders": hideSidebarMenusForUnwantedProviders,
 		"activateProvider": activateProvider,
 		"getInfraFromCookie": getInfraFromCookie,

@@ -1,6 +1,6 @@
 "use strict";
 var infraFirewallApp = soajsApp.components;
-infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraFirewallSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraFirewallSrv) {
+infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$localStorage', '$timeout', 'injectFiles', 'infraCommonSrv', 'infraFirewallSrv', function ($scope, $routeParams, $localStorage, $timeout, injectFiles, infraCommonSrv, infraFirewallSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.vmlayers = [];
 	$scope.access = {};
@@ -9,6 +9,7 @@ infraFirewallApp.controller('infraFirewallCtrl', ['$scope', '$routeParams', '$lo
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
+		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
 			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
 				//flag that infra doesn't have any resource groups

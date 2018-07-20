@@ -31,24 +31,27 @@ infraLoadBalancerSrv.service('infraLoadBalancerSrv', ['ngDataApi', '$localStorag
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`);
+				currentScope.displayAlert('success', `The load balancer has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listLoadBalancers(currentScope, currentScope.selectedGroup);
+				}, 2000);
 			}
 		});
 	}
-	
+
 	function listLoadBalancers(currentScope, oneGroup) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		
+
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
-		
+
 		// clean grid from previous list if any
 		if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
 			currentScope.grid.rows = [];
 			currentScope.grid.filteredRows = [];
 			currentScope.grid.original = [];
 		}
-		
+
 		let listOptions = {
 			method: 'get',
 			routeName: '/dashboard/infra/extras',

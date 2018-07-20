@@ -8,7 +8,6 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				{
 					'name': 'name',
 					'label': 'Name',
-					'type': 'readonly',
 					'value': "",
 					'placeholder': ' My Firewall',
 					'required': true
@@ -84,13 +83,16 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						'required': true
 					},
 					{
-						'name': 'target',
-						'label': 'Source Port',
-						'type': 'text',
-						'value': "*",
+						'name': 'priority',
+						'label': 'Priority',
+						'type': 'number',
+						'value': 1000,
 						'required': true,
-						'placeholder': "*",
-						'fieldMsg': 'example: 80 OR * for Any'
+						'tooltip': 'Enter the port priority',
+						'fieldMsg': 'Enter the port priority',
+						'placeholder': "100 - 4096",
+						"min": 100,
+						"max": 4096
 					},
 					{
 						'name': 'sourceAddress',
@@ -99,6 +101,15 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						'value': '*',
 						'required': true,
 						'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
+					},
+					{
+						'name': 'target',
+						'label': 'Source Port',
+						'type': 'text',
+						'value': "*",
+						'required': true,
+						'placeholder': "*",
+						'fieldMsg': 'example: 80 OR * for Any'
 					},
 					{
 						'name': 'destinationAddress',
@@ -116,18 +127,6 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						'required': true,
 						'placeholder': "0",
 						'fieldMsg': 'example: 80 OR * for Any'
-					},
-					{
-						'name': 'priority',
-						'label': 'Priority',
-						'type': 'number',
-						'value': 1000,
-						'required': true,
-						'tooltip': 'Enter the port priority',
-						'fieldMsg': 'Enter the port priority',
-						'placeholder': "100 - 4096",
-						"min": 100,
-						"max": 4096
 					}
 				]
 			}
@@ -149,23 +148,95 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 	
 	function addFirewall(currentScope) {
 		
-		$modal.open({
-			templateUrl: "addFirewall.tmpl",
-			size: 'm',
-			backdrop: true,
-			keyboard: true,
-			controller: function ($scope, $modalInstance) {
-				fixBackDrop();
-				
-				$scope.close = function () {
-					$modalInstance.close();
-				};
-				
-				$scope.createNetwork = function () {
-					$window.location.href = "#/infra-networks?group=" + currentScope.selectedGroup.name;
-					$modalInstance.close();
-				};
-			}
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraFirewallConfig.form.firewall)
+			},
+			name: 'addFirewall',
+			label: 'Add Firewall',
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Add Firewall",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+						let firewallPorts = [];
+						for (let i = 0; i < currentScope.portsCounter; i++) {
+							if (data['name' + i]) {
+								let portEntry = {
+									name: data['name' + i],
+									protocol: data['protocol' + i],
+									access: data['access' + i],
+									direction: data['direction' + i],
+									target: data['target' + i],
+									sourceAddress: data['sourceAddress' + i],
+									destinationAddress: data['destinationAddress' + i],
+									published: data['published' + i],
+									priority: data['priority' + i]
+								};
+								
+								firewallPorts.push(portEntry);
+							}
+						}
+						
+						let postOpts = {
+							"method": "post",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "securityGroup",
+									"region": currentScope.selectedGroup.region,
+									"group": currentScope.selectedGroup.name,
+									"name": data.name,
+									"ports": firewallPorts
+								}
+							}
+						};
+						
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.modalInstance.close();
+								currentScope.displayAlert('success', `The firewall has been successfully created. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+								$timeout(() => {
+									listFirewalls(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+		
+		//build ui to modify and configure ports
+		currentScope.portsCounter = 0;
+		
+		//attach the add another button
+		options.form.entries[2].entries[options.form.entries[2].entries.length - 1].onAction = function (id, value, form) {
+			addNewPort(currentScope);
+		};
+		options.form.entries[1].value = currentScope.selectedGroup.region;
+		buildFormWithModal(currentScope, $modal, options, () => {
+			//fill in labels after form is rendered
 		});
 	}
 	
@@ -303,6 +374,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 		
 		buildFormWithModal(currentScope, $modal, options, () => {
 			//fill in labels after form is rendered
+			currentScope.form.entries[0].type = 'readonly';
 			currentScope.form.formData = oneFirewall;
 		});
 	}

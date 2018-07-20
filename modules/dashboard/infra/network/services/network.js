@@ -240,7 +240,10 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`);
+				currentScope.displayAlert('success', `The network has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listNetworks(currentScope, currentScope.selectedGroup);
+				}, 2000);
 			}
 		});
 	}

@@ -291,7 +291,10 @@ infraIPSrv.service('infraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$mo
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`)
+				currentScope.displayAlert('success', `The IP has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listIPs(currentScope, currentScope.selectedGroup);
+				}, 2000);
 			}
 		});
 	}

@@ -28,7 +28,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 							},
 							"data": {
 								"params": {
-									"section": "network",
+									"section": "networkAndSecurityGroup",
 									"region": currentScope.selectedGroup.region,
 									"labels": {},
 									"name": data.name,
@@ -39,7 +39,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 						};
 
 
-						let addressPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}\/[0-20-4]{1,2}$/;
+						let addressPattern = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/;
 						if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
 							return $window.alert("Make sure the address you entered follows the correct CIDR format.");
 						}
@@ -145,7 +145,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 							}
 						};
 
-						let addressPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}\/[0-20-4]{1,2}$/;
+						let addressPattern = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/;
 						if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
 							return $window.alert("Make sure the address you entered follows the correct CIDR format.");
 						}
@@ -240,7 +240,10 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$time
 			}
 			else {
 				overlayLoading.hide();
-				currentScope.displayAlert('success', `The resource group "${currentScope.selectedGroup.name}" has been successfully deleted. Your changes should become visible in a few minutes.`);
+				currentScope.displayAlert('success', `The network has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listNetworks(currentScope, currentScope.selectedGroup);
+				}, 2000);
 			}
 		});
 	}

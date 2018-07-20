@@ -96,7 +96,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.go = function (path) {
 			$scope.previousPage = $route.current.originalPath;
 			if (path) {
-				$cookies.put("soajs_current_route", path.replace("#", ""), { 'domain': interfaceDomain });
+				$cookies.put("soajs_current_route", path.replace("#", ""), {'domain': interfaceDomain});
 				$location.path(path.replace("#", ""));
 			}
 		};
@@ -114,18 +114,18 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				"deployer": record.deployer
 			};
 			if (!$scope.currentDeployer) {
-				$scope.currentDeployer = { type: '' };
+				$scope.currentDeployer = {type: ''};
 			}
 			$scope.currentDeployer.type = record.deployer.type;
 			
-			for(let container in data.deployer.container){
-				for(let driver in data.deployer.container[container]){
-					if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
+			for (let container in data.deployer.container) {
+				for (let driver in data.deployer.container[container]) {
+					if (data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token) {
 						delete data.deployer.container[container][driver].auth.token;
 					}
 				}
 			}
-			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
+			$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		}
 		
 		$scope.alerts = [];
@@ -133,7 +133,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		
 		$scope.displayFixedAlert = function (type, msg) {
 			$scope.alerts = [];
-			$scope.alerts.push({ 'type': type, 'msg': msg });
+			$scope.alerts.push({'type': type, 'msg': msg});
 		};
 		
 		$scope.displayAlert = function (type, msg, isCode, service, orgMesg) {
@@ -144,7 +144,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					msg = msgT;
 				}
 			}
-			$scope.alerts.push({ 'type': type, 'msg': msg });
+			$scope.alerts.push({'type': type, 'msg': msg});
 			$scope.closeAllAlerts();
 		};
 		
@@ -156,12 +156,12 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					msg = errorCodes[service][code][LANG];
 				}
 			}
-			$scope.alerts.push({ 'type': type, 'msg': msg });
+			$scope.alerts.push({'type': type, 'msg': msg});
 			$scope.closeAllAlerts();
 		};
 		
 		$scope.pushAlert = function (type, msg) {
-			$scope.alerts.push({ 'type': type, 'msg': msg });
+			$scope.alerts.push({'type': type, 'msg': msg});
 			$scope.closeAllAlerts();
 		};
 		
@@ -194,10 +194,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.collapseMainMenu = false;
 		
 		$scope.collapseExpandMainMenu = function (forcedFlag) {
-			if(arguments.length > 0){
+			if (arguments.length > 0) {
 				$scope.collapseMainMenu = forcedFlag;
 			}
-			else{
+			else {
 				$scope.collapseMainMenu = !$scope.collapseMainMenu;
 			}
 		};
@@ -262,9 +262,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.hideMe = function (link) {
 			let currentSelectedEnvironment;
 			let currentSelectedEnvironmentRecord;
-			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-				currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
-				currentSelectedEnvironmentRecord = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
+			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+				currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
+				currentSelectedEnvironmentRecord = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 			}
 			
 			let hide = false;
@@ -304,14 +304,14 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 									$scope.leftMenu.environments.splice(k, 1);
 								}
 							}
-							if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-								if ($cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.replace(/\"/g, '').toLowerCase() === 'dashboard') {
+							if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+								if ($cookies.getObject('myEnv', {'domain': interfaceDomain}).code.replace(/\"/g, '').toLowerCase() === 'dashboard') {
 									putMyEnv($scope.leftMenu.environments[0]);
 								}
 							}
 						}
 						if ($cookies.getObject('myEnv')) {
-							$scope.switchEnvironment($cookies.getObject('myEnv', { 'domain': interfaceDomain }));
+							$scope.switchEnvironment($cookies.getObject('myEnv', {'domain': interfaceDomain}));
 						}
 						else {
 							$scope.switchEnvironment($scope.leftMenu.environments[0]);
@@ -322,11 +322,30 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 		};
 		
-		$scope.switchEnvironment = function (envRecord) {
+		$scope.switchEnvironment = function (envRecord, forceEnvRecord) {
 			if (envRecord) {
-				delete $routeParams.envCode;
+				if($routeParams && $routeParams.envCode && $routeParams.envCode !== envRecord.code){
+					//get the code from local storage
+					// console.log($routeParams, envRecord, forceEnvRecord);
+					
+					if(forceEnvRecord) {
+						$routeParams.envCode = envRecord.code;
+					}
+					else {
+						$localStorage.environments.forEach((oneEnv) => {
+							if(oneEnv.code.toUpperCase() === $routeParams.envCode.toUpperCase()){
+								envRecord = oneEnv;
+								$routeParams.envCode = oneEnv.code;
+							}
+						});
+					}
+				}
+				
 				$scope.currentSelectedEnvironment = envRecord.code.toLowerCase();
-				if (!$cookies.getObject('myEnv', { 'domain': interfaceDomain }) || $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase() !== envRecord.code.toLowerCase()) {
+				if (
+					!$cookies.getObject('myEnv', {'domain': interfaceDomain}) ||
+					$cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase() !== envRecord.code.toLowerCase()
+				) {
 					putMyEnv(envRecord);
 					if ($scope.pillar && $scope.pillar.toLowerCase() === 'operate') {
 						getSendDataFromServer($scope, ngDataApi, {
@@ -341,13 +360,24 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 									$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl[envRecord.code.toLowerCase()];
 								}
 								doEnvPerNav();
-								$route.reload();
+								if($routeParams && $routeParams.envCode){
+									//better than $route.reload;
+									$route.updateParams($routeParams);
+								}
+								else{
+									$route.reload();
+								}
 							}
 						});
 					}
 					else {
-						$route.reload();
-						// $window.location.reload();
+						if($routeParams && $routeParams.envCode){
+							//better than $route.reload;
+							$route.updateParams($routeParams);
+						}
+						else{
+							$route.reload();
+						}
 					}
 				}
 			}
@@ -401,7 +431,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 						}
 					}
 					if (found === false) {
-						$scope.mainMenu.links.push({ "pillar": $scope.appNavigation[i].pillar, "entries": [] });
+						$scope.mainMenu.links.push({"pillar": $scope.appNavigation[i].pillar, "entries": []});
 						found = $scope.mainMenu.links.length - 1;
 					}
 					
@@ -463,7 +493,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 							}
 						}
 						if (found === false) {
-							$scope.mainMenu.links.push({ "pillar": navigation[i].pillar, "entries": [] });
+							$scope.mainMenu.links.push({"pillar": navigation[i].pillar, "entries": []});
 							found = $scope.mainMenu.links.length - 1;
 						}
 						$scope.mainMenu.links[found].entries.push(navigation[i]);
@@ -542,8 +572,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		
 		$scope.$on('$routeChangeStart', function (event, next, current) {
 			if (!current) {
-				$cookies.put("soajs_current_route", $location.url(), { 'domain': interfaceDomain });
-				var gotourl = $cookies.get("soajs_current_route", { 'domain': interfaceDomain });
+				$cookies.put("soajs_current_route", $location.url(), {'domain': interfaceDomain});
+				var gotourl = $cookies.get("soajs_current_route", {'domain': interfaceDomain});
 				$timeout(function () {
 					overlayLoading.show();
 				}, 200);
@@ -551,7 +581,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					doEnvPerNav(function () {
 						overlayLoading.hide();
 						if (gotourl) {
-							$cookies.put("soajs_current_route", gotourl, { 'domain': interfaceDomain });
+							$cookies.put("soajs_current_route", gotourl, {'domain': interfaceDomain});
 							$location.url(gotourl);
 						}
 					});
@@ -562,9 +592,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.$on('$routeChangeSuccess', function () {
 			$scope.tracker = [];
 			doEnvPerNav();
-			if($scope.pillar === 'deployment' && $cookies.getObject('myEnv', { 'domain': interfaceDomain })){
-				let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-				if(updateNotifications){
+			if ($scope.pillar === 'deployment' && $cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+				let envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
+				if (updateNotifications) {
 					updateNotifications($scope, envCode, ngDataApi);
 				}
 			}
@@ -617,7 +647,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					}
 				}
 				
-				$cookies.put("soajs_current_route", $location.path(), { 'domain': interfaceDomain });
+				$cookies.put("soajs_current_route", $location.path(), {'domain': interfaceDomain});
 			});
 		});
 		
@@ -663,7 +693,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.switchLanguage = function (lang) {
 			LANG = lang;
 			$scope.LANG = LANG;
-			$cookies.put('soajs_LANG', LANG, { 'domain': interfaceDomain });
+			$cookies.put('soajs_LANG', LANG, {'domain': interfaceDomain});
 			window.location.reload();
 		};
 		
@@ -671,7 +701,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			configureRouteNavigation(navigation, $scope);
 			//delete navigation items based on deployer type
 			if (!$scope.currentDeployer) {
-				$scope.currentDeployer = { type: '' };
+				$scope.currentDeployer = {type: ''};
 			}
 			
 			$scope.appNavigation = navigation;
@@ -727,18 +757,18 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		}
 		
 		if (!$scope.currentSelectedEnvironment) {
-			if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-				$scope.currentSelectedEnvironment = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+				$scope.currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 				
 				if (!$scope.currentDeployer) {
-					$scope.currentDeployer = { type: '' };
+					$scope.currentDeployer = {type: ''};
 				}
-				$scope.currentDeployer.type = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).deployer.type;
+				$scope.currentDeployer.type = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer.type;
 			}
 		}
 		
 		$scope.isUserLoggedIn = function (stopRedirect) {
-			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
+			if ($cookies.get('access_token', {'domain': interfaceDomain}) && $cookies.get('soajs_username', {'domain': interfaceDomain})) {
 				if ($localStorage.soajs_user) {
 					$scope.enableInterface = true;
 					$scope.$emit('refreshWelcome', {});
@@ -752,9 +782,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		};
 		
 		$scope.isUserNameLoggedIn = function () {
-			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
-				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
-				if (!$cookies.get("soajs_dashboard_login", { 'domain': interfaceDomain })) {
+			if ($cookies.get('access_token', {'domain': interfaceDomain}) && $cookies.get('soajs_username', {'domain': interfaceDomain})) {
+				var username = $cookies.get('soajs_username', {'domain': interfaceDomain});
+				if (!$cookies.get("soajs_dashboard_login", {'domain': interfaceDomain})) {
 					overlayLoading.show();
 					myAccountAccess.getUser($scope, username, function (result) {
 						if (result) {
@@ -799,8 +829,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		};
 		
 		$scope.checkUserCookie = function () {
-			if ($cookies.get('access_token', { 'domain': interfaceDomain }) && $cookies.get('soajs_username', { 'domain': interfaceDomain })) {
-				var username = $cookies.get('soajs_username', { 'domain': interfaceDomain });
+			if ($cookies.get('access_token', {'domain': interfaceDomain}) && $cookies.get('soajs_username', {'domain': interfaceDomain})) {
+				var username = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				myAccountAccess.getUser($scope, username, function (result) {
 					if (!result) {
 						ngDataApi.logoutUser($scope);
@@ -867,7 +897,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 			
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "delete",
-				"routeName": "/oauth/refreshToken/" + $cookies.get("refresh_token", { 'domain': interfaceDomain }),
+				"routeName": "/oauth/refreshToken/" + $cookies.get("refresh_token", {'domain': interfaceDomain}),
 				"headers": {
 					"key": apiConfiguration.key
 				}
@@ -877,7 +907,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 				}
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "delete",
-					"routeName": "/oauth/accessToken/" + $cookies.get("access_token", { 'domain': interfaceDomain }),
+					"routeName": "/oauth/accessToken/" + $cookies.get("access_token", {'domain': interfaceDomain}),
 					"headers": {
 						"key": apiConfiguration.key
 					}
@@ -1074,7 +1104,7 @@ soajsApp.directive('onReadFile', function ($parse) {
 				
 				reader.onload = function (onLoadEvent) {
 					scope.$apply(function () {
-						fn(scope, { $fileContent: onLoadEvent.target.result });
+						fn(scope, {$fileContent: onLoadEvent.target.result});
 					});
 				};
 				

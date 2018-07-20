@@ -7,7 +7,7 @@
 				<span class="sr-only">Split button!</span>
 			</button>
 			<ul class="dropdown-menu w100" role="menu" aria-labelledby="split-button">
-				<li role="menuitem" ng-repeat="oneBtn in leftMenu.environments" ng-click="switchEnvironment(oneBtn)">{{oneBtn.code}}</li>
+				<li role="menuitem" ng-repeat="oneBtn in leftMenu.environments" ng-click="switchEnvironment(oneBtn, true)">{{oneBtn.code}}</li>
 				<li role="menuitem" ng-click="go('environments-add');">
 					<span class="icon icon-plus"></span>&nbsp;Add New Environment
 				</li>

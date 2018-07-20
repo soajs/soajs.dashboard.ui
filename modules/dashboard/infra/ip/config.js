@@ -36,6 +36,14 @@ let infraIPConfig = {
 				'required': true
 			},
 			{
+				'name': 'type',
+				'label': 'Type',
+				'type': 'uiselect',
+				'value': [{'v': 'basic', 'l': 'Basic'}, {'v': 'standard', 'l': 'Standard'}],
+				'fieldMsg': 'The IP Address Type',
+				'required': true
+			},
+			{
 				'name': 'publicIPAllocationMethod',
 				'label': 'Public IP Allocation Method',
 				'type': 'uiselect',
@@ -51,14 +59,6 @@ let infraIPConfig = {
 				'min': 240,
 				'max':1800,
 				'fieldMsg': 'The Idle Timeout between 240s and 1800s (in the case of Azure, this value will be converted to minutes)',
-				'required': true
-			},
-			{
-				'name': 'type',
-				'label': 'Type',
-				'type': 'uiselect',
-				'value': [{'v': 'basic', 'l': 'Basic'}, {'v': 'standard', 'l': 'Standard'}],
-				'fieldMsg': 'The IP Address Type',
 				'required': true
 			},
 			// {

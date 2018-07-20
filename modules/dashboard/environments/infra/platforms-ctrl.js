@@ -81,38 +81,11 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$localStorage', '$routeP
 	
 	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 		$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-		if($routeParams){
-			
-			//get the code from local storage
-			if($routeParams.envCode && $routeParams.envCode !== $scope.envCode){
-				$localStorage.environments.forEach((oneEnv) => {
-					if(oneEnv.code.toUpperCase() === $routeParams.envCode.toUpperCase()){
-						let data = {
-							"_id": oneEnv._id,
-							"code": oneEnv.code,
-							"sensitive": oneEnv.sensitive,
-							"domain": oneEnv.domain,
-							"profile": oneEnv.profile,
-							"sitePrefix": oneEnv.sitePrefix,
-							"apiPrefix": oneEnv.apiPrefix,
-							"description": oneEnv.description,
-							"deployer": oneEnv.deployer,
-							"pending": oneEnv.pending,
-							"error": oneEnv.error
-						};
-						$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
-						$scope.$parent.switchEnvironment(data);
-						$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-					}
-				});
-			}
-			
-			if($routeParams.tab && $routeParams.tab === 'vm'){
-				$scope.openVMs = true;
-				$timeout(() => {
-					$scope.listVMLayers();
-				}, 300);
-			}
+		if($routeParams && $routeParams.tab && $routeParams.tab === 'vm'){
+			$scope.openVMs = true;
+			$timeout(() => {
+				$scope.listVMLayers();
+			}, 500);
 		}
 		
 		if($scope.envCode && $scope.access.platforms.getEnvironment){

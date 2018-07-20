@@ -152,7 +152,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 				{
 					'name': 'publicIpAddressId',
 					'label': 'Public IP Address',
-					'type': 'text',
+					'type': 'select',
 					'value': [], //TODO this should be the list of available ip addresses
 					'required': false,
 					'hidden': true,
@@ -163,7 +163,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 				{
 					'name': 'subnetId',
 					'label': 'Subnet',
-					'type': 'text',
+					'type': 'select',
 					'value': [], //TODO this should be the list of available subnets, might also need to list networks to get the subnets
 					'required': false, // TODO: this should become true if the previous slider was on
 					'tooltip': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct

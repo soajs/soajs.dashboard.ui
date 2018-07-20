@@ -1,7 +1,7 @@
 "use strict";
 var vmServices = soajsApp.components;
 vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$localStorage', '$window', '$location', 'platformsVM', function (ngDataApi, $timeout, $modal, $cookies, $localStorage, $window, $location, platformsVM) {
-	
+
 	function go(currentScope) {
 		overlayLoading.show();
 		
@@ -201,6 +201,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					}
 				}
 				delete vmLayer.list[0].labels['soajs.env.code'];
+				if (vmLayer.list[0].labels['soajs.onBoard']) {
+                    delete vmLayer.list[0].labels['soajs.onBoard'];
+				}
 			}
 			
 			if (myLayer.template) {
@@ -227,7 +230,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					}
 				};
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
-				
+                vmLayer.list[0].labels['soajs.onBoard'] = "true";
+
 				currentScope.wizard.vmOnBoard.push(obj);
 				
 				if (currentScope.wizard.onboardNames.indexOf(vmLayer.name) === -1) {
@@ -423,7 +427,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					if (currentScope.wizard.onboardNames && currentScope.vmLayers) {
 						onBoard(currentScope, currentScope.vmLayers, currentScope.wizard.onboardNames);
 					}
-					
+
 					currentScope.wizard.vms = angular.copy($localStorage.addEnv.vms);
 					appendVMsTotheList();
 					

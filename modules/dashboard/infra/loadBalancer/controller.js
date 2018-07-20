@@ -2,8 +2,7 @@
 var infraLoadBalancerApp = soajsApp.components;
 infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraLoadBalancerSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraLoadBalancerSrv) {
 	$scope.$parent.isUserNameLoggedIn();
-	$scope.showTemplateForm = false;
-
+	$scope.vmlayers = [];
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraLoadBalancerConfig.permissions);
 
@@ -26,7 +25,12 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 					$scope.selectedGroup = $scope.infraGroups[0];
 				}
 				$timeout(() => {
-					infraLoadBalancerSrv.listLoadBalancers($scope, $scope.selectedGroup);
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						$scope.vmlayers = vmlayers;
+					
+						infraLoadBalancerSrv.listLoadBalancers($scope, $scope.selectedGroup);
+					});
 				}, 500);
 			}
 			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
@@ -112,7 +116,11 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 	};
 
 	$scope.listLoadBalancers = function (oneGroup) {
-		infraLoadBalancerSrv.listLoadBalancers($scope, oneGroup);
+		overlayLoading.show();
+		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			$scope.vmlayers = vmlayers;
+			infraLoadBalancerSrv.listLoadBalancers($scope, oneGroup);
+		});
 	};
 
 	if ($scope.access.list) {

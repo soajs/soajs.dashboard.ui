@@ -9,6 +9,7 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
+		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
 			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
 				//flag that infra doesn't have any resource groups

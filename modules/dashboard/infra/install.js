@@ -89,7 +89,14 @@ let infraNav = [
 		'tracker': true,
 		'order': 4,
 		"fallbackLocation": "#/infra",
-		'scripts': ['modules/dashboard/infra/config.js', 'modules/dashboard/infra/groups/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/groups/services/groups.js', 'modules/dashboard/infra/groups/controller.js'],
+		'scripts': [
+			'modules/dashboard/infra/config.js',
+			'modules/dashboard/infra/groups/config.js',
+			'modules/dashboard/infra/_services/infra.js',
+			'modules/dashboard/infra/groups/services/groups.js',
+			'modules/dashboard/infra/groups/controller.js',
+			'/modules/dashboard/infra/_drivers/azure/services/groups.js'
+		],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -112,7 +119,14 @@ let infraNav = [
 		'tracker': true,
 		'order': 5,
 		"fallbackLocation": "#/infra",
-		'scripts': ['modules/dashboard/infra/config.js', 'modules/dashboard/infra/network/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/network/services/network.js', 'modules/dashboard/infra/network/controller.js'],
+		'scripts': [
+			'modules/dashboard/infra/config.js',
+			'modules/dashboard/infra/network/config.js',
+			'modules/dashboard/infra/_services/infra.js',
+			'modules/dashboard/infra/network/services/network.js',
+			'modules/dashboard/infra/network/controller.js',
+			'/modules/dashboard/infra/_drivers/azure/services/network.js'
+		],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -141,7 +155,7 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/firewall/services/firewall.js',
 			'modules/dashboard/infra/firewall/controller.js',
-			'/modules/dashboard/infra/firewall/services/drivers/azure/index.js'
+			'/modules/dashboard/infra/_drivers/azure/services/firewall.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -165,7 +179,14 @@ let infraNav = [
 		'tracker': true,
 		'order': 7,
 		"fallbackLocation": "#/infra",
-		'scripts': ['modules/dashboard/infra/config.js', 'modules/dashboard/infra/loadBalancer/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/loadBalancer/services/lb.js', 'modules/dashboard/infra/loadBalancer/controller.js'],
+		'scripts': [
+			'modules/dashboard/infra/config.js',
+			'modules/dashboard/infra/loadBalancer/config.js',
+			'modules/dashboard/infra/_services/infra.js',
+			'modules/dashboard/infra/loadBalancer/services/lb.js',
+			'modules/dashboard/infra/loadBalancer/controller.js',
+			'/modules/dashboard/infra/_drivers/azure/services/loadBalancer.js'
+		],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -188,7 +209,14 @@ let infraNav = [
 		'tracker': true,
 		'order': 8,
 		"fallbackLocation": "#/infra",
-		'scripts': ['modules/dashboard/infra/config.js', 'modules/dashboard/infra/ip/config.js', 'modules/dashboard/infra/_services/infra.js', 'modules/dashboard/infra/ip/services/ip.js', 'modules/dashboard/infra/ip/controller.js'],
+		'scripts': [
+			'modules/dashboard/infra/config.js',
+			'modules/dashboard/infra/ip/config.js',
+			'modules/dashboard/infra/_services/infra.js',
+			'modules/dashboard/infra/ip/services/ip.js',
+			'modules/dashboard/infra/ip/controller.js',
+			'/modules/dashboard/infra/_drivers/azure/services/ip.js'
+		],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

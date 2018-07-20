@@ -1,261 +1,48 @@
 "use strict";
 var infraFirewallSrv = soajsApp.components;
-infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', 'azureInfraFirewallSrv', function (ngDataApi, $localStorage, $timeout, $modal, $window, azureInfraFirewallSrv) {
-	
-	function getInfraDriverName(currentScope) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		let name = oneInfra.name; // -> azure
-		return name;
-	}
+infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', function (azureInfraFirewallSrv) {
 	
 	function addFirewall(currentScope) {
+		let infraName = currentScope.currentInfraName;
 		
-		$modal.open({
-			templateUrl: "addFirewall.tmpl",
-			size: 'm',
-			backdrop: true,
-			keyboard: true,
-			controller: function ($scope, $modalInstance) {
-				fixBackDrop();
-				
-				$scope.close = function () {
-					$modalInstance.close();
-				};
-				
-				$scope.createNetwork = function () {
-					$window.location.href = "#/infra-networks?group=" + currentScope.selectedGroup.name;
-					$modalInstance.close();
-				};
-			}
-		});
+		switch(infraName){
+			case 'azure':
+				azureInfraFirewallSrv.addFirewall(currentScope);
+				break;
+			default:
+				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
+				break;
+		}
 	}
 	
 	function editFirewall(currentScope, originalFirewall) {
+		let infraName = currentScope.currentInfraName;
 		
-		let oneFirewall = angular.copy(originalFirewall);
-		oneFirewall.region = currentScope.selectedGroup.region;
-		
-		let options = {
-			timeout: $timeout,
-			form: {
-				"entries": angular.copy(infraFirewallConfig.form.firewall)
-			},
-			data: oneFirewall,
-			name: 'editFirewall',
-			label: 'Edit Firewall',
-			actions: [
-				{
-					'type': 'submit',
-					'label': "Update Firewall",
-					'btn': 'primary',
-					'action': function (formData) {
-						let data = angular.copy(formData);
-						let firewallPorts = [];
-						for (let i = 0; i < currentScope.portsCounter; i++) {
-							if (data['name' + i]) {
-								let portEntry = {
-									name: data['name' + i],
-									protocol: data['protocol' + i],
-									access: data['access' + i],
-									direction: data['direction' + i],
-									target: data['target' + i],
-									sourceAddress: data['sourceAddress' + i],
-									destinationAddress: data['destinationAddress' + i],
-									published: data['published' + i],
-									priority: data['priority' + i]
-								};
-								
-								firewallPorts.push(portEntry);
-							}
-						}
-						
-						let postOpts = {
-							"method": "put",
-							"routeName": "/dashboard/infra/extras",
-							"params": {
-								"infraId": currentScope.currentSelectedInfra._id,
-								"technology": "vm"
-							},
-							"data": {
-								"params": {
-									"section": "securityGroup",
-									"region": currentScope.selectedGroup.region,
-									"group": currentScope.selectedGroup.name,
-									"name": data.name,
-									"ports": firewallPorts
-								}
-							}
-						};
-						
-						overlayLoading.show();
-						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-							overlayLoading.hide();
-							if (error) {
-								currentScope.form.displayAlert('danger', error.message);
-							}
-							else {
-								currentScope.modalInstance.close();
-								currentScope.displayAlert('success', `The firewall has been successfully updated. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
-								$timeout(() => {
-									listFirewalls(currentScope, currentScope.selectedGroup);
-								}, 2000);
-							}
-						});
-					}
-				},
-				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				}
-			]
-		};
-		
-		//build ui to modify and configure ports
-		currentScope.portsCounter = 0;
-		for (let i = 0; i < oneFirewall.ports.length; i++) {
-			if (!oneFirewall.ports[i].readonly) {
-				currentScope.portsCounter++;
-				//add labels to the form based on label counters
-				let tmp = angular.copy(infraFirewallConfig.form.portInput);
-				
-				tmp.name += i;
-				tmp.label = "Port " + oneFirewall.ports[i].name;
-				tmp.entries.forEach((onePortDetail) => {
-					let originalName = onePortDetail.name;
-					onePortDetail.name += i;
-					oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
-				});
-				
-				tmp.entries.unshift({
-					'type': 'html',
-					'name': 'rLabel' + i,
-					'value': '<span class="icon icon-cross"></span>',
-					'onAction': function (id, value, form) {
-						let count = parseInt(id.replace('rLabel', ''));
-						for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
-							if (form.entries[2].entries[i].name === 'portGroup' + count) {
-								//remove from formData
-								tmp.entries.forEach((field) => {
-									delete form.formData[field.name];
-								});
-								
-								//remove from formEntries
-								form.entries[2].entries.splice(i, 1);
-								break;
-							}
-						}
-					}
-				});
-				
-				//push new entry before the last one, making sure add button remains at the bottom
-				options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
-			}
+		switch(infraName){
+			case 'azure':
+				azureInfraFirewallSrv.editFirewall(currentScope, originalFirewall);
+				break;
+			default:
+				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
+				break;
 		}
-		
-		//attach the add another button
-		options.form.entries[2].entries[options.form.entries[2].entries.length - 1].onAction = function (id, value, form) {
-			addNewPort(currentScope);
-		};
-		
-		buildFormWithModal(currentScope, $modal, options, () => {
-			//fill in labels after form is rendered
-			currentScope.form.formData = oneFirewall;
-		});
-	}
-	
-	function addNewPort(currentScope) {
-		let counter = currentScope.portsCounter || 0;
-		
-		let tmp = angular.copy(infraFirewallConfig.form.portInput);
-		tmp.name += counter;
-		tmp.collapsed = false;
-		tmp.icon = "minus";
-		tmp.entries.forEach((onePortDetail) => {
-			onePortDetail.name += counter;
-			
-			if (!currentScope.form.formData[onePortDetail.name]) {
-				
-				let defaultValue;
-				if (Array.isArray(onePortDetail.value)) {
-					onePortDetail.value.forEach((oneV) => {
-						if (oneV.selected) {
-							defaultValue = oneV.v;
-						}
-					});
-					if (!defaultValue) {
-						defaultValue = onePortDetail.value[0].v;
-					}
-				}
-				else {
-					defaultValue = onePortDetail.value
-				}
-				currentScope.form.formData[onePortDetail.name] = defaultValue;
-			}
-		});
-		
-		tmp.entries.unshift({
-			'type': 'html',
-			'name': 'rLabel' + counter,
-			'value': '<span class="icon icon-cross"></span>',
-			'onAction': function (id, value, form) {
-				let count = parseInt(id.replace('rLabel', ''));
-				for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
-					if (form.entries[2].entries[i].name === 'portGroup' + count) {
-						//remove from formData
-						tmp.entries.forEach((field) => {
-							delete form.formData[field.name];
-						});
-						
-						//remove from formEntries
-						form.entries[2].entries.splice(i, 1);
-						break;
-					}
-				}
-			}
-		});
-		
-		currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		currentScope.portsCounter++;
 	}
 	
 	function deleteFirewall(currentScope, oneFirewall) {
+		let infraName = currentScope.currentInfraName;
 		
-		let deleteFireWallOpts = {
-			method: 'delete',
-			routeName: '/dashboard/infra/extras',
-			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
-				'technology': 'vm',
-				'section': 'securityGroup',
-				'group': currentScope.selectedGroup.name,
-				'name': oneFirewall.name
-			}
-		};
-		
-		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, deleteFireWallOpts, (error, response) => {
-			overlayLoading.hide();
-			if (error) {
-				overlayLoading.hide();
-				currentScope.displayAlert('danger', error);
-			}
-			else {
-				overlayLoading.hide();
-				currentScope.displayAlert('success', `The firewall has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
-				$timeout(() => {
-					listFirewalls(currentScope, currentScope.selectedGroup);
-				}, 2000);
-			}
-		});
+		switch(infraName){
+			case 'azure':
+				azureInfraFirewallSrv.deleteFirewall(currentScope, oneFirewall);
+				break;
+			default:
+				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
+				break;
+		}
 	}
 	
 	function listFirewalls(currentScope, oneGroup) {
-		let infraName = getInfraDriverName(currentScope);
+		let infraName = currentScope.currentInfraName;
 		
 		switch(infraName){
 			case 'azure':

@@ -1,34 +1,7 @@
 <section ng-controller="infraIPCtrl">
-	<div class="w-100 c-both">
-		<div class="f-left w20">
-			<a class="btn btn-sm btn-primary" ng-if="access.addIP" ng-click="addIP()">
-				<span class="icon icon-plus"></span> Add New Public IP Address
-			</a>
-		</div>
-		
-		<div class="f-right w30">
-			<div class="searchBoxContainer">
-				<button class="btn btn-success f-right" ng-click="listIPs(selectedGroup)">
-					Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
-				</button>
-			</div>
-
-			<div ng-if="infraGroups.length > 0">
-				Group:
-				<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listIPs(selectedGroup)" ng-options="group as group.name group by group.region for group in infraGroups">
-				</select>
-			</div>
-		</div>
-		<br /><br />
-	</div>
-
-	<div ng-if="access.list">
-		<alert ng-if="!infraPublicIps || infraPublicIps.length === 0" type="warning">
-			No Public IP Addresses Detected.
-		</alert>
-		<div ng-if="infraPublicIps && infraPublicIps.length > 0" class="entryBoxes">
-			<br />
-			<nglist></nglist>
+	<div ng-switch="currentInfraName">
+		<div ng-switch-when="azure">
+			<div ng-include="'modules/dashboard/infra/_drivers/azure/directives/ip.tmpl'"></div>
 		</div>
 	</div>
 </section>

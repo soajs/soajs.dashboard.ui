@@ -98,6 +98,10 @@ em {
     margin-right: 5px;
 }
 
+#pillars .one-pillar button{
+    width: 125px;
+}
+
 #header #pillars .one-pillar button {
     background-color: #515e67;
     color: white;
@@ -1564,15 +1568,14 @@ td.apiNavigationWide .pagination a {
     border: solid 1px #ccc;
 }
 
-
-.smallNotificationCollapsed{
+.smallNotificationCollapsed {
     font-size: .83em;
     line-height: 0.5em !important;
     vertical-align: baseline;
     position: relative;
     top: 0em;
     left: 1.9em;
-    height:2px !important;
+    height: 2px !important;
 }
 
 .smallNotification {
@@ -1582,26 +1585,26 @@ td.apiNavigationWide .pagination a {
     position: relative;
     top: -0.3em;
     left: -0.3em;
-    height:2px !important;
+    height: 2px !important;
 }
 
 .smallNotificationCollapsed[data-badge]:after,
 .smallNotification[data-badge]:after {
-    content:attr(data-badge);
-    position:absolute;
-    top:-10px;
-    right:-10px;
+    content: attr(data-badge);
+    position: absolute;
+    top: -10px;
+    right: -10px;
 
-    background:#d9534f;
-    color:white;
+    background: #d9534f;
+    color: white;
 
-    width:18px;
-    height:18px;
+    width: 18px;
+    height: 18px;
 
     font-size: .6em;
-    text-align:center;
-    line-height:16px;
+    text-align: center;
+    line-height: 16px;
 
-    border-radius:50%;
+    border-radius: 50%;
     border: solid 1px white;
 }

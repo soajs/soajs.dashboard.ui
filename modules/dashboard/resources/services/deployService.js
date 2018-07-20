@@ -1257,7 +1257,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						if(context.mainData.deploymentData.vmLayers[i].list){
 							context.mainData.deploymentData.vmLayers[i].list.forEach((onevmInstance) =>{
 								if(onevmInstance.labels && onevmInstance.labels['soajs.env.code'] && onevmInstance.labels['soajs.env.code'] === envCode){
-									compatibleVM = true;
+                                    if (onevmInstance.tasks && Array.isArray(onevmInstance.tasks) &&  onevmInstance.tasks[0] && onevmInstance.tasks[0].status && onevmInstance.tasks[0].status.state === 'succeeded') {
+                                        compatibleVM = true;
+                                    }
 								}
 							});
 						}

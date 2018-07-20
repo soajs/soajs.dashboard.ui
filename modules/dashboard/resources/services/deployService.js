@@ -55,7 +55,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		if(deployOptions){
 			deployConfig = deployOptions.deployConfig;
 		}
-		
+
 		// clean
 		if (deployConfig && deployConfig.type === "vm") {
 			if (deployConfig.memoryLimit) {
@@ -608,21 +608,21 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
         //adding the api call to commonService
 		context.getCatalogRecipes = function (cb) {
-			
+
 			context.mainData.recipes = [];
-			
+
 			//wizard mode only
 			let alreadySelectedRecipe;
 			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.recipe && currentScope.environmentWizard){
 				alreadySelectedRecipe = context.formData.deployOptions.recipe;
 			}
-			
+
 			let apiParams = {};
 			commonService.getCatalogRecipes(currentScope, apiParams, function (recipes)  {
 				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
                     context.myEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
                 }
-				
+
                 let deploymentType = context.options.envType;
 				let selectedInfraProvider;
 				try{
@@ -645,7 +645,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				catch(e){
 					// console.log(e);
 				}
-				
+
                 if (recipes && Array.isArray(recipes)) {
 	                recipes.forEach(function (oneRecipe) {
 	                    if (oneRecipe.type === context.formData.type && oneRecipe.subtype === context.formData.category) {
@@ -678,17 +678,17 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		                    }
 	                    }
                     });
-	                
+
 	                if(recipes.length === 0){
 	                	alreadySelectedRecipe = null;
 		                context.formData.deployOptions.recipe = null;
 	                }
-	                
+
 	                //wizard mode only
 	                if(alreadySelectedRecipe){
 		                context.formData.deployOptions.recipe = alreadySelectedRecipe;
 	                }
-                 
+
 	                context.displayRecipeInputs(false, false, function (err) {
                         if (err) {
                             context.displayAlert('danger', err.message);
@@ -727,7 +727,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				}
-				
+
 				return false;
 			}
 		};
@@ -740,7 +740,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 
 		context.displayRecipeInputs = function (refresh, ui, cb) {
-
 			function calculateRestrictions(currentScope) {
 				let allRecipes = currentScope.mainData.recipes;
 				let selectedRecipeId;
@@ -758,7 +757,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
                         context.mainData.deploymentData.selectedRecipe = selectedRecipe;
 					}
 				});
-				
+
 				let allDeployments = [];
 				if(context.formData.deployOptions.deployConfig.type && context.formData.deployOptions.deployConfig.type !== ''){
 					allDeployments = [context.formData.deployOptions.deployConfig.type];
@@ -884,16 +883,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 			let deployConfig = context.formData.deployOptions;
 			context.vmExposedPortsDisabled = (deployConfig && deployConfig.deployConfig && deployConfig.deployConfig.type === 'vm');
-			
+
 			if(context.formData.canBeDeployed){
 				if(!context.formData.deployOptions.deployConfig){
 					context.formData.deployOptions.deployConfig = {};
 				}
-				
+
 				if(!forceValueFromSelect){
 					context.formData.deployOptions.deployConfig.type = 'vm';
 				}
-				
+
 				//get all infra accounts with vm technology
 				//get all vms from accounts
 				//show the list of vm layers to choose from
@@ -914,10 +913,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						}
 					}
-					
+
 					//get the new catalog recipes
 					context.getCatalogRecipes(() => {
-					
+
 					});
 				});
 			}
@@ -1164,8 +1163,51 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.formData.deployOptions.custom.ports = ports;
 			}
 
+			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.vmConfiguration && context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+				context.vmExposedPortsDisabled = true;
+				context.validateVmLayerPorts(selectedRecipe, context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer]);
+			}
+
 			if (cb) {
 				return cb();
+			}
+		};
+
+		context.validateVmLayerPorts = function(selectedRecipe, vmLayer) {
+			if(selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.ports && Array.isArray(selectedRecipe.recipe.deployOptions.ports)) {
+				let oneLayerInstance = {};
+				if(vmLayer && vmLayer.list && Array.isArray(vmLayer.list) && vmLayer.list[0]) {
+					oneLayerInstance = vmLayer.list[0]; // comparing with only one layer instance is enough, instances configurations in one layer are identical
+				}
+				context.formData.invalidVmLayerPortsData = {
+					ports: [],
+					securityGroupName: ''
+				};
+				for(let i = 0; i < selectedRecipe.recipe.deployOptions.ports.length; i++) {
+					let onePort = selectedRecipe.recipe.deployOptions.ports[i];
+					let foundPort = false;
+					if(oneLayerInstance && oneLayerInstance.ports) {
+						for(let j = 0; j < oneLayerInstance.ports.length; j++) {
+							let oneLayerPort = oneLayerInstance.ports[j];
+							if(oneLayerPort.access === 'allow' && oneLayerPort.direction === 'inbound') {
+								if(oneLayerPort.isPublished === onePort.isPublished &&
+									((oneLayerPort.published == onePort.published) || oneLayerPort.published === '*') &&
+									((oneLayerPort.target == onePort.target) || oneLayerPort.target === '*')) {
+									onePort.availableInVmLayer = true;
+									foundPort = true;
+									break;
+								}
+							}
+						}
+					}
+					if(!foundPort) {
+						context.formData.invalidVmLayerPortsData.ports.push(onePort);
+
+						if(!context.formData.invalidVmLayerPortsData.securityGroup) {
+							context.formData.invalidVmLayerPortsData.securityGroup = oneLayerInstance.securityGroup;
+						}
+					}
+				}
 			}
 		};
 
@@ -1222,7 +1264,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.originalInfraProviders = angular.copy(providers);
 				context.mainData.deploymentData.infraProviders = providers;
 				overlayLoading.hide();
-				
+
 				if (cb) {
 					cb();
 				}
@@ -1232,7 +1274,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		context.listVmsApi = function (cb) {
 			if (!vmDataLoaded) {
 				vmDataLoaded = true;
-				
+
 				let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
 				if(currentScope.environmentWizard){
 					envCode = null;
@@ -1250,7 +1292,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					else{
 						context.mainData.deploymentData.vmLayers = vms;
 					}
-					
+
 					//todo: remove this validation in the next sprints
 					for(let i in context.mainData.deploymentData.vmLayers){
 						let compatibleVM = false;
@@ -1279,7 +1321,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							delete context.mainData.deploymentData.vmLayers[i];
 						}
 					}
-					
+
 					if(cb && typeof cb === 'function'){
 						return cb();
 					}
@@ -1349,7 +1391,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.mainData.categoryLabel = oneCategory.l;
 			}
 		});
-		
+
 		context.options = {
 			deploymentModes: [
 				{

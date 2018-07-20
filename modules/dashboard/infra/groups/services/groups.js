@@ -3,7 +3,7 @@ var infraGroupSrv = soajsApp.components;
 infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', 'infraCommonSrv', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload, infraCommonSrv) {
 
 	function addGroup(currentScope) {
-		currentScope.labelCounter = 0;
+		// currentScope.labelCounter = 0;
 
 		let options = {
 			timeout: $timeout,
@@ -20,10 +20,10 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 					'action': function (formData) {
 						let data = angular.copy(formData);
 
-						let labels = {};
-						for (let i = 0; i < currentScope.labelCounter; i ++) {
-							labels[data['labelName'+i]] = data['labelValue'+i];
-						}
+						// let labels = {};
+						// for (let i = 0; i < currentScope.labelCounter; i ++) {
+						// 	labels[data['labelName'+i]] = data['labelValue'+i];
+						// }
 
 						let postOpts = {
 							"method": "post",
@@ -36,7 +36,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								"params": {
 									"section": "group",
 									"region": currentScope.selectedRegion.v,
-									"labels": labels,
+									"labels": {},
 									"name": data.name
 								}
 							}
@@ -70,9 +70,9 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			]
 		};
 
-		options.form.entries[2].entries[0].onAction = function (id, value, form) {
-			addNewLabel(currentScope);
-		};
+		// options.form.entries[2].entries[0].onAction = function (id, value, form) {
+		// 	addNewLabel(currentScope);
+		// };
 
 		//set value of region to selectedRegion
 		options.form.entries[1].value = currentScope.selectedRegion.l;
@@ -80,43 +80,43 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 		buildFormWithModal(currentScope, $modal, options);
 	}
 
-	function addNewLabel(currentScope) {
-		let labelCounter = currentScope.labelCounter;
-		let tmp = angular.copy(infraGroupConfig.form.labelInput);
-		tmp.name += labelCounter;
-		tmp.entries[0].name += labelCounter;
-		tmp.entries[1].name += labelCounter;
-		tmp.entries[2].name += labelCounter;
-
-		tmp.entries[2].onAction = function (id, value, form) {
-			let count = parseInt(id.replace('rLabel', ''));
-
-			for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
-				if (form.entries[2].entries[i].name === 'labelGroup' + count) {
-					//remove from formData
-					for (var fieldname in form.formData) {
-						if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
-							delete form.formData[fieldname];
-						}
-					}
-					//remove from formEntries
-					form.entries[2].entries.splice(i, 1);
-					break;
-				}
-			}
-		};
-
-		if (currentScope.form && currentScope.form.entries) {
-			currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		}
-		else {
-			// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		}
-		currentScope.labelCounter ++;
-	}
+	// function addNewLabel(currentScope) {
+	// 	let labelCounter = currentScope.labelCounter;
+	// 	let tmp = angular.copy(infraGroupConfig.form.labelInput);
+	// 	tmp.name += labelCounter;
+	// 	tmp.entries[0].name += labelCounter;
+	// 	tmp.entries[1].name += labelCounter;
+	// 	tmp.entries[2].name += labelCounter;
+	//
+	// 	tmp.entries[2].onAction = function (id, value, form) {
+	// 		let count = parseInt(id.replace('rLabel', ''));
+	//
+	// 		for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
+	// 			if (form.entries[2].entries[i].name === 'labelGroup' + count) {
+	// 				//remove from formData
+	// 				for (var fieldname in form.formData) {
+	// 					if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+	// 						delete form.formData[fieldname];
+	// 					}
+	// 				}
+	// 				//remove from formEntries
+	// 				form.entries[2].entries.splice(i, 1);
+	// 				break;
+	// 			}
+	// 		}
+	// 	};
+	//
+	// 	if (currentScope.form && currentScope.form.entries) {
+	// 		currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
+	// 	}
+	// 	else {
+	// 		// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
+	// 	}
+	// 	currentScope.labelCounter ++;
+	// }
 
 	function editGroup(currentScope, oneGroup) {
-		currentScope.labelCounter = (oneGroup.labels && typeof oneGroup.labels === 'object') ? Object.keys(oneGroup.labels).length : 0;
+		// currentScope.labelCounter = (oneGroup.labels && typeof oneGroup.labels === 'object') ? Object.keys(oneGroup.labels).length : 0;
 
 		oneGroup.region = currentScope.selectedRegion.l;
 
@@ -152,7 +152,7 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 								"params": {
 									"section": "group",
 									"region": currentScope.selectedRegion.v,
-									"labels": labels,
+									"labels": {},
 									"name": data.name
 								}
 							}
@@ -186,49 +186,47 @@ infraGroupSrv.service('infraGroupSrv', ['ngDataApi', '$timeout', '$modal', '$win
 			]
 		};
 
-		// OPTIMIZE: to avoid redundant code
-		//assertion to avoid splicing label entries more than once
-		if (options.form.entries[2].entries.length !== currentScope.labelCounter + 1) {
-			//set labels
-			for (let i = 0; i < currentScope.labelCounter; i++) {
-				// change the labels to formData style
-				oneGroup['labelName'+i] = Object.keys(oneGroup.labels)[i];
-				oneGroup['labelValue'+i] = oneGroup.labels[Object.keys(oneGroup.labels)[i]];
-
-				//add labels to the form based on label counters
-				let tmp = angular.copy(infraGroupConfig.form.labelInput);
-				tmp.name += i;
-				tmp.entries[0].name += i;
-				tmp.entries[1].name += i;
-				tmp.entries[2].name += i;
-
-				tmp.entries[2].onAction = function (id, value, form) {
-					let count = parseInt(id.replace('rLabel', ''));
-
-					for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
-						if (form.entries[2].entries[i].name === 'labelGroup' + count) {
-							//remove from formData
-							for (var fieldname in form.formData) {
-								if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
-									delete form.formData[fieldname];
-								}
-							}
-							//remove from formEntries
-							form.entries[2].entries.splice(i, 1);
-							break;
-						}
-					}
-				};
-				options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
-			}
-		}
-
-		options.form.entries[2].entries[currentScope.labelCounter].onAction = function (id, value, form) {
-			addNewLabel(currentScope);
-		};
+		// //assertion to avoid splicing label entries more than once
+		// if (options.form.entries[2].entries.length !== currentScope.labelCounter + 1) {
+		// 	//set labels
+		// 	for (let i = 0; i < currentScope.labelCounter; i++) {
+		// 		// change the labels to formData style
+		// 		oneGroup['labelName'+i] = Object.keys(oneGroup.labels)[i];
+		// 		oneGroup['labelValue'+i] = oneGroup.labels[Object.keys(oneGroup.labels)[i]];
+		//
+		// 		//add labels to the form based on label counters
+		// 		let tmp = angular.copy(infraGroupConfig.form.labelInput);
+		// 		tmp.name += i;
+		// 		tmp.entries[0].name += i;
+		// 		tmp.entries[1].name += i;
+		// 		tmp.entries[2].name += i;
+		//
+		// 		tmp.entries[2].onAction = function (id, value, form) {
+		// 			let count = parseInt(id.replace('rLabel', ''));
+		//
+		// 			for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
+		// 				if (form.entries[2].entries[i].name === 'labelGroup' + count) {
+		// 					//remove from formData
+		// 					for (var fieldname in form.formData) {
+		// 						if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+		// 							delete form.formData[fieldname];
+		// 						}
+		// 					}
+		// 					//remove from formEntries
+		// 					form.entries[2].entries.splice(i, 1);
+		// 					break;
+		// 				}
+		// 			}
+		// 		};
+		// 		options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
+		// 	}
+		// }
+		//
+		// options.form.entries[2].entries[currentScope.labelCounter].onAction = function (id, value, form) {
+		// 	addNewLabel(currentScope);
+		// };
 
 		buildFormWithModal(currentScope, $modal, options, () => {
-			//fill in labels after form is rendered
 			currentScope.form.formData = oneGroup;
 		});
 	}

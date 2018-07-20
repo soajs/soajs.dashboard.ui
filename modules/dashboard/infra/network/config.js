@@ -15,28 +15,146 @@ let infraNetworkConfig = {
 				'label': 'Name',
 				'type': 'text',
 				'value': "",
-				'placeholder': 'My Template',
-				'fieldMsg': 'Enter a name for your template',
+				'placeholder': 'Network Name',
+				'fieldMsg': 'Enter a name for the network',
 				'required': true
 			},
 			{
-				'name': 'description',
-				'label': 'Description',
-				'type': 'textarea',
+				'name': 'region',
+				'label': 'Region',
+				'type': 'readonly',
 				'value': "",
-				'placeholder': 'My Template Description',
-				'fieldMsg': 'Provide  a description for your template',
+				'fieldMsg': 'Region where the network will be located',
+				'required': true
+			},
+			{
+				'name': 'address',
+				'label': 'Address',
+				'type': 'text',
+				'value': "",
+				"placeholder": "10.0.0.1/16",
+				'fieldMsg': 'Enter an address for the network',
 				'required': false
 			},
 			{
-				'name': 'location',
-				'label': 'Location',
-				'type': 'select',
+				'name': 'dnsServers',
+				'label': 'DNS Servers',
+				'type': 'text',
+				'value': "",
+				'fieldMsg': 'Enter DNS servers for this network separated by commas. Example: 0.0.0.0, 1.1.1.1',
+				'required': false
+			},
+			{
+				'name': 'subnets',
+				'label': 'Subnets',
+				'type': 'jsoneditor',
 				'value': [],
-				'fieldMsg': 'Select where to store this template.',
-				'required': true
+				'fieldMsg': 'Enter an array of subnets for this network. Exmaple: { "name": "mySubnet", "address": "10.0.0.0/24" }',
+				'required': false
 			}
-		]
+		],
+
+		addressInput : {
+			'name': 'AddressGroup',
+			'type': 'group',
+			'label': 'New Address',
+			'entries': [
+				{
+					'name': 'address',
+					'label': 'Address',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the IP Address',
+					'fieldMsg': 'Enter the IP Address',
+					'placeholder': "10.0.0.1/16"
+				},
+				{
+					'type': 'html',
+					'name': 'rAddress',
+					'value': '<span class="icon icon-cross"></span>'
+				}
+			]
+		},
+
+		dnsInput : {
+			'name': 'DnsGroup',
+			'type': 'group',
+			'label': 'New DNS Server',
+			'entries': [
+				{
+					'name': 'dnsServer',
+					'label': 'DNS Server',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the DNS Server Address',
+					'fieldMsg': 'Enter the DNS Server Address',
+					'placeholder': "0.0.0.0"
+				},
+				{
+					'type': 'html',
+					'name': 'rDNS',
+					'value': '<span class="icon icon-cross"></span>'
+				}
+			]
+		},
+
+		dnsInput : {
+			'name': 'SubnetGroup',
+			'type': 'group',
+			'label': 'New Subnet',
+			'entries': [
+				{
+					'name': 'subnet',
+					'label': 'Subnet',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the subnet range',
+					'fieldMsg': 'Enter the subnet range',
+					'placeholder': "/16"
+				},
+				{
+					'type': 'html',
+					'name': 'rSubnet',
+					'value': '<span class="icon icon-cross"></span>'
+				}
+			]
+		},
+
+		labelInput : {
+			'name': 'LabelGroup',
+			'type': 'group',
+			'label': 'New Label',
+			'entries': [
+				{
+					'name': 'labelName',
+					'label': 'Label Name',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the name of the label',
+					'fieldMsg': 'Enter the name of the label',
+					'placeholder': "My label name"
+				},
+				{
+					'name': 'labelValue',
+					'label': 'Label Value',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the value of the label',
+					'fieldMsg': 'Enter the value of the label',
+					'placeholder': "My label Value"
+				},
+				{
+					'type': 'html',
+					'name': 'rLabel',
+					'value': '<span class="icon icon-cross"></span>'
+				}
+			]
+		}
 	},
 
 	grid: {

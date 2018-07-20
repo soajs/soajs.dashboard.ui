@@ -1,10 +1,221 @@
 "use strict";
 var infraNetworkSrv = soajsApp.components;
-infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', function (ngDataApi, $localStorage) {
+infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', function (ngDataApi, $localStorage, $timeout, $modal, $window) {
 
-	function addNetwork(currentScope) {}
+	function addNetwork(currentScope) {
 
-	function editNetwork(currentScope, oneNetwork) {}
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraNetworkConfig.form.network)
+			},
+			name: 'addNetwork',
+			label: 'Add New Network',
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Create Network",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let postOpts = {
+							"method": "post",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "network",
+									"region": currentScope.selectedGroup.region,
+									"labels": {},
+									"name": data.name,
+									"group": currentScope.selectedGroup.name,
+									"subnets": data.subnets
+								}
+							}
+						};
+
+
+						let addressPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}\/[0-20-4]{1,2}$/;
+						if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
+							return $window.alert("Make sure the address you entered follows the correct CIDR format.");
+						}
+
+						if (data.address) {
+							postOpts.data.params.address = splitAndTrim(data.address);
+						}
+
+						if (data.dnsServers) {
+							let dnsPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
+							postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+
+							let valid = true;
+							postOpts.data.params.dnsServers.forEach((oneDNS) => {
+								if (!dnsPattern.test(oneDNS)) {
+									valid = false;
+								}
+							});
+
+							if (!valid) {
+								return $window.alert("Make sure the DNS addresses you entered follow the correct CIDR format.");
+							}
+						}
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								currentScope.modalInstance.close();
+								$timeout(() => {
+									listNetworks(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+
+		//set value of region to selectedRegion
+		options.form.entries[1].value = currentScope.selectedGroup.region;
+
+		buildFormWithModal(currentScope, $modal, options);
+	}
+
+	function splitAndTrim(string) {
+		let x = string.split(',');
+
+		for (let i = 0; i < x.length; i++) {
+			x[i] = x[i].trim();
+		};
+
+		return x;
+	}
+
+	function editNetwork(currentScope, originalNetwork) {
+		let oneNetwork = angular.copy(originalNetwork);
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraNetworkConfig.form.network)
+			},
+			data: oneNetwork,
+			name: 'editNetwork',
+			label: 'Edit Network',
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Update Network",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let postOpts = {
+							"method": "put",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": {
+									"section": "network",
+									"region": currentScope.selectedGroup.region,
+									"labels": {},
+									"name": data.name,
+									"group": currentScope.selectedGroup.name,
+									"subnets": data.subnets
+								}
+							}
+						};
+
+						let addressPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}\/[0-20-4]{1,2}$/;
+						if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
+							return $window.alert("Make sure the address you entered follows the correct CIDR format.");
+						}
+
+						if (data.address) {
+							postOpts.data.params.address = splitAndTrim(data.address);
+						}
+
+						if (data.dnsServers) {
+							let dnsPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
+							postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
+
+							let valid = true;
+							postOpts.data.params.dnsServers.forEach((oneDNS) => {
+								if (!dnsPattern.test(oneDNS)) {
+									valid = false;
+								}
+							});
+
+							if (!valid) {
+								return $window.alert("Make sure the DNS addresses you entered follow the correct CIDR format.");
+							}
+						}
+
+						overlayLoading.show();
+						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.form.displayAlert('danger', error.message);
+							}
+							else {
+								currentScope.displayAlert('success', "Network Updated successfully. Changes take a bit of time to be populated and might require you to refresh in the list after a few seconds.");
+								currentScope.modalInstance.close();
+								$timeout(() => {
+									listNetworks(currentScope, currentScope.selectedGroup);
+								}, 2000);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+
+		buildFormWithModal(currentScope, $modal, options, () => {
+			currentScope.form.formData = oneNetwork;
+			currentScope.form.entries[0].type = 'readonly';
+
+			currentScope.form.formData.address = oneNetwork.address.join(",");
+
+			currentScope.form.entries[3].value = oneNetwork.dnsServers.join(",");
+
+			oneNetwork.subnets.forEach((oneSub) => {
+				currentScope.form.entries[4].value.push({
+					"name": oneSub.name,
+					"address": oneSub.address
+				});
+			});
+
+
+		});
+	}
 
 	function deleteNetwork(currentScope, oneNetwork) {
 
@@ -36,7 +247,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 
 	function listNetworks(currentScope, oneGroup) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		
+
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;
 
@@ -68,15 +279,17 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 				if (response.networks && response.networks.length > 0) {
 					currentScope.infraNetworks = response.networks;
 				}
-				currentScope.infraNetworks[0].open = true;
-				
+				if (currentScope.infraNetworks.length > 0) {
+					currentScope.infraNetworks[0].open = true;
+				}
+
 				if (currentScope.vmlayers) {
 					let processedFirewalls = [];
 					currentScope.infraNetworks.forEach((oneNetwork) => {
 						oneNetwork.subnets.forEach((oneSubnet) => {
 							currentScope.vmlayers.forEach((oneVmLayer) => {
 								if (oneVmLayer.network && oneVmLayer.network.toLowerCase() === oneNetwork.name.toLowerCase() && oneSubnet.name === oneVmLayer.layer) {
-									
+
 									if(oneVmLayer.labels&& oneVmLayer.labels['soajs.env.code']){
 										let found = false;
 										$localStorage.environments.forEach((oneEnv) => {
@@ -84,7 +297,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 												found = true;
 											}
 										});
-										
+
 										oneSubnet.vm = {
 											vmLayer: oneVmLayer.layer,
 											group: oneGroup.name,
@@ -100,11 +313,11 @@ infraNetworkSrv.service('infraNetworkSrv', ['ngDataApi', '$localStorage', functi
 											link: false
 										};
 									}
-									
+
 									if(!oneNetwork.firewall){
 										oneNetwork.firewall = [];
 									}
-									
+
 									if(processedFirewalls.indexOf(oneVmLayer.securityGroup) === -1){
 										processedFirewalls.push(oneVmLayer.securityGroup);
 										oneNetwork.firewall.push({

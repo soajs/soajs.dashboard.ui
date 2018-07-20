@@ -62,6 +62,10 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$localStorage', '$routeP
 	$scope.listVMLayers = function() {
 		platformsVM.listVMLayers($scope);
 	};
+
+	$scope.getOnBoard = function(vmLayer, release) {
+		platformsVM.getOnBoard($scope, vmLayer, release);
+	};
 	
 	$scope.addVMLayer = function(){
 		platformsVM.addVMLayer($scope);

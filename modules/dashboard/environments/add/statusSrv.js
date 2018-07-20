@@ -28,7 +28,7 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 
 		let opts;
 
-		if(!currentScope.previousEnvironment && currentScope.wizard.deployment && currentScope.wizard.deployment.previousEnvironment){
+		if (!currentScope.previousEnvironment && currentScope.wizard.deployment && currentScope.wizard.deployment.previousEnvironment) {
 			currentScope.previousEnvironment = currentScope.wizard.deployment.previousEnvironment;
 		}
 
@@ -73,11 +73,11 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		return output;
 	}
 
-	function mapVMInfra(currentScope, oneVMLayer){
+	function mapVMInfra(currentScope, oneVMLayer) {
 
 		let providerName;
 		currentScope.infraProviders.forEach((oneProvider) => {
-			if(oneProvider._id === oneVMLayer.params.infraId){
+			if (oneProvider._id === oneVMLayer.params.infraId) {
 				providerName = oneProvider.name;
 			}
 		});
@@ -113,14 +113,40 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		return output;
 	}
 
+	function mapVMOnboard(currentScope, oneVMLayer) {
+		let providerName;
+		currentScope.infraProviders.forEach((oneProvider) => {
+			if (oneProvider._id === oneVMLayer.params.infraId) {
+				providerName = oneProvider.name;
+			}
+		});
+		let opts = oneVMLayer;
+		opts.params.env = currentScope.wizard.gi.code;
+		
+		let onboardVm = {
+			"type": "infra",
+			"name": providerName,
+			"command": "onboardVM",
+			"options": opts
+		};
+		onboardVm.options.params.layerName = opts.data.name;
+		
+		let output = {
+			imfv: []
+		};
+		
+		output.imfv.push(onboardVm);
+		return output;
+	}
+
 	function listInfraProviders(currentScope, cb) {
 		//get the available providers
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/infra",
-			"params":{
-				"exclude": [ "groups", "regions", "templates" ]
+			"params": {
+				"exclude": ["groups", "regions", "templates"]
 			}
 		}, function (error, providers) {
 			overlayLoading.hide();
@@ -134,22 +160,17 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		});
 	}
 
-	function go(currentScope){
+	function go(currentScope) {
 
-		// if(!currentScope.infraProviders){
-			listInfraProviders(currentScope, () => {
-				resumeDeployment();
-			});
-		// }
-		// else{
-		// 	resumeDeployment();
-		// }
+		listInfraProviders(currentScope, () => {
+			resumeDeployment();
+		});
 
-		function resumeDeployment(){
-			if(currentScope.wizard.selectedInfraProvider){
+		function resumeDeployment() {
+			if (currentScope.wizard.selectedInfraProvider) {
 				let deployments = currentScope.wizard.template.deploy;
 
-				if(!deployments.deployments){
+				if (!deployments.deployments) {
 					currentScope.wizard.template.deploy.deployments = {};
 					deployments = currentScope.wizard.template.deploy.deployments;
 				}
@@ -171,10 +192,10 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 			}
 
 			//check for vms to create
-			if(currentScope.wizard.vms){
+			if (currentScope.wizard.vms) {
 				let deployments = currentScope.wizard.template.deploy;
 
-				if(!deployments.deployments){
+				if (!deployments.deployments) {
 					currentScope.wizard.template.deploy.deployments = {};
 				}
 
@@ -183,14 +204,31 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 				}
 
 				//backwards so they work upwards!
-				for(let i = currentScope.wizard.vms.length -1; i >=0; i--){
+				for (let i = currentScope.wizard.vms.length - 1; i >= 0; i--) {
 					let oneVMLayer = currentScope.wizard.vms[i];
 					let vmInfra = mapVMInfra(currentScope, oneVMLayer);
 					currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.deploy.' + i, vmInfra);
 				}
 			}
 
+			// if VMs to onboard
+			if (currentScope.wizard.vmOnBoard) {
+				if (!currentScope.wizard.template.deploy.deployments) {
+					currentScope.wizard.template.deploy.deployments = {};
+				}
+
+				if (!currentScope.wizard.template.deploy.deployments.pre) {
+					currentScope.wizard.template.deploy.deployments.pre = {};
+				}
+				// Add VMs to onboard
+				for (let i = currentScope.wizard.vmOnBoard.length - 1; i >= 0; i--) {
+					let oneVmOnboardLayer = mapVMOnboard(currentScope, currentScope.wizard.vmOnBoard[i]);
+					currentScope.wizard.template.deploy.deployments.pre = insertObjFirst(currentScope.wizard.template.deploy.deployments.pre, 'infra.vms.onboard.' + i, oneVmOnboardLayer);
+				}
+			}
+
 			currentScope.overview = currentScope.mapUserInputsToOverview(false);
+
 			delete currentScope.overview.selectedInfraProvider;
 
 			statusAPISrv.go(currentScope);

@@ -200,14 +200,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-
+		
 		context.gotorecipes = function(){
 			if($modalInstance){
 				$modalInstance.close();
 			}
 			$location.path("/catalog-recipes");
 		};
-
+		
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
 
@@ -1251,7 +1251,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
 			}
 		};
-
+		
 		/*
 		 VM specific
 		 */
@@ -1280,6 +1280,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					envCode = null;
 				}
 				getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
+					// TODO
+					if(!context.mainData.deploymentData.vmLayers){
+						context.mainData.deploymentData.vmLayers={};
+					}
 					if(currentScope.environmentWizard){
 						for(let i in vms){
 							context.mainData.deploymentData.vmLayers[i] = vms[i];
@@ -1295,13 +1299,23 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						if(context.mainData.deploymentData.vmLayers[i].list){
 							context.mainData.deploymentData.vmLayers[i].list.forEach((onevmInstance) =>{
 								if(onevmInstance.labels && onevmInstance.labels['soajs.env.code'] && onevmInstance.labels['soajs.env.code'] === envCode){
-									compatibleVM = true;
+                                    if (onevmInstance.tasks && Array.isArray(onevmInstance.tasks) &&  onevmInstance.tasks[0] && onevmInstance.tasks[0].status && onevmInstance.tasks[0].status.state === 'succeeded') {
+                                        compatibleVM = true;
+                                    }
 								}
 							});
 						}
 						else if (context.mainData.deploymentData.vmLayers[i].specs){
 							compatibleVM = true;
 						}
+
+                        if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
+                            for (let j in currentScope.onboardNames) {
+                                if (currentScope.onboardNames[j] === context.mainData.deploymentData.vmLayers[i].name) {
+                                    compatibleVM = true;
+                                }
+                            }
+                        }
 
 						if(!compatibleVM){
 							delete context.mainData.deploymentData.vmLayers[i];

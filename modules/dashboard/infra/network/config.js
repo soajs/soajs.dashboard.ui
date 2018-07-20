@@ -100,7 +100,7 @@ let infraNetworkConfig = {
 			]
 		},
 
-		dnsInput : {
+        subnetInput : {
 			'name': 'SubnetGroup',
 			'type': 'group',
 			'label': 'New Subnet',

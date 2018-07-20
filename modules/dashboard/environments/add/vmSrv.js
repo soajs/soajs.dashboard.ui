@@ -193,6 +193,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					}
 				}
 				delete vmLayer.list[0].labels['soajs.env.code'];
+				if (vmLayer.list[0].labels['soajs.onBoard']) {
+                    delete vmLayer.list[0].labels['soajs.onBoard'];
+				}
 			}
 
 			let myLayer = angular.copy(vmLayer);
@@ -220,6 +223,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					}
 				};
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
+                vmLayer.list[0].labels['soajs.onBoard'] = "true";
 
 				currentScope.wizard.vmOnBoard.push(obj);
 

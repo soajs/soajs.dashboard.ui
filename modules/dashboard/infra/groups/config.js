@@ -27,17 +27,17 @@ let infraGroupConfig = {
 				'fieldMsg': 'Region where the resource group will be located',
 				'required': true
 			},
-			{
-				'type': 'group',
-				'label': 'Labels',
-				'entries': [
-					{
-						'type': 'html',
-						'name': 'addLabel',
-						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
-					}
-				]
-			}
+			// {
+			// 	'type': 'group',
+			// 	'label': 'Labels',
+			// 	'entries': [
+			// 		{
+			// 			'type': 'html',
+			// 			'name': 'addLabel',
+			// 			'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
+			// 		}
+			// 	]
+			// }
 		],
 
 		editGroup: [
@@ -58,17 +58,17 @@ let infraGroupConfig = {
 				'fieldMsg': 'Region where the resource group will be located',
 				'required': true
 			},
-			{
-				'type': 'group',
-				'label': 'Labels',
-				'entries': [
-					{
-						'type': 'html',
-						'name': 'addLabel',
-						'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
-					}
-				]
-			}
+			// {
+			// 	'type': 'group',
+			// 	'label': 'Labels',
+			// 	'entries': [
+			// 		{
+			// 			'type': 'html',
+			// 			'name': 'addLabel',
+			// 			'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
+			// 		}
+			// 	]
+			// }
 		],
 
 		labelInput : {

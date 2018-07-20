@@ -149,109 +149,112 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}
 
 		let saveActionMethod = defaultSaveActionMethod;
-
-		let vmProviders = angular.copy(currentScope.infraProviders);
-		for (let i = vmProviders.length -1; i >=0; i--){
-			let oneProvider = vmProviders[i];
-			if(oneProvider.technologies.indexOf("vm") === -1){
-				vmProviders.splice(i, 1);
-			}
-		}
-
-		let formEntries = [{
-			type: 'select',
-			label: "Select Infra Provider",
-			name: "infraProvider",
-			value: [],
-			required: true,
-			fieldMsg: "Select the Infra Provider you want to create the VM Layer at.",
-			onAction: (id, value, form) => {
-				let region = {
-					'name': 'region',
-					'label': 'Select a Region',
-					'type': 'select',
-					'value': value.regions,
-					'tooltip': 'Select Deployment Region',
-					'required': true,
-					"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges.",
-					"onAction" : (id, value2, form) => {
-						form.entries.length = 2;
-						if(form.actions.length > 1){
-							form.actions.shift();
-						}
-
-						let groups = {
-							'name': 'group',
-							'label': 'Select a Group',
-							'type': 'select',
-							'value': [],
-							'tooltip': 'Select Resource Group',
-							'required': true
-						};
-
-						value.groups.forEach((oneGroup) =>{
-							if(oneGroup.region === value2){
-								groups.value.push({v: oneGroup.name, l: oneGroup.name})
-							}
-						});
-
-						if(groups.value && groups.value.length > 0){
-							groups.value[0].selected = true;
-						}
-						form.entries.push(groups);
-
-						form.actions.unshift({
-							'type': 'submit',
-							'label': translation.submit[LANG],
-							'btn': 'primary',
-							'action': function (formData) {
-								currentScope.modalInstance.close();
-								let data = {
-									inputs: {
-										region: formData.region, group: formData.group
-									}
-								};
-								populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
-							}
-						});
-
-					}
-				};
-
-				if(region.value && region.value.length > 0){
-					region.value[0].selected = true;
+		
+		listInfraProviders(currentScope, () => {
+			
+			let vmProviders = angular.copy(currentScope.infraProviders);
+			for (let i = vmProviders.length -1; i >=0; i--){
+				let oneProvider = vmProviders[i];
+				if(oneProvider.technologies.indexOf("vm") === -1){
+					vmProviders.splice(i, 1);
 				}
-				form.entries.push(region);
 			}
-		}];
-
-		vmProviders.forEach((oneProvider) => {
-			formEntries[0].value.push({
-				v: oneProvider,
-				l: oneProvider.label
+			
+			let formEntries = [{
+				type: 'select',
+				label: "Select Infra Provider",
+				name: "infraProvider",
+				value: [],
+				required: true,
+				fieldMsg: "Select the Infra Provider you want to create the VM Layer at.",
+				onAction: (id, value, form) => {
+					let region = {
+						'name': 'region',
+						'label': 'Select a Region',
+						'type': 'select',
+						'value': value.regions,
+						'tooltip': 'Select Deployment Region',
+						'required': true,
+						"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges.",
+						"onAction" : (id, value2, form) => {
+							form.entries.length = 2;
+							if(form.actions.length > 1){
+								form.actions.shift();
+							}
+							
+							let groups = {
+								'name': 'group',
+								'label': 'Select a Group',
+								'type': 'select',
+								'value': [],
+								'tooltip': 'Select Resource Group',
+								'required': true
+							};
+							
+							value.groups.forEach((oneGroup) =>{
+								if(oneGroup.region === value2){
+									groups.value.push({v: oneGroup.name, l: oneGroup.name})
+								}
+							});
+							
+							if(groups.value && groups.value.length > 0){
+								groups.value[0].selected = true;
+							}
+							form.entries.push(groups);
+							
+							form.actions.unshift({
+								'type': 'submit',
+								'label': translation.submit[LANG],
+								'btn': 'primary',
+								'action': function (formData) {
+									currentScope.modalInstance.close();
+									let data = {
+										inputs: {
+											region: formData.region, group: formData.group
+										}
+									};
+									populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
+								}
+							});
+							
+						}
+					};
+					
+					if(region.value && region.value.length > 0){
+						region.value[0].selected = true;
+					}
+					form.entries.push(region);
+				}
+			}];
+			
+			vmProviders.forEach((oneProvider) => {
+				formEntries[0].value.push({
+					v: oneProvider,
+					l: oneProvider.label
+				});
 			});
-		});
-
-		let options = {
-			timeout: $timeout,
-			form: {
-				"entries": formEntries
-			},
-			name: 'selectProvider',
-			label: 'Select Infra Cloud Provider',
-			actions: [
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						currentScope.modalInstance.dismiss('cancel');
-						currentScope.form.formData = {};
+			
+			let options = {
+				timeout: $timeout,
+				form: {
+					"entries": formEntries
+				},
+				name: 'selectProvider',
+				label: 'Select Infra Cloud Provider',
+				actions: [
+					{
+						'type': 'reset',
+						'label': translation.cancel[LANG],
+						'btn': 'danger',
+						'action': function () {
+							currentScope.modalInstance.dismiss('cancel');
+							currentScope.form.formData = {};
+						}
 					}
-				}
-			]
-		};
-		buildFormWithModal(currentScope, $modal, options);
+				]
+			};
+			buildFormWithModal(currentScope, $modal, options);
+		});
 	}
 
 	function editVMLayer(currentScope, oneVMLayer){
@@ -303,39 +306,45 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				});
 			}
 		}
-
-		//if add environment made the call, this vm actually exists only in wizard scope
-		if(currentScope.saveActionMethodModify){
-			let oneVMLayerTemplateRecord = oneVMLayer.formData;
-			let saveActionMethod = defaultSaveActionMethod;
-			populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
-		}
-		else{
-			/**
-			 * call api and get how this vm layer was created
-			 */
-			getSendDataFromServer(currentScope, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/cloud/vm/layer/status",
-				"params": {
-					"id": oneVMLayer.template.id,
-					"env": currentScope.envCode,
-					'technology': 'vm',
-					"infraId": oneVMLayer.infraProvider._id,
-					"layerName": oneVMLayer.name
-				}
-			}, function (error, response) {
-				if (error) {
-					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				else {
-					response.infraCodeTemplate = response.template;
-					let oneVMLayerTemplateRecord = response;
-					let saveActionMethod = defaultSaveActionMethod;
-					populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
-				}
-			});
-		}
+		
+		listInfraProviders(currentScope, () => {
+			//if add environment made the call, this vm actually exists only in wizard scope
+			if(currentScope.saveActionMethodModify){
+				let oneVMLayerTemplateRecord = oneVMLayer.formData;
+				let saveActionMethod = defaultSaveActionMethod;
+				populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
+			}
+			else{
+				/**
+				 * call api and get how this vm layer was created
+				 */
+				$timeout(() => {
+					overlayLoading.show();
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "get",
+						"routeName": "/dashboard/cloud/vm/layer/status",
+						"params": {
+							"id": oneVMLayer.template.id,
+							"env": currentScope.envCode,
+							'technology': 'vm',
+							"infraId": oneVMLayer.infraProvider._id,
+							"layerName": oneVMLayer.name
+						}
+					}, function (error, response) {
+						overlayLoading.hide();
+						if (error) {
+							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						}
+						else {
+							response.infraCodeTemplate = response.template;
+							let oneVMLayerTemplateRecord = response;
+							let saveActionMethod = defaultSaveActionMethod;
+							populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
+						}
+					});
+				}, 500);
+			}
+		});
 	}
 
 	function populateVMLayerForm(currentScope, oneProvider, technology, data, submitActionMethod, editMode) {
@@ -731,32 +740,34 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			scanEntries(entries);
 		}
 
-		overlayLoading.show();
-		getInfraExtras((computedValues) => {
-			overlayLoading.hide();
-			if(currentScope.reusableData && currentScope.reusableData.length > 0){
-				currentScope.reusableData.forEach((oneReusableEntry) => {
-					if(computedValues[oneReusableEntry.key]){
-						//only unique values
-						let addIt = true;
-						computedValues[oneReusableEntry.key].forEach((oneComputed) => {
-							if(JSON.stringify(oneReusableEntry.formData) === JSON.stringify(oneComputed)){
-								addIt = false;
+		$timeout(() => {
+			overlayLoading.show();
+			getInfraExtras((computedValues) => {
+				overlayLoading.hide();
+				if(currentScope.reusableData && currentScope.reusableData.length > 0){
+					currentScope.reusableData.forEach((oneReusableEntry) => {
+						if(computedValues[oneReusableEntry.key]){
+							//only unique values
+							let addIt = true;
+							computedValues[oneReusableEntry.key].forEach((oneComputed) => {
+								if(JSON.stringify(oneReusableEntry.formData) === JSON.stringify(oneComputed)){
+									addIt = false;
+								}
+							});
+							
+							if(addIt){
+								computedValues[oneReusableEntry.key].push(oneReusableEntry.formData);
 							}
-						});
-
-						if(addIt){
-							computedValues[oneReusableEntry.key].push(oneReusableEntry.formData);
 						}
-					}
-					else{
-						computedValues[oneReusableEntry.key] = [oneReusableEntry.formData];
-					}
-				});
-			}
-
-			renderForm(computedValues);
-		});
+						else{
+							computedValues[oneReusableEntry.key] = [oneReusableEntry.formData];
+						}
+					});
+				}
+				
+				renderForm(computedValues);
+			});
+		}, 500)
 	}
 
 	function getOnBoard (currentScope, vmLayer, release){

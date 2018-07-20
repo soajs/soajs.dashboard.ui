@@ -24,9 +24,9 @@
 
 <fieldset class="custom-fieldset" ng-if="formData.deployOptions.deployConfig.type && formData.deployOptions.deployConfig.type !== ''">
 	<legend>Deployment Options</legend>
-	
+
 	<div ng-if="formData.deployOptions.deployConfig.type === 'container'">
-		
+
 		<div>
 			<br />
 			<label>Catalog Recipe</label>
@@ -40,14 +40,14 @@
 			<br>
 			<br>
 		</div>
-		
+
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
 			<label class="fieldMsg">Memory limit per instance (in MBytes)</label>
 			<br/>
 		</div>
-		
+
 		<div ng-if="options.envPlatform === 'kubernetes'">
 			<label>CPU Limit Per Instance</label>
 			<input type="text" class="form-control" placeholder="100m or 0.1" ng-model="formData.deployOptions.deployConfig.cpuLimit" ng-required="formData.deployOptions.autoScale"/>
@@ -225,7 +225,7 @@
 	</div>
 
 	<div ng-if="formData.deployOptions.deployConfig.type ==='vm'">
-		
+
 		<div ng-if="mainData.deploymentData.vmLayers">
 			<div>
 				<label>VM Layer</label>
@@ -239,9 +239,9 @@
 					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length}}</strong> instances.</span>
 				</alert>
 			</div>
-			
+
 		</div>
-		
+
 		<div ng-show="(formData.deployOptions.deployConfig.type ==='vm' && formData.deployOptions.deployConfig.vmConfiguration.vmLayer)">
 			<br />
 			<label>Catalog Recipe</label>
@@ -300,10 +300,33 @@
 
 		<fieldset class="custom-fieldset" ng-if="formData.deployOptions.custom && formData.deployOptions.custom.ports">
 			<legend>Published Ports</legend>
+			<alert type="info" class="tip-alert w100 table" ng-if="formData.invalidVmLayerPortsData && formData.invalidVmLayerPortsData.ports && formData.invalidVmLayerPortsData.ports.length > 0">
+				<h3><span class="icon icon-warning"></span>&nbsp;Port Configuration</h3><br>
+				<p>
+					<span ng-if="!environmentWizard">
+					The selected layer <b>{{formData.deployOptions.deployConfig.vmConfiguration.vmLayer}}</b> is not configured to allow traffic on the following ports:
+					</span>
+
+					<span ng-if="environmentWizard">
+					The selected layer <b>{{formData.deployOptions.deployConfig.vmConfiguration.vmLayer}}</b> might not be configured to allow traffic on the following ports:
+					</span>
+					<ul>
+						<li ng-repeat="invalidPort in formData.invalidVmLayerPortsData.ports">{{invalidPort.name}} port -> Source port: {{invalidPort.published}} and Destination port: {{invalidPort.target}}</li>
+					</ul>
+
+					These ports will be automatically configured during deployment.
+				</p>
+			</alert>
 			<div ng-repeat="exposedPorts in formData.deployOptions.custom.ports">
 				<fieldset class="custom-fieldset" ng-if="exposedPorts.isPublished || exposedPorts.published">
 					<legend class="capitalize">{{exposedPorts.name}}</legend>
 					<div>
+						<div class="green" ng-if="!environmentWizard && formData.deployOptions.deployConfig.type ==='vm' && exposedPorts.availableInVmLayer">
+							<span class="icon icon-checkmark"></span> Port is available in VM Layer
+						</div>
+						<div style="color: #31708f;" ng-if="!environmentWizard && formData.deployOptions.deployConfig.type ==='vm' && !exposedPorts.availableInVmLayer">
+							<span class="icon icon-warning"></span> Port will be added to VM Layer
+						</div>
 						<label>Published Port</label>
 						<input type="number" class="form-control" ng-model="exposedPorts.published" ng-disabled="vmExposedPortsDisabled" min="1" max="65535" ng-required="true" ng-change="onExposedPortsUpdate()"/>
 						<label class="fieldMsg">Detected Published Port <b>{{exposedPorts.name}}</b> with internal value

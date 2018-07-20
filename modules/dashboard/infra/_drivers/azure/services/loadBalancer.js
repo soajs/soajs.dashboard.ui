@@ -98,7 +98,19 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					'value': [{'l': 'Static', 'v': 'static'}, {'l': 'Dynamic', 'v': 'dynamic'}],
 					'required': true,
 					'tooltip': 'Select a public IP allocation mehod',
-					'fieldMsg': 'Select a public IP allocation mehod'
+					'fieldMsg': 'Select a public IP allocation mehod',
+					onAction: function(name, value, form) {
+						let ipRulesGroup = form.entries.find((oneEntry) => { return oneEntry.label === 'IP Rules'; });
+						if(ipRulesGroup && ipRulesGroup.entries) {
+							let currentRule = ipRulesGroup.entries.find((oneEntry) => { return oneEntry.name.replace('ipRuleGroup', '') === name.replace('privateIpAllocationMethod', ''); });
+							if(currentRule && currentRule.entries) {
+								let privateIpField = currentRule.entries.find((oneEntry) => { return oneEntry.name === 'privateIpAddress'; });
+								privateIpField.value = '';
+								privateIpField.hidden = (value.v === 'dynamic');
+								privateIpField.required = (value.v === 'dynamic');
+							}
+						}
+					}
 				},
 				{
 					'name': 'privateIpAddress',
@@ -106,6 +118,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					'type': 'text',
 					'value': '',
 					'required': false,
+					'hidden': true,
 					'tooltip': 'Enter a private IP address',
 					'fieldMsg': 'Enter a private IP address',
 					'placeholder': "" // TODO: fix proper placeholder
@@ -116,23 +129,42 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					'fieldMsg': "Turn this slider on to make the IP public",
 					'type': 'buttonSlider',
 					'value': false,
-					'required': true
+					'required': true,
+					onAction: function(name, value, form) {
+						let ipRulesGroup = form.entries.find((oneEntry) => { return oneEntry.label === 'IP Rules'; });
+						if(ipRulesGroup && ipRulesGroup.entries) {
+							let currentRule = ipRulesGroup.entries.find((oneEntry) => { return oneEntry.name.replace('ipRuleGroup', '') === name.replace('isPublic', ''); });
+							if(currentRule && currentRule.entries) {
+								let publicIpField = currentRule.entries.find((oneEntry) => { return oneEntry.name === 'publicIpAddressId'; });
+								let subnetIdField = currentRule.entries.find((oneEntry) => { return oneEntry.name === 'subnetId'; });
+								publicIpField.hidden = !value;
+								subnetIdField.hidden = value;
+
+								publicIpField.value = '';
+								subnetIdField.value = '';
+
+								publicIpField.required = !value;
+								subnetIdField.required = value;
+							}
+						}
+					}
 				},
 				{
 					'name': 'publicIpAddressId',
 					'label': 'Public IP Address',
 					'type': 'text',
-					'value': '',
-					'required': false, // TODO: this should become true if the previous slider was on
-					'tooltip': 'Enter a public IP address',
-					'fieldMsg': 'Enter a public IP address',
+					'value': [], //TODO this should be the list of available ip addresses
+					'required': false,
+					'hidden': true,
+					'tooltip': 'Choose a public IP address',
+					'fieldMsg': 'Choose a public IP address',
 					'placeholder': "" // TODO: fix proper placeholder
 				},
 				{
 					'name': 'subnetId',
-					'label': 'Subnet Address',
+					'label': 'Subnet',
 					'type': 'text',
-					'value': '',
+					'value': [], //TODO this should be the list of available subnets, might also need to list networks to get the subnets
 					'required': false, // TODO: this should become true if the previous slider was on
 					'tooltip': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct
 					'fieldMsg': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct
@@ -230,7 +262,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			form: {
 				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
 			},
-			name: 'addPublicIP',
+			name: 'addLoadBalancer',
 			label: 'Add New Load Balancer',
 			actions: [
 				{
@@ -320,6 +352,8 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		tmp.name += ipRuleCounter;
 		tmp.entries[0].name += ipRuleCounter;
 		tmp.entries[1].name += ipRuleCounter;
+
+		tmp.entries[3].name += ipRuleCounter; //TODO not sure about this
 
 		tmp.entries[4].onAction = function (id, value, form) {
 			let count = parseInt(id.replace('rIpRule', ''));

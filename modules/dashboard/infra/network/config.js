@@ -49,7 +49,7 @@ let infraNetworkConfig = {
 				'label': 'Subnets',
 				'type': 'jsoneditor',
 				'value': [],
-				'fieldMsg': 'Enter an array of subnets for this network. Exmaple: { "name": "mySubnet", "address": "10.0.0.0/24" }',
+				'fieldMsg': 'Enter an array of subnets for this network. Exmaple: [{ "name": "mySubnet1", "address": "10.0.0.0/16" }, { "name": "mySubnet2", "address": "10.0.0.0/24" }]',
 				'required': false
 			}
 		],

@@ -56,11 +56,10 @@
 					</div>
 					
 					<div ng-if="oneLoadBalancer.rules && oneLoadBalancer.rules.length > 0">
-						<fieldset>
-							<legend>Rules</legend>
-							
-							
-							<div ng-repeat="oneRule in oneLoadBalancer.rules">
+						<h3>Rules</h3>
+						<accordion close-others="false">
+							<accordion-group ng-repeat="oneRule in oneLoadBalancer.rules" is-open="oneRule.open">
+								<accordion-heading>{{oneRule.name}}</accordion-heading>
 								
 								<div ng-if="oneRule.config">
 									<fieldset>
@@ -86,16 +85,16 @@
 													<tr class="even" ng-if="oneRule.config.subnet">
 														<td>Virtual Machine</td>
 														<td>
-															<span ng-if="oneRule.config.subnet.envCode">
-																<a href="#/environments-platforms?envCode={{oneRule.config.subnet.envCode}}&tab=vm&layer={{oneRule.config.subnet.name}}">
-																<span class="icon icon-stack"></span>&nbsp;<b>{{oneRule.config.subnet.name}}</b>&nbsp;
-															</a>
-															</span>
+														<span ng-if="oneRule.config.subnet.envCode">
+															<a href="#/environments-platforms?envCode={{oneRule.config.subnet.envCode}}&tab=vm&layer={{oneRule.config.subnet.name}}">
+															<span class="icon icon-stack"></span>&nbsp;<b>{{oneRule.config.subnet.name}}</b>&nbsp;
+														</a>
+														</span>
 															<span ng-if="!oneRule.config.subnet.envCode">
-																<b>
-																	<span class="icon icon-stack"></span>&nbsp;<b>{{oneRule.config.subnet.name}}</b>&nbsp;
-																</b>
-															</span>
+															<b>
+																<span class="icon icon-stack"></span>&nbsp;<b>{{oneRule.config.subnet.name}}</b>&nbsp;
+															</b>
+														</span>
 														</td>
 													</tr>
 													<tr class="even" ng-if="oneRule.config.publicIpAddress">
@@ -112,25 +111,59 @@
 									</fieldset>
 								</div>
 								
-								<div ng-if="oneRule.natRules && oneRule.natRules.length > 0">
+								<div ng-if="oneRule.ports && oneRule.ports.length > 0">
 									<fieldset>
-										<legend>Nat Rules</legend>
+										<legend>Ports</legend>
 										<div class="grid">
 											<table width="100%">
 												<thead>
 													<tr>
-														<th>Name</th>
-														<th>Protocol</th>
-														<th>Source</th>
-														<th>Destination</th>
-														<th>Timeout (minutes)</th>
-														<th>Floating Point</th>
+														<th width="12.5%">Address Pool</th>
+														<th width="12.5%">Load Distribution</th>
+														<th width="12.5%">Name</th>
+														<th width="12.5%">Protocol</th>
+														<th width="12.5%">Source Port</th>
+														<th width="12.5%">Destination Port</th>
+														<th width="12.5%">Timeout (minutes)</th>
+														<th width="12.5%">Floating Point</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr ng-repeat="onePort in oneRule.ports" ng-class-even="'even'" ng-class-odd="'odd'">
+														<td>{{onePort.addressPoolName}}</td>
+														<td>{{onePort.loadDistribution}}</td>
+														<td>{{onePort.name}}</td>
+														<td class="text-uppercase">{{onePort.protocol}}</td>
+														<td>{{onePort.published}}</td>
+														<td>{{onePort.target}}</td>
+														<td>{{onePort.idleTimeoutInMinutes}}</td>
+														<td>{{(onePort.enableFloatingIP) ? "YES" : "NO"}}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</fieldset>
+								</div>
+								
+								<div ng-if="oneRule.natRules && oneRule.natRules.length > 0">
+									<fieldset>
+										<legend>NAT Rules</legend>
+										<div class="grid">
+											<table width="100%">
+												<thead>
+													<tr>
+														<th width="37.5%">Name</th>
+														<th width="12.5%">Protocol</th>
+														<th width="12.5%">Source Port</th>
+														<th width="12.5%">Destination Port</th>
+														<th width="12.5%">Timeout (minutes)</th>
+														<th width="12.5%">Floating Point</th>
 													</tr>
 												</thead>
 												<tbody>
 													<tr ng-repeat="onePort in oneRule.natRules" ng-class-even="'even'" ng-class-odd="'odd'">
 														<td>{{onePort.name}}</td>
-														<td>{{onePort.protocol}}</td>
+														<td class="text-uppercase">{{onePort.protocol}}</td>
 														<td>{{onePort.frontendPort}}</td>
 														<td>{{onePort.backendPort}}</td>
 														<td>{{onePort.idleTimeoutInMinutes}}</td>
@@ -144,23 +177,23 @@
 								
 								<div ng-if="oneRule.natPools && oneRule.natPools.length > 0">
 									<fieldset>
-										<legend>Nat Pools</legend>
+										<legend>NAT Pools</legend>
 										<div class="grid">
 											<table width="100%">
 												<thead>
 													<tr>
-														<th>Name</th>
-														<th>Protocol</th>
-														<th>Source</th>
-														<th>Destination</th>
-														<th>Timeout (minutes)</th>
-														<th>Floating Point</th>
+														<th width="37.5%">Name</th>
+														<th width="12.5%">Protocol</th>
+														<th width="12.5%">Source Port</th>
+														<th width="12.5%">Destination Port</th>
+														<th width="12.5%">Timeout (minutes)</th>
+														<th width="12.5%">Floating Point</th>
 													</tr>
 												</thead>
 												<tbody>
 													<tr ng-repeat="onePort in oneRule.natPools" ng-class-even="'even'" ng-class-odd="'odd'">
 														<td>{{onePort.name}}</td>
-														<td>{{onePort.protocol}}</td>
+														<td class="text-uppercase">{{onePort.protocol}}</td>
 														<td>{{onePort.frontendPortRangeStart}} - {{onePort.frontendPortRangeEnd}}</td>
 														<td>{{onePort.backendPort}}</td>
 														<td>{{onePort.idleTimeoutInMinutes}}</td>
@@ -171,51 +204,8 @@
 										</div>
 									</fieldset>
 								</div>
-								
-								<div ng-if="oneRule.ports && oneRule.ports.length > 0">
-									<fieldset>
-										<legend>Ports</legend>
-										
-										<!--"healthProbePort": 80,-->
-										<!--"healthProbeProtocol": "Http",-->
-										<!--"healthProbeRequestPath": "/",-->
-										<!--"maxFailureAttempts": 20,-->
-										<!--"healthProbeInterval": 10-->
-										
-										<div class="grid">
-											<table width="100%">
-												<thead>
-													<tr>
-														<th>Address Pool</th>
-														<th>Name</th>
-														<th>Protocol</th>
-														<th>Source</th>
-														<th>Destination</th>
-														<th>Timeout (minutes)</th>
-														<th>Floating Point</th>
-														<th>Load Distribution</th>
-														<!--<th>HealthCheck</th>-->
-													</tr>
-												</thead>
-												<tbody>
-													<tr ng-repeat="onePort in oneRule.ports" ng-class-even="'even'" ng-class-odd="'odd'">
-														<td>{{onePort.addressPoolName}}</td>
-														<td>{{onePort.name}}</td>
-														<td>{{onePort.protocol}}</td>
-														<td>{{onePort.published}}</td>
-														<td>{{onePort.target}}</td>
-														<td>{{onePort.idleTimeoutInMinutes}}</td>
-														<td>{{(onePort.enableFloatingIP) ? "YES" : "NO"}}</td>
-														<td>{{onePort.loadDistribution}}</td>
-														<!--<td>{{onePort.healthProbeProtocol}}:{{onePort.healthProbePort}}{{onePort.healthProbeRequestPath}}</td>-->
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</fieldset>
-								</div>
-							</div>
-						</fieldset>
+							</accordion-group>
+						</accordion>
 					</div>
 					
 				</accordion-group>

@@ -88,7 +88,7 @@
 									</a>
 								</li>
 							</ul>
-							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
+							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
 								Release
 							</button>
 						</div>
@@ -215,7 +215,7 @@
 								</li>
 							</ul>
 
-							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || !oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
+							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>

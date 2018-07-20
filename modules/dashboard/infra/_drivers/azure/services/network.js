@@ -125,7 +125,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 							},
 							"data": {
 								"params": {
-									"section": "networkAndSecurityGroup",
+									"section": "network",
 									"region": currentScope.selectedGroup.region,
 									"labels": {},
 									"name": data.name,

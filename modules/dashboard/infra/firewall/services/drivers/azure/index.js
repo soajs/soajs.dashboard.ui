@@ -1,12 +1,138 @@
 "use strict";
-var infraFirewallSrv = soajsApp.components;
-infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', 'azureInfraFirewallSrv', function (ngDataApi, $localStorage, $timeout, $modal, $window, azureInfraFirewallSrv) {
+var azureInfraFirewallSrv = soajsApp.components;
+azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', 'injectFiles', function (ngDataApi, $localStorage, $timeout, $modal, $window, injectFiles) {
 	
-	function getInfraDriverName(currentScope) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		let name = oneInfra.name; // -> azure
-		return name;
-	}
+	let infraFirewallConfig = {
+			form: {
+				firewall: [
+					{
+						'name': 'name',
+						'label': 'Name',
+						'type': 'readonly',
+						'value': "",
+						'placeholder': ' My Firewall',
+						'required': true
+					},
+					{
+						'name': 'region',
+						'label': 'Region',
+						'type': 'readonly',
+						'value': "",
+						'required': true
+					},
+					{
+						'type': 'accordion',
+						'name': 'firewallPorts',
+						'label': 'Ports',
+						'entries': [
+							{
+								'type': 'html',
+								'name': 'addPort',
+								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add New Port'/>"
+							}
+						]
+					}
+				],
+				portInput: {
+					'name': 'portGroup',
+					'type': 'group',
+					'label': 'New Port',
+					'collapsed': true,
+					'icon': 'plus',
+					'entries': [
+						{
+							'name': 'name',
+							'label': 'Port Name',
+							'type': 'text',
+							'value': '',
+							'required': true,
+							'tooltip': 'Enter the name of the Port',
+							'fieldMsg': 'Enter the name of the Port',
+							'placeholder': "My Port"
+						},
+						{
+							'name': 'protocol',
+							'label': 'Protocol',
+							'type': 'select',
+							'value': [
+								{'v': 'TCP', 'l': "TCP", 'selected': true},
+								{'v': 'UDP', 'l': "UCP"},
+								{'v': '*', 'l': "TCP/UCP"}
+							],
+							'required': true,
+							'tooltip': 'Select Port Protocol',
+							'fieldMsg': 'Select Port Protocol'
+						},
+						{
+							'name': 'access',
+							'label': 'Access',
+							'type': 'select',
+							'value': [
+								{'v': 'allow', 'l': "Allow", 'selected': true},
+								{'v': 'deny', 'l': "Deny"}
+							],
+							'required': true
+						},
+						{
+							'name': 'direction',
+							'label': 'Direction',
+							'type': 'select',
+							'value': [
+								{'v': 'inbound', 'l': "Inbound", 'selected': true},
+								{'v': 'outbound', 'l': "Outbound"}
+							],
+							'required': true
+						},
+						{
+							'name': 'target',
+							'label': 'Source Port',
+							'type': 'text',
+							'value': "*",
+							'required': true,
+							'placeholder': "*",
+							'fieldMsg': 'example: 80 OR * for Any'
+						},
+						{
+							'name': 'sourceAddress',
+							'label': 'Source Address',
+							'type': 'text',
+							'value': '*',
+							'required': true,
+							'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
+						},
+						{
+							'name': 'destinationAddress',
+							'label': 'Destination Address',
+							'type': 'text',
+							'value': '*',
+							'required': true,
+							'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
+						},
+						{
+							'name': 'published',
+							'label': 'Destination Port',
+							'type': 'text',
+							'value': "",
+							'required': true,
+							'placeholder': "0",
+							'fieldMsg': 'example: 80 OR * for Any'
+						},
+						{
+							'name': 'priority',
+							'label': 'Priority',
+							'type': 'number',
+							'value': 1000,
+							'required': true,
+							'tooltip': 'Enter the port priority',
+							'fieldMsg': 'Enter the port priority',
+							'placeholder': "100 - 4096",
+							"min": 100,
+							"max": 4096
+						}
+					]
+				}
+			}
+		}
 	
 	function addFirewall(currentScope) {
 		
@@ -255,16 +381,97 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$localStorage', '$ti
 	}
 	
 	function listFirewalls(currentScope, oneGroup) {
-		let infraName = getInfraDriverName(currentScope);
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
 		
-		switch(infraName){
-			case 'azure':
-				azureInfraFirewallSrv.listFirewalls(currentScope, oneGroup);
-				break;
-			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
-				break;
+		//save selected group in scope to be accessed by other functions
+		currentScope.selectedGroup = oneGroup;
+		
+		//clean grid from previous list if any
+		if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
+			currentScope.grid.rows = [];
+			currentScope.grid.filteredRows = [];
+			currentScope.grid.original = [];
 		}
+		
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': oneInfra._id,
+				'group': oneGroup.name,
+				'extras[]': ['securityGroups']
+			}
+		};
+		
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error);
+			}
+			else {
+				currentScope.infraSecurityGroups = [];
+				if (response.securityGroups && response.securityGroups.length > 0) {
+					currentScope.infraSecurityGroups = response.securityGroups;
+				}
+				
+				if(currentScope.infraSecurityGroups.length > 0){
+					currentScope.infraSecurityGroups[0].open = true;
+				}
+				
+				if (currentScope.vmlayers) {
+					let processedNetworks = [];
+					currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
+						currentScope.vmlayers.forEach((oneVmLayer) => {
+							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()) {
+								
+								if (oneVmLayer.securityGroup && oneVmLayer.securityGroup === oneSecurityGroup.name) {
+									
+									if (!oneSecurityGroup.vmLayers) {
+										oneSecurityGroup.vmLayers = [];
+									}
+									
+									if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
+										let found = false;
+										$localStorage.environments.forEach((oneEnv) => {
+											if (oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()) {
+												found = true;
+											}
+										});
+										oneSecurityGroup.vmLayers.push({
+											vmLayer: oneVmLayer.layer,
+											group: oneGroup.name,
+											envCode: oneVmLayer.labels['soajs.env.code'],
+											region: oneVmLayer.labels['soajs.service.vm.location'],
+											link: found
+										});
+									}
+									else {
+										oneSecurityGroup.vmLayers.push({
+											vmLayer: oneVmLayer.layer,
+											group: oneGroup.name,
+											link: false
+										});
+									}
+									
+									if (!oneSecurityGroup.networks) {
+										oneSecurityGroup.networks = [];
+									}
+									
+									if (processedNetworks.indexOf(oneVmLayer.network) === -1) {
+										processedNetworks.push(oneVmLayer.network);
+										oneSecurityGroup.networks.push({
+											group: oneGroup.name,
+											name: oneVmLayer.network
+										});
+									}
+								}
+							}
+						});
+					});
+				}
+			}
+		});
 	}
 	
 	return {
@@ -274,3 +481,5 @@ infraFirewallSrv.service('infraFirewallSrv', ['ngDataApi', '$localStorage', '$ti
 		'listFirewalls': listFirewalls
 	};
 }]);
+
+

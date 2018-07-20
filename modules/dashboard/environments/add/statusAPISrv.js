@@ -13,8 +13,10 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		currentScope.statusMsg = "Deploying your environment might take a few minutes to finish, please be patient, progress logs will display soon.";
 		currentScope.showProgress = true;
 		currentScope.response = {};
-
-		let options = {
+		
+		// TODO: onboard
+		
+		let optionsAdd = {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
 			data: {
@@ -23,7 +25,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 			}
 		};
 
-		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
+		getSendDataFromServer(currentScope, ngDataApi, optionsAdd, (error, response) => {
 			if(error){
 				displayStickError(currentScope, error);
 				currentScope.form.actions = renderButtonDisplay(currentScope, 3);

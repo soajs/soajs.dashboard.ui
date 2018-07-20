@@ -10,8 +10,6 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 	}
 	
 	function go(currentScope) {
-		
-		
 		let controllerRepoExist = false;
 		if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.repo) {
 			let repos = currentScope.wizard.template.content.deployments.repo;

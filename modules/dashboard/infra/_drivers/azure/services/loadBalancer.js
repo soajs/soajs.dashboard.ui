@@ -299,9 +299,21 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					{
 						'name': 'portLoadDistribution',
 						'label': 'Load Distrubution',
-						'type': 'text',
-						'value': 'Default',
-						'placeholder': 'Default',
+						'type': 'uiselect',
+						'value': [
+							{
+								'v': 'Default',
+								'l': 'Default'
+							},
+							{
+								'v': 'SourceIP',
+								'l': 'Source IP'
+							},
+							{
+								'v': 'SourceIPProtocol',
+								'l': 'Source IP Protocol'
+							}
+						],
 						'required': true,
 						'tooltip': '',
 						'fieldMsg': ''

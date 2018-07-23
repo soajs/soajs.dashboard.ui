@@ -213,8 +213,18 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 			if (!release) {
 				let names = [];
+				let images = [];
 				for (let i in myLayer.list) {
 					names.push(myLayer.list[i].name);
+                    for (let j in myLayer.list[i].tasks) {
+                        images.push({
+                            "prefix": myLayer.list[i].tasks[j].ref.os.image.prefix,
+                            "name":   myLayer.list[i].tasks[j].ref.os.image.name,
+                            "version":myLayer.list[i].tasks[j].ref.os.image.version,
+                            "vmName": myLayer.list[i].name,
+                            "onBoard": (myLayer.list[i].labels && myLayer.list[i].labels['soajs.onBoard']) ? true : false,
+                        });
+                    }
 				}
 				obj = {
 					"params": {
@@ -226,7 +236,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						'names': names,
 						"group": myLayer.list[0].labels['soajs.service.vm.group'],
 						"networkName": myLayer.list[0].network,
-						"layerName": myLayer.list[0].layer
+						"layerName": myLayer.list[0].layer,
+						"image" : images
 					}
 				};
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;

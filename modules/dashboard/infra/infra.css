@@ -69,27 +69,30 @@ table tr[class^="form-group tr-labelGroup"] {
     position:relative;
 }
 
+#addFirewall .tr-region-wrapper td,
 #editFirewall .tr-region-wrapper td{
     padding-bottom:30px;
 }
 
+#addFirewall table tr [class^="form-group tr-portGroup"] tr,
 #editFirewall table tr [class^="form-group tr-portGroup"] tr{
     float: left;
     width: 24%;
     height: 70px;
 }
 
+#addFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-name"],
 #editFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-name"]{
     float: left;
     width: 98%;
 }
-
+#addFirewall table tr [class^="form-group tr-portGroup"],
 #editFirewall table tr [class^="form-group tr-portGroup"] {
     position: relative;
     display: table;
     width: 100%;
 }
-
+#addFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-rLabel"],
 #editFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-rLabel"]{
     float: none;
     height: 24px;
@@ -98,7 +101,7 @@ table tr[class^="form-group tr-labelGroup"] {
     right: 1%;
     width:2%;
 }
-
+#addFirewall table tr [class^="form-group tr-portGroup"] tr td,
 #editFirewall table tr [class^="form-group tr-portGroup"] tr td{
     width:97% !important;
     display: table;

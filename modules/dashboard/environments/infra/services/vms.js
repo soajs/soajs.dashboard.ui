@@ -34,16 +34,18 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		// 	nextStep();
 		// }
 
-		function nextStep(){
-			//call common function
-			getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
-				currentScope.vmLayers = vmLayers;
-				if(cb && typeof cb === 'function'){
-					return cb();
-				}
-			});
-		}
-	}
+        function nextStep() {
+            //call common function
+            getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
+                checkOnboard(vmLayers, () => {
+                    currentScope.vmLayers = vmLayers;
+                    if (cb && typeof cb === 'function') {
+                        return cb();
+                    }
+                });
+            });
+        }
+    }
 
 	function inspectVMLayer(currentScope, oneVMLayer, cb){
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
@@ -102,51 +104,51 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		});
 	}
 
-	function addVMLayer (currentScope){
+    function addVMLayer(currentScope) {
 
-		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
-			if(currentScope.saveActionMethodAdd){
-				currentScope.saveActionMethodAdd(modalScope, oneProvider, formData, modalInstance);
-			}
-			else{
-				//collect the inputs from formData, formulate API call and trigger it
-				//formData should include
-				/*
-					1- template chosen
-					2- region to use
-					3- template inputs
-				 */
-				getSendDataFromServer(currentScope, ngDataApi, {
-					"method": "post",
-					"routeName": "/dashboard/cloud/vm",
-					"params": {
-						"env": currentScope.envCode,
-						'technology': 'vm',
-						"infraId": oneProvider._id
-					},
-					"data": {
-						"infraCodeTemplate" : formData.infraCodeTemplate,
-						"region" : formData.region,
-						"name" : formData.name,
-						"specs": formData
-					}
-				}, function (error, response) {
-					if (error) {
-						modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
-					else {
-						currentScope.displayAlert('success', "Virtual Machine Layer created, the process will take few minutes before it shows up in the list.");
-						delete currentScope.reusableData;
-						if(modalInstance){
-							modalInstance.close();
-						}
-						$timeout(() => {
-							listVMLayers(currentScope);
-						}, 1000);
-					}
-				});
-			}
-		}
+        function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
+            if (currentScope.saveActionMethodAdd) {
+                currentScope.saveActionMethodAdd(modalScope, oneProvider, formData, modalInstance);
+            }
+            else {
+                //collect the inputs from formData, formulate API call and trigger it
+                //formData should include
+                /*
+                 1- template chosen
+                 2- region to use
+                 3- template inputs
+                 */
+                getSendDataFromServer(currentScope, ngDataApi, {
+                    "method": "post",
+                    "routeName": "/dashboard/cloud/vm",
+                    "params": {
+                        "env": currentScope.envCode,
+                        'technology': 'vm',
+                        "infraId": oneProvider._id
+                    },
+                    "data": {
+                        "infraCodeTemplate": formData.infraCodeTemplate,
+                        "region": formData.region,
+                        "name": formData.name,
+                        "specs": formData
+                    }
+                }, function (error, response) {
+                    if (error) {
+                        modalScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+                    }
+                    else {
+                        currentScope.displayAlert('success', "Virtual Machine Layer created, the process will take few minutes before it shows up in the list.");
+                        delete currentScope.reusableData;
+                        if (modalInstance) {
+                            modalInstance.close();
+                        }
+                        $timeout(() => {
+                            listVMLayers(currentScope);
+                        }, 1000);
+                    }
+                });
+            }
+        }
 
 		let saveActionMethod = defaultSaveActionMethod;
 		
@@ -257,8 +259,32 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		});
 	}
 
-	function editVMLayer(currentScope, oneVMLayer){
-		// oneVMLayerTemplateRecord --> retrieved from db
+    function checkOnboard(vmLayers, cb) {
+        let vm;
+        let found = false;
+        for (let i = 0; i < Object.keys(vmLayers).length; i++) {
+            vm = vmLayers[Object.keys(vmLayers)[i]];
+            if (!vm.template || vm.template === undefined) {
+                for (let j = 0; j < vm.list.length; j++) {
+                    if (vm.list[j].labels && vm.list[j].labels['soajs.onBoard']) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    for (let z = 0; z < vm.list.length; z++) {
+                        if ((vm.list[z].labels && (!vm.list[z].labels['soajs.onBoard'] || vm.list[z].labels['soajs.onBoard'] === undefined)) || !vm.list[z].labels) {
+                            vmLayers[Object.keys(vmLayers)[i]].sync = true
+                        }
+                    }
+                }
+            }
+        }
+        return cb();
+    }
+
+    function editVMLayer(currentScope, oneVMLayer) {
+        // oneVMLayerTemplateRecord --> retrieved from db
 
 		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
 			if(currentScope.saveActionMethodModify){
@@ -306,7 +332,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				});
 			}
 		}
-		
+
 		listInfraProviders(currentScope, () => {
 			//if add environment made the call, this vm actually exists only in wizard scope
 			if(currentScope.saveActionMethodModify){
@@ -466,7 +492,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 		}
 
-		function remapFormDataBeforeSubmission(modalScope, formData, cb) {
+        function remapFormDataBeforeSubmission(modalScope, formData, cb) {
 
 			function mapEntryToFormData(oneEntry){
 				if(oneEntry.entries && oneEntry.multi && Object.hasOwnProperty.call(oneEntry, 'limit')){
@@ -512,7 +538,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				}
 			}
 
-			function recursiveMapping(oneEntry){
+            function recursiveMapping(oneEntry) {
 
 				mapEntryToFormData(oneEntry);
 				if(oneEntry.entries){
@@ -564,7 +590,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			});
 		}
 
-		function mapComputedInputs(entries, computedValues, form){
+        function mapComputedInputs(entries, computedValues, form) {
 
 			function mapOneEntry(oneEntry){
 				if(oneEntry.type === 'select' && oneEntry.value && oneEntry.value.key && oneEntry.value.fields){
@@ -634,7 +660,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						arraycount = data.inputs[original.name].length;
 					}
 
-					original.template = angular.copy(original.entries);
+                    original.template = angular.copy(original.entries);
 
 					let finalEntries = [];
 					for(let i =0; i < arraycount; i++){
@@ -770,13 +796,13 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}, 500)
 	}
 
-	function getOnBoard (currentScope, vmLayer, release){
-		let names = [];
+    function getOnBoard(currentScope, vmLayer, release) {
+        let names = [];
         for (let i in vmLayer.list) {
             names.push(vmLayer.list[i].name)
         }
         $modal.open({
-            templateUrl: !release ? "onboardVM.tmpl": 'releaseVM.tmpl',
+            templateUrl: (!release && !vmLayer.sync)  ? "onboardVM.tmpl" : (release && !vmLayer.sync) ? 'releaseVM.tmpl' : "sync.tmpl",
             size: 'lg',
             backdrop: true,
             keyboard: true,
@@ -795,15 +821,18 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                         "data": {
                             'names': names,
                             "group": vmLayer.list[0].labels['soajs.service.vm.group'],
-							"networkName" : vmLayer.list[0].network,
-							"layerName": vmLayer.list[0].layer
+                            "networkName": vmLayer.list[0].network,
+                            "layerName": vmLayer.list[0].layer
                         }
-                    }, function (error, vmId) {
+                    }, function (error) {
                         overlayLoading.hide();
                         if (error) {
                             currentScope.displayAlert('danger', error.message);
                         }
                         else {
+                            if (vmLayer.sync) {
+                                delete vmLayer.sync;
+                            }
                             listVMLayers(currentScope);
                             currentScope.displayAlert('success', "Virtual Machine updated");
                         }

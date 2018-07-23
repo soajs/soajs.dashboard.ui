@@ -1311,7 +1311,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
                         if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
                             for (let j in currentScope.onboardNames) {
-                                if (currentScope.onboardNames[j] === context.mainData.deploymentData.vmLayers[i].name) {
+                                if (currentScope.onboardNames[j] === (context.mainData.deploymentData.vmLayers[i].name + "__" + context.mainData.deploymentData.vmLayers[i].list[0].network)) {
                                     compatibleVM = true;
                                 }
                             }

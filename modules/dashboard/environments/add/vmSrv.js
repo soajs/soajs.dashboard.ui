@@ -188,7 +188,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			let myLayer = angular.copy(vmLayer);
 			if (release) {
 				if (currentScope.wizard.onboardNames && currentScope.wizard.onboardNames.length > 0) {
-					index = currentScope.wizard.onboardNames.indexOf(vmLayer.name);
+					index = currentScope.wizard.onboardNames.indexOf(vmLayer.name + "__" + vmLayer.list[0].network);
 					if (index !== -1) {
 						currentScope.wizard.onboardNames.splice(index, 1)
 					}
@@ -244,9 +244,8 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
                 vmLayer.list[0].labels['soajs.onBoard'] = "true";
 
 				currentScope.wizard.vmOnBoard.push(obj);
-				
-				if (currentScope.wizard.onboardNames.indexOf(vmLayer.name) === -1) {
-					currentScope.wizard.onboardNames.push(vmLayer.name);
+				if (currentScope.wizard.onboardNames.indexOf(vmLayer.name + "__"+ vmLayer.list[0].network) === -1) {
+					currentScope.wizard.onboardNames.push(vmLayer.name + "__" + vmLayer.list[0].network);
 				}
 			}
 			appendNextButton(currentScope, formButtonOptions);
@@ -384,9 +383,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		function onBoard(currentScope, vmLayers, vmOnBoards) {
 			for (let i in vmLayers) {
 				for (let j in vmOnBoards) {
-					if (vmLayers[i].name === vmOnBoards[j]) {
+					if ((vmLayers[i].name + "__" + vmLayers[i].list[0].network) === vmOnBoards[j]) {
 						if (!vmLayers[i].list[0].labels['soajs.env.code']) {
-							vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code
+							vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
+							vmLayers[i].list[0].labels['soajs.onBoard'] = "true"
 						}
 					}
 				}

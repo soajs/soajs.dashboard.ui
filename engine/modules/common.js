@@ -348,7 +348,6 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 				if(providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0){
 
 					providerVMs[oneProvider.name].forEach((oneVM) => {
-						
 						//aggregate and populate groups
 						//add infra to group details
 						if(!allVMs[oneProvider.name + "_" + oneVM.layer]){
@@ -356,48 +355,64 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 							delete oneVM.template;
 							if(envCode){
 								if(oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode){
-									allVMs[oneProvider.name + "_" + oneVM.layer] = {
-										name: oneVM.layer,
-										infraProvider: oneProvider,
-										list: [oneVM],
-										template: vmTemplate
-									};
-								} else {
+									if(allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]){
+                                        allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
+									}
+									else{
+                                        allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
+                                            name: oneVM.layer,
+                                            infraProvider: oneProvider,
+                                            list: [oneVM],
+                                            template: vmTemplate
+                                        };
+									}
+
+								}
+								else {
                                     if (vmTemplate === undefined || !vmTemplate) {
                                     	if (oneVM.labels && !oneVM.labels['soajs.env.code']) {
-                                            allVMs[oneProvider.name + "_" + oneVM.layer] = {
-                                                name: oneVM.layer,
-                                                infraProvider: oneProvider,
-                                                list: [oneVM]
-                                            }
+                                    		if(allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]){
+                                                allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM)
+											}
+											else{
+                                                allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
+                                                    name: oneVM.layer,
+                                                    infraProvider: oneProvider,
+                                                    list: [oneVM]
+                                                }
+											}
 										}
                                     }
 								}
 							}
 							else{
-								allVMs[oneProvider.name + "_" + oneVM.layer] = {
-									name: oneVM.layer,
-									infraProvider: oneProvider,
-									list: [oneVM],
-									template: vmTemplate
-								};
+								if(allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]){
+                                    allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
+								}
+								else{
+                                    allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
+                                        name: oneVM.layer,
+                                        infraProvider: oneProvider,
+                                        list: [oneVM],
+                                        template: vmTemplate
+                                    };
+								}
 							}
 						}
 						else{
 							if(envCode){
 								if(oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode){
 									delete oneVM.template;
-									allVMs[oneProvider.name + "_" + oneVM.layer].list.push(oneVM);
+									allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
 								}
 							}
 							else{
 								delete oneVM.template;
-								allVMs[oneProvider.name + "_" + oneVM.layer].list.push(oneVM);
+								allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
 							}
 						}
 					});
 				}
-
 				return cb();
 			}
 		});

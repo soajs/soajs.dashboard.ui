@@ -88,8 +88,11 @@
 									</a>
 								</li>
 							</ul>
-							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.onBoard'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
+							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.onBoard'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
 								Release
+							</button>
+							<button  ng-if="!listingClouds && !environmentWizard && oneVMLayer.sync" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
+								On-Board
 							</button>
 						</div>
 					</div>
@@ -215,7 +218,10 @@
 								</li>
 							</ul>
 
-							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded'" ng-if="!listingClouds" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
+							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
+								On-Board
+							</button>
+                            <button ng-hide="(oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded') " ng-if="!listingClouds && oneVMLayer.sync" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>
@@ -394,6 +400,28 @@
 			</p>
 			<p style="color:black;">
 				Are you sure you want to proceed ?
+			</p>
+		</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="proceed()">Proceed</button>
+		<button class="btn btn-danger" ng-click="cancel()">{{translation.cancel[LANG]}}</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="sync.tmpl">
+	<div class="modal-body">
+		<alert type="warning">
+			<h2>Warning!</h2>
+			<hr>
+			<p style="color:black;">
+				You are about to onboard a new virtual machine to this layer.
+			</p>
+			<p style="color:black;">
+				Once on boarded, you can deploy source code or resources in it but only for this environment.
+			</p>
+			<p style="color:black;">
+				Do you want to proceed ?
 			</p>
 		</alert>
 	</div>

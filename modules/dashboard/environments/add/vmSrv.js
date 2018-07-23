@@ -185,11 +185,19 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 			let obj;
 			let index;
+			let myLayer = angular.copy(vmLayer);
 			if (release) {
 				if (currentScope.wizard.onboardNames && currentScope.wizard.onboardNames.length > 0) {
 					index = currentScope.wizard.onboardNames.indexOf(vmLayer.name);
 					if (index !== -1) {
 						currentScope.wizard.onboardNames.splice(index, 1)
+					}
+					for (let x = currentScope.wizard.vmOnBoard.length - 1; x >= 0; x--) {
+						if (currentScope.wizard.vmOnBoard[x].params.infraId === myLayer.infraProvider._id &&
+							currentScope.wizard.vmOnBoard[x].data.layerName === myLayer.list[0].layer
+						) {
+							currentScope.wizard.vmOnBoard.splice(x, 1);
+						}
 					}
 				}
 				delete vmLayer.list[0].labels['soajs.env.code'];
@@ -197,8 +205,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
                     delete vmLayer.list[0].labels['soajs.onBoard'];
 				}
 			}
-
-			let myLayer = angular.copy(vmLayer);
+			
 			if (myLayer.template) {
 				myLayer.template = {
 					_id: myLayer.template._id
@@ -226,11 +233,12 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
                 vmLayer.list[0].labels['soajs.onBoard'] = "true";
 
 				currentScope.wizard.vmOnBoard.push(obj);
-
+				
 				if (currentScope.wizard.onboardNames.indexOf(vmLayer.name) === -1) {
 					currentScope.wizard.onboardNames.push(vmLayer.name);
 				}
 			}
+			appendNextButton(currentScope, formButtonOptions);
 		};
 		
 		//hook the listeners
@@ -239,7 +247,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				appendVMsTotheList();
 			});
 		};
-
+		
 		currentScope.deleteVMLayer = function (oneVMLayer) {
 			if (oneVMLayer.forceEditDelete) {
 				for (let layerName in currentScope.vmLayers) {
@@ -247,7 +255,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						delete currentScope.vmLayers[layerName];
 					}
 				}
-
+				
 				for (let i = currentScope.wizard.vms.length - 1; i >= 0; i--) {
 					let oneVM = currentScope.wizard.vms[i];
 					if (oneVM.params.infraId === oneVMLayer.infraProvider._id) {
@@ -296,7 +304,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 		
 		function appendNextButton(currentScope, options) {
-			
 			//if the next button exists, remove it
 			if (options && options.actions) {
 				for (let i = options.actions.length - 1; i >= 0; i--) {
@@ -307,12 +314,20 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 			
 			let addNextButton = false;
+			//template supports vm but not restricted to only vm
 			if (!currentScope.restrictions.vm) {
 				addNextButton = true;
 			}
-			else if (currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && Object.keys(currentScope.vmLayers).length > 0) {
-				addNextButton = true;
+			else if (currentScope.restrictions.vm) {
+				//template is restricted to only vm and i have vm layers
+				if (!currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && ((currentScope.wizard.vms && currentScope.wizard.vms.length) || currentScope.wizard.vmOnBoard)) {
+					addNextButton = true;
+				}
+				else if ((currentScope.restrictions.docker || currentScope.restrictions.kubernetes) && ((currentScope.wizard.vms && currentScope.wizard.vms.length) || currentScope.wizard.vmOnBoard)) {
+					addNextButton = true;
+				}
 			}
+			//template is blank
 			else if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
 				addNextButton = true;
 			}
@@ -332,13 +347,11 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 								noContainerSelected = true;
 							}
 						}
-						
 						// TODO
 						if ((!currentScope.wizard.vms || currentScope.wizard.vms.length === 0)
 							&& (!currentScope.wizard.vmOnBoard || currentScope.wizard.vmOnBoard.length === 0)) {
 							noVMLayer = true;
 						}
-						
 						if (noContainerSelected && noVMLayer) {
 							$window.alert("You need to attach a container technology or create at least one virtual machine layer to proceed.");
 						}
@@ -353,6 +366,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				});
 			}
 		}
+		
 		//on back
 		function onBoard(currentScope, vmLayers, vmOnBoards) {
 			for (let i in vmLayers) {

@@ -258,7 +258,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				appendVMsTotheList();
 			});
 		};
-		
+
 		currentScope.deleteVMLayer = function (oneVMLayer) {
 			if (oneVMLayer.forceEditDelete) {
 				for (let layerName in currentScope.vmLayers) {
@@ -266,7 +266,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						delete currentScope.vmLayers[layerName];
 					}
 				}
-				
+
 				for (let i = currentScope.wizard.vms.length - 1; i >= 0; i--) {
 					let oneVM = currentScope.wizard.vms[i];
 					if (oneVM.params.infraId === oneVMLayer.infraProvider._id) {
@@ -346,7 +346,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				addNextButton = true;
 			}
 			currentScope.optionalVMLayer = addNextButton;
-			
+
 			if (addNextButton && options && options.actions && options.actions.length < 3) {
 				options.actions.splice(1, 0, {
 					'type': 'submit',
@@ -361,11 +361,13 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 								noContainerSelected = true;
 							}
 						}
+						
 						// TODO
 						if ((!currentScope.wizard.vms || currentScope.wizard.vms.length === 0)
 							&& (!currentScope.wizard.vmOnBoard || currentScope.wizard.vmOnBoard.length === 0)) {
 							noVMLayer = true;
 						}
+						
 						if (noContainerSelected && noVMLayer) {
 							$window.alert("You need to attach a container technology or create at least one virtual machine layer to proceed.");
 						}
@@ -467,7 +469,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						]
 					};
 					buildForm(currentScope, $modal, options, function () {
-						
 						appendNextButton(currentScope, options);
 						
 						options.actions.push({

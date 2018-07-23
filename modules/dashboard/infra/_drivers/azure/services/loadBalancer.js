@@ -164,9 +164,6 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 									publicIpField.hidden = !value;
 									subnetIdField.hidden = value;
 									
-									publicIpField.value = '';
-									subnetIdField.value = '';
-									
 									publicIpField.required = !value;
 									subnetIdField.required = value;
 								}
@@ -188,7 +185,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'subnetId',
 						'label': 'Subnet',
 						'type': 'select',
-						'value': [], //TODO this should be the list of available subnets, might also need to list networks to get the subnets
+						'value': [], //this should be the list of available subnets, might also need to list networks to get the subnets
 						'required': false, // TODO: this should become true if the previous slider was on
 						'tooltip': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct
 						'fieldMsg': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct
@@ -480,48 +477,51 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		},
 	};
 	
-	function loadAndReturnSubnets(currentScope){
-		let subnets = [];
+	function loadAndReturnSubnets(currentScope, cb){
+		let subnets = [], processed = [];
 		currentScope.vmlayers.forEach((oneVMLayer) => {
-			subnets.push({v: oneVMLayer.network, l: oneVMLayer.network});
+			
+			if(oneVMLayer.labels && oneVMLayer.labels['soajs.service.vm.group'].toLowerCase() === currentScope.selectedGroup.name.toLowerCase()){
+				if(processed.indexOf(oneVMLayer.layer) === -1){
+					processed.push(oneVMLayer.layer);
+					subnets.push({v: oneVMLayer.layer, l: oneVMLayer.layer});
+				}
+			}
 		});
-		return subnets;
+		
+		return cb(subnets);
 	}
 	
-	function loadAndReturnPublicIPs(currentScope){
+	function loadAndReturnPublicIPs(currentScope, cb){
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': currentScope.currentSelectedInfra._id,
+				'group': currentScope.selectedGroup.name,
+				'extras[]': ['publicIps']
+			}
+		};
 
-		// let postOpts = {
-		// 	"method": "post",
-		// 	"routeName": "/dashboard/infra/extras",
-		// 	"params": {
-		// 		"infraId": currentScope.currentSelectedInfra._id,
-		// 		"technology": "vm"
-		// 	},
-		// 	"data": {
-		// 		"params": {
-		// 			"section": "publicIp",
-		// 			"region": currentScope.selectedGroup.region,
-		// 			"labels": {},
-		// 			"name": data.name,
-		// 			"group": currentScope.selectedGroup.name,
-		// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
-		// 			"idleTimeout": data.idleTimeout,
-		// 			"ipAddressVersion": data.ipAddressVersion.v,
-		// 			"type": data.type.v
-		// 		}
-		// 	}
-		// };
-
-		// overlayLoading.show();
-		// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error, response) {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		currentScope.form.displayAlert('danger', error.message);
-		// 	}
-		// 	else {
-		// 		console.log(response);
-		// 	}
-		// });
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, listOptions, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.form.displayAlert('danger', error.message);
+			}
+			else {
+				let infraPublicIps = [], processed = [];
+				if (response.publicIps && response.publicIps.length > 0) {
+					response.publicIps.forEach((onePublicIP) => {
+						if(processed.indexOf(onePublicIP.name) === -1){
+							processed.push(onePublicIP.name);
+							infraPublicIps.push({'v': onePublicIP.name, 'l': onePublicIP.name});
+						}
+					});
+				}
+				return cb(infraPublicIps);
+			}
+		});
 	}
 	
 	function addNewPort(currentScope, ipRuleCounter){
@@ -623,7 +623,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natPoolCounter++;
 	}
 	
-	function addNewIpRule(currentScope) {
+	function addNewIpRule(currentScope, subnets, publicIps) {
 		let ipRuleCounter = Object.keys(currentScope.ipRuleCounter).length;
 		let tmp = angular.copy(infraLoadBalancerConfig.form.ipRuleInput);
 		tmp.name += ipRuleCounter;
@@ -631,8 +631,15 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			oneipRuleEntry.name += ipRuleCounter;
 		});
 		
-		//load subnets
-		let subnets = loadAndReturnSubnets(currentScope);
+		tmp.entries[5].value = angular.copy(subnets);
+		if(tmp.entries[5].value.length > 0){
+			tmp.entries[5].value[0].selected = true;
+		}
+		
+		tmp.entries[4].value = angular.copy(publicIps);
+		if(tmp.entries[4].value.length > 0){
+			tmp.entries[4].value[0].selected = true;
+		}
 		
 		//ports
 		tmp.entries[6].entries[0].onAction = function (id, value, form) {
@@ -743,89 +750,96 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		currentScope.addressPoolCounter = 0;
 		currentScope.ipRuleCounter = {};
 		
-		let options = {
-			timeout: $timeout,
-			form: {
-				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
-			},
-			name: 'addLoadBalancer',
-			label: 'Add New Load Balancer',
-			actions: [
-				{
-					'type': 'submit',
-					'label': "Create Load Balancer",
-					'btn': 'primary',
-					'action': function (formData) {
-						let data = angular.copy(formData);
-						console.log(data);
-						
-						// let labels = {};
-						// for (let i = 0; i < currentScope.labelCounter; i ++) {
-						// 	labels[data['labelName'+i]] = data['labelValue'+i];
-						// }
-						
-						// let postOpts = {
-						// 	"method": "post",
-						// 	"routeName": "/dashboard/infra/extras",
-						// 	"params": {
-						// 		"infraId": currentScope.currentSelectedInfra._id,
-						// 		"technology": "vm"
-						// 	},
-						// 	"data": {
-						// 		"params": {
-						// 			"section": "publicIp",
-						// 			"region": currentScope.selectedGroup.region,
-						// 			"labels": {},
-						// 			"name": data.name,
-						// 			"group": currentScope.selectedGroup.name,
-						// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
-						// 			"idleTimeout": data.idleTimeout,
-						// 			"ipAddressVersion": data.ipAddressVersion.v,
-						// 			"type": data.type.v
-						// 		}
-						// 	}
-						// };
-						
-						// overlayLoading.show();
-						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-						// 	overlayLoading.hide();
-						// 	if (error) {
-						// 		currentScope.form.displayAlert('danger', error.message);
-						// 	}
-						// 	else {
-						// 		currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-						// 		currentScope.modalInstance.close();
-						// 		$timeout(() => {
-						// 			listIPs(currentScope, currentScope.selectedGroup);
-						// 		}, 2000);
-						// 	}
-						// });
-					}
-				},
-				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				}
-			]
-		};
-		
-		options.form.entries[2].entries[0].onAction = function (id, value, form) {
-			addNewAddressPool(currentScope);
-		};
-		
-		options.form.entries[3].entries[0].onAction = function (id, value, form) {
-			addNewIpRule(currentScope);
-		};
-		
-		//set value of region to selectedRegion
-		options.form.entries[1].value = currentScope.selectedGroup.region;
-		
-		buildFormWithModal(currentScope, $modal, options);
+		//load subnets
+		loadAndReturnSubnets(currentScope, (subnets) => {
+			//load public ips
+			loadAndReturnPublicIPs(currentScope, (publicIps) => {
+				
+				let options = {
+					timeout: $timeout,
+					form: {
+						"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
+					},
+					name: 'addLoadBalancer',
+					label: 'Add New Load Balancer',
+					actions: [
+						{
+							'type': 'submit',
+							'label': "Create Load Balancer",
+							'btn': 'primary',
+							'action': function (formData) {
+								let data = angular.copy(formData);
+								console.log(data);
+								
+								// let labels = {};
+								// for (let i = 0; i < currentScope.labelCounter; i ++) {
+								// 	labels[data['labelName'+i]] = data['labelValue'+i];
+								// }
+								
+								// let postOpts = {
+								// 	"method": "post",
+								// 	"routeName": "/dashboard/infra/extras",
+								// 	"params": {
+								// 		"infraId": currentScope.currentSelectedInfra._id,
+								// 		"technology": "vm"
+								// 	},
+								// 	"data": {
+								// 		"params": {
+								// 			"section": "publicIp",
+								// 			"region": currentScope.selectedGroup.region,
+								// 			"labels": {},
+								// 			"name": data.name,
+								// 			"group": currentScope.selectedGroup.name,
+								// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
+								// 			"idleTimeout": data.idleTimeout,
+								// 			"ipAddressVersion": data.ipAddressVersion.v,
+								// 			"type": data.type.v
+								// 		}
+								// 	}
+								// };
+								
+								// overlayLoading.show();
+								// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+								// 	overlayLoading.hide();
+								// 	if (error) {
+								// 		currentScope.form.displayAlert('danger', error.message);
+								// 	}
+								// 	else {
+								// 		currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								// 		currentScope.modalInstance.close();
+								// 		$timeout(() => {
+								// 			listIPs(currentScope, currentScope.selectedGroup);
+								// 		}, 2000);
+								// 	}
+								// });
+							}
+						},
+						{
+							'type': 'reset',
+							'label': 'Cancel',
+							'btn': 'danger',
+							'action': function () {
+								delete currentScope.form.formData;
+								currentScope.modalInstance.close();
+							}
+						}
+					]
+				};
+				
+				options.form.entries[2].entries[0].onAction = function (id, value, form) {
+					addNewAddressPool(currentScope);
+				};
+				
+				options.form.entries[3].entries[0].onAction = function (id, value, form) {
+					addNewIpRule(currentScope, subnets, publicIps);
+				};
+				
+				//set value of region to selectedRegion
+				options.form.entries[1].value = currentScope.selectedGroup.region;
+				
+				buildFormWithModal(currentScope, $modal, options);
+			});
+		});
 	}
 	
 	function editLoadBalancer(currentScope, originalLoadBalancer) {
@@ -834,95 +848,101 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		console.log(oneLoadBalancer);
 		
 		currentScope.addressPoolCounter = oneLoadBalancer.addressPools.length - 1;
-		
 		currentScope.ipRuleCounter = {};
 		
 		//todo: map the values from one LoadBalancer to mappedValues
 		
-		let options = {
-			timeout: $timeout,
-			form: {
-				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
-			},
-			name: 'modifyLoadBalancer',
-			label: 'Modify Load Balancer',
-			actions: [
-				{
-					'type': 'submit',
-					'label': "Create Load Balancer",
-					'btn': 'primary',
-					'action': function (formData) {
-						let data = angular.copy(formData);
-						console.log(data);
-						
-						// let labels = {};
-						// for (let i = 0; i < currentScope.labelCounter; i ++) {
-						// 	labels[data['labelName'+i]] = data['labelValue'+i];
-						// }
-						
-						// let postOpts = {
-						// 	"method": "post",
-						// 	"routeName": "/dashboard/infra/extras",
-						// 	"params": {
-						// 		"infraId": currentScope.currentSelectedInfra._id,
-						// 		"technology": "vm"
-						// 	},
-						// 	"data": {
-						// 		"params": {
-						// 			"section": "publicIp",
-						// 			"region": currentScope.selectedGroup.region,
-						// 			"labels": {},
-						// 			"name": data.name,
-						// 			"group": currentScope.selectedGroup.name,
-						// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
-						// 			"idleTimeout": data.idleTimeout,
-						// 			"ipAddressVersion": data.ipAddressVersion.v,
-						// 			"type": data.type.v
-						// 		}
-						// 	}
-						// };
-						
-						// overlayLoading.show();
-						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-						// 	overlayLoading.hide();
-						// 	if (error) {
-						// 		currentScope.form.displayAlert('danger', error.message);
-						// 	}
-						// 	else {
-						// 		currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-						// 		currentScope.modalInstance.close();
-						// 		$timeout(() => {
-						// 			listIPs(currentScope, currentScope.selectedGroup);
-						// 		}, 2000);
-						// 	}
-						// });
-					}
-				},
-				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
-					}
-				}
-			]
-		};
-		
-		options.form.entries[2].entries[0].onAction = function (id, value, form) {
-			addNewAddressPool(currentScope);
-		};
-		
-		options.form.entries[3].entries[0].onAction = function (id, value, form) {
-			addNewIpRule(currentScope);
-		};
-		
-		//set value of region to selectedRegion
-		options.form.entries[1].value = currentScope.selectedGroup.region;
-		
-		buildFormWithModal(currentScope, $modal, options, () => {
-			//todo: set the form data: currentScope.form.formData = mappedValues;
+		//load subnets
+		loadAndReturnSubnets(currentScope, (subnets) => {
+			//load public ips
+			loadAndReturnPublicIPs(currentScope, (publicIps) => {
+				
+				let options = {
+					timeout: $timeout,
+					form: {
+						"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
+					},
+					name: 'modifyLoadBalancer',
+					label: 'Modify Load Balancer',
+					actions: [
+						{
+							'type': 'submit',
+							'label': "Create Load Balancer",
+							'btn': 'primary',
+							'action': function (formData) {
+								let data = angular.copy(formData);
+								console.log(data);
+								
+								// let labels = {};
+								// for (let i = 0; i < currentScope.labelCounter; i ++) {
+								// 	labels[data['labelName'+i]] = data['labelValue'+i];
+								// }
+								
+								// let postOpts = {
+								// 	"method": "post",
+								// 	"routeName": "/dashboard/infra/extras",
+								// 	"params": {
+								// 		"infraId": currentScope.currentSelectedInfra._id,
+								// 		"technology": "vm"
+								// 	},
+								// 	"data": {
+								// 		"params": {
+								// 			"section": "publicIp",
+								// 			"region": currentScope.selectedGroup.region,
+								// 			"labels": {},
+								// 			"name": data.name,
+								// 			"group": currentScope.selectedGroup.name,
+								// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
+								// 			"idleTimeout": data.idleTimeout,
+								// 			"ipAddressVersion": data.ipAddressVersion.v,
+								// 			"type": data.type.v
+								// 		}
+								// 	}
+								// };
+								
+								// overlayLoading.show();
+								// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+								// 	overlayLoading.hide();
+								// 	if (error) {
+								// 		currentScope.form.displayAlert('danger', error.message);
+								// 	}
+								// 	else {
+								// 		currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								// 		currentScope.modalInstance.close();
+								// 		$timeout(() => {
+								// 			listIPs(currentScope, currentScope.selectedGroup);
+								// 		}, 2000);
+								// 	}
+								// });
+							}
+						},
+						{
+							'type': 'reset',
+							'label': 'Cancel',
+							'btn': 'danger',
+							'action': function () {
+								delete currentScope.form.formData;
+								currentScope.modalInstance.close();
+							}
+						}
+					]
+				};
+				
+				options.form.entries[2].entries[0].onAction = function (id, value, form) {
+					addNewAddressPool(currentScope);
+				};
+				
+				options.form.entries[3].entries[0].onAction = function (id, value, form) {
+					addNewIpRule(currentScope, subnets, publicIps);
+				};
+				
+				//set value of region to selectedRegion
+				options.form.entries[1].value = currentScope.selectedGroup.region;
+				
+				buildFormWithModal(currentScope, $modal, options, () => {
+					//todo: set the form data: currentScope.form.formData = mappedValues;
+				});
+			});
 		});
 	}
 	

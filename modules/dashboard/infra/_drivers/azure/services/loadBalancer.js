@@ -360,6 +360,59 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': ''
 					},
 					{
+						'name': 'portHealthProbePort',
+						'label': 'Health Probe Port',
+						'type': 'number',
+						'value': '',
+						'required': false,
+						'fieldMsg': ''
+					},
+					{
+						'name': 'portHealthProbeProtocol',
+						'label': 'Health Probe Port Protocol',
+						'type': 'uiselect',
+						'value': [
+							{
+								'v': 'http',
+								'l': 'HTTP'
+							},
+							{
+								'v': 'https',
+								'l': 'HTTPS'
+							},
+							{
+								'v': 'tcp',
+								'l': 'TCP'
+							}
+						],
+						'required': true,
+						'fieldMsg': ''
+					},
+					{
+						'name': 'portHealthProbeRequestPath',
+						'label': 'Health Probe Request Path',
+						'type': 'text',
+						'value': '',
+						'required': true,
+						'fieldMsg': ''
+					},
+					{
+						'name': 'portMaxFailureAttempts',
+						'label': 'Max Failure Attempts',
+						'type': 'number',
+						'value': '',
+						'required': false,
+						'fieldMsg': ''
+					},
+					{
+						'name': 'portHealthProbeInterval',
+						'label': 'Health Probe Interval',
+						'type': 'number',
+						'value': '',
+						'required': false,
+						'fieldMsg': ''
+					},
+					{
 						'type': 'html',
 						'name': 'rIPRulePort',
 						'value': '<span class="icon icon-cross"></span>'
@@ -1018,11 +1071,20 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 											delete oneRule.config.publicIpAddress;
 										}
 
+										if (oneRule.ports.length === 0) {
+											delete oneRule.ports;
+										}
+										if (oneRule.natRules.length === 0) {
+											delete oneRule.natRules;
+										}
+										if (oneRule.natPools.length === 0) {
+											delete oneRule.natPools;
+										}
+
 										postData.rules.push(oneRule);
 									}
 								});
 
-								(postData);
 								postData.section = 'loadBalancer';
 								postData.group = currentScope.selectedGroup.name;
 
@@ -1333,7 +1395,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					onePort.healthProbePort = data[oneEntry];
 					break;
 				case `portHealthProbeProtocol${ipRuleCount}-${ipRulePortCount}`:
-					onePort.healthProbeProtocol = data[oneEntry];
+					onePort.healthProbeProtocol = data[oneEntry].v;
 					break;
 				case `portHealthProbeRequestPath${ipRuleCount}-${ipRulePortCount}`:
 					onePort.healthProbeRequestPath = data[oneEntry];
@@ -1345,7 +1407,6 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					onePort.healthProbeInterval = data[oneEntry];
 					break;
 				default:
-					console.log('could not find entry ' + oneEntry);
 					break;
 			}
 		});

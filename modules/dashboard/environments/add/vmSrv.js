@@ -326,6 +326,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				else if ((currentScope.restrictions.docker || currentScope.restrictions.kubernetes) && ((currentScope.wizard.vms && currentScope.wizard.vms.length) || currentScope.wizard.vmOnBoard)) {
 					addNextButton = true;
 				}
+                else if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
+                    addNextButton = true;
+                }
 			}
 			//template is blank
 			else if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {

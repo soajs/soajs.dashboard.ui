@@ -109,8 +109,11 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 								});
 								if (currentRule && currentRule.entries) {
 									let privateIpField = currentRule.entries.find((oneEntry) => {
-										return oneEntry.name === 'privateIpAddress';
+										if(oneEntry.name.indexOf('privateIpAddress') !== -1){
+											return oneEntry;
+										}
 									});
+									
 									privateIpField.value = '';
 									privateIpField.hidden = (value.v === 'dynamic');
 									privateIpField.required = (value.v === 'dynamic');
@@ -148,10 +151,15 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 								});
 								if (currentRule && currentRule.entries) {
 									let publicIpField = currentRule.entries.find((oneEntry) => {
-										return oneEntry.name === 'publicIpAddressId';
+										if(oneEntry.name.indexOf('publicIpAddressId') !== -1){
+											return oneEntry;
+										}
+										
 									});
 									let subnetIdField = currentRule.entries.find((oneEntry) => {
-										return oneEntry.name === 'subnetId';
+										if(oneEntry.name.indexOf('subnetId') !== -1){
+											return oneEntry;
+										}
 									});
 									publicIpField.hidden = !value;
 									subnetIdField.hidden = value;
@@ -481,7 +489,39 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 	}
 	
 	function loadAndReturnPublicIPs(currentScope){
-	
+
+		// let postOpts = {
+		// 	"method": "post",
+		// 	"routeName": "/dashboard/infra/extras",
+		// 	"params": {
+		// 		"infraId": currentScope.currentSelectedInfra._id,
+		// 		"technology": "vm"
+		// 	},
+		// 	"data": {
+		// 		"params": {
+		// 			"section": "publicIp",
+		// 			"region": currentScope.selectedGroup.region,
+		// 			"labels": {},
+		// 			"name": data.name,
+		// 			"group": currentScope.selectedGroup.name,
+		// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
+		// 			"idleTimeout": data.idleTimeout,
+		// 			"ipAddressVersion": data.ipAddressVersion.v,
+		// 			"type": data.type.v
+		// 		}
+		// 	}
+		// };
+
+		// overlayLoading.show();
+		// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error, response) {
+		// 	overlayLoading.hide();
+		// 	if (error) {
+		// 		currentScope.form.displayAlert('danger', error.message);
+		// 	}
+		// 	else {
+		// 		console.log(response);
+		// 	}
+		// });
 	}
 	
 	function addNewPort(currentScope, ipRuleCounter){

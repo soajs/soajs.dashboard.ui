@@ -66,7 +66,28 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'required': true,
 						'tooltip': 'Enter a name for the address pool',
 						'fieldMsg': 'Enter a name for the address pool',
-						'placeholder': "My Address Pool"
+						'placeholder': "My Address Pool",
+						'onAction': function(name, value, form) {
+
+							let tempArray = [];
+							for (let i = 0; i < form.addressPoolCounter; i++) {
+								if (form.formData['addressPoolName'+i]) {
+									tempArray.push({
+										'v': form.formData['addressPoolName'+i],
+										'l': form.formData['addressPoolName'+i]
+									});
+								}
+							}
+							form.availableAddressPools = angular.copy(tempArray);
+
+							form.entries[3].entries.forEach((oneIPRuleGroup) => {
+								if (['ipRuleGroup'].indexOf(oneIPRuleGroup.name)) {
+									if (oneIPRuleGroup.entries && oneIPRuleGroup.entries[6]) {
+										oneIPRuleGroup.entries[6].value = form.availableAddressPools;
+									}
+								}
+							});
+						}
 					},
 					{
 						'type': 'html',
@@ -197,6 +218,15 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'required': false, // TODO: this should become true if the previous slider was on
 						'tooltip': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct
 						'fieldMsg': 'Enter a subnet for the public IP address' //// TODO: confirm if this is correct
+					},
+					{
+						'name': 'addressPool',
+						'label': 'Address Pool',
+						'type': 'uiselect',
+						'value': [],
+						'required': true,
+						'tooltip': '',
+						'fieldMsg': ''
 					},
 					{
 						'type': 'group',
@@ -689,23 +719,26 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			tmp.entries[4].value[0].selected = true;
 		}
 
+		//availableAddressPools
+		tmp.entries[6].value = currentScope.form.availableAddressPools;
+
 		//ports
-		tmp.entries[6].entries[0].onAction = function (id, value, form) {
+		tmp.entries[7].entries[0].onAction = function (id, value, form) {
 			addNewPort(currentScope, ipRuleCounter);
 		};
 
 		//nat rules
-		tmp.entries[7].entries[0].onAction = function (id, value, form) {
+		tmp.entries[8].entries[0].onAction = function (id, value, form) {
 			addNewNATRule(currentScope, ipRuleCounter);
 		};
 
 		//nat pool
-		tmp.entries[8].entries[0].onAction = function (id, value, form) {
+		tmp.entries[9].entries[0].onAction = function (id, value, form) {
 			addNewNATPool(currentScope, ipRuleCounter);
 		};
 
 		//delete rule
-		tmp.entries[9].onAction = function (id, value, form) {
+		tmp.entries[10].onAction = function (id, value, form) {
 			let count = parseInt(id.replace('rIpRule', ''));
 			for (let i = form.entries[3].entries.length - 1; i >= 0; i--) {
 				if (form.entries[3].entries[i].name === 'ipRuleGroup' + count) {
@@ -802,11 +835,43 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 							delete form.formData[fieldname];
 						}
 					}
+
+					//clear all selected addressPools from all ipRules
+					for (let k = 0; k < form.addressPoolCounter; k++) {
+						for (let fieldData in form.formData) {
+							if (['addressPool' + k].indexOf(fieldData) !== -1) {
+								delete form.formData[fieldData];
+							}
+						}
+					}
+
 					//remove from formEntries
 					form.entries[2].entries.splice(i, 1);
 					break;
 				}
 			}
+
+			//update form.availableAddressPools
+			let tempArray = [];
+			for (let i = 0; i < form.addressPoolCounter; i++) {
+				if (form.formData['addressPoolName'+i]) {
+					tempArray.push({
+						'v': form.formData['addressPoolName'+i],
+						'l': form.formData['addressPoolName'+i]
+					});
+				}
+			}
+			form.availableAddressPools = angular.copy(tempArray);
+
+			//refresh array of address pool to choose from in all ipRules
+			form.entries[3].entries.forEach((oneIPRuleGroup) => {
+				if (['ipRuleGroup'].indexOf(oneIPRuleGroup.name)) {
+					if (oneIPRuleGroup.entries && oneIPRuleGroup.entries[6]) {
+						oneIPRuleGroup.entries[6].value = form.availableAddressPools;
+					}
+				}
+			});
+
 		};
 
 		if (currentScope.form && currentScope.form.entries) {
@@ -823,6 +888,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 	function addLoadBalancer(currentScope) {
 		currentScope.addressPoolCounter = 0;
 		currentScope.ipRuleCounter = {};
+		currentScope.availableAddressPools = [];
 
 		//load subnets
 		loadAndReturnSubnets(currentScope, (subnets) => {
@@ -902,6 +968,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 				options.form.entries[2].entries[0].onAction = function (id, value, form) {
 					addNewAddressPool(currentScope);
+					form.addressPoolCounter = currentScope.addressPoolCounter;
 				};
 
 				options.form.entries[3].entries[0].onAction = function (id, value, form) {

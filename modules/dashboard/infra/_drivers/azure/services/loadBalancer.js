@@ -139,7 +139,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'hidden': true,
 						'tooltip': 'Enter a private IP address',
 						'fieldMsg': 'Enter a private IP address',
-						'placeholder': "" // TODO: fix proper placeholder
+						'placeholder': ""
 					},
 					{
 						'name': 'isPublic',
@@ -194,9 +194,9 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'label': 'Subnet',
 						'type': 'select',
 						'value': [],
-						'required': false, // TODO: this should become true if the previous slider was on
-						'tooltip': 'Enter a subnet for the public IP address', //// TODO: confirm if this is correct
-						'fieldMsg': 'Enter a subnet for the public IP address' //// TODO: confirm if this is correct
+						'required': false,
+						'tooltip': 'Choose a subnet for the IP address',
+						'fieldMsg': 'Choose an existing subnet for the IP address'
 					},
 					{
 						'type': 'group',
@@ -284,14 +284,14 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': 'Select the destination port value'
 					},
 					{
-						'name': 'portIdleTimeoutInMinutes',
-						'label': 'Idle Timeout in Minutes',
+						'name': 'portIdleTimeout',
+						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
 						'value': 1,
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': ''
+						'fieldMsg': 'Idle timeout should be 240 and 1800'
 					},
 					{
 						'name': 'portEnableFloatingIP',
@@ -309,15 +309,15 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'type': 'uiselect',
 						'value': [
 							{
-								'v': 'Default',
+								'v': 'default',
 								'l': 'Default'
 							},
 							{
-								'v': 'SourceIP',
+								'v': 'sourceIP',
 								'l': 'Source IP'
 							},
 							{
-								'v': 'SourceIPProtocol',
+								'v': 'sourceIPProtocol',
 								'l': 'Source IP Protocol'
 							}
 						],
@@ -378,14 +378,14 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': 'Select the backend port value'
 					},
 					{
-						'name': 'natRuleIdleTimeoutInMinutes',
-						'label': 'Idle Timeout in Minutes',
+						'name': 'natRuleIdleTimeout',
+						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
 						'value': 1,
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': ''
+						'fieldMsg': 'Idle timeout should be 240 and 1800'
 					},
 					{
 						'name': 'natRuleEnableFloatingIP',
@@ -450,14 +450,14 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': 'Select the backend port value'
 					},
 					{
-						'name': 'natPoolIdleTimeoutInMinutes',
-						'label': 'Idle Timeout in Minutes',
+						'name': 'natPoolIdleTimeout',
+						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
 						'value': 1,
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': ''
+						'fieldMsg': 'Idle timeout should be 240 and 1800'
 					},
 					{
 						'name': 'natPoolEnableFloatingIP',
@@ -546,15 +546,16 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 	function addNewPort(currentScope, ipRuleCounter, defaultValues){
 		let ipRulePortsCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].portCounter;
 		let tmp = angular.copy(infraLoadBalancerConfig.form.portsInput);
-		tmp.name += ipRulePortsCounter;
+		let counterLabel = ipRuleCounter + '-' + ipRulePortsCounter;
+
+		tmp.name += counterLabel;
 		tmp.entries.forEach((oneEntry) => {
-			oneEntry.name += ipRulePortsCounter;
+			oneEntry.name += counterLabel;
 		});
 
 		//rIPRulePort
 		tmp.entries[tmp.entries.length -1].onAction = function (id, value, form) {
-			let count = parseInt(id.replace('rIPRulePort', ''));
-
+			let count = id.replace('rIPRulePort', '');
 			for (let i = form.entries[3].entries[0].entries[6].entries.length - 1; i >= 0; i--) {
 				if (form.entries[3].entries[0].entries[6].entries[i].name === 'ipRulePortsGroup' + count) {
 
@@ -571,13 +572,13 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		};
 
 		if(defaultValues) {
-			currentScope.form.formData['portName' + ipRuleCounter] = defaultValues.name;
-			currentScope.form.formData['portProtocol' + ipRuleCounter] = defaultValues.protocol;
-			currentScope.form.formData['portPublished' + ipRuleCounter] = defaultValues.published;
-			currentScope.form.formData['portTarget' + ipRuleCounter] = defaultValues.target;
-			currentScope.form.formData['portIdleTimeoutInMinutes' + ipRuleCounter] = defaultValues.idleTimeoutInMinutes;
-			currentScope.form.formData['portEnableFloatingIP' + ipRuleCounter] = defaultValues.enableFloatingIP;
-			currentScope.form.formData['portLoadDistribution' + ipRuleCounter] = defaultValues.loadDistribution;
+			currentScope.form.formData['portName' + counterLabel] = defaultValues.name;
+			currentScope.form.formData['portProtocol' + counterLabel] = defaultValues.protocol;
+			currentScope.form.formData['portPublished' + counterLabel] = defaultValues.published;
+			currentScope.form.formData['portTarget' + counterLabel] = defaultValues.target;
+			currentScope.form.formData['portIdleTimeout' + counterLabel] = defaultValues.idleTimeoutInMinutes;
+			currentScope.form.formData['portEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
+			currentScope.form.formData['portLoadDistribution' + counterLabel] = defaultValues.loadDistribution;
 		}
 
 		if (currentScope.form && currentScope.form.entries) {
@@ -587,16 +588,18 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 	}
 
 	function addNewNATRule(currentScope, ipRuleCounter, defaultValues){
-		let ipRulePortsCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natRuleCounter;
+		let ipRuleNatRulesCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natRuleCounter;
 		let tmp = angular.copy(infraLoadBalancerConfig.form.NATRule);
-		tmp.name += ipRulePortsCounter;
+		let counterLabel = ipRuleCounter + '-' + ipRuleNatRulesCounter;
+
+		tmp.name += counterLabel;
 		tmp.entries.forEach((oneEntry) => {
-			oneEntry.name += ipRulePortsCounter;
+			oneEntry.name += counterLabel;
 		});
 
 		//rIPRulePort
 		tmp.entries[tmp.entries.length -1].onAction = function (id, value, form) {
-			let count = parseInt(id.replace('rIPRuleNatRule', ''));
+			let count = id.replace('rIPRuleNatRule', '');
 
 			for (let i = form.entries[3].entries[0].entries[7].entries.length - 1; i >= 0; i--) {
 				if (form.entries[3].entries[0].entries[7].entries[i].name === 'ipRuleNATRuleGroup' + count) {
@@ -614,12 +617,12 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		};
 
 		if(defaultValues) {
-			currentScope.form.formData['natRuleName' + ipRuleCounter] = defaultValues.name;
-			currentScope.form.formData['natRuleProtocol' + ipRuleCounter] = defaultValues.protocol;
-			currentScope.form.formData['natRuleFrontendPort' + ipRuleCounter] = defaultValues.frontendPort;
-			currentScope.form.formData['natRuleBackendPort' + ipRuleCounter] = defaultValues.backendPort;
-			currentScope.form.formData['natRuleIdleTimeoutInMinutes' + ipRuleCounter] = defaultValues.idleTimeout;
-			currentScope.form.formData['natRuleEnableFloatingIP' + ipRuleCounter] = defaultValues.enableFloatingIP;
+			currentScope.form.formData['natRuleName' + counterLabel] = defaultValues.name;
+			currentScope.form.formData['natRuleProtocol' + counterLabel] = defaultValues.protocol;
+			currentScope.form.formData['natRuleFrontendPort' + counterLabel] = defaultValues.frontendPort;
+			currentScope.form.formData['natRuleBackendPort' + counterLabel] = defaultValues.backendPort;
+			currentScope.form.formData['natRuleIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
+			currentScope.form.formData['natRuleEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
 		}
 
 		if (currentScope.form && currentScope.form.entries) {
@@ -629,16 +632,18 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 	}
 
 	function addNewNATPool(currentScope, ipRuleCounter, defaultValues){
-		let ipRulePortsCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natPoolCounter;
+		let ipRuleNatPoolsCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natPoolCounter;
 		let tmp = angular.copy(infraLoadBalancerConfig.form.NATPool);
-		tmp.name += ipRulePortsCounter;
+		let counterLabel = ipRuleCounter + '-' + ipRuleNatPoolsCounter;
+
+		tmp.name += counterLabel;
 		tmp.entries.forEach((oneEntry) => {
-			oneEntry.name += ipRulePortsCounter;
+			oneEntry.name += counterLabel;
 		});
 
 		//rIPRulePort
 		tmp.entries[tmp.entries.length -1].onAction = function (id, value, form) {
-			let count = parseInt(id.replace('rIPRuleNatPool', ''));
+			let count = id.replace('rIPRuleNatPool', '');
 
 			for (let i = form.entries[3].entries[0].entries[8].entries.length - 1; i >= 0; i--) {
 				if (form.entries[3].entries[0].entries[8].entries[i].name === 'ipRuleNATPoolGroup' + count) {
@@ -656,12 +661,12 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		};
 
 		if(defaultValues) {
-			currentScope.form.formData['natPoolName' + ipRuleCounter] = defaultValues.name;
-			currentScope.form.formData['natPoolProtocol' + ipRuleCounter] = defaultValues.protocol;
-			currentScope.form.formData['natPoolFrontendPort' + ipRuleCounter] = defaultValues.frontendPortRangeStart + "-" + defaultValues.frontendPortRangeEnd;
-			currentScope.form.formData['natPoolBackendPort' + ipRuleCounter] = defaultValues.backendPort;
-			currentScope.form.formData['natPoolIdleTimeoutInMinutes' + ipRuleCounter] = defaultValues.idleTimeout;
-			currentScope.form.formData['natPoolEnableFloatingIP' + ipRuleCounter] = defaultValues.enableFloatingIP;
+			currentScope.form.formData['natPoolName' + counterLabel] = defaultValues.name;
+			currentScope.form.formData['natPoolProtocol' + counterLabel] = defaultValues.protocol;
+			currentScope.form.formData['natPoolFrontendPort' + counterLabel] = defaultValues.frontendPortRangeStart + "-" + defaultValues.frontendPortRangeEnd;
+			currentScope.form.formData['natPoolBackendPort' + counterLabel] = defaultValues.backendPort;
+			currentScope.form.formData['natPoolIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
+			currentScope.form.formData['natPoolEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
 		}
 
 		if (currentScope.form && currentScope.form.entries) {
@@ -843,49 +848,103 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 							'btn': 'primary',
 							'action': function (formData) {
 								let data = angular.copy(formData);
-								console.log(data);
 
-								// let labels = {};
-								// for (let i = 0; i < currentScope.labelCounter; i ++) {
-								// 	labels[data['labelName'+i]] = data['labelValue'+i];
-								// }
+								let postData = {
+									name: data.name,
+									region: data.region,
+									addressPools: [],
+									rules: []
+								};
 
-								// let postOpts = {
-								// 	"method": "post",
-								// 	"routeName": "/dashboard/infra/extras",
-								// 	"params": {
-								// 		"infraId": currentScope.currentSelectedInfra._id,
-								// 		"technology": "vm"
-								// 	},
-								// 	"data": {
-								// 		"params": {
-								// 			"section": "publicIp",
-								// 			"region": currentScope.selectedGroup.region,
-								// 			"labels": {},
-								// 			"name": data.name,
-								// 			"group": currentScope.selectedGroup.name,
-								// 			"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
-								// 			"idleTimeout": data.idleTimeout,
-								// 			"ipAddressVersion": data.ipAddressVersion.v,
-								// 			"type": data.type.v
-								// 		}
-								// 	}
-								// };
+								// populate postData
+								Object.keys(data).forEach((oneEntry) => {
+									if(oneEntry.match(/addressPoolName[0-9]+/g)) {
+										postData.addressPools.push({ name: data[oneEntry] });
+									}
 
-								// overlayLoading.show();
-								// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-								// 	overlayLoading.hide();
-								// 	if (error) {
-								// 		currentScope.form.displayAlert('danger', error.message);
-								// 	}
-								// 	else {
-								// 		currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-								// 		currentScope.modalInstance.close();
-								// 		$timeout(() => {
-								// 			listIPs(currentScope, currentScope.selectedGroup);
-								// 		}, 2000);
-								// 	}
-								// });
+									else if(oneEntry.match(/ipRuleName[0-9]+/g)) {
+										let ipRuleCount = oneEntry.replace('ipRuleName', '');
+
+										let oneRule = {
+											name: data[oneEntry],
+											config: {},
+											ports: [],
+											natRules: [],
+											natPools: []
+										};
+
+										let rulePortRegExp = new RegExp(`portName${ipRuleCount}-[0-9]+`, 'g');
+										let ruleNatRuleRegExp = new RegExp(`natRuleName${ipRuleCount}-[0-9]+`, 'g');
+										let ruleNatPoolRegExp = new RegExp(`natPoolName${ipRuleCount}-[0-9]+`, 'g');
+
+										// populate config and ports/rules of one rule
+										Object.keys(data).forEach((oneEntry) => {
+											switch(oneEntry) {
+												case `privateIpAllocationMethod${ipRuleCount}`:
+													oneRule.config.privateIpAllocationMethod = data[oneEntry].v;
+													break;
+												case `isPublic${ipRuleCount}`:
+													oneRule.config.isPublic = data[oneEntry];
+													break;
+												case `privateIpAddress${ipRuleCount}`:
+													oneRule.config.privateIpAddress = data[oneEntry];
+													break;
+												case `publicIpAddressId${ipRuleCount}`:
+													oneRule.config.publicIpAddress = { id: data[oneEntry] };
+													break;
+												case `subnetId${ipRuleCount}`:
+													oneRule.config.subnet = { id: data[oneEntry] };
+													break;
+												default:
+													break;
+											}
+
+											if(oneEntry.match(rulePortRegExp)) {
+												oneRule.ports.push(buildLoadBalancerPort(data, oneEntry, ipRuleCount));
+											}
+											else if(oneEntry.match(ruleNatRuleRegExp)) {
+												oneRule.natRules.push(buildLoadBalancerNatRule(data, oneEntry, ipRuleCount));
+											}
+											else if(oneEntry.match(ruleNatPoolRegExp)) {
+												oneRule.natPools.push(buildLoadBalancerNatPool(data, oneEntry, ipRuleCount));
+											}
+										});
+
+
+										postData.rules.push(oneRule);
+									}
+								});
+
+								console.log(postData);
+								postData.section = 'loadBalancer';
+								postData.group = currentScope.selectedGroup.name;
+
+								let postOpts = {
+									"method": "post",
+									"routeName": "/dashboard/infra/extras",
+									"params": {
+										"infraId": currentScope.currentSelectedInfra._id,
+										"technology": "vm"
+									},
+									"data": {
+										"params": postData
+									}
+								};
+
+								overlayLoading.show();
+								getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+									overlayLoading.hide();
+									if (error) {
+										currentScope.form.displayAlert('danger', error.message);
+									}
+									else {
+										currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+										currentScope.modalInstance.close();
+										$timeout(() => {
+											listLoadBalancers(currentScope, currentScope.selectedGroup);
+										}, 2000);
+									}
+								});
 							}
 						},
 						{
@@ -1129,6 +1188,132 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			}
 		});
 
+	}
+
+	function buildLoadBalancerPort(data, oneEntry, ipRuleCount) {
+		let ipRulePortCount = oneEntry.replace(`portName${ipRuleCount}-`, '');
+		let onePort = {
+			name: data[oneEntry]
+		};
+
+		// collect one port config
+		Object.keys(data).forEach((oneEntry) => {
+			switch(oneEntry) {
+				case `portProtocol${ipRuleCount}-${ipRulePortCount}`:
+					onePort.protocol = data[oneEntry];
+					break;
+				case `portTarget${ipRuleCount}-${ipRulePortCount}`:
+					onePort.target = data[oneEntry];
+					break;
+				case `portPublished${ipRuleCount}-${ipRulePortCount}`:
+					onePort.published = data[oneEntry];
+					break;
+				case `portIdleTimeout${ipRuleCount}-${ipRulePortCount}`:
+					onePort.idleTimeout = data[oneEntry];
+					break;
+				case `portLoadDistribution${ipRuleCount}-${ipRulePortCount}`:
+					onePort.loadDistribution = data[oneEntry].v;
+					break;
+				case `portEnableFloatingIP${ipRuleCount}-${ipRulePortCount}`:
+					onePort.enableFloatingIP = data[oneEntry];
+					break;
+				case `portAddressPoolName${ipRuleCount}-${ipRulePortCount}`:
+					onePort.addressPoolName = data[oneEntry];
+					break;
+				case `portHealthProbePort${ipRuleCount}-${ipRulePortCount}`:
+					onePort.healthProbePort = data[oneEntry];
+					break;
+				case `portHealthProbeProtocol${ipRuleCount}-${ipRulePortCount}`:
+					onePort.healthProbeProtocol = data[oneEntry];
+					break;
+				case `portHealthProbeRequestPath${ipRuleCount}-${ipRulePortCount}`:
+					onePort.healthProbeRequestPath = data[oneEntry];
+					break;
+				case `portMaxFailureAttempts${ipRuleCount}-${ipRulePortCount}`:
+					onePort.maxFailureAttempts = data[oneEntry];
+					break;
+				case `portHealthProbeInterval${ipRuleCount}-${ipRulePortCount}`:
+					onePort.healthProbeInterval = data[oneEntry];
+					break;
+				default:
+					break;
+			}
+		});
+
+		return onePort;
+	}
+
+	function buildLoadBalancerNatRule(data, oneEntry, ipRuleCount) {
+		let ipRuleNatRuleCount = oneEntry.replace(`natRuleName${ipRuleCount}-`, '');
+		let oneNatRule = {
+			name: data[oneEntry]
+		};
+
+		// collect one nat rule config
+		Object.keys(data).forEach((oneEntry) => {
+			switch(oneEntry) {
+				case `natRuleBackendPort${ipRuleCount}-${ipRuleNatRuleCount}`:
+					oneNatRule.backendPort = data[oneEntry];
+					break;
+				case `natRuleFrontendPort${ipRuleCount}-${ipRuleNatRuleCount}`:
+					oneNatRule.frontendPort = data[oneEntry];
+					break;
+				case `natRuleProtocol${ipRuleCount}-${ipRuleNatRuleCount}`:
+					oneNatRule.protocol = data[oneEntry];
+					break;
+				case `natRuleIdleTimeout${ipRuleCount}-${ipRuleNatRuleCount}`:
+					oneNatRule.idleTimeout = data[oneEntry];
+					break;
+				case `natRuleEnableFloatingIP${ipRuleCount}-${ipRuleNatRuleCount}`:
+					oneNatRule.enableFloatingIP = data[oneEntry];
+					break;
+				default:
+					break;
+			}
+		});
+
+		return oneNatRule;
+	}
+
+	function buildLoadBalancerNatPool(data, oneEntry, ipRuleCount) {
+		let ipRuleNatPoolCount = oneEntry.replace(`natPoolName${ipRuleCount}-`, '');
+		let oneNatPool = {
+			name: data[oneEntry]
+		};
+
+		// collect one nat pool config
+		Object.keys(data).forEach((oneEntry) => {
+			switch(oneEntry) {
+				case `natPoolBackendPort${ipRuleCount}-${ipRuleNatPoolCount}`:
+					oneNatPool.backendPort = data[oneEntry];
+					break;
+				case `natPoolProtocol${ipRuleCount}-${ipRuleNatPoolCount}`:
+					oneNatPool.protocol = data[oneEntry];
+					break;
+				case `natPoolEnableFloatingIP${ipRuleCount}-${ipRuleNatPoolCount}`:
+					oneNatPool.enableFloatingIP = data[oneEntry];
+					break;
+				case `natPoolFrontendPort${ipRuleCount}-${ipRuleNatPoolCount}`:
+					let range = data[oneEntry].split('-').map(oneRange => parseInt(oneRange));
+					if(range[0] < range[1]) {
+						oneNatPool.frontendPortRangeStart = range[0];
+						oneNatPool.frontendPortRangeEnd = range[1];
+					}
+					else {
+						oneNatPool.frontendPortRangeStart = range[1];
+						oneNatPool.frontendPortRangeEnd = range[0];
+					}
+
+					break;
+				case `natPoolIdleTimeout${ipRuleCount}-${ipRuleNatPoolCount}`:
+					oneNatPool.idleTimeout = data[oneEntry];
+					break;
+				default:
+					break;
+			}
+		});
+
+		return oneNatPool;
 	}
 
 	return {

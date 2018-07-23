@@ -314,25 +314,24 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			}
 			
 			let addNextButton = false;
+			//template is blank
+			if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
+				addNextButton = true;
+			}
 			//template supports vm but not restricted to only vm
 			if (!currentScope.restrictions.vm) {
 				addNextButton = true;
 			}
 			else if (currentScope.restrictions.vm) {
-				//template is restricted to only vm and i have vm layers
-				if (!currentScope.restrictions.docker && !currentScope.restrictions.kubernetes && ((currentScope.wizard.vms && currentScope.wizard.vms.length) || currentScope.wizard.vmOnBoard)) {
-					addNextButton = true;
+				if((currentScope.wizard.vms && currentScope.wizard.vms.length) || (currentScope.wizard.vmOnBoard && currentScope.wizard.vmOnBoard.length)){
+					//template is restricted to only vm and i have vm layers
+					if (!currentScope.restrictions.docker && !currentScope.restrictions.kubernetes) {
+						addNextButton = true;
+					}
+					else if (currentScope.restrictions.docker || currentScope.restrictions.kubernetes) {
+						addNextButton = true;
+					}
 				}
-				else if ((currentScope.restrictions.docker || currentScope.restrictions.kubernetes) && ((currentScope.wizard.vms && currentScope.wizard.vms.length) || currentScope.wizard.vmOnBoard)) {
-					addNextButton = true;
-				}
-                else if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
-                    addNextButton = true;
-                }
-			}
-			//template is blank
-			else if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
-				addNextButton = true;
 			}
 			currentScope.optionalVMLayer = addNextButton;
 
@@ -350,8 +349,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 								noContainerSelected = true;
 							}
 						}
-						
-						// TODO
+
 						if ((!currentScope.wizard.vms || currentScope.wizard.vms.length === 0)
 							&& (!currentScope.wizard.vmOnBoard || currentScope.wizard.vmOnBoard.length === 0)) {
 							noVMLayer = true;
@@ -364,7 +362,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							currentScope.referringStep = 'vm';
 							$localStorage.addEnv = angular.copy(currentScope.wizard);
 							currentScope.envCode = envCode;
-							// TODO
 							currentScope.nextStep();
 						}
 					}

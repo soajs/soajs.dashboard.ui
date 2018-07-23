@@ -261,8 +261,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
     function checkOnboard(vmLayers, cb) {
         let vm;
-        let found = false;
         for (let i = 0; i < Object.keys(vmLayers).length; i++) {
+            let found = false;
             vm = vmLayers[Object.keys(vmLayers)[i]];
             if (!vm.template || vm.template === undefined) {
                 for (let j = 0; j < vm.list.length; j++) {

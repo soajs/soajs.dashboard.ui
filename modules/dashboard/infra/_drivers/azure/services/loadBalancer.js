@@ -665,7 +665,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//remove from formData
 					form.entries[3].entries[ipRuleCounter].entries[6].entries[i].entries.forEach((oneEntry) => {
-						delete form.formData[oneEntry.name + count];
+						delete form.formData[oneEntry.name];
 					});
 
 					//remove from formEntries
@@ -717,7 +717,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//remove from formData
 					form.entries[3].entries[ipRuleCounter].entries[7].entries[i].entries.forEach((oneEntry) => {
-						delete form.formData[oneEntry.name + count];
+						delete form.formData[oneEntry.name];
 					});
 
 					//remove from formEntries
@@ -777,7 +777,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//remove from formData
 					form.entries[3].entries[ipRuleCounter].entries[8].entries[i].entries.forEach((oneEntry) => {
-						delete form.formData[oneEntry.name + count];
+						delete form.formData[oneEntry.name];
 					});
 
 					//remove from formEntries

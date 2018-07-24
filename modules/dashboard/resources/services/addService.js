@@ -82,9 +82,14 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							}
 
 							deployOptions.custom.type = 'resource';
+
 							if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
-								deployOptions.custom.env = formData.deployOptions.custom.env
+								if (formData.deployOptions.custom.env === null) {
+                                    formData.deployOptions.custom.env = {}
+								}
+								deployOptions.custom.env = formData.deployOptions.custom.env;
 							}
+
 							deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 							delete deployOptions.sourceCode;
 
@@ -122,6 +127,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 						}
 
 						deployOptions.custom.type = 'resource';
+                        if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
+                            deployOptions.custom.env = formData.deployOptions.custom.env
+                        }
 						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
@@ -145,6 +153,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 									deployOptions.custom.resourceId = $scope.newResource._id;
 								}
 								deployOptions.env = $scope.options.envCode;
+                             
 								if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 									deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 								}
@@ -207,6 +216,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 
 					if (type === 'saveAndRebuild') {
 						updateApiParams('saveAndRebuild');
+					}
+					if (apiParams.options && apiParams.options.custom && !apiParams.options.custom.env) {
+                        apiParams.options.custom.env = {}
 					}
 
 					commonService.addEditResourceApi($scope, apiParams, function (response) {

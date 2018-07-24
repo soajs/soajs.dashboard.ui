@@ -720,6 +720,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//if this is the last NAT Rule in the array, re-enable NAT Pool section
 					if (form.entries[3].entries[ipRuleCounter].entries[7].entries.length === 1) {
+						delete currentScope.form.entries[3].entries[ipRuleCounter].entries[8].description;
 						currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = infraLoadBalancerConfig.form.ipRuleInput.entries[8].entries;
 						currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries[0].onAction = function (id, value, form) {
 							addNewNATPool(currentScope, ipRuleCounter);
@@ -740,12 +741,12 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			currentScope.form.formData['natRuleEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
 		}
 
-		//clear NAT Pool section and display warning
-		currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = [{
-			'type': 'html',
-			'name': 'poolWarning',
-			'value': "<span class='alert alert-warning'><strong>Note: </strong> You will not be able to add any NAT Pools since you added a NAT Rule. Remove all NAT Rules to enable adding NAT Pools.</span>"
-		}];
+		//show note in NAT Pools section and remove Add NAT Pool button
+		currentScope.form.entries[3].entries[ipRuleCounter].entries[8].description = {
+			type: 'warning',
+			content: "<strong>Note: </strong> You will not be able to add any NAT Pools since you added a NAT Rule. Remove all NAT Rules to enable adding NAT Pools."
+		};
+		currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = [];
 
 		if (currentScope.form && currentScope.form.entries) {
 			currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries.length - 1, 0, tmp);
@@ -780,6 +781,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//if this is the last NAT Pool in the array, re-enable NAT Rule section
 					if (form.entries[3].entries[ipRuleCounter].entries[8].entries.length === 1) {
+						delete currentScope.form.entries[3].entries[ipRuleCounter].entries[7].description;
 						currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = infraLoadBalancerConfig.form.ipRuleInput.entries[7].entries;
 						currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries[0].onAction = function (id, value, form) {
 							addNewNATRule(currentScope, ipRuleCounter);
@@ -800,12 +802,12 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			currentScope.form.formData['natPoolEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
 		}
 
-		//clear NAT Rule section and display warning
-		currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = [{
-			'type': 'html',
-			'name': 'poolWarning',
-			'value': "<span class='alert alert-warning'><strong>Note: </strong> You will not be able to add any NAT Rules since you added a NAT Pool. Remove all NAT Pools to enable adding NAT Rules.</span>"
-		}];
+		//show note in NAT Rules section and remove Add NAT Rule button
+		currentScope.form.entries[3].entries[ipRuleCounter].entries[7].description = {
+			type: 'warning',
+			content: "<strong>Note: </strong> You will not be able to add any NAT Rules since you added a NAT Pool. Remove all NAT Pools to enable adding NAT Rules."
+		};
+		currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = [];
 
 		if (currentScope.form && currentScope.form.entries) {
 			currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries.length - 1, 0, tmp);
@@ -826,10 +828,18 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 		if(tmp.entries[5].value.length > 0){
 			tmp.entries[5].value[0].selected = true;
 		}
+		else if (tmp.entries[5].value.length === 0) {
+			tmp.entries[5].fieldMsg = `<strong style="color:red">No subnets detected in this resource group! </strong> <a target="_top" href = "http://dashboard.soajs.org/#/infra-networks?group=${currentScope.selectedGroup.name}">Click here</a> to create a new Network with subnets.`;
+			tmp.entries[5].disabled = true;
+		}
 
 		tmp.entries[4].value = angular.copy(publicIps);
 		if(tmp.entries[4].value.length > 0){
 			tmp.entries[4].value[0].selected = true;
+		}
+		else if (tmp.entries[4].value.length === 0) {
+			tmp.entries[4].fieldMsg = `<strong style="color:red">No Public IPs detected in this resource group! </strong> <a target="_top" href = "http://dashboard.soajs.org/#/infra-ip?group=${currentScope.selectedGroup.name}">Click here</a> to create a Public IP.`;
+			tmp.entries[4].disabled = true;
 		}
 
 		//ports

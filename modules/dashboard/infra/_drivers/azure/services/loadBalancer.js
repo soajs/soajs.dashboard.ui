@@ -834,7 +834,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			tmp.entries[5].value[0].selected = true;
 		}
 		else if (tmp.entries[5].value.length === 0) {
-			tmp.entries[5].fieldMsg = `<strong style="color:red">No subnets detected in this resource group! </strong> <a target="_top" href = "http://dashboard.soajs.org/#/infra-networks?group=${currentScope.selectedGroup.name}">Click here</a> to create a new Network with subnets.`;
+			tmp.entries[5].fieldMsg = `<strong style="color:red">No subnets detected in this resource group! </strong> <a target="_blank" href = "http://dashboard.soajs.org/#/infra-networks?group=${currentScope.selectedGroup.name}">Click here</a> to create a new Network with subnets.`;
 			tmp.entries[5].disabled = true;
 		}
 
@@ -843,7 +843,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			tmp.entries[4].value[0].selected = true;
 		}
 		else if (tmp.entries[4].value.length === 0) {
-			tmp.entries[4].fieldMsg = `<strong style="color:red">No Public IPs detected in this resource group! </strong> <a target="_top" href = "http://dashboard.soajs.org/#/infra-ip?group=${currentScope.selectedGroup.name}">Click here</a> to create a Public IP.`;
+			tmp.entries[4].fieldMsg = `<strong style="color:red">No Public IPs detected in this resource group! </strong> <a target="_blank" href = "http://dashboard.soajs.org/#/infra-ip?group=${currentScope.selectedGroup.name}">Click here</a> to create a Public IP.`;
 			tmp.entries[4].disabled = true;
 		}
 

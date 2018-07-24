@@ -722,6 +722,15 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//remove from formEntries
 					form.entries[3].entries[ipRuleCounter].entries[7].entries.splice(i, 1);
+
+					//if this is the last NAT Rule in the array, re-enable NAT Pool section
+					if (form.entries[3].entries[ipRuleCounter].entries[7].entries.length === 1) {
+						currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = infraLoadBalancerConfig.form.ipRuleInput.entries[8].entries;
+						currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries[0].onAction = function (id, value, form) {
+							addNewNATPool(currentScope, ipRuleCounter);
+						}
+					}
+
 					break;
 				}
 			}
@@ -735,6 +744,13 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			currentScope.form.formData['natRuleIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
 			currentScope.form.formData['natRuleEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
 		}
+
+		//clear NAT Pool section and display warning
+		currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = [{
+			'type': 'html',
+			'name': 'poolWarning',
+			'value': "<span class='alert alert-warning'><strong>Note: </strong> You will not be able to add any NAT Pools since you added a NAT Rule. Remove all NAT Rules to enable adding NAT Pools.</span>"
+		}];
 
 		if (currentScope.form && currentScope.form.entries) {
 			currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries.length - 1, 0, tmp);
@@ -766,6 +782,15 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					//remove from formEntries
 					form.entries[3].entries[ipRuleCounter].entries[8].entries.splice(i, 1);
+
+					//if this is the last NAT Pool in the array, re-enable NAT Rule section
+					if (form.entries[3].entries[ipRuleCounter].entries[8].entries.length === 1) {
+						currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = infraLoadBalancerConfig.form.ipRuleInput.entries[7].entries;
+						currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries[0].onAction = function (id, value, form) {
+							addNewNATRule(currentScope, ipRuleCounter);
+						}
+					}
+
 					break;
 				}
 			}
@@ -779,6 +804,13 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			currentScope.form.formData['natPoolIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
 			currentScope.form.formData['natPoolEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
 		}
+
+		//clear NAT Rule section and display warning
+		currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = [{
+			'type': 'html',
+			'name': 'poolWarning',
+			'value': "<span class='alert alert-warning'><strong>Note: </strong> You will not be able to add any NAT Rules since you added a NAT Pool. Remove all NAT Pools to enable adding NAT Rules.</span>"
+		}];
 
 		if (currentScope.form && currentScope.form.entries) {
 			currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries.length - 1, 0, tmp);

@@ -4,14 +4,14 @@
 			<span class="icon icon-plus"></span> Add New Load Balancer
 		</a>
 	</div>
-	
+
 	<div class="f-right w30">
 		<div class="searchBoxContainer">
 			<button class="btn btn-success f-right" ng-click="listLoadBalancers(selectedGroup)">
 				Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
 			</button>
 		</div>
-		
+
 		<div ng-if="infraGroups.length > 0">
 			Group:
 			<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listLoadBalancers(selectedGroup)" ng-options="group as group.name group by group.region for group in infraGroups"></select>
@@ -26,7 +26,7 @@
 	</alert>
 	<div ng-if="infraLoadBalancers && infraLoadBalancers.length > 0" class="entryBoxes">
 		<br/>
-		
+
 		<accordion close-others="false">
 			<accordion-group ng-repeat="oneLoadBalancer in infraLoadBalancers" is-open="oneLoadBalancer.open">
 				<accordion-heading>
@@ -40,7 +40,7 @@
 						<span class="icon icon-cross"></span>&nbsp;Delete
 					</a>
 				</div>
-				
+
 				<div ng-if="oneLoadBalancer.addressPools && oneLoadBalancer.addressPools.length > 0">
 					<fieldset>
 						<legend>Address Pools</legend>
@@ -53,19 +53,19 @@
 						</div>
 					</fieldset>
 				</div>
-				
+
 				<div ng-if="oneLoadBalancer.rules && oneLoadBalancer.rules.length > 0">
 					<h3>Rules</h3>
 					<accordion close-others="false">
 						<accordion-group ng-repeat="oneRule in oneLoadBalancer.rules" is-open="oneRule.open">
 							<accordion-heading>{{oneRule.name}}</accordion-heading>
-							
+
 							<div ng-if="oneRule.config">
 								<fieldset>
 									<legend>
 										<span class="icon icon-cog"></span> Configuration
 									</legend>
-									
+
 									<div class="grid">
 										<table width="100%">
 											<tbody>
@@ -109,7 +109,7 @@
 									</div>
 								</fieldset>
 							</div>
-							
+
 							<div ng-if="oneRule.ports && oneRule.ports.length > 0">
 								<fieldset>
 									<legend>Ports</legend>
@@ -135,7 +135,7 @@
 													<td class="text-uppercase">{{onePort.protocol}}</td>
 													<td>{{onePort.published}}</td>
 													<td>{{onePort.target}}</td>
-													<td>{{onePort.idleTimeoutInMinutes}}</td>
+													<td>{{onePort.idleTimeout/60}}</td>
 													<td>{{(onePort.enableFloatingIP) ? "YES" : "NO"}}</td>
 												</tr>
 											</tbody>
@@ -143,7 +143,7 @@
 									</div>
 								</fieldset>
 							</div>
-							
+
 							<div ng-if="oneRule.natRules && oneRule.natRules.length > 0">
 								<fieldset>
 									<legend>NAT Rules</legend>
@@ -165,7 +165,7 @@
 													<td class="text-uppercase">{{onePort.protocol}}</td>
 													<td>{{onePort.frontendPort}}</td>
 													<td>{{onePort.backendPort}}</td>
-													<td>{{onePort.idleTimeoutInMinutes}}</td>
+													<td>{{onePort.idleTimeout/60}}</td>
 													<td>{{(onePort.enableFloatingIP) ? "YES" : "NO"}}</td>
 												</tr>
 											</tbody>
@@ -173,7 +173,7 @@
 									</div>
 								</fieldset>
 							</div>
-							
+
 							<div ng-if="oneRule.natPools && oneRule.natPools.length > 0">
 								<fieldset>
 									<legend>NAT Pools</legend>
@@ -197,7 +197,7 @@
 														{{onePort.frontendPortRangeEnd}}
 													</td>
 													<td>{{onePort.backendPort}}</td>
-													<td>{{onePort.idleTimeoutInMinutes}}</td>
+													<td>{{onePort.idleTimeout/60}}</td>
 													<td>{{(onePort.enableFloatingIP) ? "YES" : "NO"}}</td>
 												</tr>
 											</tbody>
@@ -208,7 +208,7 @@
 						</accordion-group>
 					</accordion>
 				</div>
-			
+
 			</accordion-group>
 		</accordion>
 	</div>

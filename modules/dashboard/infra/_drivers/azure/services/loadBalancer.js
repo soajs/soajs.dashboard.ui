@@ -1,4 +1,7 @@
 "use strict";
+
+var closeModalUsingJs;
+
 var azureInfraLoadBalancerSrv = soajsApp.components;
 azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $localStorage, $timeout, $modal, $window, $cookies, Upload) {
 
@@ -829,12 +832,17 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			oneipRuleEntry.name += ipRuleCounter;
 		});
 
+		currentScope.closeModalUsingJs = function(){
+			currentScope.modalInstance.close();
+		};
+		closeModalUsingJs = currentScope.closeModalUsingJs;
+
 		tmp.entries[5].value = angular.copy(subnets);
 		if(tmp.entries[5].value.length > 0){
 			tmp.entries[5].value[0].selected = true;
 		}
 		else if (tmp.entries[5].value.length === 0) {
-			tmp.entries[5].fieldMsg = `<strong style="color:red">No subnets detected in this resource group! </strong> <a target="_blank" href = "http://dashboard.soajs.org/#/infra-networks?group=${currentScope.selectedGroup.name}">Click here</a> to create a new Network with subnets.`;
+			tmp.entries[5].fieldMsg = `<strong style="color:red">No subnets detected in this resource group! </strong> <a onclick="closeModalUsingJs()" href = "#/infra-networks?group=${currentScope.selectedGroup.name}">Click here</a> to create a new Network with subnets.`;
 			tmp.entries[5].disabled = true;
 		}
 
@@ -843,7 +851,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			tmp.entries[4].value[0].selected = true;
 		}
 		else if (tmp.entries[4].value.length === 0) {
-			tmp.entries[4].fieldMsg = `<strong style="color:red">No Public IPs detected in this resource group! </strong> <a target="_blank" href = "http://dashboard.soajs.org/#/infra-ip?group=${currentScope.selectedGroup.name}">Click here</a> to create a Public IP.`;
+			tmp.entries[4].fieldMsg = `<strong style="color:red">No public IPs detected in this resource group! </strong> <a onclick="closeModalUsingJs()" href = "#/infra-ip?group=${currentScope.selectedGroup.name}">Click here</a> to create a Public IP.`;
 			tmp.entries[4].disabled = true;
 		}
 

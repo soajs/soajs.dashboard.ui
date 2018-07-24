@@ -1182,7 +1182,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					actions: [
 						{
 							'type': 'submit',
-							'label': "Create Load Balancer",
+							'label': "Modify Load Balancer",
 							'btn': 'primary',
 							'action': function (formData) {
 								let data = angular.copy(formData);

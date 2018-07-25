@@ -971,15 +971,9 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 					if(currentIsPublicSwitch) {
 						currentIsPublicSwitch.value = oneDefaultIPRuleValue.config.isPublic;
+						currentIsPublicSwitch.onAction('isPublic' + ipRuleCounter, currentScope.form.formData['isPublic' + ipRuleCounter], currentScope.form);
 					}
 				}
-			}
-
-			let publicIpEntry = infraLoadBalancerConfig.form.ipRuleInput.entries.find((oneEntry) => {
-				return oneEntry.name === 'isPublic';
-			});
-			if(publicIpEntry && publicIpEntry.onAction) {
-				publicIpEntry.onAction('isPublic' + ipRuleCounter, currentScope.form.formData['isPublic' + ipRuleCounter], currentScope.form);
 			}
 
 			//public ip address if any

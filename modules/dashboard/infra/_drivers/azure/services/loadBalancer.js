@@ -33,7 +33,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					'required': true
 				},
 				{
-					'type': 'group',
+					'type': 'accordion',
 					'label': 'Address Pools',
 					'entries': [
 						{
@@ -44,7 +44,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					]
 				},
 				{
-					'type': 'group',
+					'type': 'accordion',
 					'label': 'IP Rules',
 					'entries': [
 						{
@@ -58,7 +58,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 			addressPoolInput: {
 				'name': 'addressPoolGroup',
-				'type': 'group',
+				'type': 'accordion',
 				'label': 'New Address Pool ',
 				'entries': [
 					{
@@ -105,7 +105,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 			ipRuleInput: {
 				'name': 'ipRuleGroup',
-				'type': 'group',
+				'type': 'accordion',
 				'label': 'New IP Rule ',
 				'entries': [
 					{
@@ -225,7 +225,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': 'Choose an existing subnet for the IP address'
 					},
 					{
-						'type': 'group',
+						'type': 'accordion',
 						'label': 'Ports',
 						'entries': [
 							{
@@ -236,7 +236,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						]
 					},
 					{
-						'type': 'group',
+						'type': 'accordion',
 						'label': 'NAT Rules',
 						'entries': [
 							{
@@ -247,7 +247,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						]
 					},
 					{
-						'type': 'group',
+						'type': 'accordion',
 						'label': 'NAT Pools',
 						'entries': [
 							{
@@ -267,7 +267,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 			portsInput: {
 				'name': 'ipRulePortsGroup',
-				'type': 'group',
+				'type': 'accordion',
 				'label': 'New Port ',
 				'entries': [
 					{
@@ -423,7 +423,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 			NATRule: {
 				'name': 'ipRuleNATRuleGroup',
-				'type': 'group',
+				'type': 'accordion',
 				'label': 'New NAT Rule ',
 				'entries': [
 					{
@@ -495,7 +495,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 
 			NATPool: {
 				'name': 'ipRuleNATPoolGroup',
-				'type': 'group',
+				'type': 'accordion',
 				'label': 'New NAT Pool ',
 				'entries': [
 					{

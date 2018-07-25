@@ -34,6 +34,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 				},
 				{
 					'type': 'accordion',
+					'name': 'addressPools',
 					'label': 'Address Pools',
 					'entries': [
 						{
@@ -45,6 +46,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 				},
 				{
 					'type': 'accordion',
+					'name': 'ipRules',
 					'label': 'IP Rules',
 					'entries': [
 						{
@@ -226,11 +228,12 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					},
 					{
 						'type': 'accordion',
+						'name': 'ipRulePortsGroup',
 						'label': 'Ports',
 						'entries': [
 							{
 								'type': 'html',
-								'name': 'port',
+								'name': 'portAddButton',
 								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Port'/>"
 							}
 						]
@@ -329,16 +332,6 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': 'Idle timeout should be 240 and 1800'
 					},
 					{
-						'name': 'portEnableFloatingIP',
-						'label': 'Enable Floating IP',
-						'type': 'select',
-						'value': [{'v': false,'l': 'NO', 'selected': true}, {'v': true, 'l': 'YES'}],
-						'placeholder': '1',
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': ''
-					},
-					{
 						'name': 'portLoadDistribution',
 						'label': 'Load Distrubution',
 						'type': 'select',
@@ -361,16 +354,23 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'fieldMsg': ''
 					},
 					{
-						'name': 'portHealthProbePort',
-						'label': 'Health Probe Port',
-						'type': 'number',
-						'value': '',
-						'required': false,
+						'name': 'portEnableFloatingIP',
+						'label': 'Enable Floating IP',
+						'type': 'select',
+						'value': [{'v': false,'l': 'NO', 'selected': true}, {'v': true, 'l': 'YES'}],
+						'placeholder': '1',
+						'required': true,
+						'tooltip': '',
 						'fieldMsg': ''
 					},
 					{
+						'type': 'html',
+						'name': 'portHealthProbeLabel',
+						'value': '<h4>Health Probe</h4><hr>'
+					},
+					{
 						'name': 'portHealthProbeProtocol',
-						'label': 'Health Probe Port Protocol',
+						'label': 'Protocol',
 						'type': 'select',
 						'value': [
 							{
@@ -391,10 +391,18 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					},
 					{
 						'name': 'portHealthProbeRequestPath',
-						'label': 'Health Probe Request Path',
+						'label': 'Path',
 						'type': 'text',
 						'value': '',
 						'required': true,
+						'fieldMsg': ''
+					},
+					{
+						'name': 'portHealthProbePort',
+						'label': 'Port',
+						'type': 'number',
+						'value': '',
+						'required': false,
 						'fieldMsg': ''
 					},
 					{
@@ -407,7 +415,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 					},
 					{
 						'name': 'portHealthProbeInterval',
-						'label': 'Health Probe Interval',
+						'label': 'Interval',
 						'type': 'number',
 						'value': '',
 						'required': false,
@@ -443,7 +451,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'value': [{'v': 'tcp','l': 'TCP', 'selected': true}, {'v': 'udp', 'l': 'UDP'}, {'v': '*', 'l': 'Any'}],
 						'required': true,
 						'tooltip': 'Select the rule Protocol',
-						'fieldMsg': 'Select the rule Protocol'
+						'fieldMsg': ''
 					},
 					{
 						'name': 'natRuleFrontendPort',
@@ -453,7 +461,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '80',
 						'required': true,
 						'tooltip': 'Select the frontend port value',
-						'fieldMsg': 'Select the frontend port value'
+						'fieldMsg': ''
 					},
 					{
 						'name': 'natRuleBackendPort',
@@ -463,7 +471,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '80',
 						'required': true,
 						'tooltip': 'Select the backend port value',
-						'fieldMsg': 'Select the backend port value'
+						'fieldMsg': ''
 					},
 					{
 						'name': 'natRuleIdleTimeout',
@@ -473,7 +481,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': 'Idle timeout should be 240 and 1800'
+						'fieldMsg': 'Between 240 and 1800'
 					},
 					{
 						'name': 'natRuleEnableFloatingIP',
@@ -515,7 +523,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'value': [{'v': 'tcp','l': 'TCP', 'selected': true}, {'v': 'udp', 'l': 'UDP'}, {'v': '*', 'l': 'Any'}],
 						'required': true,
 						'tooltip': 'Select the pool Protocol',
-						'fieldMsg': 'Select the pool Protocol'
+						'fieldMsg': ''
 					},
 					{
 						'name': 'natPoolFrontendPort',
@@ -525,7 +533,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '80-81',
 						'required': true,
 						'tooltip': 'Select the frontend port range',
-						'fieldMsg': 'Select the frontend port range'
+						'fieldMsg': ''
 					},
 					{
 						'name': 'natPoolBackendPort',
@@ -535,7 +543,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '80',
 						'required': true,
 						'tooltip': 'Select the backend port value',
-						'fieldMsg': 'Select the backend port value'
+						'fieldMsg': ''
 					},
 					{
 						'name': 'natPoolIdleTimeout',
@@ -545,7 +553,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': 'Idle timeout should be 240 and 1800'
+						'fieldMsg': 'Between 240 and 1800'
 					},
 					{
 						'name': 'natPoolEnableFloatingIP',

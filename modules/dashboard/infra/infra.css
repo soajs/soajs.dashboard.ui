@@ -111,3 +111,230 @@ td.readonly{
     opacity: 0.7;
     font-style:italic;
 }
+
+/* IP Rule */
+#addLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRuleGroup"],
+#modifyLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRuleGroup"]{
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#addLoadBalancer  #ipRules-wrapper tr[class^="form-group tr-ipRuleGroup"] tr[class^="form-group tr-rIpRule"],
+#modifyLoadBalancer  #ipRules-wrapper  tr[class^="form-group tr-ipRuleGroup"] tr[class^="form-group tr-rIpRule"]{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+/* Address Pool */
+#addLoadBalancer .form-group #addressPools-wrapper,
+#modifyLoadBalancer .form-group #addressPools-wrapper{
+    padding-top:30px;
+}
+
+#addLoadBalancer #addressPools-wrapper tr[class^="form-group tr-addressPoolGroup"],
+#modifyLoadBalancer #addressPools-wrapper tr[class^="form-group tr-addressPoolGroup"]{
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-addressPoolGroup"] tr[class^="form-group tr-rAddressPool"],
+#modifyLoadBalancer table tr [class^="form-group tr-addressPoolGroup"] tr[class^="form-group tr-rAddressPool"]{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+/* IP Rule Port */
+#addLoadBalancer .form-group #ipRulePortsGroup0-wrapper,
+#modifyLoadBalancer .form-group #ipRulePortsGroup0-wrapper{
+    padding-top:30px;
+}
+
+#addLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRulePortsGroup"],
+#modifyLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRulePortsGroup"]{
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-port"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-port"]{
+    float: left;
+    width: 24.5%;
+    height: 70px;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portName"],
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portAddressPoolName"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portName"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portAddressPoolName"]{
+    width: 49%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portLoadDistribution"],
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portEnableFloatingIP"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portEnableFloatingIP"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portLoadDistribution"]{
+    width: 49%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"]{
+    height: 12.5px;
+    width: 100%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"] h4,
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"] h4{
+    margin-bottom: 0px;
+}
+
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"] hr,
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"] hr{
+    margin-top: 5px;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbePort"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbePort"],
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeProtocol"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeProtocol"],
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeRequestPath"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeRequestPath"],
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portMaxFailureAttempts"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portMaxFailureAttempts"],
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeInterval"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeInterval"]{
+    width: 19.66%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-port"] td,
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-port"] td{
+    position: relative;
+    display: table;
+    width: 99%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-rIPRulePort"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-rIPRulePort"]{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portAddButton"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portAddButton"]{
+    float: right;
+}
+
+/* NAT Rules */
+#addLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRuleNATRuleGroup"],
+#modifyLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRuleNATRuleGroup"]{
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRule"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRule"]{
+    float: left;
+    width: 24%;
+    height: 70px;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleName"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleName"]{
+    width: 99%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleProtocol"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleProtocol"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleBackendPort"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleBackendPort"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleIdleTimeout"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleIdleTimeout"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleEnableFloatingIP"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleEnableFloatingIP"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleFrontendPort"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRuleFrontendPort"]{
+    width: 19.66%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRule"] td,
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-natRule"] td{
+    position: relative;
+    display: table;
+    width: 99%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-rIPRuleNatRule"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATRuleGroup"] tr[class^="form-group tr-rIPRuleNatRule"]{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+
+/* NAT Pools */
+#addLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRuleNATPoolGroup"],
+#modifyLoadBalancer #ipRules-wrapper tr[class^="form-group tr-ipRuleNATPoolGroup"]{
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPool"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPool"]{
+    float: left;
+    width: 24%;
+    height: 70px;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolName"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolName"]{
+    width: 99%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolProtocol"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolProtocol"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolBackendPort"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolBackendPort"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolIdleTimeout"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolIdleTimeout"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolEnableFloatingIP"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolEnableFloatingIP"],
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolFrontendPort"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPoolFrontendPort"]{
+    width: 19.66%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPool"] td,
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-natPool"] td{
+    position: relative;
+    display: table;
+    width: 99%;
+}
+
+#addLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-rIPRuleNatPool"],
+#modifyLoadBalancer table tr [class^="form-group tr-ipRuleNATPoolGroup"] tr[class^="form-group tr-rIPRuleNatPool"]{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}

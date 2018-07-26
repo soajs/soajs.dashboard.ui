@@ -240,6 +240,8 @@ td.readonly{
 #addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portAddButton"],
 #modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portAddButton"]{
     float: right;
+    margin-bottom: 0px;
+    height: 30px;
 }
 
 /* NAT Rules */

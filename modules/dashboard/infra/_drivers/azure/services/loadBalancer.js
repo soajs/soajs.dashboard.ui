@@ -353,7 +353,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						],
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': ''
+						'fieldMsg': 'Select a Load Distrubution Method. <a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-distribution-mode">Learn More</a>'
 					},
 					{
 						'name': 'portEnableFloatingIP',
@@ -389,7 +389,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 							}
 						],
 						'required': true,
-						'fieldMsg': ''
+						'fieldMsg': '<a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview#fundamental-load-balancer-features">Learn More</a>'
 					},
 					{
 						'name': 'portHealthProbeRequestPath',

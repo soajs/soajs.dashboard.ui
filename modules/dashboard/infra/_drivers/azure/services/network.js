@@ -27,7 +27,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 					'label': 'Address',
 					'type': 'text',
 					'value': "",
-					"placeholder": "10.0.0.1/16",
+					"placeholder": "10.0.0.0/16",
 					'fieldMsg': 'Enter an address for the network',
 					'required': false
 				},

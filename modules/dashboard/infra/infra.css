@@ -194,6 +194,7 @@ td.readonly{
 #addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"] h4,
 #modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeLabel"] h4{
     margin-bottom: 0px;
+    margin-top: 20px;
 }
 
 
@@ -217,6 +218,7 @@ td.readonly{
 #addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeInterval"],
 #modifyLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-portHealthProbeInterval"]{
     width: 19.66%;
+    margin-top: 15px;
 }
 
 #addLoadBalancer table tr [class^="form-group tr-ipRulePortsGroup"] tr[class^="form-group tr-port"] td,

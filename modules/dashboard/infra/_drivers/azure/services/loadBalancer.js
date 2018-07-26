@@ -389,7 +389,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 							}
 						],
 						'required': true,
-						'fieldMsg': '<a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview#fundamental-load-balancer-features">Learn More</a>'
+						'fieldMsg': '<a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview#fundamental-load-balancer-features">Learn More</a> about Heath Probe'
 					},
 					{
 						'name': 'portHealthProbeRequestPath',

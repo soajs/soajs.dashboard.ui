@@ -894,34 +894,33 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		
 		function logout() {
 			overlayLoading.show();
-			
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "delete",
-				"routeName": "/oauth/refreshToken/" + $cookies.get("refresh_token", {'domain': interfaceDomain}),
-				"headers": {
-					"key": apiConfiguration.key
-				}
-			}, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				getSendDataFromServer($scope, ngDataApi, {
-					"method": "delete",
-					"routeName": "/oauth/accessToken/" + $cookies.get("access_token", {'domain': interfaceDomain}),
-					"headers": {
-						"key": apiConfiguration.key
-					}
-				}, function (error, response) {
-					
-					overlayLoading.hide();
-					if (error) {
-						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					}
+			// getSendDataFromServer($scope, ngDataApi, {
+			// 	"method": "delete",
+			// 	"routeName": "/oauth/refreshToken/" + $cookies.get("refresh_token", {'domain': interfaceDomain}),
+			// 	"headers": {
+			// 		"key": apiConfiguration.key
+			// 	}
+			// }, function (error, response) {
+			// 	// if (error) {
+			// 	// 	$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			// 	// }
+			// 	getSendDataFromServer($scope, ngDataApi, {
+			// 		"method": "delete",
+			// 		"routeName": "/oauth/accessToken/" + $cookies.get("access_token", {'domain': interfaceDomain}),
+			// 		"headers": {
+			// 			"key": apiConfiguration.key
+			// 		}
+			// 	}, function (error, response) {
+            //
+			// 		overlayLoading.hide();
+			// 		// if (error) {
+			// 		// 	$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			// 		// }
 					$scope.dashboard = [];
 					$scope.currentSelectedEnvironment = null;
 					clearData();
-				});
-			});
+				//});
+			//});
 		}
 		
 		if (typeof(user) !== 'undefined') {

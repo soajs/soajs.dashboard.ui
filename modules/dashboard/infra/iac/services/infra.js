@@ -7,7 +7,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 			let renderedTemplates = {};
 			
 			currentScope.currentSelectedInfra.templates.forEach((oneTemplates) => {
-				oneTemplates.technology = (oneTemplates.technology === 'vm') ? "Vitural Machines" : oneTemplates.technology;
+				oneTemplates.technology = (oneTemplates.technology === 'vm') ? "vm" : oneTemplates.technology;
 				if(!renderedTemplates[oneTemplates.technology]){
 					renderedTemplates[oneTemplates.technology] = {};
 				}
@@ -161,7 +161,8 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		});
 
 		oneInfra.technologies.forEach(oneTech => {
-			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
+            let label = (oneTech === 'vm') ? 'Virtual Machine' : oneTech;
+			entries[4].value.push({ 'v': oneTech, 'l': label });
 		});
 
 		entries[2].onAction = function (id, value, form) {
@@ -394,7 +395,8 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		});
 
 		oneInfra.technologies.forEach(oneTech => {
-			entries[4].value.push({ 'v': oneTech, 'l': oneTech });
+			let label = (oneTech === 'vm') ? 'Virtual Machine' : oneTech;
+			entries[4].value.push({ 'v': oneTech, 'l': label });
 		});
 
 		if (oneTemplate.location === 'local') {
@@ -541,6 +543,9 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 				currentScope.form.entries[5].tabs[0].entries[2].type = 'textarea';
 				currentScope.form.entries[5].tabs[0].entries[2].rows = 30;
 				delete currentScope.form.entries[5].tabs[0].entries[2].editor;
+			}
+			if(oneTemplate.technology){
+				currentScope.form.formData.technology = oneTemplate.technology;
 			}
 		});
 

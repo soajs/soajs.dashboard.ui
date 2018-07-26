@@ -325,11 +325,13 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'portIdleTimeout',
 						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
-						'value': 1,
-						'placeholder': '1',
+						'value': 240,
+						'min': 240,
+						'max': 1800,
+						'placeholder': '240',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': 'Idle timeout should be 240 and 1800'
+						'fieldMsg': 'Between 240 and 1800'
 					},
 					{
 						'name': 'portLoadDistribution',
@@ -477,8 +479,10 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'natRuleIdleTimeout',
 						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
-						'value': 1,
-						'placeholder': '1',
+						'value': 240,
+						'min': 240,
+						'max': 1800,
+						'placeholder': '240',
 						'required': true,
 						'tooltip': '',
 						'fieldMsg': 'Between 240 and 1800'
@@ -549,8 +553,10 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'natPoolIdleTimeout',
 						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
-						'value': 1,
-						'placeholder': '1',
+						'value': 240,
+						'min': 240,
+						'max': 1800,
+						'placeholder': '240',
 						'required': true,
 						'tooltip': '',
 						'fieldMsg': 'Between 240 and 1800'

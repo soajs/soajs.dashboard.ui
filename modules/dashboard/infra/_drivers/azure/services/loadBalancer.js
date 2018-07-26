@@ -136,7 +136,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						],
 						'required': true,
 						'tooltip': 'Select a public IP allocation mehod',
-						'fieldMsg': 'Select a public IP allocation mehod',
+						'fieldMsg': 'Select an Azure Allocation Method for this IP, <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#allocation-method">Learn More</a>',
 						onAction: function (name, value, form) {
 							let ipRulesGroup = form.entries.find((oneEntry) => {
 								return oneEntry.label === 'IP Rules';

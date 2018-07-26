@@ -363,7 +363,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': ''
+						'fieldMsg': 'Enable to reuse the backend port across multiple rules. <a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-multivip-overview#rule-type-2-backend-port-reuse-by-using-floating-ip">Learn More</a>'
 					},
 					{
 						'type': 'html',

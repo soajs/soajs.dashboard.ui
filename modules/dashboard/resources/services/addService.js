@@ -105,7 +105,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							}
 						}
 
-						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
+						if (formData.deployOptions.deployConfig && formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 							apiParams["vms"] = [];
 							apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {

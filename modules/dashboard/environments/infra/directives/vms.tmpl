@@ -263,7 +263,7 @@
 										   tooltip="Restart VM Instance">
 											<span class="icon icon-loop2"></span>&nbsp;
 										</a>
-										<a ng-click="deleteVM(oneVMLayer, instance)"
+										<a ng-click="deleteVM(oneVMLayer, instance)" ng-confirm-click="Are you sure you want to delete this virtual machine instance ?"
 										   ng-if="access.vm.deleteInstance && listingClouds"
 										   tooltip="Delete VM Instance">
 											<span class="icon icon-cross"></span>

@@ -136,7 +136,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						],
 						'required': true,
 						'tooltip': 'Select a public IP allocation mehod',
-						'fieldMsg': 'Select a public IP allocation mehod',
+						'fieldMsg': 'Select an Azure Allocation Method for this IP, <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#allocation-method">Learn More</a>',
 						onAction: function (name, value, form) {
 							let ipRulesGroup = form.entries.find((oneEntry) => {
 								return oneEntry.label === 'IP Rules';
@@ -325,11 +325,13 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'portIdleTimeout',
 						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
-						'value': 1,
-						'placeholder': '1',
+						'value': 240,
+						'min': 240,
+						'max': 1800,
+						'placeholder': '240',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': 'Idle timeout should be 240 and 1800'
+						'fieldMsg': 'Between 240 and 1800'
 					},
 					{
 						'name': 'portLoadDistribution',
@@ -361,7 +363,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'placeholder': '1',
 						'required': true,
 						'tooltip': '',
-						'fieldMsg': ''
+						'fieldMsg': 'Enable to reuse the backend port across multiple rules. <a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-multivip-overview#rule-type-2-backend-port-reuse-by-using-floating-ip">Learn More</a>'
 					},
 					{
 						'type': 'html',
@@ -477,8 +479,10 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'natRuleIdleTimeout',
 						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
-						'value': 1,
-						'placeholder': '1',
+						'value': 240,
+						'min': 240,
+						'max': 1800,
+						'placeholder': '240',
 						'required': true,
 						'tooltip': '',
 						'fieldMsg': 'Between 240 and 1800'
@@ -549,8 +553,10 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 						'name': 'natPoolIdleTimeout',
 						'label': 'Idle Timeout in Seconds',
 						'type': 'number',
-						'value': 1,
-						'placeholder': '1',
+						'value': 240,
+						'min': 240,
+						'max': 1800,
+						'placeholder': '240',
 						'required': true,
 						'tooltip': '',
 						'fieldMsg': 'Between 240 and 1800'

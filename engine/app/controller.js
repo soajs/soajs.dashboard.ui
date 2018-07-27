@@ -912,7 +912,7 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 			// 		}
 			// 	}, function (error, response) {
             //
-			// 		overlayLoading.hide();
+					overlayLoading.hide();
 			// 		// if (error) {
 			// 		// 	$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			// 		// }

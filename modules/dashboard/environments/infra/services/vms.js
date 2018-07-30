@@ -283,7 +283,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
         return cb();
     }
 
-    function editVMLayer(currentScope, oneVMLayer) {
+    function editVMLayer(currentScope, originalVMLayer) {
+		let oneVMLayer = angular.copy(originalVMLayer);
         // oneVMLayerTemplateRecord --> retrieved from db
 
 		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {

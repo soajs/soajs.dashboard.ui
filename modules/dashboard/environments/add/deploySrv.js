@@ -1,15 +1,15 @@
 "use strict";
 var deployServices = soajsApp.components;
 deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
-	
+
 	let mainScope; // set on go
-	
+
 	function calculateRestrictions(currentScope) {
 		let restrictions = currentScope.wizard.template.restriction;
 		let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment // stronger then restrictions
 		let showonDemand = false; // only in case of a blank env, manual
 		let manual = true;
-		
+
 		currentScope.restrictions = {
 			docker: false,
 			kubernetes: false,
@@ -18,7 +18,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			onDemand: showonDemand,
 			showManual: showManualDeploy
 		};
-		
+
 		if (currentScope.envType && currentScope.envType === 'manual') {
 			if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
 				showonDemand = true;
@@ -31,24 +31,24 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			showManualDeploy = false;
 			manual = false;
 		}
-		
+
 		let docker = false, vm = false, kubernetes = false;
 		currentScope.infraProviders.forEach((oneInfra) => {
 			if(!showonDemand){
 				if (oneInfra.technologies.indexOf('kubernetes') !== -1) {
 					kubernetes = true;
 				}
-				
+
 				if (oneInfra.technologies.indexOf('docker') !== -1) {
 					docker = true;
 				}
-				
+
 				if (oneInfra.technologies.indexOf('vm') !== -1) {
 					vm = true;
 				}
 			}
 		});
-		
+
 		// no restrictions obj
 		if (!restrictions || Object.keys(restrictions).length === 0) {
 			let myPrevious = (currentScope.envType !== 'manual');
@@ -62,12 +62,12 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			};
 			return;
 		}
-		
+
 		if (restrictions && restrictions.deployment) {
 			vm = false;
 			docker = false;
 			kubernetes = false;
-			
+
 			if(!showonDemand) {
 				if (restrictions.deployment.indexOf('container') !== -1) {
 					showonDemand = false; // todo
@@ -84,17 +84,17 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 						kubernetes = true;
 					}
 				}
-				
+
 				if(restrictions.deployment.indexOf('vm') !== -1){
 					vm = true;
 				}
 			}
 		}
-		
+
 		if (showManualDeploy && restrictions && restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
 			manual = true;
 		}
-		
+
 		currentScope.restrictions = {
 			vm: vm,
 			docker: docker,
@@ -109,7 +109,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			}
 		}
 	}
-	
+
 	function switchDriver(driver) {
 		if (!mainScope.platforms) {
 			mainScope.platforms = {
@@ -120,7 +120,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				ondemand: false
 			};
 		}
-		
+
 		switch (driver) {
 			case 'previous':
 				if (mainScope.form && mainScope.form.formData && mainScope.form.formData.deployment && mainScope.form.formData.deployment.previousEnvironment) {
@@ -169,7 +169,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				break;
 		}
 	}
-	
+
 	function renderPreviousDeployInfo(currentScope) {
 		for (let i = currentScope.availableEnvironments.length - 1; i >= 0; i--) {
 			if (currentScope.availableEnvironments[i].code === currentScope.previousEnvironment) {
@@ -187,7 +187,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			}
 		}
 	}
-	
+
 	function getDashboardDeploymentStyle() {
 		let status = false;
 		$localStorage.environments.forEach((oneEnv) => {
@@ -195,10 +195,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				status = true
 			}
 		});
-		
+
 		return status;
 	}
-	
+
 	function handleFormData(currentScope, formData) {
 		if (currentScope.platforms.ondemand) {
 			delete formData.kubernetes;
@@ -217,7 +217,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				$window.alert("Select the environment your want to clone its deployment settings to proceed!");
 				return false;
 			}
-			
+
 			//on first run, formData.selectedDriver is not being set
 			//on refresh it works
 			formData.selectedDriver = currentScope.platform;
@@ -225,10 +225,10 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		else {
 			delete formData.previousEnvironment;
-			
+
 			//check and switch on demand if template requires not deployment for containers
 			if(!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0){
-				
+
 				if(currentScope.wizard.selectedInfraProvider){
 					formData = angular.copy(currentScope.wizard.selectedInfraProvider.deploy);
 					delete formData.grid;
@@ -251,7 +251,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				formData.selectedDriver = formData.technology;
 			}
 		}
-		
+
 		currentScope.wizard.deployment = angular.copy(formData);
 		if(!currentScope.containerWizard){
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
@@ -259,21 +259,21 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			currentScope.nextStep();
 		}
 	}
-	
+
 	function go(currentScope, cb) {
 		if (!currentScope.envType) {
 			if ($localStorage.envType) {
 				currentScope.envType = $localStorage.envType;
 			}
 		}
-		
+
 		mainScope = currentScope;
 		currentScope.switchDriver = switchDriver;
 		currentScope.selectProvider = selectProvider;
-		
+
 		currentScope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 		currentScope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
-		
+
 		currentScope.availableEnvironments = angular.copy($localStorage.environments);
 		if (currentScope.availableEnvironments.length > 0) {
 			for (let i = currentScope.availableEnvironments.length - 1; i >= 0; i--) {
@@ -285,17 +285,17 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 			}
 		}
-		
+
 		currentScope.changeLikeEnv = function () {
 			currentScope.previousPlatformDeployment = true;
 			currentScope.previousEnvironment = currentScope.form.formData.deployment.previousEnvironment;
 			renderPreviousDeployInfo(currentScope);
 		};
-		
+
 		overlayLoading.show();
 		currentScope.previousPlatformDeployment = false;
 		let configuration = angular.copy(environmentsConfig.form.add.deploy.entries);
-		
+
 		let options = {
 			timeout: $timeout,
 			entries: configuration,
@@ -315,34 +315,34 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 			]
 		};
-		
+
 		listInfraProviders(currentScope, () => {
 			buildForm(currentScope, $modal, options, function () {
-				
+
 				currentScope.mapStorageToWizard($localStorage.addEnv);
-				
+
 				if (currentScope.wizard.deployment) {
 					currentScope.form.formData = angular.copy(currentScope.wizard.deployment);
 				}
-				
+
 				if (!currentScope.form.formData) {
 					currentScope.form.formData = {};
 				}
-				
+
 				if (currentScope.form.formData.previousEnvironment) {
 					currentScope.previousEnvironment = currentScope.form.formData.previousEnvironment;
 				}
-				
+
 				if(currentScope.wizard.selectedInfraProvider){
 					currentScope.form.formData.selectedDriver = currentScope.wizard.selectedInfraProvider.technologies[0];
-					
+
 					currentScope.infraProviders.forEach((oneProvider) => {
 						if(oneProvider.name === currentScope.wizard.selectedInfraProvider.name){
 							oneProvider.deploy = currentScope.wizard.selectedInfraProvider.deploy;
 						}
 					});
 				}
-				
+
 				currentScope.platforms = {
 					docker: currentScope.form.formData.selectedDriver === 'docker' || false,
 					kubernetes: currentScope.form.formData.selectedDriver === 'kubernetes' || false,
@@ -350,7 +350,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					previous: currentScope.previousEnvironment,
 					ondemand: currentScope.form.formData.selectedDriver === 'ondemand' || false
 				};
-				
+
 				if (currentScope.previousEnvironment && currentScope.previousEnvironment !== '') {
 					currentScope.previousPlatformDeployment = true;
 					currentScope.platforms = {
@@ -361,11 +361,11 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					};
 					renderPreviousDeployInfo(currentScope);
 				}
-				
+
 				calculateRestrictions(currentScope);
-				
+
 				if(currentScope.envType === 'manual' || (currentScope.envType !== 'manual' && currentScope.infraProviders && currentScope.infraProviders.length > 0)){
-					
+
 					if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
 						options.actions.push({
 							'type': 'submit',
@@ -380,7 +380,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					else {
 						//if no provider showin and vm is used, trigger next automatically
 						if(currentScope.restrictions.vm && !currentScope.restrictions.docker && !currentScope.restrictions.docker){
-							
+
 							if(currentScope.restrictions.showManual){
 								options.actions.push({
 									'type': 'submit',
@@ -423,7 +423,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 						}
 					}
 				}
-				
+
 				options.actions.push({
 					'type': 'reset',
 					'label': translation.cancel[LANG],
@@ -436,23 +436,23 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 						currentScope.$parent.go("/environments")
 					}
 				});
-				
+
 				currentScope.allowLocalContainerDeployment = getDashboardDeploymentStyle();
 				overlayLoading.hide();
-				
+
 				if(cb && typeof cb === 'function'){
 					return cb();
 				}
 			});
 		});
 	}
-	
+
 	function selectProvider(oneProvider, technology) {
 		let selectedInfraProvider = angular.copy(oneProvider);
 		mainScope.infraProviders.forEach((oneProvider) => {
 			delete oneProvider.deploy;
 		});
-		
+
 		let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
 		if(formEntries && formEntries.length > 0){
 			formEntries.forEach((oneEntry) => {
@@ -461,7 +461,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					oneEntry.value[0].selected = true;
 				}
 			});
-			
+
 			let infraTemplates =[];
 			oneProvider.templates.forEach((oneTmpl) => {
 				let label = oneTmpl.name;
@@ -470,7 +470,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 				infraTemplates.push({'v': oneTmpl.name, 'l': label});
 			});
-			
+
 			formEntries.unshift({
 				type: 'select',
 				name: 'infraCodeTemplate',
@@ -480,13 +480,25 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
 				onAction: function(id, value, form){
 					oneProvider.templates.forEach((oneTmpl) => {
-						if(oneTmpl.name === value && oneTmpl.inputs && Array.isArray(oneTmpl.inputs)){
-							form.entries = form.entries.concat(oneTmpl.inputs);
+						if(oneTmpl.name === value && oneTmpl.inputs){
+							if(typeof(oneTmpl.inputs) === 'string') {
+								try {
+									oneTmpl.inputs = JSON.parse(oneTmpl.inputs);
+								}
+								catch(e) {
+									console.log('unable to parse input of ' + oneTmpl.name);
+									console.log(e);
+								}
+							}
+
+							if(Array.isArray(oneTmpl.inputs)) {
+								form.entries = form.entries.concat(oneTmpl.inputs);
+							}
 						}
 					});
 				}
 			});
-			
+
 			$modal.open({
 				templateUrl: "infraProvider.tmpl",
 				size: 'lg',
@@ -514,7 +526,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 											selectedInfraProvider.deploy.grid.columns = oneTmpl.display;
 										}
 									});
-									
+
 									selectedInfraProvider.deploy.technology = technology;
 									mainScope.wizard.selectedInfraProvider = selectedInfraProvider;
 									oneProvider.deploy = selectedInfraProvider.deploy;
@@ -534,7 +546,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 							}
 						]
 					};
-					
+
 					buildForm($scope, null, formConfig, function () {
 						if(mainScope.wizard.selectedInfraProvider && mainScope.wizard.selectedInfraProvider.deploy){
 							let chosenTemplate = mainScope.wizard.selectedInfraProvider.deploy['infraCodeTemplate'];
@@ -556,11 +568,11 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			mainScope.wizard.selectedInfraProvider = selectedInfraProvider;
 		}
 	}
-	
+
 	function listInfraProviders(currentScope, cb) {
 		currentScope.showDockerAccordion = false;
 		currentScope.showKubeAccordion = false;
-		
+
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
@@ -583,7 +595,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 					if(oneProvider.technologies.indexOf('kubernetes') !== -1){
 						currentScope.showKubeAccordion = true;
 					}
-					
+
 					if (oneProvider.name === 'local') {
 						let technolog = oneProvider.technologies[0];
 						oneProvider.image = "themes/" + themeToUse + "/img/" + technolog + "_logo.png";
@@ -596,7 +608,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			}
 		});
 	}
-	
+
 	return {
 		"go": go,
 		"handleFormData": handleFormData

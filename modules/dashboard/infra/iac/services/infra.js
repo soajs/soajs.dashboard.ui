@@ -53,7 +53,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 								'name': 'inputs',
 								'type': 'jsoneditor',
 								'height': '200px',
-								'value': (data) ? data.inputs : "",
+								'value': (data) ? data.inputs : [],
 								'fieldMsg': "<div class='fieldMsg'>Provide the exposed template inputs using the SOAJS Form Library syntax. To learn more about the SOAJS Form Library <a target='_blank'  href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/63862512/UI+Form'>click here</a></div>",
 								'required': false
 							}
@@ -195,7 +195,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 							getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
 								overlayLoading.hide();
 								if (error) {
-									currentScope.displayAlert("danger", error);
+									currentScope.displayAlert("danger", error.message);
 								}
 								else {
 									currentScope.displayAlert("success", "Template created successfully.");
@@ -253,7 +253,8 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 								}).success(function (response, status, headers, config) {
 									if (response.result === false && response.errors.details.length > 0) {
 										overlayLoading.hide();
-										currentScope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
+										// currentScope.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
+										currentScope.displayAlert('danger', response.errors.details[0].message);
 									}
 									else if (formData.inputs.length > 0 || typeof(formData.display) === 'object') {
 										let compOptions = {

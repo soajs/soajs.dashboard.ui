@@ -274,6 +274,12 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 											if (error) {
 												overlayLoading.hide();
 												currentScope.displayAlert('danger', "Template uploaded successfully, but there was an error uploading the template input options, please try again.");
+
+												let tempTemplate = {
+													"_id": options.params.name,
+													"name": options.params.name
+												}
+												currentScope.deleteTemplate(tempTemplate, oneInfra);
 											}
 											else {
 												overlayLoading.hide();

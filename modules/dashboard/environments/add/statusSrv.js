@@ -122,7 +122,7 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		});
 		let opts = oneVMLayer;
 		opts.params.env = currentScope.wizard.gi.code;
-		
+
 		let onboardVm = {
 			"type": "infra",
 			"name": providerName,
@@ -130,11 +130,11 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 			"options": opts
 		};
 		onboardVm.options.params.layerName = opts.data.name;
-		
+
 		let output = {
 			imfv: []
 		};
-		
+
 		output.imfv.push(onboardVm);
 		return output;
 	}
@@ -172,8 +172,8 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 
 				if (!deployments.deployments) {
 					currentScope.wizard.template.deploy.deployments = {};
-					deployments = currentScope.wizard.template.deploy.deployments;
 				}
+				deployments = currentScope.wizard.template.deploy.deployments;
 
 				if (!deployments.pre) {
 					currentScope.wizard.template.deploy.deployments.pre = {};

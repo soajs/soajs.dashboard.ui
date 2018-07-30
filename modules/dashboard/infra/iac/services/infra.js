@@ -195,7 +195,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 							getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
 								overlayLoading.hide();
 								if (error) {
-									currentScope.displayAlert("danger", error);
+									currentScope.displayAlert("danger", error.message);
 								}
 								else {
 									currentScope.displayAlert("success", "Template created successfully.");

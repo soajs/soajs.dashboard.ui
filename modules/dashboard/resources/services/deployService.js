@@ -200,14 +200,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 	}
 
 	function buildDeployForm(currentScope, context, $modalInstance, resource, action, settings, cb) {
-		
+
 		context.gotorecipes = function(){
 			if($modalInstance){
 				$modalInstance.close();
 			}
 			$location.path("/catalog-recipes");
 		};
-		
+
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
 
@@ -1165,7 +1165,21 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.vmConfiguration && context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 				context.vmExposedPortsDisabled = true;
-				context.validateVmLayerPorts(selectedRecipe, context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer]);
+				// console.log(context.mainData.deploymentData);
+				// console.log(context.formData.deployOptions)
+
+				let vmNameCombo = context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer.split("_");
+				let oneVMDeploymentData;
+				for(let vmIName in context.mainData.deploymentData.vmLayers){
+					if(vmIName.includes(vmNameCombo[0]+"_") && vmIName.includes("_" + vmNameCombo[vmNameCombo.length -1]) ){
+						oneVMDeploymentData = context.mainData.deploymentData.vmLayers[vmIName];
+						context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer = vmIName;
+					}
+				}
+				// console.log("---")
+				if(oneVMDeploymentData){
+					context.validateVmLayerPorts(selectedRecipe, oneVMDeploymentData);
+				}
 			}
 
 			if (cb) {
@@ -1251,7 +1265,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.form.formData.port0 = context.formData.deployOptions.custom.ports[0].published;
 			}
 		};
-		
+
 		/*
 		 VM specific
 		 */

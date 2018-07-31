@@ -89,6 +89,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
 
 	    }
 	    if(apiParams.deployType === 'saveAndRebuild'){
+		    options.data["recipe"] = apiParams.recipe;
 	    	options.data["serviceId"] = apiParams.serviceId;
 	    	options.data["mode"] = apiParams.mode;
 	    	options.data["action"] = "rebuild";

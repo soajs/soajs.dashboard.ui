@@ -184,13 +184,16 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 					}
 
 					if (type === "saveAndRebuild" && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id) {
-						rebuildOptions = angular.copy(deployOptions.custom);
+						rebuildOptions = angular.copy(formData.deployOptions.custom);
 						apiParams['deployType'] = "saveAndRebuild";
-						rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit back to bytes
+						rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit; //convert memory limit back to bytes
+						rebuildOptions.memory *= 1048576;
+						
 						rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
 						apiParams["rebuildOptions"] = rebuildOptions;
 						apiParams["serviceId"] = formData.instance.id;
 						apiParams["mode"] = formData.instance.labels['soajs.service.mode'];
+						apiParams["recipe"] = formData.deployOptions.recipe;
 					}
 
 					if (!$scope.options.allowEdit) {

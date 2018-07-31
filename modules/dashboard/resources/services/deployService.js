@@ -1585,11 +1585,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.getSecrets(function () {
 					context.displayRecipeInputs(true, false, (error, response) => {
 						if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
-							if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm') {
-								setTimeout(() => {
-									context.updateDeploymentName(resource.name);
-								}, 200);
-							}
+							setTimeout(() => {
+								context.updateDeploymentName(resource.name);
+							}, 200);
 						}
 					});
 				});

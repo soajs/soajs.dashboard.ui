@@ -956,17 +956,21 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						selectedVMLayer = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer];
 						//generate the new servers entries list
 						serversArray = [];
-						selectedVMLayer.list.forEach((onevminstance) => {
-							let processed = false;
-							onevminstance.ip.forEach((oneIP) =>{
-								if(oneIP.type === 'public' && !processed){
-									processed = true;
-									serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
-								}
+						if (selectedVMLayer && selectedVMLayer.list){
+							selectedVMLayer.list.forEach((onevminstance) => {
+								let processed = false;
+								onevminstance.ip.forEach((oneIP) =>{
+									if(oneIP.type === 'public' && !processed){
+										processed = true;
+										serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
+									}
+								});
 							});
-						});
+							context.options.serversArray = serversArray;
+						}
+						else {
 
-						context.options.serversArray = serversArray;
+						}
 					}
 					else {
 						setTimeout(function() {

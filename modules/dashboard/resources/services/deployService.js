@@ -984,6 +984,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			}
 
 			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0) {
+				//keep a copy of the original form entries
+				try {
+					if(!context.options.originalFormEntries) {
+						context.options.originalFormEntries = Object.assign([], context.form.entries);
+					}
+				}
+				catch(e) {
+					console.log(e);
+				}
+
 				let serversEntry = context.form.entries.find((oneEntry) => { return oneEntry.name === 'servers0'; });
 				if(serversEntry && serversEntry.entries && serversArray && serversArray.length > 0) {
 					let newEntries = [];
@@ -1023,6 +1033,25 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 
 					context.form.entries = newEntries.concat(context.form.entries);
+				}
+				else {
+					// reset form entries
+					if(context.options.originalFormEntries) {
+						try {
+							context.form.entries = Object.assign([], context.options.originalFormEntries);
+							if(context.form.formData) {
+								for(let i = 0; i < Object.keys(context.form.formData).length; i++) {
+									let oneKey = Object.keys(context.form.formData)[i];
+									if(oneKey && oneKey.match(/(host|port|removeserver)[0-9]+/g)) {
+										delete context.form.formData[oneKey];
+									}
+								}
+							}
+						}
+						catch(e) {
+							console.log(e);
+						}
+					}
 				}
 
 				for (let $index = context.form.entries.length - 1; $index >= 0; $index--) {

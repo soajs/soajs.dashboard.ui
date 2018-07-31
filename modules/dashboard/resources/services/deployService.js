@@ -1187,8 +1187,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.vmConfiguration && context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 				context.vmExposedPortsDisabled = true;
-				console.log(context.mainData.deploymentData);
-				console.log(context.formData.deployOptions)
+				// console.log(currentScope);
+				// console.log(context);
+				// console.log(context.mainData.deploymentData);
+				// console.log(context.formData.deployOptions)
 
 				let vmNameCombo = context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer.split("_");
 				let oneVMDeploymentData;
@@ -1198,7 +1200,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer = vmIName;
 					}
 				}
-				console.log("---")
+				// console.log("---")
 				if(oneVMDeploymentData){
 					context.validateVmLayerPorts(selectedRecipe, oneVMDeploymentData);
 				}
@@ -1508,9 +1510,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					context.getCatalogRecipes(cb);
 				});
 				if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
-					setTimeout(() => {
-						context.updateDeploymentName(resource.name);
-					}, 200);
+					if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm'){
+						setTimeout(() => {
+							context.updateDeploymentName(resource.name);
+						}, 100);
+					}
 				}
 			});
 		}
@@ -1521,9 +1525,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				context.getSecrets(function () {
 					context.displayRecipeInputs(true, false, (error, response) => {
 						if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
-							setTimeout(() => {
-								context.updateDeploymentName(resource.name);
-							}, 200);
+							if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm') {
+								setTimeout(() => {
+									context.updateDeploymentName(resource.name);
+								}, 200);
+							}
 						}
 					});
 				});

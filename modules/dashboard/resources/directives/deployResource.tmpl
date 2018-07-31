@@ -15,7 +15,7 @@
 
 <div ng-if="displayPlatformPicker">
 	<label>Deployment Platform</label>
-	<select class="form-control"  ng-required="true" ng-model="formData.deployOptions.deployConfig.type" ng-change="updateDeploymentName(formData.name, true)">
+	<select class="form-control"  ng-required="true" ng-model="formData.deployOptions.deployConfig.type" ng-change="updateDeploymentName(formData.name, true)" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe">
 		<option value="vm">Bare Metal Virtual Machine</option>
 		<option value="container">Container Technology</option>
 	</select>
@@ -229,8 +229,7 @@
 		<div ng-if="mainData.deploymentData.vmLayers">
 			<div>
 				<label>VM Layer</label>
-				<!--<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers" ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes(); buildComputedHostname(formData.deployOptions.custom.name);"></select>-->
-				<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers" ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes();"></select>
+				<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers" ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes()" ng-disabled="mainData.resourceDeployed && options.formAction === 'update' && formData.deployOptions.recipe"></select>
 				<label class="fieldMsg">Choose the VM layer</label>
 			</div>
 

@@ -969,7 +969,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						context.options.serversArray = serversArray;
 					}
 					else {
-						//TODO temp
 						setTimeout(function() {
 							return context.buildComputedHostname(resourceName);
 						}, 500);
@@ -977,7 +976,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			}
 
-			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0 && !context.form.updated) {
+			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0) {
 				let serversEntry = context.form.entries.find((oneEntry) => { return oneEntry.name === 'servers0'; });
 				if(serversEntry && serversEntry.entries && serversArray && serversArray.length > 0) {
 					let newEntries = [];
@@ -1010,7 +1009,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						newEntries = newEntries.concat(oneEntryClone);
 					});
 
-					context.form.updated = true;
 					for(let i = context.form.entries.length - 1; i >= 0; i--) {
 						if(context.form.entries[i].name.match(/servers[0-9]+/g)) {
 							context.form.entries.splice(i, 1);
@@ -1019,9 +1017,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 					context.form.entries = newEntries.concat(context.form.entries);
 				}
-
-
-				//todo: make sure to reset it all to default each time there is a select
 
 				for (let $index = context.form.entries.length - 1; $index >= 0; $index--) {
 					let oneEntry = context.form.entries[$index];
@@ -1034,7 +1029,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							if (context.formData.canBeDeployed && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
 
-								if (context.vmExposedPortsDisabled && resource.status === 'ready') {
+								if (context.vmExposedPortsDisabled && resource.status === 'ready' && context.options.serversArray) {
 									context.form.formData[oneSubEntry.name] = context.options.serversArray[$index].host;
 								}
 								else {

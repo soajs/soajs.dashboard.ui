@@ -33,7 +33,7 @@
 		                            <label>{{resource.name}}</label>
 
 		                            <div class="rightActions" style="display:inline;">
-			                            <a href="" ng-if="access.update && resource.allowEdit && resource.permission" class="btn btn-sm btn-default" ng-click="manageResource(resource, 'update')">
+			                            <a href="" ng-if="access.update && resource.allowEdit && resource.permission" class="btn btn-sm btn-default" ng-click="manageResource(resource, 'update')" ng-disabled="!resource.allowEdit">
 				                            <span class="icon icon-cog"></span>Configure
 			                            </a>
 

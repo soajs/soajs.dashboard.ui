@@ -14,7 +14,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		}
 	};
 	constructModulePermissions($scope, $scope.access, resourcesAppConfig.permissions);
-	
+
 	$scope.listResources = function (cb) {
 		let apiParams = {
 		    env : $scope.context.envCode,
@@ -25,7 +25,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			$scope.context.resources = {list: response};
 			$scope.context.resources.original = angular.copy($scope.context.resources.list); //keep a copy of the original resources records
 			groupByType($scope.context.resources, $scope.context.envCode);
-			
+
 			function groupByType(resources, envCode) {
 				resources.types = {};
 				resources.list.forEach(function (oneResource) {
@@ -35,11 +35,15 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					if (!resources.types[oneResource.type][oneResource.category]) {
 						resources.types[oneResource.type][oneResource.category] = [];
 					}
-					
+
 					if (oneResource.created === envCode.toUpperCase()) {
 						oneResource.allowEdit = true;
 					}
-					
+
+					if(oneResource.status && oneResource.status !== 'ready') {
+						oneResource.allowEdit = false;
+					}
+
 					if (oneResource.name === 'dash_cluster') {
 						oneResource.sensitive = true;
 					}
@@ -49,18 +53,18 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 					resources.types[oneResource.type][oneResource.category].push(oneResource);
 				});
 			}
-			
+
 			if (cb) {
 				return cb();
 			}
 		});
-		
+
 	};
-	
+
 	$scope.manageResource = function (resource, action) {
 		addService.manageResource($scope, resource, action);
 	};
-	
+
 	$scope.togglePlugResource = function (resource, plug) {
 		var resourceRecord = {};
 		//get the original resource record
@@ -70,25 +74,25 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 				break;
 			}
 		}
-		
+
 		var resourceId = resourceRecord._id;
 		delete resourceRecord._id;
 		delete resourceRecord.created;
 		delete resourceRecord.author;
 		delete resourceRecord.permission;
 		resourceRecord.plugged = plug;
-		
+
 		let apiParams = {
 			resourceId: resourceId,
 			resourceRecord: resourceRecord
 		};
-		
+
 		commonService.togglePlugResourceApi($scope, apiParams, function () {
 			$scope.displayAlert('success', 'Resource updated successfully');
 			$scope.listResources();
 		});
 	};
-	
+
 	$scope.deleteResource = function (resource) {
 		let apiParams = {
 			id: resource._id,
@@ -113,16 +117,16 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			$scope.listResources();
 		});
 	};
-	
+
 	$scope.addResource = function () {
 		addService.addNewPopUp($scope);
 	};
-	
+
 	$scope.deployResource = function (resource) {
 		if (!resource.canBeDeployed || !resource.deployOptions || Object.keys(resource.deployOptions).length === 0) {
 			$scope.displayAlert('danger', 'This resource is missing deployment configuration');
 		}
-		
+
 		let deployOptions = angular.copy(resource.deployOptions);
 		if (!deployOptions.custom) {
 			deployOptions.custom = {};
@@ -140,7 +144,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
         });
 
 	};
-	
+
 	$scope.getEnvPlatform = function(cb){
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -160,7 +164,7 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 			}
 		});
 	};
-	
+
 	//start here
 	if ($scope.access.list) {
 		injectFiles.injectCss("modules/dashboard/resources/resources.css");

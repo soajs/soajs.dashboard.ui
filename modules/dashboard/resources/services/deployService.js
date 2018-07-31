@@ -922,17 +922,17 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 					//get the new catalog recipes
 					context.getCatalogRecipes(() => {
-
+						context.buildComputedHostname(resourceName);
 					});
 				});
 			}
 			// formData.deployOptions.deployConfig.type
-			context.buildComputedHostname(resourceName);
+			// context.buildComputedHostname(resourceName);
 		};
 
 		context.buildComputedHostname = function (resourceName) {
 			let selectedVMLayer, serversArray;
-
+			context.options.computedHostname = resourceName;
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
 				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
 					context.options.computedHostname = resourceName + '-service';
@@ -980,8 +980,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				let serversEntry = context.form.entries.find((oneEntry) => { return oneEntry.name === 'servers0'; });
 				if(serversEntry && serversEntry.entries && serversArray && serversArray.length > 0) {
 					let newEntries = [];
+					let oneEntryClone = angular.copy(serversEntry);
 					serversArray.forEach((oneServer, index) => {
-						let oneEntryClone = angular.copy(serversEntry);
 						oneEntryClone.name = `servers${index}`;
 
 						let hostField = oneEntryClone.entries.find((oneField) => { return oneField.name.includes('host'); });
@@ -1029,15 +1029,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							if (context.formData.canBeDeployed && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
 
-								if (context.vmExposedPortsDisabled && resource.status === 'ready' && context.options.serversArray) {
+								if (context.vmExposedPortsDisabled && resource.status === 'ready' && context.options.serversArray && context.options.serversArray[$index]) {
 									context.form.formData[oneSubEntry.name] = context.options.serversArray[$index].host;
 								}
 								else {
 									context.form.formData[oneSubEntry.name] = context.options.computedHostname;
-									if(context.options.computedHostname) {
-										context.form.formData[oneSubEntry.name] = context.options.computedHostname;
-									}
-									else if(context.options.serversArray){
+									if(context.options.serversArray && context.options.serversArray[$index]){
 										context.form.formData[oneSubEntry.name] = context.options.serversArray[$index].host;
 									}
 								}

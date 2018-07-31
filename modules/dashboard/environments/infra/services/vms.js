@@ -279,6 +279,21 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                     }
                 }
             }
+            if (vm.template && Object.keys(vm.template).length > 0) {
+                for (let j = 0; j < vm.list.length; j++) {
+                    if (vm.list[j].labels && vm.list[j].labels['soajs.env.code']) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    for (let z = 0; z < vm.list.length; z++) {
+                        if ((vm.list[z].labels && (!vm.list[z].labels['soajs.env.code'] || vm.list[z].labels['soajs.env.code'] === undefined)) || !vm.list[z].labels) {
+                            vmLayers[Object.keys(vmLayers)[i]].sync = true
+                        }
+                    }
+                }
+			}
         }
         return cb();
     }

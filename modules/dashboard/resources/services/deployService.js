@@ -956,17 +956,21 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						selectedVMLayer = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer];
 						//generate the new servers entries list
 						serversArray = [];
-						selectedVMLayer.list.forEach((onevminstance) => {
-							let processed = false;
-							onevminstance.ip.forEach((oneIP) =>{
-								if(oneIP.type === 'public' && !processed){
-									processed = true;
-									serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
-								}
+						if (selectedVMLayer && selectedVMLayer.list){
+							selectedVMLayer.list.forEach((onevminstance) => {
+								let processed = false;
+								onevminstance.ip.forEach((oneIP) =>{
+									if(oneIP.type === 'public' && !processed){
+										processed = true;
+										serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
+									}
+								});
 							});
-						});
-
-						context.options.serversArray = serversArray;
+							context.options.serversArray = serversArray;
+						}
+						else {
+						
+						}
 					}
 					else {
 						setTimeout(function() {
@@ -1038,6 +1042,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 										context.form.formData[oneSubEntry.name] = context.options.computedHostname;
 									}
 									else if(context.options.serversArray){
+										console.log(angular.copy(context.options.serversArray[$index].host))
 										context.form.formData[oneSubEntry.name] = context.options.serversArray[$index].host;
 									}
 								}

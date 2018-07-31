@@ -609,6 +609,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
         //adding the api call to commonService
 		context.getCatalogRecipes = function (cb) {
 
+			// this function is the on-action when selecting a vm layer
+			// get the public ips from the layer and update the resource configuration
+			if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm') {
+				context.buildComputedHostname();
+			}
+
 			context.mainData.recipes = [];
 
 			//wizard mode only
@@ -926,7 +932,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 		context.buildComputedHostname = function (resourceName) {
 			let selectedVMLayer, serversArray;
-			context.options.computedHostname = resourceName;
+
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
 				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
 					context.options.computedHostname = resourceName + '-service';
@@ -944,47 +950,101 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				}
-				
-				// if(context.formData.deployOptions.deployConfig.type === 'vm' && context.formData.deployOptions.deployConfig.vmConfiguration){
-				// 	selectedVMLayer = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer];
-				// 	//generate the new servers entries list
-				// 	console.log(selectedVMLayer);
-				// 	serversArray = [];
-				// 	selectedVMLayer.list.forEach((onevminstance) => {
-				// 		let processed = false;
-				// 		onevminstance.ip.forEach((oneIP) =>{
-				// 			if(oneIP.type === 'public' && !processed){
-				// 				processed = true;
-				// 				serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
-				// 			}
-				// 		});
-				// 	});
-				// }
+
+				if(context.formData.deployOptions.deployConfig.type === 'vm' && context.formData.deployOptions.deployConfig.vmConfiguration){
+					if(context.mainData.deploymentData && context.mainData.deploymentData.vmLayers) {
+						selectedVMLayer = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer];
+						//generate the new servers entries list
+						serversArray = [];
+						selectedVMLayer.list.forEach((onevminstance) => {
+							let processed = false;
+							onevminstance.ip.forEach((oneIP) =>{
+								if(oneIP.type === 'public' && !processed){
+									processed = true;
+									serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
+								}
+							});
+						});
+
+						context.options.serversArray = serversArray;
+					}
+					else {
+						//TODO temp
+						setTimeout(function() {
+							return context.buildComputedHostname(resourceName);
+						}, 500);
+					}
+				}
 			}
 
-			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0) {
-				// console.log(context.form);
-				// console.log(serversArray);
-				
-				//todo: cross reference serversArray with form.entries ( servers ), do not forget the formData
+			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0 && !context.form.updated) {
+				let serversEntry = context.form.entries.find((oneEntry) => { return oneEntry.name === 'servers0'; });
+				if(serversEntry && serversEntry.entries && serversArray && serversArray.length > 0) {
+					let newEntries = [];
+					serversArray.forEach((oneServer, index) => {
+						let oneEntryClone = angular.copy(serversEntry);
+						oneEntryClone.name = `servers${index}`;
+
+						let hostField = oneEntryClone.entries.find((oneField) => { return oneField.name.includes('host'); });
+						let portField = oneEntryClone.entries.find((oneField) => { return oneField.name.includes('port'); });
+						let removeServerField = oneEntryClone.entries.find((oneField) => { return oneField.name.includes('removeserver'); });
+
+						if(hostField) {
+							hostField.name = `host${index}`;
+							hostField.value = oneServer.host;
+							hostField.disabled = true;
+
+							context.form.formData[hostField.name] = hostField.value;
+						}
+						if(portField) {
+							portField.name = `port${index}`;
+							portField.value = oneServer.port;
+							portField.disabled = true;
+
+							context.form.formData[portField.name] = portField.value;
+						}
+						if(removeServerField) {
+							removeServerField.name = `removeserver${index}`;
+						}
+
+						newEntries = newEntries.concat(oneEntryClone);
+					});
+
+					context.form.updated = true;
+					for(let i = context.form.entries.length - 1; i >= 0; i--) {
+						if(context.form.entries[i].name.match(/servers[0-9]+/g)) {
+							context.form.entries.splice(i, 1);
+						}
+					}
+
+					context.form.entries = newEntries.concat(context.form.entries);
+				}
+
+
 				//todo: make sure to reset it all to default each time there is a select
-				
+
 				for (let $index = context.form.entries.length - 1; $index >= 0; $index--) {
 					let oneEntry = context.form.entries[$index];
-					if (oneEntry.name && oneEntry.name === 'servers0') {
+					if (oneEntry.name && oneEntry.name.match(/servers[0-9]+/g)) {
 						oneEntry.entries.forEach((oneSubEntry) => {
 							oneSubEntry.disabled = false;
 							delete oneSubEntry.disabled;
 							context.form.formData[oneSubEntry.name] = '';
 
-							if (context.formData.canBeDeployed && resourceName && resourceName !== '' && oneSubEntry.name.includes("host")) {
+							if (context.formData.canBeDeployed && oneSubEntry.name.includes("host")) {
 								oneSubEntry.disabled = true;
 
 								if (context.vmExposedPortsDisabled && resource.status === 'ready') {
-									context.form.formData[oneSubEntry.name] = resource.config.servers[0].host;
+									context.form.formData[oneSubEntry.name] = context.options.serversArray[$index].host;
 								}
 								else {
 									context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+									if(context.options.computedHostname) {
+										context.form.formData[oneSubEntry.name] = context.options.computedHostname;
+									}
+									else if(context.options.serversArray){
+										context.form.formData[oneSubEntry.name] = context.options.serversArray[$index].host;
+									}
 								}
 							}
 
@@ -1011,9 +1071,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						});
 					}
 
-					if (context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0') {
-						context.form.entries.splice($index, 1);
-					}
+					// if (context.formData.canBeDeployed && oneEntry.name && oneEntry.name.includes("servers") && oneEntry.name !== 'anotherservers' && oneEntry.name !== 'servers0') {
+					// 	// context.form.entries.splice($index, 1);
+					// }
 
 					if (oneEntry.name && oneEntry.name === 'anotherservers') {
 						if (context.formData.canBeDeployed) {
@@ -1314,7 +1374,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				vmDataLoaded = true;
 
 				let envCode;
-				
+
 				if(context.myEnv){
 					envCode = context.myEnv;
 				}
@@ -1324,7 +1384,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				else if(context.context && context.context.envCode){
 					envCode = context.context.envCode;
 				}
-				
+
 				if(currentScope.environmentWizard){
 					envCode = null;
 				}
@@ -1342,7 +1402,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						else{
 							context.mainData.deploymentData.vmLayers = vms;
 						}
-						
+
 						//todo: remove this validation in the next sprints
 						for(let i in context.mainData.deploymentData.vmLayers){
 							let compatibleVM = false;
@@ -1358,7 +1418,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							else if (context.mainData.deploymentData.vmLayers[i].specs){
 								compatibleVM = true;
 							}
-							
+
 							if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
 								for (let j in currentScope.onboardNames) {
 									if (currentScope.onboardNames[j] === (context.mainData.deploymentData.vmLayers[i].name + "__" + context.mainData.deploymentData.vmLayers[i].list[0].network)) {
@@ -1366,12 +1426,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 									}
 								}
 							}
-							
+
 							if(!compatibleVM){
 								delete context.mainData.deploymentData.vmLayers[i];
 							}
 						}
-						
+
 						if(cb && typeof cb === 'function'){
 							return cb();
 						}
@@ -1503,7 +1563,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			];
 		}
-		
+
 		if (!context.noCDoverride) {
 			context.getInfraProviders(() => {
 				context.getSecrets((cb) => {

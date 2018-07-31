@@ -130,6 +130,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
                         if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
                             deployOptions.custom.env = formData.deployOptions.custom.env
                         }
+                        
 						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
@@ -181,6 +182,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								});
 							}
 						}
+						if(type === 'saveAndRebuild' && deployOptions.custom && deployOptions.custom.sourceCode){
+							rebuildOptions.sourceCode = deployOptions.custom.sourceCode;
+						}
 					}
 
 					if (type === "saveAndRebuild" && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id) {
@@ -223,7 +227,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 					if (apiParams.options && apiParams.options.custom && !apiParams.options.custom.env) {
                         apiParams.options.custom.env = {}
 					}
-
+					
 					commonService.addEditResourceApi($scope, apiParams, function (response) {
 						$scope.newResource = response;
 						if (type === 'saveAndRebuild') {

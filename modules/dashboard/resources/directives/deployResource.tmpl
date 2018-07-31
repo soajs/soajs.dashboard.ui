@@ -229,7 +229,8 @@
 		<div ng-if="mainData.deploymentData.vmLayers">
 			<div>
 				<label>VM Layer</label>
-				<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers" ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes()"></select>
+				<!--<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers" ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes(); buildComputedHostname(formData.deployOptions.custom.name);"></select>-->
+				<select name="vmLayer" class="form-control"  ng-required="true" ng-options="layerName as layerName for (layerName, layerInstances) in mainData.deploymentData.vmLayers" ng-model="formData.deployOptions.deployConfig.vmConfiguration.vmLayer" ng-change="getCatalogRecipes();"></select>
 				<label class="fieldMsg">Choose the VM layer</label>
 			</div>
 

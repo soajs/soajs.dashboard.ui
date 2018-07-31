@@ -925,8 +925,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		};
 
 		context.buildComputedHostname = function (resourceName) {
+			let selectedVMLayer, serversArray;
 			context.options.computedHostname = resourceName;
-
 			if (context.formData && context.formData.deployOptions && context.formData.deployOptions.custom) {
 				if (resourceName && resourceName !== '' && context.envPlatform === 'kubernetes') {
 					context.options.computedHostname = resourceName + '-service';
@@ -944,9 +944,31 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						}
 					}
 				}
+				
+				// if(context.formData.deployOptions.deployConfig.type === 'vm' && context.formData.deployOptions.deployConfig.vmConfiguration){
+				// 	selectedVMLayer = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer];
+				// 	//generate the new servers entries list
+				// 	console.log(selectedVMLayer);
+				// 	serversArray = [];
+				// 	selectedVMLayer.list.forEach((onevminstance) => {
+				// 		let processed = false;
+				// 		onevminstance.ip.forEach((oneIP) =>{
+				// 			if(oneIP.type === 'public' && !processed){
+				// 				processed = true;
+				// 				serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
+				// 			}
+				// 		});
+				// 	});
+				// }
 			}
 
 			if (context.form && context.form.entries && Array.isArray(context.form.entries) && context.form.entries.length > 0) {
+				// console.log(context.form);
+				// console.log(serversArray);
+				
+				//todo: cross reference serversArray with form.entries ( servers ), do not forget the formData
+				//todo: make sure to reset it all to default each time there is a select
+				
 				for (let $index = context.form.entries.length - 1; $index >= 0; $index--) {
 					let oneEntry = context.form.entries[$index];
 					if (oneEntry.name && oneEntry.name === 'servers0') {
@@ -1165,8 +1187,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.vmConfiguration && context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 				context.vmExposedPortsDisabled = true;
-				// console.log(context.mainData.deploymentData);
-				// console.log(context.formData.deployOptions)
+				console.log(context.mainData.deploymentData);
+				console.log(context.formData.deployOptions)
 
 				let vmNameCombo = context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer.split("_");
 				let oneVMDeploymentData;
@@ -1176,7 +1198,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer = vmIName;
 					}
 				}
-				// console.log("---")
+				console.log("---")
 				if(oneVMDeploymentData){
 					context.validateVmLayerPorts(selectedRecipe, oneVMDeploymentData);
 				}

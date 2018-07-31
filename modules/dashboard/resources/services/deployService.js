@@ -1311,57 +1311,70 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 			if (!vmDataLoaded) {
 				vmDataLoaded = true;
 
-				let envCode = (context.myEnv) ? context.myEnv : context.context.envCode;
+				let envCode;
+				
+				if(context.myEnv){
+					envCode = context.myEnv;
+				}
+				else if(context.options.envCode){
+					envCode = context.options.envCode;
+				}
+				else if(context.context && context.context.envCode){
+					envCode = context.context.envCode;
+				}
+				
 				if(currentScope.environmentWizard){
 					envCode = null;
 				}
-				getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
-					// TODO
-					if(!context.mainData.deploymentData.vmLayers){
-						context.mainData.deploymentData.vmLayers={};
-					}
-					if(currentScope.environmentWizard){
-						for(let i in vms){
-							context.mainData.deploymentData.vmLayers[i] = vms[i];
+				if(envCode){
+					getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
+						// TODO
+						if(!context.mainData.deploymentData.vmLayers){
+							context.mainData.deploymentData.vmLayers={};
 						}
-					}
-					else{
-						context.mainData.deploymentData.vmLayers = vms;
-					}
-
-					//todo: remove this validation in the next sprints
-					for(let i in context.mainData.deploymentData.vmLayers){
-						let compatibleVM = false;
-						if(context.mainData.deploymentData.vmLayers[i].list){
-							context.mainData.deploymentData.vmLayers[i].list.forEach((onevmInstance) =>{
-								if(onevmInstance.labels && onevmInstance.labels['soajs.env.code'] && onevmInstance.labels['soajs.env.code'] === envCode){
-                                    if (onevmInstance.tasks && Array.isArray(onevmInstance.tasks) &&  onevmInstance.tasks[0] && onevmInstance.tasks[0].status && onevmInstance.tasks[0].status.state === 'succeeded') {
-                                        compatibleVM = true;
-                                    }
+						if(currentScope.environmentWizard){
+							for(let i in vms){
+								context.mainData.deploymentData.vmLayers[i] = vms[i];
+							}
+						}
+						else{
+							context.mainData.deploymentData.vmLayers = vms;
+						}
+						
+						//todo: remove this validation in the next sprints
+						for(let i in context.mainData.deploymentData.vmLayers){
+							let compatibleVM = false;
+							if(context.mainData.deploymentData.vmLayers[i].list){
+								context.mainData.deploymentData.vmLayers[i].list.forEach((onevmInstance) =>{
+									if(onevmInstance.labels && onevmInstance.labels['soajs.env.code'] && onevmInstance.labels['soajs.env.code'] === envCode){
+										if (onevmInstance.tasks && Array.isArray(onevmInstance.tasks) &&  onevmInstance.tasks[0] && onevmInstance.tasks[0].status && onevmInstance.tasks[0].status.state === 'succeeded') {
+											compatibleVM = true;
+										}
+									}
+								});
+							}
+							else if (context.mainData.deploymentData.vmLayers[i].specs){
+								compatibleVM = true;
+							}
+							
+							if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
+								for (let j in currentScope.onboardNames) {
+									if (currentScope.onboardNames[j] === (context.mainData.deploymentData.vmLayers[i].name + "__" + context.mainData.deploymentData.vmLayers[i].list[0].network)) {
+										compatibleVM = true;
+									}
 								}
-							});
+							}
+							
+							if(!compatibleVM){
+								delete context.mainData.deploymentData.vmLayers[i];
+							}
 						}
-						else if (context.mainData.deploymentData.vmLayers[i].specs){
-							compatibleVM = true;
+						
+						if(cb && typeof cb === 'function'){
+							return cb();
 						}
-
-                        if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
-                            for (let j in currentScope.onboardNames) {
-                                if (currentScope.onboardNames[j] === (context.mainData.deploymentData.vmLayers[i].name + "__" + context.mainData.deploymentData.vmLayers[i].list[0].network)) {
-                                    compatibleVM = true;
-                                }
-                            }
-                        }
-
-						if(!compatibleVM){
-							delete context.mainData.deploymentData.vmLayers[i];
-						}
-					}
-
-					if(cb && typeof cb === 'function'){
-						return cb();
-					}
-				});
+					});
+				}
 			}
 			else{
 				if(cb && typeof cb === 'function')
@@ -1488,7 +1501,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			];
 		}
-
+		
 		if (!context.noCDoverride) {
 			context.getInfraProviders(() => {
 				context.getSecrets((cb) => {

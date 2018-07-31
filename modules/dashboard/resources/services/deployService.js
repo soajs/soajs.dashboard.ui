@@ -969,7 +969,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							context.options.serversArray = serversArray;
 						}
 						else {
-
+							// set default value for hostname if no servers array available for resource name
+							if(!resourceName) {
+								context.options.computedHostname = selectedVMLayer.name;
+							}
 						}
 					}
 					else {
@@ -984,8 +987,8 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				let serversEntry = context.form.entries.find((oneEntry) => { return oneEntry.name === 'servers0'; });
 				if(serversEntry && serversEntry.entries && serversArray && serversArray.length > 0) {
 					let newEntries = [];
-					let oneEntryClone = angular.copy(serversEntry);
 					serversArray.forEach((oneServer, index) => {
+						let oneEntryClone = angular.copy(serversEntry);
 						oneEntryClone.name = `servers${index}`;
 
 						let hostField = oneEntryClone.entries.find((oneField) => { return oneField.name.includes('host'); });
@@ -1243,10 +1246,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 
 			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.vmConfiguration && context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 				context.vmExposedPortsDisabled = true;
-				// console.log(currentScope);
-				// console.log(context);
-				// console.log(context.mainData.deploymentData);
-				// console.log(context.formData.deployOptions)
 
 				let vmNameCombo = context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer.split("_");
 				let oneVMDeploymentData;
@@ -1256,7 +1255,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer = vmIName;
 					}
 				}
-				// console.log("---")
+
 				if(oneVMDeploymentData){
 					context.validateVmLayerPorts(selectedRecipe, oneVMDeploymentData);
 				}

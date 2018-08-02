@@ -348,3 +348,32 @@ div.tempVMLayer .header{
     overflow: scroll;
     padding: 5px 0 10px 0;
 }
+
+.tr-docker-wrapper,
+.tr-kubernetes-wrapper,
+.tr-google-wrapper,
+.tr-aws-wrapper,
+.tr-azure-wrapper {
+   width: 100%;
+   float: none;
+   margin: 0;
+   border: none;
+   text-align: left !important;
+}
+
+.tr-docker-wrapper:hover,
+.tr-kubernetes-wrapper:hover,
+.tr-google-wrapper:hover,
+.tr-aws-wrapper:hover,
+.tr-azure-wrapper:hover {
+   border: none;
+   background-color: transparent;
+}
+
+.tr-docker-wrapper #docker,
+.tr-kubernetes-wrapper #kubernetes,
+.tr-google-wrapper #google,
+.tr-aws-wrapper #aws,
+.tr-azure-wrapper #azure {
+   text-align: left;
+}

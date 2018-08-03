@@ -5,23 +5,24 @@
     text-align: left;
     height: 120px;
 }
+
 #templates .recipe-box .header {
-    height:42px;
+    height: 42px;
 }
 
-#templates .recipe-box .header img{
-    height:32px;
+#templates .recipe-box .header img {
+    height: 32px;
 }
 
-#templates .recipe-box .header .rightActions{
-    margin:6px;
-    display:table;
-    float:right;
+#templates .recipe-box .header .rightActions {
+    margin: 6px;
+    display: table;
+    float: right;
 }
 
 #templates .recipe-box .body {
-    height:78px;
-    overflow-y:auto;
+    height: 78px;
+    overflow-y: auto;
 }
 
 #templates .recipe-box label {
@@ -51,47 +52,55 @@
     border-bottom-color: #3c763d !important;
 }
 
-#templates #exportTemplate{
+#templates #exportTemplate {
     max-height: 400px;
-    display:block;
+    display: block;
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-#templates .exportLabel{
-    display:block;
-    float:left;
+#templates .exportLabel {
+    display: block;
+    float: left;
     margin: 0 10px 0 0;
-    background-color:#eeeeee;
-    border:solid 1px #cccccc;
-    border-radius:3px;
-    padding:5px 30px;
-    cursor:pointer;
+    background-color: #eeeeee;
+    border: solid 1px #cccccc;
+    border-radius: 3px;
+    padding: 5px 30px;
+    cursor: pointer;
 }
 
-#templates .exportLabel.active{
-    background-color:#DEF1F7;
-    border:solid 1px #337ab7;
-    font-weight:bold;
+#templates .exportLabel.active {
+    background-color: #DEF1F7;
+    border: solid 1px #337ab7;
+    font-weight: bold;
 }
 
-.restrictions label{
-    width:20%;
-    float:left;
+.restrictions label {
+    width: 20%;
+    float: left;
 }
 
 .restrictions .adjacentList {
-    padding-left:0px;
-    margin-left:20px;
-    float:left;
-    list-style-type:none;
+    padding-left: 0px;
+    margin-left: 20px;
+    float: left;
+    list-style-type: none;
 }
 
-.restrictions .adjacentList li{
-    float:left;
-    margin-right:30px;
+.restrictions .adjacentList li {
+    float: left;
+    margin-right: 30px;
 }
 
-.restrictions .adjacentList li .btn{
-    cursor:default;
+.restrictions .adjacentList li .btn {
+    cursor: default;
+}
+
+.templateName {
+    float: left;
+    padding-top: 4px;
+    height: 25px;
+    width: 72%;
+    overflow: hidden;
 }

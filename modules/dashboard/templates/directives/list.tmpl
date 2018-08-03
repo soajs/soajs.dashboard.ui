@@ -85,8 +85,11 @@
 			<br />
 			<div ng-repeat="oneTmpl in templates" class="entryBox recipe-box" ng-class="{blueRecipeBox: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenRecipeBox: oneTmpl.type !== '_template'}">
 				<div class="header" ng-class="{blueBoxHeader: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenBoxHeader: oneTmpl.type !== '_template' }">
-					<img ng-if="oneTmpl.logo" ng-src="{{oneTmpl.logo}}" /> &nbsp;{{oneTmpl.name}}
-					
+					<div class="f-left">
+						<img ng-if="oneTmpl.logo" ng-src="{{oneTmpl.logo}}" /> &nbsp;
+					</div>
+					<div class="templateName" title="{{oneTmpl.name}}">{{oneTmpl.name}}</div>
+
 					<div class="rightActions" style="display:inline;">
 						<a href="" ng-if="access.delete && (oneTmpl.type !== '_template' || oneTmpl.deletable)" ng-click="deleteTmpl(oneTmpl)" ng-confirm-click="Are you sure you want to delete this template?">
 							<span class="icon icon-cross" tooltip="Delete Template"></span>

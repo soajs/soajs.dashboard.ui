@@ -89,7 +89,7 @@ em {
 
 #header #pillars {
     float: left;
-    margin: 0 0 0 2%;
+    margin: 0 0 0 1%;
     height: 35px;
 }
 
@@ -99,6 +99,9 @@ em {
 }
 
 #pillars .one-pillar button{
+    width: 102px;
+}
+#pillars .one-pillar button#infra{
     width: 125px;
 }
 

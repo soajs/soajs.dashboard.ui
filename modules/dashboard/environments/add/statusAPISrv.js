@@ -14,8 +14,6 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		currentScope.showProgress = true;
 		currentScope.response = {};
 		
-		// TODO: onboard
-		
 		let optionsAdd = {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
@@ -28,7 +26,12 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		getSendDataFromServer(currentScope, ngDataApi, optionsAdd, (error, response) => {
 			if(error){
 				displayStickError(currentScope, error);
-				currentScope.form.actions = renderButtonDisplay(currentScope, 3);
+				if(error.code === 403 && error.details && error.details[0] && error.details[0].message === "Environment already exists"){
+					currentScope.form.actions = renderButtonDisplay(currentScope, 1);
+				}
+				else{
+					currentScope.form.actions = renderButtonDisplay(currentScope, 3);
+				}
 			}
 			else{
 				currentScope.envId = response.data;

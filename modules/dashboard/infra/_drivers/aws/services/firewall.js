@@ -55,8 +55,8 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						'type': 'select',
 						'value': [
 							{'v': 'TCP', 'l': "TCP", 'selected': true},
-							{'v': 'UDP', 'l': "UCP"},
-							{'v': '*', 'l': "TCP/UCP"}
+							{'v': 'UDP', 'l': "UDP"},
+							{'v': '*', 'l': "TCP/UDP"}
 						],
 						'required': true,
 						'tooltip': 'Select Port Protocol',

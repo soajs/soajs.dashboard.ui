@@ -8,9 +8,9 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 	let infraLoadBalancerConfig = {
 		permissions: {
 			list: ['dashboard', '/infra', 'get'],
-			removeLoadBalancer: ['dashboard', '/infra/extra', 'delete'],
-			addLoadBalancer: ['dashboard', '/infra/extra', 'post'],
-			editLoadBalancer: ['dashboard', '/infra/extra', 'put']
+			removeLoadBalancer: ['dashboard', '/infra/extras', 'delete'],
+			addLoadBalancer: ['dashboard', '/infra/extras', 'post'],
+			editLoadBalancer: ['dashboard', '/infra/extras', 'put']
 		},
 
 		form: {

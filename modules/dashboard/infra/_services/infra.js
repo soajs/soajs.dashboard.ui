@@ -111,27 +111,37 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
 
 		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
-		
+
 		let excludedVms = ['infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
 
 		//fix the menu; local driver has not templates
 		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){
 			currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
-				
+
 				oneNavigationEntry.hideMe = false;
 				if(myInfra.name === 'local'){
 					if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
-						
+
 						if(oneNavigationEntry.url === $window.location.hash){
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
 				}
-				else if(['aws', 'google'].indexOf(myInfra.name) !== -1){
+				else if(['google'].indexOf(myInfra.name) !== -1){
 					if(excludedVms.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
-						
+
+						if(oneNavigationEntry.url === $window.location.hash){
+							currentScope.go(oneNavigationEntry.fallbackLocation);
+						}
+					}
+				}
+				//disable resource groups section for AWS only
+				else if(['aws'].indexOf(myInfra.name) !== -1){
+					if(['infra-groups'].indexOf(oneNavigationEntry.id) !== -1){
+						oneNavigationEntry.hideMe = true;
+
 						if(oneNavigationEntry.url === $window.location.hash){
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}

@@ -95,7 +95,8 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/groups/services/groups.js',
 			'modules/dashboard/infra/groups/controller.js',
-			'/modules/dashboard/infra/_drivers/azure/services/groups.js'
+			'/modules/dashboard/infra/_drivers/azure/services/groups.js',
+			'/modules/dashboard/infra/_drivers/aws/services/groups.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -125,7 +126,8 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/network/services/network.js',
 			'modules/dashboard/infra/network/controller.js',
-			'/modules/dashboard/infra/_drivers/azure/services/network.js'
+			'/modules/dashboard/infra/_drivers/azure/services/network.js',
+			'/modules/dashboard/infra/_drivers/aws/services/network.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -155,7 +157,8 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/firewall/services/firewall.js',
 			'modules/dashboard/infra/firewall/controller.js',
-			'/modules/dashboard/infra/_drivers/azure/services/firewall.js'
+			'/modules/dashboard/infra/_drivers/azure/services/firewall.js',
+			'/modules/dashboard/infra/_drivers/aws/services/firewall.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -185,7 +188,8 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/loadBalancer/services/lb.js',
 			'modules/dashboard/infra/loadBalancer/controller.js',
-			'/modules/dashboard/infra/_drivers/azure/services/loadBalancer.js'
+			'/modules/dashboard/infra/_drivers/azure/services/loadBalancer.js',
+			'/modules/dashboard/infra/_drivers/aws/services/loadBalancer.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -215,7 +219,8 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/ip/services/ip.js',
 			'modules/dashboard/infra/ip/controller.js',
-			'/modules/dashboard/infra/_drivers/azure/services/ip.js'
+			'/modules/dashboard/infra/_drivers/azure/services/ip.js',
+			'/modules/dashboard/infra/_drivers/aws/services/ip.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	}

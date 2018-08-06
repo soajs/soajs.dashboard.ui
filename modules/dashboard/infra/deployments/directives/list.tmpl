@@ -3,7 +3,7 @@
 		<br>
 		<div ng-if="!currentSelectedInfra.deployments || currentSelectedInfra.deployments.length === 0">
 			<alert type="warning">
-				No deployed found for this provider <a href="#/environments-add" class="btn btn-warning btn-sm f-right" style="position:relative; top:-5px;">Deploy New Environment</a>
+				No deployed environments found for this provider <a href="#/environments-add" class="btn btn-warning btn-sm f-right" style="position:relative; top:-5px;">Deploy New Environment</a>
 			</alert>
 		</div>
 		<div ng-if="currentSelectedInfra.deployments && currentSelectedInfra.deployments.length > 0" class="entryBoxes">

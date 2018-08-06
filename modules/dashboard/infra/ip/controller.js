@@ -29,7 +29,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					overlayLoading.show();
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 						$scope.vmlayers = vmlayers;
-					
+
 						infraIPSrv.listIPs($scope, $scope.selectedGroup);
 					});
 				}, 500);
@@ -57,7 +57,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 						}
 					});
 				}
-				
+
 				if(!$scope.$parent.$parent.currentSelectedInfra){
 					$scope.go("/infra");
 				}
@@ -90,7 +90,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 								}
 							});
 						}
-						
+
 						if(!$scope.$parent.$parent.currentSelectedInfra){
 							$scope.go("/infra");
 						}
@@ -119,6 +119,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 	$scope.listIPs = function (oneGroup) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
 			infraIPSrv.listIPs($scope, oneGroup);
 		});

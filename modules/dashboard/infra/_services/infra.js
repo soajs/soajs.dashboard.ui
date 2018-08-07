@@ -266,12 +266,13 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		}, function (error, providerVMs) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
+				return cb();
 			}
 			else {
 				let allVMs = [];
-				
+
 				delete providerVMs.soajsauth;
-				
+
 				//aggregate response and generate layers from list returned
 				if(providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0){
 					providerVMs[oneProvider.name].forEach((oneVM) => {

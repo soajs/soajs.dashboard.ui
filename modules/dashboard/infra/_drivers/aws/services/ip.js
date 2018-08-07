@@ -188,8 +188,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 	};
 
 	function addIP(currentScope) {
-		// // currentScope.labelCounter = 0;
-		//
+		// 
 		// let options = {
 		// 	timeout: $timeout,
 		// 	form: {
@@ -260,50 +259,11 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 		// 	]
 		// };
 		//
-		// // options.form.entries[6].entries[0].onAction = function (id, value, form) {
-		// // 	addNewLabel(currentScope);
-		// // };
-		//
 		// //set value of region to selectedRegion
 		// options.form.entries[1].value = currentScope.selectedGroup.region;
 		//
 		// buildFormWithModal(currentScope, $modal, options);
 	}
-
-	// function addNewLabel(currentScope) {
-	// 	let labelCounter = currentScope.labelCounter;
-	// 	let tmp = angular.copy(infraIPConfig.form.labelInput);
-	// 	tmp.name += labelCounter;
-	// 	tmp.entries[0].name += labelCounter;
-	// 	tmp.entries[1].name += labelCounter;
-	// 	tmp.entries[2].name += labelCounter;
-	//
-	// 	tmp.entries[2].onAction = function (id, value, form) {
-	// 		let count = parseInt(id.replace('rLabel', ''));
-	//
-	// 		for (let i = form.entries[6].entries.length - 1; i >= 0; i--) {
-	// 			if (form.entries[6].entries[i].name === 'labelGroup' + count) {
-	// 				//remove from formData
-	// 				for (var fieldname in form.formData) {
-	// 					if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
-	// 						delete form.formData[fieldname];
-	// 					}
-	// 				}
-	// 				//remove from formEntries
-	// 				form.entries[6].entries.splice(i, 1);
-	// 				break;
-	// 			}
-	// 		}
-	// 	};
-	//
-	// 	if (currentScope.form && currentScope.form.entries) {
-	// 		currentScope.form.entries[6].entries.splice(currentScope.form.entries[6].entries.length - 1, 0, tmp);
-	// 	}
-	// 	else {
-	// 		// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-	// 	}
-	// 	currentScope.labelCounter ++;
-	// }
 
 	function editIP(currentScope, originalIP) {
 		// let oneIP = angular.copy(originalIP);
@@ -484,29 +444,29 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 		// });
 	}
 
-	function listIPs(currentScope, oneGroup) {
-		// let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		//
-		// //save selected group in scope to be accessed by other functions
-		// currentScope.selectedGroup = oneGroup;
-		//
-		// // clean grid from previous list if any
-		// if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
-		// 	currentScope.grid.rows = [];
-		// 	currentScope.grid.filteredRows = [];
-		// 	currentScope.grid.original = [];
-		// }
-		//
-		// let listOptions = {
-		// 	method: 'get',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'id': oneInfra._id,
-		// 		'group': oneGroup.name,
-		// 		'extras[]': ['publicIps']
-		// 	}
-		// };
-		//
+	function listIPs(currentScope, oneRegion) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+
+		//save selected group in scope to be accessed by other functions
+		currentScope.selectedRegion = oneRegion;
+
+		// clean grid from previous list if any
+		if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
+			currentScope.grid.rows = [];
+			currentScope.grid.filteredRows = [];
+			currentScope.grid.original = [];
+		}
+
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': oneInfra._id,
+				// 'region': oneRegion.name,
+				'extras[]': ['publicIps']
+			}
+		};
+		console.log(listOptions);
 		// overlayLoading.show();
 		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 		// 	overlayLoading.hide();

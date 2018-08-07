@@ -116,12 +116,12 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 		infraIPSrv.editIP($scope, oneIP);
 	};
 
-	$scope.listIPs = function (oneGroup) {
+	$scope.listIPs = function (oneRegion) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
-			infraIPSrv.listIPs($scope, oneGroup);
+			infraIPSrv.listIPs($scope, oneRegion);
 		});
 	};
 

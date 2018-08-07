@@ -343,29 +343,29 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		// });
 	}
 
-	function listNetworks(currentScope, oneGroup) {
-		// let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		//
-		// //save selected group in scope to be accessed by other functions
-		// currentScope.selectedGroup = oneGroup;
-		//
-		// //clean grid from previous list if any
-		// if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
-		// 	currentScope.grid.rows = [];
-		// 	currentScope.grid.filteredRows = [];
-		// 	currentScope.grid.original = [];
-		// }
-		//
-		// let listOptions = {
-		// 	method: 'get',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'id': oneInfra._id,
-		// 		'group': oneGroup.name,
-		// 		'extras[]': ['networks']
-		// 	}
-		// };
-		//
+	function listNetworks(currentScope, oneRegion) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+
+		//save selected group in scope to be accessed by other functions
+		currentScope.selectedRegion = oneRegion;
+
+		//clean grid from previous list if any
+		if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
+			currentScope.grid.rows = [];
+			currentScope.grid.filteredRows = [];
+			currentScope.grid.original = [];
+		}
+
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': oneInfra._id,
+				'group': oneRegion.name,
+				'extras[]': ['networks']
+			}
+		};
+		
 		// overlayLoading.show();
 		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 		// 	overlayLoading.hide();

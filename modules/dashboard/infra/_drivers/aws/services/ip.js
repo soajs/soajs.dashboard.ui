@@ -188,7 +188,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 	};
 
 	function addIP(currentScope) {
-		// 
+		//
 		// let options = {
 		// 	timeout: $timeout,
 		// 	form: {
@@ -466,7 +466,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 				'extras[]': ['publicIps']
 			}
 		};
-		console.log(listOptions);
+
 		// overlayLoading.show();
 		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 		// 	overlayLoading.hide();

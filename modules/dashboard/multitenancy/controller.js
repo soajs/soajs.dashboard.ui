@@ -1096,25 +1096,25 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 									app.dashboardAccess = true;
 									break;
 								}
-								
-								if(app.appId === currentApps[i].appId){
-									$scope.availablePackages.forEach((onePackage) => {
-										if(onePackage.pckCode === app.package) {
-											if(!app.availableEnvs){
-												app.availableEnvs = [];
-											}
-											
-											let packAclEnv = Object.keys(onePackage.acl);
-											packAclEnv.forEach((onePackAclEnv) => {
-												if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
-													app.availableEnvs.push(onePackAclEnv);
-												}
-											});
+							}
+							
+							$scope.availablePackages.forEach((onePackage) => {
+								if(onePackage.pckCode === app.package) {
+									if(!app.availableEnvs){
+										app.availableEnvs = [];
+									}
+									
+									let packAclEnv = Object.keys(onePackage.acl);
+									packAclEnv.forEach((onePackAclEnv) => {
+										if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
+											app.availableEnvs.push(onePackAclEnv);
 										}
 									});
 								}
-							}
+							});
 						});
+						
+						
 						$scope.tenantsList.rows[i].applications = response;
 						break;
 					}

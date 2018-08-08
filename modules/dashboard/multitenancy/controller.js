@@ -14,13 +14,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		 'tenants': []
 		 },*/
 		{
-			'label': translation.product[LANG],
-			'type': 'product',
+			'label': translation.client[LANG],
+			'type': 'client',
 			'tenants': []
 		},
 		{
-			'label': translation.client[LANG],
-			'type': 'client',
+			'label': translation.product[LANG],
+			'type': 'product',
 			'tenants': []
 		}
 	];
@@ -531,6 +531,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			});
 		}
 		// on edit end
+		formConfig.entries.unshift({
+			type: "html",
+			value: "<div class='alert alert-warning'>" +
+						"<h4><span class='icon icon-info'></span>&nbsp;Warning</h4><hr />" +
+						"<p>Be advised that when turning ON and OFF or modifying the oAuth Security of a tenant, all the keys configuration for all the applications belonging to this tenant will be modified based on the option you select. <a href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/61979922/Multitenancy#Multitenancy-oauth' target='_blank'>Learn More</a></p>" +
+					"</div>"
+		});
 		
 		var options = {
 			timeout: $timeout,

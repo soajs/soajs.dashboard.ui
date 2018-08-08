@@ -1519,6 +1519,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 									for (var i = 0; i < currentKeys.length; i++) {
 										if (keyObj.key === currentKeys[i].key && currentKeys[i].dashboardAccess) {
 											keyObj.dashboardAccess = true;
+											$scope.reloadConfiguration(tId, appId, keyObj.key, i);
 											break;
 										}
 									}

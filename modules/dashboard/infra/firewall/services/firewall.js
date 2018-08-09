@@ -1,9 +1,9 @@
 "use strict";
 var infraFirewallSrv = soajsApp.components;
-infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfraFirewallSrv', function (azureInfraFirewallSrv, awsInfraFirewallSrv) {
+infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfraFirewallSrv', 'infraCommonSrv', function (azureInfraFirewallSrv, awsInfraFirewallSrv, infraCommonSrv) {
 
 	function addFirewall(currentScope) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
@@ -19,7 +19,7 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 	}
 
 	function editFirewall(currentScope, originalFirewall) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
@@ -35,7 +35,7 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 	}
 
 	function deleteFirewall(currentScope, oneFirewall) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
@@ -51,7 +51,7 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 	}
 
 	function listFirewalls(currentScope, oneGroup) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':

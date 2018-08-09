@@ -478,15 +478,15 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 			currentScope.grid.original = [];
 		}
 
-		let listOptions = {
-			method: 'get',
-			routeName: '/dashboard/infra/extras',
-			params: {
-				'id': oneInfra._id,
-				'group': oneRegion.name,
-				'extras[]': ['securityGroups']
-			}
-		};
+		// let listOptions = {
+		// 	method: 'get',
+		// 	routeName: '/dashboard/infra/extras',
+		// 	params: {
+		// 		'id': oneInfra._id,
+		// 		'group': oneRegion.name,
+		// 		'extras[]': ['securityGroups']
+		// 	}
+		// };
 
 		// overlayLoading.show();
 		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
@@ -495,67 +495,88 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 		// 		currentScope.displayAlert('danger', error);
 		// 	}
 		// 	else {
-		// 		currentScope.infraSecurityGroups = [];
-		// 		if (response.securityGroups && response.securityGroups.length > 0) {
-		// 			currentScope.infraSecurityGroups = response.securityGroups;
-		// 		}
-		//
-		// 		if (currentScope.infraSecurityGroups.length > 0) {
-		// 			currentScope.infraSecurityGroups[0].open = true;
-		// 		}
-		//
-		// 		if (currentScope.vmlayers) {
-		// 			let processedNetworks = [];
-		// 			currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
-		// 				currentScope.vmlayers.forEach((oneVmLayer) => {
-		// 					if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()) {
-		//
-		// 						if (oneVmLayer.securityGroup && oneVmLayer.securityGroup === oneSecurityGroup.name) {
-		//
-		// 							if (!oneSecurityGroup.vmLayers) {
-		// 								oneSecurityGroup.vmLayers = [];
-		// 							}
-		//
-		// 							if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
-		// 								let found = false;
-		// 								$localStorage.environments.forEach((oneEnv) => {
-		// 									if (oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()) {
-		// 										found = true;
-		// 									}
-		// 								});
-		// 								oneSecurityGroup.vmLayers.push({
-		// 									vmLayer: oneVmLayer.layer,
-		// 									group: oneGroup.name,
-		// 									envCode: oneVmLayer.labels['soajs.env.code'],
-		// 									region: oneVmLayer.labels['soajs.service.vm.location'],
-		// 									link: found
-		// 								});
-		// 							}
-		// 							else {
-		// 								oneSecurityGroup.vmLayers.push({
-		// 									vmLayer: oneVmLayer.layer,
-		// 									group: oneGroup.name,
-		// 									link: false
-		// 								});
-		// 							}
-		//
-		// 							if (!oneSecurityGroup.networks) {
-		// 								oneSecurityGroup.networks = [];
-		// 							}
-		//
-		// 							if (processedNetworks.indexOf(oneVmLayer.network) === -1) {
-		// 								processedNetworks.push(oneVmLayer.network);
-		// 								oneSecurityGroup.networks.push({
-		// 									group: oneGroup.name,
-		// 									name: oneVmLayer.network
-		// 								});
-		// 							}
-		// 						}
-		// 					}
-		// 				});
-		// 			});
-		// 		}
-		// 	}
+				let response = {
+					securityGroups: [
+					    {
+					        "id": "sg-2b0d0541",
+					        "name": "default",
+					        "description": "default VPC security group",
+					        "region": "us-east-2",
+					        "networkId": "vpc-957300fc",
+					        "ports": [
+					            {
+					                "protocol": "tcp",
+					                "published": "22",
+					                "direction": "inbound",
+					                "access": "allow",
+					                "source": "0.0.0.0/0"
+					            }
+					        ]
+					    }
+					]
+
+				}
+				currentScope.infraSecurityGroups = [];
+				if (response.securityGroups && response.securityGroups.length > 0) {
+					currentScope.infraSecurityGroups = response.securityGroups;
+				}
+
+				if (currentScope.infraSecurityGroups.length > 0) {
+					currentScope.infraSecurityGroups[0].open = true;
+				}
+
+				if (currentScope.vmlayers) {
+					let processedNetworks = [];
+					currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
+						currentScope.vmlayers.forEach((oneVmLayer) => {
+							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()) {
+
+								if (oneVmLayer.securityGroup && oneVmLayer.securityGroup === oneSecurityGroup.name) {
+
+									if (!oneSecurityGroup.vmLayers) {
+										oneSecurityGroup.vmLayers = [];
+									}
+
+									if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
+										let found = false;
+										$localStorage.environments.forEach((oneEnv) => {
+											if (oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()) {
+												found = true;
+											}
+										});
+										oneSecurityGroup.vmLayers.push({
+											vmLayer: oneVmLayer.layer,
+											group: oneGroup.name,
+											envCode: oneVmLayer.labels['soajs.env.code'],
+											region: oneVmLayer.labels['soajs.service.vm.location'],
+											link: found
+										});
+									}
+									else {
+										oneSecurityGroup.vmLayers.push({
+											vmLayer: oneVmLayer.layer,
+											group: oneGroup.name,
+											link: false
+										});
+									}
+
+									if (!oneSecurityGroup.networks) {
+										oneSecurityGroup.networks = [];
+									}
+
+									if (processedNetworks.indexOf(oneVmLayer.network) === -1) {
+										processedNetworks.push(oneVmLayer.network);
+										oneSecurityGroup.networks.push({
+											group: oneGroup.name,
+											name: oneVmLayer.network
+										});
+									}
+								}
+							}
+						});
+					});
+				}
+			// }
 		// });
 	}
 

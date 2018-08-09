@@ -1,9 +1,9 @@
 "use strict";
 var infraNetworkSrv = soajsApp.components;
-infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNetworkSrv', function (azureInfraNetworkSrv, awsInfraNetworkSrv) {
+infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNetworkSrv', 'infraCommonSrv', function (azureInfraNetworkSrv, awsInfraNetworkSrv, infraCommonSrv) {
 
 	function addNetwork(currentScope) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
@@ -19,7 +19,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 	}
 
 	function editNetwork(currentScope, originalNetwork) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
@@ -35,7 +35,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 	}
 
 	function deleteNetwork(currentScope, oneNetwork) {
-		let infraName = currentScope.currentInfraName;
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
@@ -50,15 +50,15 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 		}
 	}
 
-	function listNetworks(currentScope, oneGroup) {
-		let infraName = currentScope.currentInfraName;
+	function listNetworks(currentScope, oneGroup, oneRegion) {
+		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
 			case 'azure':
 				azureInfraNetworkSrv.listNetworks(currentScope, oneGroup);
 				break;
 			case 'aws':
-				awsInfraNetworkSrv.listNetworks(currentScope, oneGroup);
+				awsInfraNetworkSrv.listNetworks(currentScope, oneRegion);
 				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);

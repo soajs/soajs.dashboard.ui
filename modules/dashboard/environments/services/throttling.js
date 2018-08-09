@@ -15,6 +15,13 @@ throttlingService.service('throttlingSrv', ['ngDataApi', '$timeout', '$modal', f
 		currentScope.newEntry = false;
 		currentScope.envId = oneEnv._id;
 		currentScope.formEnvironment = angular.copy(oneEnv);
+		
+		if(!currentScope.formEnvironment.services.config.throttling.publicAPIStrategy){
+			currentScope.formEnvironment.services.config.throttling.publicAPIStrategy = "";
+		}
+		if(!currentScope.formEnvironment.services.config.throttling.privateAPIStrategy){
+			currentScope.formEnvironment.services.config.throttling.privateAPIStrategy = "";
+		}
 		currentScope.save(() => {
 			currentScope.$parent.displayAlert('success', "Throttling Strategy for this Environment has been updated!.");
 		});
@@ -32,6 +39,13 @@ throttlingService.service('throttlingSrv', ['ngDataApi', '$timeout', '$modal', f
 		}
 		else {
 			delete currentScope.formEnvironment.services.config.throttling[strategy];
+			
+			if(!currentScope.formEnvironment.services.config.throttling.publicAPIStrategy){
+				currentScope.formEnvironment.services.config.throttling.publicAPIStrategy = "";
+			}
+			if(!currentScope.formEnvironment.services.config.throttling.privateAPIStrategy){
+				currentScope.formEnvironment.services.config.throttling.privateAPIStrategy = "";
+			}
 			currentScope.save(() => {
 				currentScope.$parent.displayAlert('success', "Throttling Strategy has been removed from this Environment.");
 				delete oneEnv.services.config.throttling[strategy];
@@ -72,6 +86,14 @@ throttlingService.service('throttlingSrv', ['ngDataApi', '$timeout', '$modal', f
 						currentScope.formEnvironment = angular.copy(oneEnv);
 						currentScope.formEnvironment.services.config.throttling[formData.name] = angular.copy(formData);
 						delete currentScope.formEnvironment.services.config.throttling[formData.name].name;
+						delete currentScope.formEnvironment.services.config.throttling[formData.name].tip;
+						
+						if(!currentScope.formEnvironment.services.config.throttling.publicAPIStrategy){
+							currentScope.formEnvironment.services.config.throttling.publicAPIStrategy = "";
+						}
+						if(!currentScope.formEnvironment.services.config.throttling.privateAPIStrategy){
+							currentScope.formEnvironment.services.config.throttling.privateAPIStrategy = "";
+						}
 						
 						currentScope.save(() => {
 							currentScope.$parent.displayAlert('success', "Throttling Strategy has been added to this Environment!.");
@@ -118,6 +140,14 @@ throttlingService.service('throttlingSrv', ['ngDataApi', '$timeout', '$modal', f
 						currentScope.formEnvironment = angular.copy(oneEnv);
 						currentScope.formEnvironment.services.config.throttling[formData.name] = angular.copy(formData);
 						delete currentScope.formEnvironment.services.config.throttling[formData.name].name;
+						delete currentScope.formEnvironment.services.config.throttling[formData.name].tip;
+						
+						if(!currentScope.formEnvironment.services.config.throttling.publicAPIStrategy){
+							currentScope.formEnvironment.services.config.throttling.publicAPIStrategy = "";
+						}
+						if(!currentScope.formEnvironment.services.config.throttling.privateAPIStrategy){
+							currentScope.formEnvironment.services.config.throttling.privateAPIStrategy = "";
+						}
 						
 						currentScope.save(() => {
 							currentScope.$parent.displayAlert('success', "Throttling Strategy has been updated at this Environment!.");

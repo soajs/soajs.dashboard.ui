@@ -606,6 +606,10 @@ var environmentsConfig = {
 					placeholder: 0,
 					fieldMsg: 'Enter the delay number in milliseconds',
 					required: true
+				},
+				{
+					type: 'html',
+					value: "<br /><p class='fieldMsg'>If you are not familiar with how API Traffic Throttling works, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling' target='_blank'>Click Here</a></p>"
 				}
 			]
 		}

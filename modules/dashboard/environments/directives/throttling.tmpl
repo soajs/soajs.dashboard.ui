@@ -25,7 +25,8 @@
 												<option ng-repeat="strategy in throttlingStrategies" value="{{strategy}}">{{strategy}}</option>
 											</select>
 											<p class="fieldMsg" style="margin:10px 0 0 0;">
-												Select the default throttling strategy you would like to apply to all APIs deployed in this environment that are not protected by <b>oAuth</b>.
+												Select the default throttling strategy you would like to apply to all APIs deployed in this environment that are not protected by <b>oAuth</b>
+												<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling" target="_blank">Learn More</a>
 											</p>
 										</td>
 										<td width="10%"></td>
@@ -83,6 +84,7 @@
 											</select>
 											<p class="fieldMsg" style="margin:10px 0 0 0;">
 												Select the default throttling strategy you would like to apply to all APIs deployed in this environment that are protected by <b>oAuth</b> and require the <b>access token</b> of a logged in user.
+												<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling" target="_blank">Learn More</a>
 											</p>
 										</td>
 										<td width="10%"></td>
@@ -168,6 +170,11 @@
 						</tr>
 					</tbody>
 				</table>
+			</div>
+			<div>
+				<p class="fieldMsg">
+					If you are not familiar with how API Traffic Throttling works, <a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling" target="_blank">Click Here</a>
+				</p>
 			</div>
 		</tab>
 	</tabset>

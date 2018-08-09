@@ -3,8 +3,8 @@
 let infraIPConfig = {
 	permissions: {
 		list: ['dashboard', '/infra', 'get'],
-		removeIP: ['dashboard', '/infra/extra', 'delete'],
-		addIP: ['dashboard', '/infra/extra', 'post'],
-		editIP: ['dashboard', '/infra/extra', 'put']
+		removeIP: ['dashboard', '/infra/extras', 'delete'],
+		addIP: ['dashboard', '/infra/extras', 'post'],
+		editIP: ['dashboard', '/infra/extras', 'put']
 	}
 };

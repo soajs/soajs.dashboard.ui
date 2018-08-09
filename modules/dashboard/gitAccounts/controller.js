@@ -332,7 +332,7 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                         if(response.type){
                                         	repo.type = response.type;
                                         }
-                                        if (Array.isArray(response) || (typeof (response) === 'object' && response.repo && ['custom','config','component','static'].indexOf(response.type) == -1)) {
+                                        if (Array.isArray(response) || (typeof (response) === 'object' && response.repo && ['service', 'daemon', 'custom','config','component','static'].indexOf(response.type) === -1)) {
 		                                    repo.type = 'mutli';
 	                                        
                                         	var repoAddSuccess = $modal.open({

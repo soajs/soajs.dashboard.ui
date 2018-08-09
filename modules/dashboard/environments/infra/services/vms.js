@@ -420,7 +420,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 		function renderForm(computedValues){
 			let selectedInfraProvider = angular.copy(oneProvider);
-			// let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
 			let formEntries = [];
 			let infraTemplates =[];
 

@@ -127,7 +127,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                         "infraId": oneProvider._id
                     },
                     "data": {
-                        "infraCodeTemplate": formData.infraCodeTemplate.name,
+                        "infraCodeTemplate": formData.infraCodeTemplate,
                         "region": formData.region,
                         "name": formData.name,
                         "specs": formData
@@ -420,7 +420,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 		function renderForm(computedValues){
 			let selectedInfraProvider = angular.copy(oneProvider);
-			// let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
 			let formEntries = [];
 			let infraTemplates =[];
 
@@ -434,7 +433,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					label += " | " + oneTmpl.description;
 				}
 				let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
-				infraTemplates.push({'v': oneTmpl, 'l': label, selected: defaultSelected});
+				infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
 			});
 
 			formEntries.push({
@@ -445,10 +444,18 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				required: true,
 				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
 				onAction: function(id, value, form){
-					let iacTemplateTechnology = (value && value.driver) ? value.driver.toLowerCase() : technology;
+					let iacTemplateTechnology = technology;
+
+					for(let i = 0; i < oneProvider.templates.length; i++) {
+						if(oneProvider.templates[i].name === value && oneProvider.templates[i].driver) {
+							iacTemplateTechnology = oneProvider.templates[i].driver.toLowerCase();
+							break;
+						}
+					}
+
 					form.entries = form.entries.concat(angular.copy(environmentsConfig.providers[oneProvider.name][iacTemplateTechnology].ui.form.deploy.entries));
 
-					updateFormEntries(computedValues, value.name, form);
+					updateFormEntries(computedValues, value, form);
 				}
 			});
 

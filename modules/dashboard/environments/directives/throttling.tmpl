@@ -21,7 +21,7 @@
 										<td width="45%" valign="top" >
 											<label>Select Throttling Strategy</label>
 											<select class="form-control" ng-model="oneEnv.services.config.throttling.publicAPIStrategy">
-												<option value="">-- No throttling Strategy--</option>
+												<option value="">-- Throttling OFF --</option>
 												<option ng-repeat="strategy in throttlingStrategies" value="{{strategy}}">{{strategy}}</option>
 											</select>
 											<p class="fieldMsg" style="margin:10px 0 0 0;">
@@ -78,7 +78,7 @@
 										<td width="45%" valign="top" >
 											<label>Select Throttling Strategy</label>
 											<select class="form-control" ng-model="oneEnv.services.config.throttling.privateAPIStrategy">
-												<option value="">-- No throttling Strategy--</option>
+												<option value="">-- Throttling OFF --</option>
 												<option ng-repeat="strategy in throttlingStrategies" value="{{strategy}}">{{strategy}}</option>
 											</select>
 											<p class="fieldMsg" style="margin:10px 0 0 0;">

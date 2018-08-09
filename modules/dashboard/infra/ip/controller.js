@@ -11,9 +11,12 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
-			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
+			if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups.length) && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0)) {
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
+				//flag that this infra is resource group driver (otherwise will be region driven)
+				$scope.isResourceGroupDriven = true;
+
 				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
 				if($routeParams.group){
 					$scope.infraGroups.forEach((oneInfraGroup) => {
@@ -34,8 +37,36 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					});
 				}, 500);
 			}
-			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups.length) && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0)) {
+				$scope.isResourceGroupDriven = true;
 				$scope.noResourceGroups = true;
+			}
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups === "NA" && $scope.$parent.$parent.currentSelectedInfra.regions) {
+				//flag that the infra is not driven by resource group -> by region
+				$scope.isResourceGroupDriven = false;
+
+				//set infra regions in scope to be used by modules
+				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
+
+				if($routeParams.region) {
+					$scope.infraRegions.forEach((oneRegion) => {
+						if (oneRegion.name === $routeParams.region) {
+							$scope.selectedRegion = oneRegion;
+						}
+					});
+				}
+				else {
+					$scope.selectedRegion = $scope.infraRegions[0];
+				}
+
+				$timeout(() => {
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						$scope.vmlayers = vmlayers;
+
+						infraIPSrv.listIPs($scope, $scope.selectedRegion);
+					});
+				}, 500);
 			}
 		});
 	};
@@ -116,12 +147,12 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 		infraIPSrv.editIP($scope, oneIP);
 	};
 
-	$scope.listIPs = function (oneRegion) {
+	$scope.listIPs = function (groupOrRegion) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
-			infraIPSrv.listIPs($scope, oneRegion);
+			infraIPSrv.listIPs($scope, groupOrRegion);
 		});
 	};
 

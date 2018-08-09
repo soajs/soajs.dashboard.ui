@@ -195,7 +195,6 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 	}
 
 	function splitAndTrim(string) {
-		console.log(string);
 		let x = string.split(',');
 
 		for (let i = 0; i < x.length; i++) {
@@ -254,7 +253,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 						if (data.dnsServers) {
 							//join elements of array to string before provoking splitAndTrim
 							data.dnsServers = data.dnsServers.join();
-							
+
 							let dnsPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
 							postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
 

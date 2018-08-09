@@ -132,6 +132,7 @@ var environmentsConfig = {
 			required: ['ca', 'cert', 'key']
 		}
 	},
+	
 	predefinedPortalTemplateName : "SOAJS Portal Environment",
 	
 	customRegistryIncrement: 20,
@@ -534,6 +535,78 @@ var environmentsConfig = {
 					'required': false,
 					'hidden': true
 				},
+			]
+		},
+		throttling: {
+			entries: [
+				{
+					name: 'name',
+					label: 'Strategy Name',
+					type: 'text',
+					value: '',
+					placeholder: 'my_strategy',
+					fieldMsg: 'Provide a name for your strategy',
+					required: true
+				},
+				{
+					name: 'type',
+					label: 'Select Strategy Type',
+					type: 'select',
+					value: [
+						{
+							v: 0,
+							l: 'Per Tenant',
+							selected: true
+						},
+						{
+							v: 1,
+							l: 'Per Tenant & Per IP Address',
+							selected: true
+						}
+					],
+					fieldMsg: 'Select how this strategy should behave, per tenant OR per tenant and per IPAddress',
+					required: true
+				},
+				{
+					name: 'window',
+					label: "Window (msec)",
+					type: 'number',
+					min: 0,
+					value: 0,
+					placeholder: 0,
+					fieldMsg: 'Enter the throttling window size in milliseconds',
+					required: true
+				},
+				{
+					name: 'limit',
+					label: "Limit",
+					type: 'number',
+					min: 0,
+					value: 0,
+					placeholder: 0,
+					fieldMsg: 'Enter the maximum limit of quota per time before rejecting requests',
+					required: true
+				},
+				{
+					name: 'retries',
+					label: "Number of Retries",
+					type: 'number',
+					min: 0,
+					value: 0,
+					placeholder: 0,
+					fieldMsg: 'Enter the number of retries for queuing requests',
+					required: true
+				},
+				{
+					name: 'delay',
+					label: "Delay (msec)",
+					type: 'number',
+					min: 0,
+					value: 0,
+					placeholder: 0,
+					fieldMsg: 'Enter the delay number in milliseconds',
+					required: true
+				}
 			]
 		}
 	},

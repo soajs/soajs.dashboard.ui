@@ -1444,7 +1444,7 @@ var environmentsNav = [
 		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js', 'modules/dashboard/environments/services/custom_registry.js'],
+		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/controller.js', 'modules/dashboard/environments/services/custom_registry.js', 'modules/dashboard/environments/services/throttling.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

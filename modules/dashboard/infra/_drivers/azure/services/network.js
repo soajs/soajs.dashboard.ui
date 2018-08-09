@@ -1,7 +1,7 @@
 "use strict";
 var azureInfraNetworkSrv = soajsApp.components;
 azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', function (ngDataApi, $localStorage, $timeout, $modal, $window) {
-	
+
 	let infraNetworkConfig = {
 		form: {
 			network: [
@@ -48,7 +48,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 					'required': false
 				}
 			],
-			
+
 			labelInput : {
 				'name': 'LabelGroup',
 				'type': 'group',
@@ -82,7 +82,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 				]
 			}
 		},
-		
+
 		grid: {
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
@@ -97,8 +97,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 			'defaultLimit': 10
 		},
 	};
-	
-	
+
 	function addNetwork(currentScope) {
 
 		let options = {
@@ -196,6 +195,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 	}
 
 	function splitAndTrim(string) {
+		console.log(string);
 		let x = string.split(',');
 
 		for (let i = 0; i < x.length; i++) {
@@ -252,6 +252,9 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 						}
 
 						if (data.dnsServers) {
+							//join elements of array to string before provoking splitAndTrim
+							data.dnsServers = data.dnsServers.join();
+							
 							let dnsPattern = /^([0-90-90-9]{1,3}\.){3}[0-90-90-9]{1,3}$/;
 							postOpts.data.params.dnsServers = splitAndTrim(data.dnsServers);
 

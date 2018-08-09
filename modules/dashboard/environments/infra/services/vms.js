@@ -127,7 +127,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                         "infraId": oneProvider._id
                     },
                     "data": {
-                        "infraCodeTemplate": formData.infraCodeTemplate,
+                        "infraCodeTemplate": formData.infraCodeTemplate.name,
                         "region": formData.region,
                         "name": formData.name,
                         "specs": formData
@@ -151,9 +151,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
         }
 
         let saveActionMethod = defaultSaveActionMethod;
-		
+
 		listInfraProviders(currentScope, () => {
-			
+
 			let vmProviders = angular.copy(currentScope.infraProviders);
 			for (let i = vmProviders.length -1; i >=0; i--){
 				let oneProvider = vmProviders[i];
@@ -161,7 +161,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					vmProviders.splice(i, 1);
 				}
 			}
-			
+
 			let formEntries = [{
 				type: 'select',
 				label: "Select Infra Provider",
@@ -183,27 +183,29 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							if(form.actions.length > 1){
 								form.actions.shift();
 							}
-							
-							let groups = {
-								'name': 'group',
-								'label': 'Select a Group',
-								'type': 'select',
-								'value': [],
-								'tooltip': 'Select Resource Group',
-								'required': true
-							};
-							
-							value.groups.forEach((oneGroup) =>{
-								if(oneGroup.region === value2){
-									groups.value.push({v: oneGroup.name, l: oneGroup.name})
+
+							if(value.groups && Array.isArray(value.groups)) {
+								let groups = {
+									'name': 'group',
+									'label': 'Select a Group',
+									'type': 'select',
+									'value': [],
+									'tooltip': 'Select Resource Group',
+									'required': false
+								};
+
+								value.groups.forEach((oneGroup) =>{
+									if(oneGroup.region === value2){
+										groups.value.push({v: oneGroup.name, l: oneGroup.name})
+									}
+								});
+
+								if(groups.value && groups.value.length > 0){
+									groups.value[0].selected = true;
 								}
-							});
-							
-							if(groups.value && groups.value.length > 0){
-								groups.value[0].selected = true;
+								form.entries.push(groups);
 							}
-							form.entries.push(groups);
-							
+
 							form.actions.unshift({
 								'type': 'submit',
 								'label': translation.submit[LANG],
@@ -212,30 +214,34 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 									currentScope.modalInstance.close();
 									let data = {
 										inputs: {
-											region: formData.region, group: formData.group
+											region: formData.region
 										}
 									};
+
+									if(formData.group) {
+										data.inputs.group = formData.group;
+									}
+
 									populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
 								}
 							});
-							
 						}
 					};
-					
+
 					if(region.value && region.value.length > 0){
 						region.value[0].selected = true;
 					}
 					form.entries.push(region);
 				}
 			}];
-			
+
 			vmProviders.forEach((oneProvider) => {
 				formEntries[0].value.push({
 					v: oneProvider,
 					l: oneProvider.label
 				});
 			});
-			
+
 			let options = {
 				timeout: $timeout,
 				form: {
@@ -414,98 +420,98 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 		function renderForm(computedValues){
 			let selectedInfraProvider = angular.copy(oneProvider);
-			let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
+			// let formEntries = angular.copy(environmentsConfig.providers[oneProvider.name][technology].ui.form.deploy.entries);
+			let formEntries = [];
+			let infraTemplates =[];
 
-			if(formEntries && formEntries.length > 0){
-				let infraTemplates =[];
+			if(!currentScope.reusableData){
+				currentScope.reusableData = [];
+			}
 
-				if(!currentScope.reusableData){
-					currentScope.reusableData = [];
+			oneProvider.templates.forEach((oneTmpl) => {
+				let label = oneTmpl.name;
+				if(oneTmpl.description && oneTmpl.description !== ''){
+					label += " | " + oneTmpl.description;
 				}
+				let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
+				infraTemplates.push({'v': oneTmpl, 'l': label, selected: defaultSelected});
+			});
 
-				oneProvider.templates.forEach((oneTmpl) => {
-					let label = oneTmpl.name;
-					if(oneTmpl.description && oneTmpl.description !== ''){
-						label += " | " + oneTmpl.description;
-					}
-					let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
-					infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
-				});
+			formEntries.push({
+				type: 'select',
+				name: 'infraCodeTemplate',
+				label: "Infra Code Template",
+				value: infraTemplates,
+				required: true,
+				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
+				onAction: function(id, value, form){
+					let iacTemplateTechnology = (value && value.driver) ? value.driver.toLowerCase() : technology;
+					form.entries = form.entries.concat(angular.copy(environmentsConfig.providers[oneProvider.name][iacTemplateTechnology].ui.form.deploy.entries));
 
-				formEntries.push({
-					type: 'select',
-					name: 'infraCodeTemplate',
-					label: "Infra Code Template",
-					value: infraTemplates,
-					required: true,
-					fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
-					onAction: function(id, value, form){
-						form.entries.length = 2;
-						updateFormEntries(computedValues, value, form);
-					}
-				});
+					updateFormEntries(computedValues, value.name, form);
+				}
+			});
 
-				$modal.open({
-					templateUrl: "infraProvider.tmpl",
-					size: 'lg',
-					backdrop: true,
-					keyboard: true,
-					controller: function ($scope, $modalInstance) {
-						fixBackDrop();
-						$scope.title = 'Configuring Deployment on ' + selectedInfraProvider.label;
+			$modal.open({
+				templateUrl: "infraProvider.tmpl",
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope, $modalInstance) {
+					fixBackDrop();
+					$scope.title = 'Configuring Deployment on ' + selectedInfraProvider.label;
 
-						let formConfig = {
-							timeout: $timeout,
-							data: data.inputs,
-							"entries": formEntries,
-							name: 'vmdeployon' + selectedInfraProvider.name,
-							"actions": [
-								{
-									'type': 'submit',
-									'label': (editMode) ? "Modify" : "Save & Continue",
-									'btn': 'primary',
-									'action': function (formData) {
-										if(!editMode){
-											// add region and group to formData
-											formData = Object.assign(formData, data.inputs);
-										}
-										else{
-											if(formData.specs && formData.specs.specs){
-												delete formData.specs.specs;
-											}
-										}
-
-										let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
-										if(!myPattern.test(formData.name)){
-											$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
-										}
-										else{
-											remapFormDataBeforeSubmission($scope, formData, () => {
-												submitActionMethod($scope, oneProvider, formData, $modalInstance);
-											});
+					let formConfig = {
+						timeout: $timeout,
+						data: data.inputs,
+						"entries": formEntries,
+						name: 'vmdeployon' + selectedInfraProvider.name,
+						"actions": [
+							{
+								'type': 'submit',
+								'label': (editMode) ? "Modify" : "Save & Continue",
+								'btn': 'primary',
+								'action': function (formData) {
+									if(!editMode){
+										// add region and group to formData
+										formData = Object.assign(formData, data.inputs);
+									}
+									else{
+										if(formData.specs && formData.specs.specs){
+											delete formData.specs.specs;
 										}
 									}
-								},
-								{
-									'type': 'reset',
-									'label': translation.cancel[LANG],
-									'btn': 'danger',
-									'action': function () {
-										$modalInstance.dismiss('cancel');
+
+									let myPattern = /^([a-zA-Z0-9_\-\.]){2,80}$/;
+									if(!myPattern.test(formData.name)){
+										$window.alert("Make sure that the VMLayer name is between 2 and 80 characters where alphanumeric, hyphen, underscore, and period are the only allowed characters.");
+									}
+									else{
+										remapFormDataBeforeSubmission($scope, formData, () => {
+											submitActionMethod($scope, oneProvider, formData, $modalInstance);
+										});
 									}
 								}
-							]
-						};
-
-						buildForm($scope, null, formConfig, () => {
-							if(data && data.infraCodeTemplate){
-								$scope.form.formData = data;
-								updateFormEntries(computedValues, data.infraCodeTemplate, $scope.form);
+							},
+							{
+								'type': 'reset',
+								'label': translation.cancel[LANG],
+								'btn': 'danger',
+								'action': function () {
+									$modalInstance.dismiss('cancel');
+								}
 							}
-						});
-					}
-				});
-			}
+						]
+					};
+
+					buildForm($scope, null, formConfig, () => {
+						if(data && data.infraCodeTemplate){
+							$scope.form.formData = data;
+							updateFormEntries(computedValues, data.infraCodeTemplate, $scope.form);
+						}
+					});
+				}
+			});
 		}
 
         function remapFormDataBeforeSubmission(modalScope, formData, cb) {
@@ -796,7 +802,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 									addIt = false;
 								}
 							});
-							
+
 							if(addIt){
 								computedValues[oneReusableEntry.key].push(oneReusableEntry.formData);
 							}
@@ -806,7 +812,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						}
 					});
 				}
-				
+
 				renderForm(computedValues);
 			});
 		}, 500)

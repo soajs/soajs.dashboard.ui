@@ -36,6 +36,28 @@ var serviceProviders = {
 					}
 				}
 			}
+		},
+		terraform: {
+			ui: {
+				"form": {
+					"deploy": {
+						"grid": {
+							"columns": {}
+						},
+						"entries": [
+							{
+								'name': 'name',
+								'label': 'VM Layer Name',
+								'type': 'text',
+								'value': '',
+								'tooltip': 'Provide a name for your VM Layer',
+								'required': true,
+								"fieldMsg": "Enter a name that will be used as a reference for this VM Layer"
+							}
+						]
+					}
+				}
+			}
 		}
 	},
 	google: {
@@ -133,9 +155,9 @@ var environmentsConfig = {
 		}
 	},
 	predefinedPortalTemplateName : "SOAJS Portal Environment",
-	
+
 	customRegistryIncrement: 20,
-	
+
 	form: {
 		add: {
 			deploy: {

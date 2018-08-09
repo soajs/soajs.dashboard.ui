@@ -6,168 +6,21 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 		form: {
 			addIP: [
 				{
-					'name': 'name',
-					'label': 'Name',
-					'type': 'text',
-					'value': "",
-					'placeholder': ' My Public IP Name',
-					'fieldMsg': 'Enter a name for the Public IP',
-					'required': true
+					'name': 'heading',
+					'type': 'html',
+					'value': "<h3 align='center'>Select the Public IP Domain<h3>"
 				},
 				{
-					'name': 'region',
-					'label': 'Region',
-					'type': 'readonly',
-					'value': "",
-					'fieldMsg': 'Region where the Public IP will be located',
-					'required': true
+					'name': 'vpc',
+					'type': 'html',
+					'value': "<a class='btn btn-sm btn-primary f-left'><span></span>VPC</a>"
 				},
 				{
-					'name': 'ipAddressVersion',
-					'label': 'IP Address Version',
-					'type': 'uiselect',
-					'value': [{'v': 'IPv4', 'l': 'IP v4', 'selected': true}, {'v': 'IP v6', 'l': 'IPv6'}],
-					'fieldMsg': 'The IP Address Version',
-					'required': true
-				},
-				{
-					'name': 'type',
-					'label': 'Type',
-					'type': 'uiselect',
-					'value': [{'v': 'basic', 'l': 'Basic', 'selected': true}, {'v': 'standard', 'l': 'Standard'}],
-					'fieldMsg': 'Select an Azure Address type for this IP,  <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#sku">Learn More</a>',
-					'required': true
-				},
-				{
-					'name': 'publicIPAllocationMethod',
-					'label': 'Public IP Allocation Method',
-					'type': 'uiselect',
-					'value': [{'v': 'dynamic', 'l': 'Dynamic', 'selected': true}, {'v': 'static', 'l': 'Static'}],
-					'fieldMsg': 'Select an Azure Allocation Method for this IP, <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#allocation-method">Learn More</a>',
-					'required': true
-				},
-				{
-					'name': 'idleTimeout',
-					'label': 'Idle Timeout',
-					'type': 'number',
-					'value': 240,
-					'placeholder': 240,
-					'min': 240,
-					'max':1800,
-					'fieldMsg': 'The Idle Timeout between 240s and 1800s (in the case of Azure, this value will be converted to minutes)',
-					'required': true
-				},
-				// {
-				// 	'type': 'group',
-				// 	'label': 'Labels',
-				// 	'entries': [
-				// 		{
-				// 			'type': 'html',
-				// 			'name': 'addLabel',
-				// 			'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
-				// 		}
-				// 	]
-				// }
-			],
-
-			editIP: [
-				{
-					'name': 'name',
-					'label': 'Name',
-					'type': 'readonly',
-					'value': "",
-					'placeholder': ' My Public IP Name',
-					'fieldMsg': 'Enter a name for the Public IP',
-					'required': true
-				},
-				{
-					'name': 'region',
-					'label': 'Region',
-					'type': 'readonly',
-					'value': "",
-					'fieldMsg': 'Region where the Public IP will be located',
-					'required': true
-				},
-				{
-					'name': 'ipAddressVersion',
-					'label': 'IP Address Version',
-					'type': 'readonly',
-					'value': "",
-					'fieldMsg': 'The IP Address Version',
-					'required': true
-				},
-				{
-					'name': 'type',
-					'label': 'Type',
-					'type': 'readonly',
-					'value': "",
-					'fieldMsg': 'Select an Azure Address type for this IP,  <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#sku">Learn More</a>',
-					'required': true
-				},
-				{
-					'name': 'publicIPAllocationMethod',
-					'label': 'Public IP Allocation Method',
-					'type': 'uiselect',
-					'value': [{'v': 'dynamic', 'l': 'Dynamic'}, {'v': 'static', 'l': 'Static'}],
-					'fieldMsg': 'Select an Azure Allocation Method for this IP, <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#allocation-method">Learn More</a>',
-					'required': true
-				},
-				{
-					'name': 'idleTimeout',
-					'label': 'Idle Timeout',
-					'type': 'number',
-					'value': 240,
-					'placeholder': 240,
-					'min': 240,
-					'max':1800,
-					'fieldMsg': 'The Idle Timeout between 240s and 1800s (in the case of Azure, this value will be converted to minutes)',
-					'required': true
-				},
-				// {
-				// 	'type': 'group',
-				// 	'label': 'Labels',
-				// 	'entries': [
-				// 		{
-				// 			'type': 'html',
-				// 			'name': 'addLabel',
-				// 			'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Label'/>"
-				// 		}
-				// 	]
-				// }
-			],
-
-			labelInput : {
-				'name': 'labelGroup',
-				'type': 'group',
-				'label': 'New Label',
-				'entries': [
-					{
-						'name': 'labelName',
-						'label': 'Label Name',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter the name of the label',
-						'fieldMsg': 'Enter the name of the label',
-						'placeholder': "My label name"
-					},
-					{
-						'name': 'labelValue',
-						'label': 'Label Value',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter the value of the label',
-						'fieldMsg': 'Enter the value of the label',
-						'placeholder': "My label Value"
-					},
-					{
-						'type': 'html',
-						'name': 'rLabel',
-						'value': '<span class="icon icon-cross"></span>'
-					}
-				]
-			}
+					'name': 'standard',
+					'type': 'html',
+					'value': "<a class='btn btn-sm btn-primary f-right'><span></span>Standard</a>"
+				}
+			]
 		},
 
 		grid: {
@@ -188,81 +41,69 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 	};
 
 	function addIP(currentScope) {
-		//
-		// let options = {
-		// 	timeout: $timeout,
-		// 	form: {
-		// 		"entries": angular.copy(infraIPConfig.form.addIP)
-		// 	},
-		// 	name: 'addPublicIP',
-		// 	label: 'Add New Public IP',
-		// 	actions: [
-		// 		{
-		// 			'type': 'submit',
-		// 			'label': "Create Public IP",
-		// 			'btn': 'primary',
-		// 			'action': function (formData) {
-		// 				let data = angular.copy(formData);
-		//
-		// 				// let labels = {};
-		// 				// for (let i = 0; i < currentScope.labelCounter; i ++) {
-		// 				// 	labels[data['labelName'+i]] = data['labelValue'+i];
-		// 				// }
-		//
-		// 				let postOpts = {
-		// 					"method": "post",
-		// 					"routeName": "/dashboard/infra/extras",
-		// 					"params": {
-		// 						"infraId": currentScope.currentSelectedInfra._id,
-		// 						"technology": "vm"
-		// 					},
-		// 					"data": {
-		// 						"params": {
-		// 							"section": "publicIp",
-		// 							"region": currentScope.selectedGroup.region,
-		// 							"labels": {},
-		// 							"name": data.name,
-		// 							"group": currentScope.selectedGroup.name,
-		// 							"publicIPAllocationMethod": data.publicIPAllocationMethod.v,
-		// 							"idleTimeout": data.idleTimeout,
-		// 							"ipAddressVersion": data.ipAddressVersion.v,
-		// 							"type": data.type.v
-		// 						}
-		// 					}
-		// 				};
-		//
-		// 				overlayLoading.show();
-		// 				getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-		// 					overlayLoading.hide();
-		// 					if (error) {
-		// 						currentScope.form.displayAlert('danger', error.message);
-		// 					}
-		// 					else {
-		// 						currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-		// 						currentScope.modalInstance.close();
-		// 						$timeout(() => {
-		// 							listIPs(currentScope, currentScope.selectedGroup);
-		// 						}, 2000);
-		// 					}
-		// 				});
-		// 			}
-		// 		},
-		// 		{
-		// 			'type': 'reset',
-		// 			'label': 'Cancel',
-		// 			'btn': 'danger',
-		// 			'action': function () {
-		// 				delete currentScope.form.formData;
-		// 				currentScope.modalInstance.close();
-		// 			}
-		// 		}
-		// 	]
-		// };
-		//
-		// //set value of region to selectedRegion
-		// options.form.entries[1].value = currentScope.selectedGroup.region;
-		//
-		// buildFormWithModal(currentScope, $modal, options);
+
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraIPConfig.form.addIP)
+			},
+			name: 'addPublicIP',
+			label: 'Add New Public IP',
+			actions: [
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+
+		options.form.entries[1].onAction = function (id, value, form) {
+			currentScope.modalInstance.close();
+			createPublicIP(currentScope, id);
+		}
+
+		options.form.entries[2].onAction = function (id, value, form) {
+			currentScope.modalInstance.close();
+			createPublicIP(currentScope, id);
+		}
+
+		buildFormWithModal(currentScope, $modal, options);
+	}
+
+	function createPublicIP(currentScope, domainType) {
+		let postOpts = {
+			"method": "post",
+			"routeName": "/dashboard/infra/extras",
+			"params": {
+				"infraId": currentScope.currentSelectedInfra._id,
+				"technology": "vm"
+			},
+			"data": {
+				"params": {
+					"domain": domainType,
+					"region": ''//currentScope.selectedRegion.name
+				}
+			}
+		};
+
+		// overlayLoading.show();
+		// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+		// 	overlayLoading.hide();
+		// 	if (error) {
+		// 		currentScope.form.displayAlert('danger', error.message);
+		// 	}
+		// 	else {
+		// 		currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+		// 		$timeout(() => {
+		// 			listIPs(currentScope, currentScope.selectedGroup);
+		// 		}, 2000);
+		// 	}
+		// });
 	}
 
 	function editIP(currentScope, originalIP) {

@@ -16,7 +16,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				renderJSONEditor(editor, id, value, height, currentScope);
 			}
 			catch(e){
-			
+
 			}
 		}, 1000);
 	}
@@ -1167,9 +1167,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                     'type': 'buttonSlider',
                     onAction(id, data, form) {
                         if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
-                            overlayLoading.show();
                             listInfraProviders(currentScope,() => {
-                                overlayLoading.hide();
                                 form.entries.push({
                                     'name': 'deploymentType',
                                     'label': 'Deployment Type',
@@ -2280,12 +2278,13 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
     function listInfraProviders(currentScope, cb) {
         //get the available providers
+		overlayLoading.show();
         getSendDataFromServer(currentScope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/infra"
         }, function (error, providers) {
+			overlayLoading.hide();
             if (error) {
-                overlayLoading.hide();
                 currentScope.displayAlert('danger', error.message);
             }
             else {

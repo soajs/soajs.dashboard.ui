@@ -1,0 +1,181 @@
+<!--
+  ~  **********************************************************************************
+  ~   (C) Copyright Herrontech (www.herrontech.com)
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   Contributors:
+  ~   -
+  ~  **********************************************************************************
+  -->
+<div ng-repeat="oneEnv in grid.rows" >
+	<tabset>
+		<tab heading="Assign Strategies" ng-if="throttlingStrategies && throttlingStrategies.length > 0">
+			<br />
+			<fieldset>
+				<legend>Public APIs</legend>
+				<div>
+					<form action="">
+						<div class="body">
+							<table width="100%" cellspacing="0" cellpadding="0" border="0">
+								<tbody>
+									<tr class="form-group">
+										<td width="45%" valign="top" >
+											<label>Select Throttling Strategy</label>
+											<select class="form-control" ng-model="oneEnv.services.config.throttling.publicAPIStrategy">
+												<option value="">-- Throttling OFF --</option>
+												<option ng-repeat="strategy in throttlingStrategies" value="{{strategy}}">{{strategy}}</option>
+											</select>
+											<p class="fieldMsg" style="margin:10px 0 0 0;">
+												Select the default throttling strategy you would like to apply to all APIs deployed in this environment that are not protected by <b>oAuth</b>
+												<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling" target="_blank">Learn More</a>
+											</p>
+										</td>
+										<td width="10%"></td>
+										<td rowspan="2" width="45%">
+											<div class="grid" ng-show="oneEnv.services.config.throttling.publicAPIStrategy && oneEnv.services.config.throttling.publicAPIStrategy !== ''">
+												<table width="100%">
+													<tr class="odd">
+														<td width="50%"><label>Type:</label></td>
+														<td>{{(oneEnv.services.config.throttling[oneEnv.services.config.throttling.publicAPIStrategy].type === 0) ? 'Per Tenant': 'Per Tenant & Per IP Address'}}</td>
+													</tr>
+													<tr class="even">
+														<td width="50%"><label>Window (msec):</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.publicAPIStrategy].window}}</td>
+													</tr>
+													<tr class="odd">
+														<td width="50%"><label>Limit:</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.publicAPIStrategy].limit}}</td>
+													</tr>
+													<tr class="even">
+														<td width="50%"><label>Retries:</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.publicAPIStrategy].retries}}</td>
+													</tr>
+													<tr class="odd">
+														<td width="50%"><label>Delay (msec):</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.publicAPIStrategy].delay}}</td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td align="right">
+											<input type="button" ng-click="assignThrottlingStrategy(oneEnv)" value="Save" class="btn btn-primary"/><br/>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</form>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend>Private APIs</legend>
+				<div>
+					<form action="">
+						<div class="body">
+							<table width="100%" cellspacing="0" cellpadding="0" border="0">
+								<tbody>
+									<tr class="form-group">
+										<td width="45%" valign="top" >
+											<label>Select Throttling Strategy</label>
+											<select class="form-control" ng-model="oneEnv.services.config.throttling.privateAPIStrategy">
+												<option value="">-- Throttling OFF --</option>
+												<option ng-repeat="strategy in throttlingStrategies" value="{{strategy}}">{{strategy}}</option>
+											</select>
+											<p class="fieldMsg" style="margin:10px 0 0 0;">
+												Select the default throttling strategy you would like to apply to all APIs deployed in this environment that are protected by <b>oAuth</b> and require the <b>access token</b> of a logged in user.
+												<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling" target="_blank">Learn More</a>
+											</p>
+										</td>
+										<td width="10%"></td>
+										<td rowspan="2" width="45%">
+											<div class="grid" ng-show="oneEnv.services.config.throttling.privateAPIStrategy && oneEnv.services.config.throttling.privateAPIStrategy !== ''">
+												<table width="100%">
+													<tr class="odd">
+														<td width="50%"><label>Type:</label></td>
+														<td>{{(oneEnv.services.config.throttling[oneEnv.services.config.throttling.privateAPIStrategy].type === 0) ? 'Per Tenant': 'Per Tenant & Per IP Address'}}</td>
+													</tr>
+													<tr class="even">
+														<td width="50%"><label>Window (msec):</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.privateAPIStrategy].window}}</td>
+													</tr>
+													<tr class="odd">
+														<td width="50%"><label>Limit:</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.privateAPIStrategy].limit}}</td>
+													</tr>
+													<tr class="even">
+														<td width="50%"><label>Retries:</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.privateAPIStrategy].retries}}</td>
+													</tr>
+													<tr class="odd">
+														<td width="50%"><label>Delay (msec):</label></td>
+														<td>{{oneEnv.services.config.throttling[oneEnv.services.config.throttling.privateAPIStrategy].delay}}</td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td align="right">
+											<input type="button" ng-click="assignThrottlingStrategy(oneEnv)" value="Save" class="btn btn-primary"/><br/>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</form>
+				</div>
+			</fieldset>
+		</tab>
+		<tab heading="Manage Strategies">
+			<br />
+			<a href="" class="btn btn-primary btn-sm" ng-click="addThrottlingStrategy(oneEnv)">
+				<span class="icon icon-plus"></span> Add New Strategy
+			</a>
+			
+			<div ng-if="!throttlingStrategies || throttlingStrategies.length === 0">
+				<br />
+				<alert type="warning"><p>Did not find any throttling configuration for this environment.</p></alert>
+			</div>
+			<div class='grid' ng-if="throttlingStrategies && throttlingStrategies.length > 0">
+				<br />
+				<table width="100%">
+					<thead>
+						<tr>
+							<th width="5%"></th>
+							<th width="16%">Name</th>
+							<th width="16%">Type</th>
+							<th width="16%">Window (msec)</th>
+							<th width="16%">Limit</th>
+							<th width="16%">Retries</th>
+							<th width="16%">Delay (msec)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="oneStrategy in throttlingStrategies">
+							<td>
+								<a href="" ng-click="modifyThrottlingStrategy(oneEnv, oneStrategy);">
+									<span class="icon icon-pencil"></span>
+								</a>&nbsp;
+								<a href="" ng-confirm-click="Are you sure you want to remove this throttling strategy ?" ng-click="removeThrottlingStrategy(oneEnv, oneStrategy);">
+									<span class="icon icon-cross red"></span>
+								</a>
+							</td>
+							<td><b>{{oneStrategy}}</b></td>
+							<td>{{(oneEnv.services.config.throttling[oneStrategy].type === 0) ? 'Per Tenant': 'Per Tenant & Per IP Address'}}</td>
+							<td>{{oneEnv.services.config.throttling[oneStrategy].window}}</td>
+							<td>{{oneEnv.services.config.throttling[oneStrategy].limit}}</td>
+							<td>{{oneEnv.services.config.throttling[oneStrategy].retries}}</td>
+							<td>{{oneEnv.services.config.throttling[oneStrategy].delay}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div>
+				<p class="fieldMsg">
+					If you are not familiar with how API Traffic Throttling works, <a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling" target="_blank">Click Here</a>
+				</p>
+			</div>
+		</tab>
+	</tabset>
+</div>

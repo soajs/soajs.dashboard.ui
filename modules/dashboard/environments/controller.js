@@ -1,6 +1,6 @@
 "use strict";
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', '$window', 'customRegistrySrv', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage, $window, customRegistrySrv) {
+environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', '$window', 'customRegistrySrv', 'throttlingSrv', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage, $window, customRegistrySrv, throttlingSrv) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.newEntry = true;
 	$scope.envId = null;
@@ -146,6 +146,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					$scope.waitMessage.message = '';
 					$scope.waitMessage.type = '';
 					$scope.formEnvironment.services.config.session.unset = ($scope.formEnvironment.services.config.session.unset === 'keep') ? false : true;
+					
+					renderThrottling(response);
 				}
 			});
 		}
@@ -203,9 +205,36 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					if ($scope.grid.rows && $scope.grid.rows.length) {
 						$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
 					}
+					renderThrottling($scope.grid.rows[0]);
 				}
 			});
 		}
+		
+		function renderThrottling(environment){
+			//render throttling strategies
+			$scope.throttlingStrategies = [];
+			for(let strategy in environment.services.config.throttling){
+				if(['publicAPIStrategy','privateAPIStrategy'].indexOf(strategy) === -1){
+					$scope.throttlingStrategies.push(strategy);
+				}
+			}
+		}
+	};
+	
+	$scope.assignThrottlingStrategy = function(oneEnv){
+		throttlingSrv.assignThrottlingStrategy($scope, oneEnv);
+	};
+	
+	$scope.removeThrottlingStrategy = function(oneEnv, strategy){
+		throttlingSrv.removeThrottlingStrategy($scope, oneEnv, strategy);
+	};
+	
+	$scope.addThrottlingStrategy = function(oneEnv){
+		throttlingSrv.addThrottlingStrategy($scope, oneEnv);
+	};
+	
+	$scope.modifyThrottlingStrategy = function(oneEnv, strategy){
+		throttlingSrv.modifyThrottlingStrategy($scope, oneEnv, strategy);
 	};
 	
 	$scope.customLoaded = function (_editor) {
@@ -247,7 +276,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		$scope.$parent.go('/environments/environment/' + data._id);
 	};
 	
-	$scope.save = function () {
+	$scope.save = function (cb) {
 		var postData = angular.copy($scope.formEnvironment);
 		
 		if (typeof($scope.formEnvironment.services.config.session.proxy) === 'undefined') {
@@ -288,8 +317,13 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				var successMessage = translation.environment[LANG] + ' ' + (($scope.newEntry) ? translation.created[LANG] : translation.updated[LANG]) + ' ' + translation.successfully[LANG];
-				$scope.$parent.displayAlert('success', successMessage);
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
+				else{
+					var successMessage = translation.environment[LANG] + ' ' + (($scope.newEntry) ? translation.created[LANG] : translation.updated[LANG]) + ' ' + translation.successfully[LANG];
+					$scope.$parent.displayAlert('success', successMessage);
+				}
 			}
 		});
 	};

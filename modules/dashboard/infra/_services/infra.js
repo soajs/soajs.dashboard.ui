@@ -1,13 +1,13 @@
 "use strict";
 let infraCommonCSrv = soajsApp.components;
 infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-	
+
 	function getInfraDriverName(currentScope) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
 		let name = oneInfra.name; // -> azure
 		return name;
 	}
-	
+
 	function getInfraFromCookie(currentScope) {
 		if ($cookies.getObject('myInfra', {'domain': interfaceDomain})) {
 			currentScope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
@@ -22,7 +22,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			"method": "get",
 			"routeName": "/dashboard/infra",
 			"params": {
-				"exclude": ["groups", "regions", "templates"]
+				"exclude[]": ["groups", "regions", "templates"]
 			}
 		};
 
@@ -31,8 +31,10 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		}
 
 		if(opts.exclude){
-			options.params.exclude = opts.exclude;
+			options.params['exclude[]'] = opts.exclude;
 		}
+
+		console.log(options);
 
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
@@ -284,7 +286,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		});
 	}
-	
+
 	return {
 		"getInfraDriverName": getInfraDriverName,
 		"hideSidebarMenusForUnwantedProviders": hideSidebarMenusForUnwantedProviders,

@@ -10,7 +10,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
-		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
+		infraCommonSrv.switchInfra($scope, oneInfra, ["templates"], () => {
 			if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups.length) && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0)) {
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
@@ -41,7 +41,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 				$scope.isResourceGroupDriven = true;
 				$scope.noResourceGroups = true;
 			}
-			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups === "NA" && $scope.$parent.$parent.currentSelectedInfra.regions) {
+			else if ((!$scope.$parent.$parent.currentSelectedInfra.groups || $scope.$parent.$parent.currentSelectedInfra.groups === "NA") && $scope.$parent.$parent.currentSelectedInfra.regions) {
 				//flag that the infra is not driven by resource group -> by region
 				$scope.isResourceGroupDriven = false;
 
@@ -59,6 +59,8 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					$scope.selectedRegion = $scope.infraRegions[0];
 				}
 
+
+				console.log($scope.infraRegions);
 				$timeout(() => {
 					overlayLoading.show();
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {

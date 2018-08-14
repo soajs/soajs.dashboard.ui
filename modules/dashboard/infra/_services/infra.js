@@ -34,8 +34,6 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			options.params['exclude[]'] = opts.exclude;
 		}
 
-		console.log(options);
-
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			overlayLoading.hide();

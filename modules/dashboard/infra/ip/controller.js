@@ -59,11 +59,10 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					$scope.selectedRegion = $scope.infraRegions[0];
 				}
 
-
-				console.log($scope.infraRegions);
 				$timeout(() => {
 					overlayLoading.show();
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						overlayLoading.hide();
 						$scope.vmlayers = vmlayers;
 
 						infraIPSrv.listIPs($scope, $scope.selectedRegion);

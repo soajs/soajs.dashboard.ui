@@ -1,28 +1,28 @@
 "use strict";
 var infraIACSrv = soajsApp.components;
 infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-	
+
 	function rerenderTemplates(currentScope) {
 		if(currentScope.currentSelectedInfra.templates && Array.isArray(currentScope.currentSelectedInfra.templates) && currentScope.currentSelectedInfra.templates.length > 0){
 			let renderedTemplates = {};
-			
+
 			currentScope.currentSelectedInfra.templates.forEach((oneTemplates) => {
 				oneTemplates.technology = (oneTemplates.technology === 'vm') ? "vm" : oneTemplates.technology;
 				if(!renderedTemplates[oneTemplates.technology]){
 					renderedTemplates[oneTemplates.technology] = {};
 				}
-				
+
 				if(!renderedTemplates[oneTemplates.technology][oneTemplates.driver]){
 					renderedTemplates[oneTemplates.technology][oneTemplates.driver] = [];
 				}
-				
+
 				renderedTemplates[oneTemplates.technology][oneTemplates.driver].push(oneTemplates);
 			});
-			
+
 			currentScope.currentSelectedInfra.templates = renderedTemplates;
 		}
 	}
-	
+
 	function injectFormInputs(id, value, form, data) {
 		//reset form inputs to 4
 		form.entries.length = 5;
@@ -148,24 +148,52 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		let entries = angular.copy(infraIACConfig.form.templates);
 
 		//inject select infra type
+		oneInfra.drivers.forEach(oneDriver => {
+			entries[2].value.push({ 'v': oneDriver, 'l': oneDriver });
+		});
+
 		if (oneInfra.templatesTypes.indexOf("local") !== -1) {
-			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console" });
+			entries[3].value.push({ 'v': 'local', 'l': "SOAJS Console" });
 		}
 
 		if (oneInfra.templatesTypes.indexOf("external") !== -1) {
-			entries[2].value.push({ 'v': 'external', 'l': "Cloud Provider" });
+			entries[3].value.push({ 'v': 'external', 'l': "Cloud Provider" });
 		}
-
-		oneInfra.drivers.forEach(oneDriver => {
-			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
-		});
 
 		oneInfra.technologies.forEach(oneTech => {
             let label = (oneTech === 'vm') ? 'Virtual Machine' : oneTech;
 			entries[4].value.push({ 'v': oneTech, 'l': label });
 		});
 
-		entries[2].onAction = function (id, value, form) {
+		entries[2].onAction = function(id, value, form) {
+			form.entries[3].value = [];
+			delete form.formData['location'];
+
+			if(oneInfra && oneInfra.override && oneInfra.override[value]) {
+				if(oneInfra.override[value].templates && Array.isArray(oneInfra.override[value].templates)) {
+					if (oneInfra.override[value].templates.indexOf("local") !== -1) {
+						form.entries[3].value.push({ 'v': 'local', 'l': "SOAJS Console" });
+					}
+
+					if (oneInfra.override[value].templates.indexOf("external") !== -1) {
+						form.entries[3].value.push({ 'v': 'external', 'l': "Cloud Provider" });
+					}
+				}
+			}
+			else {
+				if(oneInfra && oneInfra.templatesTypes) {
+					if (oneInfra.templatesTypes.indexOf("local") !== -1) {
+						form.entries[3].value.push({ 'v': 'local', 'l': "SOAJS Console" });
+					}
+
+					if (oneInfra.templatesTypes.indexOf("external") !== -1) {
+						form.entries[3].value.push({ 'v': 'external', 'l': "Cloud Provider" });
+					}
+				}
+			}
+		};
+
+		entries[3].onAction = function (id, value, form) {
 			injectFormInputs(id, value, form);
 		};
 
@@ -180,7 +208,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 					'label': 'Submit',
 					'btn': 'primary',
 					'action': function (formData) {
-						if (oneInfra.templatesTypes.indexOf("local") !== -1) {
+						if (formData.location === 'local') {
 							let options = {
 								"method": "post",
 								"routeName": "/dashboard/infra/template",
@@ -204,7 +232,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 								}
 							});
 						}
-						else if (oneInfra.templatesTypes.indexOf("external") !== -1) {
+						else if (formData.location === 'external') {
 							//need to upload in this case
 							let keys = Object.keys(formData);
 							let foundFile = false;
@@ -317,16 +345,16 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		};
 
 		buildForm(currentScope, $modal, options, () => {
-			if (entries[2].value.length === 1) {
-				entries[2].value[0].selected = true;
-				currentScope.form.formData.location = entries[2].value[0].v;
+			if (entries[3].value.length === 1) {
+				entries[3].value[0].selected = true;
+				currentScope.form.formData.location = entries[3].value[0].v;
 				$timeout(() => {
 					injectFormInputs('location', currentScope.form.formData.location, currentScope.form);
 				}, 100);
 			}
-			if (entries[3].value.length === 1) {
-				entries[3].value[0].selected = true;
-				currentScope.form.formData.driver = entries[3].value[0].v;
+			if (entries[2].value.length === 1) {
+				entries[2].value[0].selected = true;
+				currentScope.form.formData.driver = entries[2].value[0].v;
 			}
 
 			if (entries[4].value.length === 1) {
@@ -398,8 +426,9 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		currentScope.showTemplateForm = true;
 
 		oneInfra.drivers.forEach(oneDriver => {
-			entries[3].value.push({ 'v': oneDriver, 'l': oneDriver });
+			entries[2].value.push({ 'v': oneDriver, 'l': oneDriver });
 		});
+		entries[2].disabled = true;
 
 		oneInfra.technologies.forEach(oneTech => {
 			let label = (oneTech === 'vm') ? 'Virtual Machine' : oneTech;
@@ -407,7 +436,8 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		});
 
 		if (oneTemplate.location === 'local') {
-			entries[2].value.push({ 'v': 'local', 'l': "SOAJS Console", 'selected': true });
+			entries[3].value.push({ 'v': 'local', 'l': "SOAJS Console", 'selected': true });
+			entries[3].disabled = true;
 
 			let formData = angular.copy(oneTemplate);
 
@@ -493,7 +523,8 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
 		else {
-			entries[2].value.push({ 'v': 'external', 'l': "Cloud Provider", 'selected': true });
+			entries[3].value.push({ 'v': 'external', 'l': "Cloud Provider", 'selected': true });
+			entries[3].disabled = true;
 
 			let formData = angular.copy(oneTemplate);
 			delete formData.tags;

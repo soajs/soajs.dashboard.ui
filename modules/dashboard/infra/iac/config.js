@@ -28,19 +28,19 @@ let infraIACConfig = {
 				'required': false
 			},
 			{
-				'name': 'location',
-				'label': 'Location',
-				'type': 'select',
-				'value': [],
-				'fieldMsg': 'Select where to store this template.',
-				'required': true
-			},
-			{
 				'name': 'driver',
 				'label': 'Driver',
 				'type': 'select',
 				'value': [],
 				'fieldMsg': 'Select which supported infra cloud driver this template is compatible with.',
+				'required': true
+			},
+			{
+				'name': 'location',
+				'label': 'Location',
+				'type': 'select',
+				'value': [],
+				'fieldMsg': 'Select where to store this template.',
 				'required': true
 			},
 			{

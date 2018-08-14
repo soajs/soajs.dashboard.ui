@@ -1,7 +1,7 @@
 "use strict";
 
 var multiTenantApp = soajsApp.components;
-multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$modal', '$routeParams', 'ngDataApi', '$cookies', 'injectFiles', function ($scope, $compile, $timeout, $modal, $routeParams, ngDataApi, $cookies, injectFiles) {
+multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$modal', '$routeParams', 'ngDataApi', '$cookies', 'injectFiles', 'mtsc', function ($scope, $compile, $timeout, $modal, $routeParams, ngDataApi, $cookies, injectFiles, mtsc) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -149,6 +149,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	
 	$scope.getEnvironments = function (cb) {
 		$scope.availableEnv = [];
+		$scope.availableEnvThrottling = {};
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/list"
@@ -159,6 +160,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			else {
 				response.forEach(function (oneEnv) {
 					$scope.availableEnv.push(oneEnv.code.toLowerCase());
+					
+					if(oneEnv.services && oneEnv.services.config){
+						$scope.availableEnvThrottling[oneEnv.code.toLowerCase()] = oneEnv.services.config.throttling || null;
+					}
 				});
 				
 				if(cb && typeof cb === 'function'){
@@ -1197,77 +1202,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		
 	};
 	
-	$scope.updateConfiguration = function (tId, appId, key, env, value) {
-		var data = {};
-		if (value) {
-			data.config = angular.copy(value);
-		}
-		if (env) {
-			data.envCode = env;
-		}
-		var options = {
-			timeout: $timeout,
-			form: tenantConfig.form.keyConfig,
-			name: 'updatekeyConfig',
-			label: translation.updateKeyConfiguration[LANG],
-			data: data,
-			sub: true,
-			actions: [
-				{
-					'type': 'submit',
-					'label': translation.submit[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						var configObj;
-						if (formData.config && (formData.config != "")) {
-							try {
-								configObj = formData.config;
-							}
-							catch (e) {
-								$scope.form.displayAlert('danger', translation.errorInvalidConfigJsonObject[LANG]);
-								return;
-							}
-						}
-						else {
-							configObj = {};
-						}
-						
-						var postData = {
-							'envCode': formData.envCode,
-							'config': configObj
-						};
-						
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "put",
-							"routeName": "/dashboard/tenant/application/key/config/update",
-							"data": postData,
-							"params": { "id": tId, "appId": appId, "key": key }
-						}, function (error) {
-							if (error) {
-								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
-								$scope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
-								$scope.modalInstance.close();
-								$scope.form.formData = {};
-								$scope.reloadConfiguration(tId, appId, key);
-							}
-						});
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						$scope.modalInstance.dismiss('cancel');
-						$scope.form.formData = {};
-					}
-				}]
-			
-		};
-		
-		buildFormWithModal($scope, $modal, options);
+	$scope.updateConfiguration = function (tId, appId, appPackage, key, env, value) {
+		mtsc.updateConfiguration ($scope, tId, appId, appPackage, key, env, value);
 	};
 	
 	$scope.addNewExtKey = function (tId, appId, key, packageCode) {

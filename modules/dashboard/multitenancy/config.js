@@ -1,4 +1,5 @@
 var tenantConfig = {
+	'excludedServices': ['dashboard', 'controller'],
 	'grid': {
 		'tenant': {
 			recordsPerPageArray: [5, 10, 50, 100],
@@ -364,23 +365,46 @@ var tenantConfig = {
 				}
 			]
 		},
-		'keyConfig': {
-			'name': '',
-			'label': '',
-			'actions': {},
-			'entries': [
+		'oneServiceThrottlingTmpl': {
+			type: "accordion",
+			name: "throttling",
+			label: "",
+			"entries": [
 				{
-					'name': 'envCode',
-					'label': translation.envCode[LANG],
-					'type': 'text',
-					'value': '',
-					'placeholder': 'DEV...',
-					'tooltip': 'Enter the environment code for the key configuration.',
-					'required': true
+					'name': 'public',
+					'label': "Public APIs",
+					'type': 'select',
+					"value": [
+						{
+							'v': null,
+							'l': " -- Inherit From Registry ($strategy$) -- ",
+							"selected": true
+						}
+					],
+					'tooltip': "Override throttling strategy for public API Access"
 				},
 				{
-					'name': 'config',
-					'label': translation.configuration[LANG],
+					'name': 'private',
+					'label': "Private APIs",
+					'type': 'select',
+					"value": [
+						{
+							'v': null,
+							'l': " -- Inherit From Registry ($strategy$) -- ",
+							"selected": true
+						}
+					],
+					'tooltip': "Override throttling strategy for public API Access"
+				}
+			]
+		},
+		"oneServiceIMFVTmpl": {
+			"type": "accordion",
+			"name": "imfv",
+			"label": "",
+			"entries": [
+				{
+					'name': 'imfv',
 					'type': 'jsoneditor',
 					'options': {
 						'mode': 'code',
@@ -392,7 +416,107 @@ var tenantConfig = {
 					'height': '300px',
 					"value": {},
 					'required': true,
-					'tooltip': translation.formConfigToolTip[LANG]
+					'fieldMsg': "For more information on how to configure IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a>"
+				}
+			]
+		},
+		'keyConfig': {
+			'name': '',
+			'label': '',
+			'actions': {},
+			'entries': [
+				{
+					'name': 'envCode',
+					'label': translation.envCode[LANG],
+					'type': 'text',
+					'disabled': true,
+					'value': '',
+					'placeholder': 'DEV...',
+					'tooltip': 'Enter the environment code for the key configuration.',
+					'required': true
+				},
+				{
+					'name': 'configTabs',
+					"type": "tabset",
+					// 'label': translation.configuration[LANG],
+					"tabs": [
+						{
+							"name": "throttling",
+							"label": "Throttling",
+							"description": {
+								"type": "info",
+								"content": "Override the default throttling configuration for this key."
+							},
+							"entries": [
+								{
+									"type": "html",
+									"value": "<br />"
+								}
+							]
+						},
+						{
+							"name": "oauthTab",
+							"label": "oAuth",
+							"description": {
+								"type": "info",
+								"content": "Enable or disable oAuth Security for this key in this environment."
+							},
+							"entries": [
+								{
+									'name': 'disableOauth',
+									'label': "Disable oAuth",
+									'type': 'buttonSlider',
+									"value": false,
+									'required': true,
+									'tooltip': "Enable/Disable oAuth security for this key in this environment"
+								}
+							]
+							
+						},
+						{
+							"name": "imfvTab",
+							"label": "IMFV",
+							"description": {
+								"type": "info",
+								"content": "Override the IMFV of a service and its APIs for this tenant key in this environment."
+							},
+							"entries": [
+								{
+									"type": "html",
+									"value": "<br />"
+								}
+							]
+						},
+						{
+							"name": "config",
+							"label": "JSON",
+							"description": {
+								"type": "info",
+								"content": "JSON Editor reveals the full configuration for this application key."
+							},
+							"entries": [
+								{
+									"type": "html",
+									"value": "<br />"
+								},
+								{
+									'name': 'config',
+									'type': 'jsoneditor',
+									'options': {
+										'mode': 'code',
+										'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
+											'v': 'tree',
+											'l': 'Tree View'
+										}, { 'v': 'form', 'l': 'Form View' }]
+									},
+									'height': '300px',
+									"value": {},
+									'required': true,
+									'fieldMsg': "For more information on application key configuration, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61509025/Multitenancy#Multitenancy-apps' target='_blank'>Click Here</a>"
+								}
+							]
+						}
+					]
 				}
 			]
 		},

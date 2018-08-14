@@ -228,7 +228,7 @@ var multitenancyNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'order': 2,
-		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js'],
+		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js', 'modules/dashboard/multitenancy/services/servicesConfig.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

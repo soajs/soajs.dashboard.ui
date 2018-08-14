@@ -53,11 +53,14 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 										//set the values ...
 										for (let strategyName in currentScope.availableEnvThrottling[data.envCode.toLowerCase()]) {
 											if (['privateAPIStrategy', 'publicAPIStrategy'].indexOf(strategyName) !== -1) {
+												
 												if (oneThrottleConfigEntry.name === 'public') {
+													oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy;
 													oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy);
 												}
 												
 												if (oneThrottleConfigEntry.name === 'private') {
+													oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy;
 													oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy);
 												}
 											}
@@ -78,6 +81,12 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 												}
 											}
 										}
+										
+										oneThrottleConfigEntry.value.push({
+											'v': null,
+											'l': " -- Turn OFF Throttling -- "
+										});
+										
 										oneThrottleConfigEntry.name += "_" + oneService;
 									});
 									oneTab.entries.push(serviceThrottlingConfiguration);

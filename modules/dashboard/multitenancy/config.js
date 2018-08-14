@@ -376,7 +376,7 @@ var tenantConfig = {
 					'type': 'select',
 					"value": [
 						{
-							'v': null,
+							'v': "$strategy$",
 							'l': " -- Inherit From Registry ($strategy$) -- ",
 							"selected": true
 						}
@@ -389,7 +389,7 @@ var tenantConfig = {
 					'type': 'select',
 					"value": [
 						{
-							'v': null,
+							'v': "$strategy$",
 							'l': " -- Inherit From Registry ($strategy$) -- ",
 							"selected": true
 						}

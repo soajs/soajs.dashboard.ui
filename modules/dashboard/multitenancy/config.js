@@ -495,7 +495,7 @@ var tenantConfig = {
 							]
 						},
 						{
-							"name": "config",
+							"name": "configTab",
 							"label": "JSON",
 							"description": {
 								"type": "info",
@@ -508,7 +508,7 @@ var tenantConfig = {
 									"value": "<br />"
 								},
 								{
-									'name': 'config',
+									'name': 'customConfig',
 									'type': 'jsoneditor',
 									'options': {
 										'mode': 'code',

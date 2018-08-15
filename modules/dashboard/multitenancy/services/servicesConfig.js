@@ -21,20 +21,12 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 				data.disableOauth = data.oauth.disabled;
 			}
 			
+			//hide throttling tab if no throttling is configured in this environment
 			if(!currentScope.availableEnvThrottling[data.envCode.toLowerCase()]){
 				formEntries.entries[1].tabs.splice(0, 1);
 			}
 			
-			// var provisionThrottling = {
-			
-				// can be null means throttling is off, if not set means inherit from registry
-				// "publicAPIStrategy" : "default"
-			
-				// can be null means throttling is off, if not set means inherit from registry
-				// "privateAPIStrategy": null
-
-			// }
-			
+			//loop through the tabs of the form and build the sub sections
 			formEntries.entries.forEach((oneEntry) => {
 				if (oneEntry.type === 'tabset') {
 					oneEntry.tabs.forEach((oneTab) => {
@@ -159,6 +151,10 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 				}
 			});
 			
+			data.customConfig = angular.copy(data.config);
+			delete data.customConfig.SOAJS;
+			delete data.customConfig.oauth;
+			
 			let options = {
 				timeout: $timeout,
 				form: formEntries,
@@ -226,7 +222,6 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 				currentScope.form.formData = data;
 				$timeout(() => {
 					currentScope.form.refresh();
-					console.log(currentScope.form);
 				}, 1000);
 			});
 		});

@@ -377,7 +377,8 @@ var tenantConfig = {
 					"value": [
 						{
 							'v': "$strategy$",
-							'l': " -- Inherit From Registry ($strategy$) -- ",
+							'l': "Inherit From Registry: $strategy$",
+							'group': 'Common',
 							"selected": true
 						}
 					],
@@ -390,7 +391,8 @@ var tenantConfig = {
 					"value": [
 						{
 							'v': "$strategy$",
-							'l': " -- Inherit From Registry ($strategy$) -- ",
+							'l': "Inherit From Registry: $strategy$",
+							'group': 'Common',
 							"selected": true
 						}
 					],
@@ -403,21 +405,21 @@ var tenantConfig = {
 			"name": "imfv",
 			"label": "",
 			"entries": [
-				{
-					'name': 'imfv',
-					'type': 'jsoneditor',
-					'options': {
-						'mode': 'code',
-						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
-							'v': 'tree',
-							'l': 'Tree View'
-						}, { 'v': 'form', 'l': 'Form View' }]
-					},
-					'height': '300px',
-					"value": {},
-					'required': true,
-					'fieldMsg': "For more information on how to configure IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a>"
-				}
+				// {
+				// 	'name': 'imfv',
+				// 	'type': 'jsoneditor',
+				// 	'options': {
+				// 		'mode': 'code',
+				// 		'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
+				// 			'v': 'tree',
+				// 			'l': 'Tree View'
+				// 		}, { 'v': 'form', 'l': 'Form View' }]
+				// 	},
+				// 	'height': '300px',
+				// 	"value": {},
+				// 	'required': true,
+				// 	'fieldMsg': "For more information on how to configure IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a>"
+				// }
 			]
 		},
 		'keyConfig': {
@@ -445,11 +447,13 @@ var tenantConfig = {
 							"label": "Throttling",
 							"description": {
 								"type": "info",
-								"content": "Override the default throttling configuration for this key."
+								"content":  "<p>Override the default throttling configuration for this key in this environment.</p>" +
+											"<p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
 							},
 							"entries": [
 								{
 									"type": "html",
+									"name": "__spacer__",
 									"value": "<br />"
 								}
 							]
@@ -459,7 +463,8 @@ var tenantConfig = {
 							"label": "oAuth",
 							"description": {
 								"type": "info",
-								"content": "Enable or disable oAuth Security for this key in this environment."
+								"content":  "<p>Enable or disable oAuth Security for this key in this environment.</p>" +
+											"<p>If you are not familiar with how oAuth Security works, <a href='https://soajsorg.atlassian.net/wiki/spaces/OAUT/overview' target='_blank'>Click Here</a></p>"
 							},
 							"entries": [
 								{
@@ -478,11 +483,13 @@ var tenantConfig = {
 							"label": "IMFV",
 							"description": {
 								"type": "info",
-								"content": "Override the IMFV of a service and its APIs for this tenant key in this environment."
+								"content":  "<p>Override the IMFV of a service and its APIs for this tenant key in this environment.</p>" +
+											"<p>If you are not familiar with SOAJS IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a></p>"
 							},
 							"entries": [
 								{
 									"type": "html",
+									"name": "__spacer__",
 									"value": "<br />"
 								}
 							]
@@ -497,6 +504,7 @@ var tenantConfig = {
 							"entries": [
 								{
 									"type": "html",
+									"name": "__spacer__",
 									"value": "<br />"
 								},
 								{

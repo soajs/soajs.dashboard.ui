@@ -1,6 +1,6 @@
 "use strict";
 var multiTenantServiceConfig = soajsApp.components;
-multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeout, $modal) {
+multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'checkApiHasAccess', function ($timeout, $modal, ngDataApi, checkApiHasAccess) {
 	
 	function updateConfiguration(currentScope, tId, appId, appPackage, key, env, value) {
 		let data = {};
@@ -46,8 +46,8 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 								services.forEach((oneService) => {
 									
 									let serviceThrottlingConfiguration = angular.copy(tenantConfig.form.oneServiceThrottlingTmpl);
-									serviceThrottlingConfiguration.name += "_" + oneService;
-									serviceThrottlingConfiguration.label = oneService;
+									serviceThrottlingConfiguration.name += "_" + oneService.name;
+									serviceThrottlingConfiguration.label = oneService.name;
 									serviceThrottlingConfiguration.entries.forEach((oneThrottleConfigEntry) => {
 										
 										//set the values ...
@@ -70,12 +70,13 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 													currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy !== strategyName
 												) {
 													let selected = false;
-													if(data[oneService] && data[oneService].SOAJS && data[oneService].SOAJS.THROTTLING && data[oneService].SOAJS.THROTTLING[strategyName]){
+													if(data[oneService.name] && data[oneService.name].SOAJS && data[oneService.name].SOAJS.THROTTLING && data[oneService.name].SOAJS.THROTTLING[strategyName]){
 														selected = true;
 													}
 													oneThrottleConfigEntry.value.push({
 														'v': strategyName,
 														'l': strategyName,
+														'group': 'Strategies',
 														'selected': selected
 													});
 												}
@@ -84,10 +85,11 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 										
 										oneThrottleConfigEntry.value.push({
 											'v': null,
-											'l': " -- Turn OFF Throttling -- "
+											'group': 'Common',
+											'l': "Turn OFF Throttling"
 										});
 										
-										oneThrottleConfigEntry.name += "_" + oneService;
+										oneThrottleConfigEntry.name += "_" + oneService.name;
 									});
 									oneTab.entries.push(serviceThrottlingConfiguration);
 									
@@ -113,20 +115,41 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 							// oneServiceIMFVTmpl
 							if (services && Array.isArray(services) && services.length > 0) {
 								services.forEach((oneService) => {
+									
+									let imfvMethods = [];
+									for(let method in oneService.apisList){
+										let oneMethodIMFV = {
+											"type": "group",
+											"label": method.toUpperCase(),
+											"collapsed": true,
+											"icon": "plus",
+											"entries": []
+										};
+										
+										oneService.apisList[method].forEach((oneAPI) => {
+											let oneAPIIMFV = {
+												"type": "textarea",
+												"rows": 8,
+												"name": oneAPI.v,
+												"label": oneAPI.l + " [ " + oneAPI.v + " ]",
+												"value": ""
+											};
+											
+											if( data[oneService.name] && data[oneService.name].SOAJS &&
+												data[oneService.name].SOAJS.IMFV && data[oneService.name].SOAJS.IMFV.schema &&
+												data[oneService.name].SOAJS.IMFV.schema[oneAPI.v]
+											){
+												oneAPIIMFV.value = JSON.stringify(data[oneService.name].SOAJS.IMFV.schema[oneAPI.v], null, 2);
+											}
+											oneMethodIMFV.entries.push(oneAPIIMFV);
+										});
+										imfvMethods.push(oneMethodIMFV);
+									}
+									
 									let oneServiceIMFVConfiguration = angular.copy(tenantConfig.form.oneServiceIMFVTmpl);
-									oneServiceIMFVConfiguration.name += "_" + oneService;
-									oneServiceIMFVConfiguration.label = oneService;
-									oneServiceIMFVConfiguration.entries.forEach((oneIMFVConfigEntry) => {
-										
-										//set the values ...
-										oneIMFVConfigEntry.value = "{}";
-										if(data && data[oneService] && data[oneService].SOAJS && data[oneService].SOAJS.IMFV && data[oneService].SOAJS.IMFV.schema){
-											oneIMFVConfigEntry.value = data[oneService].SOAJS.IMFV.schema || "{}";
-										}
-										oneIMFVConfigEntry.name += "_" + oneService;
-										
-										
-									});
+									oneServiceIMFVConfiguration.name += "_" + oneService.name;
+									oneServiceIMFVConfiguration.label = oneService.name;
+									oneServiceIMFVConfiguration.entries = imfvMethods;
 									oneTab.entries.push(oneServiceIMFVConfiguration);
 									
 								});
@@ -149,41 +172,42 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 						'label': translation.submit[LANG],
 						'btn': 'primary',
 						'action': function (formData) {
-							var configObj;
-							if (formData.config && (formData.config != "")) {
-								try {
-									configObj = formData.config;
-								}
-								catch (e) {
-									currentScope.form.displayAlert('danger', translation.errorInvalidConfigJsonObject[LANG]);
-									return;
-								}
-							}
-							else {
-								configObj = {};
-							}
-							
-							var postData = {
-								'envCode': formData.envCode,
-								'config': configObj
-							};
-							
-							getSendDataFromServer(currentScope, ngDataApi, {
-								"method": "put",
-								"routeName": "/dashboard/tenant/application/key/config/update",
-								"data": postData,
-								"params": {"id": tId, "appId": appId, "key": key}
-							}, function (error) {
-								if (error) {
-									currentScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-								}
-								else {
-									currentScope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
-									currentScope.modalInstance.close();
-									currentScope.form.formData = {};
-									currentScope.reloadConfiguration(tId, appId, key);
-								}
-							});
+							console.log(formData);
+							// var configObj;
+							// if (formData.config && (formData.config != "")) {
+							// 	try {
+							// 		configObj = formData.config;
+							// 	}
+							// 	catch (e) {
+							// 		currentScope.form.displayAlert('danger', translation.errorInvalidConfigJsonObject[LANG]);
+							// 		return;
+							// 	}
+							// }
+							// else {
+							// 	configObj = {};
+							// }
+							//
+							// var postData = {
+							// 	'envCode': formData.envCode,
+							// 	'config': configObj
+							// };
+							//
+							// getSendDataFromServer(currentScope, ngDataApi, {
+							// 	"method": "put",
+							// 	"routeName": "/dashboard/tenant/application/key/config/update",
+							// 	"data": postData,
+							// 	"params": {"id": tId, "appId": appId, "key": key}
+							// }, function (error) {
+							// 	if (error) {
+							// 		currentScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							// 	}
+							// 	else {
+							// 		currentScope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
+							// 		currentScope.modalInstance.close();
+							// 		currentScope.form.formData = {};
+							// 		currentScope.reloadConfiguration(tId, appId, key);
+							// 	}
+							// });
 						}
 					},
 					{
@@ -211,9 +235,10 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 	//get the services this application has access to from product package acl
 	function getServices(currentScope, appPackage, env, cb) {
 		let services = [];
-		
+		let prodPackage;
 		currentScope.availablePackages.forEach((oneProdPackage) => {
 			if (oneProdPackage.pckCode === appPackage) {
+				prodPackage = oneProdPackage;
 				services = Object.keys(oneProdPackage.acl[env.toLowerCase()]);
 				for (let i = services.length - 1; i >= 0; i--) {
 					if (tenantConfig.excludedServices.indexOf(services[i]) !== -1) {
@@ -222,7 +247,63 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', function ($timeo
 				}
 			}
 		});
-		return cb(services);
+		
+		getServicesFromDB(currentScope, prodPackage.acl, env, services, cb);
+	}
+	
+	function getServicesFromDB(currentScope, acl, env, serviceNames, cb){
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "send",
+			"routeName": "/dashboard/services/list",
+			"data": { "serviceNames": serviceNames }
+		}, function (error, response) {
+			if (error) {
+				overlayLoading.hide();
+				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				for (var x = 0; x < response.records.length; x++) {
+					if (response.records[x].apis) {
+						response.records[x].apisList = response.records[x].apis;
+					}
+					else {
+						if (response.records[x].versions) {
+							var v = returnLatestVersion(response.records[x].versions);
+							if (response.records[x].versions[v]) {
+								response.records[x].apisList = response.records[x].versions[v].apis;
+							}
+						}
+					}
+					
+					//reshape apisList based on methods
+					let contractSchema = {};
+					response.records[x].apisList.forEach((oneAPI) => {
+						if(!contractSchema[oneAPI.m]){
+							contractSchema[oneAPI.m] = [];
+						}
+						contractSchema[oneAPI.m].push(oneAPI);
+					});
+					
+					response.records[x].apisList = contractSchema;
+					delete response.records[x].versions;
+					
+					//remove apis that tenant has no access to
+					for(let method in response.records[x].apisList){
+						for(let i = response.records[x].apisList[method].length -1; i >= 0; i--){
+							let oneAPI = response.records[x].apisList[method][i];
+							let aclClone = {};
+							aclClone[env] = angular.copy(acl[env]);
+							checkApiHasAccess(aclClone, response.records[x].name, oneAPI.v, method, null, (access) => {
+								if(!access){
+									response.records[x].apisList[method].splice(i, 1);
+								}
+							});
+						}
+					}
+				}
+				return cb(response.records);
+			}
+		});
 	}
 	
 	return {

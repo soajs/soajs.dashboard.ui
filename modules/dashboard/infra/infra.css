@@ -342,21 +342,3 @@ td.readonly{
     cursor: pointer;
     color: red;
 }
-
-#addPublicIP #vpc-wrapper {
-    display: inline;
-    position: absolute;
-    top: 80px;
-    left: 400px
-}
-
-#addPublicIP #standard-wrapper {
-    display: inline;
-    position: absolute;
-    top: 80px;
-    left: 500px
-}
-
-#addPublicIP #heading-wrapper {
-    height: 80px
-}

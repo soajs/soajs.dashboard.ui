@@ -428,12 +428,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 
 			oneProvider.templates.forEach((oneTmpl) => {
-				let label = oneTmpl.name;
-				if(oneTmpl.description && oneTmpl.description !== ''){
-					label += " | " + oneTmpl.description;
+				if(oneTmpl && oneTmpl.driver && environmentsConfig.providers[oneProvider.name] && environmentsConfig.providers[oneProvider.name][oneTmpl.driver.toLowerCase()]) {
+					let label = oneTmpl.name;
+					if(oneTmpl.description && oneTmpl.description !== ''){
+						label += " | " + oneTmpl.description;
+					}
+					let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
+					infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
 				}
-				let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
-				infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
 			});
 
 			formEntries.push({

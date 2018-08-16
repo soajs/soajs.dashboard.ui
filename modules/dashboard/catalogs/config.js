@@ -274,7 +274,12 @@ var catalogAppConfig = {
                             'content': 	"<p>Expose ports to access deployments created from this recipe directly using either <b>Load Balancer</b> or <b>Specific Port</b> strategies.<br />" +
                             "<b>Load Balancer</b> &raquo; { name: 'http', target: 80, isPublished: true, preserveClientIP: true }<br />" +
                             "<b>Specific Port</b> &raquo; { name: 'http', target: 80, isPublished: true, published: 2080, preserveClientIP: true }" +
-                            "</p>"
+                            "</p><br />" +
+							"<label>If you wish to use a <b>Specific Port</b>, make sure that the published port is within these ranges:</label><br />" +
+							"<ul>" +
+							"<li>For <b>virtual machine</b> compatible recipes: <b>0 - 65535</b></li>" +
+							"<li>For <b>container</b> compatible recipes: <b>0 - 2767</b> (the selected port number will be automatically incremented by 30000)</li>" +
+							"</ul>"
                         },
 						'entries': [
 							{
@@ -547,7 +552,6 @@ var catalogAppConfig = {
 					'value': '',
 					'required': true,
 					'tooltip': 'Enter the port configuration.',
-					'fieldMsg': 'External port values are limited to a range between 0 and 2767.',
 					'height': 100
 				},
 				{

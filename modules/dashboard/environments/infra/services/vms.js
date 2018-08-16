@@ -444,6 +444,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				required: true,
 				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
 				onAction: function(id, value, form){
+					form.entries.length = 1;
 					let iacTemplateTechnology = technology;
 
 					for(let i = 0; i < oneProvider.templates.length; i++) {

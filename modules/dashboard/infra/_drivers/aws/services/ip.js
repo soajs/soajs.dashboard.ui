@@ -41,7 +41,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 			actions: [
 				{
 					'type': 'submit',
-					'label': "Create Public IP",
+					'label': "Allocate IP",
 					'btn': 'primary',
 					'action': function (formData) {
 						let data = angular.copy(formData);

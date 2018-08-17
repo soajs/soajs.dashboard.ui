@@ -22,9 +22,9 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 			}
 			
 			//hide throttling tab if no throttling is configured in this environment
-			if(!currentScope.availableEnvThrottling[data.envCode.toLowerCase()]){
-				formEntries.entries[1].tabs.splice(0, 1);
-			}
+			// if(!currentScope.availableEnvThrottling[data.envCode.toLowerCase()]){
+			// 	formEntries.entries[1].tabs.splice(0, 1);
+			// }
 			
 			//loop through the tabs of the form and build the sub sections
 			formEntries.entries.forEach((oneEntry) => {
@@ -33,59 +33,75 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 						
 						//set the throttling configuration
 						if (oneTab.name === 'throttling') {
-							if (services && Array.isArray(services) && services.length > 0) {
+							if(currentScope.availableEnvThrottling[data.envCode.toLowerCase()]){
+								oneTab.description = {
+									"type": "info",
+										"content":  "<p>You can override the default throttling configuration that is configured in the <a href='#/environments'>Registry</a> for this key in this environment.</p>" +
+									"<hr /><p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
+								};
 								
-								services.forEach((oneService) => {
-									
-									let serviceThrottlingConfiguration = angular.copy(tenantConfig.form.oneServiceThrottlingTmpl);
-									serviceThrottlingConfiguration.name += "_" + oneService.name;
-									serviceThrottlingConfiguration.label = oneService.name;
-									serviceThrottlingConfiguration.entries.forEach((oneThrottleConfigEntry) => {
+								if (services && Array.isArray(services) && services.length > 0) {
+									services.forEach((oneService) => {
 										
-										//set the values ...
-										for (let strategyName in currentScope.availableEnvThrottling[data.envCode.toLowerCase()]) {
-											if (['privateAPIStrategy', 'publicAPIStrategy'].indexOf(strategyName) !== -1) {
-												
-												if (oneThrottleConfigEntry.name === 'public') {
-													oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy;
-													oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy);
-												}
-												
-												if (oneThrottleConfigEntry.name === 'private') {
-													oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy;
-													oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy);
-												}
+										let serviceThrottlingConfiguration = angular.copy(tenantConfig.form.oneServiceThrottlingTmpl);
+										serviceThrottlingConfiguration.name += "_" + oneService.name;
+										serviceThrottlingConfiguration.label = oneService.name;
+										serviceThrottlingConfiguration.entries.forEach((oneThrottleConfigEntry) => {
+											
+											if (oneThrottleConfigEntry.name === 'public') {
+												oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy;
+												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy);
 											}
-											else {
-												if (
-													currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy !== strategyName &&
-													currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy !== strategyName
-												) {
-													let selected = false;
-													if(data[oneService.name] && data[oneService.name].SOAJS && data[oneService.name].SOAJS.THROTTLING && data[oneService.name].SOAJS.THROTTLING[strategyName]){
-														selected = true;
+											
+											if (oneThrottleConfigEntry.name === 'private') {
+												oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy;
+												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy);
+											}
+											
+											//set the values ...
+											for (let strategyName in currentScope.availableEnvThrottling[data.envCode.toLowerCase()]) {
+												if (['privateAPIStrategy', 'publicAPIStrategy'].indexOf(strategyName) === -1) {
+													if (
+														(oneThrottleConfigEntry.name === 'public' && currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy !== strategyName) ||
+														(oneThrottleConfigEntry.name === 'private' && currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy !== strategyName)
+													) {
+														let selected = false;
+														if(data[oneService.name] && data[oneService.name].SOAJS && data[oneService.name].SOAJS.THROTTLING && data[oneService.name].SOAJS.THROTTLING[strategyName]){
+															selected = true;
+														}
+														oneThrottleConfigEntry.value.push({
+															'v': strategyName,
+															'l': strategyName,
+															'group': 'Strategies',
+															'selected': selected
+														});
 													}
-													oneThrottleConfigEntry.value.push({
-														'v': strategyName,
-														'l': strategyName,
-														'group': 'Strategies',
-														'selected': selected
-													});
 												}
 											}
-										}
-										
-										oneThrottleConfigEntry.value.push({
-											'v': null,
-											'group': 'Common',
-											'l': "Turn OFF Throttling"
+											
+											oneThrottleConfigEntry.value.push({
+												'v': null,
+												'group': 'Common',
+												'l': "Turn OFF Throttling"
+											});
+											
+											oneThrottleConfigEntry.name += "_" + oneService.name;
 										});
+										oneTab.entries.push(serviceThrottlingConfiguration);
 										
-										oneThrottleConfigEntry.name += "_" + oneService.name;
 									});
-									oneTab.entries.push(serviceThrottlingConfiguration);
-									
-								});
+								}
+							}
+							else {
+								oneTab.description = {
+									"type": "warning",
+									"content":  "<p>This environment has no throttling configuration.</p>" +
+										"<ol>" +
+										"<li>Configure throttling in the <a href='#/environments'>Registry</a> of this environment</li>" +
+										"<li>Override registry throttling configuration here for this tenant for this key.</p></li>" +
+										"</ol><hr />" +
+										"<p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
+								};
 							}
 						}
 						
@@ -120,11 +136,14 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 										
 										oneService.apisList[method].forEach((oneAPI) => {
 											let oneAPIIMFV = {
-												"type": "textarea",
-												"rows": 8,
+												"type": "jsoneditor",
+												'onLoad': loadEditor,
+												'onChange': changeEditorValue,
+												'height': '100px',
 												"name": oneAPI.v,
 												"label": oneAPI.l + " [ " + oneAPI.v + " ]",
-												"value": ""
+												"value": {},
+												"fieldMsg": "Leave empty to use the default <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV'>IMFV</a> or provide a custom configuration and it will override the <b>IMFV</b> for this API only."
 											};
 											
 											if( data[oneService.name] && data[oneService.name].SOAJS &&
@@ -169,6 +188,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 						'btn': 'primary',
 						'action': function (formData) {
 							console.log(formData);
+							
 							// var configObj;
 							// if (formData.config && (formData.config != "")) {
 							// 	try {
@@ -225,6 +245,75 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 				}, 1000);
 			});
 		});
+		
+		function loadEditor(_editor){
+			reloadEditor(_editor, 100, currentScope);
+		}
+		
+		function changeEditorValue(_editor){
+			currentScope.form.entries.forEach((oneEntry) => {
+					if (oneEntry.type === 'tabset') {
+						oneEntry.tabs.forEach((oneTab) => {
+							oneTab.entries.forEach((oneServiceAccordion) => {
+								if(oneServiceAccordion.entries){
+									oneServiceAccordion.entries.forEach((oneMethodGroup) => {
+										if(oneMethodGroup.entries){
+											oneMethodGroup.entries.forEach((oneAPI) => {
+												if(oneAPI.name === _editor.container.id){
+													oneAPI.ngModel = JSON.stringify(oneAPI.value, null, 2);
+													_editor.setValue(JSON.stringify(oneAPI.value, null, 2));
+												}
+											});
+										}
+									});
+								}
+							});
+						});
+					}
+				});
+		}
+	}
+	
+	//use the currentScope to loop over the entries of the form and for each entry matching the id of the editor, set the value
+	function reloadEditor(_editor, fixedHeight, currentScope) {
+		_editor.$blockScrolling = Infinity;
+		_editor.scrollToLine(0, true, true);
+		_editor.scrollPageUp();
+		_editor.clearSelection();
+		_editor.setShowPrintMargin(false);
+		
+		function heightUpdateFunction(computedHeightValue) {
+			var newHeight =
+				_editor.getSession().getScreenLength()
+				* _editor.renderer.lineHeight
+				+ _editor.renderer.scrollBar.getWidth() + 10;
+			
+			if (computedHeightValue) {
+				newHeight = parseInt(computedHeightValue);
+			}
+			else if (fixedHeight && parseInt(fixedHeight) && parseInt(fixedHeight) > newHeight) {
+				newHeight = parseInt(fixedHeight);
+			}
+			
+			_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
+			_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
+			$timeout(function () {
+				document.getElementById(_editor.container.id).style.height = newHeight.toString() + "px";
+			}, 5);
+		}
+		
+		$timeout(function () {
+			if(_editor){
+				_editor.heightUpdate = heightUpdateFunction;
+			}
+			
+			// Set initial size to match initial content
+			heightUpdateFunction();
+			
+			// Whenever a change happens inside the ACE editor, update
+			// the size again
+			_editor.getSession().on('change', heightUpdateFunction);
+		}, 1000);
 	}
 	
 	//get the services this application has access to from product package acl

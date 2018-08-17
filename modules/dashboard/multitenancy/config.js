@@ -445,11 +445,7 @@ var tenantConfig = {
 						{
 							"name": "throttling",
 							"label": "Throttling",
-							"description": {
-								"type": "info",
-								"content":  "<p>Override the default throttling configuration for this key in this environment.</p>" +
-											"<p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
-							},
+							
 							"entries": [
 								{
 									"type": "html",
@@ -463,8 +459,8 @@ var tenantConfig = {
 							"label": "oAuth",
 							"description": {
 								"type": "info",
-								"content":  "<p>Enable or disable oAuth Security for this key in this environment.</p>" +
-											"<p>If you are not familiar with how oAuth Security works, <a href='https://soajsorg.atlassian.net/wiki/spaces/OAUT/overview' target='_blank'>Click Here</a></p>"
+								"content":  "<p>Enable or Disable oAuth Security for this key in this environment.</p>" +
+											"<hr /><p>If you are not familiar with how oAuth Security works, <a href='https://soajsorg.atlassian.net/wiki/spaces/OAUT/overview' target='_blank'>Click Here</a></p>"
 							},
 							"entries": [
 								{
@@ -483,8 +479,8 @@ var tenantConfig = {
 							"label": "IMFV",
 							"description": {
 								"type": "info",
-								"content":  "<p>Override the IMFV of a service and its APIs for this tenant key in this environment.</p>" +
-											"<p>If you are not familiar with SOAJS IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a></p>"
+								"content":  "<p>Override the default IMFV of a service APIs for this tenant key in this environment, or leave blank keep the default configuraiton.</p>" +
+											"<hr /><p>If you are not familiar with SOAJS IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a></p>"
 							},
 							"entries": [
 								{

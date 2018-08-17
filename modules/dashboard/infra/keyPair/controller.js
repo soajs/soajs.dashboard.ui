@@ -1,10 +1,10 @@
 "use strict";
-var infraIPApp = soajsApp.components;
-infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIPSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIPSrv) {
+var infraKeyPairApp = soajsApp.components;
+infraKeyPairApp.controller('infraKeyPairCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraKeyPairSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraKeyPairSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.vmlayers = [];
 	$scope.access = {};
-	constructModulePermissions($scope, $scope.access, infraIPConfig.permissions);
+	constructModulePermissions($scope, $scope.access, infraKeyPairConfig.permissions);
 
 	infraCommonSrv.getInfraFromCookie($scope);
 
@@ -33,7 +33,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 						$scope.vmlayers = vmlayers;
 
-						infraIPSrv.listIPs($scope, $scope.selectedGroup);
+						infraKeyPairSrv.listKeyPairs($scope, $scope.selectedGroup);
 					});
 				}, 500);
 			}
@@ -65,7 +65,7 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 						overlayLoading.hide();
 						$scope.vmlayers = vmlayers;
 
-						infraIPSrv.listIPs($scope, $scope.selectedRegion);
+						infraKeyPairSrv.listKeyPairs($scope, $scope.selectedRegion);
 					});
 				}, 500);
 			}
@@ -136,24 +136,20 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 		}
 	};
 
-	$scope.deleteIP = function (oneIP) {
-		infraIPSrv.deleteIP($scope, oneIP);
+	$scope.deleteKeyPair = function (oneKeyPair) {
+		infraKeyPairSrv.deleteKeyPair($scope, oneKeyPair);
 	};
 
-	$scope.addIP = function () {
-		infraIPSrv.addIP($scope);
+	$scope.addKeyPair = function () {
+		infraKeyPairSrv.addKeyPair($scope);
 	};
 
-	$scope.editIP = function (oneIP) {
-		infraIPSrv.editIP($scope, oneIP);
-	};
-
-	$scope.listIPs = function (groupOrRegion) {
+	$scope.listKeyPairs = function (groupOrRegion) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
-			infraIPSrv.listIPs($scope, groupOrRegion);
+			infraKeyPairSrv.listKeyPairs($scope, groupOrRegion);
 		});
 	};
 

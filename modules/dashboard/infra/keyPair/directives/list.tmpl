@@ -1,0 +1,7 @@
+<section ng-controller="infraKeyPairCtrl">
+	<div ng-switch="currentInfraName">
+		<div ng-switch-when="aws">
+			<div ng-include="'modules/dashboard/infra/_drivers/aws/directives/keyPair.tmpl'"></div>
+		</div>
+	</div>
+</section>

@@ -223,6 +223,36 @@ let infraNav = [
 			'/modules/dashboard/infra/_drivers/aws/services/ip.js'
 		],
 		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'infra-keyPair',
+		'label': 'Key Pairs',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/infra',
+			'method': 'get'
+		},
+		'url': '#/infra-keyPair',
+		'tplPath': 'modules/dashboard/infra/keyPair/directives/list.tmpl',
+		'icon': 'key',
+		'pillar': {
+			'name': 'infra',
+			'label': "Infrastructure",
+			'position': 0
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 9,
+		"fallbackLocation": "#/infra",
+		'scripts': [
+			'modules/dashboard/infra/config.js',
+			'modules/dashboard/infra/keyPair/config.js',
+			'modules/dashboard/infra/_services/infra.js',
+			'modules/dashboard/infra/keyPair/services/keyPair.js',
+			'modules/dashboard/infra/keyPair/controller.js',
+			'/modules/dashboard/infra/_drivers/aws/services/keyPair.js'
+		],
+		'ancestor': [translation.home[LANG]]
 	}
 ];
 

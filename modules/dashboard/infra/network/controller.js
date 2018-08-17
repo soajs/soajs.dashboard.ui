@@ -10,10 +10,13 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
-		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
-			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
+		infraCommonSrv.switchInfra($scope, oneInfra, ["templates"], () => {
+			if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups) && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0)) {
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
+				//flag that this infra is resource group driver (otherwise will be region driven)
+				$scope.isResourceGroupDriven = true;
+
 				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
 				if($routeParams.group){
 					$scope.infraGroups.forEach((oneInfraGroup) => {
@@ -29,13 +32,42 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 					overlayLoading.show();
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 						$scope.vmlayers = vmlayers;
-					
+
 						infraNetworkSrv.listNetworks($scope, $scope.selectedGroup);
 					});
 				}, 500);
 			}
 			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
+				$scope.isResourceGroupDriven = true
 				$scope.noResourceGroups = true;
+			}
+			else if ((!$scope.$parent.$parent.currentSelectedInfra.groups || $scope.$parent.$parent.currentSelectedInfra.groups === "NA") && $scope.$parent.$parent.currentSelectedInfra.regions) {
+				//flag that the infra is not driven by resource group -> by region
+				$scope.isResourceGroupDriven = false;
+
+				//set infra regions in scope to be used by modules
+				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
+
+				if($routeParams.region) {
+					$scope.infraRegions.forEach((oneRegion) => {
+						if (oneRegion.name === $routeParams.region) {
+							$scope.selectedRegion = oneRegion;
+						}
+					});
+				}
+				else {
+					$scope.selectedRegion = $scope.infraRegions[0];
+				}
+
+				$timeout(() => {
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						overlayLoading.hide();
+						$scope.vmlayers = vmlayers;
+
+						infraNetworkSrv.listNetworks($scope, $scope.selectedRegion);
+					});
+				}, 500);
 			}
 		});
 	};
@@ -57,7 +89,7 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 						}
 					});
 				}
-				
+
 				if(!$scope.$parent.$parent.currentSelectedInfra){
 					$scope.go("/infra");
 				}
@@ -90,7 +122,7 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 								}
 							});
 						}
-						
+
 						if(!$scope.$parent.$parent.currentSelectedInfra){
 							$scope.go("/infra");
 						}

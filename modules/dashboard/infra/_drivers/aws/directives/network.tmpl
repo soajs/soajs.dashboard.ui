@@ -4,17 +4,17 @@
 			<span class="icon icon-plus"></span> Add New Network
 		</a>
 	</div>
-	
+
 	<div class="f-right w30">
 		<div class="searchBoxContainer">
-			<button class="btn btn-success f-right" ng-click="listNetworks(selectedGroup)">
+			<button class="btn btn-success f-right" ng-click="listNetworks(selectedRegion)">
 				Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
 			</button>
 		</div>
-		
-		<div ng-if="infraGroups.length > 0">
-			Group:
-			<select style="display:inline" class="form-control w50" ng-model="selectedGroup" ng-change="listNetworks(selectedGroup)" ng-options="group as group.name group by group.region for group in infraGroups">
+
+		<div ng-if="infraRegions.length > 0">
+			Region:
+			<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listIPs(selectedRegion)" ng-options="region.v as region.l for region in infraRegions">
 			</select>
 		</div>
 	</div>
@@ -23,11 +23,11 @@
 
 <div ng-if="access.list">
 	<alert type="warning" ng-if="!infraNetworks || infraNetworks.length === 0">
-		No Networks found in this Group.
+		No Networks found in this Region.
 	</alert>
 	<div ng-if="infraNetworks && infraNetworks.length > 0" class="entryBoxes">
 		<br/>
-		
+
 		<accordion close-others="false">
 			<accordion-group is-open="oneNetwork.open" ng-repeat="oneNetwork in infraNetworks">
 				<accordion-heading>
@@ -44,7 +44,7 @@
 						<span class="icon icon-cross"></span>&nbsp;Delete
 					</a>
 				</div>
-				
+
 				<fieldset ng-if="oneNetwork.dnsServers && oneNetwork.dnsServers.length > 0">
 					<legend>DNS Servers</legend>
 					<div class="entryBoxes entryBoxesGrid">
@@ -55,7 +55,7 @@
 						</div>
 					</div>
 				</fieldset>
-				
+
 				<fieldset ng-if="oneNetwork.subnets && oneNetwork.subnets.length > 0">
 					<legend>Subnets</legend>
 					<div class="grid">
@@ -89,7 +89,7 @@
 						</table>
 					</div>
 				</fieldset>
-				
+
 				<div ng-if="oneNetwork.firewall && oneNetwork.firewall.length > 0">
 					<fieldset>
 						<legend>Firewall</legend>
@@ -97,6 +97,7 @@
 							<div ng-repeat="oneFirewall in oneNetwork.firewall">
 								<div class="entryBox blueBox" style="padding: 3px 5px;">
 									<a href="#/infra-firewall/?group={{oneFirewall.group}}">
+										<!-- TODO: make sure the above line of code properly calls the correct url with the correct parameters (region not group) -->
 										<span class="icon icon-shield"></span>&nbsp;<b>{{oneFirewall.name}}</b>
 									</a>
 								</div>
@@ -104,7 +105,7 @@
 						</div>
 					</fieldset>
 				</div>
-			
+
 			</accordion-group>
 		</accordion>
 	</div>

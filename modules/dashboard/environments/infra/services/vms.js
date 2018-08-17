@@ -428,12 +428,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 
 			oneProvider.templates.forEach((oneTmpl) => {
-				let label = oneTmpl.name;
-				if(oneTmpl.description && oneTmpl.description !== ''){
-					label += " | " + oneTmpl.description;
+				if(oneTmpl && oneTmpl.driver && environmentsConfig.providers[oneProvider.name] && environmentsConfig.providers[oneProvider.name][oneTmpl.driver.toLowerCase()]) {
+					let label = oneTmpl.name;
+					if(oneTmpl.description && oneTmpl.description !== ''){
+						label += " | " + oneTmpl.description;
+					}
+					let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
+					infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
 				}
-				let defaultSelected = (oneTmpl.name === data && data.infraCodeTemplate);
-				infraTemplates.push({'v': oneTmpl.name, 'l': label, selected: defaultSelected});
 			});
 
 			formEntries.push({
@@ -444,6 +446,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				required: true,
 				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
 				onAction: function(id, value, form){
+					form.entries.length = 1;
 					let iacTemplateTechnology = technology;
 
 					for(let i = 0; i < oneProvider.templates.length; i++) {

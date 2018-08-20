@@ -1,10 +1,10 @@
 "use strict";
-var infraNetworkApp = soajsApp.components;
-infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraNetworkSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraNetworkSrv) {
+var infraCertificateApp = soajsApp.components;
+infraCertificateApp.controller('infraCertificateCtrl', ['$scope', '$routeParams', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraCertificateSrv', function ($scope, $routeParams, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraCertificateSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.vmlayers = [];
 	$scope.access = {};
-	constructModulePermissions($scope, $scope.access, infraNetworkConfig.permissions);
+	constructModulePermissions($scope, $scope.access, infraCertificateConfig.permissions);
 
 	infraCommonSrv.getInfraFromCookie($scope);
 
@@ -33,12 +33,12 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 						$scope.vmlayers = vmlayers;
 
-						infraNetworkSrv.listNetworks($scope, $scope.selectedGroup);
+						infraCertificateSrv.listCertificates($scope, $scope.selectedGroup);
 					});
 				}, 500);
 			}
-			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
-				$scope.isResourceGroupDriven = true
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups) && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0)) {
+				$scope.isResourceGroupDriven = true;
 				$scope.noResourceGroups = true;
 			}
 			else if ((!$scope.$parent.$parent.currentSelectedInfra.groups || $scope.$parent.$parent.currentSelectedInfra.groups === "N/A") && $scope.$parent.$parent.currentSelectedInfra.regions) {
@@ -50,13 +50,13 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 
 				if($routeParams.region) {
 					$scope.infraRegions.forEach((oneRegion) => {
-						if (oneRegion.name === $routeParams.region) {
-							$scope.selectedRegion = oneRegion;
+						if (oneRegion.v === $routeParams.region) {
+							$scope.selectedRegion = oneRegion.v;
 						}
 					});
 				}
 				else {
-					$scope.selectedRegion = $scope.infraRegions[0];
+					$scope.selectedRegion = $scope.infraRegions[0].v;
 				}
 
 				$timeout(() => {
@@ -65,7 +65,7 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 						overlayLoading.hide();
 						$scope.vmlayers = vmlayers;
 
-						infraNetworkSrv.listNetworks($scope, $scope.selectedRegion);
+						infraCertificateSrv.listCertificates($scope, $scope.selectedRegion);
 					});
 				}, 500);
 			}
@@ -136,23 +136,20 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 		}
 	};
 
-	$scope.deleteNetwork = function (oneNetwork) {
-		infraNetworkSrv.deleteNetwork($scope, oneNetwork);
+	$scope.deleteCertificate = function (oneCertificate) {
+		infraCertificateSrv.deleteCertificate($scope, oneCertificate);
 	};
 
-	$scope.addNetwork = function () {
-		infraNetworkSrv.addNetwork($scope);
+	$scope.addCertificate = function (action, existingCertificate) {
+		infraCertificateSrv.addCertificate($scope, action, existingCertificate);
 	};
 
-	$scope.editNetwork = function (oneNetwork) {
-		infraNetworkSrv.editNetwork($scope, oneNetwork);
-	};
-
-	$scope.listNetworks = function (oneGroup) {
+	$scope.listCertificates = function (groupOrRegion) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
-			infraNetworkSrv.listNetworks($scope, oneGroup);
+			infraCertificateSrv.listCertificates($scope, groupOrRegion);
 		});
 	};
 

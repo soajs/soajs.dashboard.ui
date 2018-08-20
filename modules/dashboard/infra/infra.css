@@ -342,3 +342,32 @@ td.readonly{
     cursor: pointer;
     color: red;
 }
+
+/* AWS Certificates statuses */
+.certificate_active {
+    color: green;
+}
+
+.certificate_pending {
+    color: #8a6d3b;
+}
+
+.certificate_inactive {
+    color: #8a6d3b;
+}
+
+.certificate_expired {
+    color: red;
+}
+
+.certificate_validation_timed_out {
+    color: red;
+}
+
+.certificate_revoked {
+    color: red;
+}
+
+.certificate_failed {
+    color: red;
+}

@@ -147,6 +147,15 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 						}
 					}
 				}
+				else if(['azure'].indexOf(myInfra.name) !== -1) {
+					if(['infra-keyPairs', 'infra-certificates'].indexOf(oneNavigationEntry.id) !== -1){
+						oneNavigationEntry.hideMe = true;
+
+						if(oneNavigationEntry.url === $window.location.hash){
+							currentScope.go(oneNavigationEntry.fallbackLocation);
+						}
+					}
+				}
 			});
 		}
 	}

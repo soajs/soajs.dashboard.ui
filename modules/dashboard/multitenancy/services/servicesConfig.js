@@ -7,6 +7,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 		if (value) {
 			data.config = angular.copy(value);
 		}
+		
 		if (env) {
 			data.envCode = env;
 		}
@@ -71,7 +72,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 											oneThrottleConfigEntry.name += "_" + oneService.name;
 											
 											//if already set in servicesConfig, assign it
-											if (data.config[oneService.name] && data.config[oneService.name].SOAJS && data.config[oneService.name].SOAJS.THROTTLING){
+											if (data.config && data.config[oneService.name] && data.config[oneService.name].SOAJS && data.config[oneService.name].SOAJS.THROTTLING){
 												let oneStrategy = (oneThrottleConfigEntry.name.includes("public_")) ? "publicAPIStrategy" : "privateAPIStrategy";
 												if(data.config[oneService.name].SOAJS.THROTTLING.hasOwnProperty(oneStrategy)){
 													data[oneThrottleConfigEntry.name] = data.config[oneService.name].SOAJS.THROTTLING[oneStrategy];
@@ -153,7 +154,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 													"fieldMsg": "Leave empty to use the default <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV'>IMFV</a> or provide a custom configuration and it will override the <b>IMFV</b> for this API only."
 												};
 												
-												if (data.config[oneService.name] && data.config[oneService.name].SOAJS &&
+												if (data.config && data.config[oneService.name] && data.config[oneService.name].SOAJS &&
 													data.config[oneService.name].SOAJS.IMFV && data.config[oneService.name].SOAJS.IMFV.schema &&
 													data.config[oneService.name].SOAJS.IMFV.schema[method] && data.config[oneService.name].SOAJS.IMFV.schema[method][oneAPI.v]
 												) {

@@ -184,10 +184,12 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 				}
 			});
 			data.customConfig = angular.copy(data.config);
-			delete data.customConfig.SOAJS;
-			delete data.customConfig.oauth;
-			for(let oneService in data.customConfig){
-				delete data.customConfig[oneService].SOAJS;
+			if(data.customConfig){
+				delete data.customConfig.SOAJS;
+				delete data.customConfig.oauth;
+				for(let oneService in data.customConfig){
+					delete data.customConfig[oneService].SOAJS;
+				}
 			}
 			
 			let options = {

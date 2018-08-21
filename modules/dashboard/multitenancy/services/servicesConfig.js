@@ -44,13 +44,21 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 										serviceThrottlingConfiguration.label = oneService.name;
 										serviceThrottlingConfiguration.entries.forEach((oneThrottleConfigEntry) => {
 											if (oneThrottleConfigEntry.name === 'public') {
-												oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy;
-												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy);
+												oneThrottleConfigEntry.value[0].v = '--inherit--';
+												let label = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy;
+												if(label === null){
+													label = "throttling OFF";
+												}
+												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", label);
 											}
 											
 											if (oneThrottleConfigEntry.name === 'private') {
-												oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy;
-												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy);
+												oneThrottleConfigEntry.value[0].v = '--inherit--';
+												let label = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy;
+												if(label === null){
+													label = "throttling OFF";
+												}
+												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", label);
 											}
 											
 											//set the values ...
@@ -248,7 +256,10 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 											newConfigObject[oneService.name].SOAJS.THROTTLING = {};
 										}
 										
-										if (formData['public_' + oneService.name] === null) {
+										if (formData['public_' + oneService.name] === '--inherit--') {
+											delete newConfigObject[oneService.name].SOAJS.THROTTLING['publicAPIStrategy'];
+										}
+										else if (formData['public_' + oneService.name] === null) {
 											newConfigObject[oneService.name].SOAJS.THROTTLING['publicAPIStrategy'] = 'null';
 										}
 										else if (currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy !== formData['public_' + oneService.name]) {

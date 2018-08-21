@@ -17,14 +17,9 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 			
 			//set disable oauth value
 			data.disableOauth = false;
-			if(data && data.oauth && Object.hasOwnProperty.call(data.oauth, 'disabled')){
+			if (data && data.oauth && Object.hasOwnProperty.call(data.oauth, 'disabled')) {
 				data.disableOauth = data.oauth.disabled;
 			}
-			
-			//hide throttling tab if no throttling is configured in this environment
-			// if(!currentScope.availableEnvThrottling[data.envCode.toLowerCase()]){
-			// 	formEntries.entries[1].tabs.splice(0, 1);
-			// }
 			
 			//loop through the tabs of the form and build the sub sections
 			formEntries.entries.forEach((oneEntry) => {
@@ -33,10 +28,10 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 						
 						//set the throttling configuration
 						if (oneTab.name === 'throttling') {
-							if(currentScope.availableEnvThrottling[data.envCode.toLowerCase()]){
+							if (currentScope.availableEnvThrottling[data.envCode.toLowerCase()]) {
 								oneTab.description = {
 									"type": "info",
-										"content":  "<p>You can override the default throttling configuration that is configured in the <a href='#/environments'>Registry</a> for this key in this environment.</p>" +
+									"content": "<p>You can override the default throttling configuration that is configured in the <a href='#/environments'>Registry</a> for this key in this environment.</p>" +
 									"<hr /><p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
 								};
 								
@@ -47,7 +42,6 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 										serviceThrottlingConfiguration.name += "_" + oneService.name;
 										serviceThrottlingConfiguration.label = oneService.name;
 										serviceThrottlingConfiguration.entries.forEach((oneThrottleConfigEntry) => {
-											
 											if (oneThrottleConfigEntry.name === 'public') {
 												oneThrottleConfigEntry.value[0].v = currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy;
 												oneThrottleConfigEntry.value[0].l = oneThrottleConfigEntry.value[0].l.replace("$strategy$", currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy);
@@ -65,17 +59,22 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 														(oneThrottleConfigEntry.name === 'public' && currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy !== strategyName) ||
 														(oneThrottleConfigEntry.name === 'private' && currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy !== strategyName)
 													) {
-														let selected = false;
-														if(data[oneService.name] && data[oneService.name].SOAJS && data[oneService.name].SOAJS.THROTTLING && data[oneService.name].SOAJS.THROTTLING[strategyName]){
-															selected = true;
-														}
 														oneThrottleConfigEntry.value.push({
 															'v': strategyName,
 															'l': strategyName,
-															'group': 'Strategies',
-															'selected': selected
+															'group': 'Strategies'
 														});
 													}
+												}
+											}
+											
+											oneThrottleConfigEntry.name += "_" + oneService.name;
+											
+											//if already set in servicesConfig, assign it
+											if (data.config[oneService.name] && data.config[oneService.name].SOAJS && data.config[oneService.name].SOAJS.THROTTLING){
+												let oneStrategy = (oneThrottleConfigEntry.name.includes("public_")) ? "publicAPIStrategy" : "privateAPIStrategy";
+												if(data.config[oneService.name].SOAJS.THROTTLING.hasOwnProperty(oneStrategy)){
+													data[oneThrottleConfigEntry.name] = data.config[oneService.name].SOAJS.THROTTLING[oneStrategy];
 												}
 											}
 											
@@ -85,7 +84,14 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 												'l': "Turn OFF Throttling"
 											});
 											
-											oneThrottleConfigEntry.name += "_" + oneService.name;
+											if(data[oneThrottleConfigEntry.name] === null){
+												oneThrottleConfigEntry.value.forEach((oneV) => {
+													delete oneV.selected;
+													if(oneV.v === null){
+														oneV.selected = true;
+													}
+												});
+											}
 										});
 										oneTab.entries.push(serviceThrottlingConfiguration);
 										
@@ -95,12 +101,12 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 							else {
 								oneTab.description = {
 									"type": "warning",
-									"content":  "<p>This environment has no throttling configuration.</p>" +
-										"<ol>" +
-										"<li>Configure throttling in the <a href='#/environments'>Registry</a> of this environment</li>" +
-										"<li>Override registry throttling configuration here for this tenant for this key.</p></li>" +
-										"</ol><hr />" +
-										"<p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
+									"content": "<p>This environment has no throttling configuration.</p>" +
+									"<ol>" +
+									"<li>Configure throttling in the <a href='#/environments'>Registry</a> of this environment</li>" +
+									"<li>Override registry throttling configuration here for this tenant for this key.</p></li>" +
+									"</ol><hr />" +
+									"<p>If you are not familiar with API Traffic Throttling works, <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling'>Click Here</a></p>"
 								};
 							}
 						}
@@ -110,69 +116,79 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 							oneTab.entries.forEach((oneTabEntry) => {
 								if (oneTabEntry.name === 'disableOauth') {
 									oneTabEntry.value = null;
-									if (data.disableOauth) {
-										oneTabEntry.value = data.disableOauth;
+									if (data.config && data.config.oauth && data.config.oauth.disabled) {
+										oneTabEntry.value = data.config.oauth.disabled;
 									}
 								}
 							});
 						}
 						
 						//set the imfv configuration per service
-						if(oneTab.name === 'imfvTab'){
+						if (oneTab.name === 'imfvTab') {
 							
 							// oneServiceIMFVTmpl
 							if (services && Array.isArray(services) && services.length > 0) {
 								services.forEach((oneService) => {
 									
-									let imfvMethods = [];
-									for(let method in oneService.apisList){
-										let oneMethodIMFV = {
-											"type": "group",
-											"label": method.toUpperCase(),
-											"collapsed": true,
-											"icon": "plus",
-											"entries": []
-										};
-										
-										oneService.apisList[method].forEach((oneAPI) => {
-											let oneAPIIMFV = {
-												"type": "jsoneditor",
-												'onLoad': loadEditor,
-												'onChange': changeEditorValue,
-												'height': '100px',
-												"name": oneAPI.v,
-												"label": oneAPI.l + " [ " + oneAPI.v + " ]",
-												"value": {},
-												"fieldMsg": "Leave empty to use the default <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV'>IMFV</a> or provide a custom configuration and it will override the <b>IMFV</b> for this API only."
+									//if service is an not an rms, override the imfv
+									if(SOAJSRMS.indexOf("soajs." + oneService.name) === -1){
+										let imfvMethods = [];
+										for (let method in oneService.apisList) {
+											let oneMethodIMFV = {
+												"type": "group",
+												"label": method.toUpperCase(),
+												"collapsed": true,
+												"icon": "plus",
+												"entries": []
 											};
 											
-											if( data[oneService.name] && data[oneService.name].SOAJS &&
-												data[oneService.name].SOAJS.IMFV && data[oneService.name].SOAJS.IMFV.schema &&
-												data[oneService.name].SOAJS.IMFV.schema[oneAPI.v]
-											){
-												oneAPIIMFV.value = JSON.stringify(data[oneService.name].SOAJS.IMFV.schema[oneAPI.v], null, 2);
-											}
-											oneMethodIMFV.entries.push(oneAPIIMFV);
-										});
-										imfvMethods.push(oneMethodIMFV);
+											oneService.apisList[method].forEach((oneAPI) => {
+												let oneAPIIMFV = {
+													"type": "jsoneditor",
+													'onLoad': loadEditor,
+													'onChange': changeEditorValue,
+													'height': '100px',
+													"name": "imfv__dot__" + oneService.name + "__dot__" + method + "__dot__" + oneAPI.v,
+													"label": oneAPI.l + " [ " + oneAPI.v + " ]",
+													"fieldMsg": "Leave empty to use the default <a target='_blank' href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV'>IMFV</a> or provide a custom configuration and it will override the <b>IMFV</b> for this API only."
+												};
+												
+												if (data.config[oneService.name] && data.config[oneService.name].SOAJS &&
+													data.config[oneService.name].SOAJS.IMFV && data.config[oneService.name].SOAJS.IMFV.schema &&
+													data.config[oneService.name].SOAJS.IMFV.schema[method] && data.config[oneService.name].SOAJS.IMFV.schema[method][oneAPI.v]
+												) {
+													oneAPIIMFV.value = JSON.stringify(data.config[oneService.name].SOAJS.IMFV.schema[method][oneAPI.v], null, 2);
+												}
+												oneMethodIMFV.entries.push(oneAPIIMFV);
+											});
+											imfvMethods.push(oneMethodIMFV);
+										}
+										
+										let oneServiceIMFVConfiguration = angular.copy(tenantConfig.form.oneServiceIMFVTmpl);
+										oneServiceIMFVConfiguration.name += "_" + oneService.name;
+										oneServiceIMFVConfiguration.label = oneService.name;
+										oneServiceIMFVConfiguration.entries = imfvMethods;
+										oneTab.entries.push(oneServiceIMFVConfiguration);
 									}
-									
-									let oneServiceIMFVConfiguration = angular.copy(tenantConfig.form.oneServiceIMFVTmpl);
-									oneServiceIMFVConfiguration.name += "_" + oneService.name;
-									oneServiceIMFVConfiguration.label = oneService.name;
-									oneServiceIMFVConfiguration.entries = imfvMethods;
-									oneTab.entries.push(oneServiceIMFVConfiguration);
-									
+								});
+							}
+							
+							if(oneTab.entries.length === 1){
+								oneTab.entries.push({
+									"type": "html",
+									"value": "<div class='alert alert-warning'><p>No available services whose <b>IMFV</b> you can override for this tenant.</p></div>"
 								});
 							}
 						}
 					});
 				}
 			});
-			
 			data.customConfig = angular.copy(data.config);
 			delete data.customConfig.SOAJS;
 			delete data.customConfig.oauth;
+			for(let oneService in data.customConfig){
+				delete data.customConfig[oneService].SOAJS;
+			}
 			
 			let options = {
 				timeout: $timeout,
@@ -187,43 +203,138 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 						'label': translation.submit[LANG],
 						'btn': 'primary',
 						'action': function (formData) {
-							console.log(formData);
+							let newConfigObject = {};
 							
-							// var configObj;
-							// if (formData.config && (formData.config != "")) {
-							// 	try {
-							// 		configObj = formData.config;
-							// 	}
-							// 	catch (e) {
-							// 		currentScope.form.displayAlert('danger', translation.errorInvalidConfigJsonObject[LANG]);
-							// 		return;
-							// 	}
-							// }
-							// else {
-							// 	configObj = {};
-							// }
-							//
-							// var postData = {
-							// 	'envCode': formData.envCode,
-							// 	'config': configObj
-							// };
-							//
-							// getSendDataFromServer(currentScope, ngDataApi, {
-							// 	"method": "put",
-							// 	"routeName": "/dashboard/tenant/application/key/config/update",
-							// 	"data": postData,
-							// 	"params": {"id": tId, "appId": appId, "key": key}
-							// }, function (error) {
-							// 	if (error) {
-							// 		currentScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							// 	}
-							// 	else {
-							// 		currentScope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
-							// 		currentScope.modalInstance.close();
-							// 		currentScope.form.formData = {};
-							// 		currentScope.reloadConfiguration(tId, appId, key);
-							// 	}
-							// });
+							//set the custom json first
+							if (formData.customConfig) {
+								newConfigObject = formData.customConfig;
+								delete formData.customConfig;
+							}
+							
+							//set the oauth
+							if (formData.config && formData.config.oauth) {
+								newConfigObject.oauth = angular.copy(formData.config.oauth);
+								delete newConfigObject.oauth.SOAJS;
+							}
+							
+							//check if oauth is disabled
+							if (formData.disableOauth) {
+								if (!newConfigObject.oauth) {
+									newConfigObject.oauth = {};
+								}
+								newConfigObject.oauth.disabled = true;
+								delete formData.disableOauth;
+							}
+							else if (newConfigObject.oauth) {
+								delete newConfigObject.oauth.disabled;
+							}
+							
+							//set the throttling
+							if (services && services.length > 0) {
+								services.forEach((oneService) => {
+									//add public api throttling strategy
+									if (Object.hasOwnProperty.call(formData, 'public_' + oneService.name)) {
+										if (!newConfigObject[oneService.name]) {
+											newConfigObject[oneService.name] = {};
+										}
+										
+										if (!newConfigObject[oneService.name].SOAJS) {
+											newConfigObject[oneService.name].SOAJS = {};
+										}
+										if (!newConfigObject[oneService.name].SOAJS.THROTTLING) {
+											newConfigObject[oneService.name].SOAJS.THROTTLING = {};
+										}
+										
+										if (formData['public_' + oneService.name] === null) {
+											newConfigObject[oneService.name].SOAJS.THROTTLING['publicAPIStrategy'] = 'null';
+										}
+										else if (currentScope.availableEnvThrottling[data.envCode.toLowerCase()].publicAPIStrategy !== formData['public_' + oneService.name]) {
+											newConfigObject[oneService.name].SOAJS.THROTTLING['publicAPIStrategy'] = formData['public_' + oneService.name];
+										}
+										
+										delete formData['public_' + oneService.name];
+									}
+									
+									//add private api throttling strategy
+									if (Object.hasOwnProperty.call(formData, 'private_' + oneService.name)) {
+										if (!newConfigObject[oneService.name]) {
+											newConfigObject[oneService.name] = {};
+										}
+										
+										if (!newConfigObject[oneService.name].SOAJS) {
+											newConfigObject[oneService.name].SOAJS = {};
+										}
+										if (!newConfigObject[oneService.name].SOAJS.THROTTLING) {
+											newConfigObject[oneService.name].SOAJS.THROTTLING = {};
+										}
+										
+										if (formData['private_' + oneService.name] === null) {
+											newConfigObject[oneService.name].SOAJS.THROTTLING['privateAPIStrategy'] = 'null';
+										}
+										else if (currentScope.availableEnvThrottling[data.envCode.toLowerCase()].privateAPIStrategy !== formData['private_' + oneService.name]) {
+											newConfigObject[oneService.name].SOAJS.THROTTLING['privateAPIStrategy'] = formData['private_' + oneService.name];
+										}
+										delete formData['private_' + oneService.name];
+									}
+									
+								});
+							}
+							
+							//check & set imfv
+							for (let entry in formData) {
+								if (entry.indexOf("__dot__") !== -1) {
+									let combo = entry.split("__dot__");
+									if (combo.length === 4) {
+										//set the service
+										if (!newConfigObject[combo[1]]) {
+											newConfigObject[combo[1]] = {};
+										}
+										
+										if (!newConfigObject[combo[1]].SOAJS) {
+											newConfigObject[combo[1]].SOAJS = {};
+										}
+										
+										if (!newConfigObject[combo[1]].SOAJS.IMFV) {
+											newConfigObject[combo[1]].SOAJS.IMFV = {};
+										}
+										
+										if (!newConfigObject[combo[1]].SOAJS.IMFV.schema) {
+											newConfigObject[combo[1]].SOAJS.IMFV.schema = {};
+										}
+										
+										//set the method
+										if (!newConfigObject[combo[1]].SOAJS.IMFV.schema[combo[2]]) {
+											newConfigObject[combo[1]].SOAJS.IMFV.schema[combo[2]] = {};
+										}
+										
+										//set the api
+										newConfigObject[combo[1]].SOAJS.IMFV.schema[combo[2]][combo[3]] = formData[entry];
+										delete formData[entry];
+									}
+								}
+							}
+							
+							let postData = {
+								'envCode': formData.envCode,
+								'config': newConfigObject
+							};
+							
+							getSendDataFromServer(currentScope, ngDataApi, {
+								"method": "put",
+								"routeName": "/dashboard/tenant/application/key/config/update",
+								"data": postData,
+								"params": {"id": tId, "appId": appId, "key": key}
+							}, function (error) {
+								if (error) {
+									currentScope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								}
+								else {
+									currentScope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
+									currentScope.modalInstance.close();
+									currentScope.form.formData = {};
+									currentScope.reloadConfiguration(tId, appId, key);
+								}
+							});
 						}
 					},
 					{
@@ -240,42 +351,41 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 			
 			buildFormWithModal(currentScope, $modal, options, () => {
 				currentScope.form.formData = data;
-				$timeout(() => {
-					currentScope.form.refresh();
-				}, 1000);
 			});
 		});
 		
-		function loadEditor(_editor){
-			reloadEditor(_editor, 100, currentScope);
+		function loadEditor(_editor) {
+			reloadEditor(_editor, 100, () => {
+				changeEditorValue(_editor);
+			});
 		}
 		
-		function changeEditorValue(_editor){
+		function changeEditorValue(_editor) {
 			currentScope.form.entries.forEach((oneEntry) => {
-					if (oneEntry.type === 'tabset') {
-						oneEntry.tabs.forEach((oneTab) => {
-							oneTab.entries.forEach((oneServiceAccordion) => {
-								if(oneServiceAccordion.entries){
-									oneServiceAccordion.entries.forEach((oneMethodGroup) => {
-										if(oneMethodGroup.entries){
-											oneMethodGroup.entries.forEach((oneAPI) => {
-												if(oneAPI.name === _editor.container.id){
-													oneAPI.ngModel = JSON.stringify(oneAPI.value, null, 2);
-													_editor.setValue(JSON.stringify(oneAPI.value, null, 2));
-												}
-											});
-										}
-									});
-								}
-							});
+				if (oneEntry.type === 'tabset') {
+					oneEntry.tabs.forEach((oneTab) => {
+						oneTab.entries.forEach((oneServiceAccordion) => {
+							if (oneServiceAccordion.entries) {
+								oneServiceAccordion.entries.forEach((oneMethodGroup) => {
+									if (oneMethodGroup.entries) {
+										oneMethodGroup.entries.forEach((oneAPI) => {
+											if (oneAPI.name === _editor.container.id) {
+												oneAPI.ngModel = oneAPI.value;
+												_editor.setValue(oneAPI.value);
+											}
+										});
+									}
+								});
+							}
 						});
-					}
-				});
+					});
+				}
+			});
 		}
 	}
 	
 	//use the currentScope to loop over the entries of the form and for each entry matching the id of the editor, set the value
-	function reloadEditor(_editor, fixedHeight, currentScope) {
+	function reloadEditor(_editor, fixedHeight, cb) {
 		_editor.$blockScrolling = Infinity;
 		_editor.scrollToLine(0, true, true);
 		_editor.scrollPageUp();
@@ -303,7 +413,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 		}
 		
 		$timeout(function () {
-			if(_editor){
+			if (_editor) {
 				_editor.heightUpdate = heightUpdateFunction;
 			}
 			
@@ -313,6 +423,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 			// Whenever a change happens inside the ACE editor, update
 			// the size again
 			_editor.getSession().on('change', heightUpdateFunction);
+			return cb();
 		}, 1000);
 	}
 	
@@ -335,11 +446,11 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 		getServicesFromDB(currentScope, prodPackage.acl, env, services, cb);
 	}
 	
-	function getServicesFromDB(currentScope, acl, env, serviceNames, cb){
+	function getServicesFromDB(currentScope, acl, env, serviceNames, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "send",
 			"routeName": "/dashboard/services/list",
-			"data": { "serviceNames": serviceNames }
+			"data": {"serviceNames": serviceNames}
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
@@ -362,7 +473,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 					//reshape apisList based on methods
 					let contractSchema = {};
 					response.records[x].apisList.forEach((oneAPI) => {
-						if(!contractSchema[oneAPI.m]){
+						if (!contractSchema[oneAPI.m]) {
 							contractSchema[oneAPI.m] = [];
 						}
 						contractSchema[oneAPI.m].push(oneAPI);
@@ -372,13 +483,13 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 					delete response.records[x].versions;
 					
 					//remove apis that tenant has no access to
-					for(let method in response.records[x].apisList){
-						for(let i = response.records[x].apisList[method].length -1; i >= 0; i--){
+					for (let method in response.records[x].apisList) {
+						for (let i = response.records[x].apisList[method].length - 1; i >= 0; i--) {
 							let oneAPI = response.records[x].apisList[method][i];
 							let aclClone = {};
 							aclClone[env] = angular.copy(acl[env]);
 							checkApiHasAccess(aclClone, response.records[x].name, oneAPI.v, method, null, (access) => {
-								if(!access){
+								if (!access) {
 									response.records[x].apisList[method].splice(i, 1);
 								}
 							});

@@ -662,7 +662,8 @@ div.entryBoxes {
     display: table;
 }
 
-#page div.entryBoxes div.entryBox, .entryOneBox {
+#page div.entryBoxes div.entryBox, .entryOneBox,
+.modal-content div.entryBoxes div.entryBox, .entryOneBox {
     border: solid 1px #cccccc;
     position: relative;
     border-radius: 8px;
@@ -671,7 +672,8 @@ div.entryBoxes {
     margin-bottom: 10px;
 }
 
-#page div.entryBoxesGrid div.entryBox {
+#page div.entryBoxesGrid div.entryBox,
+.modal-content div.entryBoxesGrid div.entryBox {
     float: left;
     display: table;
     width: auto;
@@ -679,7 +681,8 @@ div.entryBoxes {
     padding-left: 5px;
 }
 
-#page div.entryBoxes div.entryBox label {
+#page div.entryBoxes div.entryBox label,
+.modal-content div.entryBoxes div.entryBox label {
     text-decoration: underline;
 }
 
@@ -687,7 +690,8 @@ div.entryBoxes {
     background: #cccccc;
 }
 
-#page div.entryBoxes div.blueBox {
+#page div.entryBoxes div.blueBox,
+.modal-content div.entryBoxes div.blueBox {
     /*#page div.entryBoxes div.entryBox:hover {*/
     background: #DEF1F7;
     border: solid 1px #337ab7;

@@ -42,9 +42,23 @@ infraKeyPairSrv.service('infraKeyPairSrv', ['awsInfraKeyPairSrv', function (awsI
 		}
 	}
 
+	function displayKeyPairVms(currentScope, oneKeyPair) {
+		let infraName = currentScope.currentInfraName;
+
+		switch(infraName){
+			case 'aws':
+				awsInfraKeyPairSrv.displayKeyPairVms(currentScope, oneKeyPair);
+				break;
+			default:
+				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
+				break;
+		}
+	}
+
 	return {
 		'addKeyPair': addKeyPair,
 		'deleteKeyPair': deleteKeyPair,
-		'listKeyPairs': listKeyPairs
+		'listKeyPairs': listKeyPairs,
+		'displayKeyPairVms': displayKeyPairVms
 	};
 }]);

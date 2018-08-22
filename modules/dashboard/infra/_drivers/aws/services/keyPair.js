@@ -64,7 +64,7 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 			'columns': [
 				{ 'label': 'Name', 'field': 'name' },
 				{ 'label': 'Fingerprint', 'field': 'fingerprint' },
-				{ 'label': 'Used By', 'field': 'usedBy' }
+				{ 'label': 'Associated To', 'field': 'associated' }
 			],
 			'leftActions': [],
 			'topActions': [],
@@ -207,15 +207,47 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 				if (response.keyPairs && response.keyPairs.length > 0) {
 					currentScope.infraKeyPairs = response.keyPairs;
 
-					currentScope.infraKeyPairs.forEach((oneKeyPair) =>{
-                        //TODO check if key pairs are associated to vms
+					currentScope.infraKeyPairs.forEach((oneKeyPair) => {
+						oneKeyPair.layers = [];
+						currentScope.vmlayers.forEach((oneVmInstance) => {
+							if(oneVmInstance.keyPair && oneVmInstance.keyPair === oneKeyPair.id) {
+								let foundLayer = oneKeyPair.layers.find((oneEntry) => { return oneEntry.name === oneVmInstance.layer });
+								if(foundLayer) {
+									foundLayer.instances.push({
+										id: oneVmInstance.id,
+										name: oneVmInstance.name
+									});
+								}
+								else {
+									oneKeyPair.layers.push({
+										name: oneVmInstance.layer,
+										region: oneVmInstance.region,
+										instances: [ { id: oneVmInstance.id, name: oneVmInstance.name } ]
+									});
+								}
+							}
+						});
+
+						oneKeyPair.associated = '';
+						if(oneKeyPair.layers.length === 0) {
+							oneKeyPair.associated = `<span title='Virtual Machine'>Not associated yet</span>`
+						}
+						else {
+							oneKeyPair.associated = `<span title='Virtual Machine'>Associated to ${oneKeyPair.layers.length} machines. Click on <span class="icon icon-stack"></span> to view them</span>`
+						}
 					});
 
 
 					let gridOptions = {
 						grid: infraKeyPairConfig.grid,
 						data: currentScope.infraKeyPairs,
-						left: [],
+						left: [
+							{
+								'label': 'View Associated Instnaces',
+								'icon': 'stack',
+								'handler': 'displayKeyPairVms'
+							}
+						],
 						top: []
 					};
 
@@ -240,9 +272,28 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 		});
 	}
 
+	function displayKeyPairVms(currentScope, oneKeyPair) {
+		var newModal = $modal.open({
+			templateUrl: "displayKeyPairVms.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: false,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+				$scope.title = `Virtual Machines Associated To ${oneKeyPair.name}`;
+				$scope.keyPair = oneKeyPair;
+
+				$scope.dismiss = function(){
+					$modalInstance.close();
+				};
+			}
+		});
+	}
+
 	return {
 		'addKeyPair': addKeyPair,
 		'deleteKeyPair': deleteKeyPair,
-		'listKeyPairs': listKeyPairs
+		'listKeyPairs': listKeyPairs,
+		'displayKeyPairVms': displayKeyPairVms
 	};
 }]);

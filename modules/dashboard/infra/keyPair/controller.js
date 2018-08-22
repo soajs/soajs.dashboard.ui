@@ -153,6 +153,10 @@ infraKeyPairApp.controller('infraKeyPairCtrl', ['$scope', '$routeParams', '$loca
 		});
 	};
 
+	$scope.displayKeyPairVms = function(oneKeyPair) {
+		infraKeyPairSrv.displayKeyPairVms($scope, oneKeyPair);
+	};
+
 	if ($scope.access.list) {
 		$scope.getProviders();
 	}

@@ -1,7 +1,7 @@
 "use strict";
 var azureInfraIPSrv = soajsApp.components;
 azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', function (ngDataApi, $localStorage, $timeout, $modal) {
-	
+
 	let infraIPConfig = {
 		form: {
 			addIP: [
@@ -69,7 +69,7 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 				// 	]
 				// }
 			],
-			
+
 			editIP: [
 				{
 					'name': 'name',
@@ -135,7 +135,7 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 				// 	]
 				// }
 			],
-			
+
 			labelInput : {
 				'name': 'labelGroup',
 				'type': 'group',
@@ -169,7 +169,7 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 				]
 			}
 		},
-		
+
 		grid: {
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
@@ -186,7 +186,7 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 			'defaultLimit': 10
 		},
 	};
-	
+
 	function addIP(currentScope) {
 		// currentScope.labelCounter = 0;
 
@@ -503,7 +503,8 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 			params: {
 				'id': oneInfra._id,
 				'group': oneGroup.name,
-				'extras[]': ['publicIps']
+				'extras[]': ['publicIps'],
+				'section': 'publicIp'
 			}
 		};
 

@@ -406,7 +406,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication = {};
 						}
 
-						if(deployFromTemplate.memoryLimit){
+						if(Object.hasOwnProperty.call(deployFromTemplate, 'memoryLimit')){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 						}
 
@@ -459,8 +459,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						};
 
 						if(!controller){
-							if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
-								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
+							if(oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit !== 0){
+								if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
+									oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
+								}
 							}
 						}
 					}
@@ -723,7 +725,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							record.deployOptions.deployConfig.replication = {};
 						}
 
-						if(deployFromTemplate.memoryLimit){
+						if(Object.hasOwnProperty.call(deployFromTemplate, 'memoryLimit')){
 							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 								record.deployOptions.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 							}

@@ -225,14 +225,14 @@ let infraNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
-		'id': 'infra-keyPair',
+		'id': 'infra-keyPairs',
 		'label': 'Key Pairs',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/infra',
 			'method': 'get'
 		},
-		'url': '#/infra-keyPair',
+		'url': '#/infra-keyPairs',
 		'tplPath': 'modules/dashboard/infra/keyPair/directives/list.tmpl',
 		'icon': 'key',
 		'pillar': {
@@ -251,6 +251,36 @@ let infraNav = [
 			'modules/dashboard/infra/keyPair/services/keyPair.js',
 			'modules/dashboard/infra/keyPair/controller.js',
 			'/modules/dashboard/infra/_drivers/aws/services/keyPair.js'
+		],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'infra-certificates',
+		'label': 'Certificates',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/infra',
+			'method': 'get'
+		},
+		'url': '#/infra-certificates',
+		'tplPath': 'modules/dashboard/infra/certificate/directives/list.tmpl',
+		'icon': 'profile',
+		'pillar': {
+			'name': 'infra',
+			'label': "Infrastructure",
+			'position': 0
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 10,
+		"fallbackLocation": "#/infra",
+		'scripts': [
+			'modules/dashboard/infra/config.js',
+			'modules/dashboard/infra/certificate/config.js',
+			'modules/dashboard/infra/_services/infra.js',
+			'modules/dashboard/infra/certificate/services/certificate.js',
+			'modules/dashboard/infra/certificate/controller.js',
+			'/modules/dashboard/infra/_drivers/aws/services/certificate.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	}

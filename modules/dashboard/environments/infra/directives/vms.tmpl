@@ -52,6 +52,8 @@
 	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
 		<br />
 		<div ng-repeat="oneVMLayer in vmLayers">
+			
+			<!--if vm was created by soajs or onboarded-->
 			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'])" ng-hide="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.layer.name'] && environmentWizard">
 
 				<div class="entryBox mb20" ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
@@ -187,6 +189,7 @@
 				</div>
 			</div>
 
+			<!--if no template and no labels, vm is an orphan, you can onboard it-->
 			<div ng-if="!oneVMLayer.template && !oneVMLayer.list[0].labels['soajs.env.code']" ng-hide="listingClouds">
 				<div class="entryBox mb20"
 					 ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">

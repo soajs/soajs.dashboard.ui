@@ -436,6 +436,21 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				
 				//turned off first vm support release
 				platformsVM.listVMLayers(currentScope, () => {
+					
+					//loop on vmLayers and if they have a label['soajs.env.code'] that doesn't match the wizard.gi.code remove the layer
+					for(let vmLayerName in currentScope.vmLayers){
+						let remove = true;
+						currentScope.vmLayers[vmLayerName].list.forEach((oneInstance) => {
+							if(oneInstance.labels && oneInstance.labels['soajs.env.code'] && oneInstance.labels['soajs.env.code'].toLowerCase() === currentScope.wizard.gi.code.toLowerCase()){
+								remove = false;
+							}
+						});
+						
+						if(remove){
+							delete currentScope.vmLayers[vmLayerName];
+						}
+					}
+					
 					//if there are registered vms to be created by the wizard hook them to the scope
 					if (currentScope.wizard.onboardNames && currentScope.vmLayers) {
 						onBoard(currentScope, currentScope.vmLayers, currentScope.wizard.onboardNames);

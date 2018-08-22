@@ -415,7 +415,8 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['securityGroups']
+				'extras[]': ['securityGroups'],
+				'section': "securityGroup"
 			}
 		};
 

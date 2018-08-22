@@ -1333,7 +1333,8 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		// 	params: {
 		// 		'id': oneInfra._id,
 		// 		'group': oneGroup.name,
-		// 		'extras[]': ['loadBalancers']
+		// 		'extras[]': ['loadBalancers'],
+		// 		'section': "loadBalancer"
 		// 	}
 		// };
 		//

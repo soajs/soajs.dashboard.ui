@@ -200,7 +200,6 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 
 	function editNetwork(currentScope, originalNetwork) {
 		let oneNetwork = angular.copy(originalNetwork);
-		console.log(oneNetwork);
 
 		// Make a copy of all addresses -> remove primary address from the array
 		let allAddresses = angular.copy(oneNetwork.address);

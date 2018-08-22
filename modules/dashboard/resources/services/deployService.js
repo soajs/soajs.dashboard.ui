@@ -921,14 +921,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					}
 
 					//get the new catalog recipes
-					if(!context.noCDoverride){
-						context.getCatalogRecipes(() => {
-							context.buildComputedHostname(resourceName);
-						});
-					}
-					else{
+					context.getCatalogRecipes(() => {
 						context.buildComputedHostname(resourceName);
-					}
+					});
 				});
 			}
 			// formData.deployOptions.deployConfig.type
@@ -1616,22 +1611,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
 							setTimeout(() => {
 								context.updateDeploymentName(resource.name);
-								
-								setTimeout(() => {
-									if(context.formData.deploy && context.formData.deploy.options){
-										
-										if(context.formData.deployOptions){
-											
-											context.formData.deployOptions.custom = context.formData.deploy.options.custom;
-											context.formData.deployOptions.deployConfig = context.formData.deploy.options.deployConfig;
-										}
-										
-										if(context.formData.deployOptions.custom && context.formData.deployOptions.custom.sourceCode){
-											context.formData.deployOptions.sourceCode = context.formData.deployOptions.custom.sourceCode;
-										}
-									}
-								}, 100);
-								
 							}, 200);
 						}
 					});

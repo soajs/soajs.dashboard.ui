@@ -198,25 +198,13 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		buildFormWithModal(currentScope, $modal, options);
 	}
 
-	function splitAndTrim(string) {
-		// let x = string.split(',');
-		//
-		// for (let i = 0; i < x.length; i++) {
-		// 	x[i] = x[i].trim();
-		// };
-		//
-		// return x;
-	}
-
 	function editNetwork(currentScope, originalNetwork) {
 		let oneNetwork = angular.copy(originalNetwork);
+		console.log(oneNetwork);
 
-		//check the length of the address (how many addresses) if more than 1 -> splice to remove primary from array
+		// Make a copy of all addresses -> remove primary address from the array
 		let allAddresses = angular.copy(oneNetwork.address);
-
-		if (oneNetwork.address && oneNetwork.address.length > 1) {
-			allAddresses.splice(oneNetwork.address.indexOf(oneNetwork.primaryAddress), 1);
-		}
+		allAddresses.splice(oneNetwork.address.indexOf(oneNetwork.primaryAddress), 1);
 
 		let options = {
 			timeout: $timeout,
@@ -261,11 +249,12 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 
 						postOpts.data.params.addresses = aggregatedAddresses;
 
-					// 	let addressPattern = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/;
-					// 	if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
-					// 		return $window.alert("Make sure the address you entered follows the correct CIDR format.");
-					// 	}
-					//
+						// // TODO: regex the ips to make sure they are in the correct format
+						// let addressPattern = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/;
+						// if (formData.address && formData.address.length > 0 && !addressPattern.test(formData.address)) {
+						// 	return $window.alert("Make sure the address you entered follows the correct CIDR format.");
+						// }
+						//
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
 							overlayLoading.hide();
@@ -276,7 +265,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 								currentScope.displayAlert('success', "Network Updated successfully. Changes take a bit of time to be populated and might require you to refresh in the list after a few seconds.");
 								currentScope.modalInstance.close();
 								$timeout(() => {
-									listNetworks(currentScope, currentScope.selectedGroup);
+									listNetworks(currentScope, currentScope.selectedRegion);
 								}, 2000);
 							}
 						});
@@ -414,34 +403,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			}
 			else {
 				console.log(response);
-		// 	}
-		// });
-		// 	else {
-				// let response = {
-				// 	networks: [
-				// 	    {
-				// 			"IsDefault": true,
-				// 			"instanceTenancy": "default",
-				// 			"primaryAddress": "172.31.0.0/16",
-				// 	        "id": "vpc-957300fc",
-				// 	        "name": "vpc-957300fc",
-				// 	        "region": "us-east-2",
-				// 	        "state": "available",
-				// 	        "address": [ "172.31.0.0/16" ],
-				// 	        "region": "us-east-2",
-				// 	        "subnets": [
-				// 	            {
-				// 	                "id": "subnet-110ad95c",
-				// 	                "name": "subnet-110ad95c",
-				// 	                "state": "available",
-				// 	                "address": "172.31.32.0/20",
-				// 	                "availabilityZone": "us-east-2c"
-				// 	            }
-				// 	        ]
-				// 	    }
-				// 	]
-				// };
-				//
+
 				currentScope.infraNetworks = [];
 				if (response.networks && response.networks.length > 0) {
 					currentScope.infraNetworks = response.networks;

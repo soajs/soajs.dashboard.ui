@@ -390,7 +390,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['networks']
+				'extras[]': ['networks'],
+				'section': "network"
 			}
 		};
 

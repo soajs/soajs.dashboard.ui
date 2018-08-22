@@ -30,7 +30,6 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 	};
 
 	function addIP(currentScope) {
-
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -72,7 +71,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 								currentScope.displayAlert('success', "Public IP created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
 								currentScope.modalInstance.close();
 								$timeout(() => {
-									listIPs(currentScope, currentScope.selectedGroup);
+									listIPs(currentScope, currentScope.selectedRegion);
 								}, 2000);
 							}
 						});
@@ -92,8 +91,6 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 
 		buildFormWithModal(currentScope, $modal, options);
 	}
-
-	function editIP(currentScope, originalIP) { }
 
 	function deleteIP(currentScope, oneIP) {
 
@@ -120,7 +117,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 				overlayLoading.hide();
 				currentScope.displayAlert('success', `The IP has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
 				$timeout(() => {
-					listIPs(currentScope, currentScope.selectedGroup);
+					listIPs(currentScope, currentScope.selectedRegion);
 				}, 2000);
 			}
 		});
@@ -190,7 +187,6 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 
 	return {
 		'addIP': addIP,
-		'editIP': editIP,
 		'deleteIP': deleteIP,
 		'listIPs': listIPs
 	};

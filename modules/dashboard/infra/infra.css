@@ -69,6 +69,7 @@ table tr[class^="form-group tr-labelGroup"] {
     position:relative;
 }
 
+/* Azure Firewall */
 #addFirewall .tr-region-wrapper td,
 #editFirewall .tr-region-wrapper td{
     padding-bottom:30px;
@@ -103,6 +104,40 @@ table tr[class^="form-group tr-labelGroup"] {
 }
 #addFirewall table tr [class^="form-group tr-portGroup"] tr td,
 #editFirewall table tr [class^="form-group tr-portGroup"] tr td{
+    width:97% !important;
+    display: table;
+}
+
+/* AWS Firewall */
+#addFirewall .tr-region-wrapper td,
+#editFirewall .tr-region-wrapper td{
+    padding-bottom:30px;
+}
+
+#addFirewall table tr [class^="form-group tr-awsPortGroup"] tr,
+#editFirewall table tr [class^="form-group tr-awsPortGroup"] tr{
+    float: left;
+    width: 19%;
+    height: 70px;
+}
+
+#addFirewall table tr [class^="form-group tr-awsPortGroup"],
+#editFirewall table tr [class^="form-group tr-awsPortGroup"] {
+    position: relative;
+    display: table;
+    width: 100%;
+}
+#addFirewall table tr [class^="form-group tr-awsPortGroup"] tr[class^="form-group tr-rLabel"],
+#editFirewall table tr [class^="form-group tr-awsPortGroup"] tr[class^="form-group tr-rLabel"]{
+    float: none;
+    height: 24px;
+    position: absolute;
+    top: -5%;
+    right: 1%;
+    width:2%;
+}
+#addFirewall table tr [class^="form-group tr-awsPortGroup"] tr td,
+#editFirewall table tr [class^="form-group tr-awsPortGroup"] tr td{
     width:97% !important;
     display: table;
 }

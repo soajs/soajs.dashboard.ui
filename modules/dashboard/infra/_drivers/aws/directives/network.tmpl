@@ -14,7 +14,7 @@
 
 		<div ng-if="infraRegions.length > 0">
 			Region:
-			<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listIPs(selectedRegion)" ng-options="region.v as region.l for region in infraRegions">
+			<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listNetworks(selectedRegion)" ng-options="region.v as region.l for region in infraRegions">
 			</select>
 		</div>
 	</div>

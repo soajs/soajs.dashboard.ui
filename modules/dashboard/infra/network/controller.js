@@ -37,11 +37,11 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 					});
 				}, 500);
 			}
-			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
-				$scope.isResourceGroupDriven = true
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups) && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0)) {
+				$scope.isResourceGroupDriven = true;
 				$scope.noResourceGroups = true;
 			}
-			else if ((!$scope.$parent.$parent.currentSelectedInfra.groups || $scope.$parent.$parent.currentSelectedInfra.groups === "NA") && $scope.$parent.$parent.currentSelectedInfra.regions) {
+			else if ((!$scope.$parent.$parent.currentSelectedInfra.groups || $scope.$parent.$parent.currentSelectedInfra.groups === "N/A") && $scope.$parent.$parent.currentSelectedInfra.regions) {
 				//flag that the infra is not driven by resource group -> by region
 				$scope.isResourceGroupDriven = false;
 
@@ -50,13 +50,13 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 
 				if($routeParams.region) {
 					$scope.infraRegions.forEach((oneRegion) => {
-						if (oneRegion.name === $routeParams.region) {
-							$scope.selectedRegion = oneRegion;
+						if (oneRegion.v === $routeParams.region) {
+							$scope.selectedRegion = oneRegion.v;
 						}
 					});
 				}
 				else {
-					$scope.selectedRegion = $scope.infraRegions[0];
+					$scope.selectedRegion = $scope.infraRegions[0].v;
 				}
 
 				$timeout(() => {
@@ -148,11 +148,12 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 		infraNetworkSrv.editNetwork($scope, oneNetwork);
 	};
 
-	$scope.listNetworks = function (oneGroup) {
+	$scope.listNetworks = function (groupOrRegion) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
-			infraNetworkSrv.listNetworks($scope, oneGroup);
+			infraNetworkSrv.listNetworks($scope, groupOrRegion);
 		});
 	};
 

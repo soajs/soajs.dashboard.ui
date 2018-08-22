@@ -50,7 +50,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 		}
 	}
 
-	function listNetworks(currentScope, oneGroup, oneRegion) {
+	function listNetworks(currentScope, oneGroup) {
 		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
 
 		switch(infraName){
@@ -58,7 +58,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 				azureInfraNetworkSrv.listNetworks(currentScope, oneGroup);
 				break;
 			case 'aws':
-				awsInfraNetworkSrv.listNetworks(currentScope, oneRegion);
+				awsInfraNetworkSrv.listNetworks(currentScope, oneGroup);
 				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);

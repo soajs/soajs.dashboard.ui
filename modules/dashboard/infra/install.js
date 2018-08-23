@@ -95,8 +95,7 @@ let infraNav = [
 			'modules/dashboard/infra/_services/infra.js',
 			'modules/dashboard/infra/groups/services/groups.js',
 			'modules/dashboard/infra/groups/controller.js',
-			'/modules/dashboard/infra/_drivers/azure/services/groups.js',
-			'/modules/dashboard/infra/_drivers/aws/services/groups.js'
+			'/modules/dashboard/infra/_drivers/azure/services/groups.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},

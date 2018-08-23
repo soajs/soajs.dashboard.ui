@@ -210,24 +210,26 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 
 					currentScope.infraKeyPairs.forEach((oneKeyPair) => {
 						oneKeyPair.layers = [];
-						currentScope.vmlayers.forEach((oneVmInstance) => {
-							if(oneVmInstance.keyPair && oneVmInstance.keyPair === oneKeyPair.id) {
-								let foundLayer = oneKeyPair.layers.find((oneEntry) => { return oneEntry.name === oneVmInstance.layer });
-								if(foundLayer) {
-									foundLayer.instances.push({
-										id: oneVmInstance.id,
-										name: oneVmInstance.name
-									});
+						if(currentScope.vmlayers && Array.isArray(currentScope.vmlayers)) {
+							currentScope.vmlayers.forEach((oneVmInstance) => {
+								if(oneVmInstance.keyPair && oneVmInstance.keyPair === oneKeyPair.id) {
+									let foundLayer = oneKeyPair.layers.find((oneEntry) => { return oneEntry.name === oneVmInstance.layer });
+									if(foundLayer) {
+										foundLayer.instances.push({
+											id: oneVmInstance.id,
+											name: oneVmInstance.name
+										});
+									}
+									else {
+										oneKeyPair.layers.push({
+											name: oneVmInstance.layer,
+											region: oneVmInstance.region,
+											instances: [ { id: oneVmInstance.id, name: oneVmInstance.name } ]
+										});
+									}
 								}
-								else {
-									oneKeyPair.layers.push({
-										name: oneVmInstance.layer,
-										region: oneVmInstance.region,
-										instances: [ { id: oneVmInstance.id, name: oneVmInstance.name } ]
-									});
-								}
-							}
-						});
+							});
+						}
 
 						oneKeyPair.associated = '';
 						if(oneKeyPair.layers.length === 0) {

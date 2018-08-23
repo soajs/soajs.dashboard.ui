@@ -1,6 +1,6 @@
 "use strict";
 var infraGroupSrv = soajsApp.components;
-infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', 'awsInfraGroupSrv', function (azureInfraGroupSrv, awsInfraGroupSrv) {
+infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', function (azureInfraGroupSrv) {
 
 	function addGroup(currentScope) {
 		let infraName = currentScope.currentInfraName;
@@ -8,9 +8,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', 'awsInfraGroupSrv'
 		switch(infraName){
 			case 'azure':
 				azureInfraGroupSrv.addGroup(currentScope);
-				break;
-			case 'aws':
-				awsInfraGroupSrv.addGroup(currentScope);
 				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
@@ -25,9 +22,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', 'awsInfraGroupSrv'
 			case 'azure':
 				azureInfraGroupSrv.editGroup(currentScope, oneGroup);
 				break;
-			case 'aws':
-				awsInfraGroupSrv.editGroup(currentScope, oneGroup);
-				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
@@ -41,9 +35,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', 'awsInfraGroupSrv'
 			case 'azure':
 				azureInfraGroupSrv.deleteGroup(currentScope, oneGroup);
 				break;
-			case 'aws':
-				awsInfraGroupSrv.deleteGroup(currentScope, oneGroup);
-				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
@@ -56,9 +47,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', 'awsInfraGroupSrv'
 		switch(infraName){
 			case 'azure':
 				azureInfraGroupSrv.listGroups(currentScope, oneRegion);
-				break;
-			case 'aws':
-				awsInfraGroupSrv.listGroups(currentScope, oneRegion);
 				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);

@@ -9,8 +9,8 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
+			$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
@@ -29,7 +29,7 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 					overlayLoading.show();
 					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
 						$scope.vmlayers = vmlayers;
-					
+
 						infraLoadBalancerSrv.listLoadBalancers($scope, $scope.selectedGroup);
 					});
 				}, 500);
@@ -57,7 +57,7 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 						}
 					});
 				}
-				
+
 				if(!$scope.$parent.$parent.currentSelectedInfra){
 					$scope.go("/infra");
 				}
@@ -90,7 +90,7 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 								}
 							});
 						}
-						
+
 						if(!$scope.$parent.$parent.currentSelectedInfra){
 							$scope.go("/infra");
 						}

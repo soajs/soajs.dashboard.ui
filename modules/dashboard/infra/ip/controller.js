@@ -9,8 +9,8 @@ infraIPApp.controller('infraIPCtrl', ['$scope', '$routeParams', '$localStorage',
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 		infraCommonSrv.switchInfra($scope, oneInfra, ["templates"], () => {
+			$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 			if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups) && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0)) {
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;

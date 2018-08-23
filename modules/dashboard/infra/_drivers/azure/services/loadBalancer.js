@@ -1333,8 +1333,7 @@ azureInfraLoadBalancerSrv.service('azureInfraLoadBalancerSrv', ['ngDataApi', '$l
 			params: {
 				'id': oneInfra._id,
 				'group': oneGroup.name,
-				'extras[]': ['loadBalancers'],
-				'section': 'loadBalancer'
+				'extras[]': ['loadBalancers']
 			}
 		};
 

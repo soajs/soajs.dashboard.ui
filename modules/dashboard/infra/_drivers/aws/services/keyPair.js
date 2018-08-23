@@ -192,8 +192,7 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['keyPairs'],
-				"section": "keyPair"
+				'extras[]': ['keyPairs']
 			}
 		};
 

@@ -142,8 +142,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['publicIps'],
-				"section": "publicIp"
+				'extras[]': ['publicIps']
 			}
 		};
 

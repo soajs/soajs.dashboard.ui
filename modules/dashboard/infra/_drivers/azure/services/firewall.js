@@ -1,7 +1,7 @@
 "use strict";
 var azureInfraFirewallSrv = soajsApp.components;
 azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', 'injectFiles', function (ngDataApi, $localStorage, $timeout, $modal, $window, injectFiles) {
-	
+
 	let infraFirewallConfig = {
 		form: {
 			firewall: [
@@ -131,7 +131,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				]
 			}
 		},
-		
+
 		grid: {
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
@@ -145,9 +145,9 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 			'defaultLimit': 10
 		}
 	};
-	
+
 	function addFirewall(currentScope) {
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -176,11 +176,11 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 									published: data['published' + i],
 									priority: data['priority' + i]
 								};
-								
+
 								firewallPorts.push(portEntry);
 							}
 						}
-						
+
 						let postOpts = {
 							"method": "post",
 							"routeName": "/dashboard/infra/extras",
@@ -198,7 +198,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 								}
 							}
 						};
-						
+
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
 							overlayLoading.hide();
@@ -226,10 +226,10 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				}
 			]
 		};
-		
+
 		//build ui to modify and configure ports
 		currentScope.portsCounter = 0;
-		
+
 		//attach the add another button
 		options.form.entries[2].entries[options.form.entries[2].entries.length - 1].onAction = function (id, value, form) {
 			addNewPort(currentScope);
@@ -239,12 +239,12 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 			//fill in labels after form is rendered
 		});
 	}
-	
+
 	function editFirewall(currentScope, originalFirewall) {
-		
+
 		let oneFirewall = angular.copy(originalFirewall);
 		oneFirewall.region = currentScope.selectedGroup.region;
-		
+
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -274,11 +274,11 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 									published: data['published' + i],
 									priority: data['priority' + i]
 								};
-								
+
 								firewallPorts.push(portEntry);
 							}
 						}
-						
+
 						let postOpts = {
 							"method": "put",
 							"routeName": "/dashboard/infra/extras",
@@ -296,7 +296,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 								}
 							}
 						};
-						
+
 						overlayLoading.show();
 						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
 							overlayLoading.hide();
@@ -324,7 +324,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				}
 			]
 		};
-		
+
 		//build ui to modify and configure ports
 		currentScope.portsCounter = 0;
 		for (let i = 0; i < oneFirewall.ports.length; i++) {
@@ -332,7 +332,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				currentScope.portsCounter++;
 				//add labels to the form based on label counters
 				let tmp = angular.copy(infraFirewallConfig.form.portInput);
-				
+
 				tmp.name += i;
 				tmp.label = "Port " + oneFirewall.ports[i].name;
 				tmp.entries.forEach((onePortDetail) => {
@@ -340,7 +340,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 					onePortDetail.name += i;
 					oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
 				});
-				
+
 				tmp.entries.unshift({
 					'type': 'html',
 					'name': 'rLabel' + i,
@@ -353,7 +353,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 								tmp.entries.forEach((field) => {
 									delete form.formData[field.name];
 								});
-								
+
 								//remove from formEntries
 								form.entries[2].entries.splice(i, 1);
 								break;
@@ -361,36 +361,36 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						}
 					}
 				});
-				
+
 				//push new entry before the last one, making sure add button remains at the bottom
 				options.form.entries[2].entries.splice(options.form.entries[2].entries.length - 1, 0, tmp);
 			}
 		}
-		
+
 		//attach the add another button
 		options.form.entries[2].entries[options.form.entries[2].entries.length - 1].onAction = function (id, value, form) {
 			addNewPort(currentScope);
 		};
-		
+
 		buildFormWithModal(currentScope, $modal, options, () => {
 			//fill in labels after form is rendered
 			currentScope.form.entries[0].type = 'readonly';
 			currentScope.form.formData = oneFirewall;
 		});
 	}
-	
+
 	function addNewPort(currentScope) {
 		let counter = currentScope.portsCounter || 0;
-		
+
 		let tmp = angular.copy(infraFirewallConfig.form.portInput);
 		tmp.name += counter;
 		tmp.collapsed = false;
 		tmp.icon = "minus";
 		tmp.entries.forEach((onePortDetail) => {
 			onePortDetail.name += counter;
-			
+
 			if (!currentScope.form.formData[onePortDetail.name]) {
-				
+
 				let defaultValue;
 				if (Array.isArray(onePortDetail.value)) {
 					onePortDetail.value.forEach((oneV) => {
@@ -408,7 +408,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				currentScope.form.formData[onePortDetail.name] = defaultValue;
 			}
 		});
-		
+
 		tmp.entries.unshift({
 			'type': 'html',
 			'name': 'rLabel' + counter,
@@ -421,7 +421,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						tmp.entries.forEach((field) => {
 							delete form.formData[field.name];
 						});
-						
+
 						//remove from formEntries
 						form.entries[2].entries.splice(i, 1);
 						break;
@@ -429,13 +429,13 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				}
 			}
 		});
-		
+
 		currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
 		currentScope.portsCounter++;
 	}
-	
+
 	function deleteFirewall(currentScope, oneFirewall) {
-		
+
 		let deleteFireWallOpts = {
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
@@ -447,7 +447,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				'name': oneFirewall.name
 			}
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, deleteFireWallOpts, (error, response) => {
 			overlayLoading.hide();
@@ -484,8 +484,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 			params: {
 				'id': oneInfra._id,
 				'group': oneGroup.name,
-				'extras[]': ['securityGroups'],
-				'section': 'securityGroup'
+				'extras[]': ['securityGroups']
 			}
 		};
 
@@ -500,23 +499,23 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 				if (response.securityGroups && response.securityGroups.length > 0) {
 					currentScope.infraSecurityGroups = response.securityGroups;
 				}
-				
+
 				if (currentScope.infraSecurityGroups.length > 0) {
 					currentScope.infraSecurityGroups[0].open = true;
 				}
-				
+
 				if (currentScope.vmlayers) {
 					let processedNetworks = [];
 					currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
 						currentScope.vmlayers.forEach((oneVmLayer) => {
 							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneGroup.name.toLowerCase()) {
-								
+
 								if (oneVmLayer.securityGroup && oneVmLayer.securityGroup === oneSecurityGroup.name) {
-									
+
 									if (!oneSecurityGroup.vmLayers) {
 										oneSecurityGroup.vmLayers = [];
 									}
-									
+
 									if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
 										let found = false;
 										$localStorage.environments.forEach((oneEnv) => {
@@ -539,11 +538,11 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 											link: false
 										});
 									}
-									
+
 									if (!oneSecurityGroup.networks) {
 										oneSecurityGroup.networks = [];
 									}
-									
+
 									if (processedNetworks.indexOf(oneVmLayer.network) === -1) {
 										processedNetworks.push(oneVmLayer.network);
 										oneSecurityGroup.networks.push({
@@ -559,7 +558,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 			}
 		});
 	}
-	
+
 	return {
 		'addFirewall': addFirewall,
 		'editFirewall': editFirewall,
@@ -567,5 +566,3 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 		'listFirewalls': listFirewalls
 	};
 }]);
-
-

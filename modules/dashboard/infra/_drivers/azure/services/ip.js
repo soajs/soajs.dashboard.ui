@@ -503,8 +503,7 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 			params: {
 				'id': oneInfra._id,
 				'group': oneGroup.name,
-				'extras[]': ['publicIps'],
-				'section': 'publicIp'
+				'extras[]': ['publicIps']
 			}
 		};
 

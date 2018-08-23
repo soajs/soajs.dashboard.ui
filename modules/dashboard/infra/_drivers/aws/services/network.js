@@ -389,8 +389,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['networks'],
-				'section': "network"
+				'extras[]': ['networks']
 			}
 		};
 
@@ -398,12 +397,9 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 			overlayLoading.hide();
 			if (error) {
-				console.log(error);
 				currentScope.displayAlert('danger', error);
 			}
 			else {
-				console.log(response);
-
 				currentScope.infraNetworks = [];
 				if (response.networks && response.networks.length > 0) {
 					currentScope.infraNetworks = response.networks;
@@ -429,7 +425,6 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 
 										oneSubnet.vm = {
 											vmLayer: oneVmLayer.layer,
-											group: oneGroup.name,
 											envCode: oneVmLayer.labels['soajs.env.code'],
 											region: oneVmLayer.labels['soajs.service.vm.location'],
 											link: found
@@ -438,7 +433,6 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 									else{
 										oneSubnet.vm = {
 											vmLayer: oneVmLayer.layer,
-											group: oneGroup.name,
 											link: false
 										};
 									}
@@ -450,7 +444,6 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 									if(processedFirewalls.indexOf(oneVmLayer.securityGroup) === -1){
 										processedFirewalls.push(oneVmLayer.securityGroup);
 										oneNetwork.firewall.push({
-											group: oneGroup.name,
 											name: oneVmLayer.securityGroup
 										});
 									}

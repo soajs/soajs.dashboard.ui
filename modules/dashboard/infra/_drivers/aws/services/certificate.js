@@ -243,8 +243,7 @@ awsInfraCertificateSrv.service('awsInfraCertificateSrv', ['ngDataApi', '$localSt
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['certificates'],
-				"section": "certificate"
+				'extras[]': ['certificates']
 			}
 		};
 

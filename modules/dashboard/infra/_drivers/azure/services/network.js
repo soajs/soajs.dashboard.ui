@@ -366,8 +366,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 			params: {
 				'id': oneInfra._id,
 				'group': oneGroup.name,
-				'extras[]': ['networks'],
-				'section': 'network'
+				'extras[]': ['networks']
 			}
 		};
 

@@ -9,11 +9,14 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 	infraCommonSrv.getInfraFromCookie($scope);
 
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
-		infraCommonSrv.switchInfra($scope, oneInfra, ["regions", "templates"], () => {
+		infraCommonSrv.switchInfra($scope, oneInfra, ["templates"], () => {
 			$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
-			if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0) {
+			if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups) && $scope.$parent.$parent.currentSelectedInfra.groups.length > 0)) {
 				//flag that infra doesn't have any resource groups
 				$scope.noResourceGroups = false;
+				//flag that this infra is resource group driver (otherwise will be region driven)
+				$scope.isResourceGroupDriven = true;
+
 				$scope.infraGroups = $scope.$parent.$parent.currentSelectedInfra.groups;
 				if($routeParams.group){
 					$scope.infraGroups.forEach((oneInfraGroup) => {
@@ -34,8 +37,37 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 					});
 				}, 500);
 			}
-			else if ($scope.$parent.$parent.currentSelectedInfra.groups && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0) {
+			else if ($scope.$parent.$parent.currentSelectedInfra.groups && (Array.isArray($scope.$parent.$parent.currentSelectedInfra.groups) && $scope.$parent.$parent.currentSelectedInfra.groups.length === 0)) {
+				$scope.isResourceGroupDriven = true;
 				$scope.noResourceGroups = true;
+			}
+			else if ((!$scope.$parent.$parent.currentSelectedInfra.groups || $scope.$parent.$parent.currentSelectedInfra.groups === "N/A") && $scope.$parent.$parent.currentSelectedInfra.regions) {
+				//flag that the infra is not driven by resource group -> by region
+				$scope.isResourceGroupDriven = false;
+
+				//set infra regions in scope to be used by modules
+				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
+
+				if($routeParams.region) {
+					$scope.infraRegions.forEach((oneRegion) => {
+						if (oneRegion.v === $routeParams.region) {
+							$scope.selectedRegion = oneRegion.v;
+						}
+					});
+				}
+				else {
+					$scope.selectedRegion = $scope.infraRegions[0].v;
+				}
+
+				$timeout(() => {
+					overlayLoading.show();
+					infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+						overlayLoading.hide();
+						$scope.vmlayers = vmlayers;
+
+						infraLoadBalancerSrv.listLoadBalancers($scope, $scope.selectedRegion);
+					});
+				}, 500);
 			}
 		});
 	};
@@ -116,11 +148,12 @@ infraLoadBalancerApp.controller('infraLoadBalancerCtrl', ['$scope', '$routeParam
 		infraLoadBalancerSrv.editLoadBalancer($scope, oneLoadBalancer);
 	};
 
-	$scope.listLoadBalancers = function (oneGroup) {
+	$scope.listLoadBalancers = function (groupOrRegion) {
 		overlayLoading.show();
 		infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
+			overlayLoading.hide();
 			$scope.vmlayers = vmlayers;
-			infraLoadBalancerSrv.listLoadBalancers($scope, oneGroup);
+			infraLoadBalancerSrv.listLoadBalancers($scope, groupOrRegion);
 		});
 	};
 

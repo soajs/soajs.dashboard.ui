@@ -34,550 +34,77 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				},
 				{
 					'type': 'accordion',
-					'name': 'addressPools',
-					'label': 'Address Pools',
+					'name': 'rules',
+					'label': 'Rules',
 					'entries': [
 						{
 							'type': 'html',
-							'name': 'addAddressPool',
-							'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Address Pool'/>"
-						}
-					]
-				},
-				{
-					'type': 'accordion',
-					'name': 'ipRules',
-					'label': 'IP Rules',
-					'entries': [
-						{
-							'type': 'html',
-							'name': 'ipRule',
-							'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add IP Rule'/>"
+							'name': 'rule',
+							'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Rule'/>"
 						}
 					]
 				}
 			],
 
-			addressPoolInput: {
-				'name': 'addressPoolGroup',
+			ruleInput: {
+				'name': 'ruleGroup',
 				'type': 'accordion',
-				'label': 'New Address Pool ',
+				'label': 'New Rule ',
 				'entries': [
 					{
-						'name': 'addressPoolName',
-						'label': 'Address Pool Name',
-						'type': 'text',
+						'name': 'backendPort',
+						'label': 'Backend Port',
+						'type': 'number',
 						'value': '',
 						'required': true,
-						'tooltip': 'Enter a name for the address pool',
-						'fieldMsg': 'Enter a name for the address pool',
-						'placeholder': "My Address Pool",
-						'onAction': function(name, value, form) {
-							let tempArray = [];
-							for (let i = 0; i < form.addressPoolCounter; i++) {
-								if (form.formData['addressPoolName'+i]) {
-									tempArray.push({
-										'v': form.formData['addressPoolName'+i],
-										'l': form.formData['addressPoolName'+i]
-									});
-								}
-							}
-							form.availableAddressPools = angular.copy(tempArray);
-
-							form.entries[3].entries.forEach((oneIPRuleGroup) => {
-								if (['ipRuleGroup'].indexOf(oneIPRuleGroup.name)) {
-									if (oneIPRuleGroup.entries && oneIPRuleGroup.entries[6] && oneIPRuleGroup.entries[6].entries) {
-										oneIPRuleGroup.entries[6].entries.forEach((oneEntry) => {
-											if(oneEntry.entries && oneEntry.entries[1]) {
-												oneEntry.entries[1].value = form.availableAddressPools;
-											}
-										});
-									}
-								}
-							});
-						}
+						'tooltip': 'Enter a backend port number.',
+						'fieldMsg': 'Enter a backend port number.',
+						'placeholder': "*"
 					},
 					{
-						'type': 'html',
-						'name': 'rAddressPool',
-						'value': '<span class="icon icon-cross"></span>'
-					}
-				]
-			},
-
-			ipRuleInput: {
-				'name': 'ipRuleGroup',
-				'type': 'accordion',
-				'label': 'New IP Rule ',
-				'entries': [
-					{
-						'name': 'ipRuleName',
-						'label': 'IP Rule Name',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter a name for the IP rule',
-						'fieldMsg': 'Enter a name for the IP rule',
-						'placeholder': "My IP Rule"
-					},
-					{
-						'name': 'privateIpAllocationMethod',
-						'label': 'Private IP Allocation Method',
+						'name': 'backendProtocol',
+						'label': 'Backend Protocol',
 						'type': 'select',
-						'value': [
-							{
-								'l': 'Static',
-								'v': 'static'
-							},
-							{
-								'l': 'Dynamic',
-								'v': 'dynamic'
-							}
-						],
+						'value': [{'v': 'http', 'l': 'HTTP'},{'v': 'https', 'l': 'HTTPS'}, {'v': 'tcp', 'l': 'TCP'}],
 						'required': true,
-						'tooltip': 'Select a public IP allocation mehod',
-						'fieldMsg': 'Select an Azure Allocation Method for this IP, <a target="_blank" href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#allocation-method">Learn More</a>',
-						onAction: function (name, value, form) {
-							let ipRulesGroup = form.entries.find((oneEntry) => {
-								return oneEntry.label === 'IP Rules';
-							});
-							if (ipRulesGroup && ipRulesGroup.entries) {
-								let currentRule = ipRulesGroup.entries.find((oneEntry) => {
-									return oneEntry.name.replace('ipRuleGroup', '') === name.replace('privateIpAllocationMethod', '');
-								});
-								if (currentRule && currentRule.entries) {
-									let privateIpField = currentRule.entries.find((oneEntry) => {
-										if(oneEntry.name.indexOf('privateIpAddress') !== -1){
-											return oneEntry;
-										}
-									});
-
-									privateIpField.value = '';
-									privateIpField.hidden = (value === 'dynamic');
-									privateIpField.required = (value !== 'dynamic');
-								}
-							}
-						}
-					},
-					{
-						'name': 'privateIpAddress',
-						'label': 'Private IP Address',
-						'type': 'text',
-						'value': '',
-						'required': false,
-						'hidden': true,
-						'tooltip': 'Enter a private IP address',
-						'fieldMsg': 'Enter a private IP address',
+						'tooltip': 'Select a backend protocol.',
+						'fieldMsg': 'Select a backend protocol',
 						'placeholder': ""
 					},
 					{
-						'name': 'isPublic',
-						'label': 'I want the IP to be public',
-						'fieldMsg': "Turn this slider on to make the IP public",
-						'type': 'buttonSlider',
-						'value': false,
-						'required': true,
-						onAction: function (name, value, form) {
-							let ipRulesGroup = form.entries.find((oneEntry) => {
-								return oneEntry.label === 'IP Rules';
-							});
-
-							if (ipRulesGroup && ipRulesGroup.entries) {
-								let currentRule = ipRulesGroup.entries.find((oneEntry) => {
-									return oneEntry.name.replace('ipRuleGroup', '') === name.replace('isPublic', '');
-								});
-								if (currentRule && currentRule.entries) {
-									let publicIpField = currentRule.entries.find((oneEntry) => {
-										if(oneEntry.name.indexOf('publicIpAddressId') !== -1){
-											return oneEntry;
-										}
-
-									});
-									let subnetIdField = currentRule.entries.find((oneEntry) => {
-										if(oneEntry.name.indexOf('subnetId') !== -1){
-											return oneEntry;
-										}
-									});
-									publicIpField.hidden = !value;
-									subnetIdField.hidden = value;
-
-									publicIpField.required = value;
-									subnetIdField.required = !value;
-								}
-							}
-						}
-					},
-					{
-						'name': 'publicIpAddressId',
-						'label': 'Public IP Address',
-						'type': 'select',
-						'value': [],
-						'required': false,
-						'hidden': true,
-						'tooltip': 'Choose a public IP address',
-						'fieldMsg': 'Choose a public IP address'
-					},
-					{
-						'name': 'subnetId',
-						'label': 'Subnet',
-						'type': 'select',
-						'value': [],
-						'required': false,
-						'tooltip': 'Choose a subnet for the IP address',
-						'fieldMsg': 'Choose an existing subnet for the IP address'
-					},
-					{
-						'type': 'accordion',
-						'name': 'ipRulePortsGroup',
-						'label': 'Ports',
-						'entries': [
-							{
-								'type': 'html',
-								'name': 'portAddButton',
-								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Port'/>"
-							}
-						]
-					},
-					{
-						'type': 'accordion',
-						'label': 'NAT Rules',
-						'entries': [
-							{
-								'type': 'html',
-								'name': 'natRule',
-								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add NAT Rule'/>"
-							}
-						]
-					},
-					{
-						'type': 'accordion',
-						'label': 'NAT Pools',
-						'entries': [
-							{
-								'type': 'html',
-								'name': 'natPool',
-								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add NAT Pool'/>"
-							}
-						]
-					},
-					{
-						'type': 'html',
-						'name': 'rIpRule',
-						'value': '<span class="icon icon-cross"></span>'
-					}
-				]
-			},
-
-			portsInput: {
-				'name': 'ipRulePortsGroup',
-				'type': 'accordion',
-				'label': 'New Port ',
-				'entries': [
-					{
-						'name': 'portName',
-						'label': 'Port Name',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter a name for the port',
-						'fieldMsg': 'Enter a name for the port',
-						'placeholder': "My Port"
-					},
-					{
-						'name': 'portAddressPoolName',
-						'label': 'Address Pool',
-						'type': 'select',
-						'value': [],
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': ''
-					},
-					{
-						'name': 'portProtocol',
-						'label': 'Protocol',
-						'type': 'select',
-						'value': [{'v': 'tcp','l': 'TCP', 'selected': true}, {'v': 'udp', 'l': 'UDP'}, {'v': '*', 'l': 'Any'}],
-						'required': true,
-						'tooltip': 'Select the port Protocol',
-						'fieldMsg': 'Select the port Protocol'
-					},
-					{
-						'name': 'portPublished',
-						'label': 'Source Value',
-						'type': 'number',
-						'value': 0,
-						'placeholder': '80',
-						'required': true,
-						'tooltip': 'Select the source port value',
-						'fieldMsg': 'Select the source port value'
-					},
-					{
-						'name': 'portTarget',
-						'label': 'Destination Value',
-						'type': 'number',
-						'value': 0,
-						'placeholder': '80',
-						'required': true,
-						'tooltip': 'Select the destination port value',
-						'fieldMsg': 'Select the destination port value'
-					},
-					{
-						'name': 'portIdleTimeout',
-						'label': 'Idle Timeout in Seconds',
-						'type': 'number',
-						'value': 240,
-						'min': 240,
-						'max': 1800,
-						'placeholder': '240',
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': 'Between 240 and 1800'
-					},
-					{
-						'name': 'portLoadDistribution',
-						'label': 'Load Distrubution',
-						'type': 'select',
-						'value': [
-							{
-								'v': 'default',
-								'l': 'Default'
-							},
-							{
-								'v': 'sourceIP',
-								'l': 'Source IP'
-							},
-							{
-								'v': 'sourceIPProtocol',
-								'l': 'Source IP Protocol'
-							}
-						],
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': 'Select a Load Distrubution Method. <a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-distribution-mode">Learn More</a>'
-					},
-					{
-						'name': 'portEnableFloatingIP',
-						'label': 'Enable Floating IP',
-						'type': 'select',
-						'value': [{'v': false,'l': 'NO', 'selected': true}, {'v': true, 'l': 'YES'}],
-						'placeholder': '1',
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': 'Enable to reuse the backend port across multiple rules. <a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-multivip-overview#rule-type-2-backend-port-reuse-by-using-floating-ip">Learn More</a>'
-					},
-					{
-						'type': 'html',
-						'name': 'portHealthProbeLabel',
-						'value': '<h4>Health Probe</h4><hr>'
-					},
-					{
-						'name': 'portHealthProbeProtocol',
-						'label': 'Protocol',
-						'type': 'select',
-						'value': [
-							{
-								'v': 'http',
-								'l': 'HTTP'
-							},
-							{
-								'v': 'https',
-								'l': 'HTTPS'
-							},
-							{
-								'v': 'tcp',
-								'l': 'TCP'
-							}
-						],
-						'required': true,
-						'fieldMsg': '<a target="_blank" href="https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview#fundamental-load-balancer-features">Learn More</a> about Heath Probe'
-					},
-					{
-						'name': 'portHealthProbeRequestPath',
-						'label': 'Path',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'fieldMsg': ''
-					},
-					{
-						'name': 'portHealthProbePort',
-						'label': 'Port',
-						'type': 'number',
-						'value': '',
-						'required': false,
-						'fieldMsg': ''
-					},
-					{
-						'name': 'portMaxFailureAttempts',
-						'label': 'Max Failure Attempts',
-						'type': 'number',
-						'value': '',
-						'required': false,
-						'fieldMsg': ''
-					},
-					{
-						'name': 'portHealthProbeInterval',
-						'label': 'Interval',
-						'type': 'number',
-						'value': '',
-						'required': false,
-						'fieldMsg': ''
-					},
-					{
-						'type': 'html',
-						'name': 'rIPRulePort',
-						'value': '<span class="icon icon-cross"></span>'
-					}
-				]
-			},
-
-			NATRule: {
-				'name': 'ipRuleNATRuleGroup',
-				'type': 'accordion',
-				'label': 'New NAT Rule ',
-				'entries': [
-					{
-						'name': 'natRuleName',
-						'label': 'Rule Name',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter a name for the rule',
-						'fieldMsg': 'Enter a name for the rule',
-						'placeholder': "My NAT Rule"
-					},
-					{
-						'name': 'natRuleProtocol',
-						'label': 'Protocol',
-						'type': 'select',
-						'value': [{'v': 'tcp','l': 'TCP', 'selected': true}, {'v': 'udp', 'l': 'UDP'}, {'v': '*', 'l': 'Any'}],
-						'required': true,
-						'tooltip': 'Select the rule Protocol',
-						'fieldMsg': ''
-					},
-					{
-						'name': 'natRuleFrontendPort',
+						'name': 'frontendPort',
 						'label': 'Frontend Port',
 						'type': 'number',
-						'value': 0,
-						'placeholder': '80',
+						'value': '',
 						'required': true,
-						'tooltip': 'Select the frontend port value',
-						'fieldMsg': ''
+						'tooltip': 'Enter a frontend port number.',
+						'fieldMsg': 'Enter a frontend port number.',
+						'placeholder': "*"
 					},
 					{
-						'name': 'natRuleBackendPort',
-						'label': 'Backend Port',
-						'type': 'number',
-						'value': 0,
-						'placeholder': '80',
-						'required': true,
-						'tooltip': 'Select the backend port value',
-						'fieldMsg': ''
-					},
-					{
-						'name': 'natRuleIdleTimeout',
-						'label': 'Idle Timeout in Seconds',
-						'type': 'number',
-						'value': 240,
-						'min': 240,
-						'max': 1800,
-						'placeholder': '240',
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': 'Between 240 and 1800'
-					},
-					{
-						'name': 'natRuleEnableFloatingIP',
-						'label': 'Enable Floating IP',
+						'name': 'frontendProtocol',
+						'label': 'Frontend Protocol',
 						'type': 'select',
-						'value': [{'v': false,'l': 'NO', 'selected': true}, {'v': true, 'l': 'YES'}],
-						'placeholder': '1',
+						'value': [{'v': 'http', 'l': 'HTTP'},{'v': 'https', 'l': 'HTTPS'}, {'v': 'udp', 'l': 'UDP'}, {'v': 'tcp', 'l': 'TCP'}],
 						'required': true,
-						'tooltip': '',
-						'fieldMsg': ''
+						'tooltip': 'Select a frontend protocol.',
+						'fieldMsg': 'Select a frontend protocol',
+						'placeholder': ""
 					},
 					{
-						'type': 'html',
-						'name': 'rIPRuleNatRule',
-						'value': '<span class="icon icon-cross"></span>'
-					}
+						'name': 'certificate',
+						'label': 'Certificate',
+						'type': 'select',
+						'value': [],
+						'required': true,
+						'hidden': true,
+						'tooltip': 'Select a certificate.',
+						'fieldMsg': 'Select a certificate',
+						'placeholder': ""
+					},
 				]
 			},
 
-			NATPool: {
-				'name': 'ipRuleNATPoolGroup',
-				'type': 'accordion',
-				'label': 'New NAT Pool ',
-				'entries': [
-					{
-						'name': 'natPoolName',
-						'label': 'Pool Name',
-						'type': 'text',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter a name for the pool',
-						'fieldMsg': 'Enter a name for the Pool',
-						'placeholder': "My NAT Pool"
-					},
-					{
-						'name': 'natPoolProtocol',
-						'label': 'Protocol',
-						'type': 'select',
-						'value': [{'v': 'tcp','l': 'TCP', 'selected': true}, {'v': 'udp', 'l': 'UDP'}, {'v': '*', 'l': 'Any'}],
-						'required': true,
-						'tooltip': 'Select the pool Protocol',
-						'fieldMsg': ''
-					},
-					{
-						'name': 'natPoolFrontendPort',
-						'label': 'Frontend Port Range',
-						'type': 'text',
-						'value': '80-81',
-						'placeholder': '80-81',
-						'required': true,
-						'tooltip': 'Select the frontend port range',
-						'fieldMsg': ''
-					},
-					{
-						'name': 'natPoolBackendPort',
-						'label': 'Backend Port',
-						'type': 'number',
-						'value': 0,
-						'placeholder': '80',
-						'required': true,
-						'tooltip': 'Select the backend port value',
-						'fieldMsg': ''
-					},
-					{
-						'name': 'natPoolIdleTimeout',
-						'label': 'Idle Timeout in Seconds',
-						'type': 'number',
-						'value': 240,
-						'min': 240,
-						'max': 1800,
-						'placeholder': '240',
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': 'Between 240 and 1800'
-					},
-					{
-						'name': 'natPoolEnableFloatingIP',
-						'label': 'Enable Floating IP',
-						'type': 'select',
-						'value': [{'v': false,'l': 'NO', 'selected': true}, {'v': true, 'l': 'YES'}],
-						'placeholder': '1',
-						'required': true,
-						'tooltip': '',
-						'fieldMsg': ''
-					},
-					{
-						'type': 'html',
-						'name': 'rIPRuleNatPool',
-						'value': '<span class="icon icon-cross"></span>'
-					}
-				]
-			},
 		},
 
 		grid: {
@@ -598,596 +125,142 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		},
 	};
 
-	function loadAndReturnSubnets(currentScope, cb){
-		// let subnets = [], processed = [];
-		// if(currentScope.networks) {
-		// 	currentScope.networks.forEach((oneNetwork) => {
-		// 		if(oneNetwork && oneNetwork.subnets && Array.isArray(oneNetwork.subnets) && oneNetwork.subnets.length > 0) {
-		// 			oneNetwork.subnets.forEach((oneSubnet) => {
-		// 				if(processed.indexOf(oneSubnet.id) === -1){
-		// 					processed.push(oneSubnet.id);
-		// 					subnets.push({v: oneSubnet.id, l: oneSubnet.name, group: `${oneNetwork.name} network`});
-		// 				}
-		// 			});
-		// 		}
-		// 	});
-		// }
-		// // currentScope.vmlayers.forEach((oneVMLayer) => {
-		// //
-		// // 	if(oneVMLayer.labels && oneVMLayer.labels['soajs.service.vm.group'].toLowerCase() === currentScope.selectedGroup.name.toLowerCase()){
-		// // 		if(processed.indexOf(oneVMLayer.layer) === -1){
-		// // 			processed.push(oneVMLayer.layer);
-		// // 			subnets.push({v: oneVMLayer.layer, l: oneVMLayer.layer});
-		// // 		}
-		// // 	}
-		// // });
-		//
-		// return cb(subnets);
-	}
+	function loadAndReturnCertificates(currentScope) {
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'region': currentScope.selectedRegion,
+				'extras[]': ['certificates']
+			}
+		};
 
-	function loadAndReturnExtras(currentScope, cb){
-		// let listOptions = {
-		// 	method: 'get',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'id': currentScope.currentSelectedInfra._id,
-		// 		'group': currentScope.selectedGroup.name,
-		// 		'extras[]': ['publicIps', 'networks']
-		// 	}
-		// };
-		//
-		// overlayLoading.show();
-		// getSendDataFromServer(currentScope, ngDataApi, listOptions, function (error, response) {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		currentScope.form.displayAlert('danger', error.message);
-		// 	}
-		// 	else {
-		// 		let infraPublicIps = [], processed = [];
-		// 		if (response.publicIps && response.publicIps.length > 0) {
-		// 			response.publicIps.forEach((onePublicIP) => {
-		// 				if(processed.indexOf(onePublicIP.name) === -1){
-		// 					processed.push(onePublicIP.name);
-		// 					infraPublicIps.push({'v': onePublicIP.id, 'l': onePublicIP.name});
-		// 				}
-		// 			});
-		// 		}
-		//
-		// 		if(response.networks && Array.isArray(response.networks) && response.networks.length > 0) {
-		// 			currentScope.networks = response.networks;
-		// 		}
-		// 		return cb(infraPublicIps);
-		// 	}
-		// });
-	}
-
-	function addNewPort(currentScope, ipRuleCounter, defaultValues){
-		// let ipRulePortsCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].portCounter;
-		// let tmp = angular.copy(infraLoadBalancerConfig.form.portsInput);
-		// let counterLabel = ipRuleCounter + '-' + ipRulePortsCounter;
-		//
-		// tmp.name += counterLabel;
-		// tmp.entries.forEach((oneEntry) => {
-		// 	oneEntry.name += counterLabel;
-		// });
-		//
-		// //add available address Pools
-		// tmp.entries[1].value = currentScope.form.availableAddressPools;
-		//
-		// //rIPRulePort
-		// tmp.entries[tmp.entries.length -1].onAction = function (id, value, form) {
-		// 	let count = id.replace('rIPRulePort', '');
-		// 	for (let i = form.entries[3].entries[ipRuleCounter].entries[6].entries.length - 1; i >= 0; i--) {
-		// 		if (form.entries[3].entries[ipRuleCounter].entries[6].entries[i].name === 'ipRulePortsGroup' + count) {
-		//
-		// 			//remove from formData
-		// 			form.entries[3].entries[ipRuleCounter].entries[6].entries[i].entries.forEach((oneEntry) => {
-		// 				delete form.formData[oneEntry.name];
-		// 			});
-		//
-		// 			//remove from formEntries
-		// 			form.entries[3].entries[ipRuleCounter].entries[6].entries.splice(i, 1);
-		// 			break;
-		// 		}
-		// 	}
-		// };
-		//
-		// if(defaultValues) {
-		// 	currentScope.form.formData['portName' + counterLabel] = defaultValues.name;
-		// 	currentScope.form.formData['portAddressPoolName' + counterLabel] = defaultValues.addressPoolName;
-		// 	currentScope.form.formData['portProtocol' + counterLabel] = defaultValues.protocol;
-		// 	currentScope.form.formData['portPublished' + counterLabel] = defaultValues.published;
-		// 	currentScope.form.formData['portTarget' + counterLabel] = defaultValues.target;
-		// 	currentScope.form.formData['portIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
-		// 	currentScope.form.formData['portEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
-		// 	currentScope.form.formData['portLoadDistribution' + counterLabel] = defaultValues.loadDistribution;
-		//
-		// 	currentScope.form.formData['portHealthProbePort' + counterLabel] = defaultValues.healthProbePort;
-		// 	currentScope.form.formData['portHealthProbeProtocol' + counterLabel] = defaultValues.healthProbeProtocol;
-		// 	currentScope.form.formData['portHealthProbeRequestPath' + counterLabel] = defaultValues.healthProbeRequestPath;
-		// 	currentScope.form.formData['portMaxFailureAttempts' + counterLabel] = defaultValues.maxFailureAttempts;
-		// 	currentScope.form.formData['portHealthProbeInterval' + counterLabel] = defaultValues.healthProbeInterval;
-		// }
-		//
-		// if (currentScope.form && currentScope.form.entries) {
-		// 	currentScope.form.entries[3].entries[ipRuleCounter].entries[6].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[6].entries.length - 1, 0, tmp);
-		// }
-		// currentScope.ipRuleCounter['iprule_' + ipRuleCounter].portCounter++;
-	}
-
-	function addNewNATRule(currentScope, ipRuleCounter, defaultValues){
-		// let ipRuleNatRulesCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natRuleCounter;
-		// let tmp = angular.copy(infraLoadBalancerConfig.form.NATRule);
-		// let counterLabel = ipRuleCounter + '-' + ipRuleNatRulesCounter;
-		//
-		// tmp.name += counterLabel;
-		// tmp.entries.forEach((oneEntry) => {
-		// 	oneEntry.name += counterLabel;
-		// });
-		//
-		// //rIPRulePort
-		// tmp.entries[tmp.entries.length -1].onAction = function (id, value, form) {
-		// 	let count = id.replace('rIPRuleNatRule', '');
-		//
-		// 	for (let i = form.entries[3].entries[ipRuleCounter].entries[7].entries.length - 1; i >= 0; i--) {
-		// 		if (form.entries[3].entries[ipRuleCounter].entries[7].entries[i].name === 'ipRuleNATRuleGroup' + count) {
-		//
-		// 			//remove from formData
-		// 			form.entries[3].entries[ipRuleCounter].entries[7].entries[i].entries.forEach((oneEntry) => {
-		// 				delete form.formData[oneEntry.name];
-		// 			});
-		//
-		// 			//remove from formEntries
-		// 			form.entries[3].entries[ipRuleCounter].entries[7].entries.splice(i, 1);
-		//
-		// 			//if this is the last NAT Rule in the array, re-enable NAT Pool section
-		// 			if (form.entries[3].entries[ipRuleCounter].entries[7].entries.length === 1) {
-		// 				delete currentScope.form.entries[3].entries[ipRuleCounter].entries[8].description;
-		// 				currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = infraLoadBalancerConfig.form.ipRuleInput.entries[8].entries;
-		// 				currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries[0].onAction = function (id, value, form) {
-		// 					addNewNATPool(currentScope, ipRuleCounter);
-		// 				}
-		// 			}
-		//
-		// 			break;
-		// 		}
-		// 	}
-		// };
-		//
-		// if(defaultValues) {
-		// 	currentScope.form.formData['natRuleName' + counterLabel] = defaultValues.name;
-		// 	currentScope.form.formData['natRuleProtocol' + counterLabel] = defaultValues.protocol;
-		// 	currentScope.form.formData['natRuleFrontendPort' + counterLabel] = defaultValues.frontendPort;
-		// 	currentScope.form.formData['natRuleBackendPort' + counterLabel] = defaultValues.backendPort;
-		// 	currentScope.form.formData['natRuleIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
-		// 	currentScope.form.formData['natRuleEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
-		// }
-		//
-		// //show note in NAT Pools section and remove Add NAT Pool button
-		// currentScope.form.entries[3].entries[ipRuleCounter].entries[8].description = {
-		// 	type: 'warning',
-		// 	content: "<strong>Note: </strong> You will not be able to add any NAT Pools since you added a NAT Rule. Remove all NAT Rules to enable adding NAT Pools."
-		// };
-		// currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries = [];
-		//
-		// if (currentScope.form && currentScope.form.entries) {
-		// 	currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries.length - 1, 0, tmp);
-		// }
-		// currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natRuleCounter++;
-	}
-
-	function addNewNATPool(currentScope, ipRuleCounter, defaultValues){
-		// let ipRuleNatPoolsCounter = currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natPoolCounter;
-		// let tmp = angular.copy(infraLoadBalancerConfig.form.NATPool);
-		// let counterLabel = ipRuleCounter + '-' + ipRuleNatPoolsCounter;
-		//
-		// tmp.name += counterLabel;
-		// tmp.entries.forEach((oneEntry) => {
-		// 	oneEntry.name += counterLabel;
-		// });
-		//
-		// //rIPRulePort
-		// tmp.entries[tmp.entries.length -1].onAction = function (id, value, form) {
-		// 	let count = id.replace('rIPRuleNatPool', '');
-		//
-		// 	for (let i = form.entries[3].entries[ipRuleCounter].entries[8].entries.length - 1; i >= 0; i--) {
-		// 		if (form.entries[3].entries[ipRuleCounter].entries[8].entries[i].name === 'ipRuleNATPoolGroup' + count) {
-		//
-		// 			//remove from formData
-		// 			form.entries[3].entries[ipRuleCounter].entries[8].entries[i].entries.forEach((oneEntry) => {
-		// 				delete form.formData[oneEntry.name];
-		// 			});
-		//
-		// 			//remove from formEntries
-		// 			form.entries[3].entries[ipRuleCounter].entries[8].entries.splice(i, 1);
-		//
-		// 			//if this is the last NAT Pool in the array, re-enable NAT Rule section
-		// 			if (form.entries[3].entries[ipRuleCounter].entries[8].entries.length === 1) {
-		// 				delete currentScope.form.entries[3].entries[ipRuleCounter].entries[7].description;
-		// 				currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = infraLoadBalancerConfig.form.ipRuleInput.entries[7].entries;
-		// 				currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries[0].onAction = function (id, value, form) {
-		// 					addNewNATRule(currentScope, ipRuleCounter);
-		// 				}
-		// 			}
-		//
-		// 			break;
-		// 		}
-		// 	}
-		// };
-		//
-		// if(defaultValues) {
-		// 	currentScope.form.formData['natPoolName' + counterLabel] = defaultValues.name;
-		// 	currentScope.form.formData['natPoolProtocol' + counterLabel] = defaultValues.protocol;
-		// 	currentScope.form.formData['natPoolFrontendPort' + counterLabel] = defaultValues.frontendPortRangeStart + "-" + defaultValues.frontendPortRangeEnd;
-		// 	currentScope.form.formData['natPoolBackendPort' + counterLabel] = defaultValues.backendPort;
-		// 	currentScope.form.formData['natPoolIdleTimeout' + counterLabel] = defaultValues.idleTimeout;
-		// 	currentScope.form.formData['natPoolEnableFloatingIP' + counterLabel] = defaultValues.enableFloatingIP;
-		// }
-		//
-		// //show note in NAT Rules section and remove Add NAT Rule button
-		// currentScope.form.entries[3].entries[ipRuleCounter].entries[7].description = {
-		// 	type: 'warning',
-		// 	content: "<strong>Note: </strong> You will not be able to add any NAT Rules since you added a NAT Pool. Remove all NAT Pools to enable adding NAT Rules."
-		// };
-		// currentScope.form.entries[3].entries[ipRuleCounter].entries[7].entries = [];
-		//
-		// if (currentScope.form && currentScope.form.entries) {
-		// 	currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries.splice(currentScope.form.entries[3].entries[ipRuleCounter].entries[8].entries.length - 1, 0, tmp);
-		// }
-		// currentScope.ipRuleCounter['iprule_' + ipRuleCounter].natPoolCounter++;
-	}
-
-	function addNewIpRule(currentScope, subnets, publicIps, oneDefaultIPRuleValue) {
-		// let ipRuleCounter = Object.keys(currentScope.ipRuleCounter).length;
-		// let tmp = angular.copy(infraLoadBalancerConfig.form.ipRuleInput);
-		// tmp.name += ipRuleCounter;
-		// tmp.entries.forEach((oneipRuleEntry) => {
-		// 	let originalName = oneipRuleEntry.name;
-		// 	oneipRuleEntry.name += ipRuleCounter;
-		// });
-		//
-		// currentScope.closeModalUsingJs = function(){
-		// 	currentScope.modalInstance.close();
-		// };
-		// closeModalUsingJs = currentScope.closeModalUsingJs;
-		//
-		// tmp.entries[5].value = angular.copy(subnets);
-		// if(tmp.entries[5].value.length > 0){
-		// 	tmp.entries[5].value[0].selected = true;
-		// }
-		// else if (tmp.entries[5].value.length === 0) {
-		// 	tmp.entries[5].fieldMsg = `<strong style="color:red">No subnets detected in this resource group! </strong> <a onclick="closeModalUsingJs()" href = "#/infra-networks?group=${currentScope.selectedGroup.name}">Click here</a> to create a new Network with subnets.`;
-		// 	tmp.entries[5].disabled = true;
-		// }
-		//
-		// tmp.entries[4].value = angular.copy(publicIps);
-		// if(tmp.entries[4].value.length > 0){
-		// 	tmp.entries[4].value[0].selected = true;
-		// }
-		// else if (tmp.entries[4].value.length === 0) {
-		// 	tmp.entries[4].fieldMsg = `<strong style="color:red">No public IPs detected in this resource group! </strong> <a onclick="closeModalUsingJs()" href = "#/infra-ip?group=${currentScope.selectedGroup.name}">Click here</a> to create a Public IP.`;
-		// 	tmp.entries[4].disabled = true;
-		// }
-		//
-		// //ports
-		// tmp.entries[6].entries[0].onAction = function (id, value, form) {
-		// 	addNewPort(currentScope, ipRuleCounter);
-		// };
-		//
-		// //nat rules
-		// tmp.entries[7].entries[0].onAction = function (id, value, form) {
-		// 	addNewNATRule(currentScope, ipRuleCounter);
-		// };
-		//
-		// //nat pool
-		// tmp.entries[8].entries[0].onAction = function (id, value, form) {
-		// 	addNewNATPool(currentScope, ipRuleCounter);
-		// };
-		//
-		// //delete rule
-		// tmp.entries[9].onAction = function (id, value, form) {
-		// 	let count = parseInt(id.replace('rIpRule', ''));
-		// 	for (let i = form.entries[3].entries.length - 1; i >= 0; i--) {
-		// 		if (form.entries[3].entries[i].name === 'ipRuleGroup' + count) {
-		//
-		// 			for (let j = form.entries[3].entries[i].entries[6].entries.length - 1; j >= 0; j--) {
-		// 				//remove ports from formData
-		// 				if (form.entries[3].entries[i].entries[6] &&
-		// 					form.entries[3].entries[i].entries[6].entries &&
-		// 					form.entries[3].entries[i].entries[6].entries[j] &&
-		// 					form.entries[3].entries[i].entries[6].entries[j].name === 'ipRulePortsGroup' + count) {
-		// 					form.entries[3].entries[i].entries[6].entries[j].entries.forEach((oneEntry) => {
-		// 						delete form.formData[oneEntry.name];
-		// 					});
-		// 				}
-		//
-		// 				//remove NAT Rules from formData
-		// 				if (form.entries[3].entries[i].entries[7] &&
-		// 					form.entries[3].entries[i].entries[7].entries &&
-		// 					form.entries[3].entries[i].entries[7].entries[j] &&
-		// 					form.entries[3].entries[i].entries[7].entries[j].name === 'ipRuleNATRuleGroup' + count) {
-		// 					form.entries[3].entries[i].entries[7].entries[j].entries.forEach((oneEntry) => {
-		// 						delete form.formData[oneEntry.name];
-		// 					});
-		// 				}
-		//
-		// 				//remove NAT Pools from formData
-		// 				if (form.entries[3].entries[i].entries[8] &&
-		// 					form.entries[3].entries[i].entries[8].entries &&
-		// 					form.entries[3].entries[i].entries[8].entries[j] &&
-		// 					form.entries[3].entries[i].entries[8].entries[j].name === 'ipRuleNATPoolGroup' + count) {
-		// 					form.entries[3].entries[i].entries[8].entries[j].entries.forEach((oneEntry) => {
-		// 						delete form.formData[oneEntry.name];
-		// 					});
-		// 				}
-		// 			}
-		//
-		// 			//remove from formData
-		// 			for (let fieldname in form.formData) {
-		// 				if (['ipRuleName' + count].indexOf(fieldname) !== -1) {
-		// 					delete form.formData[fieldname];
-		// 				}
-		// 			}
-		//
-		// 			//remove from formEntries
-		// 			form.entries[3].entries.splice(i, 1);
-		// 			break;
-		// 		}
-		// 	}
-		//
-		// 	delete currentScope.ipRuleCounter['iprule_' + ipRuleCounter];
-		// };
-		//
-		// currentScope.ipRuleCounter['iprule_' + ipRuleCounter] = {
-		// 	portCounter: 0,
-		// 	natPoolCounter: 0,
-		// 	natRuleCounter: 0
-		// };
-		//
-		// if (currentScope.form && currentScope.form.entries) {
-		// 	currentScope.form.entries[3].entries.splice(currentScope.form.entries[3].entries.length - 1, 0, tmp);
-		// }
-		//
-		// if(oneDefaultIPRuleValue && oneDefaultIPRuleValue.config){
-		// 	//rule name
-		// 	currentScope.form.formData['ipRuleName' + ipRuleCounter] = oneDefaultIPRuleValue.name;
-		//
-		// 	//priate ip allocation method
-		// 	currentScope.form.formData['privateIpAllocationMethod' + ipRuleCounter] = oneDefaultIPRuleValue.config.privateIPAllocationMethod;
-		// 	let privateIPAllocationEntry = infraLoadBalancerConfig.form.ipRuleInput.entries.find((oneEntry) => {
-		// 		return oneEntry.name === 'privateIpAllocationMethod';
-		// 	});
-		// 	if(privateIPAllocationEntry && privateIPAllocationEntry.onAction) {
-		// 		privateIPAllocationEntry.onAction('privateIpAllocationMethod' + ipRuleCounter, currentScope.form.formData['privateIpAllocationMethod' + ipRuleCounter], currentScope.form);
-		// 	}
-		//
-		// 	//private ip address, if any
-		// 	if(oneDefaultIPRuleValue.config && oneDefaultIPRuleValue.config.privateIpAddress) {
-		// 		currentScope.form.formData['privateIpAddress' + ipRuleCounter] = oneDefaultIPRuleValue.config.privateIpAddress;
-		// 	}
-		//
-		// 	//rule isPublic or not
-		// 	currentScope.form.formData['isPublic' + ipRuleCounter] = oneDefaultIPRuleValue.config.isPublic;
-		//
-		// 	let ipRulesGroup = currentScope.form.entries.find((oneEntry) => {
-		// 		return oneEntry.label === 'IP Rules';
-		// 	});
-		//
-		// 	if(ipRulesGroup && ipRulesGroup.entries) {
-		// 		let currentIpRule = ipRulesGroup.entries.find((oneEntry) => {
-		// 			return oneEntry.name === `ipRuleGroup${ipRuleCounter}`;
-		// 		});
-		//
-		// 		if(currentIpRule && currentIpRule.entries) {
-		// 			let currentIsPublicSwitch = currentIpRule.entries.find((oneEntry) => {
-		// 				return oneEntry.name === `isPublic${ipRuleCounter}`;
-		// 			});
-		//
-		// 			if(currentIsPublicSwitch) {
-		// 				currentIsPublicSwitch.value = oneDefaultIPRuleValue.config.isPublic;
-		// 				currentIsPublicSwitch.onAction('isPublic' + ipRuleCounter, currentScope.form.formData['isPublic' + ipRuleCounter], currentScope.form);
-		// 			}
-		// 		}
-		// 	}
-		//
-		// 	//public ip address if any
-		// 	if(oneDefaultIPRuleValue.config.isPublic && oneDefaultIPRuleValue.config.publicIpAddress && oneDefaultIPRuleValue.config.publicIpAddress.id) {
-		// 		if(publicIps && Array.isArray(publicIps) && publicIps.length > 0) {
-		// 			let foundIp = publicIps.find((onePublicIp) => {
-		// 				return onePublicIp.v === oneDefaultIPRuleValue.config.publicIpAddress.id;
-		// 			});
-		//
-		// 			if(foundIp) {
-		// 				currentScope.form.formData['publicIpAddressId' + ipRuleCounter] = foundIp.v;
-		// 			}
-		// 		}
-		// 	}
-		// 	//subnet if any
-		// 	else if(!oneDefaultIPRuleValue.config.isPublic && oneDefaultIPRuleValue.config.subnet && oneDefaultIPRuleValue.config.subnet.id) {
-		// 		if(subnets && Array.isArray(subnets) && subnets.length > 0) {
-		// 			let foundSubnet = subnets.find((oneSubnet) => {
-		// 				return oneSubnet.v === oneDefaultIPRuleValue.config.subnet.id;
-		// 			});
-		//
-		// 			if(foundSubnet) {
-		// 				currentScope.form.formData['subnetId' + ipRuleCounter] = foundSubnet.v;
-		// 			}
-		// 		}
-		// 	}
-		//
-		// 	if(oneDefaultIPRuleValue.ports && Array.isArray(oneDefaultIPRuleValue.ports) && oneDefaultIPRuleValue.ports.length > 0){
-		// 		oneDefaultIPRuleValue.ports.forEach((oneDefaultPort) => {
-		// 			addNewPort(currentScope, ipRuleCounter, oneDefaultPort);
-		// 		});
-		// 	}
-		// 	if(oneDefaultIPRuleValue.natPools && Array.isArray(oneDefaultIPRuleValue.natPools) && oneDefaultIPRuleValue.natPools.length > 0) {
-		// 		oneDefaultIPRuleValue.natPools.forEach((oneDefaultPool) => {
-		// 			addNewNATPool(currentScope, ipRuleCounter, oneDefaultPool);
-		// 		});
-		// 	}
-		//
-		// 	if(oneDefaultIPRuleValue.natRules && Array.isArray(oneDefaultIPRuleValue.natRules) && oneDefaultIPRuleValue.natRules.length > 0) {
-		// 		oneDefaultIPRuleValue.natRules.forEach((oneDefaultRule) => {
-		// 			addNewNATRule(currentScope, ipRuleCounter, oneDefaultRule);
-		// 		});
-		// 	}
-		// }
-	}
-
-	function addNewAddressPool(currentScope, oneAddressPoolValue) {
-		// let addressPoolCounter = currentScope.addressPoolCounter;
-		// let tmp = angular.copy(infraLoadBalancerConfig.form.addressPoolInput);
-		// tmp.name += addressPoolCounter;
-		// tmp.entries[0].name += addressPoolCounter;
-		// tmp.entries[1].name += addressPoolCounter;
-		//
-		// tmp.entries[1].onAction = function (id, value, form) {
-		// 	let count = id.replace('rAddressPool', '');
-		//
-		// 	for (let i = form.entries[2].entries.length - 1; i >= 0; i--) {
-		// 		if (form.entries[2].entries[i].name === 'addressPoolGroup' + count) {
-		// 			//remove from formData
-		// 			for (let fieldname in form.formData) {
-		// 				if (['addressPoolName' + count].indexOf(fieldname) !== -1) {
-		// 					delete form.formData[fieldname];
-		// 				}
-		// 			}
-		//
-		// 			//clear all selected addressPools from all ipRules
-		// 			for (let k = 0; k < form.ipRuleTotalCount; k++) {
-		// 				for (let fieldData in form.formData) {
-		// 					let pattern = new RegExp(`portAddressPoolName${k}-[0-9]+`, 'g');
-		// 					if(fieldData.match(pattern)) {
-		// 						delete form.formData[fieldData];
-		// 					}
-		// 				}
-		// 			}
-		//
-		// 			//remove from formEntries
-		// 			form.entries[2].entries.splice(i, 1);
-		// 			break;
-		// 		}
-		// 	}
-		//
-		// 	//update form.availableAddressPools
-		// 	let tempArray = [];
-		// 	for (let i = 0; i < form.addressPoolCounter; i++) {
-		// 		if (form.formData['addressPoolName'+i]) {
-		// 			tempArray.push({
-		// 				'v': form.formData['addressPoolName'+i],
-		// 				'l': form.formData['addressPoolName'+i]
-		// 			});
-		// 		}
-		// 	}
-		// 	form.availableAddressPools = angular.copy(tempArray);
-		//
-		// 	//refresh array of address pool to choose from in all ipRules
-		// 	form.entries[3].entries.forEach((oneIPRuleGroup) => {
-		// 		if (['ipRuleGroup'].indexOf(oneIPRuleGroup.name)) {
-		// 			if (oneIPRuleGroup.entries && oneIPRuleGroup.entries[6] && oneIPRuleGroup.entries[6].entries) {
-		// 				oneIPRuleGroup.entries[6].entries.forEach((oneEntry) => {
-		// 					if(oneEntry.entries && oneEntry.entries[1]) {
-		// 						oneEntry.entries[1].value = form.availableAddressPools;
-		// 					}
-		// 				});
-		// 			}
-		// 		}
-		// 	});
-		//
-		// };
-		//
-		// if (currentScope.form && currentScope.form.entries) {
-		// 	currentScope.form.entries[2].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		// }
-		// else {
-		// 	// formConfig[5].tabs[7].entries.splice(currentScope.form.entries[2].entries.length - 1, 0, tmp);
-		// }
-		//
-		// currentScope.form.formData['addressPoolName' + addressPoolCounter] = oneAddressPoolValue;
-		// currentScope.form.addressPoolCounter = ++currentScope.addressPoolCounter;
-		// currentScope.form.entries[2].entries[0].entries[0].onAction('addressPoolName' + addressPoolCounter, currentScope.form.formData['addressPoolName' + addressPoolCounter], currentScope.form);
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error);
+			}
+			else {
+				currentScope.infraCertificates = [];
+				if (response.certificates && response.certificates.length > 0) {
+                    let currentTime = new Date().getTime();
+                    response.certificates.forEach((oneCertificate) => {
+                        if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
+							if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
+								oneCertificate.remainingDays = {};
+								oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
+							}
+							currentScope.infraCertificates.push(oneCertificate);
+                        }
+                    });
+				}
+			}
+		});
 	}
 
 	function addLoadBalancer(currentScope) {
-		// currentScope.addressPoolCounter = 0;
-		// currentScope.ipRuleCounter = {};
-		// currentScope.availableAddressPools = [];
-		//
-		// //load public ips
-		// loadAndReturnExtras(currentScope, (publicIps) => {
-		// 	//load subnets
-		// 	loadAndReturnSubnets(currentScope, (subnets) => {
-		//
-		// 		let options = {
-		// 			timeout: $timeout,
-		// 			form: {
-		// 				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
-		// 			},
-		// 			name: 'addLoadBalancer',
-		// 			label: 'Add New Load Balancer',
-		// 			actions: [
-		// 				{
-		// 					'type': 'submit',
-		// 					'label': "Create Load Balancer",
-		// 					'btn': 'primary',
-		// 					'action': function (formData) {
-		// 						let data = angular.copy(formData);
-		//
-		// 						let postOpts = {
-		// 							"method": "post",
-		// 							"routeName": "/dashboard/infra/extras",
-		// 							"params": {
-		// 								"infraId": currentScope.currentSelectedInfra._id,
-		// 								"technology": "vm"
-		// 							},
-		// 							"data": {
-		// 								"params": populatePostData(currentScope, data)
-		// 							}
-		// 						};
-		//
-		// 						overlayLoading.show();
-		// 						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-		// 							overlayLoading.hide();
-		// 							if (error) {
-		// 								currentScope.form.displayAlert('danger', error.message);
-		// 							}
-		// 							else {
-		// 								currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-		// 								currentScope.modalInstance.close();
-		// 								$timeout(() => {
-		// 									listLoadBalancers(currentScope, currentScope.selectedGroup);
-		// 								}, 2000);
-		// 							}
-		// 						});
-		// 					}
-		// 				},
-		// 				{
-		// 					'type': 'reset',
-		// 					'label': 'Cancel',
-		// 					'btn': 'danger',
-		// 					'action': function () {
-		// 						delete currentScope.form.formData;
-		// 						currentScope.modalInstance.close();
-		// 					}
-		// 				}
-		// 			]
-		// 		};
-		//
-		// 		options.form.entries[2].entries[0].onAction = function (id, value, form) {
-		// 			addNewAddressPool(currentScope);
-		// 		};
-		//
-		// 		options.form.entries[3].entries[0].onAction = function (id, value, form) {
-		// 			addNewIpRule(currentScope, subnets, publicIps);
-		// 			form.ipRuleTotalCount = Object.keys(currentScope.ipRuleCounter).length;
-		// 		};
-		//
-		// 		//set value of region to selectedRegion
-		// 		options.form.entries[1].value = currentScope.selectedGroup.region;
-		//
-		// 		buildFormWithModal(currentScope, $modal, options);
-		// 	});
-		// });
+		currentScope.ruleCounter = {};
+
+		let options = {
+			timeout: $timeout,
+			form: {
+				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
+			},
+			name: 'addLoadBalancer',
+			label: 'Add New Load Balancer',
+			actions: [
+				{
+					'type': 'submit',
+					'label': "Create Load Balancer",
+					'btn': 'primary',
+					'action': function (formData) {
+						let data = angular.copy(formData);
+
+						let postOpts = {
+							"method": "post",
+							"routeName": "/dashboard/infra/extras",
+							"params": {
+								"infraId": currentScope.currentSelectedInfra._id,
+								"technology": "vm"
+							},
+							"data": {
+								"params": populatePostData(currentScope, data)
+							}
+						};
+
+						// overlayLoading.show();
+						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+						// 	overlayLoading.hide();
+						// 	if (error) {
+						// 		currentScope.form.displayAlert('danger', error.message);
+						// 	}
+						// 	else {
+						// 		currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+						// 		currentScope.modalInstance.close();
+						// 		$timeout(() => {
+						// 			listLoadBalancers(currentScope, currentScope.selectedGroup);
+						// 		}, 2000);
+						// 	}
+						// });
+					}
+				},
+				{
+					'type': 'reset',
+					'label': 'Cancel',
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.form.formData;
+						currentScope.modalInstance.close();
+					}
+				}
+			]
+		};
+
+		//set value of region to selectedRegion
+		options.form.entries[1].value = currentScope.selectedRegion;
+
+		options.form.entries[2].entries[0].onAction = function (id, value, form) {
+			addNewRule(form, currentScope);
+		}
+
+		buildFormWithModal(currentScope, $modal, options);
+	}
+
+	function addNewRule(form, currentScope) {
+		let ruleCounter = currentScope.ruleCounter
+		var tmp = angular.copy(infraNetworkConfig.form.ruleInput);
+
+		tmp.name += addressCounter;
+		tmp.entries[0].name += addressCounter;
+		tmp.entries[1].name += addressCounter;
+
+		tmp.entries[1].onAction = function (id, value, form) {
+			var count = parseInt(id.replace('rAddress', ''));
+
+			for (let i = form.entries[3].entries.length -1; i >= 0; i--) {
+				if (form.entries[3].entries[i].name === 'addressGroup' + count) {
+					//remove from formData
+					for (var fieldname in form.formData) {
+						if (['addressIp' + count].indexOf(fieldname) !== -1) {
+							delete form.formData[fieldname];
+						}
+					}
+					//remove from formEntries
+					form.entries[3].entries.splice(i, 1);
+					break;
+				}
+			}
+		};
+
+		if (form && form.entries) {
+			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
+		}
+		else {
+			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
+		}
+		currentScope.addressCounter++;
 	}
 
 	function editLoadBalancer(currentScope, originalLoadBalancer) {
@@ -1314,7 +387,111 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		// });
 	}
 
-	function listLoadBalancers(currentScope, oneGroup) {
+	function listLoadBalancers(currentScope, oneRegion) {
+		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+
+		//save selected group in scope to be accessed by other functions
+		currentScope.selectedRegion = oneRegion;
+
+		let response = [
+               {
+                   "region": 'us-east-1',
+                   "type": "classic",
+                   "id": "elb-internal-ragheb",
+                   "name": "elb-internal-ragheb",
+                   "mode": "internal",
+                   "networkId": "vpc-a5e482dd",
+                   "domain": "internal-elb-internal-ragheb-408965366.us-east-2.elb.amazonaws.com",
+                   "securityGroupIds": [
+                       "sg-ca3421a3"
+                   ],
+                   "createdTime": "2018-08-14T16:35:19.220Z",
+                   "healthProbe": {
+                       "healthProbePath": "HTTP:80/index.html",
+                       "healthProbeInterval": 30,
+                       "healthProbeTimeout": 5,
+                       "maxFailureAttempts": 2,
+                       "maxSuccessAttempts": 10
+                   },
+                   "rules": [
+                       {
+                           "backendProtocol": "HTTP",
+                           "backendPort": 80,
+                           "frontendProtocol": "HTTP",
+                           "frontendPPort": 80
+                       },
+                       {
+                           "backendProtocol": "HTTPS",
+                           "backendPort": 443,
+                           "frontendProtocol": "HTTPS",
+                           "frontendPPort": 443,
+                           "certificate": "arn:"
+                       }
+                   ],
+                   "zones": [
+                       {
+                           "name": "us-east-1a",
+                           "subnetId": "subnet-97c7abf3"
+                       },
+                       {
+                           "name": "us-east-1b",
+                           "subnetId": "subnet-1336e83c"
+                       }
+                   ],
+                   "instances": [
+                       {
+                           "id": "i-0bb24a3de714f9fba",
+                           "state": "OutOfService"
+                       }
+                   ]
+               },
+               {
+                   "type": "classic",
+                   "region": 'us-east-1',
+                   "id": "test-lb-ragheb",
+                   "name": "test-lb-ragheb",
+                   "mode": "internet-facing",
+                   "networkId": "vpc-957300fc",
+                   "domain": "test-lb-ragheb-69863322.us-east-2.elb.amazonaws.com",
+                   "securityGroupIds": [
+                       "sg-ca3421a3"
+                   ],
+                   "createdTime": "2018-08-14T16:25:32.560Z",
+                   "healthProbe": {
+                       "healthProbePath": "HTTP:80/index.html",
+                       "healthProbeInterval": 30,
+                       "healthProbeTimeout": 5,
+                       "maxFailureAttempts": 2,
+                       "maxSuccessAttempts": 10
+                   },
+                   "rules": [
+                       {
+                           "backendProtocol": "HTTP",
+                           "backendPort": 80,
+                           "frontendProtocol": "HTTP",
+                           "frontendPPort": 80
+                       }
+                   ],
+                   "zones": [
+                       {
+                           "name": "us-east-1a",
+                           "subnetId": "subnet-97c7abf3"
+                       },
+                       {
+                           "name": "us-east-1b",
+                           "subnetId": "subnet-1336e83c"
+                       }
+                   ],
+                   "instances": [
+                       {
+                           "id": "i-0bb24a3de714f9fba",
+                           "state": "OutOfService"
+                       }
+                   ]
+               }
+           ];
+
+		   currentScope.loadBalancers = response;
 		// let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
 		//
 		// //save selected group in scope to be accessed by other functions
@@ -1385,222 +562,6 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		// 		}
 		// 	}
 		// });
-	}
-
-	function populatePostData(currentScope, data) {
-		// let postData = {
-		// 	name: data.name,
-		// 	region: data.region,
-		// 	section: 'loadBalancer',
-		// 	group: currentScope.selectedGroup.name,
-		// 	addressPools: [],
-		// 	rules: []
-		// };
-		//
-		// // populate postData
-		// Object.keys(data).forEach((oneEntry) => {
-		// 	if(oneEntry.match(/addressPoolName[0-9]+/g)) {
-		// 		postData.addressPools.push({ name: data[oneEntry] });
-		// 	}
-		//
-		// 	else if(oneEntry.match(/ipRuleName[0-9]+/g)) {
-		// 		let ipRuleCount = oneEntry.replace('ipRuleName', '');
-		//
-		// 		let oneRule = {
-		// 			name: data[oneEntry],
-		// 			config: {},
-		// 			ports: [],
-		// 			natRules: [],
-		// 			natPools: []
-		// 		};
-		//
-		// 		let rulePortRegExp = new RegExp(`portName${ipRuleCount}-[0-9]+`, 'g');
-		// 		let ruleNatRuleRegExp = new RegExp(`natRuleName${ipRuleCount}-[0-9]+`, 'g');
-		// 		let ruleNatPoolRegExp = new RegExp(`natPoolName${ipRuleCount}-[0-9]+`, 'g');
-		//
-		// 		// populate config and ports/rules of one rule
-		// 		Object.keys(data).forEach((oneEntry) => {
-		//
-		// 			switch(oneEntry) {
-		// 				case `privateIpAllocationMethod${ipRuleCount}`:
-		// 					oneRule.config.privateIpAllocationMethod = data[oneEntry];
-		// 					break;
-		// 				case `isPublic${ipRuleCount}`:
-		// 					oneRule.config.isPublic = data[oneEntry];
-		// 					break;
-		// 				case `privateIpAddress${ipRuleCount}`:
-		// 					oneRule.config.privateIpAddress = data[oneEntry];
-		// 					break;
-		// 				case `publicIpAddressId${ipRuleCount}`:
-		// 					oneRule.config.publicIpAddress = { id: data[oneEntry] };
-		// 					break;
-		// 				case `subnetId${ipRuleCount}`:
-		// 					oneRule.config.subnet = { id: data[oneEntry] };
-		// 					break;
-		// 				default:
-		// 					break;
-		// 			}
-		//
-		// 			if(oneEntry.match(rulePortRegExp)) {
-		// 				oneRule.ports.push(buildLoadBalancerPort(data, oneEntry, ipRuleCount));
-		// 			}
-		// 			else if(oneEntry.match(ruleNatRuleRegExp)) {
-		// 				oneRule.natRules.push(buildLoadBalancerNatRule(data, oneEntry, ipRuleCount));
-		// 			}
-		// 			else if(oneEntry.match(ruleNatPoolRegExp)) {
-		// 				oneRule.natPools.push(buildLoadBalancerNatPool(data, oneEntry, ipRuleCount));
-		// 			}
-		// 		});
-		//
-		// 		// extra assurance
-		// 		if(oneRule.config.isPublic) {
-		// 			delete oneRule.config.subnet;
-		// 		}
-		// 		else {
-		// 			delete oneRule.config.publicIpAddress;
-		// 		}
-		//
-		// 		if (oneRule.ports.length === 0) {
-		// 			delete oneRule.ports;
-		// 		}
-		// 		if (oneRule.natRules.length === 0) {
-		// 			delete oneRule.natRules;
-		// 		}
-		// 		if (oneRule.natPools.length === 0) {
-		// 			delete oneRule.natPools;
-		// 		}
-		//
-		// 		postData.rules.push(oneRule);
-		// 	}
-		// });
-		//
-		// return postData;
-	}
-
-	function buildLoadBalancerPort(data, oneEntry, ipRuleCount) {
-		// let ipRulePortCount = oneEntry.replace(`portName${ipRuleCount}-`, '');
-		// let onePort = {
-		// 	name: data[oneEntry]
-		// };
-		//
-		// // collect one port config
-		// Object.keys(data).forEach((oneEntry) => {
-		// 	switch(oneEntry) {
-		// 		case `portProtocol${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.protocol = data[oneEntry];
-		// 			break;
-		// 		case `portTarget${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.target = data[oneEntry];
-		// 			break;
-		// 		case `portPublished${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.published = data[oneEntry];
-		// 			break;
-		// 		case `portIdleTimeout${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.idleTimeout = data[oneEntry];
-		// 			break;
-		// 		case `portLoadDistribution${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.loadDistribution = data[oneEntry];
-		// 			break;
-		// 		case `portEnableFloatingIP${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.enableFloatingIP = data[oneEntry];
-		// 			break;
-		// 		case `portAddressPoolName${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.addressPoolName = data[oneEntry];
-		// 			break;
-		// 		case `portHealthProbePort${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.healthProbePort = data[oneEntry];
-		// 			break;
-		// 		case `portHealthProbeProtocol${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.healthProbeProtocol = data[oneEntry];
-		// 			break;
-		// 		case `portHealthProbeRequestPath${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.healthProbeRequestPath = data[oneEntry];
-		// 			break;
-		// 		case `portMaxFailureAttempts${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.maxFailureAttempts = data[oneEntry];
-		// 			break;
-		// 		case `portHealthProbeInterval${ipRuleCount}-${ipRulePortCount}`:
-		// 			onePort.healthProbeInterval = data[oneEntry];
-		// 			break;
-		// 		default:
-		// 			break;
-		// 	}
-		// });
-		//
-		// return onePort;
-	}
-
-	function buildLoadBalancerNatRule(data, oneEntry, ipRuleCount) {
-		// let ipRuleNatRuleCount = oneEntry.replace(`natRuleName${ipRuleCount}-`, '');
-		// let oneNatRule = {
-		// 	name: data[oneEntry]
-		// };
-		//
-		// // collect one nat rule config
-		// Object.keys(data).forEach((oneEntry) => {
-		// 	switch(oneEntry) {
-		// 		case `natRuleBackendPort${ipRuleCount}-${ipRuleNatRuleCount}`:
-		// 			oneNatRule.backendPort = data[oneEntry];
-		// 			break;
-		// 		case `natRuleFrontendPort${ipRuleCount}-${ipRuleNatRuleCount}`:
-		// 			oneNatRule.frontendPort = data[oneEntry];
-		// 			break;
-		// 		case `natRuleProtocol${ipRuleCount}-${ipRuleNatRuleCount}`:
-		// 			oneNatRule.protocol = data[oneEntry];
-		// 			break;
-		// 		case `natRuleIdleTimeout${ipRuleCount}-${ipRuleNatRuleCount}`:
-		// 			oneNatRule.idleTimeout = data[oneEntry];
-		// 			break;
-		// 		case `natRuleEnableFloatingIP${ipRuleCount}-${ipRuleNatRuleCount}`:
-		// 			oneNatRule.enableFloatingIP = data[oneEntry];
-		// 			break;
-		// 		default:
-		// 			break;
-		// 	}
-		// });
-		//
-		// return oneNatRule;
-	}
-
-	function buildLoadBalancerNatPool(data, oneEntry, ipRuleCount) {
-		// let ipRuleNatPoolCount = oneEntry.replace(`natPoolName${ipRuleCount}-`, '');
-		// let oneNatPool = {
-		// 	name: data[oneEntry]
-		// };
-		//
-		// // collect one nat pool config
-		// Object.keys(data).forEach((oneEntry) => {
-		// 	switch(oneEntry) {
-		// 		case `natPoolBackendPort${ipRuleCount}-${ipRuleNatPoolCount}`:
-		// 			oneNatPool.backendPort = data[oneEntry];
-		// 			break;
-		// 		case `natPoolProtocol${ipRuleCount}-${ipRuleNatPoolCount}`:
-		// 			oneNatPool.protocol = data[oneEntry];
-		// 			break;
-		// 		case `natPoolEnableFloatingIP${ipRuleCount}-${ipRuleNatPoolCount}`:
-		// 			oneNatPool.enableFloatingIP = data[oneEntry];
-		// 			break;
-		// 		case `natPoolFrontendPort${ipRuleCount}-${ipRuleNatPoolCount}`:
-		// 			let range = data[oneEntry].split('-').map(oneRange => parseInt(oneRange));
-		// 			if(range[0] < range[1]) {
-		// 				oneNatPool.frontendPortRangeStart = range[0];
-		// 				oneNatPool.frontendPortRangeEnd = range[1];
-		// 			}
-		// 			else {
-		// 				oneNatPool.frontendPortRangeStart = range[1];
-		// 				oneNatPool.frontendPortRangeEnd = range[0];
-		// 			}
-		//
-		// 			break;
-		// 		case `natPoolIdleTimeout${ipRuleCount}-${ipRuleNatPoolCount}`:
-		// 			oneNatPool.idleTimeout = data[oneEntry];
-		// 			break;
-		// 		default:
-		// 			break;
-		// 	}
-		// });
-		//
-		// return oneNatPool;
 	}
 
 	return {

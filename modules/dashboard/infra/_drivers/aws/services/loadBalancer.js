@@ -33,6 +33,14 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'required': true
 				},
 				{
+					'name': 'type',
+					'label': 'Type',
+					'type': 'select',
+					'value': [{"v": "interal", "l": "Internal", "selected": true}, {"v": "internet-facing", "l": "Internet-Facing"}],
+					'fieldMsg': 'Select whether the loadbalancer will be internal or internet-facing.',
+					'required': true
+				},
+				{
 					'type': 'accordion',
 					'name': 'rules',
 					'label': 'Rules',
@@ -45,11 +53,59 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					]
 				},
 				{
+					'type': 'accordion',
+					'name': 'healthProbe',
+					'label': 'Health Probe Parameters',
+					'entries': [
+						{
+							'name': 'maxFailureAttempts',
+							'label': 'Max Failure Attempts',
+							'type': 'number',
+							'value': "",
+							'fieldMsg': 'Select an amount for max failure attempts.',
+							'required': true
+						},
+						{
+							'name': 'maxSuccessAttempts',
+							'label': 'Max Success Attempts',
+							'type': 'number',
+							'value': "",
+							'fieldMsg': 'Select an amount for max success attempts.',
+							'required': true
+						},
+						{
+							'name': 'healthProbeInterval',
+							'label': 'Health Probe Interval',
+							'type': 'number',
+							'value': "",
+							'fieldMsg': 'Select an interval amount in seconds.',
+							'required': true
+						},
+						{
+							'name': 'healthProbeTimeout',
+							'label': 'Health Probe Timeout',
+							'type': 'number',
+							'value': "",
+							'fieldMsg': 'Select an timeout amount in seconds.',
+							'required': true
+						},
+						{
+							'name': 'healthProbePath',
+							'label': 'Health Probe Path',
+							'type': 'text',
+							'value': "",
+							'fieldMsg': 'Enter a health probe path.',
+							'required': true
+						}
+					]
+				},
+				{
 					'type': 'uiselect',
 					'name': 'securityGroups',
 					'label': 'Security Groups',
 					'value': [],
 					'required': true,
+					'multiple': true,
 					'fieldMsg': 'Select at least one firewall.',
 				},
 				{
@@ -58,6 +114,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'label': 'Subnets',
 					'value': [],
 					'required': true,
+					'multiple': true,
 					'fieldMsg': 'Select at least one subnet.',
 				}
 			],
@@ -181,49 +238,14 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		});
 	}
 
-	function loadAndReturnSubnets(currentScope) {
-		// let listOptions = {
-		// 	method: 'get',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'id': currentScope.$parent.$parent.currentSelectedInfra._id,
-		// 		'region': currentScope.selectedRegion,
-		// 		'extras[]': ['certificates']
-		// 	}
-		// };
-		//
-		// overlayLoading.show();
-		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		currentScope.displayAlert('danger', error);
-		// 	}
-		// 	else {
-		// 		currentScope.infraCertificates = [];
-		// 		if (response.certificates && response.certificates.length > 0) {
-        //             let currentTime = new Date().getTime();
-        //             response.certificates.forEach((oneCertificate) => {
-        //                 if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
-		// 					if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
-		// 						oneCertificate.remainingDays = {};
-		// 						oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
-		// 					}
-		// 					currentScope.infraCertificates.push(oneCertificate);
-        //                 }
-        //             });
-		// 		}
-		// 	}
-		// });
-	}
-
-	function loadAndReturnSecurityGroups(currentScope, cb) {
+	function loadAndReturnExtras(currentScope, cb) {
 		let listOptions = {
 			method: 'get',
 			routeName: '/dashboard/infra/extras',
 			params: {
 				'id': currentScope.$parent.$parent.currentSelectedInfra._id,
 				'region': currentScope.selectedRegion,
-				'extras[]': ['securityGroups']
+				'extras[]': ['securityGroups', 'certificates', 'networks']
 			}
 		};
 
@@ -234,25 +256,45 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				currentScope.displayAlert('danger', error);
 			}
 			else {
+				//save certificates in scope
+				currentScope.infraCertificates = [];
+				if (response.certificates && response.certificates.length > 0) {
+                    let currentTime = new Date().getTime();
+                    response.certificates.forEach((oneCertificate) => {
+                        if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
+							if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
+								oneCertificate.remainingDays = {};
+								oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
+							}
+							currentScope.infraCertificates.push(oneCertificate);
+                        }
+                    });
+				}
+				//save security groups in scope
 				currentScope.infraSecurityGroups = [];
 				if (response.securityGroups && response.securityGroups.length > 0) {
 					currentScope.infraSecurityGroups = response.securityGroups;
 				}
+				//save subnets in scope
+				currentScope.infraSubnets = [];
+				if (response.networks && response.networks.length > 0) {
+					response.networks.forEach((oneNetwork, index) => {
+						currentScope.infraSubnets[index] = {};
+						currentScope.infraSubnets[index][oneNetwork.name] = [];
+						oneNetwork.subnets.forEach((oneSubNet) => {
+							currentScope.infraSubnets[index][oneNetwork.name].push({"name": oneSubNet.name, "id": oneSubNet.id});
+						});
+					});
+				}
 				return cb();
-				// else {
-				// 	// TODO: make the security groups field type html and write a message with a link to go add security group
-				//
-				// }
 			}
 		});
 	}
 
 	function addLoadBalancer(currentScope) {
 		currentScope.ruleCounter = 0;
-		loadAndReturnCertificates(currentScope);
-		loadAndReturnSubnets(currentScope);
 
-		loadAndReturnSecurityGroups(currentScope, () => {
+		loadAndReturnExtras(currentScope, () => {
 			let options = {
 				timeout: $timeout,
 				form: {
@@ -284,20 +326,20 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 								currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
 							}
 
-							// overlayLoading.show();
-							// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-							// 	overlayLoading.hide();
-							// 	if (error) {
-							// 		currentScope.form.displayAlert('danger', error.message);
-							// 	}
-							// 	else {
-							// 		currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-							// 		currentScope.modalInstance.close();
-							// 		$timeout(() => {
-							// 			listLoadBalancers(currentScope, currentScope.selectedGroup);
-							// 		}, 2000);
-							// 	}
-							// });
+							overlayLoading.show();
+							getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+								overlayLoading.hide();
+								if (error) {
+									currentScope.form.displayAlert('danger', error.message);
+								}
+								else {
+									currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+									currentScope.modalInstance.close();
+									$timeout(() => {
+										listLoadBalancers(currentScope, currentScope.selectedRegion);
+									}, 2000);
+								}
+							});
 						}
 					},
 					{
@@ -315,7 +357,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			//set value of region to selectedRegion
 			options.form.entries[1].value = currentScope.selectedRegion;
 
-			options.form.entries[2].entries[0].onAction = function (id, value, form) {
+			options.form.entries[3].entries[0].onAction = function (id, value, form) {
 				addNewRule(form, currentScope);
 			}
 
@@ -323,9 +365,17 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				addNewRule(currentScope.form, currentScope);
 
 				//populate securityGroups multiselect
-				console.log(currentScope);
 				currentScope.infraSecurityGroups.forEach((oneSG) => {
-					currentScope.form.entries[3].value.push({"v": oneSG.id, "l":oneSG.name});
+					currentScope.form.entries[5].value.push({"v": oneSG.id, "l":oneSG.name});
+				});
+
+				//populate subnets multiselect
+				currentScope.infraSubnets.forEach((oneSubnet) => {
+					Object.keys(oneSubnet).forEach((oneNetName) => {
+						oneSubnet[oneNetName].forEach((subnet) => {
+							currentScope.form.entries[6].value.push({"v": subnet.id, "l": oneNetName + ': ' + subnet.name});
+						});
+					});
 				});
 			});
 		});
@@ -347,8 +397,8 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		tmp.entries[5].onAction = function (id, value, form) {
 			var count = parseInt(id.replace('rRule', ''));
 
-			for (let i = form.entries[2].entries.length -1; i >= 0; i--) {
-				if (form.entries[2].entries[i].name === 'ruleGroup' + count) {
+			for (let i = form.entries[3].entries.length -1; i >= 0; i--) {
+				if (form.entries[3].entries[i].name === 'ruleGroup' + count) {
 					//remove from formData
 					for (var fieldname in form.formData) {
 
@@ -357,7 +407,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 						}
 					}
 					//remove from formEntries
-					form.entries[2].entries.splice(i, 1);
+					form.entries[3].entries.splice(i, 1);
 					currentScope.ruleCounter --;
 					break;
 				}
@@ -403,10 +453,10 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		}
 
 		if (form && form.entries) {
-			form.entries[2].entries.splice(form.entries[2].entries.length - 1, 0, tmp);
+			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
 		}
 		else {
-			form.entries[2].entries.splice(form.entries[2].entries.length - 1, 0, tmp);
+			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
 		}
 		currentScope.ruleCounter++;
 	}
@@ -640,6 +690,8 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 
 	function populatePostData(currentScope, data) {
 			let rulesArray = [];
+			let subnetsArray = [];
+			let securityGroupsArray = [];
 			let healthProbeOptions = {};
 
 			for (let i=0; i<currentScope.ruleCounter; i++) {
@@ -660,14 +712,22 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			healthProbeOptions.healthProbeTimeout = data.healthProbeTimeout;
 			healthProbeOptions.maxFailureAttempts = data.maxFailureAttempts;
 
+			data.securityGroups.forEach((oneSG) => {
+				securityGroupsArray.push(oneSG.v);
+			});
+
+			data.subnets.forEach((oneSubnet) => {
+				subnetsArray.push(oneSubnet.v);
+			});
+
 			return({
 				name: data.name,
 				region: data.region,
 				rules: rulesArray,
 				healthProbe: healthProbeOptions,
-				type: data.type ? "internal" : "internet-facing",
-				// securityGroups: data.securityGroups,
-				// subnets: data.subnets,
+				type: data.type,
+				securityGroups: securityGroupsArray,
+				subnets: subnetsArray
 			})
 	}
 

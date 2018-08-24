@@ -365,7 +365,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				'technology': 'vm',
 				'section': 'loadBalancer',
 				'region': currentScope.selectedRegion,
-				'id': oneLoadBalancer.id
+				'name': oneLoadBalancer.name
 			}
 		};
 

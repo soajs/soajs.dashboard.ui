@@ -125,16 +125,6 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				'label': 'New Rule ',
 				'entries': [
 					{
-						'name': 'backendPort',
-						'label': 'Backend Port',
-						'type': 'number',
-						'value': '',
-						'required': true,
-						'tooltip': 'Enter a backend port number.',
-						'fieldMsg': 'Enter a backend port number.',
-						'placeholder': "*"
-					},
-					{
 						'name': 'backendProtocol',
 						'label': 'Backend Protocol',
 						'type': 'select',
@@ -145,13 +135,13 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 						'placeholder': ""
 					},
 					{
-						'name': 'frontendPort',
-						'label': 'Frontend Port',
+						'name': 'backendPort',
+						'label': 'Backend Port',
 						'type': 'number',
 						'value': '',
 						'required': true,
-						'tooltip': 'Enter a frontend port number.',
-						'fieldMsg': 'Enter a frontend port number.',
+						'tooltip': 'Enter a backend port number.',
+						'fieldMsg': 'Enter a backend port number.',
 						'placeholder': "*"
 					},
 					{
@@ -163,6 +153,16 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 						'tooltip': 'Select a frontend protocol.',
 						'fieldMsg': 'Select a frontend protocol',
 						'placeholder': ""
+					},
+					{
+						'name': 'frontendPort',
+						'label': 'Frontend Port',
+						'type': 'number',
+						'value': '',
+						'required': true,
+						'tooltip': 'Enter a frontend port number.',
+						'fieldMsg': 'Enter a frontend port number.',
+						'placeholder': "*"
 					},
 					{
 						'name': 'certificate',
@@ -300,7 +300,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				form: {
 					"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
 				},
-				name: 'addLoadBalancer',
+				name: 'awsAddLoadBalancer',
 				label: 'Add New Load Balancer',
 				actions: [
 					{
@@ -419,7 +419,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		};
 		closeModalUsingJs = currentScope.closeModalUsingJs;
 
-		tmp.entries[3].onAction = function (id, value, form) {
+		tmp.entries[2].onAction = function (id, value, form) {
 			if (value === "https") {
 				currentScope.infraCertificates.forEach((oneCert) => {
 					tmp.entries[4].value.push({

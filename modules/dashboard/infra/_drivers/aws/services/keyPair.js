@@ -211,7 +211,7 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 						oneKeyPair.layers = [];
 						if(currentScope.vmlayers && Array.isArray(currentScope.vmlayers)) {
 							currentScope.vmlayers.forEach((oneVmInstance) => {
-								if(oneVmInstance.keyPair && oneVmInstance.keyPair === oneKeyPair.id) {
+								if(oneVmInstance.keyPair && oneVmInstance.keyPair === oneKeyPair.name) {
 									let foundLayer = oneKeyPair.layers.find((oneEntry) => { return oneEntry.name === oneVmInstance.layer });
 									if(foundLayer) {
 										foundLayer.instances.push({

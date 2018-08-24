@@ -261,7 +261,7 @@ awsInfraCertificateSrv.service('awsInfraCertificateSrv', ['ngDataApi', '$localSt
                         if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
 							if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
 								oneCertificate.ui = {};
-								oneCertificate.ui.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
+								oneCertificate.ui.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - new Date().getTime()) / (60 * 60 * 24 * 1000));
 
 								if(oneCertificate.ui.remainingDays > 30) {
 									oneCertificate.ui.remainingDaysColor = 'green';

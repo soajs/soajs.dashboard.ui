@@ -413,34 +413,33 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 	}
 
 	function deleteLoadBalancer(currentScope, oneLoadBalancer) {
-		//
-		// let deleteFireWallOpts = {
-		// 	method: 'delete',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
-		// 		'technology': 'vm',
-		// 		'section': 'loadBalancer',
-		// 		'group': currentScope.selectedGroup.name,
-		// 		'name': oneLoadBalancer.name
-		// 	}
-		// };
-		//
-		// overlayLoading.show();
-		// getSendDataFromServer(currentScope, ngDataApi, deleteFireWallOpts, (error, response) => {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		overlayLoading.hide();
-		// 		currentScope.displayAlert('danger', error);
-		// 	}
-		// 	else {
-		// 		overlayLoading.hide();
-		// 		currentScope.displayAlert('success', `The load balancer has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
-		// 		$timeout(() => {
-		// 			listLoadBalancers(currentScope, currentScope.selectedGroup);
-		// 		}, 2000);
-		// 	}
-		// });
+		let options = {
+			method: 'delete',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'technology': 'vm',
+				'section': 'loadBalancer',
+				'region': currentScope.selectedRegion,
+				'name': oneLoadBalancer.name
+			}
+		};
+
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
+			overlayLoading.hide();
+			if (error) {
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error);
+			}
+			else {
+				overlayLoading.hide();
+				currentScope.displayAlert('success', `The load balancer has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listLoadBalancers(currentScope, currentScope.selectedRegion);
+				}, 2000);
+			}
+		});
 	}
 
 	function listLoadBalancers(currentScope, oneRegion) {
@@ -449,175 +448,102 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;
 
-		let response = [
-               {
-                   "region": 'us-east-1',
-                   "type": "classic",
-                   "id": "elb-internal-ragheb",
-                   "name": "elb-internal-ragheb",
-                   "mode": "internal",
-                   "networkId": "vpc-a5e482dd",
-                   "domain": "internal-elb-internal-ragheb-408965366.us-east-2.elb.amazonaws.com",
-                   "securityGroupIds": [
-                       "sg-ca3421a3"
-                   ],
-                   "createdTime": "2018-08-14T16:35:19.220Z",
-                   "healthProbe": {
-                       "healthProbePath": "HTTP:80/index.html",
-                       "healthProbeInterval": 30,
-                       "healthProbeTimeout": 5,
-                       "maxFailureAttempts": 2,
-                       "maxSuccessAttempts": 10
-                   },
-                   "rules": [
-                       {
-                           "backendProtocol": "HTTP",
-                           "backendPort": 80,
-                           "frontendProtocol": "HTTP",
-                           "frontendPPort": 80
-                       },
-                       {
-                           "backendProtocol": "HTTPS",
-                           "backendPort": 443,
-                           "frontendProtocol": "HTTPS",
-                           "frontendPPort": 443,
-                           "certificate": "arn:"
-                       }
-                   ],
-                   "zones": [
-                       {
-                           "name": "us-east-1a",
-                           "subnetId": "subnet-97c7abf3"
-                       },
-                       {
-                           "name": "us-east-1b",
-                           "subnetId": "subnet-1336e83c"
-                       }
-                   ],
-                   "instances": [
-                       {
-                           "id": "i-0bb24a3de714f9fba",
-                           "state": "OutOfService"
-                       }
-                   ]
-               },
-               {
-                   "type": "classic",
-                   "region": 'us-east-1',
-                   "id": "test-lb-ragheb",
-                   "name": "test-lb-ragheb",
-                   "mode": "internet-facing",
-                   "networkId": "vpc-957300fc",
-                   "domain": "test-lb-ragheb-69863322.us-east-2.elb.amazonaws.com",
-                   "securityGroupIds": [
-                       "sg-ca3421a3"
-                   ],
-                   "createdTime": "2018-08-14T16:25:32.560Z",
-                   "healthProbe": {
-                       "healthProbePath": "HTTP:80/index.html",
-                       "healthProbeInterval": 30,
-                       "healthProbeTimeout": 5,
-                       "maxFailureAttempts": 2,
-                       "maxSuccessAttempts": 10
-                   },
-                   "rules": [
-                       {
-                           "backendProtocol": "HTTP",
-                           "backendPort": 80,
-                           "frontendProtocol": "HTTP",
-                           "frontendPPort": 80
-                       }
-                   ],
-                   "zones": [
-                       {
-                           "name": "us-east-1a",
-                           "subnetId": "subnet-97c7abf3"
-                       },
-                       {
-                           "name": "us-east-1b",
-                           "subnetId": "subnet-1336e83c"
-                       }
-                   ],
-                   "instances": [
-                       {
-                           "id": "i-0bb24a3de714f9fba",
-                           "state": "OutOfService"
-                       }
-                   ]
-               }
-           ];
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': oneInfra._id,
+				'region': oneRegion,
+				'extras[]': ['loadBalancers', 'securityGroups', 'networks', 'certificates']
+			}
+		};
 
-		   currentScope.loadBalancers = response;
-		// let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
-		//
-		// //save selected group in scope to be accessed by other functions
-		// currentScope.selectedGroup = oneGroup;
-		//
-		// // clean grid from previous list if any
-		// if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
-		// 	currentScope.grid.rows = [];
-		// 	currentScope.grid.filteredRows = [];
-		// 	currentScope.grid.original = [];
-		// }
-		//
-		// let listOptions = {
-		// 	method: 'get',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'id': oneInfra._id,
-		// 		'group': oneGroup.name,
-		// 		'extras[]': ['loadBalancers'],
-		// 		'section': "loadBalancer"
-		// 	}
-		// };
-		//
-		// overlayLoading.show();
-		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		currentScope.displayAlert('danger', error);
-		// 	}
-		// 	else {
-		// 		currentScope.infraLoadBalancers = [];
-		// 		if (response.loadBalancers && response.loadBalancers.length > 0) {
-		// 			currentScope.infraLoadBalancers = response.loadBalancers;
-		// 			currentScope.infraLoadBalancers[0].open = true;
-		//
-		// 			currentScope.infraLoadBalancers.forEach((oneLoadBalancer) => {
-		// 				if (oneLoadBalancer.rules) {
-		// 					oneLoadBalancer.rules[0].open = true;
-		// 				}
-		// 			});
-		// 		}
-		//
-		// 		if (currentScope.vmlayers) {
-		// 			let processedNetworks = [];
-		// 			currentScope.infraLoadBalancers.forEach((oneLoadBalancer) => {
-		//
-		// 				oneLoadBalancer.rules.forEach((oneRule) => {
-		// 					if (oneRule.config.subnet) {
-		//
-		// 						currentScope.vmlayers.forEach((oneVmLayer) => {
-		// 							if (
-		// 								oneVmLayer.layer.toLowerCase() === oneRule.config.subnet.name.toLowerCase() &&
-		// 								oneVmLayer.network.toLowerCase() === oneRule.config.subnet.network.toLowerCase() &&
-		// 								oneVmLayer.labels &&
-		// 								oneVmLayer.labels['soajs.service.vm.group'].toLowerCase() === oneRule.config.subnet.group.toLowerCase() &&
-		// 								oneVmLayer.labels['soajs.env.code']
-		// 							) {
-		// 								$localStorage.environments.forEach((oneEnv) => {
-		// 									if (oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()) {
-		// 										oneRule.config.subnet.envCode = oneVmLayer.labels['soajs.env.code'];
-		// 									}
-		// 								});
-		// 							}
-		// 						});
-		// 					}
-		// 				});
-		// 			});
-		// 		}
-		// 	}
-		// });
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error);
+			}
+			else {
+				currentScope.infraLoadBalancers = [];
+				if (response.loadBalancers && response.loadBalancers.length > 0) {
+					currentScope.infraLoadBalancers = response.loadBalancers;
+					currentScope.infraLoadBalancers[0].open = true;
+
+					currentScope.infraLoadBalancers.forEach((oneLoadBalancer) => {
+						if(oneLoadBalancer.securityGroupIds && Array.isArray(oneLoadBalancer.securityGroupIds) && oneLoadBalancer.securityGroupIds.length > 0) {
+							oneLoadBalancer.securityGroups = [];
+							oneLoadBalancer.securityGroupIds.forEach((oneGroupId) => {
+								let matchingGroup = response.securityGroups.find((oneEntry) => { return oneEntry.id === oneGroupId });
+								if(matchingGroup) {
+									oneLoadBalancer.securityGroups.push({
+										id: matchingGroup.id,
+										name: matchingGroup.name,
+										region: matchingGroup.region
+									});
+								}
+							});
+						}
+
+						if(oneLoadBalancer.instances && Array.isArray(oneLoadBalancer.instances) && oneLoadBalancer.instances.length > 0) {
+							oneLoadBalancer.layers = [];
+							oneLoadBalancer.instances.forEach((oneInstance) => {
+								let matchingInstance = currentScope.vmlayers.find((oneEntry) => { return oneEntry.id === oneInstance.id });
+								if(matchingInstance && matchingInstance.layer) {
+									let matchingLayer = oneLoadBalancer.layers.find((oneLayer) => { return oneLayer.name === matchingInstance.layer });
+									if(!matchingLayer) {
+										oneLoadBalancer.layers.push({
+											name: matchingInstance.layer,
+											region: matchingInstance.region,
+											numberOfInstances: 1,
+											instancesState: {
+												[oneInstance.state]: 1
+											}
+										});
+									}
+									else {
+										matchingLayer.numberOfInstances++;
+										if(matchingLayer.instancesState && typeof(matchingLayer.instancesState[oneInstance.state]) === 'number') {
+											matchingLayer.instancesState[oneInstance.state]++;
+										}
+										else {
+											matchingLayer.instancesState[oneInstance.state] = 1;
+										}
+									}
+								}
+							});
+						}
+
+						if(oneLoadBalancer.networkId) {
+							oneLoadBalancer.network = {};
+							let matchingNetwork = response.networks.find((oneEntry) => { return oneEntry.id === oneLoadBalancer.networkId; });
+							if(matchingNetwork) {
+								oneLoadBalancer.network = {
+									id: matchingNetwork.id,
+									name: matchingNetwork.name,
+									region: matchingNetwork.region
+								};
+							}
+						}
+
+						if(oneLoadBalancer.rules && Array.isArray(oneLoadBalancer.rules) && oneLoadBalancer.rules.length > 0) {
+							oneLoadBalancer.rules.forEach((oneRule) => {
+								if(oneRule.certificate) {
+									let matchingCertificate = response.certificates.find((oneEntry) => { return oneEntry.id === oneRule.certificate });
+									if(matchingCertificate) {
+										oneRule.certificateInfo = {
+											id: matchingCertificate.id,
+											name: matchingCertificate.name,
+											region: matchingCertificate.region
+										};
+									}
+								}
+							});
+						}
+					});
+				}
+			}
+		});
 	}
 
 	function populatePostData(currentScope, data) {

@@ -36,7 +36,10 @@
 	    <h3 class="modal-title">{{title}}</h3>
 	</div>
 	<div class="modal-body">
-		<accordion close-others="false">
+		<alert ng-if="!keyPair.layers || keyPair.layers.length === 0" type="info">
+			This key pair is currently not associated to any virtual machine layers.
+		</alert>
+		<accordion close-others="false" ng-if="keyPair.layers && keyPair.layers.length > 0">
 			<accordion-group ng-repeat="layer in keyPair.layers" is-open="false">
 				<accordion-heading><span class="icon icon-stack"></span>&nbsp;{{layer.name}}</accordion-heading>
 					<div ng-if="layer.instances && layer.instances.length > 0" class="entryBoxes entryBoxesGrid">

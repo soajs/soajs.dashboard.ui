@@ -378,6 +378,44 @@ td.readonly{
     color: red;
 }
 
+/* AWS Load Balancer */
+#awsAddLoadBalancer #rules-wrapper tr[class^="form-group tr-ruleGroup"]{
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#awsAddLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-backendProtocol"],
+#awsAddLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-backendPort"],
+#awsAddLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-frontendProtocol"],
+#awsAddLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-frontendPort"],
+
+#awsModifyLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-backendProtocol"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-backendPort"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-frontendProtocol"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-frontendPort"]{
+    float: left;
+    width: 24%;
+    height: 70px;
+    display: table;
+    margin-right: 5px;
+}
+
+#awsAddLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-certificate"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-certificate"]{
+    width: 100%;
+    display: table;
+}
+
+#awsAddLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-rRule"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-ruleGroup"] tr[class^="form-group tr-rRule"]{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
 /* AWS Certificates statuses */
 .certificate_active {
     color: green;

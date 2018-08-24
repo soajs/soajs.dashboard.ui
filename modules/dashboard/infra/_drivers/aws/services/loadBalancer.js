@@ -65,7 +65,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 						'name': 'backendProtocol',
 						'label': 'Backend Protocol',
 						'type': 'select',
-						'value': [{'v': 'http', 'l': 'HTTP'},{'v': 'https', 'l': 'HTTPS'}, {'v': 'tcp', 'l': 'TCP'}],
+						'value': [{'v': 'http', 'l': 'HTTP'}, {'v': 'https', 'l': 'HTTPS'}, {'v': 'tcp', 'l': 'TCP'}],
 						'required': true,
 						'tooltip': 'Select a backend protocol.',
 						'fieldMsg': 'Select a backend protocol',
@@ -85,7 +85,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 						'name': 'frontendProtocol',
 						'label': 'Frontend Protocol',
 						'type': 'select',
-						'value': [{'v': 'http', 'l': 'HTTP'},{'v': 'https', 'l': 'HTTPS'}, {'v': 'udp', 'l': 'UDP'}, {'v': 'tcp', 'l': 'TCP'}],
+						'value': [{'v': 'http', 'l': 'HTTP'}, {'v': 'https', 'l': 'HTTPS (requires certificate)'}, {'v': 'tcp', 'l': 'TCP'}],
 						'required': true,
 						'tooltip': 'Select a frontend protocol.',
 						'fieldMsg': 'Select a frontend protocol',
@@ -96,12 +96,17 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 						'label': 'Certificate',
 						'type': 'select',
 						'value': [],
-						'required': true,
+						'required': false,
 						'hidden': true,
 						'tooltip': 'Select a certificate.',
 						'fieldMsg': 'Select a certificate',
 						'placeholder': ""
 					},
+					{
+						'type': 'html',
+						'name': 'rRule',
+						'value': '<span class="icon icon-cross"></span>'
+					}
 				]
 			},
 
@@ -161,7 +166,8 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 	}
 
 	function addLoadBalancer(currentScope) {
-		currentScope.ruleCounter = {};
+		currentScope.ruleCounter = 0;
+		loadAndReturnCertificates(currentScope);
 
 		let options = {
 			timeout: $timeout,
@@ -189,6 +195,10 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 								"params": populatePostData(currentScope, data)
 							}
 						};
+
+						if (currentScope.ruleCounter === 0) {
+							currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
+						}
 
 						// overlayLoading.show();
 						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
@@ -225,42 +235,88 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			addNewRule(form, currentScope);
 		}
 
-		buildFormWithModal(currentScope, $modal, options);
+		buildFormWithModal(currentScope, $modal, options, () => {
+			addNewRule(currentScope.form, currentScope);
+		});
 	}
 
 	function addNewRule(form, currentScope) {
 		let ruleCounter = currentScope.ruleCounter
-		var tmp = angular.copy(infraNetworkConfig.form.ruleInput);
+		var tmp = angular.copy(infraLoadBalancerConfig.form.ruleInput);
 
-		tmp.name += addressCounter;
-		tmp.entries[0].name += addressCounter;
-		tmp.entries[1].name += addressCounter;
+		tmp.name += ruleCounter;
+		tmp.entries[0].name += ruleCounter;
+		tmp.entries[1].name += ruleCounter;
+		tmp.entries[2].name += ruleCounter;
+		tmp.entries[3].name += ruleCounter;
+		tmp.entries[4].name += ruleCounter;
+		tmp.entries[5].name += ruleCounter;
 
-		tmp.entries[1].onAction = function (id, value, form) {
-			var count = parseInt(id.replace('rAddress', ''));
+		tmp.entries[5].onAction = function (id, value, form) {
+			var count = parseInt(id.replace('rRule', ''));
 
-			for (let i = form.entries[3].entries.length -1; i >= 0; i--) {
-				if (form.entries[3].entries[i].name === 'addressGroup' + count) {
+			for (let i = form.entries[2].entries.length -1; i >= 0; i--) {
+				if (form.entries[2].entries[i].name === 'ruleGroup' + count) {
 					//remove from formData
 					for (var fieldname in form.formData) {
-						if (['addressIp' + count].indexOf(fieldname) !== -1) {
+
+						if (['backendPort' + count, 'backendProtocol' + count, 'frontendPort' + count, 'frontendProtocol' + count, 'certificate' + count].indexOf(fieldname) !== -1) {
 							delete form.formData[fieldname];
 						}
 					}
 					//remove from formEntries
-					form.entries[3].entries.splice(i, 1);
+					form.entries[2].entries.splice(i, 1);
+					currentScope.ruleCounter --;
 					break;
 				}
 			}
 		};
 
+		currentScope.closeModalUsingJs = function(){
+			currentScope.modalInstance.close();
+		};
+		closeModalUsingJs = currentScope.closeModalUsingJs;
+
+		tmp.entries[3].onAction = function (id, value, form) {
+			if (value === "https") {
+				currentScope.infraCertificates.forEach((oneCert) => {
+					tmp.entries[4].value.push({
+						"v": oneCert.id,
+						"l": (oneCert.name) ? oneCert.name : oneCert.id
+					});
+				});
+
+				if (tmp.entries[4].value.length > 0) {
+					tmp.entries[4].hidden = false;
+					tmp.entries[4].type = 'select';
+					tmp.entries[4].fieldMsg = 'Select a certificate';
+					tmp.entries[4].required = true;
+				}
+				else {
+					tmp.entries[4].hidden = false;
+					tmp.entries[4].type = 'html';
+					tmp.entries[4].value = `<div class="alert alert-danger">To proceed with <b>HTTPS</b> as a frontend protocol, you must select a valid certificate. </br>There are currently no valid certificates to select from. </br><a onclick="closeModalUsingJs()" href = "#/infra-certificates">Click here</a> to navigate to the certificates section and activate a certificate.</div>`,
+					tmp.entries[4].required = true;
+					delete tmp.entries[4].fieldMsg;
+					delete tmp.entries[4].tooltip;
+					delete tmp.entries[4].placeholder;
+				}
+			}
+			else {
+				tmp.entries[4].type = 'select';
+				tmp.entries[4].hidden = true;
+				tmp.entries[4].value = [];
+				tmp.entries[4].required = false;
+			}
+		}
+
 		if (form && form.entries) {
-			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
+			form.entries[2].entries.splice(form.entries[2].entries.length - 1, 0, tmp);
 		}
 		else {
-			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
+			form.entries[2].entries.splice(form.entries[2].entries.length - 1, 0, tmp);
 		}
-		currentScope.addressCounter++;
+		currentScope.ruleCounter++;
 	}
 
 	function editLoadBalancer(currentScope, originalLoadBalancer) {
@@ -562,6 +618,39 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		// 		}
 		// 	}
 		// });
+	}
+
+	function populatePostData(currentScope, data) {
+			let rulesArray = [];
+			let healthProbeOptions = {};
+
+			for (let i=0; i<currentScope.ruleCounter; i++) {
+				let tmp = {};
+				tmp.backendPort = data['backendPort'+i];
+				tmp.backendProtocol = data['backendProtocol'+i];
+				tmp.frontendPort = data['frontendPort'+i];
+				tmp.frontendProtocol = data['frontendProtocol'+i];
+				if (tmp.frontendProtocol === 'https') {
+					tmp.certificate = data['certificate'+i];
+				}
+				rulesArray.push(tmp);
+			}
+
+			healthProbeOptions.maxSuccessAttempts = data.maxSuccessAttempts;
+			healthProbeOptions.healthProbeInterval = data.healthProbeInterval;
+			healthProbeOptions.healthProbePath = data.healthProbePath;
+			healthProbeOptions.healthProbeTimeout = data.healthProbeTimeout;
+			healthProbeOptions.maxFailureAttempts = data.maxFailureAttempts;
+
+			return({
+				name: data.name,
+				region: data.region,
+				rules: rulesArray,
+				healthProbe: healthProbeOptions,
+				type: data.type ? "internal" : "internet-facing",
+				// securityGroups: data.securityGroups,
+				// subnets: data.subnets,
+			})
 	}
 
 	return {

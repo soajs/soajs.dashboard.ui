@@ -96,8 +96,7 @@
 						<div class="entryBoxes entryBoxesGrid">
 							<div ng-repeat="oneFirewall in oneNetwork.firewall">
 								<div class="entryBox blueBox" style="padding: 3px 5px;">
-									<a href="#/infra-firewall/?group={{oneFirewall.group}}">
-										<!-- TODO: make sure the above line of code properly calls the correct url with the correct parameters (region not group) -->
+									<a href="#/infra-firewall/?region={{oneFirewall.region}}">
 										<span class="icon icon-shield"></span>&nbsp;<b>{{oneFirewall.name}}</b>
 									</a>
 								</div>

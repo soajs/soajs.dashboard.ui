@@ -326,20 +326,20 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 								currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
 							}
 
-							overlayLoading.show();
-							getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-								overlayLoading.hide();
-								if (error) {
-									currentScope.form.displayAlert('danger', error.message);
-								}
-								else {
-									currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-									currentScope.modalInstance.close();
-									$timeout(() => {
-										listLoadBalancers(currentScope, currentScope.selectedRegion);
-									}, 2000);
-								}
-							});
+							// overlayLoading.show();
+							// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							// 	overlayLoading.hide();
+							// 	if (error) {
+							// 		currentScope.form.displayAlert('danger', error.message);
+							// 	}
+							// 	else {
+							// 		currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+							// 		currentScope.modalInstance.close();
+							// 		$timeout(() => {
+							// 			listLoadBalancers(currentScope, currentScope.selectedRegion);
+							// 		}, 2000);
+							// 	}
+							// });
 						}
 					},
 					{
@@ -462,96 +462,115 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 	}
 
 	function editLoadBalancer(currentScope, originalLoadBalancer) {
-		// let oneLoadBalancer = angular.copy(originalLoadBalancer);
-		//
-		// currentScope.addressPoolCounter = 0;
-		// currentScope.ipRuleCounter = {};
-		//
-		// //load public ips
-		// loadAndReturnExtras(currentScope, (publicIps) => {
-		// 	//load subnets
-		// 	loadAndReturnSubnets(currentScope, (subnets) => {
-		//
-		// 		let options = {
-		// 			timeout: $timeout,
-		// 			form: {
-		// 				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
-		// 			},
-		// 			name: 'modifyLoadBalancer',
-		// 			label: 'Modify Load Balancer',
-		// 			actions: [
-		// 				{
-		// 					'type': 'submit',
-		// 					'label': "Modify Load Balancer",
-		// 					'btn': 'primary',
-		// 					'action': function (formData) {
-		// 						let data = angular.copy(formData);
-		//
-		// 						let postOpts = {
-		// 							"method": "put",
-		// 							"routeName": "/dashboard/infra/extras",
-		// 							"params": {
-		// 								"infraId": currentScope.currentSelectedInfra._id,
-		// 								"technology": "vm"
-		// 							},
-		// 							"data": {
-		// 								"params": populatePostData(currentScope, data)
-		// 							}
-		// 						};
-		//
-		// 						overlayLoading.show();
-		// 						getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-		// 							overlayLoading.hide();
-		// 							if (error) {
-		// 								currentScope.form.displayAlert('danger', error.message);
-		// 							}
-		// 							else {
-		// 								currentScope.displayAlert('success', "Load balancer updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-		// 								currentScope.modalInstance.close();
-		// 								$timeout(() => {
-		// 									listLoadBalancers(currentScope, currentScope.selectedGroup);
-		// 								}, 2000);
-		// 							}
-		// 						});
-		// 					}
-		// 				},
-		// 				{
-		// 					'type': 'reset',
-		// 					'label': 'Cancel',
-		// 					'btn': 'danger',
-		// 					'action': function () {
-		// 						delete currentScope.form.formData;
-		// 						currentScope.modalInstance.close();
-		// 					}
-		// 				}
-		// 			]
-		// 		};
-		//
-		// 		options.form.entries[2].entries[0].onAction = function (id, value, form) {
-		// 			addNewAddressPool(currentScope);
-		// 		};
-		//
-		// 		options.form.entries[3].entries[0].onAction = function (id, value, form) {
-		// 			addNewIpRule(currentScope, subnets, publicIps);
-		// 		};
-		//
-		// 		//set value of region to selectedRegion
-		// 		options.form.entries[1].value = currentScope.selectedGroup.region;
-		//
-		// 		buildFormWithModal(currentScope, $modal, options, () => {
-		//
-		// 			currentScope.form.formData['name'] = oneLoadBalancer.name;
-		//
-		// 			oneLoadBalancer.addressPools.forEach((oneAddressPool) => {
-		// 				addNewAddressPool(currentScope, oneAddressPool.name);
-		// 			});
-		//
-		// 			oneLoadBalancer.rules.forEach((oneIPRule) => {
-		// 				addNewIpRule(currentScope, subnets, publicIps, oneIPRule);
-		// 			});
-		// 		});
-		// 	});
-		// });
+		let oneLoadBalancer = angular.copy(originalLoadBalancer);
+
+		currentScope.ruleCounter = 0
+
+		loadAndReturnExtras(currentScope, () => {
+
+			let options = {
+				timeout: $timeout,
+				form: {
+					"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
+				},
+				name: 'modifyLoadBalancer',
+				label: 'Modify Load Balancer',
+				actions: [
+					{
+						'type': 'submit',
+						'label': "Modify Load Balancer",
+						'btn': 'primary',
+						'action': function (formData) {
+							let data = angular.copy(formData);
+
+							let postOpts = {
+								"method": "put",
+								"routeName": "/dashboard/infra/extras",
+								"params": {
+									"infraId": currentScope.currentSelectedInfra._id,
+									"technology": "vm"
+								},
+								"data": {
+									"params": populatePostData(currentScope, data)
+								}
+							};
+
+							overlayLoading.show();
+							getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+								overlayLoading.hide();
+								if (error) {
+									currentScope.form.displayAlert('danger', error.message);
+								}
+								else {
+									currentScope.displayAlert('success', "Load balancer updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+									currentScope.modalInstance.close();
+									$timeout(() => {
+										listLoadBalancers(currentScope, currentScope.selectedGroup);
+									}, 2000);
+								}
+							});
+						}
+					},
+					{
+						'type': 'reset',
+						'label': 'Cancel',
+						'btn': 'danger',
+						'action': function () {
+							delete currentScope.form.formData;
+							currentScope.modalInstance.close();
+						}
+					}
+				]
+			};
+
+			options.form.entries[3].entries[0].onAction = function (id, value, form) {
+				addNewRule(form, currentScope);
+			};
+
+			//set value of region to selectedRegion
+			options.form.entries[1].value = currentScope.selectedRegion;
+
+			buildFormWithModal(currentScope, $modal, options, () => {
+				//populate type name
+				currentScope.form.entries[0].type = 'readonly';
+				currentScope.form.entries[0].value = oneLoadBalancer.name;
+
+				//populate health probe parameters
+				currentScope.form.formData['healthProbeInterval'] = oneLoadBalancer.healthProbe.healthProbeInterval;
+				currentScope.form.formData['healthProbePath'] = oneLoadBalancer.healthProbe.healthProbePath;
+				currentScope.form.formData['healthProbeTimeout'] = oneLoadBalancer.healthProbe.healthProbeTimeout;
+				currentScope.form.formData['maxFailureAttempts'] = oneLoadBalancer.healthProbe.maxFailureAttempts;
+				currentScope.form.formData['maxSuccessAttempts'] = oneLoadBalancer.healthProbe.maxSuccessAttempts;
+
+				//call addNewRule based on the number of rules the LB has
+				oneLoadBalancer.rules.forEach((oneRule, index) => {
+					// TODO: render selected protocol correctly
+					// TODO: if protocol selected is HTTPS we need to "hidden = false" for the certificate field and select the certifiate (already fetched)
+
+					addNewRule(currentScope.form, currentScope);
+					currentScope.form.formData['backendPort'+index] = oneRule.backendPort;
+					currentScope.form.formData['frontendPort'+index] = oneRule.frontendPort;
+					currentScope.form.formData['backendProtocol'+index] = oneRule.backendProtocol;
+					currentScope.form.formData['frontendProtocol'+index] = oneRule.frontendProtocol;
+				});
+
+				//populate securityGroups multiselect
+				// TODO: render the selected security group in the form (already fetched)
+				currentScope.infraSecurityGroups.forEach((oneSG) => {
+					currentScope.form.entries[5].value.push({"v": oneSG.id, "l":oneSG.name});
+				});
+
+				//populate subnets multiselect
+				// TODO: render the selected subnet in the form (already fetched)
+				currentScope.infraSubnets.forEach((oneSubnet) => {
+					Object.keys(oneSubnet).forEach((oneNetName) => {
+						oneSubnet[oneNetName].forEach((subnet) => {
+							currentScope.form.entries[6].value.push({"v": subnet.id, "l": oneNetName + ': ' + subnet.name});
+						});
+					});
+				});
+			});
+		});
 	}
 
 	function deleteLoadBalancer(currentScope, oneLoadBalancer) {

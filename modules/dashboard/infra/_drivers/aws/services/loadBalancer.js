@@ -43,6 +43,22 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 							'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add Rule'/>"
 						}
 					]
+				},
+				{
+					'type': 'uiselect',
+					'name': 'securityGroups',
+					'label': 'Security Groups',
+					'value': [],
+					'required': true,
+					'fieldMsg': 'Select at least one firewall.',
+				},
+				{
+					'type': 'uiselect',
+					'name': 'subnets',
+					'label': 'Subnets',
+					'value': [],
+					'required': true,
+					'fieldMsg': 'Select at least one subnet.',
 				}
 			],
 
@@ -165,79 +181,155 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 		});
 	}
 
+	function loadAndReturnSubnets(currentScope) {
+		// let listOptions = {
+		// 	method: 'get',
+		// 	routeName: '/dashboard/infra/extras',
+		// 	params: {
+		// 		'id': currentScope.$parent.$parent.currentSelectedInfra._id,
+		// 		'region': currentScope.selectedRegion,
+		// 		'extras[]': ['certificates']
+		// 	}
+		// };
+		//
+		// overlayLoading.show();
+		// getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
+		// 	overlayLoading.hide();
+		// 	if (error) {
+		// 		currentScope.displayAlert('danger', error);
+		// 	}
+		// 	else {
+		// 		currentScope.infraCertificates = [];
+		// 		if (response.certificates && response.certificates.length > 0) {
+        //             let currentTime = new Date().getTime();
+        //             response.certificates.forEach((oneCertificate) => {
+        //                 if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
+		// 					if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
+		// 						oneCertificate.remainingDays = {};
+		// 						oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
+		// 					}
+		// 					currentScope.infraCertificates.push(oneCertificate);
+        //                 }
+        //             });
+		// 		}
+		// 	}
+		// });
+	}
+
+	function loadAndReturnSecurityGroups(currentScope, cb) {
+		let listOptions = {
+			method: 'get',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'id': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'region': currentScope.selectedRegion,
+				'extras[]': ['securityGroups']
+			}
+		};
+
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error);
+			}
+			else {
+				currentScope.infraSecurityGroups = [];
+				if (response.securityGroups && response.securityGroups.length > 0) {
+					currentScope.infraSecurityGroups = response.securityGroups;
+				}
+				return cb();
+				// else {
+				// 	// TODO: make the security groups field type html and write a message with a link to go add security group
+				//
+				// }
+			}
+		});
+	}
+
 	function addLoadBalancer(currentScope) {
 		currentScope.ruleCounter = 0;
 		loadAndReturnCertificates(currentScope);
+		loadAndReturnSubnets(currentScope);
 
-		let options = {
-			timeout: $timeout,
-			form: {
-				"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
-			},
-			name: 'addLoadBalancer',
-			label: 'Add New Load Balancer',
-			actions: [
-				{
-					'type': 'submit',
-					'label': "Create Load Balancer",
-					'btn': 'primary',
-					'action': function (formData) {
-						let data = angular.copy(formData);
-
-						let postOpts = {
-							"method": "post",
-							"routeName": "/dashboard/infra/extras",
-							"params": {
-								"infraId": currentScope.currentSelectedInfra._id,
-								"technology": "vm"
-							},
-							"data": {
-								"params": populatePostData(currentScope, data)
-							}
-						};
-
-						if (currentScope.ruleCounter === 0) {
-							currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
-						}
-
-						// overlayLoading.show();
-						// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-						// 	overlayLoading.hide();
-						// 	if (error) {
-						// 		currentScope.form.displayAlert('danger', error.message);
-						// 	}
-						// 	else {
-						// 		currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-						// 		currentScope.modalInstance.close();
-						// 		$timeout(() => {
-						// 			listLoadBalancers(currentScope, currentScope.selectedGroup);
-						// 		}, 2000);
-						// 	}
-						// });
-					}
+		loadAndReturnSecurityGroups(currentScope, () => {
+			let options = {
+				timeout: $timeout,
+				form: {
+					"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
 				},
-				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						delete currentScope.form.formData;
-						currentScope.modalInstance.close();
+				name: 'addLoadBalancer',
+				label: 'Add New Load Balancer',
+				actions: [
+					{
+						'type': 'submit',
+						'label': "Create Load Balancer",
+						'btn': 'primary',
+						'action': function (formData) {
+							let data = angular.copy(formData);
+
+							let postOpts = {
+								"method": "post",
+								"routeName": "/dashboard/infra/extras",
+								"params": {
+									"infraId": currentScope.currentSelectedInfra._id,
+									"technology": "vm"
+								},
+								"data": {
+									"params": populatePostData(currentScope, data)
+								}
+							};
+
+							if (currentScope.ruleCounter === 0) {
+								currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
+							}
+
+							// overlayLoading.show();
+							// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+							// 	overlayLoading.hide();
+							// 	if (error) {
+							// 		currentScope.form.displayAlert('danger', error.message);
+							// 	}
+							// 	else {
+							// 		currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+							// 		currentScope.modalInstance.close();
+							// 		$timeout(() => {
+							// 			listLoadBalancers(currentScope, currentScope.selectedGroup);
+							// 		}, 2000);
+							// 	}
+							// });
+						}
+					},
+					{
+						'type': 'reset',
+						'label': 'Cancel',
+						'btn': 'danger',
+						'action': function () {
+							delete currentScope.form.formData;
+							currentScope.modalInstance.close();
+						}
 					}
-				}
-			]
-		};
+				]
+			};
 
-		//set value of region to selectedRegion
-		options.form.entries[1].value = currentScope.selectedRegion;
+			//set value of region to selectedRegion
+			options.form.entries[1].value = currentScope.selectedRegion;
 
-		options.form.entries[2].entries[0].onAction = function (id, value, form) {
-			addNewRule(form, currentScope);
-		}
+			options.form.entries[2].entries[0].onAction = function (id, value, form) {
+				addNewRule(form, currentScope);
+			}
 
-		buildFormWithModal(currentScope, $modal, options, () => {
-			addNewRule(currentScope.form, currentScope);
+			buildFormWithModal(currentScope, $modal, options, () => {
+				addNewRule(currentScope.form, currentScope);
+
+				//populate securityGroups multiselect
+				console.log(currentScope);
+				currentScope.infraSecurityGroups.forEach((oneSG) => {
+					currentScope.form.entries[3].value.push({"v": oneSG.id, "l":oneSG.name});
+				});
+			});
 		});
+
 	}
 
 	function addNewRule(form, currentScope) {

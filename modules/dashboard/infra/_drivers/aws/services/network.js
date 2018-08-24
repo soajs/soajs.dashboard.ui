@@ -243,7 +243,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 						aggregatedAddresses.push(oneNetwork.primaryAddress);
 
 						for (let i=0; i<currentScope.addressCounter; i++) {
-							if (data['addressIp'+i]) aggregatedAddresses.push(data['addressIp'+i]);
+							if (data['addressIp'+i]) aggregatedAddresses.push({"address": data['addressIp'+i]});
 						}
 
 						postOpts.data.params.addresses = aggregatedAddresses;

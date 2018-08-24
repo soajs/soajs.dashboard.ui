@@ -58,11 +58,27 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'label': 'Health Probe Parameters',
 					'entries': [
 						{
-							'name': 'maxFailureAttempts',
-							'label': 'Max Failure Attempts',
+							'name': 'healthProbePath',
+							'label': 'Path',
+							'type': 'text',
+							'value': "",
+							'fieldMsg': 'Health probe path.',
+							'required': true
+						},
+						{
+							'name': 'healthProbeInterval',
+							'label': 'Interval',
 							'type': 'number',
 							'value': "",
-							'fieldMsg': 'Select an amount for max failure attempts.',
+							'fieldMsg': 'Interval amount in seconds.',
+							'required': true
+						},
+						{
+							'name': 'healthProbeTimeout',
+							'label': 'Timeout',
+							'type': 'number',
+							'value': "",
+							'fieldMsg': 'Timeout amount in seconds.',
 							'required': true
 						},
 						{
@@ -70,31 +86,15 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 							'label': 'Max Success Attempts',
 							'type': 'number',
 							'value': "",
-							'fieldMsg': 'Select an amount for max success attempts.',
+							'fieldMsg': 'Max success attempts.',
 							'required': true
 						},
 						{
-							'name': 'healthProbeInterval',
-							'label': 'Health Probe Interval',
+							'name': 'maxFailureAttempts',
+							'label': 'Max Failure Attempts',
 							'type': 'number',
 							'value': "",
-							'fieldMsg': 'Select an interval amount in seconds.',
-							'required': true
-						},
-						{
-							'name': 'healthProbeTimeout',
-							'label': 'Health Probe Timeout',
-							'type': 'number',
-							'value': "",
-							'fieldMsg': 'Select an timeout amount in seconds.',
-							'required': true
-						},
-						{
-							'name': 'healthProbePath',
-							'label': 'Health Probe Path',
-							'type': 'text',
-							'value': "",
-							'fieldMsg': 'Enter a health probe path.',
+							'fieldMsg': 'Max failure attempts.',
 							'required': true
 						}
 					]

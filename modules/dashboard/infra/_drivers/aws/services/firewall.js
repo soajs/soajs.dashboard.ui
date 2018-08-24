@@ -439,7 +439,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 					let processedNetworks = [];
 					currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
 						currentScope.vmlayers.forEach((oneVmLayer) => {
-							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.location'].toLowerCase() === oneRegion.toLowerCase()) {
+							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.location'] && oneVmLayer.labels['soajs.service.vm.location'].toLowerCase() === oneRegion.toLowerCase()) {
 
 								if (oneVmLayer.securityGroup && oneVmLayer.securityGroup === oneSecurityGroup.name) {
 

@@ -59,16 +59,29 @@
 					<accordion close-others="false">
 						<accordion-group ng-repeat="oneRule in oneLoadBalancer.rules" is-open="oneRule.open">
 							<accordion-heading>{{oneRule.frontendProtocol}} {{oneRule.frontendPort}} &nbsp;&#8594;&nbsp; {{oneRule.backendProtocol}} {{oneRule.backendPort}}</accordion-heading>
-							<table width="100%">
-								<tbody>
-									<tr>
-										<td style="width:25%"><label>Frontend Protocol:</label>&nbsp;{{oneRule.frontendProtocol}}</td>
-										<td style="width:25%"><label>Frontend Port:</label>&nbsp;{{oneRule.frontendPort}}</td>
-										<td style="width:25%"><label>Backend Protocol:</label>&nbsp;{{oneRule.backendProtocol}}</td>
-										<td style="width:25%"><label>Backend Protocol:</label>&nbsp;{{oneRule.backendPort}}</td>
-									</tr>
-								</tbody>
-							</table>
+							<fieldset>
+								<legend>Details</legend>
+								<table width="100%">
+									<tbody>
+										<tr>
+											<td style="width:25%"><label>Frontend Protocol:</label>&nbsp;{{oneRule.frontendProtocol}}</td>
+											<td style="width:25%"><label>Frontend Port:</label>&nbsp;{{oneRule.frontendPort}}</td>
+											<td style="width:25%"><label>Backend Protocol:</label>&nbsp;{{oneRule.backendProtocol}}</td>
+											<td style="width:25%"><label>Backend Protocol:</label>&nbsp;{{oneRule.backendPort}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+							<fieldset ng-if="oneRule.certificateInfo && oneRule.certificateInfo.name">
+								<legend>Certificates</legend>
+								<div class="entryBoxes entryBoxesGrid">
+									<div class="entryBox blueBox" style="padding: 3px 5px;">
+										<a href="#/infra-certificates/?region={{oneRule.certificateInfo.region}}">
+											<span class="icon icon-profile"></span>&nbsp;<b>{{oneRule.certificateInfo.name}}</b>
+										</a>
+									</div>
+								</div>
+							</fieldset>
 						</accordion-group>
 					</accordion>
 				</fieldset>
@@ -137,17 +150,6 @@
 									<span class="icon icon-shield"></span>&nbsp;<b>{{oneSecurityGroup.name}}</b>
 								</a>
 							</div>
-						</div>
-					</div>
-				</fieldset>
-
-				<fieldset ng-if="oneLoadBalancer.certificate">
-					<legend>Certificate</legend>
-					<div class="entryBoxes entryBoxesGrid">
-						<div class="entryBox blueBox" style="padding: 3px 5px;">
-							<a href="#/infra-certificates/?region={{oneLoadBalancer.certificate.region}}">
-								<span class="icon icon-profile"></span>&nbsp;<b>{{oneLoadBalancer.certificate.name}}</b>
-							</a>
 						</div>
 					</div>
 				</fieldset>

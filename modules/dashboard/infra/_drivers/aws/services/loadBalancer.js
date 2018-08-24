@@ -357,34 +357,33 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 	}
 
 	function deleteLoadBalancer(currentScope, oneLoadBalancer) {
-		//
-		// let deleteFireWallOpts = {
-		// 	method: 'delete',
-		// 	routeName: '/dashboard/infra/extras',
-		// 	params: {
-		// 		'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
-		// 		'technology': 'vm',
-		// 		'section': 'loadBalancer',
-		// 		'group': currentScope.selectedGroup.name,
-		// 		'name': oneLoadBalancer.name
-		// 	}
-		// };
-		//
-		// overlayLoading.show();
-		// getSendDataFromServer(currentScope, ngDataApi, deleteFireWallOpts, (error, response) => {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		overlayLoading.hide();
-		// 		currentScope.displayAlert('danger', error);
-		// 	}
-		// 	else {
-		// 		overlayLoading.hide();
-		// 		currentScope.displayAlert('success', `The load balancer has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
-		// 		$timeout(() => {
-		// 			listLoadBalancers(currentScope, currentScope.selectedGroup);
-		// 		}, 2000);
-		// 	}
-		// });
+		let options = {
+			method: 'delete',
+			routeName: '/dashboard/infra/extras',
+			params: {
+				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'technology': 'vm',
+				'section': 'loadBalancer',
+				'region': currentScope.selectedRegion,
+				'id': oneLoadBalancer.id
+			}
+		};
+
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
+			overlayLoading.hide();
+			if (error) {
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error);
+			}
+			else {
+				overlayLoading.hide();
+				currentScope.displayAlert('success', `The load balancer has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
+				$timeout(() => {
+					listLoadBalancers(currentScope, currentScope.selectedRegion);
+				}, 2000);
+			}
+		});
 	}
 
 	function listLoadBalancers(currentScope, oneRegion) {
@@ -399,7 +398,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['loadBalancers', 'securityGroups', 'networks']
+				'extras[]': ['loadBalancers', 'securityGroups', 'networks', 'certificates']
 			}
 		};
 
@@ -469,6 +468,21 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 									region: matchingNetwork.region
 								};
 							}
+						}
+
+						if(oneLoadBalancer.rules && Array.isArray(oneLoadBalancer.rules) && oneLoadBalancer.rules.length > 0) {
+							oneLoadBalancer.rules.forEach((oneRule) => {
+								if(oneRule.certificate) {
+									let matchingCertificate = response.certificates.find((oneEntry) => { return oneEntry.id === oneRule.certificate });
+									if(matchingCertificate) {
+										oneRule.certificateInfo = {
+											id: matchingCertificate.id,
+											name: matchingCertificate.name,
+											region: matchingCertificate.region
+										};
+									}
+								}
+							});
 						}
 					});
 				}

@@ -4,8 +4,18 @@
 		<a class="btn btn-sm btn-primary" ng-if="access.addTEmplate" ng-click="addTemplate(currentSelectedInfra)">
 			<span class="icon icon-plus"></span> Add New Template
 		</a>
+		<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+			<span class="icon icon-download"></span> Download From Store
+		</a>
 		<br /><br />
-		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">No Templates available, please add.</alert>
+		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">
+			<p>
+				No Infra As Code Templates available.
+			</p>
+			<p ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+				You can also browse the <a href="{{showSOAJSStoreLink}}" target="_blank"><b>SOAJS Store</b></a> and download templates for this driver.
+			</p>
+		</alert>
 		<div ng-if="currentSelectedInfra.templates" class="grid">
 
 			<tabset>

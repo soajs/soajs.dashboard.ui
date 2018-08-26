@@ -10,27 +10,146 @@
 		</div>
 		<div class="w-100 c-both entryBoxes">
 			<br>
-			<div class="entryBox" ng-if="currentSelectedInfra.technologies">
-				<div class="header"><label>Technologies</label></div>
-				<div class="body">
-					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneTechnology in currentSelectedInfra.technologies">{{oneTechnology}}</span>
+			<div>
+				<div ng-bind-html="currentSelectedInfra.logo"></div>
+				<hr>
+				<p>The following driver supports:</p>
+				<div ng-if="currentSelectedInfra.name === 'local'">
+					<ul>
+						<li>Connecting to an already provisioned cluster that uses <b>{{currentSelectedInfra.technologies[0]}}</b> as infrastructure.</li>
+						<li>Deploying resources & source code in containers</li>
+						<li>Managing, Operating & Orchestrating deployed components</li>
+						<li>Collecting & Monitoring metric analytics for all deployed components</li>
+					</ul>
+				</div>
+				<div ng-if="currentSelectedInfra.name === 'google'">
+					<ul>
+						<li>Provisioning a <b>Kubernetes</b> cluster as infrastructure</li>
+						<li>Deploying resources & source code in containers</li>
+						<li>Managing, Operating & Orchestrating deployed components</li>
+						<li>Collecting & Monitoring metric analytics for all deployed components</li>
+					</ul>
+					<hr>
+					<p>
+						Provisioning Clusters is accomplished using <a href="#/infra-templates">Infra As Code Templates</a>.<br />
+						The following table shows which engine(s) the driver uses at the cloud provider to provision clusters using templates as well as the location of where these templates are stored.
+					</p>
+					<br />
+					<div class="grid">
+						<table width="100%">
+							<thead>
+								<tr>
+									<th width="12%">Driver</th>
+									<th width="12%">Template Storage</th>
+									<th>Storage Location Details</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><b>GKE</b></td>
+									<td valign="top">SOAJS Console</td>
+									<td valign="top">Templates are stored within the <b>SOAJS Console</b> Database and are pulled from that database whenever a <b>Kubernetes</b> cluster is being provisioned using <b>GKE</b> Engine.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<hr>
+					<p>For more information on how to use <b>Infra as Code Templates</b>, <a href="#/infra-templates">Click Here</a>.</p>
+				</div>
+				
+				<div ng-if="currentSelectedInfra.name === 'aws'">
+					<ul>
+						<li>
+							<b>Container Technology:</b>
+							<ul>
+								<li>Provisioning a <b>Docker Swarm</b> cluster as infrastructure</li>
+								<li>Deploying resources & source code in containers</li>
+								<li>Managing, Operating & Orchestrating deployed components</li>
+								<li>Collecting & Monitoring metric analytics for all deployed components</li>
+							</ul>
+						</li>
+						<li>
+							<b>Virtual Machine Layers:</b>
+							<ul>
+								<li>Provisioning <b>Virtual Machine Layers</b> as infrastructure</li>
+								<li>Deploying resources & source code inside the Virtual Machine Layer Instances</li>
+								<li>Managing, Operating & Orchestrating Virtual Machine Instances</li>
+							</ul>
+						</li>
+					</ul>
+					<hr>
+					<p>
+						Provisioning Clusters is accomplished using <a href="#/infra-templates">Infra As Code Templates</a>.<br />
+						The following table shows which engine(s) the driver uses at the cloud provider to provision clusters using templates as well as the location of where these templates are stored.
+					</p>
+					<br />
+					<div class="grid">
+						<table width="100%">
+							<thead>
+								<tr>
+									<th width="12%">Driver</th>
+									<th width="12%">Template Storage</th>
+									<th>Storage Location Details</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><b>Cloud Formation</b></td>
+									<td>S3 Buckets</td>
+									<td>Templates are stored at <b>AWS S3 Buckets</b> as <b>Cloud Formation</b> engine dictates so it can use them whenever a <b>docker swarm</b> cluster is being provisioned.</td>
+								</tr>
+								<tr class="even">
+									<td><b>Terraform</b></td>
+									<td valign="top">
+										<p>S3 Buckets</p>
+										<p>SOAJS Console</p>
+									</td>
+									<td valign="top">
+										<p>Templates can be store at <b>AWS S3 Buckets</b> and get pulled whenever a <b>Virtual Machine Layer</b> is being provisioned using <b>Terraform</b> Engine.</p>
+										<p>Templates can be stored within the <b>SOAJS Console</b> Database and get pulled from that database whenever a <b>Virtual Machine Layer</b> is being provisioned using <b>Terraform</b> Engine.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<hr>
+					<p>For more information on how to use <b>Infra as Code Templates</b>, <a href="#/infra-templates">Click Here</a>.</p>
+				</div>
+				
+				<div ng-if="currentSelectedInfra.name === 'azure'">
+					<ul>
+						<li>Provisioning <b>Virtual Machine Layers</b> as infrastructure</li>
+						<li>Deploying resources & source code inside the Virtual Machine Layer Instances</li>
+						<li>Managing, Operating & Orchestrating Virtual Machine Instances</li>
+					</ul>
+					<hr>
+					<p>
+						Provisioning Layers is accomplished using <a href="#/infra-templates">Infra As Code Templates</a>.<br />
+						The following table shows which engine(s) the driver uses at the cloud provider to provision Virtual Machine Layers using templates as well as the location of where these templates are stored.
+					</p>
+					<br />
+					<div class="grid">
+						<table width="100%">
+							<thead>
+								<tr>
+									<th width="12%">Driver</th>
+									<th width="12%">Template Storage</th>
+									<th>Storage Location Details</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><b>Terraform</b></td>
+									<td valign="top">SOAJS Console</td>
+									<td valign="top">Templates are stored within the <b>SOAJS Console</b> Database and are pulled from that database whenever a <b>Virtual Machine Layer</b> is being provisioned using <b>Terraform</b> Engine.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<hr>
+					<p>For more information on how to use <b>Infra as Code Templates</b>, <a href="#/infra-templates">Click Here</a>.</p>
 				</div>
 			</div>
-			<div class="entryBox" ng-if="currentSelectedInfra.drivers">
-				<div class="header"><label>Infra Code Template Drivers</label></div>
-				<div class="body">
-					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneDriver in currentSelectedInfra.drivers">{{oneDriver}}</span>
-				</div>
-			</div>
-			<div class="entryBox" ng-if="currentSelectedInfra.templates">
-				<div class="header"><label>Infra Code Template Storage Location</label></div>
-				<div class="body">
-					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneLocation in currentSelectedInfra.templates">
-						{{(oneLocation === 'local') ? 'SOAJS Console' : 'Cloud Provider'}}
-					</span>
-				</div>
-			</div>
-
 		</div>
 	</div>
 

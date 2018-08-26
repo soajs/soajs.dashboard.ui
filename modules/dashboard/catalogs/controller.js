@@ -3,7 +3,8 @@ var catalogApp = soajsApp.components;
 
 catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles,) {
 	$scope.$parent.isUserLoggedIn();
-
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, catalogAppConfig.permissions);
 

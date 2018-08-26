@@ -2,7 +2,7 @@
 /**
  * Custom configuration values
  */
-
+var _soajsStore = "https://www.soajs.io/store";
 var mydomain = "soajs.org";
 
 //detect domain

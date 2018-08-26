@@ -46,6 +46,11 @@ div.box-of-3{
     background:#efefef;
 }
 
+.environmentBox2.noHover .readmore{
+    pointer-events: initial;
+    opacity: 1;
+}
+
 .environmentBox2:hover hr{
     border-color: #333333;
 }

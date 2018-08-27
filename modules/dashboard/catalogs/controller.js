@@ -1,7 +1,7 @@
 'use strict';
 var catalogApp = soajsApp.components;
 
-catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles,) {
+catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles','$cookies','$location', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
@@ -219,7 +219,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
-
 
 	function proceedWithForm(currentScope, mainFormConfig, data, submitAction) {
 		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0;
@@ -2493,6 +2492,13 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
+
+    $scope.go = function (path, method) {
+        if (path) {
+            $cookies.put("method", method, {});
+            $location.path(path);
+        }
+    };
 
 	injectFiles.injectCss("modules/dashboard/catalogs/catalog.css");
 

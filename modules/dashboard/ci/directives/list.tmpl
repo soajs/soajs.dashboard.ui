@@ -107,5 +107,8 @@
 				</div>
 			</div>
 		</tab>
+		<button class="btn btn-primary f-right" ng-click="go('/importExport', 'export')" style="margin-left: 1%;" ng-if="import">Export</button>
+		<button class="btn btn-success f-right" ng-click="go('/importExport', 'import')" style="margin-left: 1%;" ng-if="import">Import</button>
+		<button class="btn btn-info f-right"  onclick="window.open('https://www.herrontech.com/store');" data-target="_blank" ng-if="import">Store</button>
 	</tabset>
 </section>

@@ -1,0 +1,159 @@
+<script type="text/ng-template" id="templateInfoBox.tmpl">
+    <div class="modal-header">
+        <h3 class="modal-title">
+            <img ng-if="logo" ng-src="{{logo}}" width="32px" height="32px"/> &nbsp;
+            {{title}}
+        </h3>
+        <hr>
+
+        <div>
+            <alert type="{{(reusable) ? 'info': 'warning'}}">
+                <p ng-show="reusable">
+                    You can deploy multiple environments using this template.
+                </p>
+                <p ng-show="!reusable">
+                    This template allows you to deploy ONLY one environment.
+                </p>
+            </alert>
+            <br/>
+        </div>
+        <p>{{description}}</p>
+
+        <div ng-if="restriction" class="restrictions">
+            <hr>
+            <p>This template restricts deploying environments to use the following supported strategies:</p>
+            <div ng-if="restriction.deployment" class="c-both w100">
+                <label>Deployment Type:</label>
+                <ul class="adjacentList">
+                    <li ng-repeat="oneDeployment in restriction.deployment" class="capitalize">
+                        <span class="btn btn-sm btn-default">{{oneDeployment}}</span>
+                    </li>
+                </ul>
+                <div ng-if="restriction.driver" class="c-both w100">
+                    <label>Deployment Driver:</label>
+                    <ul class="adjacentList">
+                        <li ng-repeat="oneDriver in restriction.driver" class="capitalize">
+                            <span class="btn btn-sm btn-default">{{oneDriver.split(".")[0]}} / {{oneDriver.split(".")[1]}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div ng-if="restriction.infra" class="c-both w100">
+                <label>Infrastructure Providers:</label>
+                <ul class="adjacentList">
+                    <li ng-repeat="oneInfra in restriction.infra" class="text-uppercase">
+                        <span class="btn btn-sm btn-default">{{oneInfra}}</span>
+                    </li>
+                </ul>
+            </div>
+            <br/>
+        </div>
+
+    </div>
+    <div class="modal-body text-align-center grid">
+        <div ng-include="'modules/dashboard/templates/directives/preview.tmpl'"></div>
+    </div>
+    <div class="modal-footer">
+        <a ng-if="link" href="{{link}}" target="_blank" class="btn btn-sm btn-info">Documentation</a>
+        <a href="" ng-click="exportTemplateContent()" class="btn btn-sm btn-primary">Download</a>
+        <button class="btn btn-danger" ng-click="close()">Close</button>
+    </div>
+</script>
+
+<section ng-controller="importAppCtrl" class="importAppCtrl" id="templates">
+    <tabset>
+        <tab heading="Import" ng-click="importForm()" id="importTab" active="importTab">
+            <div ng-show="step === 1 || step === 2">
+                <br/>
+                <form name="importTemplate">
+                    <div ng-show="step === 1">
+                        <alert type="info" ng-show="!alerts">
+                            <p>
+                                SOAJS allows you to import certain functionality & Configuration using templates.<br/>
+                                Provide your template in the form input below, and the wizard will help you through the
+                                process.
+                            </p>
+                            <p>
+                                For more recipes check our <a href="{{storeLink}}"
+                                                                     target="_blank">store</a>.
+                            </p>
+                            <hr/>
+                            <p style="font-style:italic; font-size:12px;"><u>Note:</u>&nbsp;You can learn more about
+                                templates and how to create them on the <a href="{{templatesDocumentationLink}}"
+                                                                           target="_blank">official documentation
+                                    site</a>.</p>
+                        </alert>
+
+                        <alert type="danger" ng-show="alerts">
+                            <p>
+                                Your template contains errors, please fix them and re-upload your template.<br/>
+                            </p>
+                            <p>
+                                <u>Error Details</u>
+                            </p>
+                            <div ng-repeat="(group, list) in alerts">
+                                <label>{{group}}</label>
+                                <ul>
+                                    <li ng-repeat="oneAlert in list"><p>{{oneAlert.code}} => <span
+                                            ng-bind-html="oneAlert.msg"></span></p></li>
+                                </ul>
+                            </div>
+                            <hr>
+                            <p style="font-style:italic; font-size:12px;"><u>Note:</u>&nbsp;You can learn more about
+                                templates and how to create them on the <a href="{{templatesDocumentationLink}}"
+                                                                           target="_blank">official documentation
+                                    site</a>.</p>
+                        </alert>
+                        <br/>
+                        <ngform-inputs></ngform-inputs>
+                        <hr>
+                        <ngform-actions></ngform-actions>
+                    </div>
+                    <div ng-show="step === 2">
+                        <alert type="warning">
+                            <p>
+                                <label>Duplicate Entries Detected</label>:&nbsp;In order to finish importing the
+                                template, you need to fix the following duplicates.
+                            </p>
+                        </alert>
+                        <br/>
+                        <ngform-inputs></ngform-inputs>
+                        <hr>
+                        <ngform-actions></ngform-actions>
+                    </div>
+                </form>
+            </div>
+        </tab>
+        <tab heading="Export" ng-click="exportForm()" id="exportTab" active="exportTab">
+            <div ng-show="step === 3">
+                <br/>
+                <form name="importTemplate">
+                    <alert type="info">
+                        <p>
+                            SOAJS allows you to export certain functionality & Configuration.<br/>
+                            This wizard will guide you through the available sections that can be exported.<br/>
+                        </p>
+                        <p>
+                            For more recipes check our <a href="{{storeLink}}"
+                                                          target="_blank">store</a>.
+                        </p>
+                        <hr>
+                        <p style="font-style:italic; font-size:12px;"><u>Note:</u>&nbsp;You can learn more about
+                            templates and how to create them on the <a href="{{templatesDocumentationLink}}"
+                                                                       target="_blank">official documentation site</a>.
+                        </p>
+                    </alert>
+                    <hr/>
+                    <br/>
+                    <div ng-show="isSafari">
+                        <alert type="danger">The Downloader of this module is not compatible with safari. Please use
+                            another browser.
+                        </alert>
+                        <br/>
+                    </div>
+                    <div ng-include="'modules/dashboard/templates/directives/export.tmpl'"></div>
+                </form>
+            </div>
+        </tab>
+    </tabset>
+</section>

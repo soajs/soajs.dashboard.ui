@@ -1,7 +1,7 @@
 "use strict";
 var templateService = soajsApp.components;
 templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies', '$window', function (Upload, ngDataApi, $timeout, $cookies, $window) {
-	
+	//remove
 	function listTemplates(currentScope) {
 		
 		// if coming back from add import template, clear file input
@@ -42,7 +42,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			}
 		});
 	}
-	
+    //remove
 	function upgradeTemplates(currentScope) {
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -58,7 +58,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			}
 		});
 	}
-	
+    //remove
 	function deleteTmpl(currentScope, oneTemplate) {
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -77,7 +77,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			}
 		});
 	}
-	
+
 	function uploadTemplate(currentScope, input, cb) {
 		//to avoid incompatibiltiy issues when using safari browsers
 		if (!input) {
@@ -122,6 +122,9 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 					fixTemplateProblems(currentScope, response.data, cb);
 				}
 				else {
+                    if(document.getElementById('myTemplate_0')){
+                        document.getElementById('myTemplate_0').value = "";
+                    }
 					return cb();
 				}
 			}
@@ -130,7 +133,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			currentScope.$parent.displayAlert('danger', "An Error Occurred while uploading your template, please try again.");
 		});
 	}
-	
+
 	function fixTemplateProblems(currentScope, issues, cb) {
 		delete currentScope.form;
 		currentScope.alerts = null;
@@ -584,6 +587,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 										fixTemplateProblems(currentScope, response, cb);
 									}
 									else {
+                                        currentScope.importForm();
 										return cb();
 									}
 								}
@@ -598,12 +602,13 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 							if (currentScope.form && currentScope.form.formData) {
 								currentScope.form.formData = {};
 							}
-							currentScope.listTemplates();
+							currentScope.importForm();
 						}
 					}
 				]
 			};
 			buildForm(currentScope, null, options, () => {
+
 			});
 		}
 	}
@@ -846,7 +851,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
                                     'info': {
                                         "name": oneTemplate.name,
                                         "description": oneTemplate.description,
-                                        "Provider": oneResponse.name,
+                                        "Provider": oneResponse.label,
                                         "driver": oneTemplate.driver,
                                         "technology": oneTemplate.technology,
 

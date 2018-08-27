@@ -98,6 +98,10 @@
 			</div>
 		</tab>
 	</tabset>
+	<button class="btn btn-primary f-right" ng-click="go('/importExport', 'export')" style="margin-left: 1%">Export</button>
+	<button class="btn btn-success f-right" ng-click="go('/importExport', 'import')" style="margin-left: 1%" >Import</button>
+	<button class="btn btn-info f-right" onclick="window.open('https://www.herrontech.com/store');" >Store</button>
+
 	<tabset ng-show="!oldStyle">
 		<tab heading="Latest Versions">
 			<br />
@@ -212,4 +216,5 @@
 			</div>
 		</tab>
 	</tabset>
+
 </section>

@@ -3,6 +3,12 @@
         <tab heading="Import" ng-click="importForm()" id="importTab" active="importTab">
             <div ng-show="step === 1 || step === 2">
                 <br/>
+	            <div ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+		            <a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info">
+			            <span class="icon icon-download"></span> Download From Store
+		            </a>
+		            <br /><br />
+	            </div>
                 <form name="importTemplate">
                     <div ng-show="step === 1">
                         <alert type="info" ng-show="!alerts">

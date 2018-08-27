@@ -5,7 +5,9 @@ interfaceDomain = mydomain.split(":")[0];
 
 importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'importSrv', 'detectBrowser', '$modal', '$window', 'ngDataApi', '$cookies', '$location', function ($scope, $timeout, injectFiles, importSrv, detectBrowser, $modal, $window, ngDataApi, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
-
+	
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
+	
 	$scope.storeLink = importAppConfig.storeLink;
 
 	$scope.access = {};
@@ -126,4 +128,9 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'imp
 
     // Start here
     $scope.switchForms();
+	
+	$scope.$on("$destroy", function () {
+		delete $scope.method;
+		$cookies.remove('method', { 'domain': interfaceDomain });
+	});
 }]);

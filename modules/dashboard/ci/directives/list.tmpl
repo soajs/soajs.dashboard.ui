@@ -53,7 +53,7 @@
 				<alert type="warning">Did not Find any Providers Configured. Please Integrate with at least one provider in the previous tab before you can proceed.</alert>
 			</div>
 			<!--<div ng-show="providers && Object.keys(providers).length > 0">-->
-			<div >
+			<div id="ciRecipes">
 				<div class="entryBoxes entryBoxesGrid">
 					<div id="a_{{provider}}" ng-repeat="(provider, recipes) in providers track by provider" class="entryBox customEntryBox">
 						<div class="header opened">
@@ -62,8 +62,8 @@
 						<div class="body">
 							<div class="inner">
 								
-								<div class="dropdown f-left table" style="width:26%;" ng-show="access.add">
-									<button class="btn btn-sm btn-primary dropdown-toggle" style="float:left;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								<div class="dropdown f-left table w50"ng-show="access.add">
+									<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 										Add New Recipe&nbsp;<span class="caret"></span>
 									</button>
 									<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
@@ -74,11 +74,11 @@
 											<a href="" ng-click="addRecipe(provider, 'blank')"><span class="icon icon-file-empty"></span>&nbsp;StartFrom Blank Template</a>
 										</li>
 									</ul>
-									<div ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''" class="f-left">
-										&nbsp;<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info">
-											<span class="icon icon-download"></span> Download From Store
-										</a>
-									</div>
+									<a ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''" href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info">
+										<span class="icon icon-download"></span> Download From Store
+									</a>
+									<button class="btn btn-sm btn-success" ng-click="go('/importExport', 'import')" ng-if="access.import">Import</button>
+									<button class="btn btn-sm btn-warning" ng-click="go('/importExport', 'export')" ng-if="access.export">Export</button>
 								</div>
 								<div class="f-right w20 searchBoxContainer">
 									<input type="text" name="tag" ng-model="query" ng-keyup="filterData(provider, query)" class="form-control text-field-align-right mb5" placeholder="Search"/>
@@ -117,8 +117,5 @@
 				</div>
 			</div>
 		</tab>
-		<button class="btn btn-primary f-right" ng-click="go('/importExport', 'export')" style="margin-left: 1%;" ng-if="import">Export</button>
-		<button class="btn btn-success f-right" ng-click="go('/importExport', 'import')" style="margin-left: 1%;" ng-if="import">Import</button>
-		<button class="btn btn-info f-right"  onclick="window.open('https://www.herrontech.com/store');" data-target="_blank" ng-if="import">Store</button>
 	</tabset>
 </section>

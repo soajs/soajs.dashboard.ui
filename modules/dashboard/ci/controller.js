@@ -29,7 +29,6 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				$scope.import = false;
 				$scope.accounts = [];
 				var processed = [];
 				response.forEach(function(oneEntry){
@@ -292,7 +291,6 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				$scope.import = true;
 				$scope.providers = angular.copy(response);
 				//angular doesn't allow referencing Object prototype
 				$scope.ObjectKeys = Object.keys;

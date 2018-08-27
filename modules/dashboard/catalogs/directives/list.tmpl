@@ -98,20 +98,17 @@
 			</div>
 		</tab>
 	</tabset>
-	<button class="btn btn-primary f-right" ng-click="go('/importExport', 'export')" style="margin-left: 1%">Export</button>
-	<button class="btn btn-success f-right" ng-click="go('/importExport', 'import')" style="margin-left: 1%" >Import</button>
-	<button class="btn btn-info f-right" onclick="window.open('https://www.herrontech.com/store');" >Store</button>
 
 	<tabset ng-show="!oldStyle">
 		<tab heading="Latest Versions">
 			<br />
 			<div class="f-right w30 searchBoxContainer">
-				<button class="btn btn-success f-right" ng-click="listRecipes()">
+				<button class="btn btn-sm btn-success f-right" ng-click="listRecipes()">
 					Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
 				</button>
 			</div>
 			<div class="dropdown f-left">
-				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					Add New Recipe&nbsp;<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
@@ -121,6 +118,8 @@
 				<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
 					<span class="icon icon-download"></span> Download From Store
 				</a>
+				<button class="btn btn-success btn-sm" ng-if="access.import" ng-click="go('/importExport', 'import')">Import</button>
+				<button class="btn btn-warning btn-sm" ng-if="access.export" ng-click="go('/importExport', 'export')">Export</button>
 			</div>
 			<div ng-if="recipes && recipes.length === 0">
 				<br />

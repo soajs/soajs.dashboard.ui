@@ -7,6 +7,8 @@
 		<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
 			<span class="icon icon-download"></span> Download From Store
 		</a>
+		<button class="btn btn-sm btn-success" ng-click="go('/importExport', 'import')" ng-if="access.import">Import</button>
+		<button class="btn btn-sm btn-warning" ng-click="go('/importExport', 'export')" ng-if="access.export">Export</button>
 		<br /><br />
 		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">
 			<p>

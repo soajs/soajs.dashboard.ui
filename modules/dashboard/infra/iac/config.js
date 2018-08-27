@@ -5,6 +5,9 @@ let infraIACConfig = {
 		list: ['dashboard', '/infra', 'get'],
 		removeTemplates: ['dashboard', '/infra/template', 'delete'],
 		addTEmplate: ['dashboard', '/infra/template', 'post'],
+		
+		import: ['dashboard', '/templates/import', 'post'],
+		export: ['dashboard', '/templates/export', 'post']
 	},
 
 	form: {

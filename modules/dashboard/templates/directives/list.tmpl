@@ -79,10 +79,9 @@
 			<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
 				<span class="icon icon-download"></span> Download From Store
 			</a>
-			<input ng-if="access.import" type="button" class="btn btn-sm btn-success" value="Import" ng-click="go('/importExport', 'import')" />&nbsp;
-			<input ng-if="access.export" type="button" class="btn btn-sm btn-primary" value="Export" ng-click="go('/importExport', 'export')" />&nbsp;
+			<input ng-if="access.import" type="button" class="btn btn-sm btn-success" value="Import" ng-click="go('/importExport', 'import')" />
+			<input ng-if="access.export" type="button" class="btn btn-sm btn-warning" value="Export" ng-click="go('/importExport', 'export')" />
 			<input type="button" class="btn btn-sm btn-success f-right" value="Refresh" ng-click="listTemplates()" />&nbsp;
-			<input ng-if="access.export" type="button" class="btn btn-sm btn-info f-right" value="Store" onclick="window.open('https://www.herrontech.com/store');" style="margin-right: 1%" href=""/>&nbsp;
 		</div>
 	
 		<div ng-if="!oldStyle && templates && templates.length > 0" class="entryBoxes">

@@ -113,7 +113,7 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'tem
 		$scope.exportSectionCounter = 0;
 		templateSrv.exportTemplate($scope);
 	};
-	//
+	
 	$scope.listTemplates = function(){
 		$scope.alerts = null;
 		$scope.step = 0;
@@ -122,15 +122,15 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'tem
 		}
 		templateSrv.listTemplates($scope);
 	};
-	//
+	
 	$scope.deleteTmpl = function(oneTemplate){
 		templateSrv.deleteTmpl($scope, oneTemplate);
 	};
-	//
+	
 	$scope.upgradeTemplates = function(){
 		templateSrv.upgradeTemplates($scope);
 	};
-	//
+	
 	$scope.showTemplateContent = function(oneTmpl) {
 		let parentScope = $scope;
 

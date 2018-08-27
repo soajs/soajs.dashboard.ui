@@ -15,7 +15,7 @@
 					This template allows you to deploy ONLY one environment.
 				</p>
 			</alert>
-			<br />
+			<br/>
 		</div>
 		<p>{{description}}</p>
 		
@@ -46,9 +46,9 @@
 					</li>
 				</ul>
 			</div>
-			<br />
+			<br/>
 		</div>
-		
+	
 	</div>
 	<div class="modal-body text-align-center grid">
 		<div ng-include="'modules/dashboard/templates/directives/preview.tmpl'"></div>
@@ -62,134 +62,57 @@
 
 <section ng-controller="templatesAppCtrl" class="templatesAppCtrl" id="templates">
 	
-	<div ng-show="step === 0">
-		
-		<div ng-if="oldStyle">
-			<alert type="danger">
-				<h5>Upgrade Your Templates</h5>
-				<hr>
-				<input ng-if="access.upgrade" type="button" class="f-right btn btn-sm btn-danger" value="Upgrade" ng-click="upgradeTemplates()">
-				<p>
-					Detect the presence of Old Template Schemas, you need to upgrade your templates to the latest versions to proceed.
-				</p>
-			</alert>
-		</div>
-		
-		<div ng-if="!oldStyle && templates && templates.length > 0">
-			<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
-				<span class="icon icon-download"></span> Download From Store
-			</a>
-			<input ng-if="access.import" type="button" class="btn btn-sm btn-success" value="Import" ng-click="go('/importExport', 'import')" />
-			<input ng-if="access.export" type="button" class="btn btn-sm btn-warning" value="Export" ng-click="go('/importExport', 'export')" />
-			<input type="button" class="btn btn-sm btn-success f-right" value="Refresh" ng-click="listTemplates()" />&nbsp;
-		</div>
-	
-		<div ng-if="!oldStyle && templates && templates.length > 0" class="entryBoxes">
-			<br />
-			<div ng-repeat="oneTmpl in templates" class="entryBox recipe-box" ng-class="{blueRecipeBox: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenRecipeBox: oneTmpl.type !== '_template'}">
-				<div class="header" ng-class="{blueBoxHeader: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenBoxHeader: oneTmpl.type !== '_template' }">
-					<div class="f-left">
-						<img ng-if="oneTmpl.logo" ng-src="{{oneTmpl.logo}}" /> &nbsp;
-					</div>
-					<div class="templateName" title="{{oneTmpl.name}}">{{oneTmpl.name}}</div>
-
-					<div class="rightActions" style="display:inline;">
-						<a href="" ng-if="access.delete && (oneTmpl.type !== '_template' || oneTmpl.deletable)" ng-click="deleteTmpl(oneTmpl)" ng-confirm-click="Are you sure you want to delete this template?">
-							<span class="icon icon-cross" tooltip="Delete Template"></span>
-						</a>
-						<a href="" ng-click="exportTemplateContent(oneTmpl)" ng-if="!isSafari">
-							<span class="icon icon-download2" tooltip="Download Template"></span>
-						</a>
-						
-						<a ng-if="oneTmpl.link" href="{{oneTmpl.link}}" target="_blank">
-							<span class="icon icon-info" tooltip="Open Template Documentation"></span>
-						</a>
-						
-						<a ng-if="oneTmpl.content" href="" ng-click="showTemplateContent(oneTmpl)">
-							<span class="icon icon-search" tooltip="Browse Template Content"></span>
-						</a>
-					</div>
-					
-				</div>
-				<div class="body">
-					<p>{{oneTmpl.description}}</p>
-				</div>
-			</div>
-		</div>
-		
+	<div ng-if="oldStyle">
+		<alert type="danger">
+			<h5>Upgrade Your Templates</h5>
+			<hr>
+			<input ng-if="access.upgrade" type="button" class="f-right btn btn-sm btn-danger" value="Upgrade" ng-click="upgradeTemplates()">
+			<p>
+				Detect the presence of Old Template Schemas, you need to upgrade your templates to the latest versions
+				to proceed.
+			</p>
+		</alert>
 	</div>
 	
-	<div ng-show="step === 1 || step === 2">
-		<div>
-			<input type="button" class="btn btn-sm btn-danger f-right" value="Back" ng-click="listTemplates()" />&nbsp;
-		</div>
-		<br />
-		<form name="importTemplate" >
-			<div ng-show="step === 1">
-				<alert type="info" ng-show="!alerts">
-					<p>
-						SOAJS allows you to import certain functionality & Configuration using templates.<br />
-						Provide your template in the form input below, and the wizard will help you through the process.
-					</p>
-					<hr />
-					<p style="font-style:italic; font-size:12px;"><u>Note:</u>&nbsp;You can learn more about templates and how to create them on the <a href="{{templatesDocumentationLink}}" target="_blank">official documentation site</a>.</p>
-				</alert>
+	<div ng-if="!oldStyle && templates && templates.length > 0">
+		<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+			<span class="icon icon-download"></span> Download From Store
+		</a>
+		<input ng-if="access.import" type="button" class="btn btn-sm btn-success" value="Import" ng-click="go('/importExport', 'import')"/>
+		<input ng-if="access.export" type="button" class="btn btn-sm btn-warning" value="Export" ng-click="go('/importExport', 'export')"/>
+		<input type="button" class="btn btn-sm btn-success f-right" value="Refresh" ng-click="listTemplates()"/>&nbsp;
+	</div>
+	
+	<div ng-if="!oldStyle && templates && templates.length > 0" class="entryBoxes">
+		<br/>
+		<div ng-repeat="oneTmpl in templates" class="entryBox recipe-box" ng-class="{blueRecipeBox: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenRecipeBox: oneTmpl.type !== '_template'}">
+			<div class="header" ng-class="{blueBoxHeader: (oneTmpl.type === '_template' && !oneTmpl.deletable), greenBoxHeader: oneTmpl.type !== '_template' }">
+				<div class="f-left">
+					<img ng-if="oneTmpl.logo" ng-src="{{oneTmpl.logo}}"/> &nbsp;
+				</div>
+				<div class="templateName" title="{{oneTmpl.name}}">{{oneTmpl.name}}</div>
 				
-				<alert type="danger" ng-show="alerts">
-					<p>
-						Your template contains errors, please fix them and re-upload your template.<br />
-					</p>
-					<p>
-						<u>Error Details</u>
-					</p>
-					<div ng-repeat="(group, list) in alerts">
-						<label>{{group}}</label>
-						<ul>
-							<li ng-repeat="oneAlert in list"><p>{{oneAlert.code}} => <span ng-bind-html="oneAlert.msg"></span></p></li>
-						</ul>
-					</div>
-					<hr>
-					<p style="font-style:italic; font-size:12px;"><u>Note:</u>&nbsp;You can learn more about templates and how to create them on the <a href="{{templatesDocumentationLink}}" target="_blank">official documentation site</a>.</p>
-				</alert>
-				<br />
-				<ngform-inputs></ngform-inputs>
-				<hr>
-				<ngform-actions></ngform-actions>
+				<div class="rightActions" style="display:inline;">
+					<a href="" ng-if="access.delete && (oneTmpl.type !== '_template' || oneTmpl.deletable)" ng-click="deleteTmpl(oneTmpl)" ng-confirm-click="Are you sure you want to delete this template?">
+						<span class="icon icon-cross" tooltip="Delete Template"></span>
+					</a>
+					<a href="" ng-click="exportTemplateContent(oneTmpl)" ng-if="!isSafari">
+						<span class="icon icon-download2" tooltip="Download Template"></span>
+					</a>
+					
+					<a ng-if="oneTmpl.link" href="{{oneTmpl.link}}" target="_blank">
+						<span class="icon icon-info" tooltip="Open Template Documentation"></span>
+					</a>
+					
+					<a ng-if="oneTmpl.content" href="" ng-click="showTemplateContent(oneTmpl)">
+						<span class="icon icon-search" tooltip="Browse Template Content"></span>
+					</a>
+				</div>
+			
 			</div>
-			<div ng-show="step === 2">
-				<alert type="warning">
-					<p>
-						<label>Duplicate Entries Detected</label>:&nbsp;In order to finish importing the template, you need to fix the following duplicates.
-					</p>
-				</alert>
-				<br />
-				<ngform-inputs></ngform-inputs>
-				<hr>
-				<ngform-actions></ngform-actions>
+			<div class="body">
+				<p>{{oneTmpl.description}}</p>
 			</div>
-		</form>
-	</div>
-	
-	<div ng-show="step === 3">
-		<div>
-			<input type="button" class="btn btn-sm btn-danger f-right" value="Back" ng-click="listTemplates()" />&nbsp;
 		</div>
-		<br />
-		<form name="importTemplate" >
-			<alert type="info">
-				<p>
-					SOAJS allows you to export certain functionality & Configuration.<br />
-					This wizard will guide you through the available sections that can be exported.<br />
-				</p>
-				<p style="font-style:italic; font-size:12px;"><u>Note:</u>&nbsp;You can learn more about templates and how to create them on the <a href="{{templatesDocumentationLink}}" target="_blank">official documentation site</a>.</p>
-			</alert>
-			<hr />
-			<br />
-			<div ng-show="isSafari">
-				<alert type="danger">The Downloader of this module is not compatible with safari. Please use another browser.</alert>
-				<br />
-			</div>
-			<div ng-include="'modules/dashboard/templates/directives/export.tmpl'"></div>
-		</form>
 	</div>
 </section>

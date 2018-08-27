@@ -8,7 +8,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 				{
 					'name': 'heading',
 					'type': 'html',
-					'value': "<p align='left'><strong>This will allocate an Elastic IP address to your AWS account.</strong></br></br>After you allocate the Elastic IP address you can associate it with an instance or network interface.</br></br>You may later release this address. When you release an Elastic IP address, it is released to the IP address pool and can be allocated to a different AWS account.</br></br>To proceed, click on <strong>Allocate IP</strong> below.<p>"
+					'value': "<label>Use this form to request a new IP Address. This address can be later attached to an instance when creating/updating a VM layer.</label>"
 				}
 			]
 		},
@@ -17,10 +17,10 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 			recordsPerPageArray: [5, 10, 50, 100],
 			'columns': [
 				{ 'label': 'Address', 'field': 'address' },
-				{ 'label': 'Allocation ID', 'field': 'id' },
 				{ 'label': 'Type', 'field': 'type' },
-				{ 'label': 'Instance ID', 'field': 'instanceId' },
-				{ 'label': 'Private Address', 'field': 'privateAddress' }
+				{ 'label': 'Private Address', 'field': 'privateAddress' },
+				{ 'label': 'Instance', 'field': 'instanceName' },
+				{ 'label': 'VM Layer', 'field': 'vmLayerName' }
 			],
 			'leftActions': [],
 			'topActions': [],
@@ -155,7 +155,29 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 			else {
 				currentScope.infraPublicIps = [];
 				if (response.publicIps && response.publicIps.length > 0) {
-					currentScope.infraPublicIps = response.publicIps;
+					response.publicIps.forEach((oneIp) => {
+						if(!oneIp.privateAddress) {
+							oneIp.privateAddress = 'N/A';
+						}
+
+						oneIp.instanceName = 'Not yet associated';
+						oneIp.vmLayerName = 'Not yet associated';
+						if(currentScope.vmlayers && Array.isArray(currentScope.vmlayers) && currentScope.vmlayers.length > 0) {
+							currentScope.vmlayers.forEach((oneInstance) => {
+								if(oneInstance.ip && Array.isArray(oneInstance.ip) && oneInstance.ip.length > 0) {
+									oneInstance.ip.forEach((oneEntry) => {
+										if(oneEntry.address === oneIp.address && oneIp.region === oneInstance.region) {
+											oneIp.instanceName = oneInstance.name;
+											oneIp.vmLayerName = `<span class="icon icon-stack"></span>&nbsp;<b>${oneInstance.layer}</b>`;
+											return;
+										}
+									});
+								}
+							});
+						}
+
+						currentScope.infraPublicIps.push(oneIp);
+					});
 
 					let gridOptions = {
 						grid: infraIPConfig.grid,

@@ -153,6 +153,10 @@ infraCertificateApp.controller('infraCertificateCtrl', ['$scope', '$routeParams'
 		});
 	};
 
+	$scope.downloadDnsConfig = function(oneCertificate) {
+		infraCertificateSrv.downloadDnsConfig($scope, oneCertificate);
+	};
+
 	if ($scope.access.list) {
 		$scope.getProviders();
 	}

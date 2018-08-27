@@ -16,12 +16,25 @@ infraCertificateSrv.service('infraCertificateSrv', ['awsInfraCertificateSrv', fu
 		}
 	}
 
-	function deleteCertificate(currentScope, oneKeyPair) {
+	function deleteCertificate(currentScope, oneCertificate) {
 		let infraName = currentScope.currentInfraName;
 
 		switch(infraName){
 			case 'aws':
-				awsInfraCertificateSrv.deleteCertificate(currentScope, oneKeyPair);
+				awsInfraCertificateSrv.deleteCertificate(currentScope, oneCertificate);
+				break;
+			default:
+				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
+				break;
+		}
+	}
+
+	function downloadDnsConfig(currentScope, oneCertificate) {
+		let infraName = currentScope.currentInfraName;
+
+		switch(infraName){
+			case 'aws':
+				awsInfraCertificateSrv.downloadDnsConfig(currentScope, oneCertificate);
 				break;
 			default:
 				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
@@ -45,6 +58,7 @@ infraCertificateSrv.service('infraCertificateSrv', ['awsInfraCertificateSrv', fu
 	return {
 		'addCertificate': addCertificate,
 		'deleteCertificate': deleteCertificate,
-		'listCertificates': listCertificates
+		'listCertificates': listCertificates,
+		'downloadDnsConfig': downloadDnsConfig
 	};
 }]);

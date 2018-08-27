@@ -263,11 +263,11 @@ awsInfraCertificateSrv.service('awsInfraCertificateSrv', ['ngDataApi', '$localSt
 								oneCertificate.ui = {};
 								oneCertificate.ui.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - new Date().getTime()) / (60 * 60 * 24 * 1000));
 
-								if(oneCertificate.ui.remainingDays > 30) {
+								if(oneCertificate.ui.remainingDays >= 30) {
 									oneCertificate.ui.remainingDaysColor = 'green';
 									oneCertificate.ui.remainingDaysIcon = 'checkmark';
 								}
-								else if(oneCertificate.ui.remainingDays > 10) {
+								else if(oneCertificate.ui.remainingDays >= 10) {
 									oneCertificate.ui.remainingDaysColor = 'yellow';
 									oneCertificate.ui.remainingDaysIcon = 'warning';
 								}
@@ -285,9 +285,21 @@ awsInfraCertificateSrv.service('awsInfraCertificateSrv', ['ngDataApi', '$localSt
 		});
 	}
 
+	function downloadDnsConfig(currentScope, oneCertificate) {
+		if(oneCertificate && oneCertificate.dnsConfig && Array.isArray(oneCertificate.dnsConfig) && oneCertificate.dnsConfig.length > 0) {
+			let output = 'Domain Name,Record Name,Record Type,Record Value\r\n';
+			oneCertificate.dnsConfig.forEach((oneConfig) => {
+				output += `${oneConfig.domain},${oneConfig.name},${oneConfig.type},${oneConfig.value}\r\n`;
+			});
+
+			openSaveAsDialog(`dns_config.csv`, output, 'text/csv');
+		}
+	}
+
 	return {
 		'addCertificate': addCertificate,
 		'deleteCertificate': deleteCertificate,
-		'listCertificates': listCertificates
+		'listCertificates': listCertificates,
+		'downloadDnsConfig': downloadDnsConfig
 	};
 }]);

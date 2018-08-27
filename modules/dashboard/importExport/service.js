@@ -1,6 +1,6 @@
 "use strict";
-var templateService = soajsApp.components;
-templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies', '$window', function (Upload, ngDataApi, $timeout, $cookies, $window) {
+var importService = soajsApp.components;
+importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies', '$window', function (Upload, ngDataApi, $timeout, $cookies, $window) {
 	//remove
 	function listTemplates(currentScope) {
 		
@@ -39,41 +39,6 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 				else {
 					currentScope.displayAlert('danger', 'No templates found!');
 				}
-			}
-		});
-	}
-    //remove
-	function upgradeTemplates(currentScope) {
-		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
-			'method': 'get',
-			'routeName': '/dashboard/templates/upgrade'
-		}, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error.message);
-			} else {
-				currentScope.displayAlert('success', 'Templates Upgraded');
-				currentScope.listTemplates();
-			}
-		});
-	}
-    //remove
-	function deleteTmpl(currentScope, oneTemplate) {
-		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
-			'method': 'delete',
-			'routeName': '/dashboard/templates',
-			'params': {
-				'id': oneTemplate._id,
-			},
-		}, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error.message);
-			} else {
-				currentScope.displayAlert('success', "Template Deleted Successfully");
-				currentScope.listTemplates();
 			}
 		});
 	}
@@ -802,7 +767,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			}
 			else {
 				let records;
-				if (response && response.records) {
+				if (response && response.records && Array.isArray(response.records) && response.records.length > 0) {
 					if (!Array.isArray(records)) {
 						records = [];
 					}
@@ -869,8 +834,6 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 	
 	return {
 		"listTemplates": listTemplates,
-		"deleteTmpl": deleteTmpl,
-		"upgradeTemplates": upgradeTemplates,
 		"uploadTemplate": uploadTemplate,
 		"exportTemplate": exportTemplate,
 		"storeRecordsOf": storeRecordsOf,

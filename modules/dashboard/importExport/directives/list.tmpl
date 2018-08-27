@@ -1,65 +1,3 @@
-<script type="text/ng-template" id="templateInfoBox.tmpl">
-    <div class="modal-header">
-        <h3 class="modal-title">
-            <img ng-if="logo" ng-src="{{logo}}" width="32px" height="32px"/> &nbsp;
-            {{title}}
-        </h3>
-        <hr>
-
-        <div>
-            <alert type="{{(reusable) ? 'info': 'warning'}}">
-                <p ng-show="reusable">
-                    You can deploy multiple environments using this template.
-                </p>
-                <p ng-show="!reusable">
-                    This template allows you to deploy ONLY one environment.
-                </p>
-            </alert>
-            <br/>
-        </div>
-        <p>{{description}}</p>
-
-        <div ng-if="restriction" class="restrictions">
-            <hr>
-            <p>This template restricts deploying environments to use the following supported strategies:</p>
-            <div ng-if="restriction.deployment" class="c-both w100">
-                <label>Deployment Type:</label>
-                <ul class="adjacentList">
-                    <li ng-repeat="oneDeployment in restriction.deployment" class="capitalize">
-                        <span class="btn btn-sm btn-default">{{oneDeployment}}</span>
-                    </li>
-                </ul>
-                <div ng-if="restriction.driver" class="c-both w100">
-                    <label>Deployment Driver:</label>
-                    <ul class="adjacentList">
-                        <li ng-repeat="oneDriver in restriction.driver" class="capitalize">
-                            <span class="btn btn-sm btn-default">{{oneDriver.split(".")[0]}} / {{oneDriver.split(".")[1]}}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div ng-if="restriction.infra" class="c-both w100">
-                <label>Infrastructure Providers:</label>
-                <ul class="adjacentList">
-                    <li ng-repeat="oneInfra in restriction.infra" class="text-uppercase">
-                        <span class="btn btn-sm btn-default">{{oneInfra}}</span>
-                    </li>
-                </ul>
-            </div>
-            <br/>
-        </div>
-
-    </div>
-    <div class="modal-body text-align-center grid">
-        <div ng-include="'modules/dashboard/templates/directives/preview.tmpl'"></div>
-    </div>
-    <div class="modal-footer">
-        <a ng-if="link" href="{{link}}" target="_blank" class="btn btn-sm btn-info">Documentation</a>
-        <a href="" ng-click="exportTemplateContent()" class="btn btn-sm btn-primary">Download</a>
-        <button class="btn btn-danger" ng-click="close()">Close</button>
-    </div>
-</script>
-
 <section ng-controller="importAppCtrl" class="importAppCtrl" id="templates">
     <tabset>
         <tab heading="Import" ng-click="importForm()" id="importTab" active="importTab">
@@ -151,7 +89,7 @@
                         </alert>
                         <br/>
                     </div>
-                    <div ng-include="'modules/dashboard/templates/directives/export.tmpl'"></div>
+                    <div ng-include="'modules/dashboard/importExport/directives/export.tmpl'"></div>
                 </form>
             </div>
         </tab>

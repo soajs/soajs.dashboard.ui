@@ -33,10 +33,13 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'required': true
 				},
 				{
-					'name': 'type',
-					'label': 'Type',
+					'name': 'mode',
+					'label': 'Mode',
 					'type': 'select',
-					'value': [{"v": "interal", "l": "Internal", "selected": true}, {"v": "internet-facing", "l": "Internet-Facing"}],
+					'value': [
+						{ "v": "private", "l": "Private", "selected": true },
+						{ "v": "public", "l": "Public" }
+					],
 					'fieldMsg': 'Select whether the loadbalancer will be internal or internet-facing.',
 					'required': true
 				},
@@ -116,6 +119,19 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'required': true,
 					'multiple': true,
 					'fieldMsg': 'Select at least one subnet.',
+					onAction: function(id, value, form) {
+						let subnetsEntry = form.entries.find((oneEntry) => { return oneEntry.name === id });
+						if(value.length > 0) {
+							for(let i = subnetsEntry.value.length - 1 ; i >= 0; i--) {
+								if(subnetsEntry.value[i].network !== value[0].network) {
+									subnetsEntry.value.splice(i, 1);
+								}
+							}
+						}
+						else {
+							subnetsEntry.value = angular.copy(subnetsEntry.originalValue);
+						}
+					}
 				}
 			],
 
@@ -183,60 +199,8 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				]
 			},
 
-		},
-
-		grid: {
-			recordsPerPageArray: [5, 10, 50, 100],
-			'columns': [
-				{'label': 'Load Balancer Name', 'field': 'name'},
-				{'label': 'Load Balancer Region', 'field': 'region'},
-				{'label': 'Load Balancer Ports', 'field': 'ports'},
-				{'label': 'Load Balancer Ports', 'field': 'ipAddresses'},
-				{'label': 'Load Balancer Ports', 'field': 'ipConfigs'},
-				{'label': 'Load Balancer Ports', 'field': 'natPools'},
-				{'label': 'Load Balancer Ports', 'field': 'natRules'},
-			],
-			'leftActions': [],
-			'topActions': [],
-			'defaultSortField': '',
-			'defaultLimit': 10
-		},
+		}
 	};
-
-	function loadAndReturnCertificates(currentScope) {
-		let listOptions = {
-			method: 'get',
-			routeName: '/dashboard/infra/extras',
-			params: {
-				'id': currentScope.$parent.$parent.currentSelectedInfra._id,
-				'region': currentScope.selectedRegion,
-				'extras[]': ['certificates']
-			}
-		};
-
-		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error);
-			}
-			else {
-				currentScope.infraCertificates = [];
-				if (response.certificates && response.certificates.length > 0) {
-                    let currentTime = new Date().getTime();
-                    response.certificates.forEach((oneCertificate) => {
-                        if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
-							if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
-								oneCertificate.remainingDays = {};
-								oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
-							}
-							currentScope.infraCertificates.push(oneCertificate);
-                        }
-                    });
-				}
-			}
-		});
-	}
 
 	function loadAndReturnExtras(currentScope, cb) {
 		let listOptions = {
@@ -263,10 +227,12 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
                     response.certificates.forEach((oneCertificate) => {
                         if(oneCertificate && oneCertificate.details && oneCertificate.details.status && oneCertificate.details.status === 'active') {
 							if(oneCertificate.details.validFrom && oneCertificate.details.validTo) {
-								oneCertificate.remainingDays = {};
-								oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - Date.parse(oneCertificate.details.validFrom)) / (60 * 60 * 24 * 1000));
+								oneCertificate.remainingDays = Math.floor((Date.parse(oneCertificate.details.validTo) - new Date().getTime()) / (60 * 60 * 24 * 1000));
 							}
-							currentScope.infraCertificates.push(oneCertificate);
+							currentScope.infraCertificates.push({
+								v: oneCertificate.id,
+								l: `${oneCertificate.name} (${oneCertificate.domain}) - Valid for ${oneCertificate.remainingDays} days`
+							});
                         }
                     });
 				}
@@ -276,6 +242,11 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					currentScope.infraSecurityGroups = response.securityGroups;
 				}
 				//save subnets in scope
+				currentScope.infraNetworks = [];
+				if(response.networks && Array.isArray(response.networks) && response.networks.length > 0) {
+					currentScope.infraNetworks = angular.copy(response.networks);
+				}
+
 				currentScope.infraSubnets = [];
 				if (response.networks && response.networks.length > 0) {
 					response.networks.forEach((oneNetwork, index) => {
@@ -326,20 +297,20 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 								currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
 							}
 
-							// overlayLoading.show();
-							// getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
-							// 	overlayLoading.hide();
-							// 	if (error) {
-							// 		currentScope.form.displayAlert('danger', error.message);
-							// 	}
-							// 	else {
-							// 		currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
-							// 		currentScope.modalInstance.close();
-							// 		$timeout(() => {
-							// 			listLoadBalancers(currentScope, currentScope.selectedRegion);
-							// 		}, 2000);
-							// 	}
-							// });
+							overlayLoading.show();
+							getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
+								overlayLoading.hide();
+								if (error) {
+									currentScope.form.displayAlert('danger', error.message);
+								}
+								else {
+									currentScope.displayAlert('success', "Load balancer created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+									currentScope.modalInstance.close();
+									$timeout(() => {
+										listLoadBalancers(currentScope, currentScope.selectedRegion);
+									}, 2000);
+								}
+							});
 						}
 					},
 					{
@@ -370,13 +341,23 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				});
 
 				//populate subnets multiselect
-				currentScope.infraSubnets.forEach((oneSubnet) => {
-					Object.keys(oneSubnet).forEach((oneNetName) => {
-						oneSubnet[oneNetName].forEach((subnet) => {
-							currentScope.form.entries[6].value.push({"v": subnet.id, "l": oneNetName + ': ' + subnet.name});
-						});
+				let subnetsEntry = currentScope.form.entries.find((oneEntry) => { return oneEntry.name === 'subnets' });
+				if(subnetsEntry) {
+					currentScope.infraNetworks.forEach((oneNetwork) => {
+						if(oneNetwork && oneNetwork.subnets && Array.isArray(oneNetwork.subnets)) {
+							oneNetwork.subnets.forEach((oneSubnet) => {
+								let oneSubnetEntry = {
+									v: oneSubnet.id,
+									l: `${oneSubnet.name} - (Network: ${oneNetwork.name} | Availability Zone: ${oneSubnet.availabilityZone})`,
+									network: oneNetwork.name
+								};
+
+								subnetsEntry.value.push(oneSubnetEntry);
+							});
+						}
 					});
-				});
+					subnetsEntry.originalValue = angular.copy(subnetsEntry.value);
+				}
 			});
 		});
 
@@ -421,12 +402,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 
 		tmp.entries[2].onAction = function (id, value, form) {
 			if (value === "https") {
-				currentScope.infraCertificates.forEach((oneCert) => {
-					tmp.entries[4].value.push({
-						"v": oneCert.id,
-						"l": (oneCert.name) ? oneCert.name : oneCert.id
-					});
-				});
+				tmp.entries[4].value = angular.copy(currentScope.infraCertificates);
 
 				if (tmp.entries[4].value.length > 0) {
 					tmp.entries[4].hidden = false;
@@ -473,7 +449,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				form: {
 					"entries": angular.copy(infraLoadBalancerConfig.form.addLoadBalancer)
 				},
-				name: 'modifyLoadBalancer',
+				name: 'awsModifyLoadBalancer',
 				label: 'Modify Load Balancer',
 				actions: [
 					{
@@ -535,6 +511,10 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				currentScope.form.entries[0].type = 'readonly';
 				currentScope.form.entries[0].value = oneLoadBalancer.name;
 
+				//populate load balancer type
+				currentScope.form.entries[2].type = 'readonly';
+				currentScope.form.entries[2].value = oneLoadBalancer.mode;
+
 				//populate health probe parameters
 				currentScope.form.formData['healthProbeInterval'] = oneLoadBalancer.healthProbe.healthProbeInterval;
 				currentScope.form.formData['healthProbePath'] = oneLoadBalancer.healthProbe.healthProbePath;
@@ -544,31 +524,68 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 
 				//call addNewRule based on the number of rules the LB has
 				oneLoadBalancer.rules.forEach((oneRule, index) => {
-					// TODO: render selected protocol correctly
-					// TODO: if protocol selected is HTTPS we need to "hidden = false" for the certificate field and select the certifiate (already fetched)
-
 					addNewRule(currentScope.form, currentScope);
 					currentScope.form.formData['backendPort'+index] = oneRule.backendPort;
 					currentScope.form.formData['frontendPort'+index] = oneRule.frontendPort;
 					currentScope.form.formData['backendProtocol'+index] = oneRule.backendProtocol;
 					currentScope.form.formData['frontendProtocol'+index] = oneRule.frontendProtocol;
+
+					if(currentScope.form.formData['frontendProtocol'+index] === 'https' && oneRule.certificate) {
+						currentScope.form.formData['certificate'+index] = oneRule.certificate;
+						let rulesEntry = currentScope.form.entries.find((oneEntry) => { return oneEntry.name === 'rules'; });
+						if(rulesEntry && rulesEntry.entries && rulesEntry.entries[index]) {
+							let certificateEntry = rulesEntry.entries[index].entries.find((oneEntry) => { return oneEntry.name === `certificate${index}` });
+							if(certificateEntry) {
+								certificateEntry.hidden = false;
+								certificateEntry.value = angular.copy(currentScope.infraCertificates);
+							}
+						}
+					}
 				});
 
 				//populate securityGroups multiselect
-				// TODO: render the selected security group in the form (already fetched)
+				if(!oneLoadBalancer.securityGroupIds || !Array.isArray(oneLoadBalancer.securityGroupIds)) {
+					oneLoadBalancer.securityGroupIds = [];
+				}
+				currentScope.form.formData['securityGroups'] = [];
 				currentScope.infraSecurityGroups.forEach((oneSG) => {
-					currentScope.form.entries[5].value.push({"v": oneSG.id, "l":oneSG.name});
+					let oneSecurityGroupEntry = { "v": oneSG.id, "l": oneSG.name };
+
+					currentScope.form.entries[5].value.push(oneSecurityGroupEntry);
+					if(oneLoadBalancer.securityGroupIds.indexOf(oneSecurityGroupEntry.v) !== -1) {
+						currentScope.form.formData['securityGroups'].push(oneSecurityGroupEntry);
+					}
 				});
 
 				//populate subnets multiselect
-				// TODO: render the selected subnet in the form (already fetched)
-				currentScope.infraSubnets.forEach((oneSubnet) => {
-					Object.keys(oneSubnet).forEach((oneNetName) => {
-						oneSubnet[oneNetName].forEach((subnet) => {
-							currentScope.form.entries[6].value.push({"v": subnet.id, "l": oneNetName + ': ' + subnet.name});
-						});
+				if(!oneLoadBalancer.zones || !Array.isArray(oneLoadBalancer.zones)) {
+					oneLoadBalancer.zones = [];
+				}
+
+				currentScope.form.formData['subnets'] = [];
+				let subnetsEntry = currentScope.form.entries.find((oneEntry) => { return oneEntry.name === 'subnets' });
+				if(subnetsEntry) {
+					subnetsEntry.value = [];
+					currentScope.infraNetworks.forEach((oneNetwork) => {
+						if(oneNetwork && oneNetwork.id === oneLoadBalancer.networkId && oneNetwork.subnets && Array.isArray(oneNetwork.subnets)) {
+							oneNetwork.subnets.forEach((oneSubnet) => {
+								let oneSubnetEntry = {
+									v: oneSubnet.id,
+									l: `${oneSubnet.name} - (Network: ${oneNetwork.name} | Availability Zone: ${oneSubnet.availabilityZone})`,
+									network: oneNetwork.name
+								};
+
+								subnetsEntry.value.push(oneSubnetEntry);
+								let found = oneLoadBalancer.zones.find((oneZone) => { return oneZone.subnetId === oneSubnetEntry.v });
+								if(found) {
+									currentScope.form.formData['subnets'].push(oneSubnetEntry);
+								}
+							});
+						}
 					});
-				});
+					subnetsEntry.originalValue = angular.copy(subnetsEntry.value);
+					subnetsEntry.onAction('subnets', currentScope.form.formData['subnets'], currentScope.form);
+				}
 			});
 		});
 	}
@@ -742,9 +759,10 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			return({
 				name: data.name,
 				region: data.region,
+				section: 'loadBalancer',
 				rules: rulesArray,
 				healthProbe: healthProbeOptions,
-				type: data.type,
+				type: data.mode,
 				securityGroups: securityGroupsArray,
 				subnets: subnetsArray
 			})

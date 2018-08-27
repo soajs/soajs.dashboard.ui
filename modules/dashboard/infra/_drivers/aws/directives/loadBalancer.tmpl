@@ -58,7 +58,7 @@
 					<legend>Rules</legend>
 					<accordion close-others="false">
 						<accordion-group ng-repeat="oneRule in oneLoadBalancer.rules" is-open="oneRule.open">
-							<accordion-heading>{{oneRule.frontendProtocol}} {{oneRule.frontendPort}} &nbsp;&#8594;&nbsp; {{oneRule.backendProtocol}} {{oneRule.backendPort}}</accordion-heading>
+							<accordion-heading>{{oneRule.frontendProtocol|uppercase}} {{oneRule.frontendPort}} &nbsp;&#8594;&nbsp; {{oneRule.backendProtocol|uppercase}} {{oneRule.backendPort}}</accordion-heading>
 							<fieldset>
 								<legend>Details</legend>
 								<table width="100%">

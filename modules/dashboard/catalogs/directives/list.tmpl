@@ -118,11 +118,19 @@
 					<li><a ng-if="access.list" href="" ng-click="addRecipe('template')"><span class="icon icon-copy"></span>&nbsp;Use Existing Template</a></li>
 					<li><a ng-if="access.list" href="" ng-click="addRecipe('blank')"><span class="icon icon-file-empty"></span>&nbsp;Start From Blank Template</a></li>
 				</ul>
+				<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+					<span class="icon icon-download"></span> Download From Store
+				</a>
 			</div>
 			<div ng-if="recipes && recipes.length === 0">
 				<br />
 				<br />
-				<alert type="warning">No catalog recipes found</alert>
+				<alert type="warning">
+					<p>No catalog recipes available.</p>
+					<p ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+						You can also browse the <a href="{{showSOAJSStoreLink}}" target="_blank"><b>SOAJS Store</b></a> and download deployment recipes.
+					</p>
+				</alert>
 			</div>
 			<div ng-if="access.list">
 				<div ng-if="recipes && recipes.length > 0" class="entryBoxes">

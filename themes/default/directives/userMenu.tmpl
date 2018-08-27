@@ -2,15 +2,9 @@
     <div ng-controller="welcomeCtrl">
         <div ng-show="enableInterface">
             <ul style="margin-left:40px;">
-                <li>{{translation.welcome[LANG]}} {{userFirstName}} {{userLastName}}</li>
-                <li ng-repeat="link in userMenu.links">
-                    <a href="{{link.url}}" ng-class="{active: link.url === userMenu.selectedMenu}" class="userMenu{{$index}}" id="userMenu-{{link.id}}">
-                        <span class="icon icon-{{link.icon}}"></span>{{link.label}}
-                    </a>
-                </li>
-	            <li ng-show="isPortalDeployed()">
-		            <a href="" ng-click="openMy('portal')" class="userMenu-portal" id="userMenu-portal">
-			            <span class="icon icon-home"></span>Open Portal
+	            <li ng-show="showSOAJSStoreLink && showSOAJSStoreLink!==''">
+		            <a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-info" style="position:relative; top:-6px;">
+			            <span class="icon icon-cart"></span>SOAJS Store
 		            </a>
 	            </li>
 	            <li ng-show="!isPortalDeployed()">
@@ -18,11 +12,16 @@
 			            <span class="icon icon-rocket"></span>Deploy Portal
 		            </a>
 	            </li>
-                <li>
-                    <a onclick="window.open('https://www.herrontech.com/store');" id="userMenu-store">
-                        <span class="icon icon-cart"></span>Store
-                    </a>
+	            <li ng-show="isPortalDeployed()">
+		            <a href="" ng-click="openMy('portal')" class="userMenu-portal" id="userMenu-portal">
+			            <span class="icon icon-home"></span>Open Portal
+		            </a>
 	            </li>
+                <li ng-repeat="link in userMenu.links">
+                    <a href="{{link.url}}" ng-class="{active: link.url === userMenu.selectedMenu}" class="userMenu{{$index}}" id="userMenu-{{link.id}}">
+                        <span class="icon icon-{{link.icon}}"></span>{{link.label}}
+                    </a>
+                </li>
 	            <li class="logout">
 		            <a href="" ng-click="logoutUser()" class="userMenu-logout" id="userMenu-logout">
 			            <span class="icon icon-switch"></span>{{translation.logout[LANG]}}

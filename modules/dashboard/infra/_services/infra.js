@@ -97,6 +97,17 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 							}
 						});
 					}
+					
+					infraConfig.form.providers.forEach((oneProvider) => {
+						if(myInfra.name === 'local'){
+							if(myInfra.technologies[0] === oneProvider.name){
+								myInfra.logo = oneProvider.value;
+							}
+						}
+						else if(myInfra.name === oneProvider.name){
+							myInfra.logo = oneProvider.value;
+						}
+					});
 
 					hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
 

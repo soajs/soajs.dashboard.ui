@@ -3,7 +3,8 @@
 var ciApp = soajsApp.components;
 ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'injectFiles',"$location", function ($scope, $timeout, $modal, $cookies, ngDataApi, injectFiles, $location) {
 	$scope.$parent.isUserLoggedIn();
-
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, ciAppConfig.permissions);
 

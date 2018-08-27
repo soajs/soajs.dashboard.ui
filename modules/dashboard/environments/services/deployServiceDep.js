@@ -223,7 +223,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 		}
 		
 		if (($scope.services[$scope.oneSrv].deployed && $scope.serviceType !== 'daemon') || ($scope.services[$scope.oneSrv].deployed && daemonGrpConf && $scope.services[$scope.oneSrv].deploySettings && $scope.services[$scope.oneSrv].deploySettings[daemonGrpConf] && $scope.services[$scope.oneSrv].deploySettings[daemonGrpConf].deploy)) {
-			$scope.serviceId = ($scope.serviceType === 'daemon' && daemonGrpConf && $scope.services[$scope.oneSrv][daemonGrpConf]) ? $scope.services[$scope.oneSrv][daemonGrpConf].serviceId : $scope.services[$scope.oneSrv].serviceId;
+			$scope.serviceId = $scope.services[$scope.oneSrv].serviceId;
 			$scope.deployed = true;
 		}
 		$scope.default = false;
@@ -357,7 +357,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			}
 			var service = $scope.services[oneSrv];
 			$scope.groupConfigs = '';
-			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit) {
+			if (!Object.hasOwnProperty.call($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig, 'memoryLimit')) {
 				if (service && service.prerequisites) {
 					if (service.prerequisites.memory && service.prerequisites.memory.trim().length > 0) {
 						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = parseFloat(service.prerequisites.memory);
@@ -373,9 +373,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			}
 			else {
-				$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit /= 1048576;
-				if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit < 1) {
-					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
+				if($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit!== 0){
+					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit /= 1048576;
+					if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit < 1) {
+						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = 500;
+					}
 				}
 			}
 			if (service && $scope.serviceType === 'daemon' && service.grpConf) {

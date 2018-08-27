@@ -76,6 +76,9 @@
 		</div>
 		
 		<div ng-if="!oldStyle && templates && templates.length > 0">
+			<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+				<span class="icon icon-download"></span> Download From Store
+			</a>
 			<input ng-if="access.import" type="button" class="btn btn-sm btn-success" value="Import" ng-click="go('/importExport', 'import')" />&nbsp;
 			<input ng-if="access.export" type="button" class="btn btn-sm btn-primary" value="Export" ng-click="go('/importExport', 'export')" />&nbsp;
 			<input type="button" class="btn btn-sm btn-success f-right" value="Refresh" ng-click="listTemplates()" />&nbsp;

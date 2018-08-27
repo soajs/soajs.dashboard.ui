@@ -406,7 +406,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication = {};
 						}
 
-						if(deployFromTemplate.memoryLimit){
+						if(Object.hasOwnProperty.call(deployFromTemplate, 'memoryLimit')){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 						}
 
@@ -459,8 +459,10 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						};
 
 						if(!controller){
-							if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
-								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
+							if(oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit !== 0){
+								if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
+									oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
+								}
 							}
 						}
 					}
@@ -622,7 +624,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					if (currentScope.wizard.onboardNames) {
                         resource.scope.onboardNames = currentScope.wizard.onboardNames;
 					}
-					// TODO
+					
 					if(currentScope.wizard.vms || currentScope.wizard.vmOnBoard){
 						if(!resource.scope.mainData.deploymentData){
 							resource.scope.mainData.deploymentData = {}
@@ -723,7 +725,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							record.deployOptions.deployConfig.replication = {};
 						}
 
-						if(deployFromTemplate.memoryLimit){
+						if(Object.hasOwnProperty.call(deployFromTemplate, 'memoryLimit')){
 							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
 								record.deployOptions.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 							}
@@ -799,8 +801,9 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							oneTemplateSecret.uid = "from-template-" + oneTemplateSecret.name.toLowerCase();
 						});
 					}
-
-					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, record, 'add', settings, () => {
+					
+					let alreadyFilledFormData = record;
+					resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, angular.copy(record), 'add', settings, () => {
 						if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 							resource.scope.hideDeployButton = true;
 							if(isKubernetes){
@@ -866,39 +869,70 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 						let entries = [];
 						buildDynamicForm(resource.scope, entries, () => {
-
-							if(resource.scope.formData.deployOptions && resource.deployOptions){
-								resource.scope.formData.deployOptions.deployConfig = resource.deployOptions.deployConfig;
-								let deployConfig = resource.scope.formData.deployOptions.deployConfig;
-								if(deployConfig && deployConfig.type ==='vm'){
-									resource.scope.onDeploymentTechnologySelect();
-								}
-							}
-
 							let element = angular.element(document.getElementById("resource_" + key));
 							element.append("<form name=\"addEditResource\" id=\"addEditResource\"><div ng-include=\"'modules/dashboard/resources/directives/resource.tmpl'\"></div></form>");
 							$compile(element.contents())(resource.scope);
-
-							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
-								setTimeout(() => {
-									resource.scope.updateDeploymentName(record.name);
-								}, 200);
-							}
-
+							
 							resource.scope.$watch("addEditResource.$invalid", function($invalid){
 								resource.formIsInvalid = $invalid;
 							});
-
+							
 							resource.scope.$watch('catalogConflictingPorts', (value) => {
 								currentScope.loadingDynamicSection = value && value !== '';
 							});
-
-							counter++;
-							if (counter < entriesNames.length) {
-								buildMyForms(counter, cb);
+							
+							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
+								$timeout(() => {
+									resource.scope.formData = angular.copy(alreadyFilledFormData);
+									
+									if(resource.scope.formData.deployOptions){
+										resource.deployOptions = resource.scope.formData.deployOptions;
+									}
+									
+									//if wizard, and template container only, do not show the platform picker !
+									if(currentScope.restrictions){
+										if(currentScope.restrictions.vm && (currentScope.restrictions.docker || currentScope.restrictions.kubernetes) ){
+											resource.scope.displayPlatformPicker = true;
+										}
+									}
+									else{
+										resource.scope.displayPlatformPicker = true;
+									}
+									
+									if(resource.deployOptions && resource.deployOptions.deployConfig && resource.deployOptions.deployConfig.type && resource.deployOptions.deployConfig.type === 'vm'){
+										resource.scope.updateDeploymentName(record.name, true);
+									}
+									else{
+										if(resource.scope.displayPlatformPicker){
+											resource.scope.updateDeploymentName(record.name, true);
+										}
+										resource.scope.updateCustomRepoName();
+									}
+									
+									counter++;
+									if (counter < entriesNames.length) {
+										buildMyForms(counter, cb);
+									}
+									else {
+										return cb();
+									}
+								}, 1100);
 							}
-							else {
-								return cb();
+							//external resource
+							else{
+								resource.scope.formData = angular.copy(alreadyFilledFormData);
+								
+								if(resource.scope.formData.deployOptions){
+									resource.deployOptions = resource.scope.formData.deployOptions;
+								}
+								
+								counter++;
+								if (counter < entriesNames.length) {
+									buildMyForms(counter, cb);
+								}
+								else {
+									return cb();
+								}
 							}
 						});
 					});

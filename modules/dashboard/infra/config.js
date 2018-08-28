@@ -127,7 +127,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'tooltip': 'Enter your AWS Key Id',
-				'fieldMsg': 'Users need an access keys to make programmatic calls to AWS Services using the APIs.',
+				'fieldMsg': 'Users need an access keys to make programmatic calls to AWS Services using the APIs, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729710593/AWS" target="_blank">Learn More</a>',
 				'required': true
 			},
 			{
@@ -136,7 +136,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'tooltip': 'Enter your AWS secretAccessKey',
-				'fieldMsg': 'Secret Access Keys work in conjunction with Key ID to authorize calls made to AWS APIs.',
+				'fieldMsg': 'Secret Access Keys work in conjunction with Key ID to authorize calls made to AWS APIs. <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729710593/AWS" target="_blank">Learn More</a>',
 				'required': true
 			}
 		],
@@ -156,7 +156,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'tooltip': 'Enter your Google Project Id',
-				'fieldMsg': 'Google Cloud allows deployment within already created projects only. Enter the Google Project Name you which to use for your deployments.',
+				'fieldMsg': 'Google Cloud allows deployment within already created projects only. Enter the Google Project Name you which to use for your deployments, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729546773/Google+Cloud" target="_blank">Learn More</a>',
 				'required': true
 			},
 			{
@@ -166,7 +166,7 @@ let infraConfig = {
 				'height': '200px',
 				'value': "",
 				'tooltip': 'Enter the token associated with this project',
-				'fieldMsg': 'Tokens allow you to communicate with Google Cloud APIs to manage your deployments. Generate a Key Token in Google Cloud IAM / Service Accounts section and copy it here.',
+				'fieldMsg': 'Tokens allow you to communicate with Google Cloud APIs to manage your deployments. Generate a Key Token in Google Cloud IAM / Service Accounts section and copy it here, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729546773/Google+Cloud" target="_blank">Learn More</a>',
 				'required': true
 			}
 		],
@@ -186,7 +186,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'placeholder': 'Azure Client ID',
-				'fieldMsg': 'Client ID is required to communicate with Azure\'s API',
+				'fieldMsg': 'Client ID is required to communicate with Azure\'s API, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729579529/Microsoft+Azure" target="_blank">Learn More</a>',
 				'required': true
 			},
 			{
@@ -195,7 +195,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'placeholder': 'Azure Client Secret',
-				'fieldMsg': 'Client Secret is required to communicate with Azure\'s API',
+				'fieldMsg': 'Client Secret is required to communicate with Azure\'s API, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729579529/Microsoft+Azure" target="_blank">Learn More</a>',
 				'required': true
 			},
 			{
@@ -204,7 +204,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'placeholder': 'Application Tenant ID',
-				'fieldMsg': 'Enter the ID of the tenant that your application requires to communicate with Azure subscription',
+				'fieldMsg': 'Enter the ID of the tenant that your application requires to communicate with Azure subscription, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729579529/Microsoft+Azure" target="_blank">Learn More</a>',
 				'required': true
 			},
 			{
@@ -213,7 +213,7 @@ let infraConfig = {
 				'type': 'text',
 				'value': "",
 				'placeholder': 'Subscription ID',
-				'fieldMsg': 'Provide the ID of the subscription you want to use',
+				'fieldMsg': 'Provide the ID of the subscription you want to use, <a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/729579529/Microsoft+Azure" target="_blank">Learn More</a>',
 				'required': true
 			}
 		]

@@ -3,10 +3,11 @@ var importApp = soajsApp.components;
 var interfaceDomain = location.host;
 interfaceDomain = mydomain.split(":")[0];
 
-importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'templateSrv', 'detectBrowser', '$modal', '$window', 'ngDataApi', '$cookies', '$location', function ($scope, $timeout, injectFiles, templateSrv, detectBrowser, $modal, $window, ngDataApi, $cookies, $location) {
+importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'importSrv', 'detectBrowser', '$modal', '$window', 'ngDataApi', '$cookies', '$location', function ($scope, $timeout, injectFiles, importSrv, detectBrowser, $modal, $window, ngDataApi, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
-
-	$scope.templatesDocumentationLink = importAppConfig.documentationLink;
+	
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
+	
 	$scope.storeLink = importAppConfig.storeLink;
 
 	$scope.access = {};
@@ -17,7 +18,7 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'tem
 	let myBrowser = detectBrowser();
 	$scope.isSafari = myBrowser === 'safari';
 
-	$scope.step = 0;
+	$scope.step = 1;
 
 	$scope.switchForms = function () {
         $scope.method = angular.copy($cookies.get("method"));
@@ -50,7 +51,7 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'tem
 					btn: 'primary',
 					action: function (formData) {
 						if(formData && Object.keys(formData).length > 0){
-							templateSrv.uploadTemplate($scope, formData.myTemplate_0, () => {
+							importSrv.uploadTemplate($scope, formData.myTemplate_0, () => {
 								if($scope.form && $scope.form.formData){
 									$scope.form.formData = {};
 								}
@@ -101,17 +102,17 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'tem
 	};
 
 	$scope.generateTemplate = function(){
-		templateSrv.generateTemplate($scope);
+		importSrv.generateTemplate($scope);
 	};
 
 	$scope.storeRecordsOf = function(){
-		templateSrv.storeRecordsOf($scope);
+		importSrv.storeRecordsOf($scope);
 	};
 
 	$scope.exportForm = function(){
 		$scope.step = 3;
 		$scope.exportSectionCounter = 0;
-		templateSrv.exportTemplate($scope);
+		importSrv.exportTemplate($scope);
 	};
 	
 	$scope.listTemplates = function(){
@@ -120,93 +121,16 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'tem
 		if($scope.form && $scope.form.formData){
 			$scope.form.formData = {};
 		}
-		templateSrv.listTemplates($scope);
-	};
-	
-	$scope.deleteTmpl = function(oneTemplate){
-		templateSrv.deleteTmpl($scope, oneTemplate);
-	};
-	
-	$scope.upgradeTemplates = function(){
-		templateSrv.upgradeTemplates($scope);
-	};
-	
-	$scope.showTemplateContent = function(oneTmpl) {
-		let parentScope = $scope;
-
-		$modal.open({
-			templateUrl: "templateInfoBox.tmpl",
-			size: 'lg',
-			backdrop: true,
-			keyboard: false,
-			controller: function ($scope, $modalInstance) {
-				fixBackDrop();
-				$scope.link = (oneTmpl.link) ? oneTmpl.link : null;
-				$scope.logo = (oneTmpl.logo) ? oneTmpl.logo : null;
-
-				$scope.title = oneTmpl.name;
-				$scope.reusable = true;
-				if(Object.hasOwnProperty.call(oneTmpl, 'reusable')){
-					$scope.reusable = oneTmpl.reusable;
-				}
-
-				if(oneTmpl.restriction){
-					$scope.restriction = oneTmpl.restriction;
-				}
-
-				$scope.description = oneTmpl.description;
-				$scope.content = oneTmpl.content;
-
-				if($scope.content.deployments){
-					if($scope.content.deployments.repo){
-						$scope.content.deployments.repo.max = Object.keys($scope.content.deployments.repo).length;
-					}
-
-					if($scope.content.deployments.resources){
-						$scope.content.deployments.resources.max = Object.keys($scope.content.deployments.resources).length;
-					}
-				}
-
-				$scope.close = function () {
-					$modalInstance.close();
-				};
-
-				$scope.exportTemplateContent = function(){
-					parentScope.exportTemplateContent(oneTmpl);
-				};
-			}
-		});
+		importSrv.listTemplates($scope);
 	};
 
-	$scope.exportTemplateContent = function(oneTmpl){
-		if($scope.isSafari){
-			$window.alert("The Downloader of this module is not compatible with Safari. Please use another browser.");
-			return false;
-		}
-
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			'method': 'post',
-			'routeName': '/dashboard/templates/export',
-			'data': {
-				"id": oneTmpl._id
-			},
-			"headers": {
-				"Accept": "application/zip"
-			},
-			"responseType": 'arraybuffer',
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				openSaveAsDialog("soajs_template_" + new Date().toISOString() + ".zip", response, "application/zip");
-			}
-		});
-	};
-
-	injectFiles.injectCss("modules/dashboard/templates/templates.css");
+	injectFiles.injectCss("modules/dashboard/importExport/import.css");
 
     // Start here
     $scope.switchForms();
+	
+	$scope.$on("$destroy", function () {
+		delete $scope.method;
+		$cookies.remove('method', { 'domain': interfaceDomain });
+	});
 }]);

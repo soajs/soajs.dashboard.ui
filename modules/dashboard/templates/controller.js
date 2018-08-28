@@ -104,7 +104,7 @@ templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles'
 	
     $scope.go = function (path, method) {
         if (path) {
-            $cookies.put("method", method, {});
+            $cookies.put("method", method, { 'domain': interfaceDomain });
             $location.path(path);
         }
     };

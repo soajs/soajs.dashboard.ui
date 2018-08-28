@@ -29,23 +29,23 @@
 		<br/>
 
 		<accordion close-others="false">
-			<accordion-group is-open="oneGroups.open" ng-repeat="oneGroups in infraSecurityGroups">
+			<accordion-group is-open="oneGroup.open" ng-repeat="oneGroup in infraSecurityGroups">
 				<accordion-heading>
-					{{oneGroups.name}}
+					{{oneGroup.name}}
 				</accordion-heading>
 				<div class="w-100 c-both t-right">
-					<a href="" title="Modify" ng-click="editFirewall(oneGroups)" class="btn btn-sm btn-primary">
+					<a href="" title="Modify" ng-click="editFirewall(oneGroup)" class="btn btn-sm btn-primary">
 						<span class="icon icon-pencil2"></span>&nbsp;Modify
 					</a>
-					<a title="Delete" ng-disabled="oneGroups.vmLayers && oneGroups.vmLayers.length > 0" class="btn btn-sm btn-danger" href="" ng-click="deleteFirewall(oneGroups)" ng-confirm-click="Are you sure you want to delete this Security Group ?">
+					<a title="Delete" ng-disabled="oneGroup.vmLayers && oneGroup.vmLayers.length > 0" class="btn btn-sm btn-danger" href="" ng-click="deleteFirewall(oneGroup)" ng-confirm-click="Are you sure you want to delete this Security Group ?">
 						<span class="icon icon-cross"></span>&nbsp;Delete
 					</a>
 				</div>
-				<alert ng-if="!oneGroups.ports || oneGroups.ports.length === 0" type="warning">
+				<alert ng-if="!oneGroup.ports || oneGroup.ports.length === 0" type="warning">
 					<p>No Ports Configuration Detected.</p>
 				</alert>
 
-				<fieldset ng-if="oneGroups.ports && oneGroups.ports.length > 0">
+				<fieldset ng-if="oneGroup.ports && oneGroup.ports.length > 0">
 					<legend>Ports Configuration</legend>
 					<div class="grid">
 						<table width="100%">
@@ -59,10 +59,10 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr ng-repeat="onePort in oneGroups.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
+								<tr ng-repeat="onePort in oneGroup.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.protocol}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.published}}</td>
-									<td ng-class="{'readonly': onePort.readonly}">{{onePort.source}}</td>
+									<td ng-class="{'readonly': onePort.readonly}">{{onePort.source.toString()}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.direction}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.access}}</td>
 									</td>
@@ -72,26 +72,24 @@
 					</div>
 				</fieldset>
 
-				<div ng-if="oneGroups.networks && oneGroups.networks.length > 0">
+				<div ng-if="oneGroup.networkId && oneGroup.networkInfo">
 					<fieldset>
 						<legend>Networks</legend>
 						<div class="entryBoxes entryBoxesGrid">
-							<div ng-repeat="oneNetwork in oneGroups.networks">
-								<div class="entryBox blueBox" style="padding: 3px 5px;">
-									<a href="#/infra-networks/?group={{oneNetwork.group}}">
-										<span class="icon icon-connection"></span>&nbsp;<b>{{oneNetwork.name}}</b>
-									</a>
-								</div>
+							<div class="entryBox blueBox" style="padding: 3px 5px;">
+								<a href="#/infra-networks/?region={{oneGroup.networkInfo.region}}">
+									<span class="icon icon-connection"></span>&nbsp;<b>{{oneGroup.networkInfo.name}}</b>
+								</a>
 							</div>
 						</div>
 					</fieldset>
 				</div>
 
-				<div ng-if="oneGroups.vmLayers && oneGroups.vmLayers.length > 0">
+				<div ng-if="oneGroup.vmLayers && oneGroup.vmLayers.length > 0">
 					<fieldset>
 						<legend>Virtual Machine Layers</legend>
 						<div class="entryBoxes entryBoxesGrid">
-							<div ng-repeat="oneVMLayer in oneGroups.vmLayers">
+							<div ng-repeat="oneVMLayer in oneGroup.vmLayers">
 								<div class="entryBox blueBox" style="padding: 3px 5px;">
 									<div ng-if="oneVMLayer.link">
 										<a href="#/environments-platforms?envCode={{oneVMLayer.envCode}}&tab=vm&layer={{oneVMLayer.vmLayer}}">

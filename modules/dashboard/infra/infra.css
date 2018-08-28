@@ -450,6 +450,51 @@ td.readonly{
     margin-right: 5px;
 }
 
+/* AWS Network subnets */
+#awsAddNetwork #networkSubnets-wrapper tr[class^="form-group tr-subnetGroup"],
+#awsModifyNetwork #networkSubnets-wrapper tr[class^="form-group tr-subnetGroup"] {
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#awsAddNetwork table tr [class^="form-group tr-subnetGroup"] tr[class^="form-group tr-subnetAddress"],
+#awsModifyNetwork table tr [class^="form-group tr-subnetGroup"] tr[class^="form-group tr-subnetAddress"],
+#awsAddNetwork table tr [class^="form-group tr-subnetGroup"] tr[class^="form-group tr-subnetAvailabilityZone"],
+#awsModifyNetwork table tr [class^="form-group tr-subnetGroup"] tr[class^="form-group tr-subnetAvailabilityZone"] {
+    float: left;
+    width: 49.5%;
+    height: 70px;
+    display: table;
+    margin-right: 5px;
+}
+
+#awsAddNetwork table tr [class^="form-group tr-subnetGroup"] tr[class^="form-group tr-rSubnet"],
+#awsModifyNetwork table tr [class^="form-group tr-subnetGroup"] tr[class^="form-group tr-rSubnet"]{
+    position: absolute;
+    top: 25px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+/* AWS Network addresses */
+#awsAddNetwork #networkAddresses-wrapper tr[class^="form-group tr-addressGroup"],
+#awsModifyNetwork #networkAddresses-wrapper tr[class^="form-group tr-addressGroup"] {
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+#awsAddNetwork table tr [class^="form-group tr-addressGroup"] tr[class^="form-group tr-rAddress"],
+#awsModifyNetwork table tr [class^="form-group tr-addressGroup"] tr[class^="form-group tr-rAddress"]{
+    position: absolute;
+    top: 25px;
+    right: 10px;
+    cursor: pointer;
+    color: red;
+}
+
 /* AWS Certificates statuses */
 .certificate_active {
     color: green;
@@ -477,4 +522,13 @@ td.readonly{
 
 .certificate_failed {
     color: red;
+}
+
+/* AWS Network statuses */
+.network_available {
+    color: green;
+}
+
+.network_pending {
+    color: #8a6d3b;
 }

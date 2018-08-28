@@ -92,6 +92,19 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 						}
 
 					]
+				},
+				{
+					'name': 'networkSubnets',
+					'label': 'Network Subnets',
+					'type': 'group',
+					'entries':[
+						{
+							'type': 'html',
+							'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add New Subnet'/>",
+							'name': 'addNewSubnet'
+						}
+
+					]
 				}
 			],
 			addressInput: {
@@ -114,6 +127,35 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 						'value': '<span class="icon icon-cross"></span>'
 					}
 				]
+			},
+			subnetInput: {
+				'name': 'subnetGroup',
+				'type': 'group',
+				'label': 'New Subnet',
+				'entries': [
+					{
+						'name': 'subnetAddress',
+						'label': 'Address',
+						'type': 'text',
+						'value': '',
+						'required': true,
+						'fieldMsg': 'Enter an address using CIDR notation.',
+						'placeholder': "10.0.1.0/24"
+					},
+					{
+						'name': 'subnetAvailabilityZone',
+						'label': 'Availability Zone',
+						'type': 'select',
+						'value': [],
+						'required': false,
+						'fieldMsg': 'Optional: If no zone is set, it will be auto assigned.'
+					},
+					{
+						'type': 'html',
+						'name': 'rSubnet',
+						'value': '<span class="icon icon-cross"></span>'
+					}
+				]
 			}
 
 		}
@@ -126,7 +168,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			form: {
 				"entries": angular.copy(infraNetworkConfig.form.addNetwork)
 			},
-			name: 'addNetwork',
+			name: 'awsAddNetwork',
 			label: 'Add New Network',
 			actions: [
 				{
@@ -214,7 +256,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				"entries": angular.copy(infraNetworkConfig.form.editNetwork)
 			},
 			data: oneNetwork,
-			name: 'editNetwork',
+			name: 'awsModifyNetwork',
 			label: 'Edit Network',
 			actions: [
 				{
@@ -251,7 +293,19 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 							}
 						}
 
+						//aggregate subnets in one array
+						let aggregatedSubnets = [];
+						for(let i = 0; i < currentScope.subnetCounter; i++) {
+							let oneSubnet = {};
+
+							if(data[`subnetAddress${i}`]) oneSubnet.address = data[`subnetAddress${i}`];
+							if(data[`subnetAvailabilityZone${i}`]) oneSubnet.availabilityZone = data[`subnetAvailabilityZone${i}`];
+
+							if(oneSubnet.address) aggregatedSubnets.push(oneSubnet);
+						}
+
 						postOpts.data.params.addresses = aggregatedAddresses;
+						postOpts.data.params.subnets = aggregatedSubnets;
 
 						// // TODO: regex the ips to make sure they are in the correct format
 						// let addressPattern = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$/;
@@ -291,6 +345,9 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			addNewAddress(form, currentScope);
 		};
 
+		options.form.entries[5].entries[0].onAction = function(id, value, form){
+			addNewSubnet(currentScope);
+		};
 
 		buildFormWithModal(currentScope, $modal, options, () => {
 			currentScope.form.formData = oneNetwork;
@@ -307,6 +364,15 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				addNewAddress(currentScope.form, currentScope);
 				currentScope.form.formData['addressIp' + index] = oneAddress;
 			});
+
+			currentScope.subnetCounter = 0;
+			if(oneNetwork.subnets && Array.isArray(oneNetwork.subnets) && oneNetwork.subnets.length > 0) {
+				oneNetwork.subnets.forEach((oneSubnet, index) => {
+					addNewSubnet(currentScope, { disabled: true });
+					currentScope.form.formData[`subnetAddress${index}`] = oneSubnet.address;
+					currentScope.form.formData[`subnetAvailabilityZone${index}`] = oneSubnet.availabilityZone;
+				});
+			}
 		});
 	}
 
@@ -343,6 +409,52 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			form.entries[4].entries.splice(form.entries[4].entries.length - 1, 0, tmp);
 		}
 		currentScope.addressCounter++;
+	}
+
+	function addNewSubnet(currentScope, options) {
+		let subnetCounter = currentScope.subnetCounter
+		var tmp = angular.copy(infraNetworkConfig.form.subnetInput);
+
+		tmp.name += subnetCounter;
+		tmp.entries[0].name += subnetCounter;
+		tmp.entries[1].name += subnetCounter;
+		tmp.entries[2].name += subnetCounter;
+
+		if(options && options.disabled) {
+			tmp.entries[0].disabled = true;
+			tmp.entries[1].disabled = true;
+		}
+
+		tmp.entries[2].onAction = function (id, value, form) {
+			var count = parseInt(id.replace('rSubnet', ''));
+
+			for (let i = form.entries[5].entries.length -1; i >= 0; i--) {
+				if (form.entries[5].entries[i].name === 'subnetGroup' + count) {
+					//remove from formData
+					for (var fieldname in form.formData) {
+						if ([`subnetAddress${count}`, `subnetAvailabilityZone${count}`].indexOf(fieldname) !== -1) {
+							delete form.formData[fieldname];
+						}
+					}
+					//remove from formEntries
+					form.entries[5].entries.splice(i, 1);
+					break;
+				}
+			}
+		};
+
+		//add availability zones values to entry
+		if(currentScope.availabilityZones) {
+			tmp.entries[1].value = currentScope.availabilityZones;
+		}
+
+		if (currentScope.form && currentScope.form.entries) {
+			currentScope.form.entries[5].entries.splice(currentScope.form.entries[5].entries.length - 1, 0, tmp);
+		}
+		else {
+			currentScope.form.entries[5].entries.splice(currentScope.form.entries[5].entries.length - 1, 0, tmp);
+		}
+		currentScope.subnetCounter++;
 	}
 
 	function deleteNetwork(currentScope, oneNetwork) {
@@ -387,7 +499,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['networks', 'securityGroups']
+				'extras[]': ['networks', 'securityGroups', 'availabilityZones']
 			}
 		};
 
@@ -404,6 +516,13 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				}
 				if (currentScope.infraNetworks.length > 0) {
 					currentScope.infraNetworks[0].open = true;
+				}
+
+				if(response.availabilityZones) {
+					// keep the availability zones in scope for further use
+					currentScope.availabilityZones = response.availabilityZones.map((oneAz) => {
+						return { v: oneAz.name, l: oneAz.name };
+					});
 				}
 
 				if (currentScope.vmlayers) {

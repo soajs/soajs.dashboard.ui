@@ -36,7 +36,12 @@
 							Address: {{oneNetwork.address[0]}}
 						</span>
 				</accordion-heading>
-				<div class="w-100 c-both t-right">
+				<div class="w-100 t-left f-left">
+					<a class="btn btn-sm btn-default">
+						State: <b class="network_{{oneNetwork.state}}">{{oneNetwork.state|uppercase}}</b>
+					</a>
+				</div>
+				<div class="w-100 t-right">
 					<a href="" ng-click="editNetwork(oneNetwork)" class="btn btn-sm btn-primary">
 						<span class="icon icon-pencil2"></span>&nbsp;Modify
 					</a>&nbsp;&nbsp;
@@ -45,12 +50,12 @@
 					</a>
 				</div>
 
-				<fieldset ng-if="oneNetwork.dnsServers && oneNetwork.dnsServers.length > 0">
-					<legend>DNS Servers</legend>
+				<fieldset ng-if="oneNetwork.address && oneNetwork.address.length > 0">
+					<legend>Applicable Addresses</legend>
 					<div class="entryBoxes entryBoxesGrid">
-						<div ng-repeat="oneServer in oneNetwork.dnsServers">
+						<div ng-repeat="oneAddress in oneNetwork.address">
 							<div class="entryBox blueBox" style="padding: 3px 5px;">
-								<b>IP Address</b>&nbsp;{{oneServer}}
+								<b>{{oneAddress}}</b>
 							</div>
 						</div>
 					</div>
@@ -65,6 +70,7 @@
 									<th>Name</th>
 									<th>Address</th>
 									<th>Availability Zone</th>
+									<th>State</th>
 									<th>Virtual Machines</th>
 								</tr>
 							</thead>
@@ -73,6 +79,7 @@
 									<td>{{oneSubnet.name}}</td>
 									<td>{{oneSubnet.address}}</td>
 									<td>{{oneSubnet.availabilityZone}}</td>
+									<td>{{oneSubnet.state}}</td>
 									<td>
 										<div ng-if="!oneSubnet.vm">N/A</div>
 										<div ng-if="oneSubnet.vm.link">

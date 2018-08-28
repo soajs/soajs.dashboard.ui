@@ -416,6 +416,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		var tmp = angular.copy(infraNetworkConfig.form.subnetInput);
 
 		tmp.name += subnetCounter;
+		tmp.label = `Subnet ${subnetCounter + 1}`;
 		tmp.entries[0].name += subnetCounter;
 		tmp.entries[1].name += subnetCounter;
 		tmp.entries[2].name += subnetCounter;

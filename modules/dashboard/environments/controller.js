@@ -307,6 +307,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		
 		postData.services.config.session.unset = (postData.services.config.session.unset) ? "destroy" : "keep";
 		
+		if(postData.services.config.throttling){
+			if(postData.services.config.throttling.publicAPIStrategy === null){
+				postData.services.config.throttling.publicAPIStrategy = '';
+			}
+			if(postData.services.config.throttling.privateAPIStrategy === null){
+				postData.services.config.throttling.privateAPIStrategy = '';
+			}
+		}
+		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": (($scope.newEntry) ? "post" : "put"),
 			"routeName": "/dashboard/environment/" + (($scope.newEntry) ? "add" : "update"),

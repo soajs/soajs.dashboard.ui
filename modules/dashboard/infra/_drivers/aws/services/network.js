@@ -6,6 +6,14 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		form: {
 			addNetwork: [
 				{
+					'name': 'name',
+					'label': 'Name',
+					'type': 'text',
+					'value': "",
+					'fieldMsg': 'Name of the new network',
+					'required': true
+				},
+				{
 					'name': 'region',
 					'label': 'Region',
 					'type': 'readonly',
@@ -40,6 +48,14 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				}
 			],
 			editNetwork: [
+				{
+					'name': 'name',
+					'label': 'Name',
+					'type': 'readonly',
+					'value': "",
+					'fieldMsg': 'Name of the new network',
+					'required': true
+				},
 				{
 					'name': 'region',
 					'label': 'Region',
@@ -100,21 +116,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				]
 			}
 
-		},
-
-		grid: {
-			recordsPerPageArray: [5, 10, 50, 100],
-			'columns': [
-				{ 'label': 'Network Name', 'field': 'name' },
-				{ 'label': 'Network Address Prefixes', 'field': 'addressPrefixes' },
-				{ 'label': 'Network DNS Servers', 'field': 'dnsServers' },
-				{ 'label': 'Network Subnets', 'field': 'subnets' }
-			],
-			'leftActions': [],
-			'topActions': [],
-			'defaultSortField': 'name',
-			'defaultLimit': 10
-		},
+		}
 	};
 
 
@@ -144,6 +146,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 							"data": {
 								"params": {
 									"section": "network",
+									"name": data.name,
 									"region": currentScope.selectedRegion,
 									"Ipv6Address": data.amazonProvidedIpv6CidrBlock,
 									"InstanceTenancy": data.instanceTenancy
@@ -168,7 +171,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 								currentScope.form.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.displayAlert('success', "Netowkr created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
+								currentScope.displayAlert('success', "Netowrk created successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
 								currentScope.modalInstance.close();
 								$timeout(() => {
 									listNetworks(currentScope, currentScope.selectedRegion);
@@ -190,10 +193,10 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		};
 
 		//set value of region to selectedRegion
-		options.form.entries[0].value = currentScope.selectedRegion;
+		options.form.entries[1].value = currentScope.selectedRegion;
 
 		//select first entry by default
-		options.form.entries[3].value[0].selected = true;
+		options.form.entries[4].value[0].selected = true;
 
 		buildFormWithModal(currentScope, $modal, options);
 	}
@@ -233,17 +236,19 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 								"params": {
 									"section": "network",
 									"region": currentScope.selectedRegion,
-									"name": originalNetwork.id
+									"id": originalNetwork.id
 								}
 							}
 						};
 
 						//aggregated primary address and other addresses in one array
 						let aggregatedAddresses = [];
-						aggregatedAddresses.push(oneNetwork.primaryAddress);
+						aggregatedAddresses.push({ address: oneNetwork.primaryAddress });
 
 						for (let i=0; i<currentScope.addressCounter; i++) {
-							if (data['addressIp'+i]) aggregatedAddresses.push({"address": data['addressIp'+i]});
+							if (data['addressIp'+i]) {
+								aggregatedAddresses.push({ address: data['addressIp'+i] });
+							}
 						}
 
 						postOpts.data.params.addresses = aggregatedAddresses;
@@ -282,7 +287,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			]
 		};
 
-		options.form.entries[3].entries[0].onAction = function(id, value, form){
+		options.form.entries[4].entries[0].onAction = function(id, value, form){
 			addNewAddress(form, currentScope);
 		};
 
@@ -291,10 +296,10 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			currentScope.form.formData = oneNetwork;
 
 			if (oneNetwork.instanceTenancy && oneNetwork.instanceTenancy === 'default') {
-				currentScope.form.entries[2].value = "Default";
+				currentScope.form.entries[3].value = "Default";
 			}
 			else if (oneNetwork.instanceTenancy && oneNetwork.instanceTenancy === 'dedicated'){
-				currentScope.form.entries[2].value = "Dedicated";
+				currentScope.form.entries[3].value = "Dedicated";
 			}
 
 			currentScope.addressCounter = 0;
@@ -316,8 +321,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		tmp.entries[1].onAction = function (id, value, form) {
 			var count = parseInt(id.replace('rAddress', ''));
 
-			for (let i = form.entries[3].entries.length -1; i >= 0; i--) {
-				if (form.entries[3].entries[i].name === 'addressGroup' + count) {
+			for (let i = form.entries[4].entries.length -1; i >= 0; i--) {
+				if (form.entries[4].entries[i].name === 'addressGroup' + count) {
 					//remove from formData
 					for (var fieldname in form.formData) {
 						if (['addressIp' + count].indexOf(fieldname) !== -1) {
@@ -325,17 +330,17 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 						}
 					}
 					//remove from formEntries
-					form.entries[3].entries.splice(i, 1);
+					form.entries[4].entries.splice(i, 1);
 					break;
 				}
 			}
 		};
 
 		if (form && form.entries) {
-			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
+			form.entries[4].entries.splice(form.entries[4].entries.length - 1, 0, tmp);
 		}
 		else {
-			form.entries[3].entries.splice(form.entries[3].entries.length - 1, 0, tmp);
+			form.entries[4].entries.splice(form.entries[4].entries.length - 1, 0, tmp);
 		}
 		currentScope.addressCounter++;
 	}
@@ -376,20 +381,13 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;
 
-		//clean grid from previous list if any
-		if (currentScope.grid && currentScope.grid.rows && currentScope.grid.filteredRows && currentScope.grid.original) {
-			currentScope.grid.rows = [];
-			currentScope.grid.filteredRows = [];
-			currentScope.grid.original = [];
-		}
-
 		let listOptions = {
 			method: 'get',
 			routeName: '/dashboard/infra/extras',
 			params: {
 				'id': oneInfra._id,
 				'region': oneRegion,
-				'extras[]': ['networks']
+				'extras[]': ['networks', 'securityGroups']
 			}
 		};
 
@@ -415,7 +413,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 							currentScope.vmlayers.forEach((oneVmLayer) => {
 								if (oneVmLayer.network && oneVmLayer.network.toLowerCase() === oneNetwork.name.toLowerCase() && oneSubnet.name === oneVmLayer.layer) {
 
-									if (oneVmLayer.labels&& oneVmLayer.labels['soajs.env.code']) {
+									if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
 										let found = false;
 										$localStorage.environments.forEach((oneEnv) => {
 											if (oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()) {
@@ -441,10 +439,20 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 										oneNetwork.firewall = [];
 									}
 
-									if(processedFirewalls.indexOf(oneVmLayer.securityGroup) === -1){
-										processedFirewalls.push(oneVmLayer.securityGroup);
-										oneNetwork.firewall.push({
-											name: oneVmLayer.securityGroup
+									if(oneVmLayer.securityGroup && Array.isArray(oneVmLayer.securityGroup) && response.securityGroups) {
+										oneVmLayer.securityGroup.forEach((oneSecurityGroupId) => {
+											if(processedFirewalls.indexOf(oneSecurityGroupId) === -1){
+												processedFirewalls.push(oneSecurityGroupId);
+
+												let matchingSecurityGroup = response.securityGroups.find((oneEntry) => { return oneEntry.id === oneSecurityGroupId });
+												if(matchingSecurityGroup) {
+													oneNetwork.firewall.push({
+														id: matchingSecurityGroup.id,
+														name: matchingSecurityGroup.name,
+														region: matchingSecurityGroup.region
+													});
+												}
+											}
 										});
 									}
 								}

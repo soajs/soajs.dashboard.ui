@@ -64,6 +64,7 @@
 								<tr>
 									<th>Name</th>
 									<th>Address</th>
+									<th>Availability Zone</th>
 									<th>Virtual Machines</th>
 								</tr>
 							</thead>
@@ -71,6 +72,7 @@
 								<tr ng-repeat="oneSubnet in oneNetwork.subnets" ng-class-even="'even'" ng-class-odd="'odd'">
 									<td>{{oneSubnet.name}}</td>
 									<td>{{oneSubnet.address}}</td>
+									<td>{{oneSubnet.availabilityZone}}</td>
 									<td>
 										<div ng-if="!oneSubnet.vm">N/A</div>
 										<div ng-if="oneSubnet.vm.link">
@@ -92,7 +94,7 @@
 
 				<div ng-if="oneNetwork.firewall && oneNetwork.firewall.length > 0">
 					<fieldset>
-						<legend>Firewall</legend>
+						<legend>Firewalls</legend>
 						<div class="entryBoxes entryBoxesGrid">
 							<div ng-repeat="oneFirewall in oneNetwork.firewall">
 								<div class="entryBox blueBox" style="padding: 3px 5px;">

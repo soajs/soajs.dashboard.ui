@@ -616,6 +616,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 	function exportTemplate(currentScope) {
 		
 		currentScope.collectedExportedConent = {};
+		currentScope.collectedExternalConent = {};
 		listUniqueProviders(currentScope, (ciRecipes) => {
 			listRecipes(currentScope, (catalogs) => {
 				listEndpoints(currentScope, (endpoints) => {
@@ -668,17 +669,34 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			if (!currentScope.collectedExportedConent[section]) {
 				currentScope.collectedExportedConent[section] = [];
 			}
+			if (!currentScope.collectedExternalConent[section]) {
+				currentScope.collectedExternalConent[section] = [];
+			}
 			
 			if (oneRecord.selected) {
 				//check unique
-				if(currentScope.collectedExportedConent[section].indexOf(oneRecord.id) === -1){
-					currentScope.collectedExportedConent[section].push(oneRecord.id);
-				}
+				if (oneRecord.info && oneRecord.info.location && oneRecord.info.location === 'external') {
+                    if(currentScope.collectedExternalConent[section].indexOf(oneRecord.id + '__' + oneRecord.info.Provider) === -1){
+                        currentScope.collectedExternalConent[section].push(oneRecord.id + '__' + oneRecord.info.Provider);
+                    }
+				} else {
+                    if(currentScope.collectedExportedConent[section].indexOf(oneRecord.id) === -1){
+                        currentScope.collectedExportedConent[section].push(oneRecord.id);
+                    }
+                }
 			}
 			else{
 				let index = currentScope.collectedExportedConent[section].indexOf(oneRecord.id);
+				let external;
+				if (oneRecord.info && oneRecord.info.location && oneRecord.info.location === 'external') {
+					external = currentScope.collectedExternalConent[section].indexOf(oneRecord.id + '__' + oneRecord.info.Provider);
+				}
+
 				if(index >= 0 && index < currentScope.collectedExportedConent[section].length){
 					currentScope.collectedExportedConent[section].splice(index, 1);
+				}
+				if(external >= 0 && external < currentScope.collectedExternalConent[section].length){
+					currentScope.collectedExternalConent[section].splice(external, 1);
 				}
 			}
 		});
@@ -692,15 +710,25 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
 			}
 		}
 		
-		if(Object.keys(currentScope.collectedExportedConent).length === 0){
+		if(Object.keys(currentScope.collectedExportedConent).length === 0 && Object.keys(currentScope.collectedExternalConent).length === 0){
 			$window.alert("Selected at least on record from any section to generate the template.");
 			return false;
 		}
 		let postData = angular.copy(currentScope.collectedExportedConent);
+		let external = {};
+		if (currentScope.collectedExternalConent && currentScope.collectedExternalConent && currentScope.collectedExternalConent.iac.length > 0){
+            postData.external = angular.copy(currentScope.collectedExternalConent);
+        }
 		postData.deployment = angular.copy(postData.catalogs);
-		
+
 		delete postData.catalogs;
 		overlayLoading.show();
+		let options = {
+            'method': 'post',
+            'routeName': '/dashboard/templates/export',
+            'data': postData
+        }
+        console.log( options ); // ToDelete #2del
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'post',
 			'routeName': '/dashboard/templates/export',
@@ -854,7 +882,7 @@ templateService.service('templateSrv', ['Upload', 'ngDataApi', '$timeout', '$coo
                                         "Provider": oneResponse.label,
                                         "driver": oneTemplate.driver,
                                         "technology": oneTemplate.technology,
-
+										"location" : oneTemplate.location
                                     }
                                 });
 							});

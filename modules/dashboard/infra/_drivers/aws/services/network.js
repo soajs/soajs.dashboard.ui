@@ -75,8 +75,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				{
 					'name': 'instanceTenancy',
 					'label': 'Instance Tenancy',
-					'type': 'readonly',
-					'value': "",
+					'type': 'select',
+					'value': [{"v": "default", "l": "Default"}, {"v": "dedicated", "l": "Dedicated"}],
 					'fieldMsg': '',
 					'required': false
 				},
@@ -190,8 +190,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 									"section": "network",
 									"name": data.name,
 									"region": currentScope.selectedRegion,
-									"Ipv6Address": data.amazonProvidedIpv6CidrBlock,
-									"InstanceTenancy": data.instanceTenancy
+									"ipv6Address": data.amazonProvidedIpv6CidrBlock,
+									"instanceTenancy": data.instanceTenancy
 								}
 							}
 						};
@@ -278,7 +278,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 								"params": {
 									"section": "network",
 									"region": currentScope.selectedRegion,
-									"id": originalNetwork.id
+									"id": originalNetwork.id,
+									"instanceTenancy": data.instanceTenancy
 								}
 							}
 						};
@@ -352,11 +353,11 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		buildFormWithModal(currentScope, $modal, options, () => {
 			currentScope.form.formData = oneNetwork;
 
-			if (oneNetwork.instanceTenancy && oneNetwork.instanceTenancy === 'default') {
-				currentScope.form.entries[3].value = "Default";
-			}
-			else if (oneNetwork.instanceTenancy && oneNetwork.instanceTenancy === 'dedicated'){
-				currentScope.form.entries[3].value = "Dedicated";
+			if(oneNetwork.instanceTenancy) {
+				currentScope.form.formData['instanceTenancy'] = oneNetwork.instanceTenancy;
+				if (oneNetwork.instanceTenancy === 'default') {
+					currentScope.form.entries[3].disabled = true;
+				}
 			}
 
 			currentScope.addressCounter = 0;
@@ -519,10 +520,10 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 					currentScope.infraNetworks[0].open = true;
 				}
 
-				if(response.availabilityZones) {
+				if(response.availabilityZones && response.availabilityZones[oneRegion]) {
 					// keep the availability zones in scope for further use
-					currentScope.availabilityZones = response.availabilityZones.map((oneAz) => {
-						return { v: oneAz.name, l: oneAz.name };
+					currentScope.availabilityZones = response.availabilityZones[oneRegion].map((oneAz) => {
+						return { v: oneAz, l: oneAz };
 					});
 				}
 

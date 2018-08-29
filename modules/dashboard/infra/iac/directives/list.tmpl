@@ -13,9 +13,9 @@
 		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">
 			<p>
 				No Infra As Code Templates available.
-			</p>
-			<p ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
-				You can also browse the <a href="{{showSOAJSStoreLink}}" target="_blank"><b>SOAJS Store</b></a> and download templates for this driver.
+				<span ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
+					You can download for free Infra As Code Templates from the <a href="{{showSOAJSStoreLink}}" target="_blank"><b>SOAJS Store</b></a>.
+				</span>
 			</p>
 		</alert>
 		<div ng-if="currentSelectedInfra.templates" class="grid">

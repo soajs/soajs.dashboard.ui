@@ -52,7 +52,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 				}
 			],
 			portInput: {
-				'name': 'awsPortGroup',
+				'name': 'portGroup',
 				'type': 'group',
 				'label': 'New Port',
 				'collapsed': true,
@@ -120,7 +120,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 				form: {
 					"entries": angular.copy(infraFirewallConfig.form.firewall)
 				},
-				name: 'addFirewall',
+				name: 'awsAddFirewall',
 				label: 'Add Firewall',
 				actions: [
 					{
@@ -229,7 +229,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 					"entries": angular.copy(infraFirewallConfig.form.firewall)
 				},
 				data: oneFirewall,
-				name: 'editFirewall',
+				name: 'awsModifyFirewall',
 				label: 'Edit Firewall',
 				actions: [
 					{
@@ -327,7 +327,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						'onAction': function (id, value, form) {
 							let count = parseInt(id.replace('rLabel', ''));
 							for (let i = form.entries[4].entries.length - 1; i >= 0; i--) {
-								if (form.entries[4].entries[i].name === 'awsPortGroup' + count) {
+								if (form.entries[4].entries[i].name === 'portGroup' + count) {
 									//remove from formData
 									tmp.entries.forEach((field) => {
 										delete form.formData[field.name];
@@ -407,7 +407,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 			'onAction': function (id, value, form) {
 				let count = parseInt(id.replace('rLabel', ''));
 				for (let i = form.entries[4].entries.length - 1; i >= 0; i--) {
-					if (form.entries[4].entries[i].name === 'awsPortGroup' + count) {
+					if (form.entries[4].entries[i].name === 'portGroup' + count) {
 						//remove from formData
 						tmp.entries.forEach((field) => {
 							delete form.formData[field.name];
@@ -429,7 +429,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 		let index = id.replace('protocol', '');
 		let portsGroup = form.entries.find((oneEntry) => { return oneEntry.name === `firewallPorts` });
 		if(portsGroup && portsGroup.entries) {
-			let portEntry = portsGroup.entries.find((oneEntry) => { return oneEntry.name === `awsPortGroup${index}` });
+			let portEntry = portsGroup.entries.find((oneEntry) => { return oneEntry.name === `portGroup${index}` });
 			if(portEntry && portEntry.entries) {
 				let destinationPort = portEntry.entries.find((oneEntry) => { return oneEntry.name === `publishedPortRange${index}` });
 				if(destinationPort) {

@@ -109,35 +109,33 @@ table tr[class^="form-group tr-labelGroup"] {
 }
 
 /* AWS Firewall */
-#addFirewall .tr-region-wrapper td,
-#editFirewall .tr-region-wrapper td{
-    padding-bottom:30px;
+#awsAddFirewall #firewallPorts-wrapper,
+#awsModifyFirewall #firewallPorts-wrapper {
+    margin-top: 30px;
 }
 
-#addFirewall table tr [class^="form-group tr-awsPortGroup"] tr,
-#editFirewall table tr [class^="form-group tr-awsPortGroup"] tr{
-    float: left;
-    width: 19%;
-    height: 70px;
-}
-
-#addFirewall table tr [class^="form-group tr-awsPortGroup"],
-#editFirewall table tr [class^="form-group tr-awsPortGroup"] {
+#awsAddFirewall table tr [class^="form-group tr-portGroup"],
+#awsModifyFirewall table tr [class^="form-group tr-portGroup"] {
     position: relative;
     display: table;
     width: 100%;
 }
-#addFirewall table tr [class^="form-group tr-awsPortGroup"] tr[class^="form-group tr-rLabel"],
-#editFirewall table tr [class^="form-group tr-awsPortGroup"] tr[class^="form-group tr-rLabel"]{
+#awsAddFirewall table tr [class^="form-group tr-portGroup"] tr,
+#awsModifyFirewall table tr [class^="form-group tr-portGroup"] tr{
+    float: left;
+    width: 19%;
+    height: 70px;
+}
+#awsAddFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-rLabel"],
+#awsModifyFirewall table tr [class^="form-group tr-portGroup"] tr[class^="form-group tr-rLabel"]{
     float: none;
-    height: 24px;
     position: absolute;
     top: -5%;
     right: 1%;
     width:2%;
 }
-#addFirewall table tr [class^="form-group tr-awsPortGroup"] tr td,
-#editFirewall table tr [class^="form-group tr-awsPortGroup"] tr td{
+#awsAddFirewall table tr [class^="form-group tr-portGroup"] tr td,
+#awsModifyFirewall table tr [class^="form-group tr-portGroup"] tr td{
     width:97% !important;
     display: table;
 }

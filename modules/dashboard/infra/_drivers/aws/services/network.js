@@ -468,7 +468,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 				'technology': 'vm',
 				'section': 'network',
 				'region': currentScope.selectedRegion,
-				'name': oneNetwork.id
+				'id': oneNetwork.id
 			}
 		};
 

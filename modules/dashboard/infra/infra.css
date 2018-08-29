@@ -423,15 +423,15 @@ td.readonly{
     width: 100%;
 }
 
-#awsAddLoadBalancer table tr [class^="form-group tr-healthProbe"],
-#awsAddLoadBalancer table tr [class^="form-group tr-maxSuccessAttempts"],
-#awsAddLoadBalancer table tr [class^="form-group tr-maxFailureAttempts"],
+#awsAddLoadBalancer table tr [class^="form-group tr-healthProbeProtocol"],
+#awsAddLoadBalancer table tr [class^="form-group tr-healthProbePort"],
+#awsAddLoadBalancer table tr [class^="form-group tr-healthProbePath"],
 
-#awsModifyLoadBalancer table tr [class^="form-group tr-healthProbe"],
-#awsModifyLoadBalancer table tr [class^="form-group tr-maxSuccessAttempts"],
-#awsModifyLoadBalancer table tr [class^="form-group tr-maxFailureAttempts"]{
+#awsModifyLoadBalancer table tr [class^="form-group tr-healthProbeProtocol"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-healthProbePort"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-healthProbePath"]{
     float: left;
-    width: 19%;
+    width: 32%;
     height: 70px;
     display: table;
     margin-right: 5px;
@@ -439,10 +439,15 @@ td.readonly{
 
 #awsAddLoadBalancer table tr [class^="form-group tr-maxSuccessAttempts"],
 #awsAddLoadBalancer table tr [class^="form-group tr-maxFailureAttempts"],
+#awsAddLoadBalancer table tr [class^="form-group tr-healthProbeInterval"],
+#awsAddLoadBalancer table tr [class^="form-group tr-healthProbeTimeout"],
+
 #awsModifyLoadBalancer table tr [class^="form-group tr-maxSuccessAttempts"],
-#awsModifyLoadBalancer table tr [class^="form-group tr-maxFailureAttempts"]{
+#awsModifyLoadBalancer table tr [class^="form-group tr-maxFailureAttempts"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-healthProbeInterval"],
+#awsModifyLoadBalancer table tr [class^="form-group tr-healthProbeTimeout"]{
     float: left;
-    width: 19%;
+    width: 24%;
     height: 70px;
     display: table;
     margin-right: 5px;

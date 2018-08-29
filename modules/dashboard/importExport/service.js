@@ -693,7 +693,6 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
             'routeName': '/dashboard/templates/export',
             'data': postData
         }
-        console.log( options ); // ToDelete #2del
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'post',
 			'routeName': '/dashboard/templates/export',

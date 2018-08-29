@@ -665,10 +665,12 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 		}
 		
 		var formConfig = angular.copy(settingsConfig.form.extKey);
-		for (var i = 0; i < formConfig.entries.length; i++) {
+		for (var i = formConfig.entries.length -1; i >=0; i--) {
 			if (formConfig.entries[i].name === 'environment') {
 				formConfig.entries.splice(i, 1);
-				break;
+			}
+			if (formConfig.entries[i].name === 'dashboardAccess') {
+				formConfig.entries.splice(i, 1);
 			}
 		}
 		
@@ -679,6 +681,7 @@ settingsApp.controller('settingsCtrl', ['$scope', '$timeout', '$modal', '$routeP
 			'rows': 3,
 			'required': false
 		});
+		
 		var options = {
 			timeout: $timeout,
 			form: formConfig,

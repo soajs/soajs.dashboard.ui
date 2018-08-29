@@ -2,6 +2,9 @@
 var awsInfraFirewallSrv = soajsApp.components;
 awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', 'injectFiles', function (ngDataApi, $localStorage, $timeout, $modal, $window, injectFiles) {
 
+	const ipv4CIDRRegex = new RegExp(/^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/g);
+	const ipv6CIDRRegex = new RegExp(/^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/g);
+
 	let infraFirewallConfig = {
 		form: {
 			firewall: [
@@ -62,14 +65,15 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						'value': [
 							{'v': 'tcp', 'l': "TCP", 'selected': true},
 							{'v': 'udp', 'l': "UDP"},
-							{'v': '*', 'l': "TCP/UDP"}
+							{'v': 'icmp', 'l': "ICMP"},
+							{'v': '*', 'l': "All Protocols"}
 						],
 						'required': true,
 						'tooltip': 'Select Port Protocol',
 						'fieldMsg': 'Select Port Protocol'
 					},
 					{
-						'name': 'published',
+						'name': 'publishedPortRange',
 						'label': 'Destination Port',
 						'type': 'text',
 						'value': "",
@@ -90,8 +94,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						'label': 'Access',
 						'type': 'select',
 						'value': [
-							{'v': 'allow', 'l': "Allow", 'selected': true},
-							{'v': 'deny', 'l': "Deny"}
+							{'v': 'allow', 'l': "Allow", 'selected': true}
 						],
 						'required': true
 					},
@@ -126,20 +129,14 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						'btn': 'primary',
 						'action': function (formData) {
 							let data = angular.copy(formData);
-							let firewallPorts = [];
-							for (let i = 0; i < currentScope.portsCounter; i++) {
-								if (data['published' + i]) {
-									let portEntry = {
-										protocol: data['protocol' + i],
-										access: data['access' + i],
-										direction: data['direction' + i],
-										source: data['source' + i],
-										published: data['published' + i]
-									};
+							let computePortsOutput = computePorts(currentScope, data);
 
-									firewallPorts.push(portEntry);
-								}
+							if(computePortsOutput.validationError) {
+								currentScope.form.displayAlert('danger', computePortsOutput.validationError);
+								return;
 							}
+
+							let firewallPorts = computePortsOutput.firewallPorts;
 
 							let postOpts = {
 								"method": "post",
@@ -153,6 +150,8 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 										"section": "securityGroup",
 										"region": currentScope.selectedRegion,
 										"name": data.name,
+										"description": data.description,
+										"network": data.networkId,
 										"ports": firewallPorts
 									}
 								}
@@ -211,6 +210,18 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 		let oneFirewall = angular.copy(originalFirewall);
 		oneFirewall.region = currentScope.selectedRegion;
 
+		if(oneFirewall.ports && Array.isArray(oneFirewall.ports) && oneFirewall.ports.length > 0) {
+			oneFirewall.ports.forEach((onePort) => {
+				let stringifiedSources = '';
+				if(onePort.source && Array.isArray(onePort.source) && onePort.source.length > 0) {
+					stringifiedSources += onePort.source.join(', ');
+				}
+				if(onePort.ipv6 && Array.isArray(onePort.ipv6) && onePort.ipv6.length > 0) {
+					stringifiedSources += onePort.ipv6.join(', ');
+				}
+			});
+		}
+
 		loadExtras(currentScope, () => {
 			let options = {
 				timeout: $timeout,
@@ -227,20 +238,14 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						'btn': 'primary',
 						'action': function (formData) {
 							let data = angular.copy(formData);
-							let firewallPorts = [];
-							for (let i = 0; i < currentScope.portsCounter; i++) {
-								if (data['published' + i]) {
-									let portEntry = {
-										protocol: data['protocol' + i],
-										access: data['access' + i],
-										direction: data['direction' + i],
-										published: data['published' + i],
-										source: data['source' + i]
-									};
+							let computePortsOutput = computePorts(currentScope, data);
 
-									firewallPorts.push(portEntry);
-								}
+							if(computePortsOutput.validationError) {
+								currentScope.form.displayAlert('danger', computePortsOutput.validationError);
+								return;
 							}
+
+							let firewallPorts = computePortsOutput.firewallPorts;
 
 							let postOpts = {
 								"method": "put",
@@ -296,11 +301,23 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 					let tmp = angular.copy(infraFirewallConfig.form.portInput);
 
 					tmp.name += i;
-					tmp.label = "Port " + oneFirewall.ports[i].published;
+					tmp.label = "Port " + oneFirewall.ports[i].publishedPortRange;
 					tmp.entries.forEach((onePortDetail) => {
 						let originalName = onePortDetail.name;
 						onePortDetail.name += i;
-						oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
+
+						if(originalName === 'source') {
+							oneFirewall[onePortDetail.name] = '';
+							if(oneFirewall.ports[i]['source'] && Array.isArray(oneFirewall.ports[i]['source']) && oneFirewall.ports[i]['source'].length > 0) {
+								oneFirewall[onePortDetail.name] += oneFirewall.ports[i]['source'].join(', ');
+							}
+							if(oneFirewall.ports[i]['ipv6'] && Array.isArray(oneFirewall.ports[i]['ipv6']) && oneFirewall.ports[i]['ipv6'].length > 0) {
+								oneFirewall[onePortDetail.name] += ', ' + oneFirewall.ports[i]['ipv6'].join(', ');
+							}
+						}
+						else {
+							oneFirewall[onePortDetail.name] = oneFirewall.ports[i][originalName];
+						}
 					});
 
 					tmp.entries.unshift({
@@ -358,6 +375,9 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 		tmp.collapsed = false;
 		tmp.icon = "minus";
 		tmp.entries.forEach((onePortDetail) => {
+			if(onePortDetail.name === 'protocol') {
+				onePortDetail.onAction = selectProtocol;
+			}
 			onePortDetail.name += counter;
 
 			if (!currentScope.form.formData[onePortDetail.name]) {
@@ -403,6 +423,26 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 
 		currentScope.form.entries[4].entries.splice(currentScope.form.entries[4].entries.length - 1, 0, tmp);
 		currentScope.portsCounter++;
+	}
+
+	function selectProtocol(id, value, form) {
+		let index = id.replace('protocol', '');
+		let portsGroup = form.entries.find((oneEntry) => { return oneEntry.name === `firewallPorts` });
+		if(portsGroup && portsGroup.entries) {
+			let portEntry = portsGroup.entries.find((oneEntry) => { return oneEntry.name === `awsPortGroup${index}` });
+			if(portEntry && portEntry.entries) {
+				let destinationPort = portEntry.entries.find((oneEntry) => { return oneEntry.name === `publishedPortRange${index}` });
+				if(destinationPort) {
+					if(value === '*') {
+						form.formData[`publishedPortRange${index}`] = '0 - 65535';
+						destinationPort.disabled = true;
+					}
+					else {
+						destinationPort.disabled = false;
+					}
+				}
+			}
+		}
 	}
 
 	function loadExtras(currentScope, cb) {
@@ -500,6 +540,13 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 
 				currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
 
+					oneSecurityGroup.ports.forEach((onePort) => {
+						onePort.publishedPortRange = `${onePort.published} - ${onePort.range}`;
+						if(onePort.published === onePort.range || onePort.protocol === '*') {
+							onePort.publishedPortRange = onePort.published.toString();
+						}
+					});
+
 					if(oneSecurityGroup.networkId && response.networks && Array.isArray(response.networks) && response.networks.length > 0) {
 						let matchingNetwork = response.networks.find((oneNetwork) => { return oneNetwork.id === oneSecurityGroup.networkId });
 						if(matchingNetwork) {
@@ -549,6 +596,106 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 				});
 			}
 		});
+	}
+
+	function computePorts(currentScope, data) {
+		let firewallPorts = [], validationError = '';
+		for (let i = 0; i < currentScope.portsCounter; i++) {
+			if (data['publishedPortRange' + i]) {
+				let portEntry = {
+					protocol: data['protocol' + i],
+					access: data['access' + i],
+					direction: data['direction' + i],
+					source: [],
+					ipv6: [],
+					published: '',
+					range: ''
+				};
+
+				if(data['source' + i]) {
+					let sources = data['source' + i].split(',');
+					sources.forEach((oneSource) => {
+						oneSource = oneSource.trim();
+						if(oneSource.match(ipv4CIDRRegex)) {
+							portEntry.source.push(oneSource);
+						}
+						else if(oneSource.match(ipv6CIDRRegex)) {
+							portEntry.ipv6.push(oneSource);
+						}
+						else {
+							validationError = `${oneSource} is not a valid IPv4 or IPv6 CIDR`;
+						}
+					});
+				}
+
+				if(data['publishedPortRange' + i]) {
+					if(data['publishedPortRange' + i].includes('-')) {
+						let portsRange = data['publishedPortRange' + i].split('-');
+						if(portsRange.length > 2) {
+							validationError = `Invalid port range ${data['publishedPortRange' + i]}`;
+							break;
+						}
+
+						portsRange = portsRange.map((onePort) => { return parseInt(onePort.trim()); });
+						if(isNaN(portsRange[0]) || isNaN(portsRange[1])) {
+							validationError = `Invalid ports input ${data['publishedPortRange' + i]}. Ports should be numbers between 0 and 65535`;
+							break;
+						}
+
+						if(portsRange[0] < 0 || portsRange[0] > 65535) {
+							validationError = `Invalid port value for ${portsRange[0]}. Ports should be numbers between 0 and 65535`;
+							break;
+						}
+
+						if(portsRange[1] < 0 || portsRange[1] > 65535) {
+							validationError = `Invalid port value for ${portsRange[1]}. Ports should be numbers between 0 and 65535`;
+							break;
+						}
+
+						if(portsRange[0] < portsRange[1]) {
+							portEntry.published = portsRange[0];
+							portEntry.range = portsRange[1];
+						}
+						else if(portsRange[0] > portsRange[1]) {
+							portEntry.published = portsRange[1];
+							portEntry.range = portsRange[0];
+						}
+						else {
+							// ports are identical
+							portEntry.published = portsRange[0];
+							portEntry.range = portsRange[0];
+						}
+					}
+					else {
+						let portNumber = data['publishedPortRange' + i];
+
+						if(portNumber === '*') {
+							portEntry.published = portNumber;
+							portEntry.range = portNumber;
+						}
+						else {
+							portNumber = parseInt(portNumber);
+
+							if(isNaN(portNumber)) {
+								validationError = `Invalid ports input ${data['publishedPortRange' + i]}. Ports should be numbers between 0 and 65535`;
+								break;
+							}
+
+							if(portNumber < 0 || portNumber > 65535) {
+								validationError = `Invalid port value for ${portNumber}. Ports should be numbers between 0 and 65535`;
+								break;
+							}
+
+							portEntry.published = portNumber;
+							portEntry.range = portNumber;
+						}
+					}
+				}
+				firewallPorts.push(portEntry);
+			}
+		}
+
+		return { firewallPorts, validationError };
 	}
 
 	return {

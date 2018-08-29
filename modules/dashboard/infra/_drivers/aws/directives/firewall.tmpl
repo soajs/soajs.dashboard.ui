@@ -61,7 +61,7 @@
 							<tbody>
 								<tr ng-repeat="onePort in oneGroup.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.protocol}}</td>
-									<td ng-class="{'readonly': onePort.readonly}">{{onePort.published}}</td>
+									<td ng-class="{'readonly': onePort.readonly}">{{onePort.publishedPortRange}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.source.toString()}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.direction}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.access}}</td>

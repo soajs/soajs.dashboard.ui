@@ -804,7 +804,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 											overlayLoading.hide();
 											$scope.enableInterface = true;
 											window.location.reload();
-										}, 400);
+										}, 700);
 									} else {
 										overlayLoading.hide();
 									}

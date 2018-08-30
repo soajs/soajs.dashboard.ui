@@ -406,7 +406,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"id": oneProvider._id,
 					"region": data.inputs.region,
 					"group": data.inputs.group,
-					"extras": [ 'osDisks', 'dataDisks', 'loadBalancers', 'networks', 'publicIps', 'securityGroups', 'vmSizes' ]
+					"extras": [] //NOTE empty array means get extras of all available types
 				}
 			}, function (error, response) {
 				if (error) {

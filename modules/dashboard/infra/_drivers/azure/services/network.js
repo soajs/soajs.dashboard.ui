@@ -250,7 +250,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 							postOpts.data.params.address = splitAndTrim(data.address);
 						}
 
-						if (data.dnsServers) {
+						if (data.dnsServers && data.dnsServers.length > 0) {
 							//join elements of array to string before provoking splitAndTrim
 							data.dnsServers = data.dnsServers.join();
 

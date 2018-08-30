@@ -103,11 +103,10 @@
 								<tr class="header">
 									<td ng-if="listingClouds" class="">Operations</td>
 									<td ng-class="{'nameHeader': true }">Instance Name</td>
-									<td ng-class="nameHeader" ng-if="instance.tasks[0].ref.os.type">OS Name</td>
-									<td ng-class="nameHeader" ng-if="instance.tasks[0].ref.os.diskSizeGB">DiskSize</td>
+									<td ng-class="nameHeader">OS Name</td>
+									<td ng-class="nameHeader">DiskSize</td>
 									<td ng-class="nameHeader">Instance Network</td>
 									<td ng-class="nameHeader">IP Addresses</td>
-									<td ng-class="nameHeader">Exposed Ports</td>
 									<td ng-class="nameHeader">Status</td>
 									<td ng-class="nameHeader">Last Check</td>
 								</tr>
@@ -132,18 +131,18 @@
 										</a>
 									</td>
 									<td>{{instance.name}}</td>
-									<td ng-if="instance.tasks[0].ref.os.type">{{instance.tasks[0].ref.os.type}}</td>
-									<td ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</td>
+									<td>
+										<span ng-if="instance.tasks[0].ref.os.type">{{instance.tasks[0].ref.os.type}}</span>
+										<span ng-if="!instance.tasks[0].ref.os.type">N/A</span>
+									</td>
+									<td>
+										<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
+										<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
+									</td>
 									<td>{{instance.network}}</td>
 									<td>
 										<div ng-repeat="oneIP in instance.ip">
 											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
-										</div>
-									</td>
-									<td>
-										<div ng-if="!instance.ports || instance.ports.length === 0">N/A</div>
-										<div ng-repeat="onePort in instance.ports">
-											<label class="text-uppercase">{{onePort.protocol}}</label>: {{onePort.published}}
 										</div>
 									</td>
 									<td>{{instance.tasks[0].status.state}}</td>
@@ -233,11 +232,10 @@
 								<tr class="header">
 									<td ng-if="listingClouds" class="">Operations</td>
 									<td ng-class="{'nameHeader': true }">Instance Name</td>
-									<td ng-class="nameHeader" ng-if="instance.tasks[0].ref.os.type">OS Name</td>
-									<td ng-class="nameHeader" ng-if="instance.tasks[0].ref.os.diskSizeGB">DiskSize</td>
+									<td ng-class="nameHeader">OS Name</td>
+									<td ng-class="nameHeader">DiskSize</td>
 									<td ng-class="nameHeader">Instance Network</td>
 									<td ng-class="nameHeader">IP Addresses</td>
-									<td ng-class="nameHeader">Exposed Ports</td>
 									<td ng-class="nameHeader">Status</td>
 									<td ng-class="nameHeader">Last Check</td>
 								</tr>
@@ -270,19 +268,18 @@
 										</a>
 									</td>
 									<td>{{instance.name}}</td>
-									<td ng-if="instance.tasks[0].ref.os.type">{{instance.tasks[0].ref.os.type}}</td>
-									<td ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</td>
+									<td>
+										<span ng-if="instance.tasks[0].ref.os.type">{{instance.tasks[0].ref.os.type}}</span>
+										<span ng-if="!instance.tasks[0].ref.os.type">N/A</span>
+									</td>
+									<td>
+										<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
+										<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
+									</td>
 									<td>{{instance.network}}</td>
 									<td>
 										<div ng-repeat="oneIP in instance.ip">
 											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
-										</div>
-									</td>
-									<td>
-										<div ng-if="!instance.ports || instance.ports.length === 0">N/A</div>
-										<div ng-repeat="onePort in instance.ports">
-											<label class="text-uppercase">{{onePort.protocol}}</label>:
-											{{onePort.published}}
 										</div>
 									</td>
 									<td>{{instance.tasks[0].status.state}}</td>

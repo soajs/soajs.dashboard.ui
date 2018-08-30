@@ -536,6 +536,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 								return;
 							}
 
+							delete populateData.postData.type;
 							postOpts.data.params = populateData.postData;
 
 							overlayLoading.show();
@@ -548,7 +549,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 									currentScope.displayAlert('success', "Load balancer updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
 									currentScope.modalInstance.close();
 									$timeout(() => {
-										listLoadBalancers(currentScope, currentScope.selectedGroup);
+										listLoadBalancers(currentScope, currentScope.selectedRegion);
 									}, 2000);
 								}
 							});

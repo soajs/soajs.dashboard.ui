@@ -131,19 +131,17 @@
 										</a>
 									</td>
 									<td>{{instance.name}}</td>
-									<td>
-										<span ng-if="instance.tasks[0].ref.os.type">{{instance.tasks[0].ref.os.type}}</span>
-										<span ng-if="!instance.tasks[0].ref.os.type">N/A</span>
-									</td>
+									<td>{{instance.tasks[0].ref.os.type || 'N/A'}}</td>
 									<td>
 										<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
 										<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
 									</td>
-									<td>{{instance.network}}</td>
+									<td>{{instance.network || 'N/A'}}</td>
 									<td>
-										<div ng-repeat="oneIP in instance.ip">
+										<div ng-repeat="oneIP in instance.ip" ng-if="instance.ip && instance.ip.length > 0">
 											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
 										</div>
+										<span ng-if="!instance.ip || instance.ip.length === 0">N/A</span>
 									</td>
 									<td>{{instance.tasks[0].status.state}}</td>
 									<td>{{instance.tasks[0].status.ts|fulldate}}</td>
@@ -268,19 +266,17 @@
 										</a>
 									</td>
 									<td>{{instance.name}}</td>
-									<td>
-										<span ng-if="instance.tasks[0].ref.os.type">{{instance.tasks[0].ref.os.type}}</span>
-										<span ng-if="!instance.tasks[0].ref.os.type">N/A</span>
-									</td>
+									<td>{{instance.tasks[0].ref.os.type || 'N/A'}}</td>
 									<td>
 										<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
 										<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
 									</td>
-									<td>{{instance.network}}</td>
+									<td>{{instance.network || 'N/A'}}</td>
 									<td>
-										<div ng-repeat="oneIP in instance.ip">
+										<div ng-repeat="oneIP in instance.ip" ng-if="instance.ip && instance.ip.length > 0">
 											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
 										</div>
+										<span ng-if="!instance.ip || instance.ip.length === 0">N/A</span>
 									</td>
 									<td>{{instance.tasks[0].status.state}}</td>
 									<td>{{instance.tasks[0].status.ts|fulldate}}</td>

@@ -33,7 +33,12 @@
 				<accordion-heading>
 					{{oneGroup.name}}
 				</accordion-heading>
-				<div class="w-100 c-both t-right">
+				<div class="w-100 t-left f-left">
+					<a class="btn btn-sm btn-default">
+						Description: <b>{{oneGroup.description}}</b>
+					</a>
+				</div>
+				<div class="w-100 t-right">
 					<a href="" title="Modify" ng-click="editFirewall(oneGroup)" class="btn btn-sm btn-primary">
 						<span class="icon icon-pencil2"></span>&nbsp;Modify
 					</a>
@@ -41,6 +46,7 @@
 						<span class="icon icon-cross"></span>&nbsp;Delete
 					</a>
 				</div>
+				<br />
 				<alert ng-if="!oneGroup.ports || oneGroup.ports.length === 0" type="warning">
 					<p>No Ports Configuration Detected.</p>
 				</alert>

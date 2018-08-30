@@ -16,6 +16,14 @@ let infraConfig = {
 		edit: ['dashboard', '/infra', 'put'],
 		deactivate: ['dashboard', '/infra', 'delete']
 	},
+	
+	logos: {
+		google: 'modules/dashboard/infra/main/images/google.png',
+		aws: 'modules/dashboard/infra/main/images/aws.png',
+		azure: 'modules/dashboard/infra/main/images/azure.png',
+		docker: 'modules/dashboard/infra/main/images/docker_logo.png',
+		kubernetes: 'modules/dashboard/infra/main/images/kubernetes_logo.png'
+	},
 
 	form: {
 		providers :[

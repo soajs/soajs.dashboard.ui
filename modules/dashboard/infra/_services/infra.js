@@ -108,6 +108,13 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 							myInfra.logo = oneProvider.value;
 						}
 					});
+					
+					if(myInfra.name === 'local'){
+						myInfra.icon = infraConfig.logos[myInfra.technologies[0]];
+					}
+					else{
+						myInfra.icon = infraConfig.logos[myInfra.name];
+					}
 
 					hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
 
@@ -124,6 +131,8 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
 		
 		let excludedVms = ['infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
+		
+		let excludedDeployments = ['infra-deployments'];
 
 		//fix the menu; local driver has not templates
 		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){
@@ -132,6 +141,15 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				oneNavigationEntry.hideMe = false;
 				if(myInfra.name === 'local'){
 					if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
+						oneNavigationEntry.hideMe = true;
+						
+						if(oneNavigationEntry.url === $window.location.hash){
+							currentScope.go(oneNavigationEntry.fallbackLocation);
+						}
+					}
+				}
+				else if(['azure'].indexOf(myInfra.name) !== -1){
+					if(excludedDeployments.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 						
 						if(oneNavigationEntry.url === $window.location.hash){

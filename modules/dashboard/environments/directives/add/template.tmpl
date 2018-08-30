@@ -9,6 +9,21 @@
 		<p class="fieldMsg">
 			Choose the type of environment you would like to create
 		</p>
+		<div class="table" ng-if="!showDockerAccordion && !showKubeAccordion">
+			<alert type="info" >
+				<h4>No Infra Provider!</h4>
+				<hr>
+				<a href="#/infra" class="btn btn-primary connectInfra f-right" style="margin-top:-5px;">
+					<span class="glyphicon glyphicon-link"/> Click to Connect an Infra Provider
+				</a>
+				<p style="color:black;">
+					Cloud Clustering is disabled because no active <b>infra provider</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+			</alert>
+		</div>
 		<div class="table">
 			<div class="text-center table-cell environmentBox2" ng-class="{'selectedEnv': envType==='manual'}" ng-click="switchEnv('manual')">
 				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">

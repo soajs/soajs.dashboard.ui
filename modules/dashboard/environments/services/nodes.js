@@ -29,19 +29,28 @@ nodeSrv.service('nodeSrv', ['ngDataApi', '$timeout', '$modal', function (ngDataA
 		let formEntries = environmentsConfig.providers[providerInfo.name][currentScope.envPlatform].ui.form.scale.entries;
 
 		let workernumber = 0;
+		let zonesList = [];
 		providerInfo.nodes.forEach((oneNode) => {
 			if(oneNode.spec.role === 'manager'){
 				workernumber++;
 			}
+			if (oneNode.zone && zonesList.indexOf(oneNode.zone) === -1){
+				zonesList.push(oneNode.zone)
+			}
 		});
-
+		let zones = zonesList.length > 1 ? zonesList.length : 1;
+		if (zones > 1){
+			formEntries[0].fieldMsg += "(per zone)";
+			formEntries[0].tooltip =  'Enter the number of Worker Node(s) per zone to scale your deployment to';
+			formEntries[0].label +=  ' Per Zone';
+		}
 		var options = {
 			timeout: $timeout,
 			form: {
 				"entries": formEntries
 			},
 			data: {
-				"number": workernumber
+				"number": Math.ceil(workernumber/zones)
 			},
 			name: 'scaleNodes',
 			label: 'Scale Node(s)',

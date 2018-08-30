@@ -272,6 +272,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 																		oneService.deployedConfigCounter[oneVersion.v]++;
 																		// oneVersion[oneEnv.split("=")[1]].deployed = true;
 																		// oneVersion[oneEnv.split("=")[1]].serviceId = oneDeployedEntry.id;
+																		oneVersion.serviceId = oneDeployedEntry.id;
 																		if(!oneVersion.deploySettings || !oneVersion.deploySettings[oneEnv.split("=")[1]]){
 																			getDeploySettings(currentScope, oneDeployedEntry, function (deploySettings) {
 																				if(Object.keys(deploySettings).length > 0){
@@ -284,7 +285,8 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 																		}
 																	}
 																});
-															}else{
+															}
+															else{
 																oneVersion.deployed = true;
 																oneVersion.serviceId = oneDeployedEntry.id;
 																oneService.deployedVersionsCounter++;
@@ -517,8 +519,12 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					delete currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.deployConfig.replication.replicas;
 				}
 				configuration.default.options = angular.copy(currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options);
-				if (configuration.default.options && configuration.default.options.deployConfig && configuration.default.options.deployConfig.memoryLimit) {
+				if (configuration.default.options && configuration.default.options.deployConfig && Object.hasOwnProperty.call(configuration.default.options.deployConfig, 'memoryLimit')) {
 					configuration.default.options.deployConfig.memoryLimit *= 1048576;
+					
+					if(configuration.custom && configuration.custom.memory){
+						configuration.custom.memory = configuration.default.options.deployConfig.memoryLimit;
+					}
 				}
 				
 				if((!currentScope.autoScale || !currentScope.isAutoScalable || configuration.default.options.deployConfig.replication.mode !== 'deployment') && configuration.default.options.autoScale){
@@ -555,9 +561,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					delete currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options.deployConfig.replication.replicas;
 				}
 				configuration.version.options = angular.copy(currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options);
-				if (configuration.version.options && configuration.version.options.deployConfig && configuration.version.options.deployConfig.memoryLimit) {
+				
+				if (configuration.version.options && configuration.version.options.deployConfig && Object.hasOwnProperty.call(configuration.version.options.deployConfig, 'memoryLimit')) {
 					configuration.version.options.deployConfig.memoryLimit *= 1048576;
+					
+					if(configuration.version.options.custom){
+						configuration.version.options.custom.memory = configuration.version.options.deployConfig.memoryLimit;
+					}
 				}
+				
 				if (currentScope.services[currentScope.oneSrv] && currentScope.services[currentScope.oneSrv].gcId) {
 					if (!configuration.version.options.custom) {
 						configuration.version.options.custom = {};
@@ -674,16 +686,21 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			mode: ((formData.deployConfig && formData.deployConfig.replication && formData.deployConfig.replication.mode) ? formData.deployConfig.replication.mode : ''),
 			action: 'rebuild'
 		};
-
+		
+		if(formData.deployConfig){
+			params.deployConfig = formData.deployConfig;
+		}
+		
 		if (formData.custom) {
 			params.custom = formData.custom;
 			if(formData.gitSource && formData.gitSource.branch){
 				params.custom.branch = formData.gitSource.branch;
 			}
-			if(formData.deployConfig && formData.deployConfig.memoryLimit){
+			if(formData.deployConfig && Object.hasOwnProperty.call(formData.deployConfig, 'memoryLimit')){
 				params.custom.memory = formData.deployConfig.memoryLimit;
 			}
 		}
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'put',
 			routeName: '/dashboard/cloud/services/redeploy',

@@ -93,6 +93,9 @@ var ciAppConfig = {
 		add: ['dashboard', '/ci/recipe', 'post'],
 		edit: ['dashboard', '/ci/recipe', 'put'],
 		delete: ['dashboard', '/ci/recipe', 'delete'],
+		
+		import: ['dashboard', '/templates/import', 'post'],
+		export: ['dashboard', '/templates/export', 'post']
 	}
 
 };

@@ -525,6 +525,11 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 							onePublicIP.idleTimeout *= 60;
 						}
 
+						//set ip address to dynamic in case the allocation method is dynamic and there is no ip address assigned
+						if(onePublicIP.publicIPAllocationMethod === "dynamic" && (!onePublicIP.address || onePublicIP.address.length === 0)) {
+							onePublicIP.address = "dynamic"
+						}
+
 						if(onePublicIP.associated){
 							let label = onePublicIP.associated.name;
 							let html;
@@ -573,6 +578,9 @@ azureInfraIPSrv.service('azureInfraIPSrv', ['ngDataApi', '$localStorage', '$time
 								html = "N/A";
 							}
 							onePublicIP.associated = html;
+						}
+						else {
+							onePublicIP.associated = "Not associated yet"
 						}
 					});
 

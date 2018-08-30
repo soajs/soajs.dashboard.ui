@@ -1,9 +1,10 @@
 'use strict';
 var catalogApp = soajsApp.components;
 
-catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, ngDataApi, injectFiles,) {
+catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles','$cookies','$location', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
-
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, catalogAppConfig.permissions);
 
@@ -16,7 +17,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				renderJSONEditor(editor, id, value, height, currentScope);
 			}
 			catch(e){
-			
+
 			}
 		}, 1000);
 	}
@@ -219,7 +220,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
-
 
 	function proceedWithForm(currentScope, mainFormConfig, data, submitAction) {
 		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0;
@@ -1167,9 +1167,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                     'type': 'buttonSlider',
                     onAction(id, data, form) {
                         if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
-                            overlayLoading.show();
                             listInfraProviders(currentScope,() => {
-                                overlayLoading.hide();
                                 form.entries.push({
                                     'name': 'deploymentType',
                                     'label': 'Deployment Type',
@@ -2280,12 +2278,13 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
     function listInfraProviders(currentScope, cb) {
         //get the available providers
+		overlayLoading.show();
         getSendDataFromServer(currentScope, ngDataApi, {
             "method": "get",
             "routeName": "/dashboard/infra"
         }, function (error, providers) {
+			overlayLoading.hide();
             if (error) {
-                overlayLoading.hide();
                 currentScope.displayAlert('danger', error.message);
             }
             else {
@@ -2494,6 +2493,13 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		});
 	};
+
+    $scope.go = function (path, method) {
+        if (path) {
+            $cookies.put("method", method, { 'domain': interfaceDomain });
+            $location.path(path);
+        }
+    };
 
 	injectFiles.injectCss("modules/dashboard/catalogs/catalog.css");
 

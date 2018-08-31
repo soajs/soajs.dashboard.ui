@@ -61,10 +61,45 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'label': 'Health Probe Parameters',
 					'entries': [
 						{
+							'name': 'healthProbeProtocol',
+							'label': 'Protocol',
+							'type': 'select',
+							'value': [
+								{ v: 'http', l: 'HTTP', selected: true },
+								{ v: 'https', l: 'HTTPS' },
+								{ v: 'tcp', l: 'TCP' },
+								{ v: 'ssl', l: 'SSL' }
+							],
+							'fieldMsg': 'Health probe protocol.',
+							'required': true,
+							onAction: function(id, value, form) {
+								let healthProbeEntry = form.entries.find((oneEntry) => { return oneEntry.name === 'healthProbe'; });
+								if(healthProbeEntry && healthProbeEntry.entries) {
+									let healthProbePath = healthProbeEntry.entries.find((oneEntry) => { return oneEntry.name === 'healthProbePath'; });
+									if(healthProbePath) {
+										if([ 'http', 'https' ].includes(value)) {
+											healthProbePath.required = true;
+										}
+										else if([ 'tcp', 'ssl' ].includes(value)) {
+											healthProbePath.required = false;
+										}
+									}
+								}
+							}
+						},
+						{
+							'name': 'healthProbePort',
+							'label': 'Ping Port',
+							'type': 'number',
+							'value': 80,
+							'fieldMsg': 'Health probe port.',
+							'required': true
+						},
+						{
 							'name': 'healthProbePath',
-							'label': 'Path',
+							'label': 'Ping Path',
 							'type': 'text',
-							'value': "",
+							'value': "/index.html",
 							'fieldMsg': 'Health probe path.',
 							'required': true
 						},
@@ -72,7 +107,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 							'name': 'healthProbeInterval',
 							'label': 'Interval',
 							'type': 'number',
-							'value': "",
+							'value': 30,
 							'fieldMsg': 'Interval amount in seconds.',
 							'required': true
 						},
@@ -80,23 +115,43 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 							'name': 'healthProbeTimeout',
 							'label': 'Timeout',
 							'type': 'number',
-							'value': "",
+							'value': 5,
 							'fieldMsg': 'Timeout amount in seconds.',
 							'required': true
 						},
 						{
 							'name': 'maxSuccessAttempts',
 							'label': 'Max Success Attempts',
-							'type': 'number',
-							'value': "",
+							'type': 'select',
+							'value': [
+								{ v: 2, l: '2', selected: true },
+								{ v: 3, l: '3' },
+								{ v: 4, l: '4' },
+								{ v: 5, l: '5' },
+								{ v: 6, l: '6' },
+								{ v: 7, l: '7' },
+								{ v: 8, l: '8' },
+								{ v: 9, l: '9' },
+								{ v: 10, l: '10' }
+							],
 							'fieldMsg': 'Max success attempts.',
 							'required': true
 						},
 						{
 							'name': 'maxFailureAttempts',
 							'label': 'Max Failure Attempts',
-							'type': 'number',
-							'value': "",
+							'type': 'select',
+							'value': [
+								{ v: 2, l: '2' },
+								{ v: 3, l: '3' },
+								{ v: 4, l: '4' },
+								{ v: 5, l: '5' },
+								{ v: 6, l: '6' },
+								{ v: 7, l: '7' },
+								{ v: 8, l: '8' },
+								{ v: 9, l: '9' },
+								{ v: 10, l: '10', selected: true }
+							],
 							'fieldMsg': 'Max failure attempts.',
 							'required': true
 						}
@@ -289,13 +344,17 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 									"technology": "vm"
 								},
 								"data": {
-									"params": populatePostData(currentScope, data)
+									"params": {}
 								}
 							};
 
-							if (currentScope.ruleCounter === 0) {
-								currentScope.form.displayAlert('danger', "You must create at least one Rule to proceed.");
+							let populateData = populatePostData(currentScope, data);
+							if(populateData.validationError) {
+								currentScope.form.displayAlert('danger', populateData.validationError);
+								return;
 							}
+
+							postOpts.data.params = populateData.postData;
 
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
@@ -467,9 +526,18 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 									"technology": "vm"
 								},
 								"data": {
-									"params": populatePostData(currentScope, data)
+									"params": {}
 								}
 							};
+
+							let populateData = populatePostData(currentScope, data);
+							if(populateData.validationError) {
+								currentScope.form.displayAlert('danger', populateData.validationError);
+								return;
+							}
+
+							delete populateData.postData.type;
+							postOpts.data.params = populateData.postData;
 
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, postOpts, function (error) {
@@ -481,7 +549,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 									currentScope.displayAlert('success', "Load balancer updated successfully. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.");
 									currentScope.modalInstance.close();
 									$timeout(() => {
-										listLoadBalancers(currentScope, currentScope.selectedGroup);
+										listLoadBalancers(currentScope, currentScope.selectedRegion);
 									}, 2000);
 								}
 							});
@@ -508,15 +576,17 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 
 			buildFormWithModal(currentScope, $modal, options, () => {
 				//populate type name
-				currentScope.form.entries[0].type = 'readonly';
-				currentScope.form.entries[0].value = oneLoadBalancer.name;
+				currentScope.form.entries[0].disabled = true;
+				currentScope.form.formData['name'] = oneLoadBalancer.name;
 
 				//populate load balancer type
-				currentScope.form.entries[2].type = 'readonly';
-				currentScope.form.entries[2].value = oneLoadBalancer.mode;
+				currentScope.form.entries[2].disabled = true;
+				currentScope.form.formData['region'] = oneLoadBalancer.region;
 
 				//populate health probe parameters
 				currentScope.form.formData['healthProbeInterval'] = oneLoadBalancer.healthProbe.healthProbeInterval;
+				currentScope.form.formData['healthProbeProtocol'] = oneLoadBalancer.healthProbe.healthProbeProtocol.toLowerCase();
+				currentScope.form.formData['healthProbePort'] = parseInt(oneLoadBalancer.healthProbe.healthProbePort);
 				currentScope.form.formData['healthProbePath'] = oneLoadBalancer.healthProbe.healthProbePath;
 				currentScope.form.formData['healthProbeTimeout'] = oneLoadBalancer.healthProbe.healthProbeTimeout;
 				currentScope.form.formData['maxFailureAttempts'] = oneLoadBalancer.healthProbe.maxFailureAttempts;
@@ -725,47 +795,62 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 	}
 
 	function populatePostData(currentScope, data) {
-			let rulesArray = [];
-			let subnetsArray = [];
-			let securityGroupsArray = [];
-			let healthProbeOptions = {};
+		let postData = {}, validationError = '';
+		let rulesArray = [];
+		let subnetsArray = [];
+		let securityGroupsArray = [];
+		let healthProbeOptions = {};
 
-			for (let i=0; i<currentScope.ruleCounter; i++) {
-				let tmp = {};
-				tmp.backendPort = data['backendPort'+i];
-				tmp.backendProtocol = data['backendProtocol'+i];
-				tmp.frontendPort = data['frontendPort'+i];
-				tmp.frontendProtocol = data['frontendProtocol'+i];
-				if (tmp.frontendProtocol === 'https') {
-					tmp.certificate = data['certificate'+i];
-				}
-				rulesArray.push(tmp);
+		if (currentScope.ruleCounter === 0) {
+			validationError = "You must create at least one Rule to proceed";
+			return { postData, validationError };
+		}
+
+		for (let i=0; i<currentScope.ruleCounter; i++) {
+			let tmp = {};
+			tmp.backendPort = data['backendPort'+i];
+			tmp.backendProtocol = data['backendProtocol'+i];
+			tmp.frontendPort = data['frontendPort'+i];
+			tmp.frontendProtocol = data['frontendProtocol'+i];
+			if (tmp.frontendProtocol === 'https') {
+				tmp.certificate = data['certificate'+i];
 			}
+			rulesArray.push(tmp);
+		}
 
-			healthProbeOptions.maxSuccessAttempts = data.maxSuccessAttempts;
-			healthProbeOptions.healthProbeInterval = data.healthProbeInterval;
-			healthProbeOptions.healthProbePath = data.healthProbePath;
-			healthProbeOptions.healthProbeTimeout = data.healthProbeTimeout;
-			healthProbeOptions.maxFailureAttempts = data.maxFailureAttempts;
+		if(data.healthProbePath && data.healthProbePath.charAt(0) !== '/') {
+			validationError = 'Health probe path should start with a "/", for example: /index.html';
+			return { postData, validationError };
+		}
 
-			data.securityGroups.forEach((oneSG) => {
-				securityGroupsArray.push(oneSG.v);
-			});
+		healthProbeOptions.maxSuccessAttempts = data.maxSuccessAttempts;
+		healthProbeOptions.healthProbeInterval = data.healthProbeInterval;
+		healthProbeOptions.healthProbeProtocol = data.healthProbeProtocol;
+		healthProbeOptions.healthProbePort = data.healthProbePort;
+		healthProbeOptions.healthProbePath = data.healthProbePath;
+		healthProbeOptions.healthProbeTimeout = data.healthProbeTimeout;
+		healthProbeOptions.maxFailureAttempts = data.maxFailureAttempts;
 
-			data.subnets.forEach((oneSubnet) => {
-				subnetsArray.push(oneSubnet.v);
-			});
+		data.securityGroups.forEach((oneSG) => {
+			securityGroupsArray.push(oneSG.v);
+		});
 
-			return({
-				name: data.name,
-				region: data.region,
-				section: 'loadBalancer',
-				rules: rulesArray,
-				healthProbe: healthProbeOptions,
-				type: data.mode,
-				securityGroups: securityGroupsArray,
-				subnets: subnetsArray
-			})
+		data.subnets.forEach((oneSubnet) => {
+			subnetsArray.push(oneSubnet.v);
+		});
+
+		postData = {
+			name: data.name,
+			region: data.region,
+			section: 'loadBalancer',
+			rules: rulesArray,
+			healthProbe: healthProbeOptions,
+			type: data.mode,
+			securityGroups: securityGroupsArray,
+			subnets: subnetsArray
+		};
+
+		return({ postData, validationError });
 	}
 
 	return {

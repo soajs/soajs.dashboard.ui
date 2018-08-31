@@ -1,4 +1,5 @@
 var tenantConfig = {
+	'excludedServices': ['dashboard', 'controller'],
 	'grid': {
 		'tenant': {
 			recordsPerPageArray: [5, 10, 50, 100],
@@ -364,6 +365,63 @@ var tenantConfig = {
 				}
 			]
 		},
+		'oneServiceThrottlingTmpl': {
+			type: "accordion",
+			name: "throttling",
+			label: "",
+			"entries": [
+				{
+					'name': 'public',
+					'label': "Public APIs",
+					'type': 'select',
+					"value": [
+						{
+							'v': "$strategy$",
+							'l': "Inherit From Registry: $strategy$",
+							'group': 'Common',
+							"selected": true
+						}
+					],
+					'tooltip': "Override throttling strategy for public API Access"
+				},
+				{
+					'name': 'private',
+					'label': "Private APIs",
+					'type': 'select',
+					"value": [
+						{
+							'v': "$strategy$",
+							'l': "Inherit From Registry: $strategy$",
+							'group': 'Common',
+							"selected": true
+						}
+					],
+					'tooltip': "Override throttling strategy for public API Access"
+				}
+			]
+		},
+		"oneServiceIMFVTmpl": {
+			"type": "accordion",
+			"name": "imfv",
+			"label": "",
+			"entries": [
+				// {
+				// 	'name': 'imfv',
+				// 	'type': 'jsoneditor',
+				// 	'options': {
+				// 		'mode': 'code',
+				// 		'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
+				// 			'v': 'tree',
+				// 			'l': 'Tree View'
+				// 		}, { 'v': 'form', 'l': 'Form View' }]
+				// 	},
+				// 	'height': '300px',
+				// 	"value": {},
+				// 	'required': true,
+				// 	'fieldMsg': "For more information on how to configure IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a>"
+				// }
+			]
+		},
 		'keyConfig': {
 			'name': '',
 			'label': '',
@@ -373,26 +431,96 @@ var tenantConfig = {
 					'name': 'envCode',
 					'label': translation.envCode[LANG],
 					'type': 'text',
+					'disabled': true,
 					'value': '',
 					'placeholder': 'DEV...',
 					'tooltip': 'Enter the environment code for the key configuration.',
 					'required': true
 				},
 				{
-					'name': 'config',
-					'label': translation.configuration[LANG],
-					'type': 'jsoneditor',
-					'options': {
-						'mode': 'code',
-						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
-							'v': 'tree',
-							'l': 'Tree View'
-						}, { 'v': 'form', 'l': 'Form View' }]
-					},
-					'height': '300px',
-					"value": {},
-					'required': true,
-					'tooltip': translation.formConfigToolTip[LANG]
+					'name': 'configTabs',
+					"type": "tabset",
+					// 'label': translation.configuration[LANG],
+					"tabs": [
+						{
+							"name": "throttling",
+							"label": "Throttling",
+							
+							"entries": [
+								{
+									"type": "html",
+									"name": "__spacer__",
+									"value": "<br />"
+								}
+							]
+						},
+						{
+							"name": "oauthTab",
+							"label": "oAuth",
+							"description": {
+								"type": "info",
+								"content":  "<p>Enable or Disable oAuth Security for this key in this environment.</p>" +
+											"<hr /><p>If you are not familiar with how oAuth Security works, <a href='https://soajsorg.atlassian.net/wiki/spaces/OAUT/overview' target='_blank'>Click Here</a></p>"
+							},
+							"entries": [
+								{
+									'name': 'disableOauth',
+									'label': "Disable oAuth",
+									'type': 'buttonSlider',
+									"value": false,
+									'required': true,
+									'tooltip': "Enable/Disable oAuth security for this key in this environment"
+								}
+							]
+							
+						},
+						{
+							"name": "imfvTab",
+							"label": "IMFV",
+							"description": {
+								"type": "info",
+								"content":  "<p>Override the default IMFV of a service APIs for this tenant key in this environment, or leave blank keep the default configuraiton.</p>" +
+											"<hr /><p>If you are not familiar with SOAJS IMFV, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61353979/IMFV' target='_blank'>Click Here</a></p>"
+							},
+							"entries": [
+								{
+									"type": "html",
+									"name": "__spacer__",
+									"value": "<br />"
+								}
+							]
+						},
+						{
+							"name": "configTab",
+							"label": "JSON",
+							"description": {
+								"type": "info",
+								"content": "JSON Editor reveals the full configuration for this application key."
+							},
+							"entries": [
+								{
+									"type": "html",
+									"name": "__spacer__",
+									"value": "<br />"
+								},
+								{
+									'name': 'customConfig',
+									'type': 'jsoneditor',
+									'options': {
+										'mode': 'code',
+										'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
+											'v': 'tree',
+											'l': 'Tree View'
+										}, { 'v': 'form', 'l': 'Form View' }]
+									},
+									'height': '300px',
+									"value": {},
+									'required': true,
+									'fieldMsg': "For more information on application key configuration, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61509025/Multitenancy#Multitenancy-apps' target='_blank'>Click Here</a>"
+								}
+							]
+						}
+					]
 				}
 			]
 		},

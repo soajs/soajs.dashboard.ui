@@ -1,7 +1,7 @@
 "use strict";
 
 var multiTenantApp = soajsApp.components;
-multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$modal', '$routeParams', 'ngDataApi', '$cookies', 'injectFiles', function ($scope, $compile, $timeout, $modal, $routeParams, ngDataApi, $cookies, injectFiles) {
+multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$modal', '$routeParams', 'ngDataApi', '$cookies', 'injectFiles', 'mtsc', function ($scope, $compile, $timeout, $modal, $routeParams, ngDataApi, $cookies, injectFiles, mtsc) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -14,13 +14,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		 'tenants': []
 		 },*/
 		{
-			'label': translation.product[LANG],
-			'type': 'product',
+			'label': translation.client[LANG],
+			'type': 'client',
 			'tenants': []
 		},
 		{
-			'label': translation.client[LANG],
-			'type': 'client',
+			'label': translation.product[LANG],
+			'type': 'product',
 			'tenants': []
 		}
 	];
@@ -149,6 +149,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	
 	$scope.getEnvironments = function (cb) {
 		$scope.availableEnv = [];
+		$scope.availableEnvThrottling = {};
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/list"
@@ -159,6 +160,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			else {
 				response.forEach(function (oneEnv) {
 					$scope.availableEnv.push(oneEnv.code.toLowerCase());
+					
+					if(oneEnv.services && oneEnv.services.config){
+						$scope.availableEnvThrottling[oneEnv.code.toLowerCase()] = oneEnv.services.config.throttling || null;
+					}
 				});
 				
 				if(cb && typeof cb === 'function'){
@@ -531,6 +536,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			});
 		}
 		// on edit end
+		formConfig.entries.unshift({
+			type: "html",
+			value: "<div class='alert alert-warning'>" +
+						"<h4><span class='icon icon-info'></span>&nbsp;Warning</h4><hr />" +
+						"<p>Be advised that when turning ON and OFF or modifying the oAuth Security of a tenant, all the keys configuration for all the applications belonging to this tenant will be modified based on the option you select. <a href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/61979922/Multitenancy#Multitenancy-oauth' target='_blank'>Learn More</a></p>" +
+					"</div>"
+		});
 		
 		var options = {
 			timeout: $timeout,
@@ -1097,7 +1109,24 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 									break;
 								}
 							}
+							
+							$scope.availablePackages.forEach((onePackage) => {
+								if(onePackage.pckCode === app.package) {
+									if(!app.availableEnvs){
+										app.availableEnvs = [];
+									}
+									
+									let packAclEnv = Object.keys(onePackage.acl);
+									packAclEnv.forEach((onePackAclEnv) => {
+										if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
+											app.availableEnvs.push(onePackAclEnv);
+										}
+									});
+								}
+							});
 						});
+						
+						
 						$scope.tenantsList.rows[i].applications = response;
 						break;
 					}
@@ -1173,77 +1202,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		
 	};
 	
-	$scope.updateConfiguration = function (tId, appId, key, env, value) {
-		var data = {};
-		if (value) {
-			data.config = angular.copy(value);
-		}
-		if (env) {
-			data.envCode = env;
-		}
-		var options = {
-			timeout: $timeout,
-			form: tenantConfig.form.keyConfig,
-			name: 'updatekeyConfig',
-			label: translation.updateKeyConfiguration[LANG],
-			data: data,
-			sub: true,
-			actions: [
-				{
-					'type': 'submit',
-					'label': translation.submit[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						var configObj;
-						if (formData.config && (formData.config != "")) {
-							try {
-								configObj = formData.config;
-							}
-							catch (e) {
-								$scope.form.displayAlert('danger', translation.errorInvalidConfigJsonObject[LANG]);
-								return;
-							}
-						}
-						else {
-							configObj = {};
-						}
-						
-						var postData = {
-							'envCode': formData.envCode,
-							'config': configObj
-						};
-						
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "put",
-							"routeName": "/dashboard/tenant/application/key/config/update",
-							"data": postData,
-							"params": { "id": tId, "appId": appId, "key": key }
-						}, function (error) {
-							if (error) {
-								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
-								$scope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
-								$scope.modalInstance.close();
-								$scope.form.formData = {};
-								$scope.reloadConfiguration(tId, appId, key);
-							}
-						});
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						$scope.modalInstance.dismiss('cancel');
-						$scope.form.formData = {};
-					}
-				}]
-			
-		};
-		
-		buildFormWithModal($scope, $modal, options);
+	$scope.updateConfiguration = function (tId, appId, appPackage, key, env, value) {
+		mtsc.updateConfiguration ($scope, tId, appId, appPackage, key, env, value);
 	};
 	
 	$scope.addNewExtKey = function (tId, appId, key, packageCode) {
@@ -1519,6 +1479,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 									for (var i = 0; i < currentKeys.length; i++) {
 										if (keyObj.key === currentKeys[i].key && currentKeys[i].dashboardAccess) {
 											keyObj.dashboardAccess = true;
+											$scope.reloadConfiguration(tId, appId, keyObj.key, i);
 											break;
 										}
 									}

@@ -1,9 +1,10 @@
 'use strict';
 
 var ciApp = soajsApp.components;
-ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, $cookies, ngDataApi, injectFiles) {
+ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDataApi', 'injectFiles',"$location", function ($scope, $timeout, $modal, $cookies, ngDataApi, injectFiles, $location) {
 	$scope.$parent.isUserLoggedIn();
-
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, ciAppConfig.permissions);
 
@@ -495,6 +496,13 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 			delete $scope.originalRecipes;
 		}
 	};
+
+    $scope.go = function (path, method) {
+        if (path) {
+            $cookies.put("method", method, { 'domain': interfaceDomain });
+            $location.path(path);
+        }
+    };
 
 	injectFiles.injectCss("modules/dashboard/ci/ci.css");
 

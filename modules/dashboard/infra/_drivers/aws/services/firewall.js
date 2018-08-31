@@ -358,6 +358,12 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 				networksEntry.disabled = true;
 			}
 
+			//disable discription editing
+			let descriptionEntry = options.form.entries.find((oneEntry) => { return oneEntry.name === 'description' });
+			if(descriptionEntry) {
+				descriptionEntry.disabled = true;
+			}
+
 			buildFormWithModal(currentScope, $modal, options, () => {
 				//fill in labels after form is rendered
 				currentScope.form.entries[0].type = 'readonly';

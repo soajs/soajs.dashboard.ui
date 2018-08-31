@@ -419,12 +419,16 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 									if(!oneNetwork.firewall){
 										oneNetwork.firewall = [];
 									}
-
-									if(processedFirewalls.indexOf(oneVmLayer.securityGroup) === -1){
-										processedFirewalls.push(oneVmLayer.securityGroup);
-										oneNetwork.firewall.push({
-											group: oneGroup.name,
-											name: oneVmLayer.securityGroup
+									
+									if(oneVmLayer.securityGroup && Array.isArray(oneVmLayer.securityGroup)){
+										oneVmLayer.securityGroup.forEach((oneSG) => {
+											if(oneSG && processedFirewalls.indexOf(oneSG) === -1){
+												processedFirewalls.push(oneSG);
+												oneNetwork.firewall.push({
+													group: oneGroup.name,
+													name: oneSG
+												});
+											}
 										});
 									}
 								}

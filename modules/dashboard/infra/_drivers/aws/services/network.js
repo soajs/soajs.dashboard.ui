@@ -31,6 +31,14 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 					'required': false
 				},
 				{
+					'name': 'attachInternetGateway',
+					'label': 'Attach an Internet Gateway to make this network publicly accessible',
+					'type': 'buttonSlider',
+					'value': false,
+					'fieldMsg': 'If vm layers in this network should be publicly accessible via a public IP address, you need to enable this option.',
+					'required': true
+				},
+				{
 					'name': 'amazonProvidedIpv6CidrBlock',
 					'label': 'Request Amazon Provided IPv6 CIDR Block',
 					'type': 'buttonSlider',
@@ -42,7 +50,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 					'name': 'instanceTenancy',
 					'label': 'Instance Tenancy',
 					'type': 'select',
-					'value': [{"v": "default", "l": "Default"}, {"v": "dedicated", "l": "Dedicated"}],
+					'value': [{"v": "default", "l": "Default", "selected": true}, {"v": "dedicated", "l": "Dedicated"}],
 					'fieldMsg': 'Selecting "Default" launches instances with shared tenancy by default. Selecting "Dedicated" launches instances as dedicated tenancy by default.',
 					'required': false
 				}
@@ -71,6 +79,14 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 					'value': "",
 					'fieldMsg': "The Network's primary address.",
 					'required': false
+				},
+				{
+					'name': 'attachInternetGateway',
+					'label': 'Attach an Internet Gateway to make this network publicly accessible',
+					'type': 'buttonSlider',
+					'value': false,
+					'fieldMsg': 'If vm layers in this network should be publicly accessible via a public IP address, you need to enable this option.',
+					'required': true
 				},
 				{
 					'name': 'instanceTenancy',
@@ -191,6 +207,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 									"name": data.name,
 									"region": currentScope.selectedRegion,
 									"ipv6Address": data.amazonProvidedIpv6CidrBlock,
+									"attachInternetGateway": data.attachInternetGateway,
 									"instanceTenancy": data.instanceTenancy
 								}
 							}
@@ -237,9 +254,6 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		//set value of region to selectedRegion
 		options.form.entries[1].value = currentScope.selectedRegion;
 
-		//select first entry by default
-		options.form.entries[4].value[0].selected = true;
-
 		buildFormWithModal(currentScope, $modal, options);
 	}
 
@@ -279,7 +293,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 									"section": "network",
 									"region": currentScope.selectedRegion,
 									"id": originalNetwork.id,
-									"instanceTenancy": data.instanceTenancy
+									"instanceTenancy": data.instanceTenancy,
+									"attachInternetGateway": data.attachInternetGateway
 								}
 							}
 						};
@@ -342,21 +357,23 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			]
 		};
 
-		options.form.entries[4].entries[0].onAction = function(id, value, form){
+		options.form.entries[5].entries[0].onAction = function(id, value, form){
 			addNewAddress(form, currentScope);
 		};
 
-		options.form.entries[5].entries[0].onAction = function(id, value, form){
+		options.form.entries[6].entries[0].onAction = function(id, value, form){
 			addNewSubnet(currentScope);
 		};
 
 		buildFormWithModal(currentScope, $modal, options, () => {
 			currentScope.form.formData = oneNetwork;
 
+			currentScope.form.formData['attachInternetGateway'] = oneNetwork.attachInternetGateway;
+
 			if(oneNetwork.instanceTenancy) {
 				currentScope.form.formData['instanceTenancy'] = oneNetwork.instanceTenancy;
 				if (oneNetwork.instanceTenancy === 'default') {
-					currentScope.form.entries[3].disabled = true;
+					currentScope.form.entries[4].disabled = true;
 				}
 			}
 
@@ -388,8 +405,8 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		tmp.entries[1].onAction = function (id, value, form) {
 			var count = parseInt(id.replace('rAddress', ''));
 
-			for (let i = form.entries[4].entries.length -1; i >= 0; i--) {
-				if (form.entries[4].entries[i].name === 'addressGroup' + count) {
+			for (let i = form.entries[5].entries.length -1; i >= 0; i--) {
+				if (form.entries[5].entries[i].name === 'addressGroup' + count) {
 					//remove from formData
 					for (var fieldname in form.formData) {
 						if (['addressIp' + count].indexOf(fieldname) !== -1) {
@@ -397,17 +414,17 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 						}
 					}
 					//remove from formEntries
-					form.entries[4].entries.splice(i, 1);
+					form.entries[5].entries.splice(i, 1);
 					break;
 				}
 			}
 		};
 
 		if (form && form.entries) {
-			form.entries[4].entries.splice(form.entries[4].entries.length - 1, 0, tmp);
+			form.entries[5].entries.splice(form.entries[5].entries.length - 1, 0, tmp);
 		}
 		else {
-			form.entries[4].entries.splice(form.entries[4].entries.length - 1, 0, tmp);
+			form.entries[5].entries.splice(form.entries[5].entries.length - 1, 0, tmp);
 		}
 		currentScope.addressCounter++;
 	}
@@ -451,10 +468,10 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 		}
 
 		if (currentScope.form && currentScope.form.entries) {
-			currentScope.form.entries[5].entries.splice(currentScope.form.entries[5].entries.length - 1, 0, tmp);
+			currentScope.form.entries[6].entries.splice(currentScope.form.entries[6].entries.length - 1, 0, tmp);
 		}
 		else {
-			currentScope.form.entries[5].entries.splice(currentScope.form.entries[5].entries.length - 1, 0, tmp);
+			currentScope.form.entries[6].entries.splice(currentScope.form.entries[6].entries.length - 1, 0, tmp);
 		}
 		currentScope.subnetCounter++;
 	}

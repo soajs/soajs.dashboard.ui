@@ -461,7 +461,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		}
 
 		context.updateCustomRepoName = updateCustomRepoName;
-		
+
 		// changes to deployoptions
 		context.setSourceCodeData = function (selectedRecipe) {
 			context.sourceCodeConfig = {
@@ -616,9 +616,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 		context.getCatalogRecipes = function (cb) {
 
 			// this function is the on-action when selecting a vm layer
-			// get the public ips from the layer and update the resource configuration
 			if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm') {
+				// get the public ips from the layer and update the resource configuration
 				context.buildComputedHostname();
+
+				// get the available security groups from the layer in case a port update is required
+				context.getLayerSecurityGroups();
 			}
 
 			context.mainData.recipes = [];
@@ -968,7 +971,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 								onevminstance.ip.forEach((oneIP) =>{
 									if(oneIP.type === 'public' && !processed){
 										processed = true;
-										serversArray.push({'host': oneIP.address, 'port': onevminstance.ports[0].published});
+										serversArray.push({'host': oneIP.address, 'port': (onevminstance.ports && onevminstance.ports[0]) ? onevminstance.ports[0].published : ''});
 									}
 								});
 							});
@@ -1120,6 +1123,28 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				}
 			}
 		};
+
+		context.getLayerSecurityGroups = function() {
+			if(context.formData.deployOptions.deployConfig.vmConfiguration &&
+				context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer &&
+				context.mainData.deploymentData.vmLayers &&
+				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer] &&
+				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list) {
+
+				let availableSecurityGroups = [];
+				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
+					if(oneInstance.securityGroup && Array.isArray(oneInstance.securityGroup) && oneInstance.securityGroup.length > 0) {
+						availableSecurityGroups = availableSecurityGroups.concat(oneInstance.securityGroup.map((oneSg) => { return { v: oneSg, l: oneSg }; }));
+					}
+				});
+
+				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups = availableSecurityGroups;
+				if(context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups.length === 1) {
+					let oneSg = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups[0];
+					context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups =[ oneSg ];
+				}
+			}
+		}
 
 		context.toggleShareWithAllEnvs = function () {
 			if (context.mainData.envs.sharedWithAll) {
@@ -1418,7 +1443,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if(currentScope.environmentWizard){
 					envCode = null;
 				}
-				
+
 				if(envCode){
 					getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
 						// TODO
@@ -1433,7 +1458,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						else{
 							context.mainData.deploymentData.vmLayers = vms;
 						}
-						
+
 						aggregateVMList();
 					});
 				}
@@ -1445,11 +1470,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				if(cb && typeof cb === 'function')
 					return cb();
 			}
-			
+
 			function aggregateVMList(){
 				//recalculate envCode value
 				let envCode;
-				
+
 				if(context.myEnv){
 					envCode = context.myEnv;
 				}
@@ -1459,7 +1484,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				else if(context.context && context.context.envCode){
 					envCode = context.context.envCode;
 				}
-				
+
 				//remove incompatible VMs
 				for(let i in context.mainData.deploymentData.vmLayers){
 					let compatibleVM = false;
@@ -1477,7 +1502,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					else if (context.mainData.deploymentData.vmLayers[i].specs){
 						compatibleVM = true;
 					}
-					
+
 					//if vm layer is onboarded via wizard
 					if (currentScope.onboardNames && currentScope.onboardNames.length > 0 && currentScope.environmentWizard) {
 						for (let j in currentScope.onboardNames) {
@@ -1486,12 +1511,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							}
 						}
 					}
-					
+
 					if(!compatibleVM){
 						delete context.mainData.deploymentData.vmLayers[i];
 					}
 				}
-				
+
 				if(cb && typeof cb === 'function'){
 					return cb();
 				}

@@ -97,7 +97,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 							}
 						});
 					}
-					
+
 					infraConfig.form.providers.forEach((oneProvider) => {
 						if(myInfra.name === 'local'){
 							if(myInfra.technologies[0] === oneProvider.name){
@@ -108,7 +108,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 							myInfra.logo = oneProvider.value;
 						}
 					});
-					
+
 					if(myInfra.name === 'local'){
 						myInfra.icon = infraConfig.logos[myInfra.technologies[0]];
 					}
@@ -128,10 +128,10 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
 
-		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
+		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
 
 		let excludedVms = ['infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
-		
+
 		let excludedDeployments = ['infra-deployments'];
 
 		//fix the menu; local driver has not templates
@@ -142,23 +142,23 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				if(myInfra.name === 'local'){
 					if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
-						
+
 						if(oneNavigationEntry.url === $window.location.hash){
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
 				}
 				else if(['azure'].indexOf(myInfra.name) !== -1){
-					if(excludedDeployments.indexOf(oneNavigationEntry.id) !== -1){
+					if(excludedDeployments.indexOf(oneNavigationEntry.id) !== -1 || ['infra-keyPairs', 'infra-certificates'].includes(oneNavigationEntry.id)){
 						oneNavigationEntry.hideMe = true;
-						
+
 						if(oneNavigationEntry.url === $window.location.hash){
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
 				}
 				else if(['google'].indexOf(myInfra.name) !== -1){
-					if(excludedVms.indexOf(oneNavigationEntry.id) !== -1){
+					if(excludedVms.indexOf(oneNavigationEntry.id) !== -1 || ['infra-keyPairs', 'infra-certificates'].includes(oneNavigationEntry.id)){
 						oneNavigationEntry.hideMe = true;
 
 						if(oneNavigationEntry.url === $window.location.hash){
@@ -169,15 +169,6 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				//disable resource groups section for AWS only
 				else if(['aws'].indexOf(myInfra.name) !== -1){
 					if(['infra-groups'].indexOf(oneNavigationEntry.id) !== -1){
-						oneNavigationEntry.hideMe = true;
-
-						if(oneNavigationEntry.url === $window.location.hash){
-							currentScope.go(oneNavigationEntry.fallbackLocation);
-						}
-					}
-				}
-				else if(['azure'].indexOf(myInfra.name) !== -1) {
-					if(['infra-keyPairs', 'infra-certificates'].indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 
 						if(oneNavigationEntry.url === $window.location.hash){

@@ -326,7 +326,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 
 soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	return function (currentScope) {
-		if ($cookies.get('soajs_username', { 'domain': interfaceDomain }) && $cookies.get('access_token', { 'domain': interfaceDomain })) {
+		if ($localStorage.soajs_user && $cookies.get('soajs_username', { 'domain': interfaceDomain }) && $cookies.get('access_token', { 'domain': interfaceDomain })) {
 			return true;
 		}
 		else {

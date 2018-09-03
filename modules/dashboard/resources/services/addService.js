@@ -109,7 +109,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							apiParams["vms"] = [];
 							apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-								apiParams.vms.push(oneInstance.name);
+								apiParams.vms.push(oneInstance.id);
 
 								if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
 									if(!apiParams.options.deployConfig.vmConfiguration.group) {
@@ -136,7 +136,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 							formData.vms = [];
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-								formData.vms.push(oneInstance.name);
+								formData.vms.push(oneInstance.id);
 							});
 						}
 						if (type === "saveAndDeploy" && $scope.formData.canBeDeployed && $scope.formData.deployOptions && Object.keys($scope.formData.deployOptions).length > 0) {
@@ -172,7 +172,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								apiParams["vms"] = [];
 								apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
 								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-									apiParams.vms.push(oneInstance.name);
+									apiParams.vms.push(oneInstance.id);
 
 									if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
 										if(!apiParams.options.deployConfig.vmConfiguration.group) {

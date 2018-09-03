@@ -1134,7 +1134,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 				let availableSecurityGroups = [];
 				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
 					if(oneInstance.securityGroup && Array.isArray(oneInstance.securityGroup) && oneInstance.securityGroup.length > 0) {
-						availableSecurityGroups = availableSecurityGroups.concat(oneInstance.securityGroup.map((oneSg) => { return { v: oneSg, l: oneSg }; }));
+						oneInstance.securityGroup.forEach((oneSg) => {
+							let matchingGroup = availableSecurityGroups.find((oneGroup) => { return oneGroup.v === oneSg; });
+							if(!matchingGroup) {
+								availableSecurityGroups.push({ v: oneSg, l: oneSg });
+							}
+						});
 					}
 				});
 

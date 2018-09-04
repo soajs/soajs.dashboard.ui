@@ -325,18 +325,28 @@
 					<legend>Firewalls</legend>
 					<div>
 						<label>Published Port</label>
-						<ui-select class="form-control" ng-model="formData.deployOptions.deployConfig.vmConfiguration.securityGroups" multiple required="true">
-					      <ui-select-match>
-					        <span ng-bind="$select.selected.l"></span>
-					        {{$item.l}}
-					      </ui-select-match>
-					      	<ui-select-choices repeat="oneGroup in mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups track by oneGroup.v">
-					        <span ng-bind="oneGroup.l"></span>
-					      </ui-select-choices>
-					    </ui-select>
-						<label class="fieldMsg">
-							Select all the firewalls that should be updated based on the port configuration message displayed above.
-						</label>
+						<div ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups.length > 1">
+							<ui-select class="form-control" ng-model="formData.deployOptions.deployConfig.vmConfiguration.securityGroups" multiple required="true">
+								<ui-select-match>
+									<span ng-bind="$select.selected.l"></span>
+									{{$item.l}}
+								</ui-select-match>
+								<ui-select-choices repeat="oneGroup in mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups track by oneGroup.v">
+									<span ng-bind="oneGroup.l"></span>
+								</ui-select-choices>
+							</ui-select>
+							<label class="fieldMsg">
+								Select all the firewalls that should be updated based on the port configuration message displayed below.
+							</label>
+						</div>
+						<div ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups.length == 1">
+							<div ng-repeat="oneGroup in mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups track by oneGroup.v">
+								<span class="form-control" ng-bind="oneGroup.l" ng-model="formData.deployOptions.deployConfig.vmConfiguration.securityGroups"></span>
+							</div>
+							<label class="fieldMsg">
+								The following firewall will be updated based on the port configuration message displayed below.
+							</label>
+						</div>
 					</div>
 				</fieldset>
 			</div>

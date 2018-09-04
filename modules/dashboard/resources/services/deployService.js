@@ -1149,14 +1149,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				});
 				availableSecurityGroups[0].selected = true;
 				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups = availableSecurityGroups;
-				
+
 				if(context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups.length === 1) {
 					let oneSg = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups[0];
 					context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups =[ oneSg ];
 				}
 			}
 		};
-		
+
 		context.checkSelectedFirewall = function(previousValue){
 			if(!context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups || context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups.length === 0){
 				$window.alert("At least one Security Group must be selected to proceed.");
@@ -1364,17 +1364,34 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 						for(let j = 0; j < oneLayerInstance.ports.length; j++) {
 							let oneLayerPort = oneLayerInstance.ports[j];
 							if(oneLayerPort.access === 'allow' && oneLayerPort.direction === 'inbound') {
-								if(oneLayerPort.isPublished === onePort.isPublished &&
-									((parseInt(oneLayerPort.published) === parseInt(onePort.published)) || oneLayerPort.published.toString() === '*') &&
-									((parseInt(oneLayerPort.target) === parseInt(onePort.target)) || oneLayerPort.target.toString() === '*')) {
-									onePort.availableInVmLayer = true;
-									context.formData.deployOptions.custom.ports.forEach((oneCport) => {
-										if(oneCport.name === onePort.name && oneCport.target === onePort.target){
-											oneCport.availableInVmLayer = onePort.availableInVmLayer;
+								if(oneLayerPort.isPublished === onePort.isPublished) {
+									if(oneLayerPort.published.indexOf('-') !== -1) {
+										let range = oneLayerPort.published.split('-').map((oneEntry) => { return parseInt(oneEntry.trim()); });
+										if(parseInt(onePort.published) >= range[0] && parseInt(onePort.published) <= range[1]) {
+											if(!oneLayerPort.hasOwnProperty('target') || parseInt(oneLayerPort.target) === parseInt(onePort.target) || oneLayerPort.target === '*') {
+												onePort.availableInVmLayer = true;
+												context.formData.deployOptions.custom.ports.forEach((oneCport) => {
+													if(oneCport.name === onePort.name && oneCport.target === onePort.target){
+														oneCport.availableInVmLayer = onePort.availableInVmLayer;
+													}
+												});
+												foundPort = true;
+												break;
+											}
 										}
-									});
-									foundPort = true;
-									break;
+									}
+									else if(parseInt(oneLayerPort.published) === parseInt(onePort.published) || oneLayerPort.published === '*'){
+										if(!oneLayerPort.hasOwnProperty('target') || parseInt(oneLayerPort.target) === parseInt(onePort.target) || oneLayerPort.target === '*') {
+											onePort.availableInVmLayer = true;
+											context.formData.deployOptions.custom.ports.forEach((oneCport) => {
+												if(oneCport.name === onePort.name && oneCport.target === onePort.target){
+													oneCport.availableInVmLayer = onePort.availableInVmLayer;
+												}
+											});
+											foundPort = true;
+											break;
+										}
+									}
 								}
 							}
 						}

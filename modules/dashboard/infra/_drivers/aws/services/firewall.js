@@ -547,7 +547,8 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 				currentScope.infraSecurityGroups.forEach((oneSecurityGroup) => {
 
 					oneSecurityGroup.ports.forEach((onePort) => {
-						onePort.publishedPortRange = `${onePort.published} - ${onePort.range}`;
+						// onePort.publishedPortRange = `${onePort.published} - ${onePort.range}`;
+						onePort.publishedPortRange = onePort.published;
 						if(onePort.published === onePort.range || onePort.protocol === '*') {
 							onePort.publishedPortRange = onePort.published.toString();
 						}

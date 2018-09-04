@@ -1,6 +1,6 @@
 "use strict";
 var resourceDeployService = soajsApp.components;
-resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$modal', 'ngDataApi', '$cookies', '$localStorage', '$timeout', '$location', 'commonService', function (resourceConfiguration, $modal, ngDataApi, $cookies, $localStorage, $timeout, $location, commonService) {
+resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$window', '$modal', 'ngDataApi', '$cookies', '$localStorage', '$timeout', '$location', 'commonService', function (resourceConfiguration, $window, $modal, ngDataApi, $cookies, $localStorage, $timeout, $location, commonService) {
 
 	function confirmMainData(context, currentScope) {
 		if(!context.mainData){
@@ -1142,12 +1142,23 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 						});
 					}
 				});
-
+				availableSecurityGroups[0].selected = true;
 				context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups = availableSecurityGroups;
+				
 				if(context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups.length === 1) {
 					let oneSg = context.mainData.deploymentData.vmLayers[context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups[0];
 					context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups =[ oneSg ];
 				}
+			}
+		};
+		
+		context.checkSelectedFirewall = function(previousValue){
+			if(!context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups || context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups.length === 0){
+				$window.alert("At least one Security Group must be selected to proceed.");
+				if(previousValue){
+					previousValue = JSON.parse(previousValue);
+				}
+				context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups = previousValue;
 			}
 		};
 

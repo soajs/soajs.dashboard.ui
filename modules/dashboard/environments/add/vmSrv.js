@@ -217,15 +217,15 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				for (let i in myLayer.list) {
 					names.push(myLayer.list[i].name);
                     for (let j in myLayer.list[i].tasks) {
-                        images.push({
-                            "prefix": myLayer.list[i].tasks[j].ref.os.image.prefix,
-                            "name":   myLayer.list[i].tasks[j].ref.os.image.name,
-                            "version":myLayer.list[i].tasks[j].ref.os.image.version,
-                            "vmName": myLayer.list[i].name,
-                            "onBoard": (myLayer.list[i].labels && myLayer.list[i].labels['soajs.onBoard']) ? true : false,
-                        });
+                            images.push({
+                                "prefix": myLayer.list[i].tasks[j].ref.os.image.prefix,
+                                "name":   myLayer.list[i].tasks[j].ref.os.image.name,
+                                "version":myLayer.list[i].tasks[j].ref.os.image.version,
+                                "vmName": myLayer.list[i].name,
+                                "onBoard": (myLayer.list[i].labels && myLayer.list[i].labels['soajs.onBoard']) ? true : false,
+                            });
+						}
                     }
-				}
 				obj = {
 					"params": {
 						"env": currentScope.wizard.gi.code,

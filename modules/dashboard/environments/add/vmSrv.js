@@ -214,17 +214,21 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			if (!release) {
 				let names = [];
 				let images = [];
+				let ids = [];
 				for (let i in myLayer.list) {
 					names.push(myLayer.list[i].name);
+					ids.push(myLayer.list[i].id);
                     for (let j in myLayer.list[i].tasks) {
+                        if (myLayer.list[i].tasks[j].ref.os.image) {
                             images.push({
                                 "prefix": myLayer.list[i].tasks[j].ref.os.image.prefix,
-                                "name":   myLayer.list[i].tasks[j].ref.os.image.name,
-                                "version":myLayer.list[i].tasks[j].ref.os.image.version,
+                                "name": myLayer.list[i].tasks[j].ref.os.image.name,
+                                "version": myLayer.list[i].tasks[j].ref.os.image.version,
                                 "vmName": myLayer.list[i].name,
                                 "onBoard": (myLayer.list[i].labels && myLayer.list[i].labels['soajs.onBoard']) ? true : false,
                             });
-						}
+                        }
+                    }
                     }
 				obj = {
 					"params": {
@@ -234,12 +238,17 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 					},
 					"data": {
 						'names': names,
+                        'ids' : ids,
 						"group": myLayer.list[0].labels['soajs.service.vm.group'],
 						"networkName": myLayer.list[0].network,
 						"layerName": myLayer.list[0].layer,
 						"image" : images
 					}
 				};
+				if (vmLayer.list[0].region) {
+                    obj.data['region'] = vmLayer.list[0].region
+				}
+
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
                 vmLayer.list[0].labels['soajs.onBoard'] = "true";
 
@@ -282,7 +291,6 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 
 		//if there are registered vms to be created by the wizard hook them to the scope
 		function appendVMsTotheList() {
-			// TODO: if onboarded
 			if (currentScope.wizard.vms) {
 				currentScope.wizard.vms.forEach((oneVM) => {
 
@@ -318,8 +326,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			//loop on vmLayers and if they have a label['soajs.env.code'] that doesn't match the wizard.gi.code remove the layer
 			for(let vmLayerName in currentScope.vmLayers){
 				let remove = true;
+
 				currentScope.vmLayers[vmLayerName].list.forEach((oneInstance) => {
-					if(oneInstance.labels && oneInstance.labels['soajs.env.code'] && oneInstance.labels['soajs.env.code'].toLowerCase() === currentScope.wizard.gi.code.toLowerCase()){
+					if((oneInstance.labels && oneInstance.labels['soajs.env.code'] && oneInstance.labels['soajs.env.code'].toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) || !oneInstance.labels || (oneInstance.labels && !oneInstance.labels['soajs.env.code'])){
 						remove = false;
 					}
 				});

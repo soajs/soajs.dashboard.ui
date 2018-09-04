@@ -628,7 +628,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 
 			//wizard mode only
 			let alreadySelectedRecipe;
-			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.recipe && currentScope.environmentWizard){
+			if(context.formData && context.formData.deployOptions && context.formData.deployOptions.recipe){
 				alreadySelectedRecipe = context.formData.deployOptions.recipe;
 			}
 

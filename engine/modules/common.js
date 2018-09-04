@@ -416,7 +416,11 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 						}
 						
 						if(Object.hasOwnProperty.call(oneVM, 'executeCommand') && allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]){
-							allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].executeCommand = oneVM.executeCommand;
+							//ensure to only update the value of this property if it is true. setting it to false will prevent the user from:
+							// - on boarding and deploying in it
+							if(allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].executeCommand === true){
+								allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].executeCommand = oneVM.executeCommand;
+							}
 						}
 					});
 				}

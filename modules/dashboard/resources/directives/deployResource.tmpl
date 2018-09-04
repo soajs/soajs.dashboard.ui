@@ -362,4 +362,15 @@
 		</fieldset>
 
 	</div>
+	
+	<div ng-if="formData.deployOptions.deployConfig.type === 'invalid'">
+		<alert type="danger">
+			<p>The Virtual Machine Layer <b>* {{formData.deployOptions.deployConfig.vmConfiguration.vmLayer}} *</b> that was selected to deploy this resource in it, no longer support executing commands on its instances.</p>
+			<b>Possible Solutions:</b>
+			<ul>
+				<li>Delete the resource and deploy it in a new Virtual Machine Layer</li>
+				<li>Re-enable executing commands on the instances of this Layer to update the resource</li>
+			</ul>
+		</alert>
+	</div>
 </fieldset>

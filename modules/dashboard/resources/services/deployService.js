@@ -914,7 +914,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				context.loadVmData(function () {
 					if(context.options.envPlatform && context.options.envPlatform !== ''){
 						if(!forceValueFromSelect && (!context.mainData.deploymentData.vmLayers || Object.keys(context.mainData.deploymentData.vmLayers).length === 0)){
-							context.formData.deployOptions.deployConfig.type = 'container';
+							if(action === 'update'){
+								context.formData.deployOptions.deployConfig.type = "invalid";
+							}
+							else{
+								context.formData.deployOptions.deployConfig.type = 'container';
+							}
 						}
 						else{
 							//if wizard, and template container only, do not show the platform picker !

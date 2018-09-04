@@ -272,14 +272,14 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
             vm = vmLayers[Object.keys(vmLayers)[i]];
             if (!vm.template || vm.template === undefined) {
                 for (let j = 0; j < vm.list.length; j++) {
-                    if (vm.list[j].labels && vm.list[j].labels['soajs.onBoard']) {
+                    if (vm.list[j].labels && vm.list[j].labels['soajs.env.code']) {
                         found = true;
                         break;
                     }
                 }
                 if (found) {
                     for (let z = 0; z < vm.list.length; z++) {
-                        if ((vm.list[z].labels && (!vm.list[z].labels['soajs.onBoard'] || vm.list[z].labels['soajs.onBoard'] === undefined)) || !vm.list[z].labels) {
+                        if ((vm.list[z].labels && (!vm.list[z].labels['soajs.env.code'] || vm.list[z].labels['soajs.env.code'] === undefined)) || !vm.list[z].labels) {
                             vmLayers[Object.keys(vmLayers)[i]].sync = true
                         }
                     }
@@ -406,7 +406,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"id": oneProvider._id,
 					"region": data.inputs.region,
 					"group": data.inputs.group,
-					"extras": [ 'osDisks', 'dataDisks', 'loadBalancers', 'networks', 'publicIps', 'securityGroups', 'vmSizes' ]
+					"extras": [] //NOTE empty array means get extras of all available types
 				}
 			}, function (error, response) {
 				if (error) {

@@ -652,7 +652,9 @@ var catalogAppConfig = {
 		add: ['dashboard', '/catalog/recipes/add', 'post'],
 		update: ['dashboard', '/catalog/recipes/update', 'put'],
 		delete: ['dashboard', '/catalog/recipes/delete', 'delete'],
-		upgrade: ['dashboard', '/catalog/recipes/upgrade', 'get']
+		upgrade: ['dashboard', '/catalog/recipes/upgrade', 'get'],
+		import: ['dashboard', '/templates/import', 'post'],
+		export: ['dashboard', '/templates/export', 'post']
 	}
 
 };

@@ -1,36 +1,42 @@
 <section ng-controller="infraCtrl">
 	<div ng-if="!noInfraProvidersConfigured">
-		<div class="w100 t-right">
-			<a href="" ng-click="editProvider(currentSelectedInfra)" class="btn btn-sm btn-success" ng-if="access.edit">
-				<span class="icon icon-pencil"></span> Reconfigure
-			</a>&nbsp;
-			<a href="" ng-confirm-click="Are you sure you want to deactivate this Provider ?" ng-click="deactivateProvider(currentSelectedInfra)" class="btn btn-sm btn-danger" ng-if="access.deactivate">
-				<span class="icon icon-cross"></span> Deactivate
-			</a>
+		<div class="w100">
+			<div class="col-lg-2">
+				<img ng-src="{{currentSelectedInfra.icon}}" alt="" height="48"/>
+			</div>
+			<div class="col-lg-10 t-right">
+				<a href="" ng-click="editProvider(currentSelectedInfra)" class="btn btn-sm btn-success" ng-if="access.edit">
+					<span class="icon icon-pencil"></span> Reconfigure
+				</a>&nbsp;
+				<a href="" ng-confirm-click="Are you sure you want to deactivate this Provider ?" ng-click="deactivateProvider(currentSelectedInfra)" class="btn btn-sm btn-danger" ng-if="access.deactivate">
+					<span class="icon icon-cross"></span> Deactivate
+				</a>
+			</div>
 		</div>
-		<div class="w-100 c-both entryBoxes">
-			<br>
-			<div class="entryBox" ng-if="currentSelectedInfra.technologies">
-				<div class="header"><label>Technologies</label></div>
-				<div class="body">
-					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneTechnology in currentSelectedInfra.technologies">{{oneTechnology}}</span>
+		<div class="w-100 c-both entryBoxes" id="driver-specs">
+			<div>
+				<hr>
+				<div ng-if="currentSelectedInfra.name === 'local'">
+					<div ng-if="currentSelectedInfra.technologies[0] === 'docker'">
+						<div ng-include="'modules/dashboard/infra/main/directives/docker-machine.tmpl'"></div>
+					</div>
+					<div ng-if="currentSelectedInfra.technologies[0] === 'kubernetes'">
+						<div ng-include="'modules/dashboard/infra/main/directives/kubernetes-machine.tmpl'"></div>
+					</div>
+				</div>
+				
+				<div ng-if="currentSelectedInfra.name === 'google'">
+					<div ng-include="'modules/dashboard/infra/main/directives/google.tmpl'"></div>
+				</div>
+				
+				<div ng-if="currentSelectedInfra.name === 'aws'">
+					<div ng-include="'modules/dashboard/infra/main/directives/aws.tmpl'"></div>
+				</div>
+				
+				<div ng-if="currentSelectedInfra.name === 'azure'">
+					<div ng-include="'modules/dashboard/infra/main/directives/azure.tmpl'"></div>
 				</div>
 			</div>
-			<div class="entryBox" ng-if="currentSelectedInfra.drivers">
-				<div class="header"><label>Infra Code Template Drivers</label></div>
-				<div class="body">
-					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneDriver in currentSelectedInfra.drivers">{{oneDriver}}</span>
-				</div>
-			</div>
-			<div class="entryBox" ng-if="currentSelectedInfra.templates">
-				<div class="header"><label>Infra Code Template Storage Location</label></div>
-				<div class="body">
-					<span class="btn btn-sm btn-default capitalize" ng-repeat="oneLocation in currentSelectedInfra.templates">
-						{{(oneLocation === 'local') ? 'SOAJS Console' : 'Cloud Provider'}}
-					</span>
-				</div>
-			</div>
-
 		</div>
 	</div>
 

@@ -109,7 +109,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							apiParams["vms"] = [];
 							apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-								apiParams.vms.push(oneInstance.name);
+								apiParams.vms.push(oneInstance.id);
 
 								if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
 									if(!apiParams.options.deployConfig.vmConfiguration.group) {
@@ -130,13 +130,13 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
                         if (formData.deployOptions.custom && formData.deployOptions.custom.env) {
                             deployOptions.custom.env = formData.deployOptions.custom.env
                         }
-                        
+
 						deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 						delete deployOptions.sourceCode;
 						if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 							formData.vms = [];
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-								formData.vms.push(oneInstance.name);
+								formData.vms.push(oneInstance.id);
 							});
 						}
 						if (type === "saveAndDeploy" && $scope.formData.canBeDeployed && $scope.formData.deployOptions && Object.keys($scope.formData.deployOptions).length > 0) {
@@ -154,7 +154,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 									deployOptions.custom.resourceId = $scope.newResource._id;
 								}
 								deployOptions.env = $scope.options.envCode;
-                             
+
 								if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
 									deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
 								}
@@ -172,7 +172,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								apiParams["vms"] = [];
 								apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
 								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
-									apiParams.vms.push(oneInstance.name);
+									apiParams.vms.push(oneInstance.id);
 
 									if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
 										if(!apiParams.options.deployConfig.vmConfiguration.group) {
@@ -180,6 +180,10 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 										}
 									}
 								});
+
+								if(formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.securityGroups) {
+									apiParams.options.deployConfig.vmConfiguration.securityGroups = formData.deployOptions.deployConfig.vmConfiguration.securityGroups.map((oneSg) => { return oneSg.v; });
+								}
 							}
 						}
 						if(type === 'saveAndRebuild' && deployOptions.custom && deployOptions.custom.sourceCode){
@@ -192,7 +196,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 						apiParams['deployType'] = "saveAndRebuild";
 						rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit; //convert memory limit back to bytes
 						rebuildOptions.memory *= 1048576;
-						
+
 						rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
 						apiParams["rebuildOptions"] = rebuildOptions;
 						apiParams["serviceId"] = formData.instance.id;
@@ -227,7 +231,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 					if (apiParams.options && apiParams.options.custom && !apiParams.options.custom.env) {
                         apiParams.options.custom.env = {}
 					}
-					
+
 					commonService.addEditResourceApi($scope, apiParams, function (response) {
 						$scope.newResource = response;
 						if (type === 'saveAndRebuild') {

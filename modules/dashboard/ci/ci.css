@@ -58,3 +58,11 @@ div.entryBox .body .btn-primary{
     margin-left:0;
     padding-left:0;
 }
+
+#ciRecipes div.entryBox .body .btn-primary {
+    float:none;
+}
+
+#ciRecipes div.entryBox .body .btn {
+    margin-right: 3px;
+}

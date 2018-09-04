@@ -206,6 +206,10 @@
 				</div>
 			</div>
 		</tab>
+		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Throttling">
+			<br />
+			<div ng-include="'modules/dashboard/environments/directives/throttling.tmpl'"></div>
+		</tab>
 	</tabset>
 </section>
 

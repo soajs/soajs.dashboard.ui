@@ -44,7 +44,10 @@
 		<div>
 			<label>Memory Limit</label>
 			<input type="number" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
-			<label class="fieldMsg">Memory limit per instance (in MBytes)</label>
+			<label class="fieldMsg">
+				Specify the Maximum memory limit (in Megabytes) that should be provided when deploying your resource.<br />
+				You can use 0 if you want the deployment to use elastic memory from the node where it will be deployed in.
+			</label>
 			<br/>
 		</div>
 
@@ -314,9 +317,29 @@
 						<li ng-repeat="invalidPort in formData.invalidVmLayerPortsData.ports">{{invalidPort.name}} port -> Source port: {{invalidPort.published}} and Destination port: {{invalidPort.target}}</li>
 					</ul>
 
-					These ports will be automatically configured during deployment.
+					These ports will be automatically configured during deployment. Please select which firewalls should be updated to reflect this change.
 				</p>
 			</alert>
+			<div ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups">
+				<fieldset>
+					<legend>Firewalls</legend>
+					<div>
+						<label>Published Port</label>
+						<ui-select class="form-control" ng-model="formData.deployOptions.deployConfig.vmConfiguration.securityGroups" multiple required="true">
+					      <ui-select-match>
+					        <span ng-bind="$select.selected.l"></span>
+					        {{$item.l}}
+					      </ui-select-match>
+					      	<ui-select-choices repeat="oneGroup in mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].availableSecurityGroups track by oneGroup.v">
+					        <span ng-bind="oneGroup.l"></span>
+					      </ui-select-choices>
+					    </ui-select>
+						<label class="fieldMsg">
+							Select all the firewalls that should be updated based on the port configuration message displayed above.
+						</label>
+					</div>
+				</fieldset>
+			</div>
 			<div ng-repeat="exposedPorts in formData.deployOptions.custom.ports">
 				<fieldset class="custom-fieldset" ng-if="exposedPorts.isPublished || exposedPorts.published">
 					<legend class="capitalize">{{exposedPorts.name}}</legend>

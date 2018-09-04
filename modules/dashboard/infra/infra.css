@@ -535,3 +535,17 @@ td.readonly{
 .network_pending {
     color: #8a6d3b;
 }
+#driver-specs ul li {
+    display: block;
+}
+
+#driver-specs ul li:before {
+    /*Using a Bootstrap glyphicon as the bullet point*/
+    content: "\e080";
+    font-family: 'Glyphicons Halflings';
+    font-size: 9px;
+    float: left;
+    margin-top: 4px;
+    margin-left: -17px;
+    color: #337ab7;
+}

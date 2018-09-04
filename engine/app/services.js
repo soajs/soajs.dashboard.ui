@@ -1,5 +1,26 @@
 "use strict";
-
+soajsApp.service('SOAJSStore', ['$http', function($http) {
+	
+	function check(currentScope){
+		var config = {
+			url: _soajsStore,
+			method: "options",
+			cache: true,
+			timeout: 10000
+		};
+		$http(config).success(function (response, status, headers, config) {
+			if(status === 204){
+				currentScope.showSOAJSStoreLink = _soajsStore;
+			}
+		}).error(function (errData) {
+			console.log(errData)
+		});
+	}
+	
+	return {
+		'check': check
+	}
+}]);
 
 soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', function ($http, $cookies, $localStorage, Upload) {
 	
@@ -305,7 +326,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 
 soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	return function (currentScope) {
-		if ($cookies.get('soajs_username', { 'domain': interfaceDomain }) && $cookies.get('access_token', { 'domain': interfaceDomain })) {
+		if ($localStorage.soajs_user && $cookies.get('soajs_username', { 'domain': interfaceDomain }) && $cookies.get('access_token', { 'domain': interfaceDomain })) {
 			return true;
 		}
 		else {

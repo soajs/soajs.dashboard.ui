@@ -1,13 +1,21 @@
 "use strict";
 var infraIACApp = soajsApp.components;
-infraIACApp.controller('infraIACCtrl', ['$scope', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIACSrv', function ($scope, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIACSrv) {
+infraIACApp.controller('infraIACCtrl', ['$scope', '$location', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIACSrv', function ($scope, $location, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIACSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
+	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraIACConfig.permissions);
 	
 	infraCommonSrv.getInfraFromCookie($scope);
+	
+	$scope.go = function (path, method) {
+		if (path) {
+			$cookies.put("method", method, { 'domain': interfaceDomain });
+			$location.path(path);
+		}
+	};
 	
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions"], () => {

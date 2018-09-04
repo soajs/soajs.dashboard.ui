@@ -1149,7 +1149,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 					context.formData.deployOptions.deployConfig.vmConfiguration.securityGroups =[ oneSg ];
 				}
 			}
-		}
+		};
 
 		context.toggleShareWithAllEnvs = function () {
 			if (context.mainData.envs.sharedWithAll) {
@@ -1349,9 +1349,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$moda
 							let oneLayerPort = oneLayerInstance.ports[j];
 							if(oneLayerPort.access === 'allow' && oneLayerPort.direction === 'inbound') {
 								if(oneLayerPort.isPublished === onePort.isPublished &&
-									((oneLayerPort.published == onePort.published) || oneLayerPort.published === '*') &&
-									((oneLayerPort.target == onePort.target) || oneLayerPort.target === '*')) {
+									((parseInt(oneLayerPort.published) === parseInt(onePort.published)) || oneLayerPort.published.toString() === '*') &&
+									((parseInt(oneLayerPort.target) === parseInt(onePort.target)) || oneLayerPort.target.toString() === '*')) {
 									onePort.availableInVmLayer = true;
+									context.formData.deployOptions.custom.ports.forEach((oneCport) => {
+										if(oneCport.name === onePort.name && oneCport.target === onePort.target){
+											oneCport.availableInVmLayer = onePort.availableInVmLayer;
+										}
+									});
 									foundPort = true;
 									break;
 								}

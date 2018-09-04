@@ -350,7 +350,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 					providerVMs[oneProvider.name].forEach((oneVM) => {
 						//aggregate and populate groups
 						//add infra to group details
-						if(!allVMs[oneProvider.name + "_" + oneVM.layer]){
+						if(!allVMs[oneProvider.name + "_" + oneVM.network +  "_" + oneVM.layer]){
 							let vmTemplate = angular.copy(oneVM.template);
 							delete oneVM.template;
 							if(envCode){
@@ -362,6 +362,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
                                         allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
                                             name: oneVM.layer,
                                             infraProvider: oneProvider,
+	                                        executeCommand : true,
                                             list: [oneVM],
                                             template: vmTemplate
                                         };
@@ -378,6 +379,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
                                                 allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
                                                     name: oneVM.layer,
                                                     infraProvider: oneProvider,
+	                                                executeCommand : true,
                                                     list: [oneVM]
                                                 }
 											}
@@ -393,6 +395,7 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
                                     allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
                                         name: oneVM.layer,
                                         infraProvider: oneProvider,
+	                                    executeCommand : true,
                                         list: [oneVM],
                                         template: vmTemplate
                                     };
@@ -410,6 +413,10 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 								delete oneVM.template;
 								allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
 							}
+						}
+						
+						if(Object.hasOwnProperty.call(oneVM, 'executeCommand') && allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]){
+							allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].executeCommand = oneVM.executeCommand;
 						}
 					});
 				}

@@ -831,18 +831,22 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
     function getOnBoard(currentScope, vmLayer, release) {
         let names = [];
         let images = [];
+        let ids = [];
         for (let i in vmLayer.list) {
             names.push(vmLayer.list[i].name);
+            ids.push(vmLayer.list[i].id);
             for (let j in vmLayer.list[i].tasks) {
-                images.push({
-                    "prefix": vmLayer.list[i].tasks[j].ref.os.image.prefix,
-                    "name":   vmLayer.list[i].tasks[j].ref.os.image.name,
-                    "version":vmLayer.list[i].tasks[j].ref.os.image.version,
-                    "vmName": vmLayer.list[i].name,
-                    "onBoard": (vmLayer.list[i].labels && vmLayer.list[i].labels['soajs.onBoard']) ? true : false,
-                });
+            	if (vmLayer.list[i].tasks[j].ref.os.image) {
+                    images.push({
+                        "prefix": vmLayer.list[i].tasks[j].ref.os.image.prefix,
+                        "name":   vmLayer.list[i].tasks[j].ref.os.image.name,
+                        "version":vmLayer.list[i].tasks[j].ref.os.image.version,
+                        "vmName": vmLayer.list[i].name,
+                        "onBoard": (vmLayer.list[i].labels && vmLayer.list[i].labels['soajs.onBoard']) ? true : false,
+                    });
+				}
+				}
             }
-        }
         $modal.open({
             templateUrl: (!release && !vmLayer.sync)  ? "onboardVM.tmpl" : (release && !vmLayer.sync) ? 'releaseVM.tmpl' : "sync.tmpl",
             size: 'lg',
@@ -862,10 +866,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
                         },
                         "data": {
                             'names': names,
+							'ids' : ids,
                             "group": vmLayer.list[0].labels['soajs.service.vm.group'],
                             "networkName": vmLayer.list[0].network,
                             "layerName": vmLayer.list[0].layer,
-                            "image" : !release ? images : []
+							"region" : vmLayer.list[0].region,
+                            "image" : !release ? images : [],
                         }
                     }, function (error) {
                         overlayLoading.hide();

@@ -90,10 +90,10 @@
 									</a>
 								</li>
 							</ul>
-							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.onBoard'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
+							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.onBoard'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync && oneVMLayer.executeCommand" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
 								Release
 							</button>
-							<button  ng-if="!listingClouds && !environmentWizard && oneVMLayer.sync" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
+							<button  ng-if="!listingClouds && !environmentWizard && oneVMLayer.sync && oneVMLayer.executeCommand" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>
@@ -218,10 +218,10 @@
 								</li>
 							</ul>
 
-							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
+							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync && oneVMLayer.executeCommand" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
-                            <button ng-hide="(oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded') " ng-if="!listingClouds && oneVMLayer.sync" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
+                            <button ng-hide="(oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded')" ng-if="!listingClouds && oneVMLayer.sync && oneVMLayer.executeCommand" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>

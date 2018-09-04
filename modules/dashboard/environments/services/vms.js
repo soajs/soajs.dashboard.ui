@@ -51,10 +51,12 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 				"group": oneVMInstance.labels['soajs.service.vm.group'],
 				"serviceId": oneVMInstance.name,
 				"infraId": oneVMLayer.infraProvider._id,
-				"technology": "vm"
+				"technology": "vm",
+				'instanceId' : oneVMInstance.id
 			},
 			"data":{
-				"operation": action
+				"operation": action,
+                'region' : oneVMLayer.list[0].region,
 			}
 		}, function (error, response) {
 			overlayLoading.hide();

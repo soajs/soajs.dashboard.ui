@@ -170,6 +170,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				required: true,
 				fieldMsg: "Select the Infra Provider you want to create the VM Layer at.",
 				onAction: (id, value, form) => {
+					form.entries.length = 1;
+					delete form.formData.region;
+					delete form.formData.group;
+
 					let region = {
 						'name': 'region',
 						'label': 'Select a Region',
@@ -180,6 +184,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"fieldMsg": "Deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges.",
 						"onAction" : (id, value2, form) => {
 							form.entries.length = 2;
+							delete form.formData.group;
+
 							if(form.actions.length > 1){
 								form.actions.shift();
 							}

@@ -212,23 +212,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 				};
 			}
 			if (!release) {
-				let names = [];
-				let images = [];
 				let ids = [];
 				for (let i in myLayer.list) {
-					names.push(myLayer.list[i].name);
 					ids.push(myLayer.list[i].id);
-                    for (let j in myLayer.list[i].tasks) {
-                        if (myLayer.list[i].tasks[j].ref.os.image) {
-                            images.push({
-                                "prefix": myLayer.list[i].tasks[j].ref.os.image.prefix,
-                                "name": myLayer.list[i].tasks[j].ref.os.image.name,
-                                "version": myLayer.list[i].tasks[j].ref.os.image.version,
-                                "vmName": myLayer.list[i].name,
-                                "onBoard": (myLayer.list[i].labels && myLayer.list[i].labels['soajs.onBoard']) ? true : false,
-                            });
-                        }
-                    }
                     }
 				obj = {
 					"params": {
@@ -237,12 +223,10 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						"release": release
 					},
 					"data": {
-						'names': names,
                         'ids' : ids,
 						"group": myLayer.list[0].labels['soajs.service.vm.group'],
-						"networkName": myLayer.list[0].network,
 						"layerName": myLayer.list[0].layer,
-						"image" : images
+						'region' : vmLayer.list[0].region
 					}
 				};
 				if (vmLayer.list[0].region) {

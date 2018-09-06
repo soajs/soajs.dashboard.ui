@@ -84,7 +84,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					let infraCookieCopy = angular.copy(myInfra);
 					delete infraCookieCopy.templates;
 					delete infraCookieCopy.groups;
-					delete infraCookieCopy.region;
+					delete infraCookieCopy.regions;
 					delete infraCookieCopy.deployments;
 					delete infraCookieCopy.api;
 					$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
@@ -92,7 +92,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					//check if infraProviders more than 0 and then unhide the leftMenu items that were hidden when there were no infra providers configured
 					if (currentScope.infraProviders.length > 0) {
 						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavItem) => {
-							if (['infra-deployments', 'infra-templates'].indexOf(oneNavItem.id) !== -1) {
+							if (['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'].indexOf(oneNavItem.id) !== -1) {
 								oneNavItem.hideMe = false;
 							}
 						});
@@ -128,11 +128,10 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
 
-		let excludedInfras = ['infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
-
-		let excludedVms = ['infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'];
-
-		let excludedDeployments = ['infra-deployments'];
+		let awsExcluded = [ 'infra-groups' ];
+		let azureExcluded = [ 'infra-deployments', 'infra-keyPairs', 'infra-certificates' ];
+		let googleExcluded = [ 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
+		let localExcluded = [ 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
 
 		//fix the menu; local driver has not templates
 		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){
@@ -140,7 +139,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 				oneNavigationEntry.hideMe = false;
 				if(myInfra.name === 'local'){
-					if(excludedInfras.indexOf(oneNavigationEntry.id) !== -1){
+					if(localExcluded.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 
 						if(oneNavigationEntry.url === $window.location.hash){
@@ -149,7 +148,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				}
 				else if(['azure'].indexOf(myInfra.name) !== -1){
-					if(excludedDeployments.indexOf(oneNavigationEntry.id) !== -1 || ['infra-keyPairs', 'infra-certificates'].includes(oneNavigationEntry.id)){
+					if(azureExcluded.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 
 						if(oneNavigationEntry.url === $window.location.hash){
@@ -158,7 +157,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				}
 				else if(['google'].indexOf(myInfra.name) !== -1){
-					if(excludedVms.indexOf(oneNavigationEntry.id) !== -1 || ['infra-keyPairs', 'infra-certificates'].includes(oneNavigationEntry.id)){
+					if(googleExcluded.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 
 						if(oneNavigationEntry.url === $window.location.hash){
@@ -168,7 +167,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}
 				//disable resource groups section for AWS only
 				else if(['aws'].indexOf(myInfra.name) !== -1){
-					if(['infra-groups'].indexOf(oneNavigationEntry.id) !== -1){
+					if(awsExcluded.indexOf(oneNavigationEntry.id) !== -1){
 						oneNavigationEntry.hideMe = true;
 
 						if(oneNavigationEntry.url === $window.location.hash){

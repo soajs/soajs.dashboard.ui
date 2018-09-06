@@ -108,14 +108,20 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 						if (formData.deployOptions.deployConfig && formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
 							apiParams["vms"] = [];
 							apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
+							if (apiParams.options && apiParams.options.deployConfig) {
+								apiParams.options.deployConfig.region = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list;
+							}
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
 								apiParams.vms.push(oneInstance.id);
-
+								if (apiParams.options && apiParams.options.deployConfig) {
+									apiParams.options.deployConfig.region = oneInstance.region;
+								}
 								if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
 									if(!apiParams.options.deployConfig.vmConfiguration.group) {
 										apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];
 									}
 								}
+								
 							});
 						}
 					}
@@ -137,6 +143,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							formData.vms = [];
 							$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
 								formData.vms.push(oneInstance.id);
+								if (apiParams.options && apiParams.options.deployConfig) {
+									apiParams.options.deployConfig.region = oneInstance.region;
+								}
 							});
 						}
 						if (type === "saveAndDeploy" && $scope.formData.canBeDeployed && $scope.formData.deployOptions && Object.keys($scope.formData.deployOptions).length > 0) {
@@ -173,7 +182,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 								apiParams.options.deployConfig.infra = $scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].infraProvider._id;
 								$scope.mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.forEach((oneInstance) => {
 									apiParams.vms.push(oneInstance.id);
-
+									if (apiParams.options && apiParams.options.deployConfig) {
+										apiParams.options.deployConfig.region = oneInstance.region;
+									}
 									if(apiParams.options && apiParams.options.deployConfig && apiParams.options.deployConfig.vmConfiguration) {
 										if(!apiParams.options.deployConfig.vmConfiguration.group) {
 											apiParams.options.deployConfig.vmConfiguration.group = oneInstance.labels['soajs.service.vm.group'];

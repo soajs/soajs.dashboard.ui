@@ -216,9 +216,20 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 									"id": oneInfra._id
 								},
 								"data": {
-									"template": formData
+									"template": angular.copy(formData)
 								}
 							};
+							
+							if(options.data.template.inputs && typeof(options.data.template.inputs) !== 'string'){
+								options.data.template.inputs = JSON.stringify(options.data.template.inputs);
+							}
+							if(options.data.template.display && typeof(options.data.template.display) !== 'string'){
+								options.data.template.display = JSON.stringify(options.data.template.display);
+							}
+							if(options.data.template.imfv && typeof(options.data.template.imfv) !== 'string'){
+								options.data.template.imfv = JSON.stringify(options.data.template.imfv);
+							}
+							
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
 								overlayLoading.hide();
@@ -293,9 +304,9 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 											},
 											"data": {
 												"name": formData.name,
-												"inputs": formData.inputs,
-												"display": formData.display,
-												"imfv": formData.imfv
+												"inputs": JSON.stringify(formData.inputs),
+												"display": JSON.stringify(formData.display),
+												"imfv": JSON.stringify(formData.imfv)
 											}
 										};
 										getSendDataFromServer(currentScope, ngDataApi, compOptions, function (error, data) {
@@ -306,7 +317,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 												let tempTemplate = {
 													"_id": options.params.name,
 													"name": options.params.name
-												}
+												};
 												currentScope.deleteTemplate(tempTemplate, oneInfra);
 											}
 											else {
@@ -441,6 +452,10 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 
 			let formData = angular.copy(oneTemplate);
 
+			if(!formData.textMode && typeof(formData.content) === 'string'){
+				formData.content = JSON.parse(formData.content);
+			}
+			
 			if (typeof(formData.inputs) === "string") {
 				try {
 					formData.inputs = JSON.parse(formData.inputs)
@@ -491,9 +506,24 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 									"id": oneTemplate._id
 								},
 								"data": {
-									"template": formData
+									"template": angular.copy(formData)
 								}
 							};
+							
+							if(options.data.template.content && typeof(options.data.template.content) !== 'string'){
+								options.data.template.content = JSON.stringify(options.data.template.content);
+							}
+							
+							if(options.data.template.inputs && typeof(options.data.template.inputs) !== 'string'){
+								options.data.template.inputs = JSON.stringify(options.data.template.inputs);
+							}
+							if(options.data.template.display && typeof(options.data.template.display) !== 'string'){
+								options.data.template.display = JSON.stringify(options.data.template.display);
+							}
+							if(options.data.template.imfv && typeof(options.data.template.imfv) !== 'string'){
+								options.data.template.imfv = JSON.stringify(options.data.template.imfv);
+							}
+							
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
 								overlayLoading.hide();
@@ -642,9 +672,9 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 					},
 					"data": {
 						"name": oneTemplate.name,
-						"inputs": formData.inputs,
-						"display": formData.display,
-						"imfv": formData.imfv
+						"inputs": JSON.stringify(formData.inputs),
+						"display": JSON.stringify(formData.display),
+						"imfv": JSON.stringify(formData.imfv)
 					}
 				};
 				overlayLoading.show();

@@ -582,10 +582,12 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 		
 		currentScope.collectedExportedConent = {};
 		currentScope.collectedExternalConent = {};
+		overlayLoading.show();
 		listUniqueProviders(currentScope, (ciRecipes) => {
 			listRecipes(currentScope, (catalogs) => {
 				listEndpoints(currentScope, (endpoints) => {
                     getInfra(currentScope, (iacTemplates) => {
+	                    overlayLoading.hide();
                         currentScope.exportSections = [];
                         if (ciRecipes) {
                             currentScope.exportSections.push({
@@ -688,11 +690,6 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 
 		delete postData.catalogs;
 		overlayLoading.show();
-		let options = {
-            'method': 'post',
-            'routeName': '/dashboard/templates/export',
-            'data': postData
-        }
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'post',
 			'routeName': '/dashboard/templates/export',
@@ -712,12 +709,10 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 	}
 	
 	function listUniqueProviders(currentScope, cb) {
-		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
 			'routeName': '/dashboard/ci/providers'
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
@@ -740,12 +735,10 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 	}
 	
 	function listRecipes(currentScope, cb) {
-		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/catalog/recipes/list'
 		}, function (error, response) {
-			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			}
@@ -823,10 +816,7 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
                 "exclude": ["groups", "regions", "extra"]
             }
         };
-
-        overlayLoading.show();
         getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
-            overlayLoading.hide();
             if(error){
                 currentScope.displayAlert('danger', error.message);
             } else {

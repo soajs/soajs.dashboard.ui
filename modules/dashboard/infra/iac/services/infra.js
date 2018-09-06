@@ -268,6 +268,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 								let options = {
 									url: apiConfiguration.domain + "/dashboard/infra/template/upload",
 									params: {
+										action: 'add',
 										id: oneInfra._id,
 										name: formData.name,
 										access_token: access_token,
@@ -626,6 +627,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 			let options = {
 				url: apiConfiguration.domain + "/dashboard/infra/template/upload",
 				params: {
+					action: 'edit',
 					id: oneInfra._id,
 					name: oneTemplate.name,
 					description: formData.description,

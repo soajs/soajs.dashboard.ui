@@ -914,7 +914,11 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				context.loadVmData(function () {
 					if(context.options.envPlatform && context.options.envPlatform !== ''){
 						if(!forceValueFromSelect && (!context.mainData.deploymentData.vmLayers || Object.keys(context.mainData.deploymentData.vmLayers).length === 0)){
-							if(action === 'update'){
+							if(action === 'update' && context.formData &&
+							context.formData.deployOptions &&
+							context.formData.deployOptions.deployConfig &&
+							context.formData.deployOptions.deployConfig.vmConfiguration &&
+							context.formData.deployOptions.deployConfig.vmConfiguration.vmLayer){
 								context.formData.deployOptions.deployConfig.type = "invalid";
 							}
 							else{

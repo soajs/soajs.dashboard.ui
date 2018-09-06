@@ -883,30 +883,33 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							
 							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 								$timeout(() => {
-									resource.scope.formData = angular.copy(alreadyFilledFormData);
 									
-									if(resource.scope.formData.deployOptions){
-										resource.deployOptions = resource.scope.formData.deployOptions;
-									}
-									
-									//if wizard, and template container only, do not show the platform picker !
-									if(currentScope.restrictions){
-										if(currentScope.restrictions.vm && (currentScope.restrictions.docker || currentScope.restrictions.kubernetes) ){
+									if(alreadyFilledFormData && alreadyFilledFormData.deployOptions && alreadyFilledFormData.deployOptions.deployConfig && alreadyFilledFormData.deployOptions.deployConfig.type){
+										resource.scope.formData = angular.copy(alreadyFilledFormData);
+										
+										if(resource.scope.formData.deployOptions){
+											resource.deployOptions = resource.scope.formData.deployOptions;
+										}
+										
+										//if wizard, and template container only, do not show the platform picker !
+										if(currentScope.restrictions){
+											if(currentScope.restrictions.vm && (currentScope.restrictions.docker || currentScope.restrictions.kubernetes) ){
+												resource.scope.displayPlatformPicker = true;
+											}
+										}
+										else{
 											resource.scope.displayPlatformPicker = true;
 										}
-									}
-									else{
-										resource.scope.displayPlatformPicker = true;
-									}
-									
-									if(resource.deployOptions && resource.deployOptions.deployConfig && resource.deployOptions.deployConfig.type && resource.deployOptions.deployConfig.type === 'vm'){
-										resource.scope.updateDeploymentName(record.name, true);
-									}
-									else{
-										if(resource.scope.displayPlatformPicker){
+										
+										if(resource.deployOptions && resource.deployOptions.deployConfig && resource.deployOptions.deployConfig.type && resource.deployOptions.deployConfig.type === 'vm'){
 											resource.scope.updateDeploymentName(record.name, true);
 										}
-										resource.scope.updateCustomRepoName();
+										else{
+											if(resource.scope.displayPlatformPicker){
+												resource.scope.updateDeploymentName(record.name, true);
+											}
+											resource.scope.updateCustomRepoName();
+										}
 									}
 									
 									counter++;

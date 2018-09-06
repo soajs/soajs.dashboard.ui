@@ -479,6 +479,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				required: true,
 				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
 				onAction: function(id, value, form){
+					form.entries.length = 2;
 					oneProvider.templates.forEach((oneTmpl) => {
 						if(oneTmpl.name === value && oneTmpl.inputs){
 							if(typeof(oneTmpl.inputs) === 'string') {

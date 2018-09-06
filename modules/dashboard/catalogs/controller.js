@@ -1857,12 +1857,15 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		};
 
-		formData.deploymentType = [formData.deploymentType];
-		if (formData.deploymentType && formData.deploymentType.length > 0) {
-			for (let i = 0; i < formData.deploymentType.length ; i ++) {
-                formData.deploymentType[i] = formData.deploymentType[i].v
+
+		if (formData.deploymentType) {
+            formData.deploymentType = [formData.deploymentType];
+			if ( formData.deploymentType &&  formData.deploymentType.length > 0) {
+                for (let i = 0; i < formData.deploymentType.length ; i ++) {
+                    formData.deploymentType[i] = formData.deploymentType[i].v
+                }
+                apiData['restriction']["deployment"] = formData.deploymentType
 			}
-            apiData['restriction']["deployment"] = formData.deploymentType
 		}
 
 		if (formData.drivers && formData.drivers.length > 0) {

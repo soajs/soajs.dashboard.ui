@@ -1,6 +1,6 @@
 <div class="grid" ng-show="!isSafari">
 	<div class="w100 c-both table">
-		<span class="exportLabel" ng-repeat="section in exportSections" ng-class="{'active': exportSectionCounter === $index}" ng-click="goToExportSection($index)"><b>Section {{($index+1)}}:</b> {{section.label}}</span>
+		<span class="exportLabel" ng-repeat="section in exportSections" ng-class="{'active': exportSectionCounter === $index}" ng-click="storeRecordsOf(); goToExportSection($index)"><b>Section {{($index+1)}}:</b> {{section.label}}</span>
 	</div>
 	<br />
 	<div ng-if="exportSections && exportSections.length > 0">

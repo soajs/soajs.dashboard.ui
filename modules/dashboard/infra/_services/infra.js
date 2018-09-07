@@ -2,6 +2,8 @@
 let infraCommonCSrv = soajsApp.components;
 infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
 
+	const dynamicInfraSections = ['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
+
 	function getInfraDriverName(currentScope) {
 		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
 		let name = oneInfra.name; // -> azure
@@ -50,7 +52,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				if (response.length === 0) {
 					$timeout(() => {
 						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
-							if(['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip'].indexOf(oneNavigationEntry.id) !== -1){
+							if(dynamicInfraSections.indexOf(oneNavigationEntry.id) !== -1){
 								oneNavigationEntry.hideMe = true;
 							}
 						});
@@ -92,7 +94,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					//check if infraProviders more than 0 and then unhide the leftMenu items that were hidden when there were no infra providers configured
 					if (currentScope.infraProviders.length > 0) {
 						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavItem) => {
-							if (['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'].indexOf(oneNavItem.id) !== -1) {
+							if (dynamicInfraSections.indexOf(oneNavItem.id) !== -1) {
 								oneNavItem.hideMe = false;
 							}
 						});

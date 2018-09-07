@@ -29,8 +29,8 @@
 								<br />
 								<thead>
 									<tr>
-										<th width="10%"></th>
-										<th width="20%">Name</th>
+										<th width="5%"></th>
+										<th width="30%">Name</th>
 										<th width="40%">Description</th>
 										<th width="10%">Storage Location</th>
 									</tr>
@@ -38,7 +38,7 @@
 								<tbody>
 									<tr ng-repeat="oneTmpl in list" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
 										<td ng-if="oneTmpl.technology === oneTechnology">
-											<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;
+											<!--<a href="" ng-click="previewTemplate(oneTmpl)" ng-if="oneTmpl.location === 'local'"><span class="icon icon-search"></span></a>&nbsp;-->
 											<a href="" ng-click="editTemplate(oneTmpl, currentSelectedInfra)" ><span class="icon icon-pencil"></span></a>&nbsp;
 											<a href="" ng-click="downloadTemplate(oneTmpl, currentSelectedInfra)" ng-if="oneTmpl.location !== 'local'"><span class="icon icon-download"></span></a>&nbsp;
 											<a ng-confirm-click="Are you sure you want to remove this template ?" href="" ng-click="deleteTemplate(oneTmpl, currentSelectedInfra)" ng-if="access.removeTemplates"><span class="icon icon-cross red"></span></a>

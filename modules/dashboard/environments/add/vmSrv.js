@@ -339,9 +339,21 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 
 			let addNextButton = false;
 			//template is blank
-			if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.deploy).length === 0) {
+			if (!currentScope.wizard.template.deploy || Object.keys(currentScope.wizard.template.deploy).length === 0) {
 				addNextButton = true;
 			}
+			//template is blank, variation 2
+			if (currentScope.wizard.template.deploy && currentScope.wizard.template.deploy.deployments) {
+				if(Object.keys(currentScope.wizard.template.deploy.deployments).length === 0){
+					addNextButton = true;
+				}
+				else {
+					if(Object.keys(currentScope.wizard.template.deploy.deployments.pre).length === 0 && Object.keys(currentScope.wizard.template.deploy.deployments.steps).length === 0 && Object.keys(currentScope.wizard.template.deploy.deployments.post).length === 0){
+						addNextButton = true;
+					}
+				}
+			}
+			
 			//template supports vm but not restricted to only vm
 			if (!currentScope.restrictions.vm) {
 				addNextButton = true;

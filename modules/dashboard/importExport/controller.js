@@ -21,6 +21,7 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'imp
 	$scope.step = 1;
 
 	$scope.switchForms = function () {
+		$scope.alerts = null;
         $scope.method = angular.copy($cookies.get("method"));
         if($scope.method === 'import') {
             $scope.importTab = true;

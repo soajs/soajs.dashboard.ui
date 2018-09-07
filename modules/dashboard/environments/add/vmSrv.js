@@ -5,7 +5,11 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 	function go(currentScope) {
 		overlayLoading.show();
 
-		let envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+		let envCode = null;
+		let envRecord = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
+		if(envRecord && envRecord.code) {
+			envCode = envRecord.code;
+		}
 
 		let formButtonOptions;
 

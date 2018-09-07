@@ -56,6 +56,7 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'imp
 								if($scope.form && $scope.form.formData){
 									$scope.form.formData = {};
 								}
+								$scope.alerts = null;
 								$scope.$parent.displayAlert('success', "Your Template has been imported successfully.");
 							});
 						}

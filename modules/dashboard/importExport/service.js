@@ -595,7 +595,7 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
                             currentScope.exportSections.push({
                                 all: false,
                                 section: 'ci',
-                                label: "Continuous Integration Recipes",
+                                label: "Continuous Integration",
                                 data: ciRecipes
                             });
                         }
@@ -604,7 +604,7 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
                             currentScope.exportSections.push({
                                 all: false,
                                 section: 'catalogs',
-                                label: "Catalog Deployment Recipes",
+                                label: "Catalog Deployment",
                                 data: catalogs
                             });
                         }

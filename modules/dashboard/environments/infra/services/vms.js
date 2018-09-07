@@ -23,17 +23,17 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 
 	function listVMLayers(currentScope, cb) {
 
-		// if(!currentScope.infraProviders){
 		//clear infraProviders array
-		currentScope.infraProviders = [];
-		listInfraProviders(currentScope, () => {
+		if(currentScope.environmentWizard && currentScope.infraProviders && Array.isArray(currentScope.infraProviders) && currentScope.infraProviders.length > 0){
 			nextStep();
-		});
-		// }
-		// else{
-		// 	nextStep();
-		// }
-
+		}
+		else{
+			currentScope.infraProviders = [];
+			listInfraProviders(currentScope, () => {
+				nextStep();
+			});
+		}
+		
         function nextStep() {
             //call common function
             getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {

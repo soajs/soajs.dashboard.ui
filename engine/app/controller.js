@@ -94,13 +94,21 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.pillar = null;
 		$scope.enableInterface = false;
 		$scope.go = function (path) {
+			if(path === '/dashboard') {
+				// reset left menu items and seleted pillar when redirecting to home page
+				if(!$scope.leftMenu) $scope.leftMenu = {};
+				$scope.leftMenu.links = [];
+				$scope.leftMenu.environments = [];
+				$scope.pillar = null;
+			}
+
 			$scope.previousPage = $route.current.originalPath;
 			if (path) {
 				$cookies.put("soajs_current_route", path.replace("#", ""), {'domain': interfaceDomain});
 				$location.path(path.replace("#", ""));
 			}
 		};
-		
+
 		function putMyEnv(record) {
 			var data = {
 				"_id": record._id,

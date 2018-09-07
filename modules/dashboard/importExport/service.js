@@ -531,7 +531,6 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
                                                 provider: formData['iac_provider_' + count]
                                             });
                                         }
-
                                         break;
                                 }
                             }
@@ -554,6 +553,7 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 										fixTemplateProblems(currentScope, response, cb);
 									}
 									else {
+                                        currentScope.alerts = null;
                                         currentScope.importForm();
 										return cb();
 									}

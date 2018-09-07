@@ -688,11 +688,14 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 		if (currentScope.collectedExternalConent && currentScope.collectedExternalConent && currentScope.collectedExternalConent.iac.length > 0){
             postData.external = angular.copy(currentScope.collectedExternalConent);
         }
+        
 		postData.deployment = angular.copy(postData.catalogs);
-		for (let i = Object.keys(postData.external).length - 1; i >=0; i --) {
-			let index = Object.keys(postData.external)[i];
-			if (postData.external[index] && postData.external[index].length === 0) {
-				delete postData.external[index]
+		if(postData.external){
+			for (let i = Object.keys(postData.external).length - 1; i >=0; i --) {
+				let index = Object.keys(postData.external)[i];
+				if (postData.external[index] && postData.external[index].length === 0) {
+					delete postData.external[index]
+				}
 			}
 		}
 		delete postData.catalogs;

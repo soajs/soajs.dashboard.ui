@@ -5,8 +5,8 @@ var templatesAppConfig = {
 	
 	permissions: {
 		list: ['dashboard', '/templates', 'get'],
-		delete: ['dashboard', '/template', 'delete'],
-		upgrade: ['dashboard', '/template/upgrade', 'get'],
+		delete: ['dashboard', '/templates', 'delete'],
+		upgrade: ['dashboard', '/templates/upgrade', 'get'],
 		import: ['dashboard', '/templates/import', 'post'],
 		export: ['dashboard', '/templates/export', 'post']
 	}

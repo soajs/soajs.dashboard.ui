@@ -52,6 +52,7 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 		let soajsauthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 		let dashKeyCookie = $cookies.get('soajs_dashboard_key', {'domain': interfaceDomain});
 		let access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+		let project = $cookies.get('soajs_project', { 'domain': interfaceDomain });
 		
 		let progress = {value: 0};
 		
@@ -59,7 +60,8 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 			url: apiConfiguration.domain + "/dashboard/templates/import",
 			params: {
 				filename: input.name,
-				access_token: access_token
+				access_token: access_token,
+				soajs_project: project
 			},
 			file: input,
 			headers: {

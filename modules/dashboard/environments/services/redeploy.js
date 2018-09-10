@@ -1,7 +1,7 @@
 "use strict";
 var hacloudServicesRedeploy = soajsApp.components;
 hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout', '$modal', '$sce', function (ngDataApi, $timeout, $modal, $sce) {
-	
+
 	function redeployService(currentScope, service) {
 		var params = {
 			env: currentScope.envCode,
@@ -13,7 +13,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			},
 			recipe: service.labels["soajs.catalog.id"]
 		};
-		
+
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'put',
@@ -35,7 +35,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			}
 		});
 	}
-	
+
 	function rebuildService(currentScope, OriginalService) {
 		let service = angular.copy(OriginalService);
 		let sourceCode = {};
@@ -45,7 +45,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			let t = oneEnv.split("=");
 			serviceEnvs[t[0]] = t[1];
 		});
-		
+
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
 			routeName: '/dashboard/catalog/recipes/get',
@@ -66,7 +66,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						}
 					]
 				};
-				
+
 				if (catalogRecipe.recipe.deployOptions.image.override) {
 					//append images
 					formConfig.entries[0].entries.push({
@@ -76,7 +76,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						'value': catalogRecipe.recipe.deployOptions.image.prefix,
 						'fieldMsg': "Override the image prefix if you want"
 					});
-					
+
 					formConfig.entries[0].entries.push({
 						'name': "ImageName",
 						'label': "Image Name",
@@ -84,7 +84,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						'value': catalogRecipe.recipe.deployOptions.image.name,
 						'fieldMsg': "Override the image name if you want"
 					});
-					
+
 					formConfig.entries[0].entries.push({
 						'name': "ImageTag",
 						'label': "Image Tag",
@@ -93,12 +93,12 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						'fieldMsg': "Override the image tag if you want"
 					});
 				}
-				
+
 				let nodePort =0, LoadBalancer=0;
 				if(service.catalogUpdate){
 					service.ports = catalogRecipe.recipe.deployOptions.ports;
 				}
-				
+
 				if (service.ports && Array.isArray(service.ports) && service.ports.length > 0){
 					//let ports = [];
 					if(catalogRecipe.recipe.deployOptions && catalogRecipe.recipe.deployOptions.ports && Array.isArray(catalogRecipe.recipe.deployOptions.ports)){
@@ -121,13 +121,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							});
 						});
 					}
-					
+
 					let publishedPortEntry = {
 						"type": "group",
 						"label": "Published Ports",
 						"entries": []
 					};
-					
+
 					if (LoadBalancer > 0){
 						publishedPortEntry.entries.push({
 							'type': 'html',
@@ -145,7 +145,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 								"target": parseInt(onePort.target),
 								"preserveClientIP": onePort.preserveClientIP
 							});
-							
+
 							if(onePort.published) {
 								formConfig.data.ports[key].isPublished = true;
 								formConfig.data.ports[key].published = parseInt(onePort.published);
@@ -154,7 +154,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 									"label": onePort.name + ":" + onePort.target,
 									"type": "group",
 									"entries": [{
-										'name': onePort.name+onePort.published,
+										'name': onePort.name+onePort.target,
 										'type': 'number',
 										'label': 'Published Port',
 										'value': parseInt(onePort.published),
@@ -163,16 +163,16 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 										"max": 2767
 									}]
 								});
-								formConfig.data[onePort.name+onePort.published] = parseInt(onePort.published);
+								formConfig.data[onePort.name+onePort.target] = parseInt(onePort.published);
 							}
-							
+
 						});
 					}
 					if(nodePort > 0 || LoadBalancer > 0){
 						formConfig.entries[0].entries.push(publishedPortEntry);
 					}
 				}
-				
+
 				if (LoadBalancer !== 0 && nodePort !== 0){
 					$modal.open({
 						templateUrl: "portConfigurationReDepoly.tmpl",
@@ -193,7 +193,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				else {
 					for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
 						if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
-							
+
 							var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
 							//todo: get value from service.env
 							service.env.forEach(function (oneEnv) {
@@ -210,18 +210,18 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 								'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
 								'required': false
 							};
-							
+
 							//if the default value is ***, clear the value and set the field as required
 							//this is applicable for tokens whose values are masked by *
 							if (newInput.value.match(/^\*+$/g)) {
 								newInput.value = '';
 								newInput.required = true;
 							}
-							
+
 							formConfig.entries[0].entries.push(newInput);
 						}
 					}
-					
+
 					checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
 						for (let i = formConfig.entries.length - 1; i >= 0; i--) {
 							if (formConfig.entries[i].entries.length === 0) {
@@ -233,7 +233,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			}
 		});
-		
+
 		function checkifRepoBranch(accounts, catalogRecipe, formConfig){
 			if (['service', 'daemon', 'other'].indexOf(catalogRecipe.type) !== -1) {
 				var newInput = {
@@ -244,13 +244,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					'fieldMsg': 'Select a branch to deploy from',
 					'required': true
 				};
-				
+
 				if (service.labels['service.owner']) {
 					getServiceBranches(accounts, {
 						repo_owner: service.labels['service.owner'],
 						repo_name: service.labels['service.repo']
 					}, function (response) {
-						
+
 						response.branches.forEach(function (oneBranch) {
 							delete oneBranch.commit.url;
 							newInput.value.push({'v': oneBranch, 'l': oneBranch.name, selected: (service.labels['service.branch'] === oneBranch.name) });
@@ -260,7 +260,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							"label" : "Repository Options",
 							"entries": [newInput]
 						});
-						
+
 						if (formConfig.entries.length === 0) {
 							doRebuild(null, accounts);
 						}
@@ -344,7 +344,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			}
 		}
-		
+
 		function checkForSourceCode(formConfig, catalogRecipe, cb){
 			//get git accounts
 			listAccounts((accounts) => {
@@ -363,7 +363,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			});
 		}
-		
+
 		function checkSourcodeConfig(accounts, formConfig, catalogRecipe, cb){
 			if (catalogRecipe.recipe.deployOptions.sourceCode.configuration) {
 				if(catalogRecipe.recipe.deployOptions.sourceCode.configuration.repo && catalogRecipe.recipe.deployOptions.sourceCode.configuration.repo !== ''){
@@ -407,7 +407,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						repo: "",
 						branch: ""
 					};
-					
+
 					if(serviceEnvs['SOAJS_CONFIG_REPO_OWNER']) {
 						sourceCode.configuration["repo"] = serviceEnvs['SOAJS_CONFIG_REPO_OWNER'] + "/" + serviceEnvs['SOAJS_CONFIG_REPO_NAME'];
 					}
@@ -417,7 +417,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					if(serviceEnvs['SOAJS_CONFIG_REPO_PATH']) {
 						sourceCode.configuration["path"] = serviceEnvs['SOAJS_CONFIG_REPO_PATH'];
 					}
-					
+
 					let extraRepo = [
 						{
 							'name': 'config_branch',
@@ -436,7 +436,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							'required': false
 						}
 					];
-					
+
 					let sourceCodeConfig = {
 						"type": "group",
 						"label": catalogRecipe.recipe.deployOptions.sourceCode.configuration.label,
@@ -467,7 +467,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							}
 						]
 					};
-					
+
 					if(sourceCode.configuration.repo !== ''){
 						accounts.forEach((oneAccount) => {
 							oneAccount.repos.forEach((oneRepo) => {
@@ -493,7 +493,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			else{
 				return cb();
 			}
-			
+
 			function prefillForm(sourceCodeConfig){
 				//fill the first element repositories with allowed values and highlight the one that has an env variable if any
 				if (accounts) {
@@ -517,12 +517,12 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						}
 					});
 				}
-				
+
 				formConfig.entries.push(sourceCodeConfig);
 				return cb();
 			}
 		}
-		
+
 		function checkSourcodeCustom(accounts, formConfig, catalogRecipe, cb){
 			if (catalogRecipe.recipe.deployOptions.sourceCode.custom && catalogRecipe.type === 'server') {
 				if(catalogRecipe.recipe.deployOptions.sourceCode.custom.repo && catalogRecipe.recipe.deployOptions.sourceCode.custom.repo !== ''){
@@ -580,7 +580,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						repo: "",
 						branch: ""
 					};
-					
+
 					if(serviceEnvs['SOAJS_GIT_OWNER']) {
 						sourceCode.custom["repo"] = serviceEnvs['SOAJS_GIT_OWNER'] + "/" + serviceEnvs['SOAJS_GIT_REPO'];
 					}
@@ -590,7 +590,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					if(serviceEnvs['SOAJS_GIT_PATH']) {
 						sourceCode.custom["path"] = serviceEnvs['SOAJS_GIT_PATH'];
 					}
-					
+
 					let extraRepo = [
 						{
 							'name': 'custom_branch',
@@ -609,7 +609,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							'required': false
 						}
 					];
-					
+
 					let sourceCodeConfig = {
 						"type": "group",
 						"label": catalogRecipe.recipe.deployOptions.sourceCode.custom.label,
@@ -643,7 +643,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							}
 						]
 					};
-					
+
 					if(sourceCode.custom.repo !== ''){
 						let found = false;
 						accounts.forEach((oneAccount) => {
@@ -659,7 +659,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 									if(oneRepo.type === 'multi'){
 										opts.subRepo = sourceCode.custom.path;
 									}
-									
+
 									injectBrancheAndPath(opts, extraRepo, sourceCodeConfig, 'custom', () => {
 										prefilForm(sourceCodeConfig);
 									});
@@ -678,7 +678,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			else{
 				return cb();
 			}
-			
+
 			function prefilForm(sourceCodeConfig){
 				//fill the first element repositories with allowed values and highlight the one that has an env variable if any
 				if (accounts) {
@@ -706,10 +706,10 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 								}
 								else if (eachRepo.type === 'multi'){
 									eachRepo.configSHA.forEach((subRepo) => {
-										
+
 										//if not locked or locked from catalog and the value is multi
 										if(!lockedType || lockedType === 'multi'){
-											
+
 											//check for sub name and acceptable type
 											if(!catalogRecipe.recipe.deployOptions.sourceCode.custom.subName || catalogRecipe.recipe.deployOptions.sourceCode.custom.subName === subRepo.contentName) {
 												if (['custom', 'service', 'daemon', 'static'].indexOf(subRepo.contentType) !== -1) {
@@ -729,7 +729,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 												}
 											}
 										}
-										
+
 										//if not locked or locked from catalog and value not multi
 										if(!lockedType || lockedType !== 'multi'){
 											//one of the sub repo types should match locked type or no locked type and acceptable type
@@ -755,12 +755,12 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						}
 					});
 				}
-				
+
 				formConfig.entries.push(sourceCodeConfig);
 				return cb();
 			}
 		}
-		
+
 		function injectBrancheAndPath(opts, extraRepo, oneEntry, type, callback){
 			getBranches(opts, (error, branches) => {
 				if(error){
@@ -791,7 +791,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			});
 		}
-		
+
 		function listAccounts(callback) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				'method': 'get',
@@ -807,7 +807,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			});
 		}
-		
+
 		function getBranches(opts, callback) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				'method': 'get',
@@ -820,11 +820,11 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			}, callback);
 		}
-		
+
 		function getServiceBranches(gitAccounts, opts, cb) {
 			let nextOpts = {};
 			gitAccounts.forEach((oneGitAccount) => {
-				
+
 				for (let i = 0; i < oneGitAccount.repos.length; i++) {
 					let oneRepo = oneGitAccount.repos[i];
 					if (oneRepo.name === opts.repo_owner + "/" + opts.repo_name) {
@@ -847,7 +847,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				}
 			});
 		}
-		
+
 		function doRebuild(formData, accounts) {
 			var params = {
 				env: currentScope.envCode,
@@ -855,13 +855,13 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				mode: ((service.labels && service.labels['soajs.service.mode']) ? service.labels['soajs.service.mode'] : ''),
 				action: 'rebuild'
 			};
-			
+
 			if (formData && Object.keys(formData).length > 0) {
 				//inject user input catalog entry and image override
 				if (!params.custom) {
 					params.custom = {};
 				}
-				
+
 				params.custom = {
 					image: {
 						name: formData['ImageName'],
@@ -869,19 +869,19 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						tag: formData['ImageTag']
 					}
 				};
-				
+
 				if (formData.branch) {
 					var t = formData.branch;
 					if (typeof t === 'string') {
 						t = JSON.parse(angular.copy(formData.branch));
 					}
-					
+
 					params.custom.branch = t.name;
 					if (t.commit && t.commit.sha) {
 						params.custom.commit = t.commit.sha;
 					}
 				}
-				
+
 				for (var input in formData) {
 					if (input.indexOf('_ci_') !== -1) {
 						if (!params.custom.env) {
@@ -890,10 +890,10 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						params.custom.env[input.replace('_ci_', '')] = formData[input];
 					}
 				}
-				
+
 				if(sourceCode && Object.keys(sourceCode).length > 0){
 					params.custom.sourceCode = {};
-					
+
 					if(sourceCode.configuration && formData.config_repository){
 						params.custom.sourceCode.configuration = {};
 						if(typeof(formData.config_repository) === 'string'){
@@ -919,7 +919,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							};
 						}
 					}
-					
+
 					if(sourceCode.custom && formData.custom_repository){
 						params.custom.sourceCode.custom = {};
 						if(typeof(formData.custom_repository) === 'string'){
@@ -948,12 +948,19 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						}
 					}
 				}
-				
-				if (formData.ports){
+
+				if (formData.ports && Array.isArray(formData.ports)){
+					formData.ports.forEach((onePort) => {
+						if(onePort.name && onePort.target) {
+							if(formData[onePort.name + onePort.target]) {
+								onePort.published = formData[onePort.name + onePort.target];
+							}
+						}
+					});
 					params.custom.ports = formData.ports;
 				}
 			}
-			
+
 			if (!params.custom){
 				params.custom = {
 					name: service.name
@@ -962,7 +969,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			else {
 				params.custom.name = service.name;
 			}
-			
+
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, {
 				method: 'put',
@@ -989,7 +996,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 			});
 		}
 	}
-	
+
 	return {
 		'redeployService': redeployService,
 		'rebuildService': rebuildService

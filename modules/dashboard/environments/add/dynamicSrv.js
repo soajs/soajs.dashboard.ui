@@ -1019,15 +1019,21 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									resource.deployOptions.deployConfig.infra = currentScope.vmLayers[vmLayer].infraProvider._id;
 									if(currentScope.vmLayers[vmLayer].list && currentScope.vmLayers[vmLayer].list.length > 0){
 										currentScope.vmLayers[vmLayer].list.forEach(function (oneVM) {
-											resource.deployOptions.vms.push(oneVM.name);
+											resource.deployOptions.vms.push(oneVM.id);
 											if (!resource.deployOptions.deployConfig.vmConfiguration.group){
 												resource.deployOptions.deployConfig.vmConfiguration.group = oneVM.labels['soajs.service.vm.group'];
+											}
+											if (!resource.deployOptions.deployConfig.region){
+												resource.deployOptions.deployConfig.region = oneVM.labels['soajs.service.vm.location'];
 											}
 										});
 									}
 									else {
 										if (!resource.deployOptions.deployConfig.vmConfiguration.group){
 											resource.deployOptions.deployConfig.vmConfiguration.group = currentScope.vmLayers[vmLayer].group;
+										}
+										if (!resource.deployOptions.deployConfig.region){
+											resource.deployOptions.deployConfig.region = currentScope.vmLayers[vmLayer].region;
 										}
 									}
 								}

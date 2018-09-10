@@ -621,6 +621,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					resource.scope.mainData = {};
 					resource.scope.mainData.recipes = [];
 					resource.scope.restrictions = currentScope.restrictions;
+					
 					if (currentScope.wizard.onboardNames) {
                         resource.scope.onboardNames = currentScope.wizard.onboardNames;
 					}
@@ -630,8 +631,12 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							resource.scope.mainData.deploymentData = {}
 						}
 					}
+					
 					if(currentScope.wizard.vms && Array.isArray(currentScope.wizard.vms) && currentScope.wizard.vms.length > 0){
 						resource.scope.wizardVMs = currentScope.wizard.vms;
+					}
+					
+					if(currentScope.vmLayers){
 						resource.scope.mainData.deploymentData.vmLayers = currentScope.vmLayers;
 					}
 

@@ -552,6 +552,22 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						if(onePort.protocol === '*') {
 							onePort.publishedPortRange = onePort.published.toString();
 						}
+						if(onePort.source && Array.isArray(onePort.source) && onePort.source.length > 0) {
+							onePort.sgSourcesLinks = [];
+							onePort.source.forEach((oneSource) => {
+								if(oneSource.match(/sg-[0-9]+/g)) {
+									// source is another security group
+									let matchingGroup = currentScope.infraSecurityGroups.find((oneEntry) => { return oneEntry.id === oneSource });
+									if(matchingGroup) {
+										onePort.sgSourcesLinks.push({
+											id: matchingGroup.id,
+											name: matchingGroup.name,
+											region: matchingGroup.region
+										});
+									}
+								}
+							});
+						}
 					});
 
 					if(oneSecurityGroup.networkId && response.networks && Array.isArray(response.networks) && response.networks.length > 0) {

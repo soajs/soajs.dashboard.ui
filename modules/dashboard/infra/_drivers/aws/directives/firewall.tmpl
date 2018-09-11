@@ -68,7 +68,12 @@
 								<tr ng-repeat="onePort in oneGroup.ports" ng-class-even="'even'" ng-class-odd="'odd'" tooltip="{{onePort.description}}">
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.protocol}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.publishedPortRange}}</td>
-									<td ng-class="{'readonly': onePort.readonly}">{{onePort.source.toString()}}</td>
+									<td ng-class="{'readonly': onePort.readonly}" ng-if="onePort.source && onePort.source.length > 0 && onePort.sgSourcesLinks.length === 0">{{onePort.source.toString()}}</td>
+									<td ng-class="{'readonly': onePort.readonly}" ng-if="onePort.sgSourcesLinks && onePort.sgSourcesLinks.length > 0">
+										<span ng-repeat="oneLink in onePort.sgSourcesLinks">
+											<span tooltip="Browse firewall {{oneLink.name}}"><span class="icon icon-shield"></span><b>{{oneLink.name}}</b><span ng-if="!$last">,&nbsp;</span></span>
+										</span>
+									</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.direction}}</td>
 									<td ng-class="{'readonly': onePort.readonly}">{{onePort.access}}</td>
 									</td>

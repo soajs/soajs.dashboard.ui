@@ -51,14 +51,18 @@
 
 			                            <a ng-show="resource.config" href="" ng-if="access.update && resource.plugged" ng-disabled="!resource.permission || resource.sensitive" class="btn btn-sm btn-success" ng-class="{disabled: !resource.allowEdit}" ng-click="togglePlugResource(resource, false)"><span class="icon icon-power-cord"></span>Unplug</a>
 
-			                            <a href="" class="btn btn-sm btn-danger" ng-if="access.delete && resource.permission && resource.allowEdit && !resource.sensitive" ng-click="deleteResource(resource)" ng-confirm-click="Are you sure you want to delete this resource?">
+			                            <a href="" class="btn btn-sm btn-danger" ng-if="access.delete && resource.permission && (resource.allowEdit || resource.status === 'error') && !resource.sensitive" ng-click="deleteResource(resource)" ng-confirm-click="Are you sure you want to delete this resource?">
 				                            <span class="icon icon-cross" tooltip="Delete Resource"></span>Remove
 			                            </a>
-			                            <a href="" class="btn btn-sm btn-danger" ng-if="!access.delete || !resource.permission || !resource.allowEdit || resource.sensitive" disabled>
+			                            <a href="" class="btn btn-sm btn-danger" ng-if="!access.delete || !resource.permission || (!resource.allowEdit && resource.status !== 'error') || resource.sensitive" disabled>
 				                            <span class="icon icon-cross" tooltip="Delete Resource"></span>Remove
 			                            </a>
                                     </div>
                                 </div>
+		                        <div ng-if="resource.statusMsg">
+			                        <br />
+			                        <alert type="danger">{{resource.statusMsg}}</alert>
+		                        </div>
                             </div>
                         </accordion-group>
                     </accordion>

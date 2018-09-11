@@ -6,39 +6,38 @@
   ~   - Mike Hajj <mikehajj>
   ~  **********************************************************************************
   -->
-<alert type="default">
-	<p style="color:black;">
+<br />
+<alert type="warning">
+	<div>
+		<span class="icon icon-warning"></span>
 		The following virtual machine clusters failed to be created due to an error that happened at the infra cloud provider while provisioning them.
-	</p>
+	</div>
 </alert>
+<br />
 <div class="c-both w100 entryBoxes">
 	<div ng-repeat="(oneVMId, oneVMLayer) in errorVMLayers">
 		<div class="entryBox redEntryBox mb20">
-			<div class="header table">
+			<div class="header" style="border-bottom: none; border-radius: 5px;">
 				<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>
 				&nbsp;
-				<span class="serviceLabelBox">
+				<span class="serviceLabelBox" style="font-weight:bold;">
 					{{oneVMLayer.layerName}}&nbsp;&nbsp;
 				</span>
+				
+				<span class="f-right">
+					<a href="" ng-click="oneVMLayer.expand = !oneVMLayer.expand;" tooltip="Show/Hide Error Details">
+						<span class="icon" ng-class="{'icon-plus':!oneVMLayer.expand, 'icon-minus': oneVMLayer.expand}"></span>
+					</a>
+				</span>
+				<span class="f-right">{{oneVMLayer.ts|prettyLocalDate}}</span>
 			</div>
-			<div class="body">
-				<div class="grid">
-					<table cellspacing="0" cellpadding="0" border="1" width="100%">
-						<tr>
-							<td class="nameHeader"><b>Infra Code Template</b></td>
-							<td><a href="#/infra-templates">{{oneVMLayer.infraCodeTemplate}}</a></td>
-						</tr>
-						<tr class="header">
-							<td colspan="2" class="nameHeader">Details</td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<div><b>Error: {{oneVMLayer.error.code}}</b></div>
-								<div style="padding: 10px; white-space: pre-line">{{oneVMLayer.error.message}}</div>
-							</td>
-						</tr>
-					</table>
+			<div ng-show="oneVMLayer.expand" style="padding: 10px;">
+				<div>
+					<b>Infra Code Template:</b>&nbsp;<a href="">{{oneVMLayer.infraCodeTemplate}}</a>
+					<hr>
 				</div>
+				<div><b>Error: {{oneVMLayer.error.code}}</b></div>
+				<div style="padding: 10px; white-space: pre-line">{{oneVMLayer.error.message}}</div>
 			</div>
 		</div>
 	</div>

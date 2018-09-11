@@ -238,7 +238,8 @@
 
 			<div ng-if="formData.deployOptions.deployConfig.vmConfiguration.vmLayer && options.formAction !== 'update'">
 				<alert type="warning" ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list">
-					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length === 1">This resource will be deployed in <strong>1</strong> instance.</span>
+					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length === 1">This resource will be deployed in <strong>1</strong> instance.</span><br><hr>
+					<span>Deploying a resource in virtual machine might take few minutes, you can always click on refresh after you deploy your resource to see the effects.</span>
 					<span ng-if="mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length > 1">This resource will be deployed on <strong>{{mainData.deploymentData.vmLayers[formData.deployOptions.deployConfig.vmConfiguration.vmLayer].list.length}}</strong> instances.</span>
 				</alert>
 			</div>

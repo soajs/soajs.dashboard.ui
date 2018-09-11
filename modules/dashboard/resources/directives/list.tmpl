@@ -61,7 +61,9 @@
                                 </div>
 		                        <div ng-if="resource.statusMsg">
 			                        <br />
-			                        <alert type="danger">{{resource.statusMsg}}</alert>
+			                        <alert type="danger">
+				                        <p ng-bind-html="resource.statusMsg|toTrustedHtml"></p>
+			                        </alert>
 		                        </div>
                             </div>
                         </accordion-group>

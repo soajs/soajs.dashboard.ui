@@ -44,7 +44,12 @@
 				<accordion-heading><span class="icon icon-stack"></span>&nbsp;{{layer.name}}</accordion-heading>
 					<div ng-if="layer.instances && layer.instances.length > 0" class="entryBoxes entryBoxesGrid">
 						<div class="entryBox blueBox" ng-repeat="instance in layer.instances" style="padding: 3px 5px;">
-							<span class="icon icon-drive"></span>&nbsp;<b>{{instance.name}}</b>
+							<a ng-if="instance.link" href="" ng-click="goToVM(instance.link);">
+								<span class="icon icon-drive"></span>&nbsp;<b>{{instance.name}}</b>
+							</a>
+							<span ng-if="!instance.link">
+								<span class="icon icon-drive"></span>&nbsp;<b>{{instance.name}}</b>
+							</span>
 						</div>
 					</div>
 			</accordion-group>

@@ -549,13 +549,14 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 					currentScope.infraNetworks.forEach((oneNetwork) => {
 						oneNetwork.subnets.forEach((oneSubnet) => {
 							currentScope.vmlayers.forEach((oneVmLayer) => {
-								if (oneVmLayer.network && oneVmLayer.network.toLowerCase() === oneNetwork.name.toLowerCase() && oneSubnet.name === oneVmLayer.layer) {
-
+								
+								if (oneVmLayer.network && oneVmLayer.network.toLowerCase() === oneNetwork.id.toLowerCase() && oneSubnet.name === oneVmLayer.layer) {
+									
 									if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
 										let found = false;
 										$localStorage.environments.forEach((oneEnv) => {
 											if (oneEnv.code.toUpperCase() === oneVmLayer.labels['soajs.env.code'].toUpperCase()) {
-												found = true;
+												found = `#/environments-platforms?envCode=${oneVmLayer.labels['soajs.env.code']}&tab=vm&layer=${oneVmLayer.layer}`;
 											}
 										});
 

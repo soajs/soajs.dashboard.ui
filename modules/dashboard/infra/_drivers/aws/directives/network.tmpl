@@ -83,7 +83,7 @@
 									<td>
 										<div ng-if="!oneSubnet.vm">N/A</div>
 										<div ng-if="oneSubnet.vm.link">
-											<a href="#/environments-platforms?envCode={{oneSubnet.vm.envCode}}&tab=vm&layer={{oneSubnet.vm.vmLayer}}">
+											<a href="{{oneSubnet.vm.link}}">
 												<span class="icon icon-stack"></span>&nbsp;<b>{{oneSubnet.vm.vmLayer}}</b>&nbsp;
 											</a>
 										</div>

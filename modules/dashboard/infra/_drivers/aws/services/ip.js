@@ -168,8 +168,21 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 									oneInstance.ip.forEach((oneEntry) => {
 										if(oneEntry.address === oneIp.address && oneIp.region === oneInstance.region) {
 											oneIp.instanceName = oneInstance.name;
-											oneIp.vmLayerName = `<span class="icon icon-stack"></span>&nbsp;<b>${oneInstance.layer}</b>`;
-											return;
+											
+											
+											let found = false;
+											$localStorage.environments.forEach((oneEnv) => {
+												if(oneEnv.code.toUpperCase() === oneInstance.labels['soajs.env.code'].toUpperCase()){
+													found = true;
+												}
+											});
+											
+											if(found){
+												oneIp.vmLayerName = `<span title="Virtual Machine"><a href="#/environments-platforms?envCode=${oneInstance.labels['soajs.env.code']}&tab=vm&layer=${oneInstance.layer}"><span class="icon icon-stack"></span>&nbsp;<b>${oneInstance.layer}</b></a></span>`;
+											}
+											else{
+												oneIp.vmLayerName += `<span title="Virtual Machine"><span class="icon icon-stack"></span>&nbsp;<b>${oneVmLayer.layer}</b></span>`;
+											}
 										}
 									});
 								}

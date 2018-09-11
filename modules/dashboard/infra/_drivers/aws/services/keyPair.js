@@ -1,6 +1,6 @@
 "use strict";
 var awsInfraKeyPairSrv = soajsApp.components;
-awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', function (ngDataApi, $localStorage, $timeout, $modal) {
+awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', '$timeout', '$modal', '$window', function (ngDataApi, $localStorage, $timeout, $modal, $window) {
 
 	let infraKeyPairConfig = {
 		form: {
@@ -212,19 +212,34 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 						if(currentScope.vmlayers && Array.isArray(currentScope.vmlayers)) {
 							currentScope.vmlayers.forEach((oneVmInstance) => {
 								if(oneVmInstance.keyPair && oneVmInstance.keyPair === oneKeyPair.name) {
+									
+									//if the instance already exists in the layer, push the instance
 									let foundLayer = oneKeyPair.layers.find((oneEntry) => { return oneEntry.name === oneVmInstance.layer });
 									if(foundLayer) {
-										foundLayer.instances.push({
+										let tmpVMObj = {
 											id: oneVmInstance.id,
 											name: oneVmInstance.name
+										};
+										$localStorage.environments.forEach((oneEnv) => {
+											if(oneEnv.code.toUpperCase() === oneVmInstance.labels['soajs.env.code'].toUpperCase()){
+												tmpVMObj.link = `#/environments-platforms?envCode=${oneVmInstance.labels['soajs.env.code']}&tab=vm&layer=${oneVmInstance.layer}`;
+											}
 										});
+										foundLayer.instances.push(tmpVMObj);
 									}
+									//create the new layer and push the first instance
 									else {
-										oneKeyPair.layers.push({
+										let tmpVMObj = {
 											name: oneVmInstance.layer,
 											region: oneVmInstance.region,
 											instances: [ { id: oneVmInstance.id, name: oneVmInstance.name } ]
+										};
+										$localStorage.environments.forEach((oneEnv) => {
+											if(oneEnv.code.toUpperCase() === oneVmInstance.labels['soajs.env.code'].toUpperCase()){
+												tmpVMObj.instances[0].link = `#/environments-platforms?envCode=${oneVmInstance.labels['soajs.env.code']}&tab=vm&layer=${oneVmInstance.layer}`;
+											}
 										});
+										oneKeyPair.layers.push(tmpVMObj);
 									}
 								}
 							});
@@ -275,7 +290,7 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 	}
 
 	function displayKeyPairVms(currentScope, oneKeyPair) {
-		var newModal = $modal.open({
+		$modal.open({
 			templateUrl: "displayKeyPairVms.tmpl",
 			size: 'lg',
 			backdrop: true,
@@ -284,7 +299,12 @@ awsInfraKeyPairSrv.service('awsInfraKeyPairSrv', ['ngDataApi', '$localStorage', 
 				fixBackDrop();
 				$scope.title = `Virtual Machines Associated To ${oneKeyPair.name}`;
 				$scope.keyPair = oneKeyPair;
-
+				
+				$scope.goToVM = function (instanceLink){
+					$modalInstance.close();
+					$window.location.href = instanceLink;
+				};
+				
 				$scope.dismiss = function(){
 					$modalInstance.close();
 				};

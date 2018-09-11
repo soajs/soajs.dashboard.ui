@@ -173,7 +173,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 					'value': [],
 					'required': true,
 					'multiple': true,
-					'fieldMsg': 'Select at least one subnet.',
+					'fieldMsg': 'Select at least one Availability Zone.',
 					onAction: function(id, value, form) {
 						let subnetsEntry = form.entries.find((oneEntry) => { return oneEntry.name === id });
 						if(value.length > 0) {

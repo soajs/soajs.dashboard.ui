@@ -39,6 +39,18 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
             getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
                 checkOnboard(vmLayers, () => {
                     currentScope.vmLayers = vmLayers;
+                    
+                    if(currentScope.errorVMLayers){
+                    	for(let vmId in currentScope.errorVMLayers){
+                    		let vmInfra = currentScope.errorVMLayers[vmId].infraId;
+		
+		                    currentScope.infraProviders.forEach((oneInfraProvider) =>{
+		                    	if(oneInfraProvider._id === vmInfra){
+				                    currentScope.errorVMLayers[vmId].infraProvider = oneInfraProvider;
+			                    }
+		                    });
+	                    }
+                    }
                     if (cb && typeof cb === 'function') {
                         return cb();
                     }

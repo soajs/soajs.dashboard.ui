@@ -335,7 +335,8 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 			"routeName": "/dashboard/cloud/vm/list",
 			"params":{
 				"infraId": oneProvider._id,
-				"env": envCode
+				"env": envCode,
+				"includeErrors": $scope.includeVMErrors
 			}
 		}, function (error, providerVMs) {
 			if (error) {
@@ -423,6 +424,14 @@ function getInfraProvidersAndVMLayers($scope, ngDataApi, envCode, infraProviders
 							}
 						}
 					});
+				}
+				if(providerVMs.errors){
+					if(!$scope.errorVMLayers){
+						$scope.errorVMLayers = {};
+					}
+					for(let id in providerVMs.errors){
+						$scope.errorVMLayers[id] = providerVMs.errors[id];
+					}
 				}
 				return cb();
 			}

@@ -4,7 +4,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 
 	function go(currentScope) {
 		overlayLoading.show();
-
+		
+		currentScope.errorVMLayers = null;
+		
 		let envCode = null;
 		let envRecord = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
 		if(envRecord && envRecord.code) {

@@ -1,15 +1,15 @@
 <section ng-controller="platformsCtrl">
-
+	
 	<tabset ng-if="!containerWizard">
 		<tab heading="Container Technology">
-			<br />
+			<br/>
 			<div ng-if="environment.selected !== 'manual'" ng-include="'modules/dashboard/environments/infra/directives/container.tmpl'"></div>
 			<div ng-if="environment.selected === 'manual'">
 				<div class="w-100 c-both t-right">
 					<a class="btn btn-sm btn-success" ng-click="checkAttachContainerProgress(false)">
 						<span class="icon icon-redo"></span> Refresh
 					</a>
-					<br /><br />
+					<br/><br/>
 				</div>
 				<div ng-if="environment.error && !environment.pending">
 					<alert type="danger">
@@ -19,18 +19,19 @@
 							An error occured while attaching container technology to this environment.<br / >
 						</p>
 						<p style="color:black;" ng-if="environment.error.code === 173">
-							The inputs you provided while attaching the container technology are invalid according to the validation rules of the template you have selected.
+							The inputs you provided while attaching the container technology are invalid according to
+							the validation rules of the template you have selected.
 						</p>
 						<p style="color:black;">
 							<b><u>Details:</u></b><br / >
-							<ul>
-								<li style="color:black;">
-									<label>Error {{environment.error.code}} :</label>&nbsp;{{environment.error.msg}}
-								</li>
-							</ul>
+						<ul>
+							<li style="color:black;">
+								<label>Error {{environment.error.code}} :</label>&nbsp;{{environment.error.msg}}
+							</li>
+						</ul>
 						</p>
 					</alert>
-					<br />
+					<br/>
 				</div>
 				<alert type="info">
 					<input type="button" class="btn btn-sm btn-primary f-right" value="Attach Container Technology" ng-click="attachContainerTechnology()">
@@ -41,11 +42,14 @@
 			</div>
 		</tab>
 		<tab heading="Virtual Machines" ng-click="listVMLayers()" ng-if="access.vm.list" active="openVMs">
-			<br />
+			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
+		<tab class="redTab" heading="Failed Virtual Machines" ng-show="errorVMLayers">
+			<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
+		</tab>
 	</tabset>
-
+	
 	<div ng-if="containerWizard">
 		<form>
 			<div class="header"><h3>Attach Container Technology</h3></div>

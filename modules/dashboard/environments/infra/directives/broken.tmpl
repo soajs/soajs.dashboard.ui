@@ -1,0 +1,45 @@
+<!--
+  ~  **********************************************************************************
+  ~   (C) Copyright Herrontech (www.herrontech.com)
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   Contributors:
+  ~   - Mike Hajj <mikehajj>
+  ~  **********************************************************************************
+  -->
+<alert type="default">
+	<p style="color:black;">
+		The following virtual machine clusters failed to be created due to an error that happened at the infra cloud provider while provisioning them.
+	</p>
+</alert>
+<div class="c-both w100 entryBoxes">
+	<div ng-repeat="(oneVMId, oneVMLayer) in errorVMLayers">
+		<div class="entryBox redEntryBox mb20">
+			<div class="header table">
+				<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>
+				&nbsp;
+				<span class="serviceLabelBox">
+					{{oneVMLayer.layerName}}&nbsp;&nbsp;
+				</span>
+			</div>
+			<div class="body">
+				<div class="grid">
+					<table cellspacing="0" cellpadding="0" border="1" width="100%">
+						<tr>
+							<td class="nameHeader"><b>Infra Code Template</b></td>
+							<td><a href="#/infra-templates">{{oneVMLayer.infraCodeTemplate}}</a></td>
+						</tr>
+						<tr class="header">
+							<td colspan="2" class="nameHeader">Details</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div><b>Error: {{oneVMLayer.error.code}}</b></div>
+								<div style="padding: 10px; white-space: pre-line">{{oneVMLayer.error.message}}</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -10,7 +10,9 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$localStorage', '$routeP
 	$scope.containerWizard = false;
 	$scope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
-
+	$scope.includeVMErrors = true;
+	$scope.errorVMLayers = null;
+	
 	$scope.getEnvPlatform = function(overlay){
 		if(overlay){
 			overlayLoading.show();

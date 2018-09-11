@@ -761,3 +761,7 @@ input.secretMountPathRepo{
 .tr-azure-wrapper #azure {
    text-align: left;
 }
+
+.redTab a{
+    color:#a94442 !important;
+}

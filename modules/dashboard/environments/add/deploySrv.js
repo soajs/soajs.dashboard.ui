@@ -464,11 +464,14 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 
 			let infraTemplates =[];
 			oneProvider.templates.forEach((oneTmpl) => {
-				let label = oneTmpl.name;
-				if(oneTmpl.description && oneTmpl.description !== ''){
-					label += " | " + oneTmpl.description;
+				
+				if(oneTmpl.technology === "kubernetes" || oneTmpl.technology === "docker"){
+					let label = oneTmpl.name;
+					if(oneTmpl.description && oneTmpl.description !== ''){
+						label += " | " + oneTmpl.description;
+					}
+					infraTemplates.push({'v': oneTmpl.name, 'l': label});
 				}
-				infraTemplates.push({'v': oneTmpl.name, 'l': label});
 			});
 
 			formEntries.unshift({

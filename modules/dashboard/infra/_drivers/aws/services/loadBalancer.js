@@ -169,7 +169,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 				{
 					'type': 'uiselect',
 					'name': 'subnets',
-					'label': 'Subnets',
+					'label': 'Availability Zones',
 					'value': [],
 					'required': true,
 					'multiple': true,
@@ -407,7 +407,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 							oneNetwork.subnets.forEach((oneSubnet) => {
 								let oneSubnetEntry = {
 									v: oneSubnet.id,
-									l: `${oneSubnet.name} - (Network: ${oneNetwork.name} | Availability Zone: ${oneSubnet.availabilityZone})`,
+									l: `${oneSubnet.availabilityZone} (Network: ${oneNetwork.name} | Subnet: ${oneSubnet.name})`,
 									network: oneNetwork.name
 								};
 
@@ -641,7 +641,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 							oneNetwork.subnets.forEach((oneSubnet) => {
 								let oneSubnetEntry = {
 									v: oneSubnet.id,
-									l: `${oneSubnet.name} - (Network: ${oneNetwork.name} | Availability Zone: ${oneSubnet.availabilityZone})`,
+									l: `${oneSubnet.availabilityZone} (Network: ${oneNetwork.name} | Subnet: ${oneSubnet.name})`,
 									network: oneNetwork.name
 								};
 

@@ -97,16 +97,7 @@
 						<div class="entryBoxes entryBoxesGrid">
 							<div ng-repeat="oneVMLayer in oneGroup.vmLayers">
 								<div class="entryBox blueBox" style="padding: 3px 5px;">
-									<div ng-if="oneVMLayer.link">
-										<a href="#/environments-platforms?envCode={{oneVMLayer.envCode}}&tab=vm&layer={{oneVMLayer.vmLayer}}">
-											<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
-										</a>
-									</div>
-									<div ng-if="!oneVMLayer.link">
-										<b>
-											<span class="icon icon-stack"></span>&nbsp;<b>{{oneVMLayer.vmLayer}}</b>&nbsp;
-										</b>
-									</div>
+									<span ng-bind-html="oneVMLayer.link"></span>
 								</div>
 							</div>
 						</div>

@@ -569,7 +569,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 						currentScope.vmlayers.forEach((oneVmLayer) => {
 							if (oneVmLayer.labels && oneVmLayer.labels['soajs.service.vm.location'] && oneVmLayer.labels['soajs.service.vm.location'].toLowerCase() === oneRegion.toLowerCase()) {
 
-								if (oneVmLayer.securityGroup && oneVmLayer.securityGroup === oneSecurityGroup.name) {
+								if (oneVmLayer.securityGroup && oneVmLayer.securityGroup.includes(oneSecurityGroup.id)) {
 
 									if (!oneSecurityGroup.vmLayers) {
 										oneSecurityGroup.vmLayers = [];
@@ -586,14 +586,16 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 											vmLayer: oneVmLayer.layer,
 											envCode: oneVmLayer.labels['soajs.env.code'],
 											region: oneVmLayer.labels['soajs.service.vm.location'],
-											link: found
+											link: (found) ?
+												`<span title="Virtual Machine"><a href="#/environments-platforms?envCode=${oneVmLayer.labels['soajs.env.code']}&tab=vm&layer=${oneVmLayer.layer}"><span class="icon icon-stack"></span>&nbsp;<b>${oneVmLayer.layer}</b></a></span>` :
+												`<span title="Virtual Machine"><span class="icon icon-stack"></span>&nbsp;<b>${oneVmLayer.layer}</b></span>`
 										});
 									}
 									else {
 										oneSecurityGroup.vmLayers.push({
 											vmLayer: oneVmLayer.layer,
 											region: oneRegion,
-											link: false
+											link: `<span title="Virtual Machine"><span class="icon icon-stack"></span>&nbsp;<b>${oneVmLayer.layer}</b></span>`
 										});
 									}
 								}

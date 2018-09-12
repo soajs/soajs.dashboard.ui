@@ -13,12 +13,6 @@ var navigation = [
 		'tracker': true
 	},
 	{
-		'id': 'help',
-		'label': "Help",
-		'url': 'https://www.soajs.org/documentation',
-		'footerMenu': true
-	},
-	{
 		'id': 'login',
 		'label': translation.home[LANG],
 		'url': '#/login',

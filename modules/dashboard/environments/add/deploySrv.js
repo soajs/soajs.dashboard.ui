@@ -480,7 +480,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				label: "Infra Code Template",
 				value: infraTemplates,
 				required: true,
-				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster.",
+				fieldMsg: "Pick which Infra Code template to use for the deployment of your cluster. If you do nave any template yet, <a href='#/infra-templates'>Click Here</a>",
 				onAction: function(id, value, form){
 					form.entries.length = 2;
 					oneProvider.templates.forEach((oneTmpl) => {

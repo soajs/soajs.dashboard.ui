@@ -14,8 +14,8 @@ var navigation = [
 	},
 	{
 		'id': 'help',
-		'label': translation.help[LANG],
-		'url': 'https://soajsorg.atlassian.net/wiki/spaces/DSBRD/overview',
+		'label': "Help",
+		'url': 'https://www.soajs.org/documentation',
 		'footerMenu': true
 	},
 	{

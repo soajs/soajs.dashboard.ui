@@ -13,6 +13,12 @@ var navigation = [
 		'tracker': true
 	},
 	{
+		'id': 'help',
+		'label': translation.help[LANG],
+		'url': 'https://soajsorg.atlassian.net/wiki/spaces/DSBRD/overview',
+		'footerMenu': true
+	},
+	{
 		'id': 'login',
 		'label': translation.home[LANG],
 		'url': '#/login',

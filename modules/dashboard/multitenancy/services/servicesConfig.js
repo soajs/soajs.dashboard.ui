@@ -508,6 +508,10 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 								}
 							});
 						}
+						
+						if(response.records[x].apisList[method].length === 0){
+							delete response.records[x].apisList[method];
+						}
 					}
 				}
 				return cb(response.records);

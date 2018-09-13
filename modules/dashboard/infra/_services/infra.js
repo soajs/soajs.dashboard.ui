@@ -78,10 +78,10 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				else {
 					if(currentScope.$parent && currentScope.$parent.$parent){
 						currentScope.$parent.$parent.currentSelectedInfra = myInfra;
-					}
-
-					if (!currentScope.$parent.$parent.currentSelectedInfra) {
-						currentScope.$parent.$parent.go("/infra");
+						
+						if (!currentScope.$parent.$parent.currentSelectedInfra) {
+							currentScope.$parent.$parent.go("/infra");
+						}
 					}
 
 					let infraCookieCopy = angular.copy(myInfra);

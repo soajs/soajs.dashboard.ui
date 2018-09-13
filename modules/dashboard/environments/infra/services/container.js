@@ -123,7 +123,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	}
 
 	function checkAttachContainerProgress(currentScope, autoRefresh){
-		currentScope.getEnvPlatform(true);
+		currentScope.getEnvPlatform(false);
 
 		if(autoRefresh){
 			let autoRefreshTimeoutProgress = $timeout(() => {

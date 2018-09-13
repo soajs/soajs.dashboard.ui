@@ -6,7 +6,7 @@ var secretsNav = [
         'label': "Secrets",
         'checkPermission': {
             'service': 'dashboard',
-            'route': '/secrets',
+            'route': '/secrets/list',
             'method': 'get'
         },
 	    "fallbackLocation": "#/environments",

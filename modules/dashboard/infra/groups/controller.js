@@ -20,8 +20,10 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 
 				$scope.selectedRegion = $scope.infraRegions[0];
 				$timeout(() => {
-					overlayLoading.show();
-					infraGroupSrv.listGroups($scope, $scope.selectedRegion);
+					if ($scope.$parent.$parent.currentSelectedInfra && $scope.$parent.$parent.currentSelectedInfra.name && $scope.$parent.$parent.currentSelectedInfra.name === 'azure') {
+                        overlayLoading.show();
+                        infraGroupSrv.listGroups($scope, $scope.selectedRegion);
+					}
 				}, 500);
 			}
 		});

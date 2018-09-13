@@ -48,7 +48,7 @@ let infraNav = [
 	},
 	{
 		'id': 'infra-templates',
-		'label': 'Infra Code Templates',
+		'label': 'Infra As Code Templates',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/infra',

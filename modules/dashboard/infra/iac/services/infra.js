@@ -201,7 +201,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 			timeout: $timeout,
 			entries: entries,
 			name: 'addTemplate',
-			label: 'Add Infra Code Template',
+			label: 'Add Infra As Code Template',
 			actions: [
 				{
 					'type': 'submit',
@@ -356,7 +356,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 			]
 		};
 
-		buildForm(currentScope, $modal, options, () => {
+		buildForm(currentScope, null, options, () => {
 			if (entries[3].value.length === 1) {
 				entries[3].value[0].selected = true;
 				currentScope.form.formData.location = entries[3].value[0].v;
@@ -488,7 +488,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 				entries: entries,
 				data: formData,
 				name: 'editTemplate',
-				label: 'Modify Infra Code Template',
+				label: 'Modify Infra As Code Template',
 				actions: [
 					{
 						'type': 'submit',
@@ -510,11 +510,11 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 									"template": angular.copy(formData)
 								}
 							};
-							
+
 							if(options.data.template.content && typeof(options.data.template.content) !== 'string'){
 								options.data.template.content = JSON.stringify(options.data.template.content);
 							}
-							
+
 							if(options.data.template.inputs && typeof(options.data.template.inputs) !== 'string'){
 								options.data.template.inputs = JSON.stringify(options.data.template.inputs);
 							}
@@ -524,7 +524,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 							if(options.data.template.imfv && typeof(options.data.template.imfv) !== 'string'){
 								options.data.template.imfv = JSON.stringify(options.data.template.imfv);
 							}
-							
+
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
 								overlayLoading.hide();
@@ -564,7 +564,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 				entries: entries,
 				data: formData,
 				name: 'editTemplate',
-				label: 'Modify Infra Code Template',
+				label: 'Modify Infra As Code Template',
 				actions: [
 					{
 						'type': 'submit',
@@ -599,7 +599,7 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 			injectFormInputs('location', oneTemplate.location, options, oneTemplate);
 		}
 
-		buildForm(currentScope, $modal, options, () => {
+		buildForm(currentScope, null, options, () => {
 			inputsEditor = currentScope.form.entries[5].tabs[1].entries[1];
 			displayEditor = currentScope.form.entries[5].tabs[2].entries[1];
 			imfvEditor = currentScope.form.entries[5].tabs[3].entries[1];

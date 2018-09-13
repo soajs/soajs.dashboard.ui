@@ -76,7 +76,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					currentScope.displayAlert("danger", error);
 				}
 				else {
-                    if (currentScope.$parent.$parent.currentSelectedInfra.name !== myInfra.name) {
+                    if (currentScope.$parent.$parent.currentSelectedInfra && currentScope.$parent.$parent.currentSelectedInfra.name !== myInfra.name) {
                         currentScope.$parent.$parent.go("/infra");
                     }
 					if(currentScope.$parent && currentScope.$parent.$parent){

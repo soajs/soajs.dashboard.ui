@@ -105,7 +105,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		});
 	};
 	
-	$scope.listEnvironments = function (environmentId) {
+	$scope.listEnvironments = function (environmentId, afterDelete) {
 		if (environmentId) {
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
@@ -164,6 +164,11 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 				}
 				else {
 					$localStorage.environments = angular.copy(response);
+					if (afterDelete && (response.length === 0)) {
+						$scope.$parent.rebuildMenus(function () {
+						});
+					}
+
 					var myEnvCookie = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
 					var found = false;
 					var newList = [];
@@ -436,12 +441,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 										currentScope.$parent.leftMenu.environments.splice(i, 1);
 									}
 								}
-								currentScope.listEnvironments();
-								$timeout(() => {
-									if (currentScope.$parent.leftMenu.environments.length === 0) {
-										currentScope.$parent.rebuildMenus(function () {});
-									}
-								}, 100);
+								currentScope.listEnvironments(null, true);
 							}
 							else {
 								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);
@@ -466,12 +466,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 										currentScope.$parent.leftMenu.environments.splice(i, 1);
 									}
 								}
-								currentScope.listEnvironments();
-								$timeout(() => {
-									if (currentScope.$parent.leftMenu.environments.length === 0) {
-										currentScope.$parent.rebuildMenus(function () {});
-									}
-								}, 100);
+								currentScope.listEnvironments(null, true);
 							}
 							else {
 								currentScope.displayAlert('danger', translation.unableRemoveSelectedEnvironment[LANG]);

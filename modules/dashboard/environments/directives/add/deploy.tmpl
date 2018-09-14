@@ -69,7 +69,7 @@
 				<alert type="warning">No Infra providers detected <a href="#/infra">Add Infra Cloud Provider</a></alert>
 			</div>
 		</div>
-		<div ng-show="wizard.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
+		<div ng-show="wizard.selectedInfraProvider.deploy.grid && wizard.selectedInfraProvider.technologies.indexOf('docker') !== -1" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
 	</accordion-group>
 	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')" ng-show="restrictions.kubernetes">
 		<accordion-heading>
@@ -86,7 +86,7 @@
 				<alert type="warning">No Infra providers detected, <a href="#/infra">Add Infra Cloud Provider</a></alert>
 			</div>
 		</div>
-		<div ng-show="wizard.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
+		<div ng-show="wizard.selectedInfraProvider.deploy.grid && wizard.selectedInfraProvider.technologies.indexOf('kubernetes') !== -1" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
 	</accordion-group>
 	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')" ng-show="restrictions.showManual">
 		<accordion-heading>

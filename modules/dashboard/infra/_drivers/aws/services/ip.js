@@ -98,7 +98,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'publicIp',
 				'region': currentScope.selectedRegion,
@@ -124,7 +124,7 @@ awsInfraIPSrv.service('awsInfraIPSrv', ['ngDataApi', '$localStorage', '$timeout'
 	}
 
 	function listIPs(currentScope, oneRegion) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;

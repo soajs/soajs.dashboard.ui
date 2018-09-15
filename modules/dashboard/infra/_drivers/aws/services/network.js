@@ -481,7 +481,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'network',
 				'region': currentScope.selectedRegion,
@@ -507,7 +507,7 @@ awsInfraNetworkSrv.service('awsInfraNetworkSrv', ['ngDataApi', '$localStorage', 
 	}
 
 	function listNetworks(currentScope, oneRegion) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;

@@ -20,7 +20,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 
 	$scope.getProviders = function () {
 		$localStorage.infraProviders =[];
-		$scope.$parent.$parent.infraProviders = [];
+		$scope.updateParentScope('infraProviders', []);
 		
 		infraCommonSrv.getInfra($scope, {
 			id: null,
@@ -36,16 +36,16 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 					$scope.noInfraProvidersConfigured = false;
 					$scope.infraProviders = infras;
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
-					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
-					if (!$scope.$parent.$parent.currentSelectedInfra) {
+					$scope.updateParentScope('infraProviders', angular.copy($scope.infraProviders));
+					if (!$scope.getFromParentScope('currentSelectedInfra')) {
 						infraCommonSrv.switchInfra($scope, infras[0]);
 					}
 					else{
-						infraCommonSrv.switchInfra($scope, $scope.$parent.$parent.currentSelectedInfra);
+						infraCommonSrv.switchInfra($scope, $scope.getFromParentScope('currentSelectedInfra'));
 					}
 				}
 				else{
-					delete $scope.$parent.$parent.currentSelectedInfra;
+					$scope.removeFromParentScope('currentSelectedInfra');
 					$cookies.remove('myInfra', { 'domain': interfaceDomain });
 				}
 			}
@@ -136,7 +136,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			}
 			else {
 				$scope.displayAlert("success", "Provider deactivated successfully.");
-				delete $scope.$parent.$parent.currentSelectedInfra;
+				$scope.removeFromParentScope('currentSelectedInfra');
 				$scope.getProviders();
 			}
 		});

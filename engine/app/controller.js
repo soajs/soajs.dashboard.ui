@@ -859,6 +859,23 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		
 		$scope.checkUserCookie();
 		
+		//method used by extended controllers to update the main parent scope.
+		$scope.updateParentScope = function(name, data){
+			$scope[name] = data;
+		};
+		
+		//method used by extended controllers to remove elements from the main parent scope.
+		$scope.removeFromParentScope = function(name){
+			if($scope[name]){
+				delete $scope[name];
+			}
+		};
+		
+		//method used by extended controllers to retrieve elements from the main parent scope.
+		$scope.getFromParentScope = function(name){
+			return $scope[name];
+		};
+		
 	}]);
 
 soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localStorage', function ($scope, ngDataApi, $cookies, $localStorage) {

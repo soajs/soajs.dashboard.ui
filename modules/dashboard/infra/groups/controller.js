@@ -15,12 +15,12 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "templates"], () => {
 			$scope.currentInfraName = infraCommonSrv.getInfraDriverName($scope);
 			// infraIACSrv.rerenderTemplates($scope);
-			if ($scope.$parent.$parent.currentSelectedInfra.regions && $scope.$parent.$parent.currentSelectedInfra.regions.length > 0) {
-				$scope.infraRegions = $scope.$parent.$parent.currentSelectedInfra.regions;
+			if ($scope.getFromParentScope('currentSelectedInfra').regions && $scope.getFromParentScope('currentSelectedInfra').regions.length > 0) {
+				$scope.infraRegions = $scope.getFromParentScope('currentSelectedInfra').regions;
 
 				$scope.selectedRegion = $scope.infraRegions[0];
 				$timeout(() => {
-					if ($scope.$parent.$parent.currentSelectedInfra && $scope.$parent.$parent.currentSelectedInfra.name && $scope.$parent.$parent.currentSelectedInfra.name === 'azure') {
+					if ($scope.getFromParentScope('currentSelectedInfra') && $scope.getFromParentScope('currentSelectedInfra').name && $scope.getFromParentScope('currentSelectedInfra').name === 'azure') {
                         overlayLoading.show();
                         infraGroupSrv.listGroups($scope, $scope.selectedRegion);
 					}
@@ -35,25 +35,25 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 
 	$scope.getProviders = function () {
 		if($localStorage.infraProviders){
-			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
-			if(!$scope.$parent.$parent.currentSelectedInfra){
+			$scope.updateParentScope('infraProviders', angular.copy($localStorage.infraProviders));
+			if(!$scope.getFromParentScope('currentSelectedInfra')){
 				if($routeParams.infraId){
-					$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+					$scope.getFromParentScope('infraProviders').forEach((oneProvider) => {
 						if(oneProvider._id === $routeParams.infraId){
-							$scope.$parent.$parent.currentSelectedInfra = oneProvider;
-							delete $scope.$parent.$parent.currentSelectedInfra.templates;
-							$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+							$scope.updateParentScope('currentSelectedInfra', oneProvider);
+							delete $scope.getFromParentScope('currentSelectedInfra').templates;
+							$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 						}
 					});
 				}
 
-				if(!$scope.$parent.$parent.currentSelectedInfra){
+				if(!$scope.getFromParentScope('currentSelectedInfra')){
 					$scope.go("/infra");
 				}
 			}
 			else{
-				delete $scope.$parent.$parent.currentSelectedInfra.templates;
-				$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+				delete $scope.getFromParentScope('currentSelectedInfra').templates;
+				$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 			}
 		}
 		else{
@@ -68,25 +68,25 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 				else {
 					$scope.infraProviders = infras;
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
-					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
-					if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.updateParentScope('infraProviders', angular.copy($scope.infraProviders));
+					if(!$scope.getFromParentScope('currentSelectedInfra')){
 						if($routeParams.infraId){
-							$scope.$parent.$parent.infraProviders.forEach((oneProvider) => {
+							$scope.getFromParentScope('infraProviders').forEach((oneProvider) => {
 								if(oneProvider._id === $routeParams.infraId){
-									$scope.$parent.$parent.currentSelectedInfra = oneProvider;
-									delete $scope.$parent.$parent.currentSelectedInfra.templates;
-									$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+									$scope.updateParentScope('currentSelectedInfra', oneProvider);
+									delete $scope.getFromParentScope('currentSelectedInfra').templates;
+									$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 								}
 							});
 						}
 
-						if(!$scope.$parent.$parent.currentSelectedInfra){
+						if(!$scope.getFromParentScope('currentSelectedInfra')){
 							$scope.go("/infra");
 						}
 					}
 					else{
-						delete $scope.$parent.$parent.currentSelectedInfra.templates;
-						$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+						delete $scope.getFromParentScope('currentSelectedInfra').templates;
+						$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 					}
 				}
 			});

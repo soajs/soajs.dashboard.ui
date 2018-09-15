@@ -440,7 +440,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'securityGroup',
 				'group': currentScope.selectedGroup.name,
@@ -466,7 +466,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 	}
 
 	function listFirewalls(currentScope, oneGroup) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;

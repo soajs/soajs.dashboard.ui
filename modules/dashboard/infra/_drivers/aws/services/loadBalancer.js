@@ -262,7 +262,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			method: 'get',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'id': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'id': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'region': currentScope.selectedRegion,
 				'extras[]': ['securityGroups', 'certificates', 'networks']
 			}
@@ -665,7 +665,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'loadBalancer',
 				'region': currentScope.selectedRegion,
@@ -691,7 +691,7 @@ awsInfraLoadBalancerSrv.service('awsInfraLoadBalancerSrv', ['ngDataApi', '$local
 	}
 
 	function listLoadBalancers(currentScope, oneRegion) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;

@@ -29,13 +29,13 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$location', '$localStorage', 
 	
 	$scope.getProviders = function () {
 		if($localStorage.infraProviders){
-			$scope.$parent.$parent.infraProviders = angular.copy($localStorage.infraProviders);
-			if(!$scope.$parent.$parent.currentSelectedInfra){
+			$scope.updateParentScope('infraProviders', angular.copy($localStorage.infraProviders));
+			if(!$scope.getFromParentScope('currentSelectedInfra')){
 				$scope.go("/infra");
 			}
 			else{
-				delete $scope.$parent.$parent.currentSelectedInfra.templates;
-				$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+				delete $scope.getFromParentScope('currentSelectedInfra').templates;
+				$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 			}
 		}
 		else{
@@ -50,13 +50,13 @@ infraIACApp.controller('infraIACCtrl', ['$scope', '$location', '$localStorage', 
 				else {
 					$scope.infraProviders = infras;
 					$localStorage.infraProviders = angular.copy($scope.infraProviders);
-					$scope.$parent.$parent.infraProviders = angular.copy($scope.infraProviders);
-					if(!$scope.$parent.$parent.currentSelectedInfra){
+					$scope.updateParentScope('infraProviders', angular.copy($scope.infraProviders));
+					if(!$scope.getFromParentScope('currentSelectedInfra')){
 						$scope.go("/infra");
 					}
 					else{
-						delete $scope.$parent.$parent.currentSelectedInfra.templates;
-						$scope.$parent.$parent.switchInfra($scope.$parent.$parent.currentSelectedInfra);
+						delete $scope.getFromParentScope('currentSelectedInfra').templates;
+						$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 					}
 				}
 			});

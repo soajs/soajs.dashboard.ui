@@ -457,7 +457,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 			method: 'get',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'id': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'id': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'region': currentScope.selectedRegion,
 				'extras[]': ['networks']
 			}
@@ -488,7 +488,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'securityGroup',
 				'region': currentScope.selectedRegion,
@@ -514,7 +514,7 @@ awsInfraFirewallSrv.service('awsInfraFirewallSrv', ['ngDataApi', '$localStorage'
 	}
 
 	function listFirewalls(currentScope, oneRegion) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected region in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;

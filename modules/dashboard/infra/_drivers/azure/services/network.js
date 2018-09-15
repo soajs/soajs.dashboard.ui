@@ -322,7 +322,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'network',
 				'group': currentScope.selectedGroup.name,
@@ -348,7 +348,7 @@ azureInfraNetworkSrv.service('azureInfraNetworkSrv', ['ngDataApi', '$localStorag
 	}
 
 	function listNetworks(currentScope, oneGroup) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected group in scope to be accessed by other functions
 		currentScope.selectedGroup = oneGroup;

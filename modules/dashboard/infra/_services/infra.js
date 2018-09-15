@@ -5,17 +5,17 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 	const dynamicInfraSections = ['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
 
 	function getInfraDriverName(currentScope) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 		let name = oneInfra.name; // -> azure
 		return name;
 	}
 
 	function getInfraFromCookie(currentScope) {
 		if ($cookies.getObject('myInfra', {'domain': interfaceDomain})) {
-			currentScope.$parent.$parent.currentSelectedInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
+			currentScope.updateParentScope('currentSelectedInfra', $cookies.getObject('myInfra', {'domain': interfaceDomain}));
 			$timeout(() => {
-				hideSidebarMenusForUnwantedProviders(currentScope, currentScope.$parent.$parent.currentSelectedInfra);
-			}, 200);
+				hideSidebarMenusForUnwantedProviders(currentScope, currentScope.getFromParentScope('currentSelectedInfra'));
+			}, 500);
 		}
 	}
 
@@ -46,17 +46,17 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			if(opts.id){
 				$timeout(() => {
 					hideSidebarMenusForUnwantedProviders(currentScope, response);
-				}, 300);
+				}, 500);
 			}
 			else {
 				if (response.length === 0) {
 					$timeout(() => {
-						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavigationEntry) => {
+						currentScope.getFromParentScope('leftMenu').links.forEach((oneNavigationEntry) => {
 							if(dynamicInfraSections.indexOf(oneNavigationEntry.id) !== -1){
 								oneNavigationEntry.hideMe = true;
 							}
 						});
-					}, 200);
+					}, 500);
 				}
 			}
 			return cb(null, response);
@@ -76,13 +76,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					currentScope.displayAlert("danger", error);
 				}
 				else {
-					if(currentScope.$parent && currentScope.$parent.$parent){
-						currentScope.$parent.$parent.currentSelectedInfra = myInfra;
-						
-						if (!currentScope.$parent.$parent.currentSelectedInfra) {
-							currentScope.$parent.$parent.go("/infra");
-						}
-					}
+					currentScope.updateParentScope('currentSelectedInfra', myInfra);
 
 					let infraCookieCopy = angular.copy(myInfra);
 					delete infraCookieCopy.templates;
@@ -94,7 +88,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 					//check if infraProviders more than 0 and then unhide the leftMenu items that were hidden when there were no infra providers configured
 					if (currentScope.infraProviders.length > 0) {
-						currentScope.$parent.$parent.leftMenu.links.forEach((oneNavItem) => {
+						currentScope.getFromParentScope('leftMenu').links.forEach((oneNavItem) => {
 							if (dynamicInfraSections.indexOf(oneNavItem.id) !== -1) {
 								oneNavItem.hideMe = false;
 							}
@@ -137,8 +131,8 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		let localExcluded = [ 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
 
 		//fix the menu; local driver has not templates
-		if(currentScope.$parent && currentScope.$parent.$parent && currentScope.$parent.$parent.appNavigation){
-			currentScope.$parent.$parent.appNavigation.forEach((oneNavigationEntry) => {
+		if(currentScope.getFromParentScope('appNavigation')){
+			currentScope.getFromParentScope('appNavigation').forEach((oneNavigationEntry) => {
 
 				oneNavigationEntry.hideMe = false;
 				if(myInfra.name === 'local'){
@@ -260,7 +254,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 											//copy infras to scope and parent scope
 											currentScope.infraProviders = infras;
-											currentScope.$parent.$parent.infraProviders = angular.copy(currentScope.infraProviders);
+											currentScope.updateParentScope('infraProviders', angular.copy(currentScope.infraProviders));
 
 											//switch to the latest added infra
 											switchInfra(currentScope, infras[infras.length - 1]);
@@ -287,7 +281,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 	}
 
 	function getVMLayers(currentScope, cb){
-		let oneProvider = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneProvider = currentScope.getFromParentScope('currentSelectedInfra');
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/cloud/vm/list",

@@ -206,7 +206,7 @@ awsInfraCertificateSrv.service('awsInfraCertificateSrv', ['ngDataApi', '$localSt
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'certificate',
 				'region': currentScope.selectedRegion,
@@ -232,7 +232,7 @@ awsInfraCertificateSrv.service('awsInfraCertificateSrv', ['ngDataApi', '$localSt
 	}
 
 	function listCertificates(currentScope, oneRegion) {
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected region in scope to be accessed by other functions
 		currentScope.selectedRegion = oneRegion;

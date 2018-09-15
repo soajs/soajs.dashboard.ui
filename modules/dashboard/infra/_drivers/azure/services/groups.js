@@ -351,7 +351,7 @@ azureInfraGroupSrv.service('azureInfraGroupSrv', ['ngDataApi', '$timeout', '$mod
 			method: 'delete',
 			routeName: '/dashboard/infra/extras',
 			params: {
-				'infraId': currentScope.$parent.$parent.currentSelectedInfra._id,
+				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'group',
 				'name': oneGroup.name
@@ -377,7 +377,7 @@ azureInfraGroupSrv.service('azureInfraGroupSrv', ['ngDataApi', '$timeout', '$mod
 
 	function listGroups(currentScope, oneRegion) {
 
-		let oneInfra = currentScope.$parent.$parent.currentSelectedInfra;
+		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
 
 		//save selected region in scope
 		// NOTE: we are using this value to trigger listGroups from deleteGroup

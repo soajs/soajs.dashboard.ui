@@ -260,9 +260,11 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 
 		currentScope.deleteVMLayer = function (oneVMLayer) {
 			if (oneVMLayer.forceEditDelete) {
-				for (let layerName in currentScope.vmLayers) {
-					if (layerName === oneVMLayer.infraProvider.name + "_" + oneVMLayer.name) {
-						delete currentScope.vmLayers[layerName];
+				if(currentScope.vmLayers){
+					for (let layerName in currentScope.vmLayers) {
+						if (layerName === oneVMLayer.infraProvider.name + "_" + oneVMLayer.name) {
+							delete currentScope.vmLayers[layerName];
+						}
 					}
 				}
 
@@ -314,17 +316,19 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 
 		function filterVmLayers(currentScope) {
 			//loop on vmLayers and if they have a label['soajs.env.code'] that doesn't match the wizard.gi.code remove the layer
-			for(let vmLayerName in currentScope.vmLayers){
-				let remove = true;
-
-				currentScope.vmLayers[vmLayerName].list.forEach((oneInstance) => {
-					if((oneInstance.labels && oneInstance.labels['soajs.env.code'] && oneInstance.labels['soajs.env.code'].toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) || !oneInstance.labels || (oneInstance.labels && !oneInstance.labels['soajs.env.code'])){
-						remove = false;
+			if(currentScope.vmLayers){
+				for(let vmLayerName in currentScope.vmLayers){
+					let remove = true;
+	
+					currentScope.vmLayers[vmLayerName].list.forEach((oneInstance) => {
+						if((oneInstance.labels && oneInstance.labels['soajs.env.code'] && oneInstance.labels['soajs.env.code'].toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) || !oneInstance.labels || (oneInstance.labels && !oneInstance.labels['soajs.env.code'])){
+							remove = false;
+						}
+					});
+	
+					if(remove){
+						delete currentScope.vmLayers[vmLayerName];
 					}
-				});
-
-				if(remove){
-					delete currentScope.vmLayers[vmLayerName];
 				}
 			}
 		}
@@ -409,12 +413,14 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 
 		//on back
 		function onBoard(currentScope, vmLayers, vmOnBoards) {
-			for (let i in vmLayers) {
-				for (let j in vmOnBoards) {
-					if ((vmLayers[i].name + "__" + vmLayers[i].list[0].network) === vmOnBoards[j]) {
-						if (!vmLayers[i].list[0].labels['soajs.env.code']) {
-							vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
-							vmLayers[i].list[0].labels['soajs.onBoard'] = "true"
+			if(vmLayers){
+				for (let i in vmLayers) {
+					for (let j in vmOnBoards) {
+						if ((vmLayers[i].name + "__" + vmLayers[i].list[0].network) === vmOnBoards[j]) {
+							if (!vmLayers[i].list[0].labels['soajs.env.code']) {
+								vmLayers[i].list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
+								vmLayers[i].list[0].labels['soajs.onBoard'] = "true"
+							}
 						}
 					}
 				}

@@ -201,7 +201,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							if(form.actions.length > 1){
 								form.actions.shift();
 							}
-
+							
+							let showSubmitButton = false;
 							if(value.groups && Array.isArray(value.groups)) {
 								let groups = {
 									'name': 'group',
@@ -211,38 +212,53 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 									'tooltip': 'Select Resource Group',
 									'required': false
 								};
-
+								
 								value.groups.forEach((oneGroup) =>{
 									if(oneGroup.region === value2){
 										groups.value.push({v: oneGroup.name, l: oneGroup.name})
 									}
 								});
-
+								
 								if(groups.value && groups.value.length > 0){
 									groups.value[0].selected = true;
+									showSubmitButton = true;
 								}
+								else {
+									groups = {
+										'name': 'group',
+										'label': 'Select a Group',
+										'type': 'html',
+										'value': '<p class="alert alert-danger">No Groups available in this region, try selecting another region.</p>'
+									};
+								}
+								
 								form.entries.push(groups);
 							}
-
-							form.actions.unshift({
-								'type': 'submit',
-								'label': translation.submit[LANG],
-								'btn': 'primary',
-								'action': function (formData) {
-									currentScope.modalInstance.close();
-									let data = {
-										inputs: {
-											region: formData.region
+							else{
+								showSubmitButton = true;
+							}
+							
+							if(showSubmitButton){
+								form.actions.unshift({
+									'type': 'submit',
+									'label': translation.submit[LANG],
+									'btn': 'primary',
+									'action': function (formData) {
+										currentScope.modalInstance.close();
+										let data = {
+											inputs: {
+												region: formData.region
+											}
+										};
+										
+										if(formData.group) {
+											data.inputs.group = formData.group;
 										}
-									};
-
-									if(formData.group) {
-										data.inputs.group = formData.group;
+										
+										populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
 									}
-
-									populateVMLayerForm(currentScope, formData.infraProvider, formData.infraProvider.drivers[0].toLowerCase(), data, saveActionMethod);
-								}
-							});
+								});
+							}
 						}
 					};
 

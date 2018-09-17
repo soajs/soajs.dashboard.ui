@@ -41,7 +41,7 @@
 			Create New Virtual Machine Layer
 		</a>
 	</div>
-	<div class="c-both w100 entryBoxes" ng-show="!vmLayers">
+	<div class="c-both w100 entryBoxes" ng-show="noVMLayers">
 		<br>
 		<alert type="warning">
 			<p>
@@ -49,7 +49,7 @@
 			</p>
 		</alert>
 	</div>
-	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
+	<div class="c-both w100 entryBoxes" ng-show="!noVMLayers">
 		<br />
 		<div ng-repeat="oneVMLayer in vmLayers">
 			

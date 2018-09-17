@@ -52,9 +52,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	                    }
                     }
                     
-                    if(Object.keys(currentScope.vmLayers).length === 0){
-                    	delete currentScope.vmLayers;
-                    }
+                    currentScope.noVMLayers = (Object.keys(currentScope.vmLayers).length === 0);
                     if (cb && typeof cb === 'function') {
                         return cb();
                     }

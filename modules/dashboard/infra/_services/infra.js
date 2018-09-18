@@ -11,11 +11,13 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 	}
 
 	function getInfraFromCookie(currentScope) {
-		if ($cookies.getObject('myInfra', {'domain': interfaceDomain})) {
-			currentScope.updateParentScope('currentSelectedInfra', $cookies.getObject('myInfra', {'domain': interfaceDomain}));
-			$timeout(() => {
-				hideSidebarMenusForUnwantedProviders(currentScope, currentScope.getFromParentScope('currentSelectedInfra'));
-			}, 500);
+		let cookieInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
+		let scopeInfra = currentScope.getFromParentScope('currentSelectedInfra');
+		if (cookieInfra) {
+			if(!scopeInfra || cookieInfra._id !== scopeInfra._id){
+				hideSidebarMenusForUnwantedProviders(currentScope, cookieInfra);
+			}
+			currentScope.updateParentScope('currentSelectedInfra', cookieInfra);
 		}
 	}
 
@@ -35,96 +37,82 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		if(opts.exclude){
 			options.params['exclude[]'] = opts.exclude;
 		}
-
+		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			overlayLoading.hide();
 			if(error){
 				return cb(error);
 			}
-
-			if(opts.id){
-				$timeout(() => {
-					hideSidebarMenusForUnwantedProviders(currentScope, response);
-				}, 500);
-			}
-			else {
-				if (response.length === 0) {
-					$timeout(() => {
-						currentScope.getFromParentScope('leftMenu').links.forEach((oneNavigationEntry) => {
-							if(dynamicInfraSections.indexOf(oneNavigationEntry.id) !== -1){
-								oneNavigationEntry.hideMe = true;
-							}
-						});
-					}, 500);
-				}
+			
+			if (response.length === 0) {
+				currentScope.getFromParentScope('leftMenu').links.forEach((oneNavigationEntry) => {
+					if(dynamicInfraSections.indexOf(oneNavigationEntry.id) !== -1){
+						oneNavigationEntry.hideMe = true;
+					}
+				});
 			}
 			return cb(null, response);
 		});
 	}
 
 	function switchInfra(currentScope, oneInfra, exclude, cb) {
-		$timeout(() => {
-			currentScope.showTemplateForm = false;
-			overlayLoading.show();
-			getInfra(currentScope, {
-				id: oneInfra._id,
-				exclude: exclude
-			}, (error, myInfra) => {
-				overlayLoading.hide();
-				if (error) {
-					currentScope.displayAlert("danger", error);
-				}
-				else {
-					currentScope.updateParentScope('currentSelectedInfra', myInfra);
-
-					let infraCookieCopy = angular.copy(myInfra);
-					delete infraCookieCopy.templates;
-					delete infraCookieCopy.groups;
-					delete infraCookieCopy.regions;
-					delete infraCookieCopy.deployments;
-					delete infraCookieCopy.api;
-					$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
-
-					//check if infraProviders more than 0 and then unhide the leftMenu items that were hidden when there were no infra providers configured
-					if (currentScope.infraProviders.length > 0) {
-						currentScope.getFromParentScope('leftMenu').links.forEach((oneNavItem) => {
-							if (dynamicInfraSections.indexOf(oneNavItem.id) !== -1) {
-								oneNavItem.hideMe = false;
-							}
-						});
-					}
-
-					infraConfig.form.providers.forEach((oneProvider) => {
-						if(myInfra.name === 'local'){
-							if(myInfra.technologies[0] === oneProvider.name){
-								myInfra.logo = oneProvider.value;
-							}
-						}
-						else if(myInfra.name === oneProvider.name){
-							myInfra.logo = oneProvider.value;
-						}
-					});
-
-					if(myInfra.name === 'local'){
-						myInfra.icon = infraConfig.logos[myInfra.technologies[0]];
-					}
-					else{
-						myInfra.icon = infraConfig.logos[myInfra.name];
-					}
-
-					hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
-
+		currentScope.showTemplateForm = false;
+		
+		overlayLoading.show();
+		
+		getInfra(currentScope, {
+			id: oneInfra._id,
+			exclude: exclude
+		}, (error, myInfra) => {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert("danger", error);
+			}
+			else {
+				hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
+				updateInfraLabels(myInfra, () => {
 					if(cb && typeof cb === 'function'){
 						return cb();
 					}
+				});
+			}
+		});
+		
+		function updateInfraLabels(myInfra, cb){
+			currentScope.updateParentScope('currentSelectedInfra', myInfra);
+			
+			let infraCookieCopy = angular.copy(myInfra);
+			delete infraCookieCopy.templates;
+			delete infraCookieCopy.groups;
+			delete infraCookieCopy.regions;
+			delete infraCookieCopy.deployments;
+			delete infraCookieCopy.api;
+			$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
+			
+			infraConfig.form.providers.forEach((oneProvider) => {
+				if(myInfra.name === 'local'){
+					if(myInfra.technologies[0] === oneProvider.name){
+						myInfra.logo = oneProvider.value;
+					}
+				}
+				else if(myInfra.name === oneProvider.name){
+					myInfra.logo = oneProvider.value;
 				}
 			});
-		}, 500);
+			
+			if(myInfra.name === 'local'){
+				myInfra.icon = infraConfig.logos[myInfra.technologies[0]];
+			}
+			else{
+				myInfra.icon = infraConfig.logos[myInfra.name];
+			}
+			
+			return cb();
+		}
 	}
 
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
-
 		let awsExcluded = [ 'infra-groups' ];
 		let azureExcluded = [ 'infra-deployments', 'infra-keyPairs', 'infra-certificates' ];
 		let googleExcluded = [ 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
@@ -132,47 +120,56 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 		//fix the menu; local driver has not templates
 		if(currentScope.getFromParentScope('appNavigation')){
-			currentScope.getFromParentScope('appNavigation').forEach((oneNavigationEntry) => {
-
-				oneNavigationEntry.hideMe = false;
-				if(myInfra.name === 'local'){
-					if(localExcluded.indexOf(oneNavigationEntry.id) !== -1){
-						oneNavigationEntry.hideMe = true;
-
-						if(oneNavigationEntry.url === $window.location.hash){
-							currentScope.go(oneNavigationEntry.fallbackLocation);
+			$timeout(() => {
+				overlayLoading.show();
+				currentScope.getFromParentScope('appNavigation').forEach((oneNavigationEntry) => {
+					oneNavigationEntry.hideMe = false;
+					
+					if(myInfra.name === 'local'){
+						if(localExcluded.indexOf(oneNavigationEntry.id) !== -1){
+							oneNavigationEntry.hideMe = true;
+							
+							if(oneNavigationEntry.url === $window.location.hash){
+								currentScope.go(oneNavigationEntry.fallbackLocation);
+							}
 						}
 					}
-				}
-				else if(['azure'].indexOf(myInfra.name) !== -1){
-					if(azureExcluded.indexOf(oneNavigationEntry.id) !== -1){
-						oneNavigationEntry.hideMe = true;
-
-						if(oneNavigationEntry.url === $window.location.hash){
-							currentScope.go(oneNavigationEntry.fallbackLocation);
+					else if(['azure'].indexOf(myInfra.name) !== -1){
+						if(azureExcluded.indexOf(oneNavigationEntry.id) !== -1){
+							oneNavigationEntry.hideMe = true;
+							
+							if(oneNavigationEntry.url === $window.location.hash){
+								currentScope.go(oneNavigationEntry.fallbackLocation);
+							}
 						}
 					}
-				}
-				else if(['google'].indexOf(myInfra.name) !== -1){
-					if(googleExcluded.indexOf(oneNavigationEntry.id) !== -1){
-						oneNavigationEntry.hideMe = true;
-
-						if(oneNavigationEntry.url === $window.location.hash){
-							currentScope.go(oneNavigationEntry.fallbackLocation);
+					else if(['google'].indexOf(myInfra.name) !== -1){
+						if(googleExcluded.indexOf(oneNavigationEntry.id) !== -1){
+							oneNavigationEntry.hideMe = true;
+							
+							if(oneNavigationEntry.url === $window.location.hash){
+								currentScope.go(oneNavigationEntry.fallbackLocation);
+							}
 						}
 					}
-				}
-				//disable resource groups section for AWS only
-				else if(['aws'].indexOf(myInfra.name) !== -1){
-					if(awsExcluded.indexOf(oneNavigationEntry.id) !== -1){
-						oneNavigationEntry.hideMe = true;
-
-						if(oneNavigationEntry.url === $window.location.hash){
-							currentScope.go(oneNavigationEntry.fallbackLocation);
+					//disable resource groups section for AWS only
+					else if(['aws'].indexOf(myInfra.name) !== -1){
+						if(awsExcluded.indexOf(oneNavigationEntry.id) !== -1){
+							oneNavigationEntry.hideMe = true;
+							
+							if(oneNavigationEntry.url === $window.location.hash){
+								currentScope.go(oneNavigationEntry.fallbackLocation);
+							}
 						}
 					}
-				}
-			});
+				});
+			
+			
+				let rebuildMenus = currentScope.getFromParentScope('rebuildMenus');
+				rebuildMenus(() => {
+					overlayLoading.hide();
+				});
+			}, 100);
 		}
 	}
 
@@ -312,7 +309,6 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 	return {
 		"getInfraDriverName": getInfraDriverName,
-		"hideSidebarMenusForUnwantedProviders": hideSidebarMenusForUnwantedProviders,
 		"activateProvider": activateProvider,
 		"getInfraFromCookie": getInfraFromCookie,
 		"getInfra": getInfra,

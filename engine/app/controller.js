@@ -268,6 +268,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		};
 		
 		$scope.hideMe = function (link) {
+			if(link.pillar && link.pillar.name !== 'deployment'){
+				return link.hideMe;
+			}
+			
 			let currentSelectedEnvironment;
 			let currentSelectedEnvironmentRecord;
 			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {

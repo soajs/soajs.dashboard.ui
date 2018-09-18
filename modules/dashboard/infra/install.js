@@ -39,6 +39,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 2,
@@ -62,6 +63,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 3,
@@ -85,6 +87,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 4,
@@ -115,6 +118,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 5,
@@ -146,6 +150,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 6,
@@ -177,6 +182,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 7,
@@ -208,6 +214,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 8,
@@ -239,6 +246,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 9,
@@ -269,6 +277,7 @@ let infraNav = [
 			'label': "Infrastructure",
 			'position': 0
 		},
+		'hideMe': true,
 		'mainMenu': true,
 		'tracker': true,
 		'order': 10,

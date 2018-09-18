@@ -13,7 +13,6 @@ infraLoadBalancerSrv.service('infraLoadBalancerSrv', ['azureInfraLoadBalancerSrv
 				awsInfraLoadBalancerSrv.addLoadBalancer(currentScope);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -29,7 +28,6 @@ infraLoadBalancerSrv.service('infraLoadBalancerSrv', ['azureInfraLoadBalancerSrv
 				awsInfraLoadBalancerSrv.editLoadBalancer(currentScope, oneLoadBalancer);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -45,7 +43,6 @@ infraLoadBalancerSrv.service('infraLoadBalancerSrv', ['azureInfraLoadBalancerSrv
 				awsInfraLoadBalancerSrv.deleteLoadBalancer(currentScope, oneLoadBalancer);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -61,7 +58,6 @@ infraLoadBalancerSrv.service('infraLoadBalancerSrv', ['azureInfraLoadBalancerSrv
 				awsInfraLoadBalancerSrv.listLoadBalancers(currentScope, oneGroup);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

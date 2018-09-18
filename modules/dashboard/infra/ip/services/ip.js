@@ -14,7 +14,6 @@ infraIPSrv.service('infraIPSrv', ['azureInfraIPSrv', 'awsInfraIPSrv', function (
 				awsInfraIPSrv.addIP(currentScope);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -30,7 +29,6 @@ infraIPSrv.service('infraIPSrv', ['azureInfraIPSrv', 'awsInfraIPSrv', function (
 				awsInfraIPSrv.editIP(currentScope, originalIP);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -46,7 +44,6 @@ infraIPSrv.service('infraIPSrv', ['azureInfraIPSrv', 'awsInfraIPSrv', function (
 				awsInfraIPSrv.deleteIP(currentScope, oneIP);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -62,7 +59,6 @@ infraIPSrv.service('infraIPSrv', ['azureInfraIPSrv', 'awsInfraIPSrv', function (
 				awsInfraIPSrv.listIPs(currentScope, oneGroup);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

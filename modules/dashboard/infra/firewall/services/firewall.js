@@ -13,7 +13,6 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 				awsInfraFirewallSrv.addFirewall(currentScope);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -29,7 +28,6 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 				awsInfraFirewallSrv.editFirewall(currentScope, originalFirewall);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -45,7 +43,6 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 				awsInfraFirewallSrv.deleteFirewall(currentScope, oneFirewall);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -61,7 +58,6 @@ infraFirewallSrv.service('infraFirewallSrv', ['azureInfraFirewallSrv', 'awsInfra
 				awsInfraFirewallSrv.listFirewalls(currentScope, oneGroup);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

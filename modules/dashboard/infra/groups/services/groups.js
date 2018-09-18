@@ -10,7 +10,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', function (azureInf
 				azureInfraGroupSrv.addGroup(currentScope);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -23,7 +22,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', function (azureInf
 				azureInfraGroupSrv.editGroup(currentScope, oneGroup);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -36,7 +34,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', function (azureInf
 				azureInfraGroupSrv.deleteGroup(currentScope, oneGroup);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -49,7 +46,6 @@ infraGroupSrv.service('infraGroupSrv', ['azureInfraGroupSrv', function (azureInf
 				azureInfraGroupSrv.listGroups(currentScope, oneRegion);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

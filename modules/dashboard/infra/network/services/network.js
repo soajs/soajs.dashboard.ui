@@ -13,7 +13,6 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 				awsInfraNetworkSrv.addNetwork(currentScope);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -29,7 +28,6 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 				awsInfraNetworkSrv.editNetwork(currentScope, originalNetwork);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -45,7 +43,6 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 				awsInfraNetworkSrv.deleteNetwork(currentScope, oneNetwork);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -61,7 +58,6 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 				awsInfraNetworkSrv.listNetworks(currentScope, oneGroup);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

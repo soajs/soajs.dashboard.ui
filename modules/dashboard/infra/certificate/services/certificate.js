@@ -11,7 +11,6 @@ infraCertificateSrv.service('infraCertificateSrv', ['awsInfraCertificateSrv', fu
 				awsInfraCertificateSrv.addCertificate(currentScope, action, existingCertificate);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -24,7 +23,6 @@ infraCertificateSrv.service('infraCertificateSrv', ['awsInfraCertificateSrv', fu
 				awsInfraCertificateSrv.deleteCertificate(currentScope, oneCertificate);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -37,7 +35,6 @@ infraCertificateSrv.service('infraCertificateSrv', ['awsInfraCertificateSrv', fu
 				awsInfraCertificateSrv.downloadDnsConfig(currentScope, oneCertificate);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -50,7 +47,6 @@ infraCertificateSrv.service('infraCertificateSrv', ['awsInfraCertificateSrv', fu
 				awsInfraCertificateSrv.listCertificates(currentScope, oneGroupOrRegion);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

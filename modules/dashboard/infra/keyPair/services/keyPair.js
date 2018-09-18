@@ -11,7 +11,6 @@ infraKeyPairSrv.service('infraKeyPairSrv', ['awsInfraKeyPairSrv', function (awsI
 				awsInfraKeyPairSrv.addKeyPair(currentScope);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -24,7 +23,6 @@ infraKeyPairSrv.service('infraKeyPairSrv', ['awsInfraKeyPairSrv', function (awsI
 				awsInfraKeyPairSrv.deleteKeyPair(currentScope, oneKeyPair);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -37,7 +35,6 @@ infraKeyPairSrv.service('infraKeyPairSrv', ['awsInfraKeyPairSrv', function (awsI
 				awsInfraKeyPairSrv.listKeyPairs(currentScope, oneGroupOrRegion);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}
@@ -50,7 +47,6 @@ infraKeyPairSrv.service('infraKeyPairSrv', ['awsInfraKeyPairSrv', function (awsI
 				awsInfraKeyPairSrv.displayKeyPairVms(currentScope, oneKeyPair);
 				break;
 			default:
-				currentScope.displayAlert('danger', "Invalid or Unknown Infra Provider Requested: " + infraName);
 				break;
 		}
 	}

@@ -883,6 +883,8 @@ soajsApp.controller('welcomeCtrl', ['$scope', 'ngDataApi', '$cookies', '$localSt
 		$scope.setUser();
 	});
 	
+	$scope.soajs_project = $cookies.get('soajs_project', {'domain': interfaceDomain});
+	
 	$scope.isPortalDeployed = function () {
 		let hasPortal = false;
 		if ($localStorage && $localStorage.environments) {

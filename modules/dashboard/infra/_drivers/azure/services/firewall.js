@@ -54,8 +54,8 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						'label': 'Protocol',
 						'type': 'select',
 						'value': [
-							{'v': 'TCP', 'l': "TCP", 'selected': true},
-							{'v': 'UDP', 'l': "UCP"},
+							{'v': 'tcp', 'l': "TCP", 'selected': true},
+							{'v': 'udp', 'l': "UCP"},
 							{'v': '*', 'l': "TCP/UCP"}
 						],
 						'required': true,
@@ -103,11 +103,12 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
 					},
 					{
-						'name': 'target',
+						'name': 'published',
 						'label': 'Source Port',
 						'type': 'text',
 						'value': "*",
 						'required': true,
+						'disabled': true,
 						'placeholder': "*",
 						'fieldMsg': 'example: 80 OR * for Any'
 					},
@@ -120,7 +121,7 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 						'fieldMsg': 'example: 0.0.0.0/0 OR * for Any'
 					},
 					{
-						'name': 'published',
+						'name': 'target',
 						'label': 'Destination Port',
 						'type': 'text',
 						'value': "",
@@ -512,11 +513,11 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 								if(oneVmLayer.securityGroup && Array.isArray(oneVmLayer.securityGroup)){
 									oneVmLayer.securityGroup.forEach((oneSG) => {
 										if (oneSG && oneSG === oneSecurityGroup.name) {
-											
+
 											if (!oneSecurityGroup.vmLayers) {
 												oneSecurityGroup.vmLayers = [];
 											}
-											
+
 											if (oneVmLayer.labels && oneVmLayer.labels['soajs.env.code']) {
 												let found = false;
 												$localStorage.environments.forEach((oneEnv) => {
@@ -539,11 +540,11 @@ azureInfraFirewallSrv.service('azureInfraFirewallSrv', ['ngDataApi', '$localStor
 													link: false
 												});
 											}
-											
+
 											if (!oneSecurityGroup.networks) {
 												oneSecurityGroup.networks = [];
 											}
-											
+
 											if (processedNetworks.indexOf(oneVmLayer.network) === -1) {
 												processedNetworks.push(oneVmLayer.network);
 												oneSecurityGroup.networks.push({

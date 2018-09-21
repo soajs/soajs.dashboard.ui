@@ -1395,20 +1395,28 @@ var environmentsNav = [
 		'scripts': [
 			'modules/dashboard/environments/config.js',
 			'modules/dashboard/environments/add/controller.js',
+			
 			'modules/dashboard/environments/add/templateSrv.js',
+			
 			'modules/dashboard/environments/add/giSrv.js',
 
 			'modules/dashboard/environments/add/deploySrv.js',
+			
 			'modules/dashboard/environments/add/vmSrv.js',
+			
 			'modules/dashboard/environments/add/registrySrv.js',
+			
 			'modules/dashboard/environments/add/overviewSrv.js',
 
 			'modules/dashboard/environments/add/nginxSrv.js',
+			
 			'modules/dashboard/environments/add/dynamicSrv.js',
+			
 			'modules/dashboard/environments/add/statusSrv.js',
 			'modules/dashboard/environments/add/statusAPISrv.js',
+			
 			'modules/dashboard/environments/services/custom_registry.js',
-
+			
 			'modules/dashboard/environments/infra/services/vms.js',
 
 			'modules/dashboard/resources/config.js',

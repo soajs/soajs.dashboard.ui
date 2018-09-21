@@ -3,6 +3,7 @@ var dynamicServices = soajsApp.components;
 dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$compile', 'customRegistrySrv', 'resourceDeploy', 'resourceConfiguration', 'secretsService', 'deployRepos', 'deployServiceDep', function (ngDataApi, $timeout, $modal, $localStorage, $window, $compile, customRegistrySrv, resourceDeploy, resourceConfiguration, secretsService, deployRepos, deployServiceDep) {
 	let defaultWizardSecretValues = [];
 
+	//predefined handling steps that each tackle a certain section in the template based on the section type
 	let predefinedSchemaSteps = {
 		custom_registry: {
 			deploy: function (currentScope, context) {
@@ -1064,6 +1065,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		}
 	};
 
+	//common function to print the form
 	function buildDynamicForm(currentScope, entries, postFormExecute) {
 		let options = {
 			timeout: $timeout,
@@ -1078,6 +1080,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		});
 	}
 
+	//main driver
 	function go(currentScope) {
 		currentScope.loadingDynamicSection = true;
 		currentScope.mapStorageToWizard($localStorage.addEnv);
@@ -1157,6 +1160,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		};
 	}
 
+	//helper that "transforms deployments.repo.controller" --> [deployments][repo][controller]
 	function returnObjectPathFromString(stringPath, mainObj) {
 		function index(obj, i) {
 			return obj[i]
@@ -1165,6 +1169,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		return stringPath.split('.').reduce(index, mainObj);
 	}
 
+	//transform the template deploy steps to a stack to be processed step by step
 	function getDeploymentWorkflow(currentScope, stack, template) {
 		if (template.deploy && Object.keys(template.deploy).length > 0) {
 			let schemaOptions = Object.keys(template.deploy);
@@ -1193,6 +1198,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			});
 		}
 
+		//check in each deploy step if the user already filled custom data
 		function prepareInputs(stage, oneGroup, stepPath, opts){
 			//case of ui read only, loop in array and generate an inputs object then call utils
 			if (template.deploy[stage][oneGroup][stepPath].ui && template.deploy[stage][oneGroup][stepPath].ui.readOnly) {
@@ -1261,6 +1267,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		}
 	}
 
+	//process every entry in the stack and determin which predefined deploy function should be triggered
 	function processStack(currentScope, stack) {
 		let stackStep = stack[currentScope.deploymentStackStep];
 		if (stackStep && stackStep.inputs) {

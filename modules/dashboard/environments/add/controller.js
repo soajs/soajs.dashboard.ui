@@ -8,6 +8,8 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
 	$scope.wizard = {};
+	
+	//list of steps the wizard executes, each step has a method below
 	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseVM', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
 	$scope.addEnvCounter = 0;
 	$scope.environmentWizard = true;

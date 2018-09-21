@@ -450,16 +450,23 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 		}
 
 		currentScope.form.actions = [];
+		
+		//if i am not allowed to open this page
 		if (!currentScope.restrictions.vm) {
+			
+			//if i am coming back from dynamic or registry
 			if (['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1) {
 				currentScope.referringStep = 'vm';
 				currentScope.previousStep();
 			}
+			
+			//if i am coming from gi or deploy
 			else {
 				currentScope.referringStep = 'vm';
 				currentScope.nextStep();
 			}
 		}
+		//i am allowed to see this page
 		else {
 			//execute main function
 			listInfraProviders(currentScope, () => {

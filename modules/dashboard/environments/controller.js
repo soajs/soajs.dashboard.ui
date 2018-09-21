@@ -219,7 +219,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		function renderThrottling(environment) {
 			//render throttling strategies
 			$scope.throttlingStrategies = [];
-			if (environment && environment.services && environment.services.config && environment.services.config.throttling && Array.isArray(environment.services.config.throttling)) {
+			if (environment && environment.services && environment.services.config && environment.services.config.throttling && Object.keys(environment.services.config.throttling).length > 0) {
 				for (let strategy in environment.services.config.throttling) {
 					if (['publicAPIStrategy', 'privateAPIStrategy'].indexOf(strategy) === -1) {
 						$scope.throttlingStrategies.push(strategy);

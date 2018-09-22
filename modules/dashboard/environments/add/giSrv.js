@@ -40,6 +40,10 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 						}
 						
 						formData.code = formData.code.trim().toUpperCase();
+						if(formData.code === 'PORTAL'){
+							environmentsConfig.predefinedPortalTemplateName = currentScope.wizard.template.name;
+						}
+						
 						currentScope.wizard.gi = angular.copy(formData);
 						$localStorage.addEnv = angular.copy(currentScope.wizard);
 						delete $localStorage.addEnv.template.content;

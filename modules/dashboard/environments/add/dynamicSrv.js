@@ -470,15 +470,17 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					//prepare to print the form
 					currentScope.accounts.forEach((oneGitAccount) => {
-						if (oneGitAccount.owner === oneRepo.gitSource.owner) {
-							gitAccount = oneGitAccount;
-							oneGitAccount.repos.forEach((oneGitRepo) => {
+						oneGitAccount.repos.forEach((oneGitRepo) => {
+							
+							if (oneGitRepo.owner === oneRepo.gitSource.owner) {
+								gitAccount = oneGitAccount;
+								
 								if (oneGitRepo.name === oneRepo.gitSource.repo) {
 									record = oneGitRepo;
 									oneGitRepo.servicesList.forEach((oneService) => {
 										if (oneService.name === oneRepo.name) {
 											service = oneService;
-
+											
 											if(service.name === 'controller'){
 												version = 'Default';
 											}
@@ -494,8 +496,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 										}
 									});
 								}
-							});
-						}
+							}
+						});
 					});
 
 					if(isKubernetes){

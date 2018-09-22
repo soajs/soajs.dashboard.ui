@@ -166,6 +166,8 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 								template = oneTemplate;
 							}
 						});
+						
+						environmentsConfig.predefinedPortalTemplateName = template.name;
 						currentScope.wizard.template = angular.copy(template);
 						currentScope.nextStep();
 					}

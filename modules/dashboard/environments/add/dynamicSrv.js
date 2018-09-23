@@ -316,7 +316,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						version = 'Default';
 					}
 					else{
-						//todo: try a daemon to finalize this part before confirming it works in full
 						currentScope.services.forEach((oneService) => {
 							if (oneService.name === oneRepo.name && oneService.name !== 'controller') {
 								let tempV = 0;
@@ -327,7 +326,22 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 									}
 								}
 							}
-						})
+						});
+						currentScope.daemons.forEach((oneDaemon) => {
+							if(oneDaemon.name === oneRepo.name){
+								let tempV = 0;
+								for(let v in oneDaemon.versions){
+									oneDaemon.versions[v].grpConf.forEach((oneGrpConf) => {
+										if(oneRepo.group === oneGrpConf.daemonConfigGroup){
+											if (parseInt(v) > tempV) {
+												version = v;
+												tempV = parseInt(v);
+											}
+										}
+									});
+								}
+							}
+						});
 					}
 
 					oneRepo.scope.cdData = {};
@@ -458,6 +472,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							type: oneRepo.type,
 							deploySettings: previousImfv.options
 						};
+						
+						if(previousImfv.strategy){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].strategy = previousImfv.strategy;
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].strategy = previousImfv.strategy;
+						}
 
 						if(!controller){
 							if(oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit !== 0){

@@ -124,9 +124,10 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			};
 		}
 		//cdData was saved before, fill entries from arriving db of cdData
+		var cdData
 		if (currentScope.cdData[env.toUpperCase()][serviceName]) {
 			currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData = angular.copy(currentScope.cdData[env.toUpperCase()][serviceName]);
-			var cdData = currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData;
+			cdData = currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData;
 			if (!cdData.versions) {
 				cdData.versions = {};
 			}
@@ -162,6 +163,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 					cdData.versions[v] = cdDataClone[version];
 					if(typeof cdData.versions[v] === 'object'){
 						cdData.versions[v].active = true;
+						currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj.ha[v] = currentScope.services[serviceName];
 					}
 				}
 			}
@@ -169,7 +171,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				delete cdData.versions;
 			}
 		}
-		currentScope.cdConfiguration[serviceName][env.toUpperCase()].obj.ha[version] = currentScope.services[serviceName];
 		currentScope.cdConfiguration[serviceName].display = true;
 		currentScope.cdConfiguration[serviceName][env.toUpperCase()].display = true;
 		return cb();

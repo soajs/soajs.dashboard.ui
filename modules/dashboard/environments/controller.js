@@ -487,7 +487,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "delete",
 				"routeName": "/dashboard/product/delete",
-				"params": { "code": "PRTAL" }
+				"params": { "code": "PORTAL" }
 			}, function (error) {
 				if (error) {
 					cb(error);

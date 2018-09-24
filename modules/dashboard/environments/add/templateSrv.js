@@ -83,6 +83,9 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 							delete $localStorage.envType;
 							currentScope.templates.forEach(function (oneTemplate) {
 								if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
+									if(!currentScope.wizard.template){
+										currentScope.wizard.template = {};
+									}
 									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 									currentScope.nextStep();
 								}

@@ -1,7 +1,7 @@
 "use strict";
 var giServices = soajsApp.components;
-giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$location',
-	function (ngDataApi, $timeout, $modal, $localStorage, $window, $location) {
+giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', '$location', '$routeParams',
+	function (ngDataApi, $timeout, $modal, $localStorage, $window, $location, $routeParams) {
 	
 	function go(currentScope){
 		overlayLoading.show();
@@ -71,11 +71,15 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 			currentScope.mapStorageToWizard($localStorage.addEnv);
 			
 			currentScope.form.formData = angular.copy(currentScope.wizard.gi);
-
-			if(currentScope.wizard.template && (currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName)){
-				if(!currentScope.form.formData){
-					currentScope.form.formData = {};
-				}
+			if(!currentScope.form.formData){
+				currentScope.form.formData = {};
+			}
+			
+			if($routeParams.portal){
+				currentScope.form.formData.code = 'PORTAL';
+				entries.code.disabled = true;
+			}
+			else if(currentScope.wizard.template && (currentScope.wizard.template.name === environmentsConfig.predefinedPortalTemplateName)){
 				currentScope.form.formData.code = 'PORTAL';
 				entries.code.disabled = true;
 			}

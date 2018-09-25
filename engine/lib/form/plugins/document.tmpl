@@ -1,5 +1,4 @@
 <label>{{entry.label}}</label>
-{{entry.limit}}
 <div ng-repeat="i in [] | range: (entry.limit> 0)? entry.limit : 1" class="table c-both w100" ng-class-odd="'file-odd'" ng-class-even="'file-even'">
     <div ng-if="entry.value[i]" class="f-left file-actions">
         <b>{{entry.value[i].filename}}</b>&nbsp;

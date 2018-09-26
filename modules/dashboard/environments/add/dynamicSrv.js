@@ -298,7 +298,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					oneRepo.type = templateDefaults.type; //enforce
 					oneRepo.category = templateDefaults.category; //enforce
-
+					
 					currentScope.dynamictemplatestep = `Deploy Source Code From Repository`;
 
 					let service = {};
@@ -319,7 +319,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					oneRepo.name = repoName;
 					oneRepo.scope = currentScope.$new(true); //true means detached from main currentScope
 					oneRepo.scope.oneEnv = currentScope.envCode;
-
+					
 					if(oneRepo.name === 'controller'){
 						version = 'Default';
 					}
@@ -340,6 +340,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								let tempV = 0;
 								for(let v in oneDaemon.versions){
 									oneDaemon.versions[v].grpConf.forEach((oneGrpConf) => {
+										
 										if(oneRepo.group === oneGrpConf.daemonConfigGroup){
 											if (parseInt(v) > tempV) {
 												version = v;
@@ -351,7 +352,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						});
 					}
-
+					
 					oneRepo.scope.cdData = {};
 					oneRepo.scope.cdData[oneRepo.scope.oneEnv.toUpperCase()] = {};
 
@@ -806,7 +807,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 							record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
 							record.label = resource.label;
-
 							if(record.config && record.config.servers){
 								record.config.servers.forEach((oneServer) =>{
 									oneServer.port = oneServer.port.toString();
@@ -929,7 +929,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							
 							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 								$timeout(() => {
-									
 									if(alreadyFilledFormData && alreadyFilledFormData.deployOptions && alreadyFilledFormData.deployOptions.deployConfig && alreadyFilledFormData.deployOptions.deployConfig.type){
 										resource.scope.formData = angular.copy(alreadyFilledFormData);
 										

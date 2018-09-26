@@ -6,18 +6,25 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		currentScope.wizard.nginx = angular.copy(formData);
 		$localStorage.addEnv = angular.copy(currentScope.wizard);
 		delete $localStorage.addEnv.template.content;
-		currentScope.nextStep();
+		//apiPrefix
+		// sitePrefix
+		if (formData.domain) {
+			currentScope.nextStep();
+		} else {
+			currentScope.$parent.displayAlert('danger', "Please choose your domain!" );
+		}
+
 	}
 	
 	function go(currentScope) {
 		
 		let nginxResourceExists = false;
-		if(currentScope.wizard.deployment.selectedDriver !== 'manual'){
+		if (currentScope.wizard.deployment.selectedDriver !== 'manual') {
 			if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.resources) {
 				let resources = currentScope.wizard.template.content.deployments.resources;
 				
-				for(let oneResource in resources){
-					if(resources[oneResource].type === 'server' && resources[oneResource].category === 'nginx'){
+				for (let oneResource in resources) {
+					if (resources[oneResource].type === 'server' && resources[oneResource].category === 'nginx') {
 						nginxResourceExists = true;
 					}
 				}
@@ -25,15 +32,14 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		}
 		
 		if (!nginxResourceExists) {
-			if(currentScope.referringStep === 'overview'){
+			if (currentScope.referringStep === 'overview') {
 				currentScope.previousStep();
 			}
-			else{
+			else {
 				currentScope.nextStep();
 			}
 		}
 		else {
-			
 			overlayLoading.show();
 			let configuration = angular.copy(environmentsConfig.form.add.nginx.entries);
 			

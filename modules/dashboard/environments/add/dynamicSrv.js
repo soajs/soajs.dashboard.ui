@@ -472,6 +472,17 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options.gitSource.branch = deployFromTemplate.branch;
 						}
+						
+						//cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo
+						if(deployFromTemplate.sourceCode && deployFromTemplate.sourceCode.config){
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom = {};
+							}
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom.sourceCode){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom.sourceCode = {};
+							}
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom.sourceCode.configuration = deployFromTemplate.sourceCode.config;
+						}
 					}
 
 					//on update

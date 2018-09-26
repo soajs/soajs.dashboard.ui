@@ -797,8 +797,19 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							record.deployOptions.deployConfig.replication.replicas = deployFromTemplate.replicas;
 						}
 						
-						if(deployFromTemplate.custom && deployFromTemplate.custom.sourceCode){
-							record.deployOptions.sourceCode = deployFromTemplate.custom.sourceCode;
+						if(deployFromTemplate.custom && deployFromTemplate.custom.sourceCode && Object.keys(deployFromTemplate.custom.sourceCode).length > 0){
+							record.deployOptions.sourceCode = {};
+							if(deployFromTemplate.custom.sourceCode.custom){
+								record.deployOptions.sourceCode.custom = deployFromTemplate.custom.sourceCode.custom;
+							}
+							
+							if(deployFromTemplate.custom.sourceCode.config){
+								record.deployOptions.sourceCode.configuration = deployFromTemplate.custom.sourceCode.config;
+							}
+							
+							if(deployFromTemplate.custom.sourceCode.configuration){
+								record.deployOptions.sourceCode.configuration = deployFromTemplate.custom.sourceCode.configuration;
+							}
 						}
 						
 						if(record.config && record.config.servers){

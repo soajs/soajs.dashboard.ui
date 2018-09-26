@@ -370,7 +370,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
                         }
                     });
                 }
-
+	            
                 context.mainData.configRepos.customType = customRecords;
                 context.mainData.configRepos.config = configRecords;
 
@@ -493,7 +493,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
 				
 				if(context.environmentWizard && deployOptions && deployOptions.sourceCode && Object.keys(deployOptions.sourceCode).length > 0){
-					sourceCode = deployOptions.sourceCode
+					sourceCode = deployOptions.sourceCode;
+					if(sourceCode.custom && !sourceCode.custom.type){
+						sourceCode.custom.type = 'static';
+					}
 				}
 				
 				let conf = sourceCode.configuration;
@@ -513,7 +516,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 					}
 
 					if (conf.repo && conf.repo !== '') {
-						if (!vv.sourceCode.configuration) {
+						if (!deployOptions.sourceCode.configuration) {
                             deployOptions.sourceCode.configuration = {};
 						}
 

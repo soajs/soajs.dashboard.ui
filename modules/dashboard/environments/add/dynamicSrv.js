@@ -298,7 +298,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 					oneRepo.type = templateDefaults.type; //enforce
 					oneRepo.category = templateDefaults.category; //enforce
-
+					
 					currentScope.dynamictemplatestep = `Deploy Source Code From Repository`;
 
 					let service = {};
@@ -307,11 +307,19 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 					let gitAccount = {};
 					let daemonGrpConf = (oneRepo.type === 'daemon' && oneRepo.group) ? oneRepo.group : "";
 					let isKubernetes = (currentScope.wizard.deployment.selectedDriver === 'kubernetes');
-
+					
+					//the below happens on refresh
+					if(oneRepo.type === 'daemon' && (!daemonGrpConf || daemonGrpConf === '')){
+						if(oneRepo.version && oneRepo.version.options && oneRepo.version.options.custom && oneRepo.version.options.custom.daemonGroup){
+							oneRepo.group = oneRepo.version.options.custom.daemonGroup;
+							daemonGrpConf = oneRepo.version.options.custom.daemonGroup;
+						}
+					}
+					
 					oneRepo.name = repoName;
 					oneRepo.scope = currentScope.$new(true); //true means detached from main currentScope
 					oneRepo.scope.oneEnv = currentScope.envCode;
-
+					
 					if(oneRepo.name === 'controller'){
 						version = 'Default';
 					}
@@ -332,6 +340,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								let tempV = 0;
 								for(let v in oneDaemon.versions){
 									oneDaemon.versions[v].grpConf.forEach((oneGrpConf) => {
+										
 										if(oneRepo.group === oneGrpConf.daemonConfigGroup){
 											if (parseInt(v) > tempV) {
 												version = v;
@@ -343,7 +352,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							}
 						});
 					}
-
+					
 					oneRepo.scope.cdData = {};
 					oneRepo.scope.cdData[oneRepo.scope.oneEnv.toUpperCase()] = {};
 
@@ -443,6 +452,37 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].deploySettings.deployConfig.replication.replicas = deployFromTemplate.replicas;
 							}
 						}
+						
+						if(deployFromTemplate.strategy){
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].strategy = deployFromTemplate.strategy;
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].strategy = deployFromTemplate.strategy;
+						}
+						
+						if(deployFromTemplate.branch){
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.gitSource){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.gitSource = {};
+							}
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.gitSource.branch = deployFromTemplate.branch;
+							
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options = {};
+							}
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options.gitSource){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options.gitSource = {};
+							}
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options.gitSource.branch = deployFromTemplate.branch;
+						}
+						
+						//cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.sourceCode.configuration.repo
+						if(deployFromTemplate.sourceCode && deployFromTemplate.sourceCode.config){
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom = {};
+							}
+							if(!oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom.sourceCode){
+								oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom.sourceCode = {};
+							}
+							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.custom.sourceCode.configuration = deployFromTemplate.sourceCode.config;
+						}
 					}
 
 					//on update
@@ -467,23 +507,11 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 
 						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options = previousImfv.options;
-						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version] = {
-							name: oneRepo.name,
-							type: oneRepo.type,
-							deploySettings: previousImfv.options
-						};
+						oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].options = previousImfv.options;
 						
 						if(previousImfv.strategy){
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].strategy = previousImfv.strategy;
 							oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].obj.ha[version].strategy = previousImfv.strategy;
-						}
-
-						if(!controller){
-							if(oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit !== 0){
-								if((oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit / 1048576) < 1){
-									oneRepo.scope.cdConfiguration[oneRepo.name][oneRepo.scope.oneEnv].cdData.versions[version].options.deployConfig.memoryLimit *= 1048576;
-								}
-							}
 						}
 					}
 
@@ -678,7 +706,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						if(!resource.scope.mainData.deploymentData){
 							resource.scope.mainData.deploymentData = {}
 						}
-						resource.scope.mainData.deploymentData.infraProviders = currentScope.infraProviders
+						resource.scope.mainData.deploymentData.infraProviders = currentScope.infraProviders;
 						
 						//get the recipes
 						resource.scope.mainData.recipes = [];
@@ -753,9 +781,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 
 						if(Object.hasOwnProperty.call(deployFromTemplate, 'memoryLimit')){
-							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-								record.deployOptions.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
-							}
+							record.deployOptions.deployConfig.memoryLimit = deployFromTemplate.memoryLimit;
 						}
 
 						if(deployFromTemplate.mode){
@@ -764,17 +790,33 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 								if(mode === 'global'){ mode = 'daemonset'; }
 								if(mode === 'replicated'){ mode = 'deployment'; }
 							}
-							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-								record.deployOptions.deployConfig.replication.mode = mode;
-							}
+							record.deployOptions.deployConfig.replication.mode = mode;
 						}
 
 						if(deployFromTemplate.replicas){
-							if(!currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv){
-								record.deployOptions.deployConfig.replication.replicas = deployFromTemplate.replicas;
+							record.deployOptions.deployConfig.replication.replicas = deployFromTemplate.replicas;
+						}
+						
+						if(deployFromTemplate.custom && deployFromTemplate.custom.sourceCode && Object.keys(deployFromTemplate.custom.sourceCode).length > 0){
+							record.deployOptions.sourceCode = {};
+							if(deployFromTemplate.custom.sourceCode.custom){
+								record.deployOptions.sourceCode.custom = deployFromTemplate.custom.sourceCode.custom;
+							}
+							
+							if(deployFromTemplate.custom.sourceCode.config){
+								record.deployOptions.sourceCode.configuration = deployFromTemplate.custom.sourceCode.config;
+							}
+							
+							if(deployFromTemplate.custom.sourceCode.configuration){
+								record.deployOptions.sourceCode.configuration = deployFromTemplate.custom.sourceCode.configuration;
 							}
 						}
-
+						
+						if(record.config && record.config.servers){
+							record.config.servers.forEach((oneServer) =>{
+								oneServer.port = oneServer.port.toString();
+							});
+						}
 						currentScope.dynamictemplatestep = "Deploy " + currentScope.dynamictemplatestep;
 					}
 					else{
@@ -787,7 +829,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 							record = currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv[counter];
 							record.label = resource.label;
-
 							if(record.config && record.config.servers){
 								record.config.servers.forEach((oneServer) =>{
 									oneServer.port = oneServer.port.toString();
@@ -910,7 +951,6 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 							
 							if(currentScope.wizard.template.content.deployments.resources[key].deploy){
 								$timeout(() => {
-									
 									if(alreadyFilledFormData && alreadyFilledFormData.deployOptions && alreadyFilledFormData.deployOptions.deployConfig && alreadyFilledFormData.deployOptions.deployConfig.type){
 										resource.scope.formData = angular.copy(alreadyFilledFormData);
 										

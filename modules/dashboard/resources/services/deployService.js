@@ -171,7 +171,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 
 		deployConfig.region = '';
 
-		if (deployConfig && deployConfig.type === 'container') {
+		if (context.displayPlatformPicker && deployConfig && deployConfig.type === 'container') {
 			if (deployConfig.memoryLimit) {
 				deployConfig.memoryLimit = ''
 			}
@@ -370,7 +370,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
                         }
                     });
                 }
-
+	            
                 context.mainData.configRepos.customType = customRecords;
                 context.mainData.configRepos.config = configRecords;
 
@@ -491,10 +491,16 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 
 			if (selectedRecipe && selectedRecipe.recipe && selectedRecipe.recipe.deployOptions && selectedRecipe.recipe.deployOptions.sourceCode) {
 				let sourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
-
+				
+				if(context.environmentWizard && deployOptions && deployOptions.sourceCode && Object.keys(deployOptions.sourceCode).length > 0){
+					sourceCode = deployOptions.sourceCode;
+					if(sourceCode.custom && !sourceCode.custom.type){
+						sourceCode.custom.type = 'static';
+					}
+				}
+				
 				let conf = sourceCode.configuration;
 				let cust = sourceCode.custom;
-
 				context.selectedSourceCode = selectedRecipe.recipe.deployOptions.sourceCode;
 
 				if (!deployOptions.sourceCode) {
@@ -505,9 +511,12 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
                     configuration.isEnabled = true;
                     configuration.repoAndBranch.disabled = (conf.repo && conf.repo !== '');
                     configuration.repoAndBranch.required = conf.required;
+					if(context.environmentWizard && deployOptions && deployOptions.sourceCode && deployOptions.sourceCode.configuration && Object.keys(deployOptions.sourceCode.configuration).length > 0){
+						configuration.repoAndBranch.disabled = false;
+					}
 
 					if (conf.repo && conf.repo !== '') {
-						if (!vv.sourceCode.configuration) {
+						if (!deployOptions.sourceCode.configuration) {
                             deployOptions.sourceCode.configuration = {};
 						}
 
@@ -528,13 +537,25 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
                     custom.isEnabled = true;
                     custom.repoAndBranch.disabled = (cust.repo && cust.repo !== '');
                     custom.repoAndBranch.required = cust.required;
-
+					
+					if(context.environmentWizard && deployOptions && deployOptions.sourceCode && deployOptions.sourceCode.custom && Object.keys(deployOptions.sourceCode.custom).length > 0){
+						custom.repoAndBranch.disabled = false;
+					}
+     
 					if (cust.repo && cust.repo !== '') {
 						if (!deployOptions.sourceCode.custom) {
                             deployOptions.sourceCode.custom = {};
 						}
-
-                        deployOptions.sourceCode.custom.repo = cust.repo + "__SOAJS_DELIMITER__" + (cust.subName ? cust.subName : "");
+						
+						
+                        deployOptions.sourceCode.custom.repo = cust.repo;
+						
+						if(deployOptions.sourceCode.custom.repo.indexOf("__SOAJS_DELIMITER__") === -1){
+							deployOptions.sourceCode.custom.repo += "__SOAJS_DELIMITER__";
+						}
+						
+						deployOptions.sourceCode.custom.repo += (cust.subName ? cust.subName : "");
+						
                         deployOptions.sourceCode.custom.branch = cust.branch;
 					} else {
 						if (!deployOptions.custom || !deployOptions.custom.sourceCode || !deployOptions.custom.sourceCode.custom || !deployOptions.custom.sourceCode.custom.repo) { // if not filled from cicd

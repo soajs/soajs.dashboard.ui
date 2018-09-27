@@ -14,7 +14,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		return hasPortal;
 	}
 	
-	function go(currentScope){
+	function go(currentScope) {
 		currentScope.showTemplates = false;
 		overlayLoading.show();
 		
@@ -32,46 +32,46 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 						currentScope.templates = angular.copy(response);
 						currentScope.oldStyle = false;
 						
-						for(let i = currentScope.templates.length -1; i >=0; i--){
-							if(!currentScope.templates[i].type){
+						for (let i = currentScope.templates.length - 1; i >= 0; i--) {
+							if (!currentScope.templates[i].type) {
 								currentScope.templates.splice(i, 1);
 							}
-							else{
+							else {
 								if (currentScope.templates[i].type === '_BLANK') {
 									currentScope.oldStyle = true;
 								}
-								else if(currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0){
+								else if (currentScope.templates[i].content && Object.keys(currentScope.templates[i].content).length === 0) {
 									delete currentScope.templates[i].content;
 								}
-								else if(currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()){
+								else if (currentScope.templates[i].name === environmentsConfig.predefinedPortalTemplateName && isPortalDeployed()) {
 									currentScope.templates.splice(i, 1);
 								}
 							}
 						}
 						
-						if(currentScope.wizard.template){
+						if (currentScope.wizard.template) {
 							let storedTemplateFound = false;
 							currentScope.templates.forEach(function (oneTemplate) {
-								if(currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id){
+								if (currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id) {
 									storedTemplateFound = true;
 									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 									currentScope.nextStep();
 								}
-								else if(currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name){
+								else if (currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name) {
 									storedTemplateFound = true;
 									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
 									currentScope.wizard.template._id = oneTemplate._id;
 									
-									if(currentScope.goToStep === 'status'){
+									if (currentScope.goToStep === 'status') {
 										currentScope.checkStatus();
 									}
-									else{
+									else {
 										currentScope.nextStep();
 									}
 								}
 							});
 							
-							if(!storedTemplateFound){
+							if (!storedTemplateFound) {
 								// template not found // clear storage and redirect to main page
 								delete $localStorage.addEnv;
 								delete currentScope.wizard;
@@ -112,7 +112,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		displayFormButons(currentScope);
 	}
 	
-	function chooseTemplate(currentScope, template){
+	function chooseTemplate(currentScope, template) {
 		currentScope.templates.forEach((oneTemplate) => {
 			delete oneTemplate.selected;
 		});
@@ -122,7 +122,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		displayFormButons(currentScope, 2);
 	}
 	
-	function displayFormButons(currentScope, stage){
+	function displayFormButons(currentScope, stage) {
 		let options = {
 			timeout: $timeout,
 			entries: [],
@@ -144,7 +144,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 			]
 		};
 		
-		switch(stage){
+		switch (stage) {
 			case 1:
 				options.actions.unshift({
 					'type': 'submit',
@@ -165,7 +165,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 						
 						let template;
 						currentScope.templates.forEach((oneTemplate) => {
-							if(oneTemplate.selected){
+							if (oneTemplate.selected) {
 								template = oneTemplate;
 							}
 						});
@@ -198,14 +198,14 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 				break;
 		}
 		
-		buildForm(currentScope, null, options, () => {});
+		buildForm(currentScope, null, options, () => {
+		});
 	}
 	
 	function filterTemplate(currentScope) {
 		let type = currentScope.envType;
 		currentScope.showTemplates = true;
 		currentScope.templates = angular.copy(currentScope.allTemplates);
-		
 		if (type === 'manual') {
 			for (let i = currentScope.templates.length - 1; i >= 0; i--) {
 				let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment
@@ -224,45 +224,48 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 			}
 		}
 		else {
-			for (let i = currentScope.templates.length - 1; i >= 0; i--) {
-				let showManualDeploy = false; // show manual iff none of the stages is repos/resources/secrets deployment
-				
-				if(!currentScope.templates[i].deploy || Object.keys(currentScope.templates[i].deploy).length === 0){
-					showManualDeploy = true;
-				}
-				//template is blank, variation 2
-				if (currentScope.templates[i].deploy && currentScope.templates[i].deploy.deployments) {
-					if(Object.keys(currentScope.templates[i].deploy.deployments).length === 0){
-						showManualDeploy = true;
-					}
-					else {
-						if(Object.keys(currentScope.templates[i].deploy.deployments.pre).length === 0 && Object.keys(currentScope.templates[i].deploy.deployments.steps).length === 0 && Object.keys(currentScope.templates[i].deploy.deployments.post).length === 0){
-							showManualDeploy = true;
-						}
-					}
-				}
-				
-				if (currentScope.templates[i].restriction && currentScope.templates[i].restriction.deployment) {
-					if (currentScope.templates[i].restriction.deployment.indexOf('container') !== -1) {
-						currentScope.infraProviders.forEach((oneProvider) => {
-							if(oneProvider.technologies.includes('docker') || oneProvider.technologies.includes('kubernetes')){
-								showManualDeploy = true;
-							}
-						});
-					}
-					if (currentScope.templates[i].restriction.deployment.indexOf('vm') !== -1) {
-						currentScope.infraProviders.forEach((oneProvider) => {
-							if(oneProvider.technologies.includes('vm')){
-								showManualDeploy = true;
-							}
-						});
-					}
-				}
-				
-				if (!showManualDeploy) {
-					currentScope.templates.splice(i, 1);
-				}
-			}
+			// Show all
+			// for (let i = currentScope.templates.length - 1; i >= 0; i--) {
+			// 	let showManualDeploy = false; // show manual iff none of the stages is repos/resources/secrets deployment
+			//
+			// 	if (!currentScope.templates[i].deploy || Object.keys(currentScope.templates[i].deploy).length === 0) {
+			// 		showManualDeploy = true;
+			// 	}
+			// 	//template is blank, variation 2
+			// 	if (currentScope.templates[i].deploy && currentScope.templates[i].deploy.deployments) {
+			// 		if (Object.keys(currentScope.templates[i].deploy.deployments).length === 0) {
+			// 			showManualDeploy = true;
+			// 		}
+			// 		else {
+			// 			if (Object.keys(currentScope.templates[i].deploy.deployments.pre).length === 0 && Object.keys(currentScope.templates[i].deploy.deployments.steps).length === 0 && Object.keys(currentScope.templates[i].deploy.deployments.post).length === 0) {
+			// 				showManualDeploy = true;
+			// 			}
+			// 		}
+			// 	}
+			//
+			// 	if (currentScope.templates[i].restriction && currentScope.templates[i].restriction.deployment) {
+			// 		if (currentScope.templates[i].restriction.deployment.indexOf('container') !== -1) {
+			// 			currentScope.infraProviders.forEach((oneProvider) => {
+			// 				if (oneProvider.technologies.includes('docker') || oneProvider.technologies.includes('kubernetes')) {
+			// 					showManualDeploy = true;
+			// 				}
+			// 			});
+			// 		}
+			// 		if (currentScope.templates[i].restriction.deployment.indexOf('vm') !== -1) {
+			// 			currentScope.infraProviders.forEach((oneProvider) => {
+			// 				if (oneProvider.technologies.includes('vm')) {
+			// 					showManualDeploy = true;
+			// 				}
+			// 			});
+			// 		}
+			// 	} else {
+			// 		showManualDeploy = true;
+			// 	}
+			//
+			// 	if (!showManualDeploy) {
+			// 		currentScope.templates.splice(i, 1);
+			// 	}
+			// }
 		}
 	}
 	
@@ -277,7 +280,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/infra",
-			"params":{
+			"params": {
 				"exclude": ["regions", "groups", "templates"]
 			}
 		}, function (error, providers) {
@@ -288,7 +291,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 			else {
 				currentScope.infraProviders = providers;
 				delete providers.soajsauth;
-				if(!providers || providers.length === 0){
+				if (!providers || providers.length === 0) {
 					currentScope.noProviders = true;
 				}
 				return cb();

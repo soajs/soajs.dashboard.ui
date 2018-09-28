@@ -201,6 +201,16 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 
 	function handleFormData(currentScope, formData) {
+		if(currentScope.wizard.template.restriction && currentScope.wizard.template.restriction.deployment && currentScope.wizard.template.restriction.deployment.length > 0){
+			if(currentScope.wizard.template.restriction.deployment.indexOf("container") !== -1){
+				if(!currentScope.platforms.docker && !currentScope.platforms.kubernetes && !currentScope.platforms.previous){
+					$window.alert("Select which container technology you want to use as infrastructure to proceed!");
+					return false;
+				}
+				
+			}
+		}
+		
 		if (currentScope.platforms.ondemand) {
 			delete formData.kubernetes;
 			delete formData.docker;

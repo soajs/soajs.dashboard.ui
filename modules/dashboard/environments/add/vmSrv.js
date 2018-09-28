@@ -377,6 +377,9 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 						addNextButton = true;
 					}
 				}
+				else{
+					addNextButton = false;
+				}
 			}
 			currentScope.optionalVMLayer = addNextButton;
 

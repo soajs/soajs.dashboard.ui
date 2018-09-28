@@ -197,33 +197,32 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 			for (let i = currentScope.templates.length - 1; i >= 0; i--) {
 				let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment
 				let myTemplate = currentScope.templates[i];
-				if (myTemplate.restriction) {
-					if (myTemplate.restriction.deployment) {
-						if (myTemplate.restriction.deployment.indexOf('container') !== -1) {
-							showManualDeploy = false;
-						}
-						if (myTemplate.restriction.deployment.indexOf('vm') !== -1) {
-							showManualDeploy = false;
-						}
+				if (myTemplate.restriction && myTemplate.restriction.deployment) {
+					if (myTemplate.restriction.deployment.indexOf('container') !== -1) {
+						showManualDeploy = false;
 					}
-					if (showManualDeploy) {
-						if (myTemplate.deploy && myTemplate.deploy.deployments) {
-							let deployments = myTemplate.deploy.deployments;
-							let stepsKeys = Object.keys(deployments);
-							stepsKeys.forEach(function (eachStep) {
-								if (deployments[eachStep]) {
-									let stagesKeys = Object.keys(deployments[eachStep]);
-									stagesKeys.forEach(function (eachStage) {
-										if (eachStage.includes('__repo__dot') || eachStage.includes('.repo.') || eachStage.includes('secrets')) {
-											showManualDeploy = false;
-										}
-										if (eachStage.includes('.resources.') || eachStage.includes('__resources__dot')) {
-											showManualDeploy = false;
-										}
-									});
-								}
-							});
-						}
+					if (myTemplate.restriction.deployment.indexOf('vm') !== -1) {
+						showManualDeploy = false;
+					}
+				}
+				// no restriction, check for deployment
+				if (showManualDeploy) {
+					if (myTemplate.deploy && myTemplate.deploy.deployments) {
+						let deployments = myTemplate.deploy.deployments;
+						let stepsKeys = Object.keys(deployments);
+						stepsKeys.forEach(function (eachStep) {
+							if (deployments[eachStep]) {
+								let stagesKeys = Object.keys(deployments[eachStep]);
+								stagesKeys.forEach(function (eachStage) {
+									if (eachStage.includes('.repo.') || eachStage.includes('secrets')) {
+										showManualDeploy = false;
+									}
+									if (eachStage.includes('.resources.')) {
+										showManualDeploy = false;
+									}
+								});
+							}
+						});
 					}
 				}
 				

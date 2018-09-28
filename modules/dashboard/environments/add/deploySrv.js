@@ -103,6 +103,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 			onDemand: showonDemand,
 			showManual: manual
 		};
+		
 		if (restrictions && Object.hasOwnProperty.call(restrictions, 'allowInfraReuse')) {
 			if (restrictions.allowInfraReuse === false) {
 				currentScope.restrictions.previousEnv = false;
@@ -363,19 +364,40 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 
 				calculateRestrictions(currentScope);
-
+				
 				if(currentScope.envType === 'manual' || (currentScope.envType !== 'manual' && currentScope.infraProviders && currentScope.infraProviders.length > 0)){
-
+					
 					if (!currentScope.wizard.template.content || Object.keys(currentScope.wizard.template.content).length === 0) {
-						options.actions.push({
-							'type': 'submit',
-							'label': (currentScope.restrictions.vm) ? 'Next' : 'OverView & Finalize',
-							'btn': 'primary',
-							'action': function (formData) {
+						
+						if(currentScope.wizard.template.restriction && currentScope.wizard.template.restriction.deployment && currentScope.wizard.template.restriction.deployment.length > 0 && currentScope.wizard.template.restriction.deployment.indexOf("container") === -1){
+							
+							if(currentScope.referringStep === 'vm'){
 								currentScope.referringStep = 'deploy';
-								handleFormData(currentScope, formData);
+								currentScope.previousStep();
 							}
-						});
+							else {
+								currentScope.referringStep = 'deploy';
+								handleFormData(currentScope, {
+									deployment :{
+										manual :{
+											nodes: "127.0.0.1"
+										}
+									}
+								});
+							}
+						}
+						else{
+							options.actions.push({
+								'type': 'submit',
+								'label': (currentScope.restrictions.vm) ? 'Next' : 'OverView & Finalize',
+								'btn': 'primary',
+								'action': function (formData) {
+									currentScope.referringStep = 'deploy';
+									handleFormData(currentScope, formData);
+								}
+							});
+						}
+						
 					}
 					else {
 						//if no provider showin and vm is used, trigger next automatically

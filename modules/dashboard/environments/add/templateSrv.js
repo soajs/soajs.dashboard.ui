@@ -1,6 +1,6 @@
 "use strict";
 var tmplServices = soajsApp.components;
-tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localStorage', '$timeout', function (ngDataApi, $routeParams, $localStorage, $timeout) {
+tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localStorage', '$timeout', '$window', function (ngDataApi, $routeParams, $localStorage, $timeout, $window) {
 	
 	function isPortalDeployed() {
 		let hasPortal = false;
@@ -157,8 +157,34 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 							}
 						});
 						
-						currentScope.wizard.template = angular.copy(template);
-						currentScope.nextStep();
+						let stopWizard;
+						if (template.deploy && template.deploy.deployments) {
+							let deployments = template.deploy.deployments;
+							let stepsKeys = Object.keys(deployments);
+							stepsKeys.forEach(function (eachStep) {
+								if (deployments[eachStep]) {
+									let stagesKeys = Object.keys(deployments[eachStep]);
+									stagesKeys.forEach(function (eachStage) {
+										if (eachStage.includes('.repo.') || eachStage.includes('secrets')) {
+											if(template.restriction && template.restriction.deployment && template.restriction.deployment.length > 0){
+												if(template.restriction.deployment.indexOf("container") === -1){
+													//stop the execution!
+													stopWizard = "Detected mismatch between the template restriction and the template content. The template restriction does not allow deploying source code but the template content is configured to allow deploying source code!";
+												}
+											}
+										}
+									});
+								}
+							});
+						}
+						
+						if(stopWizard && stopWizard !== ''){
+							$window.alert(stopWizard);
+						}
+						else{
+							currentScope.wizard.template = angular.copy(template);
+							currentScope.nextStep();
+						}
 					}
 				});
 				

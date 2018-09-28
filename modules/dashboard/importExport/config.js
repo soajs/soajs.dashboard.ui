@@ -1,6 +1,8 @@
 'use strict';
 
 var importAppConfig = {
+	documentationLink: "https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/400326661/Templates",
+	
 	storeLink: "https://www.herrontech.com/store",
 	form: {
 		import:{

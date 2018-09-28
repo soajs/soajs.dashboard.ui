@@ -7,7 +7,8 @@ importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'imp
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
-	
+	$scope.templatesDocumentationLink = importAppConfig.documentationLink;
+
 	$scope.storeLink = importAppConfig.storeLink;
 
 	$scope.access = {};

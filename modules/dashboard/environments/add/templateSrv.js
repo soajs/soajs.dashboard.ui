@@ -169,7 +169,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 											if(template.restriction && template.restriction.deployment && template.restriction.deployment.length > 0){
 												if(template.restriction.deployment.indexOf("container") === -1){
 													//stop the execution!
-													stopWizard = "Detected mismatch between the template restriction and the template content. The template restriction does not allow deploying source code but the template content is configured to allow deploying source code!";
+													stopWizard = "Detected mismatch between the template restriction and the template content.\nThe template restriction allows only VM Deployment which is used for resources only But, the template content is configured to allow deploying source code.";
 												}
 											}
 										}

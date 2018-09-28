@@ -50,7 +50,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		});
 
 		// no restrictions obj
-		if (!restrictions || Object.keys(restrictions).length === 0) {
+		if (!restrictions || Object.keys(restrictions).length === 0 || restrictions.deployment.length === 0 || restrictions.infra.length === 0) {
 			let myPrevious = (currentScope.envType !== 'manual');
 			currentScope.restrictions = {
 				vm: vm,
@@ -90,7 +90,7 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 				}
 			}
 		}
-
+		
 		if (showManualDeploy && restrictions && restrictions.deployment && restrictions.deployment.indexOf('manual') !== -1) {
 			manual = true;
 		}

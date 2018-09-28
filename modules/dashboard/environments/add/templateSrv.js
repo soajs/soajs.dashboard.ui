@@ -78,19 +78,6 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 								currentScope.$parent.go("/environments-add");
 							}
 						}
-						
-						// if($routeParams.portal){
-						// 	delete $localStorage.envType;
-						// 	currentScope.templates.forEach(function (oneTemplate) {
-						// 		if(oneTemplate.name === environmentsConfig.predefinedPortalTemplateName){
-						// 			if(!currentScope.wizard.template){
-						// 				currentScope.wizard.template = {};
-						// 			}
-						// 			currentScope.wizard.template.content = angular.copy(oneTemplate.content);
-						// 			currentScope.nextStep();
-						// 		}
-						// 	});
-						// }
 					}
 					else {
 						currentScope.displayAlert('danger', 'No templates found!');
@@ -222,50 +209,6 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 					currentScope.templates.splice(i, 1);
 				}
 			}
-		}
-		else {
-			// Show all
-			// for (let i = currentScope.templates.length - 1; i >= 0; i--) {
-			// 	let showManualDeploy = false; // show manual iff none of the stages is repos/resources/secrets deployment
-			//
-			// 	if (!currentScope.templates[i].deploy || Object.keys(currentScope.templates[i].deploy).length === 0) {
-			// 		showManualDeploy = true;
-			// 	}
-			// 	//template is blank, variation 2
-			// 	if (currentScope.templates[i].deploy && currentScope.templates[i].deploy.deployments) {
-			// 		if (Object.keys(currentScope.templates[i].deploy.deployments).length === 0) {
-			// 			showManualDeploy = true;
-			// 		}
-			// 		else {
-			// 			if (Object.keys(currentScope.templates[i].deploy.deployments.pre).length === 0 && Object.keys(currentScope.templates[i].deploy.deployments.steps).length === 0 && Object.keys(currentScope.templates[i].deploy.deployments.post).length === 0) {
-			// 				showManualDeploy = true;
-			// 			}
-			// 		}
-			// 	}
-			//
-			// 	if (currentScope.templates[i].restriction && currentScope.templates[i].restriction.deployment) {
-			// 		if (currentScope.templates[i].restriction.deployment.indexOf('container') !== -1) {
-			// 			currentScope.infraProviders.forEach((oneProvider) => {
-			// 				if (oneProvider.technologies.includes('docker') || oneProvider.technologies.includes('kubernetes')) {
-			// 					showManualDeploy = true;
-			// 				}
-			// 			});
-			// 		}
-			// 		if (currentScope.templates[i].restriction.deployment.indexOf('vm') !== -1) {
-			// 			currentScope.infraProviders.forEach((oneProvider) => {
-			// 				if (oneProvider.technologies.includes('vm')) {
-			// 					showManualDeploy = true;
-			// 				}
-			// 			});
-			// 		}
-			// 	} else {
-			// 		showManualDeploy = true;
-			// 	}
-			//
-			// 	if (!showManualDeploy) {
-			// 		currentScope.templates.splice(i, 1);
-			// 	}
-			// }
 		}
 	}
 	

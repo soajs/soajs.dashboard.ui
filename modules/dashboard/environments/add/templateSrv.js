@@ -196,12 +196,34 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		if (type === 'manual') {
 			for (let i = currentScope.templates.length - 1; i >= 0; i--) {
 				let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment
-				if (currentScope.templates[i].restriction && currentScope.templates[i].restriction.deployment) {
-					if (currentScope.templates[i].restriction.deployment.indexOf('container') !== -1) {
-						showManualDeploy = false;
+				let myTemplate = currentScope.templates[i];
+				if (myTemplate.restriction) {
+					if (myTemplate.restriction.deployment) {
+						if (myTemplate.restriction.deployment.indexOf('container') !== -1) {
+							showManualDeploy = false;
+						}
+						if (myTemplate.restriction.deployment.indexOf('vm') !== -1) {
+							showManualDeploy = false;
+						}
 					}
-					if (currentScope.templates[i].restriction.deployment.indexOf('vm') !== -1) {
-						showManualDeploy = false;
+					if (showManualDeploy) {
+						if (myTemplate.deploy && myTemplate.deploy.deployments) {
+							let deployments = myTemplate.deploy.deployments;
+							let stepsKeys = Object.keys(deployments);
+							stepsKeys.forEach(function (eachStep) {
+								if (deployments[eachStep]) {
+									let stagesKeys = Object.keys(deployments[eachStep]);
+									stagesKeys.forEach(function (eachStage) {
+										if (eachStage.includes('__repo__dot') || eachStage.includes('.repo.') || eachStage.includes('secrets')) {
+											showManualDeploy = false;
+										}
+										if (eachStage.includes('.resources.') || eachStage.includes('__resources__dot')) {
+											showManualDeploy = false;
+										}
+									});
+								}
+							});
+						}
 					}
 				}
 				

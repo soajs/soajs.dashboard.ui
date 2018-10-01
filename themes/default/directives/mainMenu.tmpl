@@ -24,8 +24,11 @@
 			</button>
 			<ul class="dropdown-menu w100" role="menu" aria-labelledby="split-button">
 				<li role="menuitem" ng-repeat="oneInfra in infraProviders" ng-click="switchInfra(oneInfra)">{{oneInfra.label}}</li>
-				<li role="menuitem" ng-click="activateProvider()">
-					<span class="icon icon-plus"></span>&nbsp;Connect New Infra Provider
+				<li role="menuitem" ng-click="activateProvider(false)">
+					<span class="icon icon-plus"></span>&nbsp;Connect Technology
+				</li>
+				<li role="menuitem" ng-click="activateProvider(true)">
+					<span class="icon icon-plus"></span>&nbsp;Connect Cloud Provider
 				</li>
 			</ul>
 		</div>

@@ -28,9 +28,9 @@ infraGroupApp.controller('infraGroupCtrl', ['$scope', '$routeParams', '$localSto
 			}
 		});
 	};
-
-	$scope.$parent.$parent.activateProvider = function () {
-		infraCommonSrv.activateProvider($scope);
+	
+	$scope.$parent.$parent.activateProvider = function (cloud) {
+		infraCommonSrv.activateProvider($scope, cloud);
 	};
 
 	$scope.getProviders = function () {

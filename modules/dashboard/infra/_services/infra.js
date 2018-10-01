@@ -173,8 +173,15 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		}
 	}
 
-	function activateProvider(currentScope) {
-		let providersList = angular.copy(infraConfig.form.providers);
+	function activateProvider(currentScope, cloudProvider) {
+		
+		let providersList;
+		if(cloudProvider){
+			providersList= angular.copy(infraConfig.form.providers);
+		}
+		else{
+			providersList= angular.copy(infraConfig.form.technologies);
+		}
 		providersList.forEach((oneProvider) => {
 			oneProvider.onAction = function (id, value, form) {
 				currentScope.modalInstance.close();
@@ -190,7 +197,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				"entries": providersList
 			},
 			name: 'activateProvider',
-			label: 'Connect New Provider',
+			label: (cloudProvider) ? "Connect New Cloud Provider" : "Connect New Technology",
 			actions: [
 				{
 					'type': 'reset',
@@ -213,7 +220,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					"entries": angular.copy(infraConfig.form[selectedProvider])
 				},
 				name: 'activateProvider',
-				label: 'Connect New Provider',
+				label: (cloudProvider) ? "Provide Cloud Provider Account Details" : "Configure Connection to Technology",
 				actions: [
 					{
 						'type': 'submit',

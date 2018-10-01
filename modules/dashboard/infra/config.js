@@ -41,7 +41,9 @@ let infraConfig = {
 				'name': 'azure',
 				'type': 'html',
 				'value': "<img height='32' src=\"modules/dashboard/environments/images/azure.png\">&nbsp; Microsoft Azure"
-			},
+			}
+		],
+		technologies: [
 			{
 				'name': 'docker',
 				'type': 'html',
@@ -53,6 +55,7 @@ let infraConfig = {
 				'value': "<img height='32' src=\"themes/default/img/kubernetes_logo.png\">&nbsp; Kubernetes Machine"
 			}
 		],
+		
 		docker: [
 			{
 				'name': 'label',

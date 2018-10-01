@@ -55,9 +55,9 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"]);
 	};
-
-	$scope.$parent.$parent.activateProvider = function () {
-		infraCommonSrv.activateProvider($scope);
+	
+	$scope.$parent.$parent.activateProvider = function (cloud) {
+		infraCommonSrv.activateProvider($scope, cloud);
 	};
 
 	$scope.editProvider = function (oneProvider) {

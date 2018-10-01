@@ -13,8 +13,8 @@ infraDepApp.controller('infraDepCtrl', ['$scope', '$localStorage', '$cookies', '
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"]);
 	};
 	
-	$scope.$parent.$parent.activateProvider = function () {
-		infraCommonSrv.activateProvider($scope);
+	$scope.$parent.$parent.activateProvider = function (cloud) {
+		infraCommonSrv.activateProvider($scope, cloud);
 	};
 	
 	$scope.getProviders = function () {

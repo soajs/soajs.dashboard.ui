@@ -71,9 +71,9 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 			}
 		});
 	};
-
-	$scope.$parent.$parent.activateProvider = function () {
-		infraCommonSrv.activateProvider($scope);
+	
+	$scope.$parent.$parent.activateProvider = function (cloud) {
+		infraCommonSrv.activateProvider($scope, cloud);
 	};
 
 	$scope.getProviders = function () {

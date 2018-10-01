@@ -1,5 +1,12 @@
 .tr-docker-wrapper,
-.tr-kubernetes-wrapper,
+.tr-kubernetes-wrapper{
+    width: 48%;
+    float: left;
+    margin: 1%;
+    border: solid 1px #cccccc;
+    border-radius: 8px;
+}
+
 .tr-google-wrapper,
 .tr-aws-wrapper,
 .tr-azure-wrapper {

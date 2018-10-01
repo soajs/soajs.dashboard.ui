@@ -21,8 +21,8 @@ let infraConfig = {
 		google: 'modules/dashboard/infra/main/images/google.png',
 		aws: 'modules/dashboard/infra/main/images/aws.png',
 		azure: 'modules/dashboard/infra/main/images/azure.png',
-		docker: 'modules/dashboard/infra/main/images/docker_logo.png',
-		kubernetes: 'modules/dashboard/infra/main/images/kubernetes_logo.png'
+		docker: 'themes/default/img/docker_logo.png',
+		kubernetes: 'themes/default/img/kubernetes_logo.png'
 	},
 
 	form: {
@@ -47,12 +47,12 @@ let infraConfig = {
 			{
 				'name': 'docker',
 				'type': 'html',
-				'value': "<img height='32' src=\"themes/default/img/docker_logo.png\">&nbsp; Docker Machine"
+				'value': "<img height='32' src=\"modules/dashboard/infra/main/images/docker.png\">&nbsp; Docker Swarm Cluster"
 			},
 			{
 				'name': 'kubernetes',
 				'type': 'html',
-				'value': "<img height='32' src=\"themes/default/img/kubernetes_logo.png\">&nbsp; Kubernetes Machine"
+				'value': "<img height='32' src=\"modules/dashboard/infra/main/images/kubernetes.png\">&nbsp; Kubernetes Cluster"
 			}
 		],
 		

@@ -9,16 +9,52 @@
 		<p class="fieldMsg">
 			Choose the type of environment you would like to create
 		</p>
-		<div class="table" ng-if="noProviders">
-			<alert type="info" >
-				<h4>No Infra Provider!</h4>
+		<div class="table" ng-if="noProviders && noTechnology">
+			<alert type="warning">
+				<h4>No Cloud Provider or Technology Found!</h4>
 				<hr>
-				<a href="#/infra" class="btn btn-primary connectInfra f-right" style="margin-top:-5px;">
-					<span class="glyphicon glyphicon-link"/> Click to Connect an Infra Provider
+				<a href="#/infra" class="btn btn-primary connectInfra f-right">
+					<span class="glyphicon glyphicon-link"/> Click to Connect a Cloud Provider or a Technology
 				</a>
 				<p style="color:black;">
-					Cloud Clustering is disabled because no active <b>infra provider</b> was found,
+					Cloud Clustering is disabled because no <b>cloud provider</b> was found,
 					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+				<p style="color:black;">
+					Containerized Environment is disabled because no active <b>technology</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+			</alert>
+		</div>
+		<div class="table" ng-if="noProviders && !noTechnology">
+			<alert type="warning">
+				<h4>No Cloud Provider Found!</h4>
+				<hr>
+				<a href="#/infra" class="btn btn-primary connectInfra f-right" style="margin-top:-5px;">
+					<span class="glyphicon glyphicon-link"/> Click to Connect a Cloud Provider
+				</a>
+				<p style="color:black;">
+					Cloud Clustering is disabled because no <b>cloud provider</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+			</alert>
+		</div>
+		<div class="table" ng-if="noTechnology && !noProviders">
+			<alert type="warning" >
+				<h4>No Technology Found!</h4>
+				<hr>
+				<a href="#/infra" class="btn btn-primary connectInfra f-right" style="margin-top:-5px;">
+					<span class="glyphicon glyphicon-link"/> Click to Connect a Technology
+				</a>
+				<p style="color:black;">
+					Containerized Environment is disabled because no active <b>technology</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank">
 						Learn More
 					</a>
 				</p>
@@ -66,24 +102,23 @@
 				<div>
 					<div class="envDescription">Connects an existing container cluster as infrastructure enabling container deployment & orchestration.</div>
 					<ul class="fieldMsg">
-						<li>API Lifecycle Management Configuration
+						<li>Support Container Technology: Docker Swarm & Kubernetes
 							<ul>
-								<li>Multi Tenancy & Multi Security</li>
-								<li>Productization & Profiling</li>
-								<li>Cataloging</li>
+								<li>Secrets Management</li>
+								<li>Container Orchestration</li>
+								<li>High Availability</li>
 							</ul>
 						</li>
-						<li>Resource Deployment & Management Configuration
+						<li>Configure & Manage
 							<ul>
-								<li>Custom Registries</li>
-								<li>3rd Party/Existing Resource Configuration</li>
-								<li>Newly Introduced Resource Deployment & Configuration</li>
+								<li>Catalog Deployment: Source Code & Resources</li>
+								<li>Custom CI/CD</li>
 							</ul>
 						</li>
 					</ul>
 					<br>
 					<div class="readmore">
-						<a href="" target="_blank" tooltip="Learn&nbsp;More">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank" tooltip="Learn&nbsp;More">
 							<span class="icon icon-info"/>
 						</a>
 					</div>

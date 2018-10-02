@@ -41,6 +41,22 @@
 	</div>
 
 	<div ng-if="noInfraProvidersConfigured">
-		<alert type="warning">No cloud providers or technologies detected. <br /> From the Sidebar, connect a cloud provider or technology to proceed.</alert>
+		<alert type="warning">
+			<div class="w100 table" style="margin-bottom:0;">
+				<div class="f-left">
+					<p>
+						No cloud providers or technologies detected.
+					</p>
+				</div>
+				<div class="f-right">
+					<a href="" class="btn btn-primary btn-sm" ng-click="activateProvider(false)">
+						<span class="glyphicon glyphicon-plus"/> Connect a Technology
+					</a>&nbsp;&nbsp;
+					<a href="" class="btn btn-primary btn-sm" ng-click="activateProvider(true)">
+						<span class="glyphicon glyphicon-plus"/> Connect a Cloud Provider
+					</a>
+				</div>
+			</div>
+		</alert>
 	</div>
 </section>

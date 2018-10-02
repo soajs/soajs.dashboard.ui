@@ -269,10 +269,6 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 	}
 	
 	function listInfraProviders(currentScope, cb) {
-		if (currentScope.envType && currentScope.envType === 'manual') {
-			return cb();
-		}
-		
 		currentScope.noProviders = true;
 		currentScope.noTechnology = true;
 		

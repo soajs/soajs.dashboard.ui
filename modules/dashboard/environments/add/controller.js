@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrvDeploy', 'giSrv', 'deploymentSrv', 'vmSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $localStorage, ngDataApi, injectFiles, templateSrvDeploy, giSrv, deploymentSrv, vmSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
+environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal', '$localStorage', 'ngDataApi', 'injectFiles', 'templateSrvDeploy', 'giSrv', 'deploymentSrv', 'vmSrv', 'registrySrv', 'overviewSrv', 'dynamicSrv', 'nginxSrv', 'statusSrv', function ($scope, $window, $modal, $localStorage, ngDataApi, injectFiles, templateSrvDeploy, giSrv, deploymentSrv, vmSrv, registrySrv, overviewSrv, dynamicSrv, nginxSrv, statusSrv) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.access = {};
@@ -10,21 +10,26 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	$scope.wizard = {};
 	
 	//list of steps the wizard executes, each step has a method below
-	$scope.steps = ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseVM', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'];
+	$scope.steps = {
+		"manual": ['listTemplate', 'generalInfo', 'chooseDeployment', 'processDynamicSteps', 'displayOverview', 'checkStatus'],
+		"container": ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'],
+		"singleInfra": ['listTemplate', 'generalInfo', 'chooseDeployment', 'chooseVM', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'],
+	};
+	
 	$scope.addEnvCounter = 0;
 	$scope.environmentWizard = true;
 	$scope.envType = '';
 
 	function triggerMethod(counter) {
-		let method = $scope.steps[counter];
+		let method = $scope.steps[$scope.envType][counter];
 		$scope[method]();
 	}
 	
 	$scope.nextStep = function () {
 		jQuery("html, body").animate({scrollTop: 0 });
 		$scope.addEnvCounter++;
-		if ($scope.addEnvCounter >= $scope.steps.length - 1) {
-			$scope.addEnvCounter = $scope.steps.length - 1;
+		if ($scope.addEnvCounter >= $scope.steps[$scope.envType].length - 1) {
+			$scope.addEnvCounter = $scope.steps[$scope.envType].length - 1;
 		}
 		triggerMethod($scope.addEnvCounter);
 	};
@@ -251,8 +256,64 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 				overlayLoading.hide();
 				delete pendingEnvironment.soajsauth;
 				
-				if(pendingEnvironment){
+				if(pendingEnvironment && Object.keys(pendingEnvironment).length > 0){
 					$scope.environmentId = pendingEnvironment._id;
+					
+					//recalculate envType
+					if(pendingEnvironment.deployer.type === 'manual'){
+						$scope.envType = 'manual';
+					}
+					else if(pendingEnvironment.restriction && Object.keys(pendingEnvironment.restriction).length > 0){
+						$scope.envType = 'singleInfra';
+					}
+					else if(pendingEnvironment.deployer.type ==='container'){
+						$scope.envType = 'container';
+					}
+					else{
+						let parentScope = $scope;
+						$modal.open({
+							templateUrl: "invalidEnvConfiguration.tmpl",
+							size: 'lg',
+							backdrop: true,
+							keyboard: true,
+							controller: function ($scope, $modalInstance) {
+								
+								$scope.close = function(){
+									delete $localStorage.addEnv;
+									delete parentScope.wizard;
+									if(parentScope.form){
+										parentScope.form.formData = {};
+									}
+									parentScope.$parent.go("/environments");
+									$modalInstance.close();
+								};
+							}
+						});
+					}
+				}
+				else if($scope.wizard && $scope.wizard.envType){
+					$scope.envType = $scope.wizard.envType;
+				}
+				else {
+					let parentScope = $scope;
+					$modal.open({
+						templateUrl: "invalidEnvConfiguration.tmpl",
+						size: 'lg',
+						backdrop: true,
+						keyboard: true,
+						controller: function ($scope, $modalInstance) {
+							
+							$scope.close = function(){
+								delete $localStorage.addEnv;
+								delete parentScope.wizard;
+								if(parentScope.form){
+									parentScope.form.formData = {};
+								}
+								parentScope.$parent.go("/environments");
+								$modalInstance.close();
+							};
+						}
+					});
 				}
 				
 				if (pendingEnvironment && (pendingEnvironment.pending || pendingEnvironment.error) && pendingEnvironment.template) {
@@ -275,6 +336,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 			});
 		}
 		else {
+			$scope.envType = 'manual';
 			return cb();
 		}
 	}
@@ -285,11 +347,11 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$localStorage', 'ng
 	
 	if ($scope.access.addEnvironment) {
 		checkEnvironment(() => {
-			let method = $scope.steps[$scope.addEnvCounter];
+			let method = $scope.steps[$scope.envType][$scope.addEnvCounter];
 			//go to status, this happens if refresh was triggered after invoking deploy environment
 			if ($scope.environmentId) {
-				$scope.addEnvCounter = $scope.steps.length - 1;
-				method = $scope.steps[$scope.addEnvCounter];
+				$scope.addEnvCounter = $scope.steps[$scope.envType].length - 1;
+				method = $scope.steps[$scope.envType][$scope.addEnvCounter];
 			}
 			//trigger method
 			$scope[method]();

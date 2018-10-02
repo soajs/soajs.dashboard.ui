@@ -609,11 +609,23 @@ deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		currentScope.showDockerAccordion = false;
 		currentScope.showKubeAccordion = false;
 
+		let infraType;
+		if(currentScope.wizard.envType === 'container'){
+			infraType = "technology";
+		}
+		else if(currentScope.wizard.envType === 'singleInfra'){
+			infraType = "cloud";
+		}
+		else{
+			return cb();
+		}
+		
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/infra",
 			"params":{
+				"type": infraType,
 				"exclude": [ "groups", "extra" ]
 			}
 		}, function (error, providers) {

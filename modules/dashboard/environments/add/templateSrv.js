@@ -182,6 +182,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 							$window.alert(stopWizard);
 						}
 						else{
+							currentScope.wizard.envType = currentScope.envType;
 							currentScope.wizard.template = angular.copy(template);
 							currentScope.nextStep();
 						}
@@ -219,42 +220,50 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 		let type = currentScope.envType;
 		currentScope.showTemplates = true;
 		currentScope.templates = angular.copy(currentScope.allTemplates);
-		if (type === 'manual') {
-			for (let i = currentScope.templates.length - 1; i >= 0; i--) {
-				let showManualDeploy = true; // show manual iff none of the stages is repos/resources/secrets deployment
-				let myTemplate = currentScope.templates[i];
-				if (myTemplate.restriction && myTemplate.restriction.deployment) {
-					if (myTemplate.restriction.deployment.indexOf('container') !== -1) {
-						showManualDeploy = false;
-					}
-					if (myTemplate.restriction.deployment.indexOf('vm') !== -1) {
-						showManualDeploy = false;
-					}
+		
+		for (let i = currentScope.templates.length - 1; i >= 0; i--) {
+			let showManualOnly = true;
+			let showContainerOnly = true;
+			
+			let myTemplate = currentScope.templates[i];
+			if (myTemplate.restriction && myTemplate.restriction.deployment) {
+				if (myTemplate.restriction.deployment.indexOf('container') !== -1) {
+					showManualOnly = false;
 				}
-				// no restriction, check for deployment
-				if (showManualDeploy) {
-					if (myTemplate.deploy && myTemplate.deploy.deployments) {
-						let deployments = myTemplate.deploy.deployments;
-						let stepsKeys = Object.keys(deployments);
-						stepsKeys.forEach(function (eachStep) {
-							if (deployments[eachStep]) {
-								let stagesKeys = Object.keys(deployments[eachStep]);
-								stagesKeys.forEach(function (eachStage) {
-									if (eachStage.includes('.repo.') || eachStage.includes('secrets')) {
-										showManualDeploy = false;
-									}
-									if (eachStage.includes('.resources.')) {
-										showManualDeploy = false;
-									}
-								});
+				if (myTemplate.restriction.deployment.indexOf('vm') !== -1) {
+					showManualOnly = false;
+					showContainerOnly = false;
+				}
+			}
+			
+			// no restriction, check for deployment
+			if (myTemplate.deploy && myTemplate.deploy.deployments) {
+				let deployments = myTemplate.deploy.deployments;
+				let stepsKeys = Object.keys(deployments);
+				stepsKeys.forEach(function (deploymentType) {
+					if (deployments[deploymentType]) {
+						let stagesKeys = Object.keys(deployments[deploymentType]);
+						stagesKeys.forEach(function (entryName) {
+							if (entryName.includes('.repo.') || entryName.includes('secrets')) {
+								showManualOnly = false;
+							}
+							if (entryName.includes('.resources.')) {
+								showManualOnly = false;
+								if(deployments[deploymentType][entryName].deploy && deployments[deploymentType][entryName].deploy.vm){
+									showContainerOnly = false;
+								}
 							}
 						});
 					}
-				}
-				
-				if (!showManualDeploy) {
-					currentScope.templates.splice(i, 1);
-				}
+				});
+			}
+			
+			if (type ==='manual' && !showManualOnly) {
+				currentScope.templates.splice(i, 1);
+			}
+			
+			if (type ==='container' && !showContainerOnly) {
+				currentScope.templates.splice(i, 1);
 			}
 		}
 	}
@@ -264,7 +273,8 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 			return cb();
 		}
 		
-		currentScope.noProviders = false;
+		currentScope.noProviders = true;
+		currentScope.noTechnology = true;
 		
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -281,8 +291,15 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 			else {
 				currentScope.infraProviders = providers;
 				delete providers.soajsauth;
-				if (!providers || providers.length === 0) {
-					currentScope.noProviders = true;
+				if (providers && providers.length > 0) {
+					providers.forEach((oneProvider) => {
+						if(oneProvider.name === 'local'){
+							currentScope.noTechnology = false;
+						}
+						else{
+							currentScope.noProviders = false;
+						}
+					});
 				}
 				return cb();
 			}

@@ -1411,6 +1411,10 @@ var environmentsNav = [
 			'modules/dashboard/environments/add/nginxSrv.js',
 			
 			'modules/dashboard/environments/add/dynamicSrv.js',
+			'modules/dashboard/environments/add/dynamic/custom_registrySrv.js',
+			'modules/dashboard/environments/add/dynamic/secretsSrv.js',
+			'modules/dashboard/environments/add/dynamic/repoSrv.js',
+			'modules/dashboard/environments/add/dynamic/resourceSrv.js',
 			
 			'modules/dashboard/environments/add/statusSrv.js',
 			'modules/dashboard/environments/add/statusAPISrv.js',

@@ -461,11 +461,7 @@ containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$
 					'label': translation.cancel[LANG],
 					'btn': 'danger',
 					'action': function () {
-						delete $localStorage.addEnv;
-						delete currentScope.wizard;
-						delete currentScope.reusableData;
-						currentScope.form.formData = {};
-						currentScope.$parent.go("/environments")
+						currentScope.exitWizard();
 					}
 				});
 

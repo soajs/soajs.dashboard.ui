@@ -10,7 +10,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 	}
 	
 	function go(currentScope) {
-		currentScope.currentStep === 'registry';
+		currentScope.currentStep = 'registry';
 		
 		let controllerRepoExist = false;
 		if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.repo) {
@@ -24,6 +24,8 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 		
 		//no controller, do not show this page
 		if (!controllerRepoExist) {
+			
+			currentScope.referringStep = currentScope.currentStep;
 			
 			//i am coming from dynamic srv, hit previous page
 			if(currentScope.referringStep === 'dynamicSrv'){
@@ -58,7 +60,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 						'label': "Back",
 						'btn': 'success',
 						'action': function () {
-							currentScope.referringStep = 'registry';
+							currentScope.referringStep = currentScope.currentStep;
 							if (currentScope.form && currentScope.form.formData) {
 								currentScope.form.formData = {};
 							}
@@ -74,7 +76,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 					'label': 'OverView & Finalize',
 					'btn': 'primary',
 					'action': function (formData) {
-						currentScope.referringStep = 'registry';
+						currentScope.referringStep = currentScope.currentStep;
 						handleFormData(currentScope, formData);
 					}
 				});
@@ -85,7 +87,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 					'label': "Next",
 					'btn': 'primary',
 					'action': function (formData) {
-						currentScope.referringStep = 'registry';
+						currentScope.referringStep = currentScope.currentStep;
 						handleFormData(currentScope, formData);
 					}
 				});
@@ -96,12 +98,7 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 				'label': translation.cancel[LANG],
 				'btn': 'danger',
 				'action': function () {
-					currentScope.referringStep = 'registry';
-					delete $localStorage.addEnv;
-					delete currentScope.wizard;
-					delete currentScope.reusableData;
-					currentScope.form.formData = {};
-					currentScope.$parent.go("/environments")
+					currentScope.exitWizard();
 				}
 			});
 			

@@ -73,7 +73,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 				else {
 					currentScope.deploymentStackStep = 0;
-					if(['registry', 'deploy', 'vm'].indexOf(currentScope.referringStep) === -1){
+					if(['registry', 'container', 'vm'].indexOf(currentScope.referringStep) === -1){
 						currentScope.deploymentStackStep = stack.length -1;
 					}
 					processStack(currentScope, stack);
@@ -82,10 +82,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 		}
 
 		currentScope.reset = function () {
-			delete $localStorage.addEnv;
-			delete currentScope.wizard;
-			currentScope.form.formData = {};
-			currentScope.$parent.go("/environments")
+			currentScope.exitWizard();
 		};
 
 		currentScope.back = function () {

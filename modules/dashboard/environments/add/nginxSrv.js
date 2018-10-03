@@ -33,12 +33,11 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		}
 		
 		if (!nginxResourceExists) {
+			currentScope.referringStep = currentScope.currentStep;
 			if (currentScope.referringStep === 'overview') {
-				currentScope.referringStep = currentScope.currentStep;
 				currentScope.previousStep();
 			}
 			else {
-				currentScope.referringStep = currentScope.currentStep;
 				currentScope.nextStep();
 			}
 		}
@@ -93,11 +92,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 				'label': translation.cancel[LANG],
 				'btn': 'danger',
 				'action': function () {
-					delete $localStorage.addEnv;
-					delete currentScope.wizard;
-					delete currentScope.reusableData;
-					currentScope.form.formData = {};
-					currentScope.$parent.go("/environments")
+					currentScope.exitWizard();
 				}
 			});
 			

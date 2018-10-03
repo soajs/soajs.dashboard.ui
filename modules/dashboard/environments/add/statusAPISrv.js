@@ -240,12 +240,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				'label': translation.cancel[LANG],
 				'btn': 'danger',
 				'action': function () {
-					delete $localStorage.addEnv;
-					delete currentScope.reusableData;
-					currentScope.form.formData = {};
-					currentScope.remoteCertificates = {};
-					delete currentScope.wizard;
-					currentScope.$parent.go("/environments");
+					currentScope.exitWizard();
 				}
 			}
 		];

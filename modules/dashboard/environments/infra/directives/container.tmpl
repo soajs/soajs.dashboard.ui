@@ -1,9 +1,3 @@
-<div class="w-100 c-both t-right">
-	<a class="btn btn-sm btn-success" ng-click="checkAttachContainerProgress(false)">
-		<span class="icon icon-redo"></span> Refresh
-	</a>
-	<br /><br />
-</div>
 <div ng-if="environment.pending">
 	<alert type="info">
 		<h4><span class="icon icon-spinner4"></span>Attaching Container Technology</h4>
@@ -19,18 +13,19 @@
 	<progressbar class="progress-striped active" value="100 * 100" type="info"></progressbar>
 
 </div>
+
 <div ng-if="environment.error && !environment.pending">
 	<alert type="danger">
 		<h4>Problem Attaching Container Technology</h4>
 		<hr>
 		<p style="color:black;">
-			An error occured while attaching container technology to this environment.<br / >
+			An error occured while attaching container technology to this environment.<br />
 		</p>
 		<p style="color:black;" ng-if="environment.error.code === 173">
 			The inputs you provided while attaching the container technology are invalid according to the validation rules of the template you have selected.
 		</p>
 		<p style="color:black;">
-			<b><u>Details:</u></b><br / >
+			<b><u>Details:</u></b><br />
 			<ul>
 				<li style="color:black;">
 					<label>Error {{environment.error.code}} :</label>&nbsp;{{environment.error.msg}}
@@ -40,14 +35,19 @@
 	</alert>
 	<br />
 </div>
-<div ng-if="!environment.pending">
+
+<div ng-if="attach && !environment.pending">
+	<div ng-include="'modules/dashboard/environments/infra/directives/attach.tmpl'"></div>
+</div>
+
+<div ng-if="!environment.pending && !environment.error && !attach">
 	<fieldset>
 		<legend>
 			<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
 			<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
 		</legend>
 		<div class="t-right">
-			<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="detachContainerTechnology()">
+			<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="detachContainer()">
 		</div>
 		<div class="entryBoxes entryBoxesGrid">
 			<div class="entryBox driverEntryBox">
@@ -63,15 +63,17 @@
                     </span>
 				</div>
 				<div class="body">
-					<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
 				</div>
 			</div>
 		</div>
 	</fieldset>
 </div>
+
 <script type="text/ng-template" id="updateNamespaceConfig.tmpl">
 	<div ng-include="'modules/dashboard/environments/directives/updateNamespaceConfig.tmpl'"></div>
 </script>
+
 <script type="text/ng-template" id="detachContainerTechnology.tmpl">
 	<div class="modal-body">
 		<alert type="danger">

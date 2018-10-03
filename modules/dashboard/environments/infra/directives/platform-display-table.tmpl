@@ -1,15 +1,5 @@
 <div ng-if="platform === 'docker'">
-	<div class="grid" ng-if="config.socketPath">
-		<table width="100%" cellspacing="10">
-			<tr class="odd first last">
-				<td width="50%">
-					<b>Docker Socket</b>
-				</td>
-				<td>{{config.socketPath}}</td>
-			</tr>
-		</table>
-	</div>
-	<div class="grid" ng-if="!config.socketPath">
+	<div class="grid">
 		<alert type="warning" ng-if="oldDocker">
 			<h4>Docker Deployment has been Upgraded</h4>
 			<p>

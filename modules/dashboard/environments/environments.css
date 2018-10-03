@@ -765,3 +765,33 @@ input.secretMountPathRepo{
 .redTab a{
     color:#a94442 !important;
 }
+
+
+.environmentBox3 {
+    width:48%;
+    margin: 0 1%;
+}
+
+.environmentBox3 .content{
+    border-radius: 5px;
+    border: solid 1px #eeeeee;
+    margin: 10px;
+    padding: 10px;
+    cursor: pointer;
+    position:relative;
+}
+
+.environmentBox3 .content .info{
+    position:absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+.environmentBox3 .content:hover{
+    background-color: #DEF1F7;
+    border: solid 1px #337ab7;
+}
+
+.environmentBox3 .content:hover > hr{
+    border-top: solid 1px #337ab7;
+}

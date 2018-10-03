@@ -1,6 +1,6 @@
 "use strict";
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('platformsCtrl', ['$scope', '$localStorage', '$routeParams', '$cookies', '$timeout', 'envPlatforms', 'platformsVM', 'platformCntnr', 'ngDataApi', 'injectFiles', function ($scope, $localStorage, $routeParams, $cookies, $timeout, envPlatforms, platformsVM, platformCntnr, ngDataApi, injectFiles) {
+environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms', 'ngDataApi', 'injectFiles', function ($scope, $cookies, envPlatforms, ngDataApi, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 
 	$scope.access = {};
@@ -32,73 +32,35 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$localStorage', '$routeP
 			}
 			else {
 				$scope.environment = response;
-				if($scope.environment.selected !== 'manual'){
-					envPlatforms.renderDisplay($scope);
-				}
+				$scope.calculateType(response);
+				envPlatforms.go($scope);
 			}
 		});
 	};
 	
-	$scope.editDriverConfig = function (driver) {
-		envPlatforms.editDriverConfig($scope, driver);
-	};
-
-	$scope.updateNamespaceConfig = function (driver) {
-		envPlatforms.updateNamespaceConfig($scope, driver);
-	};
-	
-	$scope.attachContainerTechnology = function(){
-		$scope.containerWizard = true;
-		platformCntnr.openContainerWizard($scope);
-	};
-	
-	$scope.detachContainerTechnology = function(){
-		platformCntnr.detachContainerTechnology($scope);
-	};
-	
-	$scope.checkAttachContainerProgress = function(autoRefresh){
-		platformCntnr.checkAttachContainerProgress($scope, autoRefresh);
-	};
-	
-	/** VM Operations **/
-	$scope.listVMLayers = function() {
-		platformsVM.listVMLayers($scope);
-	};
-
-	$scope.getOnBoard = function(vmLayer, release) {
-		platformsVM.getOnBoard($scope, vmLayer, release);
-	};
-	
-	$scope.addVMLayer = function(){
-		platformsVM.addVMLayer($scope);
-	};
-	
-	$scope.inspectVMLayer = function(oneVMLayer){
-		platformsVM.inspectVMLayer($scope, oneVMLayer);
-	};
-	
-	$scope.editVMLayer = function(oneVMLayer){
-		platformsVM.editVMLayer($scope, oneVMLayer);
-	};
-	
-	$scope.deleteVMLayer = function(oneVMLayer){
-		platformsVM.deleteVMLayer($scope, oneVMLayer);
+	$scope.calculateType = function(response){
+		//calculate environment type
+		if(response.restriction && Object.keys(response.restriction).length > 0){
+			//single cloud clustering
+			$scope.environment.type = 'singleInfra';
+		}
+		else if(response.selected === 'manual'){
+			//manual
+			$scope.environment.type = 'manual';
+		}
+		else {
+			//containerized
+			$scope.environment.type = 'container';
+		}
 	};
 	
 	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 		$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
-		if($routeParams && $routeParams.tab && $routeParams.tab === 'vm'){
-			$scope.openVMs = true;
-			$timeout(() => {
-				$scope.listVMLayers();
-			}, 500);
-		}
 		
 		if($scope.envCode && $scope.access.platforms.getEnvironment){
 			$scope.getEnvPlatform();
 		}
 	}
-	
 	
 	injectFiles.injectCss("modules/dashboard/environments/environments.css");
 }]);

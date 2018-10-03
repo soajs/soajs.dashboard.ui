@@ -1,0 +1,69 @@
+<alert type="info">
+	<p>
+		Attach a container technology to this environment by selecting from the options below.
+	</p>
+</alert>
+<br />
+<accordion close-others="true">
+	<accordion-group ng-click="switchDriver('previous')">
+		<accordion-heading>
+			Use an existing Infra Cloud Provider
+		</accordion-heading>
+		I want to use the same technoloyg i already used for environment
+		<select ng-change="changeLikeEnv()" ng-model="form.formData.previousEnvironment" class="form-control w30" style="display: inline-block">
+			<option value=""> -- Choose Environment --</option>
+			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
+		</select>
+		<div ng-show="previousPlatformDeployment">
+			<hr>
+			<fieldset>
+				<legend style="width:15%;">
+					<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" width="100%" alt="Docker Logo"/>
+					<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" width="100%" alt="Kubernetes Logo"/>
+				</legend>
+				<br/>
+				<div class="entryBoxes entryBoxesGrid">
+					<div class="entryBox driverEntryBox" style="display:block;">
+						<div class="header">
+							{{driver|uppercase}}
+						</div>
+						<div class="body">
+							<div ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</accordion-group>
+	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
+		<accordion-heading>
+			Use Docker Swarm as my Container Technology
+		</accordion-heading>
+
+		<div>
+			<div class="w100 c-both"><label>Select which Docker Swarm Cluster to Use</label><br></div>
+			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
+				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
+			</div>
+			<div ng-if="!showDocker">
+				<alert type="warning">No Technologies detected, click here to <a href="#/infra">Connect a Container Technology</a></alert>
+			</div>
+		</div>
+	</accordion-group>
+	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')">
+		<accordion-heading>
+			Use Kubernetes as my Container Technology
+		</accordion-heading>
+
+		<div>
+			<div class="w100 c-both"><label>Select a Kubernetes Technology</label><br></div>
+			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
+				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
+			</div>
+			<div ng-if="!showKube">
+				<alert type="warning">No Technologies detected, click here to <a href="#/infra">Connect a Container Technology</a></alert>
+			</div>
+		</div>
+	</accordion-group>
+</accordion>
+<div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>

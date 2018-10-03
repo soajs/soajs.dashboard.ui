@@ -1543,7 +1543,8 @@ var environmentsNav = [
 			'modules/dashboard/environments/infra/services/platforms.js',
 			'modules/dashboard/environments/infra/services/vms.js',
 			'modules/dashboard/environments/infra/services/container.js',
-			'modules/dashboard/environments/add/deploySrv.js'
+			'modules/dashboard/environments/infra/services/manual.js',
+			'modules/dashboard/environments/infra/services/cloudProvider.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},

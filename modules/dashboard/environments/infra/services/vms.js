@@ -916,7 +916,44 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
         });
     }
 
+    function go(currentScope){
+	    /** VM Operations **/
+	    $scope.listVMLayers = function() {
+		    platformsVM.listVMLayers($scope);
+	    };
+	
+	    $scope.getOnBoard = function(vmLayer, release) {
+		    platformsVM.getOnBoard($scope, vmLayer, release);
+	    };
+	
+	    $scope.addVMLayer = function(){
+		    platformsVM.addVMLayer($scope);
+	    };
+	
+	    $scope.inspectVMLayer = function(oneVMLayer){
+		    platformsVM.inspectVMLayer($scope, oneVMLayer);
+	    };
+	
+	    $scope.editVMLayer = function(oneVMLayer){
+		    platformsVM.editVMLayer($scope, oneVMLayer);
+	    };
+	
+	    $scope.deleteVMLayer = function(oneVMLayer){
+		    platformsVM.deleteVMLayer($scope, oneVMLayer);
+	    };
+	
+	
+	    //no longer valid
+	    // if($routeParams && $routeParams.tab && $routeParams.tab === 'vm'){
+	    // 	$scope.openVMs = true;
+	    // 	$timeout(() => {
+	    // 		$scope.listVMLayers();
+	    // 	}, 500);
+	    // }
+    }
+    
     return {
+		'go': go,
         'listInfraProviders': listInfraProviders,
         'listVMLayers': listVMLayers,
         'inspectVMLayer': inspectVMLayer,

@@ -681,7 +681,9 @@ var environmentsConfig = {
 			"logs": ['dashboard', '/cloud/vm/logs', 'post']
 		},
 		"platforms": {
-			"getEnvironment": ['dashboard', '/environment', 'get']
+			"getEnvironment": ['dashboard', '/environment', 'get'],
+			"attachContainer": ['dashboard', '/environment/platforms/attach', 'post'],
+			"detachContainer": ['dashboard', '/environment/platforms/detach', 'delete']
 		},
 		"hacloud": {
 			"nodes": {

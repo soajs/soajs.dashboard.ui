@@ -3,50 +3,62 @@
 		<div ng-include="'modules/dashboard/environments/directives/add/template.tmpl'"></div>
 	</div>
 	<div ng-show="wizard.template">
-		<div ng-switch="addEnvCounter">
-			<div ng-switch-when="1">
+		<div ng-switch="currentStep">
+			<div ng-switch-when="gi">
 				<form>
 					<div class="header"><h3>Environment Code & Description</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/gi.tmpl'"></div>
 			</div>
-			<div ng-switch-when="2">
+			<div ng-switch-when="manual">
 				<form>
-					<div class="header"><h3>Infra Cloud Providers / Container Technology</h3></div>
+					<div class="header"><h3>Manual Deployment</h3></div>
+				</form>
+				<div ng-include="'modules/dashboard/environments/directives/add/manual.tmpl'"></div>
+			</div>
+			<div ng-switch-when="cloudProviders">
+				<form>
+					<div class="header"><h3>Cloud Providers</h3></div>
+				</form>
+				<div ng-include="'modules/dashboard/environments/directives/add/cloudProviders.tmpl'"></div>
+			</div>
+			<div ng-switch-when="container">
+				<form>
+					<div class="header"><h3>Container Technology</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/deploy.tmpl'"></div>
 			</div>
-			<div ng-switch-when="3">
+			<div ng-switch-when="vm">
 				<form>
-					<div class="header"><h3>Infra Cloud Providers / Virtual Machines Technology</h3></div>
+					<div class="header"><h3>Virtual Machines</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/vm.tmpl'"></div>
 			</div>
-			<div ng-switch-when="4">
+			<div ng-switch-when="registry">
 				<form>
 					<div class="header"><h3>Registry Information</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/registry.tmpl'"></div>
 			</div>
-			<div ng-switch-when="5">
+			<div ng-switch-when="dynamicSrv">
 				<form>
 					<div class="header capitalize"><h3>{{dynamictemplatestep}}</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/dynamic.tmpl'"></div>
 			</div>
-			<div ng-switch-when="6">
+			<div ng-switch-when="nginx">
 				<form>
 					<div class="header"><h3>Domain & Prefixes</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/nginx.tmpl'"></div>
 			</div>
-			<div ng-switch-when="7">
+			<div ng-switch-when="overview">
 				<form>
 					<div class="header"><h3>Overview</h3></div>
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/overview.tmpl'"></div>
 			</div>
-			<div ng-switch-when="8">
+			<div ng-switch-when="status">
 				<form>
 					<div class="header"><h3>Progress</h3></div>
 				</form>

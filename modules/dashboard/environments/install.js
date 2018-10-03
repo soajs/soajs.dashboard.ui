@@ -1400,7 +1400,11 @@ var environmentsNav = [
 			
 			'modules/dashboard/environments/add/giSrv.js',
 
-			'modules/dashboard/environments/add/deploySrv.js',
+			'modules/dashboard/environments/add/manualSrv.js',
+			
+			'modules/dashboard/environments/add/cloudProviderSrv.js',
+			
+			'modules/dashboard/environments/add/containerSrv.js',
 			
 			'modules/dashboard/environments/add/vmSrv.js',
 			

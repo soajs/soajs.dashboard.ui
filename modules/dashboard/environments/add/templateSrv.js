@@ -15,6 +15,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 	}
 	
 	function go(currentScope) {
+		currentScope.currentStep = 'listTemplate';
 		currentScope.showTemplates = false;
 		overlayLoading.show();
 		
@@ -55,6 +56,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 								if (currentScope.wizard.template._id && oneTemplate._id === currentScope.wizard.template._id) {
 									storedTemplateFound = true;
 									currentScope.wizard.template.content = angular.copy(oneTemplate.content);
+									currentScope.referringStep = currentScope.currentStep;
 									currentScope.nextStep();
 								}
 								else if (currentScope.wizard.template.name && oneTemplate.name === currentScope.wizard.template.name) {
@@ -66,6 +68,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 										currentScope.checkStatus();
 									}
 									else {
+										currentScope.referringStep = currentScope.currentStep;
 										currentScope.nextStep();
 									}
 								}
@@ -121,11 +124,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 					'label': translation.cancel[LANG],
 					'btn': 'danger',
 					'action': function () {
-						delete $localStorage.addEnv;
-						delete currentScope.wizard;
-						delete currentScope.reusableData;
-						currentScope.form.formData = {};
-						currentScope.$parent.go("/environments")
+						currentScope.exitWizard();
 					}
 				}
 			]
@@ -184,6 +183,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 						else{
 							currentScope.wizard.envType = currentScope.envType;
 							currentScope.wizard.template = angular.copy(template);
+							currentScope.referringStep = currentScope.currentStep;
 							currentScope.nextStep();
 						}
 					}

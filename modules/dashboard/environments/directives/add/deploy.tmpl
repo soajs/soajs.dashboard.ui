@@ -88,34 +88,5 @@
 		</div>
 		<div ng-show="wizard.selectedInfraProvider.deploy.grid && wizard.selectedInfraProvider.technologies.indexOf('kubernetes') !== -1" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
 	</accordion-group>
-	<accordion-group is-open="platforms.manual" ng-click="switchDriver('manual')" ng-show="restrictions.showManual">
-		<accordion-heading>
-			<input type="radio" ng-checked="platforms.manual" value="true" name="manual" disabled/>&nbsp;
-			Do not need any Container Deployment Technology
-		</accordion-heading>
-		<p>
-			I will Deploy Everything Myself on the Machine.<br />
-			I will also handle pulling and applying updates on the machine of this Environment.
-		</p>
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tbody>
-				<tr class="form-group machinePort-wrapper">
-					<td>
-						<div id="manualIP-wrapper">
-							<label class="f-left">Machine IP</label>
-							<input type="text" ng-required="platforms.manual" ng-model="form.formData.deployment.manual.nodes" class="form-control" placeholder="127.0.0.1"/>
-							<div class="fieldMsg hint">Provide the IP Address of your machine.</div>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<hr/>
-		<alert type="warning">
-			<p>
-				Please make sure that the machine you will will be reachable so that the dashboard can communicate with your environment.
-			</p>
-		</alert>
-	</accordion-group>
 </accordion>
 <div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>

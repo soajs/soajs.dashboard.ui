@@ -45,6 +45,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 	//main driver
 	function go(currentScope) {
+		currentScope.currentStep = 'dynamicSrv';
 		currentScope.loadingDynamicSection = true;
 		currentScope.mapStorageToWizard($localStorage.addEnv);
 
@@ -58,7 +59,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				//this template has no deployment workflow go to overview
 				if (stack.length === 0) {
 					if(['overview'].indexOf(currentScope.referringStep) !== -1){
-						currentScope.referringStep = "dynamicSrv";
+						currentScope.referringStep = currentScope.currentStep;
 						currentScope.deploymentStackStep = 0;
 						if (currentScope.form && currentScope.form.formData) {
 							currentScope.form.formData = {};
@@ -66,6 +67,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 						currentScope.previousStep();
 					}
 					else{
+						currentScope.referringStep = currentScope.currentStep;
 						currentScope.nextStep();
 					}
 				}
@@ -88,8 +90,8 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 
 		currentScope.back = function () {
 			jQuery("html, body").animate({scrollTop: 0 });
-
-			currentScope.referringStep = "dynamicSrv";
+			
+			currentScope.referringStep = currentScope.currentStep;
 			currentScope.deploymentStackStep--;
 			if (currentScope.deploymentStackStep < 0) {
 				if (currentScope.form && currentScope.form.formData) {
@@ -114,7 +116,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				if (currentScope.form && currentScope.form.formData) {
 					currentScope.form.formData = {};
 				}
-				currentScope.referringStep = 'dynamic';
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.nextStep();
 			}
 			else {
@@ -269,6 +271,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 			//jump to next step or leave
 			if (currentScope.deploymentStackStep === stack.length - 1) {
 				//stack has been processed in full, go to overview
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.nextStep();
 			}
 			else {

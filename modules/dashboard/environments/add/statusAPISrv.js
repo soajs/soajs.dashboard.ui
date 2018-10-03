@@ -14,11 +14,13 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		currentScope.showProgress = true;
 		currentScope.response = {};
 		
+		let environmentData = angular.copy(currentScope.overview.data);
+		environmentData.envType = currentScope.envType;
 		let optionsAdd = {
 			method: 'post',
 			routeName: '/dashboard/environment/add',
 			data: {
-				data: currentScope.overview.data,
+				data: environmentData,
 				template: currentScope.overview.template
 			}
 		};
@@ -36,7 +38,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 			else{
 				currentScope.envId = response.data;
 				//call check status
-				checkEnvironmentStatus(currentScope, null, (error) => {
+				checkEnvironmentStatus(currentScope, null, 5000, (error) => {
 					if (error) {
 						displayStickError(currentScope, error);
 						currentScope.form.actions = renderButtonDisplay(currentScope, 3);
@@ -62,9 +64,9 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		getSendDataFromServer(currentScope, ngDataApi, opts, cb);
 	}
 
-	function checkEnvironmentStatus(currentScope, params, cb){
+	function checkEnvironmentStatus(currentScope, params, timeoutValue, cb){
 		currentScope.showProgress = true;
-
+		
 		let autoRefreshTimeoutProgress = $timeout(() => {
 			checkDeploymentStatus(currentScope, params, (error, response) => {
 				if (error) {
@@ -128,12 +130,13 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 							currentScope.form.actions = renderButtonDisplay(currentScope, 2);
 						}
 						else {
-							checkEnvironmentStatus(currentScope, params, cb);
+							timeoutValue = 15000;
+							checkEnvironmentStatus(currentScope, params, timeoutValue, cb);
 						}
 					}
 				}
 			});
-		}, 15000);
+		}, timeoutValue);
 
 		currentScope.$on("$destroy", function () {
 			$timeout.cancel(autoRefreshTimeoutProgress);
@@ -382,7 +385,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 				}
 				else{
 					//print status
-					checkEnvironmentStatus(currentScope, null, (error) => {
+					checkEnvironmentStatus(currentScope, null, 5000, (error) => {
 						if (error) {
 							displayStickError(currentScope, error);
 							currentScope.form.actions = renderButtonDisplay(currentScope, 3);

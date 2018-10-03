@@ -3,6 +3,7 @@ var overviewServices = soajsApp.components;
 overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
 	
 	function handleFormData(currentScope) {
+		currentScope.referringStep = currentScope.currentStep;
 		currentScope.nextStep();
 	}
 	
@@ -11,6 +12,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function go(currentScope) {
+		currentScope.currentStep = 'overview';
 		currentScope.mapStorageToWizard($localStorage.addEnv);
 		
 		currentScope.overview = mapUserInputsToOverview(currentScope);
@@ -64,7 +66,7 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 						if (currentScope.form && currentScope.form.formData) {
 							currentScope.form.formData = {};
 						}
-						currentScope.referringStep = 'overview';
+						currentScope.referringStep = currentScope.currentStep;
 						currentScope.previousStep();
 					}
 				}

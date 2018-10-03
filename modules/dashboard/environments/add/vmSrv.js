@@ -3,6 +3,7 @@ var vmServices = soajsApp.components;
 vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$localStorage', '$window', '$location', 'platformsVM', function (ngDataApi, $timeout, $modal, $cookies, $localStorage, $window, $location, platformsVM) {
 
 	function go(currentScope) {
+		currentScope.currentStep = 'vm';
 		overlayLoading.show();
 		
 		currentScope.errorVMLayers = null;
@@ -407,7 +408,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 							$window.alert("You need to attach a container technology or create at least one virtual machine layer to proceed.");
 						}
 						else {
-							currentScope.referringStep = 'vm';
+							currentScope.referringStep = currentScope.currentStep;
 							$localStorage.addEnv = angular.copy(currentScope.wizard);
 							currentScope.envCode = envCode;
 							currentScope.nextStep();
@@ -462,13 +463,13 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 			
 			//if i am coming back from dynamic or registry
 			if (['registry', 'dynamicSrv'].indexOf(currentScope.referringStep) !== -1) {
-				currentScope.referringStep = 'vm';
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.previousStep();
 			}
 			
 			//if i am coming from gi or deploy
 			else {
-				currentScope.referringStep = 'vm';
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.nextStep();
 			}
 		}
@@ -506,7 +507,7 @@ vmServices.service('vmSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '$lo
 								'label': "Back",
 								'btn': 'success',
 								'action': function () {
-									currentScope.referringStep = 'vm';
+									currentScope.referringStep = currentScope.currentStep;
 									if (currentScope.form && currentScope.form.formData) {
 										currentScope.form.formData = {};
 									}

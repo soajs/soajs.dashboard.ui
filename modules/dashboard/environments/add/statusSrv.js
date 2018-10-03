@@ -161,7 +161,8 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 	}
 
 	function go(currentScope) {
-
+		currentScope.currentStep = 'status';
+		
 		listInfraProviders(currentScope, () => {
 			resumeDeployment();
 		});

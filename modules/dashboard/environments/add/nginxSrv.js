@@ -9,6 +9,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		//apiPrefix
 		// sitePrefix
 		if (formData.domain) {
+			currentScope.referringStep = currentScope.currentStep;
 			currentScope.nextStep();
 		} else {
 			currentScope.$parent.displayAlert('danger', "Please choose your domain!" );
@@ -17,7 +18,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 	}
 	
 	function go(currentScope) {
-		
+		currentScope.currentStep = 'nginx';
 		let nginxResourceExists = false;
 		if (currentScope.wizard.deployment.selectedDriver !== 'manual') {
 			if (currentScope.wizard.template && currentScope.wizard.template.content && currentScope.wizard.template.content.deployments && currentScope.wizard.template.content.deployments.resources) {
@@ -33,9 +34,11 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		
 		if (!nginxResourceExists) {
 			if (currentScope.referringStep === 'overview') {
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.previousStep();
 			}
 			else {
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.nextStep();
 			}
 		}
@@ -54,7 +57,7 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 						'label': "Back",
 						'btn': 'success',
 						'action': function () {
-							currentScope.referringStep = 'nginx';
+							currentScope.referringStep = currentScope.currentStep;
 							if (currentScope.form && currentScope.form.formData) {
 								currentScope.form.formData = {};
 							}

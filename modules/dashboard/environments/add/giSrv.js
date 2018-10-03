@@ -4,6 +4,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 	function (ngDataApi, $timeout, $modal, $localStorage, $window, $location, $routeParams) {
 		
 		function go(currentScope) {
+			currentScope.currentStep = 'gi';
 			overlayLoading.show();
 			
 			let entries = {
@@ -70,6 +71,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 										currentScope.wizard.gi = angular.copy(formData);
 										$localStorage.addEnv = angular.copy(currentScope.wizard);
 										delete $localStorage.addEnv.template.content;
+										currentScope.referringStep = currentScope.currentStep;
 										currentScope.nextStep();
 									}
 									
@@ -84,12 +86,7 @@ giServices.service('giSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage',
 						'label': translation.cancel[LANG],
 						'btn': 'danger',
 						'action': function () {
-							delete $localStorage.addEnv;
-							delete currentScope.wizard;
-							delete currentScope.reusableData;
-							currentScope.form.formData = {};
-							$location.url($location.path());
-							currentScope.$parent.go("/environments");
+							currentScope.exitWizard();
 						}
 					}
 				]

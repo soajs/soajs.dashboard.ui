@@ -1,6 +1,6 @@
 "use strict";
-var deployServices = soajsApp.components;
-deployServices.service('deploymentSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
+var containerServices = soajsApp.components;
+containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', function (ngDataApi, $timeout, $modal, $localStorage, $window) {
 
 	let mainScope; // set on go
 

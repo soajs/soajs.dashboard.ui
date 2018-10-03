@@ -230,6 +230,14 @@
 			<table>
 				<tbody>
 					<tr>
+						<td><label>Type</label></td>
+						<td>
+							<span ng-if="envType ==='manual'">Manual Development</span>
+							<span ng-if="envType ==='container'">Containerized Development</span>
+							<span ng-if="envType ==='singleInfra'">Single Cloud Clustering</span>
+						</td>
+					</tr>
+					<tr>
 						<td><label>Code</label></td>
 						<td><span>{{overview.data.code}}</span></td>
 					</tr>

@@ -822,7 +822,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					if(editMode && defaultData){
 						let thisEntryDefaultData = defaultData[countValue];
 						form.formData[oneEntry.name + "_c_" + countValue] = thisEntryDefaultData[oneEntry.name];
-						//console.log(oneEntry.name + "_c_" + countValue, form.formData[oneEntry.name + "_c_" + countValue]);
 
 						//todo: case of json editor
 					}

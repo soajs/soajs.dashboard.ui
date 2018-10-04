@@ -423,11 +423,14 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			}
 			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 
+			overlayLoading.show();
+			currentScope.updateParentScope('currentSelectedEnvironment', record.code.toLowerCase());
+			currentScope.updateParentScope('currentDeployer', {"type": record.deployer.type});
 			$timeout(() => {
-				console.log('hi')
-				currentScope.switchEnvironment(data);
-				currentScope.rebuildMenus(function(){});
-			}, 200);
+				currentScope.$parent.$parent.rebuildMenus(() => {
+					overlayLoading.hide();
+				});
+			}, 500);
 		}
 	}
 	

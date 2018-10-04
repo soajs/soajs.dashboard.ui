@@ -280,7 +280,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 			
 			let hide = false;
-			if (currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
+			if ($scope.currentDeployer.type !== 'manual' && currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
 				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else if ($scope.currentDeployer.type === 'manual') {

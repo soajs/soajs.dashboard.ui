@@ -168,14 +168,14 @@ infraIACSrv.service('infraIACSrv', ['ngDataApi', '$timeout', '$modal', '$window'
 		entries[2].onAction = function(id, value, form) {
 			form.entries[3].value = [];
 			delete form.formData['location'];
-
-			if(oneInfra && oneInfra.override && oneInfra.override[value]) {
-				if(oneInfra.override[value].templates && Array.isArray(oneInfra.override[value].templates)) {
-					if (oneInfra.override[value].templates.indexOf("local") !== -1) {
+			
+			if(oneInfra && oneInfra.override && oneInfra.override.drivers && oneInfra.override.drivers[value]) {
+				if(oneInfra.override.drivers[value].templates && Array.isArray(oneInfra.override.drivers[value].templates)) {
+					if (oneInfra.override.drivers[value].templates.indexOf("local") !== -1) {
 						form.entries[3].value.push({ 'v': 'local', 'l': "SOAJS Console" });
 					}
 
-					if (oneInfra.override[value].templates.indexOf("external") !== -1) {
+					if (oneInfra.override.drivers[value].templates.indexOf("external") !== -1) {
 						form.entries[3].value.push({ 'v': 'external', 'l': "Cloud Provider" });
 					}
 				}

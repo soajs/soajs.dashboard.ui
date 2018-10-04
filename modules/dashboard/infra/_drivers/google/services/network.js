@@ -117,7 +117,7 @@ googleInfraNetworkSrv.service('googleInfraNetworkSrv', ['ngDataApi', '$localStor
 				'infraId': currentScope.getFromParentScope('currentSelectedInfra')._id,
 				'technology': 'vm',
 				'section': 'network',
-				'name' : oneNetwork.network,
+				'name' : oneNetwork.name,
                 'id': oneNetwork.id
 			}
 		};
@@ -133,7 +133,7 @@ googleInfraNetworkSrv.service('googleInfraNetworkSrv', ['ngDataApi', '$localStor
 				overlayLoading.hide();
 				currentScope.displayAlert('success', `The network has been successfully deleted. Changes take a bit of time to be populated and might require you refresh in the list after a few seconds.`);
 				$timeout(() => {
-					listNetworks(currentScope, '');
+					listNetworks(currentScope);
 				}, 2000);
 			}
 		});

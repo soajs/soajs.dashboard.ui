@@ -5,6 +5,10 @@ platformsServices.service('envPlatforms', ['platformManual', 'platformCntnr', 'p
 	function go(currentScope) {
 		currentScope.originalEnvironment = angular.copy(currentScope.environment);
 		
+		currentScope.switchManual = platformManual.go;
+		
+		currentScope.switchContainer = platformCntnr.go;
+		
 		switch (currentScope.environment.type) {
 			case 'container':
 				platformCntnr.checkContainerTechnology(currentScope);

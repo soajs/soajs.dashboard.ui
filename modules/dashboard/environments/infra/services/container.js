@@ -329,6 +329,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							currentScope.currentDeployer.type = 'manual';
 							currentScope.displayAlert('success', "Container Technology has been detached from this environment.");
 							getEnvRecord(currentScope);
+							currentScope.switchManual(currentScope);
 							
 						}
 					});
@@ -385,7 +386,15 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					}
 				}
 				else {
-					checkAttachContainerProgress(currentScope, response.deployer, true);
+					let autoRefreshTimeoutProgress = $timeout(() => {
+						if(!environment.pending){
+							currentScope.environment = angular.copy(environment);
+							$timeout.cancel(autoRefreshTimeoutProgress);
+						}
+						else{
+							getEnvRecord(currentScope);
+						}
+					}, 10 * 1000);
 				}
 			}
 		});
@@ -415,28 +424,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 
 			$timeout(() => {
-				currentScope.$parent.$parent.switchEnvironment(data);
-				currentScope.$parent.$parent.rebuildMenus(function(){});
-			}, 100);
-		}
-	}
-	
-	/**
-	 * Check if Environment attach container is done
-	 * @param currentScope
-	 * @param autoRefresh
-	 */
-	function checkAttachContainerProgress(currentScope, environment, autoRefresh){
-		if(autoRefresh){
-			let autoRefreshTimeoutProgress = $timeout(() => {
-				if(!environment.pending){
-					currentScope.environment = angular.copy(environment);
-					$timeout.cancel(autoRefreshTimeoutProgress);
-				}
-				else{
-					checkAttachContainerProgress(currentScope, environment, autoRefresh);
-				}
-			}, 10 * 1000);
+				console.log('hi')
+				currentScope.switchEnvironment(data);
+				currentScope.rebuildMenus(function(){});
+			}, 200);
 		}
 	}
 	
@@ -557,11 +548,6 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * render the display if the environment is a containerized development and print what it is already using
 	 * @param currentScope
 	 */
-	function renderDisplay(currentScope) {
-	
-	}
-	
-	
 	function checkContainerTechnology(currentScope) {
 		
 		currentScope.platform = currentScope.environment.selected.split(".")[1];
@@ -593,7 +579,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	function go(currentScope, operation){
 		
 		currentScope.renderDisplay = function(){
-			renderDisplay(currentScope);
+			checkContainerTechnology(currentScope);
 		};
 		
 		currentScope.updateNamespaceConfig = function (driver) {

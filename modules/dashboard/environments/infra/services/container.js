@@ -387,7 +387,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				}
 				else {
 					let autoRefreshTimeoutProgress = $timeout(() => {
-						if(!environment.pending){
+						if(!currentScope.environment.pending){
 							currentScope.environment = angular.copy(environment);
 							$timeout.cancel(autoRefreshTimeoutProgress);
 						}

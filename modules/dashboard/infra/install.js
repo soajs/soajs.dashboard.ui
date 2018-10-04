@@ -130,6 +130,7 @@ let infraNav = [
 			'modules/dashboard/infra/network/services/network.js',
 			'modules/dashboard/infra/network/controller.js',
 			'/modules/dashboard/infra/_drivers/azure/services/network.js',
+			'/modules/dashboard/infra/_drivers/google/services/network.js',
 			'/modules/dashboard/infra/_drivers/aws/services/network.js'
 		],
 		'ancestor': [translation.home[LANG]]

@@ -6,5 +6,8 @@
 		<div ng-switch-when="aws">
 			<div ng-include="'modules/dashboard/infra/_drivers/aws/directives/network.tmpl'"></div>
 		</div>
+		<div ng-switch-when="google">
+			<div ng-include="'modules/dashboard/infra/_drivers/google/directives/network.tmpl'"></div>
+		</div>
 	</div>
 </section>

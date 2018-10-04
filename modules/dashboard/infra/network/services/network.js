@@ -1,6 +1,6 @@
 "use strict";
 var infraNetworkSrv = soajsApp.components;
-infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNetworkSrv', 'infraCommonSrv', function (azureInfraNetworkSrv, awsInfraNetworkSrv, infraCommonSrv) {
+infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNetworkSrv', 'googleInfraNetworkSrv', 'infraCommonSrv', function (azureInfraNetworkSrv, awsInfraNetworkSrv, googleInfraNetworkSrv, infraCommonSrv) {
 
 	function addNetwork(currentScope) {
 		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
@@ -12,6 +12,9 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 			case 'aws':
 				awsInfraNetworkSrv.addNetwork(currentScope);
 				break;
+            case 'google':
+                googleInfraNetworkSrv.addNetwork(currentScope);
+                break;
 			default:
 				break;
 		}
@@ -41,26 +44,31 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
 				break;
 			case 'aws':
 				awsInfraNetworkSrv.deleteNetwork(currentScope, oneNetwork);
-				break;
+                break;
+			case 'google':
+                googleInfraNetworkSrv.deleteNetwork(currentScope, oneNetwork);
+                break;
 			default:
 				break;
 		}
 	}
 
-	function listNetworks(currentScope, oneGroup) {
-		let infraName = infraCommonSrv.getInfraDriverName(currentScope);
-
-		switch(infraName){
-			case 'azure':
-				azureInfraNetworkSrv.listNetworks(currentScope, oneGroup);
-				break;
-			case 'aws':
-				awsInfraNetworkSrv.listNetworks(currentScope, oneGroup);
-				break;
-			default:
-				break;
-		}
-	}
+    function listNetworks(currentScope, oneGroup) {
+        let infraName = infraCommonSrv.getInfraDriverName(currentScope);
+        switch (infraName) {
+            case 'azure':
+                azureInfraNetworkSrv.listNetworks(currentScope, oneGroup);
+                break;
+            case 'aws':
+                awsInfraNetworkSrv.listNetworks(currentScope, oneGroup);
+                break;
+            case 'google':
+                googleInfraNetworkSrv.listNetworks(currentScope);
+                break;
+            default:
+                break;
+        }
+    }
 
 	return {
 		'addNetwork': addNetwork,

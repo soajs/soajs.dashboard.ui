@@ -115,7 +115,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
 		let awsExcluded = [ 'infra-groups' ];
 		let azureExcluded = [ 'infra-deployments', 'infra-keyPairs', 'infra-certificates' ];
-		let googleExcluded = [ 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
+		let googleExcluded = [ 'infra-groups', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
 		let localExcluded = [ 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
 
 		//fix the menu; local driver has not templates

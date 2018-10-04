@@ -1,0 +1,61 @@
+<div class="w-100 c-both">
+	<div class="f-left w20">
+		<a class="btn btn-sm btn-primary" ng-if="access.addNetwork" ng-click="addNetwork()">
+			<span class="icon icon-plus"></span> Add New Network
+		</a>
+	</div>
+	<div class="f-right">
+		<a class="btn btn-sm btn-success" ng-if="access.addNetwork" ng-click="listNetworks('google')">
+			<span class="icon icon-loop2"></span> Refresh
+		</a>
+	</div>
+	<br/><br/>
+</div>
+
+<div ng-if="access.list">
+	<alert type="warning" ng-if="!infraNetworks || infraNetworks.length === 0">
+		No Networks found.
+	</alert>
+	<div ng-if="infraNetworks && infraNetworks.length > 0" class="entryBoxes">
+		<br/>
+		
+		<accordion>
+			<accordion-group is-open="oneNetwork.open" ng-repeat="oneNetwork in infraNetworks">
+				<accordion-heading>
+					{{oneNetwork.network}}
+				</accordion-heading>
+				<div class="w-100 c-both t-right">
+					<span class="f-left">
+						{{oneNetwork.description}}
+						</span>
+					<a class="btn btn-sm btn-danger" href="" ng-click="deleteNetwork(oneNetwork)" ng-confirm-click="Are you sure you want to delete this network ?">
+						<span class="icon icon-cross"></span>&nbsp;Delete
+					</a>
+				</div>
+				<fieldset ng-if="oneNetwork.subnetworks && oneNetwork.subnetworks.length > 0">
+					<legend>Subnets</legend>
+					<div class="grid">
+						<table width="100%">
+							<thead>
+							<tr>
+								<th>Name</th>
+								<th>Address</th>
+								<th>Gateway</th>
+								<th>Region</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr ng-repeat="oneSubnet in oneNetwork.subnetworks" ng-class-even="'even'" ng-class-odd="'odd'">
+								<td>{{oneSubnet.name}}</td>
+								<td>{{oneSubnet.address}}</td>
+								<td>{{oneSubnet.gateway}}</td>
+								<td>{{oneSubnet.region}}</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</fieldset>
+			</accordion-group>
+		</accordion>
+	</div>
+</div>

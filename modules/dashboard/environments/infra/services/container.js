@@ -206,7 +206,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							if(currentScope.containers.availableEnvironments[i].restriction){
 								currentScope.containers.availableEnvironments.splice(i, 1);
 							}
-							if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+							else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
 								currentScope.containers.availableEnvironments.splice(i, 1);
 							}
 						}

@@ -143,6 +143,12 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			//populate form inputs for user to configure IAC
 			let oneProvider = currentScope.cloud.form.formData.selectedProvider;
 			
+			currentScope.cloud.selectedProvider = oneProvider;
+			currentScope.cloud.selectedProvider.region = Object.keys(currentScope.environment.restriction[oneProvider._id])[0];
+			currentScope.cloud.selectedProvider.network = currentScope.environment.restriction[oneProvider._id][currentScope.cloud.selectedProvider.region].network;
+			currentScope.cloud.selectedProvider.extra = angular.copy(currentScope.environment.restriction[oneProvider._id][currentScope.cloud.selectedProvider.region]);
+			delete currentScope.cloud.selectedProvider.extra.network;
+			
 			let containerTemplates = [];
 			let vmTemplates = [];
 			
@@ -201,13 +207,6 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		//check environment deployer options
 		if(currentScope.environment.selected.includes('container') && (!currentScope.environment.pending || !currentScope.environment.error)){
-			
-			currentScope.cloud.selectedProvider = oneProvider;
-			currentScope.cloud.selectedProvider.region = Object.keys(currentScope.environment.restriction[oneProvider._id])[0];
-			currentScope.cloud.selectedProvider.network = currentScope.environment.restriction[oneProvider._id][currentScope.cloud.selectedProvider.region].network;
-			currentScope.cloud.selectedProvider.extra = angular.copy(currentScope.environment.restriction[oneProvider._id][currentScope.cloud.selectedProvider.region]);
-			delete currentScope.cloud.selectedProvider.extra.network;
-			
 			currentScope.containers.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 			currentScope.containers.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 			
@@ -337,13 +336,9 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		//update the container form entries
 		currentScope.vms = currentScope.cloud.$new();
-		currentScope.vms.techProviders = currentScope.cloud.techProviders;
-		currentScope.vms.envCode = currentScope.environment.code;
+		currentScope.vms.envCode = currentScope.envCode;
 		platformsVM.go(currentScope, 'listVMLayers');
-		
 		currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
-		
-		
 	}
 	
 	/**

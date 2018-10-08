@@ -240,11 +240,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			"method": "delete",
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
+				'technology': 'vm',
 				"id": oneVMLayer.template.id,
 				"env": currentScope.envCode,
-				"layerName": oneVMLayer.name,
-				"infraId": oneVMLayer.infraProvider._id,
-				'technology': 'vm'
+				"layerName": oneVMLayer.name
 			}
 		}, function (error, response) {
 			if (error) {
@@ -253,7 +252,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			else {
 				currentScope.displayAlert('success', "Virtual Machine Layer deleted, changes will be available soon.");
 				
-				listVMLayers(currentScope);
+				listVMLayers(currentScope, currentScope.envCode);
 			}
 		});
 	}
@@ -276,9 +275,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"method": "post",
 					"routeName": "/dashboard/cloud/vm",
 					"params": {
-						"env": currentScope.envCode,
 						'technology': 'vm',
-						"infraId": oneProvider._id
+						"env": currentScope.envCode
 					},
 					"data": {
 						"infraCodeTemplate": formData.infraCodeTemplate,
@@ -296,7 +294,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							modalInstance.close();
 						}
 						$timeout(() => {
-							listVMLayers(currentScope);
+							listVMLayers(currentScope, currentScope.envCode);
 						}, 1000);
 					}
 				});
@@ -343,15 +341,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"method": "put",
 					"routeName": "/dashboard/cloud/vm",
 					"params": {
-						"env": currentScope.envCode,
 						'technology': 'vm',
-						"infraId": oneProvider._id,
-						"layerName": formData.name,
+						"env": currentScope.envCode,
 						"id": oneVMLayer.template.id
 					},
 					"data": {
 						"infraCodeTemplate": formData.infraCodeTemplate,
-						"region": formData.region,
 						"layerName": formData.name,
 						"specs": formData
 					}
@@ -367,7 +362,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							modalInstance.close();
 						}
 						$timeout(() => {
-							listVMLayers(currentScope);
+							listVMLayers(currentScope, currentScope.envCode);
 						}, 1000);
 					}
 				});
@@ -391,10 +386,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"method": "get",
 						"routeName": "/dashboard/cloud/vm/layer/status",
 						"params": {
-							"id": oneVMLayer.template.id,
-							"env": currentScope.envCode,
 							'technology': 'vm',
-							"infraId": oneVMLayer.infraProvider._id,
+							"env": currentScope.envCode,
+							"id": oneVMLayer.template.id,
 							"layerName": oneVMLayer.name
 						}
 					}, function (error, response) {
@@ -894,14 +888,12 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"routeName": "/dashboard/cloud/vm/onboard",
 						"params": {
 							"env": currentScope.envCode,
-							"infraId": vmLayer.infraProvider._id,
 							"release": release
 						},
 						"data": {
 							'ids': ids,
 							"group": vmLayer.list[0].labels['soajs.service.vm.group'],
-							"layerName": vmLayer.list[0].layer,
-							"region": vmLayer.list[0].region,
+							"layerName": vmLayer.list[0].layer
 						}
 					}, function (error) {
 						overlayLoading.hide();
@@ -912,7 +904,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 							if (vmLayer.sync) {
 								delete vmLayer.sync;
 							}
-							listVMLayers(currentScope);
+							listVMLayers(currentScope, currentScope.envCode);
 							currentScope.displayAlert('success', "Virtual Machine updated");
 						}
 					});

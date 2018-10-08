@@ -10,23 +10,9 @@
 			</div>
 		</div>
 		<div ng-switch-when="singleInfra">
-			
-			<tabset>
-				<tab heading="Container Technology" ng-if="access.platforms.attachContainer || access.platforms.detachContainer">
-					<br/>
-					<div ng-include="'modules/dashboard/environments/infra/directives/container.tmpl'"></div>
-				</tab>
-				<tab heading="Virtual Machines" ng-if="access.vm.list" active="openVMs">
-					<br/>
-					<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
-				</tab>
-				<tab class="redTab" heading="Failed Virtual Machines" ng-show="errorVMLayers">
-					<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
-				</tab>
-				<tab heading="Cloud Provider">
-					<div ng-include="'modules/dashboard/environments/infra/directives/cloudProvider.tmpl'"></div>
-				</tab>
-			</tabset>
+			<div ng-if="access.platforms.createContainer || access.platforms.deleteContainer || access.vm.list">
+				<div ng-include="'modules/dashboard/environments/infra/directives/cloudProvider.tmpl'"></div>
+			</div>
 		</div>
 	</div>
 </section>

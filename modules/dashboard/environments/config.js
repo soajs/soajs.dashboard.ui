@@ -22,17 +22,7 @@ var serviceProviders = {
 						"grid": {
 							"columns": {}
 						},
-						"entries": [
-								{
-									'name': 'region',
-									'label': 'Select a Region',
-									'type': 'select',
-									'value': [],
-									'tooltip': 'Select Deployment Region',
-									"fieldMsg": "AWS deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges.",
-									'required': true
-								}
-							]
+						"entries": []
 					}
 				}
 			}
@@ -82,17 +72,7 @@ var serviceProviders = {
 						"grid": {
 							"columns": {}
 						},
-						"entries": [
-							{
-								'name': 'region',
-								'label': 'Select a Region',
-								'type': 'select',
-								'value': [],
-								'tooltip': 'Select Deployment Region',
-								'required': true,
-								"fieldMsg": "Google Cloud deployments are based on regions; Regions differ in type & price of machines as well as data transfer charges."
-							}
-						]
+						"entries": []
 					}
 				}
 			}
@@ -683,7 +663,9 @@ var environmentsConfig = {
 		"platforms": {
 			"getEnvironment": ['dashboard', '/environment', 'get'],
 			"attachContainer": ['dashboard', '/environment/platforms/attach', 'post'],
-			"detachContainer": ['dashboard', '/environment/platforms/detach', 'delete']
+			"detachContainer": ['dashboard', '/environment/platforms/detach', 'delete'],
+			"createContainer": ['dashboard', '/environment/platforms/createContainer', 'post'],
+			"deleteContainer": ['dashboard', '/environment/platforms/deleteContainer', 'delete']
 		},
 		"hacloud": {
 			"nodes": {

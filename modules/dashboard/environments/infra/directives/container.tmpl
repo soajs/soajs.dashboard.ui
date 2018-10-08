@@ -1,9 +1,13 @@
 <div ng-if="environment.pending">
 	<alert type="info">
-		<h4><span class="icon icon-spinner4"></span>Attaching Container Technology</h4>
+		<h4 ng-if="!containers.form.formData.selectedProvider"><span class="icon icon-spinner4"></span>Attaching Container Technology</h4>
+		<h4 ng-if="containers.form.formData.selectedProvider"><span class="icon icon-spinner4"></span>Creating & Attaching Container Cluster</h4>
 		<hr>
-		<p style="color:black;">
+		<p style="color:black;" ng-if="containers.form.formData.selectedProvider">
 			The Container Technology is being created and will be attached to this environment.
+		</p>
+		<p style="color:black;" ng-if="!containers.form.formData.selectedProvider">
+			The Container Technology is being attached to this environment.
 		</p>
 		<p style="color:black;">
 			This operation takes a few minutes and the container configuration will be displayed once completed.
@@ -16,13 +20,18 @@
 
 <div ng-if="environment.error && !environment.pending">
 	<alert type="danger">
-		<h4>Problem Attaching Container Technology</h4>
+		<h4 ng-if="!containers.form.formData.selectedProvider">Problem Attaching Container Technology</h4>
+		<h4 ng-if="containers.form.formData.selectedProvider">Problem Creating Container Cluster</h4>
 		<hr>
-		<p style="color:black;">
+		<p style="color:black;" ng-if="!containers.form.formData.selectedProvider">
 			An error occured while attaching container technology to this environment.<br />
 		</p>
-		<p style="color:black;" ng-if="environment.error.code === 173">
-			The inputs you provided while attaching the container technology are invalid according to the validation rules of the template you have selected.
+		
+		<p style="color:black;" ng-if="containers.form.formData.selectedProvider">
+			An error occured while creating the container cluster and attaching it to this environment.<br />
+		</p>
+		<p style="color:black;" ng-if="containers.form.formData.selectedProvider && environment.error.code === 173">
+			The inputs you provided while creating the container cluster are invalid according to the validation rules of the template you have selected.
 		</p>
 		<p style="color:black;">
 			<b><u>Details:</u></b><br />
@@ -43,21 +52,22 @@
 <div ng-if="!environment.pending && !environment.error && !attach">
 	<fieldset>
 		<legend>
-			<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" height="80px" alt="Docker Logo"/>
-			<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
+			<img ng-if="containers.platform === 'docker'" ng-src="{{containers.dockerImagePath}}" height="80px" alt="Docker Logo"/>
+			<img ng-if="containers.platform === 'kubernetes'" ng-src="{{containers.kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
 		</legend>
 		<div class="t-right">
-			<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="detachContainer()">
+			<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="containers.detachContainer()" ng-if="!containers.form.formData.selectedProvider">
+			<input type="button" class="btn btn-sm btn-danger" value="Delete Container Cluster" ng-click="containers.detachContainer()" ng-if="containers.form.formData.selectedProvider">
 		</div>
 		<div class="entryBoxes entryBoxesGrid">
 			<div class="entryBox driverEntryBox">
 				<div class="header">
 					{{driver|uppercase}}
 					<span class="rightActions">
-                        <a href="" ng-if="access.platforms.certs.upload && platform === 'docker' && driver ==='remote' && config.certs.length < 3" ng-click="uploadCerts(platform, driver)">
+                        <a href="" ng-if="access.platforms.certs.upload && containers.platform === 'docker' && containers.driver ==='remote' && containers.config.certs.length < 3">
                             <span class="icon icon-attachment" tooltip="{{translation.uploadCertificates[LANG]}}"></span>
                         </a>
-                        <a href="" ng-if="platform === 'kubernetes'" ng-click="updateNamespaceConfig(driver)">
+                        <a href="" ng-if="containers.platform === 'kubernetes'" ng-click="containers.updateNamespaceConfig(containers.driver)">
                             <span class="icon icon-cog" tooltip="ConfigureDriver"></span>
                         </a>
                     </span>
@@ -79,14 +89,20 @@
 		<alert type="danger">
 			<h2>Warning !</h2>
 			<hr>
-			<p style="color:black;">
+			<p style="color:black;" ng-if="!selectedProvider">
 				Detaching the container technology from this environment will automatically remove all the deployments & secrets associated to this environment.
 			</p>
-			<p style="color:black;">
-				The infra cloud provider <b>cluster</b> will also be removed if this environment is the only one using it.
+			<p style="color:black;" ng-if="selectedProvider">
+				Deleting the container cluster from this environment will automatically remove all the deployments & secrets associated to this environment.
 			</p>
-			<p style="color:black;">
+			<p style="color:black;" ng-if="selectedProvider">
+				The container cluster will also be removed if this environment is the only one using it.
+			</p>
+			<p style="color:black;" ng-if="!selectedProvider">
 				You can always reattach a new container technology back to this environment, but the deployments & secrets will not be available.
+			</p>
+			<p style="color:black;" ng-if="selectedProvider">
+				You can always recreate a new container cluster and attach it to this environment, but the deployments & secrets will not be available.
 			</p>
 			<p>
 				<b>This operation is irreversible and might cause the environment to become unreachable!</b>

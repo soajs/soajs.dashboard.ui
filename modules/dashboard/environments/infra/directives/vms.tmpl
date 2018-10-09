@@ -1,62 +1,32 @@
-<div ng-if="environmentWizard" class="c-both w-100 table">
-	<!--<alert type="info">-->
-		<!--<p>-->
-			<!--Detected Existing VM Layers that you can use to deploy resources in based on the template you have selected.<br />-->
-		<!--</p>-->
-		<!--<b><u>To proceed, you can:</u></b>-->
-		<!--<ol>-->
-			<!--<li>Either click next and use these VM Layers in the next step when deploying resources.</li>-->
-			<!--<li>Or create new VM Layers and use these layers in the next steps when deploying resources.</li>-->
-		<!--</ol>-->
-	<!--</alert>-->
-	<alert type="info">
-		<p>
-			Create Virtual Machine Layers and attach them to this environment and later on, you can deploy resources in them.
-		</p>
-		<p ng-if="optionalVMLayer">
-			If you do not want to attach any virtual machine at the moment, just click on next to skip.
-		</p>
-	</alert>
-	<br />
-</div>
-
 <div class="f-right">
-	<a class="btn btn-sm btn-success" ng-click="listVMLayers()" ng-if="access.vm.list">
+	<a class="btn btn-sm btn-success" ng-click="vms.listVMLayers()" ng-if="access.vm.list">
 		<span class="icon icon-undo"></span>
 		Refresh
 	</a>
 </div>
-<div ng-if="!infraProviders && !listingClouds" class="c-both w-100 table">
-	<br />
-	<alert type="warning">
-		<p>
-			No Cloud Providers Detected that support <b>Virtual Machines</b>.
-		</p>
-	</alert>
-</div>
-<div ng-if="(infraProviders && infraProviders.length > 0) || vmsAvailable">
+<div>
 	<div class="f-left">
-		<a class="btn btn-sm btn-primary" ng-click="addVMLayer()" ng-if="infraProviders && access.vm.create && !listingClouds">
+		<a class="btn btn-sm btn-primary" ng-click="vms.addVMLayer()" ng-if="access.vm.create && !listingClouds">
 			<span class="icon icon-plus"></span>
-			Create New Virtual Machine Layer
+			Create Virtual Machine Cluster
 		</a>
 	</div>
-	<div class="c-both w100 entryBoxes" ng-show="!vmLayers">
+	<div class="c-both w100 entryBoxes" ng-show="!vms.vmLayers">
 		<br>
 		<alert type="warning">
 			<p>
-				No <b>Virtual Machines</b> Found.
+				No <b>Virtual Machines Clusters </b> Found.
 			</p>
 		</alert>
 	</div>
-	<div class="c-both w100 entryBoxes" ng-show="vmLayers">
-		<br />
-		<div ng-repeat="oneVMLayer in vmLayers">
+	<div class="c-both w100 entryBoxes" ng-show="vms.vmLayers">
+		<br/>
+		<div ng-repeat="oneVMLayer in vms.vmLayers">
 			
 			<!--if vm was created by soajs or onboarded-->
-			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'])" ng-hide="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.layer.name'] && environmentWizard">
-
-				<div class="entryBox mb20" ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
+			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'])" ng-hide="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.layer.name']">
+				
+				<div class="entryBox mb20" ng-class="{'tempVMLayer': oneVMLayer.forceEditDelete }">
 					<div class="header table">
 						<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
 						<span class="serviceLabelBox">
@@ -67,7 +37,7 @@
 						</span>
 						&nbsp;&nbsp;
 					</span>
-
+						
 						<div class="dropdown serviceOpsDropdown">
 							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 								Service Operations
@@ -75,25 +45,25 @@
 							</button>
 							<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
 								<li>
-									<a href="" ng-click="inspectVMLayer(oneVMLayer)">
+									<a href="" ng-click="vms.inspectVMLayer(oneVMLayer)">
 										<span class="icon icon-info"></span>&nbsp;Inspect VM Layer
 									</a>
 								</li>
 								<li ng-show="environmentWizard || oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="access.vm.modify && oneVMLayer.template && (!environmentWizard || oneVMLayer.forceEditDelete) && !listingClouds">
-									<a href="" ng-click="editVMLayer(oneVMLayer)">
+									<a href="" ng-click="vms.editVMLayer(oneVMLayer)">
 										<span class="icon icon-pencil"></span>&nbsp;Modify VM Layer
 									</a>
 								</li>
 								<li ng-show="environmentWizard || oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="access.vm.delete && oneVMLayer.template  && (!environmentWizard || oneVMLayer.forceEditDelete || listingClouds)">
-									<a href="" ng-click="deleteVMLayer(oneVMLayer)" ng-confirm-click="Are you sure you want to delete this VM Layer, this operation is irreversible?">
+									<a href="" ng-click="vms.deleteVMLayer(oneVMLayer)" ng-confirm-click="Are you sure you want to delete this VM Layer, this operation is irreversible?">
 										<span class="icon icon-cross"></span>&nbsp;Delete VM Layer
 									</a>
 								</li>
 							</ul>
-							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.onBoard'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync && oneVMLayer.executeCommand" class="btn btn-danger" ng-click="getOnBoard(oneVMLayer, true)">
+							<button ng-show="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.onBoard'] && oneVMLayer.list[0].tasks[0].status.state === 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync && oneVMLayer.executeCommand" class="btn btn-danger" ng-click="vms.getOnBoard(oneVMLayer, true)">
 								Release
 							</button>
-							<button  ng-if="!listingClouds && !environmentWizard && oneVMLayer.sync && oneVMLayer.executeCommand" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
+							<button ng-if="!listingClouds && !environmentWizard && oneVMLayer.sync && oneVMLayer.executeCommand" class="btn  btn-warning" ng-click="vms.getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>
@@ -102,126 +72,121 @@
 						<div class="grid" ng-repeat="instance in oneVMLayer.list">
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
-								<tr class="header">
-									<td ng-if="listingClouds" class="">Operations</td>
-									<td ng-class="{'nameHeader': true }">Instance Name</td>
-									<td ng-class="nameHeader">OS Name</td>
-									<td ng-class="nameHeader">DiskSize</td>
-									<td ng-class="nameHeader">Instance Network</td>
-									<td ng-class="nameHeader">IP Addresses</td>
-									<td ng-class="nameHeader">Status</td>
-									<td ng-class="nameHeader">Last Check</td>
-								</tr>
+									<tr class="header">
+										<td class="nameHeader">Operations</td>
+										<td class="nameHeader">Instance Name</td>
+										<td class="nameHeader">OS Name</td>
+										<td class="nameHeader">DiskSize</td>
+										<td class="nameHeader">Instance Network</td>
+										<td class="nameHeader">IP Addresses</td>
+										<td class="nameHeader">Status</td>
+										<td class="nameHeader">Last Check</td>
+									</tr>
 								</thead>
 								<tbody>
-								<tr class="cloud-tr-bgColor">
-									<td ng-if="listingClouds">
-										<!--<a href="" ng-if="access.vm.logs" ng-click="getVMLogs(oneVMLayer, instance)" tooltip="Show VM Logs">-->
-										<!--<span class="icon icon-terminal"></span>&nbsp;-->
-										<!--</a>-->
-										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'startVM')" tooltip="Start VM Instance">
-											<span class="icon icon-switch"></span>&nbsp;
-										</a>
-										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'powerOffVM')" tooltip="Stop VM Instance">
-											<span class="icon icon-blocked"></span>&nbsp;
-										</a>
-										<a href="" ng-if="access.vm.maintenance" ng-click="maintenanceOp(oneVMLayer, instance, 'restartService')" tooltip="Restart VM Instance">
-											<span class="icon icon-loop2"></span>&nbsp;
-										</a>
-										<a ng-click="deleteVM(oneVMLayer, instance)" ng-if="access.vm.deleteInstance && listingClouds" tooltip="Delete VM Instance">
-											<span class="icon icon-cross"></span>
-										</a>
-									</td>
-									<td>{{instance.name}}</td>
-									<td>{{instance.tasks[0].ref.os.type || 'N/A'}}</td>
-									<td>
-										<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
-										<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
-									</td>
-									<td>{{instance.network || 'N/A'}}</td>
-									<td>
-										<div ng-repeat="oneIP in instance.ip" ng-if="instance.ip && instance.ip.length > 0">
-											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
-										</div>
-										<span ng-if="!instance.ip || instance.ip.length === 0">N/A</span>
-									</td>
-									<td>{{instance.tasks[0].status.state}}</td>
-									<td>{{instance.tasks[0].status.ts|fulldate}}</td>
+									<tr class="cloud-tr-bgColor">
+										<td>
+											<a href="" ng-if="access.vm.maintenance" ng-click="vms.maintenanceOp(oneVMLayer, instance, 'startVM')" tooltip="Start VM Instance">
+												<span class="icon icon-switch"></span>&nbsp;
+											</a>
+											<a href="" ng-if="access.vm.maintenance" ng-click="vms.maintenanceOp(oneVMLayer, instance, 'powerOffVM')" tooltip="Stop VM Instance">
+												<span class="icon icon-blocked"></span>&nbsp;
+											</a>
+											<a href="" ng-if="access.vm.maintenance" ng-click="vms.maintenanceOp(oneVMLayer, instance, 'restartService')" tooltip="Restart VM Instance">
+												<span class="icon icon-loop2"></span>&nbsp;
+											</a>
+											<a ng-click="vms.deleteVM(oneVMLayer, instance)" ng-if="access.vm.deleteInstance && listingClouds" tooltip="Delete VM Instance">
+												<span class="icon icon-cross"></span>
+											</a>
+										</td>
+										<td>{{instance.name}}</td>
+										<td>{{instance.tasks[0].ref.os.type || 'N/A'}}</td>
+										<td>
+											<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
+											<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
+										</td>
+										<td>{{instance.network || 'N/A'}}</td>
+										<td>
+											<div ng-repeat="oneIP in instance.ip" ng-if="instance.ip && instance.ip.length > 0">
+												<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
+											</div>
+											<span ng-if="!instance.ip || instance.ip.length === 0">N/A</span>
+										</td>
+										<td>{{instance.tasks[0].status.state}}</td>
+										<td>{{instance.tasks[0].status.ts|fulldate}}</td>
 								</tbody>
 							</table>
 						</div>
 						<div class="grid" ng-if="oneVMLayer.specs">
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
-								<tr class="header">
-									<td width="50%" class="nameHeader">Template</td>
-									<td class="nameHeader">Region</td>
-									<td class="nameHeader">Group</td>
-								</tr>
+									<tr class="header">
+										<td width="50%" class="nameHeader">Template</td>
+										<td class="nameHeader">Region</td>
+										<td class="nameHeader">Group</td>
+									</tr>
 								</thead>
 								<tbody>
-								<tr class="cloud-tr-bgColor">
-									<td>{{oneVMLayer.template}}</td>
-									<td>{{oneVMLayer.region}}</td>
-									<td>{{oneVMLayer.group}}</td>
-								</tr>
+									<tr class="cloud-tr-bgColor">
+										<td>{{oneVMLayer.template}}</td>
+										<td>{{oneVMLayer.region}}</td>
+										<td>{{oneVMLayer.group}}</td>
+									</tr>
 								</tbody>
 							</table>
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
-								<tr class="header">
-									<td class="nameHeader">VM Layer Specs</td>
-								</tr>
+									<tr class="header">
+										<td class="nameHeader">VM Layer Specs</td>
+									</tr>
 								</thead>
 								<tbody>
-								<tr class="cloud-tr-bgColor">
-									<td>
-										<div ng-bind-html="oneVMLayer.specs|object" class="vmSpecsBox"></div>
-									</td>
-								</tr>
+									<tr class="cloud-tr-bgColor">
+										<td>
+											<div ng-bind-html="oneVMLayer.specs|object" class="vmSpecsBox"></div>
+										</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>
 					</div>
 				</div>
 			</div>
-
+			
 			<!--if no template and no labels, vm is an orphan, you can onboard it-->
-			<div ng-if="!oneVMLayer.template && !oneVMLayer.list[0].labels['soajs.env.code']" ng-hide="listingClouds">
+			<div ng-if="!oneVMLayer.template && !oneVMLayer.list[0].labels['soajs.env.code']">
 				<div class="entryBox mb20"
-					 ng-class="{'tempVMLayer': (environmentWizard && oneVMLayer.forceEditDelete) }">
+				     ng-class="{'tempVMLayer': oneVMLayer.forceEditDelete}">
 					<div class="header table" style="background-color: #d9edf7">
-						<img height="26"
-							 ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png"
-							 alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
+						<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>&nbsp;
 						<span class="serviceLabelBox">
-						<span>
-							<b style="margin:0;">{{oneVMLayer.name}}</b>
-							<span ng-if="oneVMLayer.list.length > 1">/ Replica of {{oneVMLayer.list.length}}</span>
-							<span ng-if="oneVMLayer.list.length === 1">/ Single Instance</span>
+							<span>
+								<b style="margin:0;">{{oneVMLayer.name}}</b>
+								<span ng-if="oneVMLayer.list.length > 1">/ Replica of {{oneVMLayer.list.length}}</span>
+								<span ng-if="oneVMLayer.list.length === 1">/ Single Instance</span>
+							</span>
+							&nbsp;&nbsp;
 						</span>
-						&nbsp;&nbsp;
-					</span>
-
+						
 						<div class="dropdown serviceOpsDropdown">
-
+							
 							<button class="btn btn-default dropdown-toggle" type="button" id="" data-toggle="dropdown"
-									aria-haspopup="true" aria-expanded="true">
+							        aria-haspopup="true" aria-expanded="true">
 								Service Operations
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
 								<li>
-									<a href="" ng-click="inspectVMLayer(oneVMLayer)">
+									<a href="" ng-click="vms.inspectVMLayer(oneVMLayer)">
 										<span class="icon icon-info"></span>&nbsp;Inspect VM Layer
 									</a>
 								</li>
 							</ul>
-
-							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync && oneVMLayer.executeCommand" class="btn btn-primary" ng-click="getOnBoard(oneVMLayer, false)">
+							
+							<button ng-hide="oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded'" ng-if="!listingClouds && !oneVMLayer.sync && oneVMLayer.executeCommand" class="btn btn-primary" ng-click="vms.getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
-                            <button ng-hide="(oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded')" ng-if="!listingClouds && oneVMLayer.sync && oneVMLayer.executeCommand" class="btn  btn-warning" ng-click="getOnBoard(oneVMLayer, false)">
+							<button ng-hide="(oneVMLayer.list[0].labels['soajs.env.code'] || oneVMLayer.list[0].tasks[0].status.state !== 'succeeded')" ng-if="!listingClouds && oneVMLayer.sync && oneVMLayer.executeCommand" class="btn  btn-warning" ng-click="vms.getOnBoard(oneVMLayer, false)">
 								On-Board
 							</button>
 						</div>
@@ -230,91 +195,88 @@
 						<div class="grid" ng-repeat="instance in oneVMLayer.list">
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
-								<tr class="header">
-									<td ng-if="listingClouds" class="">Operations</td>
-									<td ng-class="{'nameHeader': true }">Instance Name</td>
-									<td ng-class="nameHeader">OS Name</td>
-									<td ng-class="nameHeader">DiskSize</td>
-									<td ng-class="nameHeader">Instance Network</td>
-									<td ng-class="nameHeader">IP Addresses</td>
-									<td ng-class="nameHeader">Status</td>
-									<td ng-class="nameHeader">Last Check</td>
-								</tr>
+									<tr class="header">
+										<td class="nameHeader">Operations</td>
+										<td class="nameHeader">Instance Name</td>
+										<td class="nameHeader">OS Name</td>
+										<td class="nameHeader">DiskSize</td>
+										<td class="nameHeader">Instance Network</td>
+										<td class="nameHeader">IP Addresses</td>
+										<td class="nameHeader">Status</td>
+										<td class="nameHeader">Last Check</td>
+									</tr>
 								</thead>
 								<tbody>
-								<tr class="cloud-tr-bgColor">
-									<td ng-if="listingClouds">
-										<!--<a href="" ng-if="access.vm.logs" ng-click="getVMLogs(oneVMLayer, instance)" tooltip="Show VM Logs">-->
-										<!--<span class="icon icon-terminal"></span>&nbsp;-->
-										<!--</a>-->
-										<a href="" ng-if="access.vm.maintenance"
-										   ng-click="maintenanceOp(oneVMLayer, instance, 'startVM')"
-										   tooltip="Start VM Instance">
-											<span class="icon icon-switch"></span>&nbsp;
-										</a>
-										<a href="" ng-if="access.vm.maintenance"
-										   ng-click="maintenanceOp(oneVMLayer, instance, 'powerOffVM')"
-										   tooltip="Stop VM Instance">
-											<span class="icon icon-blocked"></span>&nbsp;
-										</a>
-										<a href="" ng-if="access.vm.maintenance"
-										   ng-click="maintenanceOp(oneVMLayer, instance, 'restartService')"
-										   tooltip="Restart VM Instance">
-											<span class="icon icon-loop2"></span>&nbsp;
-										</a>
-										<a ng-click="deleteVM(oneVMLayer, instance)" ng-confirm-click="Are you sure you want to delete this virtual machine instance ?"
-										   ng-if="access.vm.deleteInstance && listingClouds"
-										   tooltip="Delete VM Instance">
-											<span class="icon icon-cross"></span>
-										</a>
-									</td>
-									<td>{{instance.name}}</td>
-									<td>{{instance.tasks[0].ref.os.type || 'N/A'}}</td>
-									<td>
-										<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
-										<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
-									</td>
-									<td>{{instance.network || 'N/A'}}</td>
-									<td>
-										<div ng-repeat="oneIP in instance.ip" ng-if="instance.ip && instance.ip.length > 0">
-											<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
-										</div>
-										<span ng-if="!instance.ip || instance.ip.length === 0">N/A</span>
-									</td>
-									<td>{{instance.tasks[0].status.state}}</td>
-									<td>{{instance.tasks[0].status.ts|fulldate}}</td>
+									<tr class="cloud-tr-bgColor">
+										<td>
+											<a href="" ng-if="access.vm.maintenance"
+											   ng-click="vms.maintenanceOp(oneVMLayer, instance, 'startVM')"
+											   tooltip="Start VM Instance">
+												<span class="icon icon-switch"></span>&nbsp;
+											</a>
+											<a href="" ng-if="access.vm.maintenance"
+											   ng-click="vms.maintenanceOp(oneVMLayer, instance, 'powerOffVM')"
+											   tooltip="Stop VM Instance">
+												<span class="icon icon-blocked"></span>&nbsp;
+											</a>
+											<a href="" ng-if="access.vm.maintenance"
+											   ng-click="vms.maintenanceOp(oneVMLayer, instance, 'restartService')"
+											   tooltip="Restart VM Instance">
+												<span class="icon icon-loop2"></span>&nbsp;
+											</a>
+											<a ng-click="vms.deleteVM(oneVMLayer, instance)" ng-confirm-click="Are you sure you want to delete this virtual machine instance ?"
+											   ng-if="access.vm.deleteInstance && listingClouds"
+											   tooltip="Delete VM Instance">
+												<span class="icon icon-cross"></span>
+											</a>
+										</td>
+										<td>{{instance.name}}</td>
+										<td>{{instance.tasks[0].ref.os.type || 'N/A'}}</td>
+										<td>
+											<span ng-if="instance.tasks[0].ref.os.diskSizeGB">{{instance.tasks[0].ref.os.diskSizeGB}} GB</span>
+											<span ng-if="!instance.tasks[0].ref.os.diskSizeGB">N/A</span>
+										</td>
+										<td>{{instance.network || 'N/A'}}</td>
+										<td>
+											<div ng-repeat="oneIP in instance.ip" ng-if="instance.ip && instance.ip.length > 0">
+												<span ng-if="oneIP.address">{{oneIP.address}} ( {{oneIP.type}} / allocated to: {{oneIP.allocatedTo}} )</span>
+											</div>
+											<span ng-if="!instance.ip || instance.ip.length === 0">N/A</span>
+										</td>
+										<td>{{instance.tasks[0].status.state}}</td>
+										<td>{{instance.tasks[0].status.ts|fulldate}}</td>
 								</tbody>
 							</table>
 						</div>
 						<div class="grid" ng-if="oneVMLayer.specs">
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
-								<tr class="header">
-									<td width="50%" class="nameHeader">Template</td>
-									<td class="nameHeader">Region</td>
-									<td class="nameHeader">Group</td>
-								</tr>
+									<tr class="header">
+										<td width="50%" class="nameHeader">Template</td>
+										<td class="nameHeader">Region</td>
+										<td class="nameHeader">Group</td>
+									</tr>
 								</thead>
 								<tbody>
-								<tr class="cloud-tr-bgColor">
-									<td>{{oneVMLayer.template}}</td>
-									<td>{{oneVMLayer.region}}</td>
-									<td>{{oneVMLayer.group}}</td>
-								</tr>
+									<tr class="cloud-tr-bgColor">
+										<td>{{oneVMLayer.template}}</td>
+										<td>{{oneVMLayer.region}}</td>
+										<td>{{oneVMLayer.group}}</td>
+									</tr>
 								</tbody>
 							</table>
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
-								<tr class="header">
-									<td class="nameHeader">VM Layer Specs</td>
-								</tr>
+									<tr class="header">
+										<td class="nameHeader">VM Layer Specs</td>
+									</tr>
 								</thead>
 								<tbody>
-								<tr class="cloud-tr-bgColor">
-									<td>
-										<div ng-bind-html="oneVMLayer.specs|object" class="vmSpecsBox"></div>
-									</td>
-								</tr>
+									<tr class="cloud-tr-bgColor">
+										<td>
+											<div ng-bind-html="oneVMLayer.specs|object" class="vmSpecsBox"></div>
+										</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>
@@ -324,6 +286,7 @@
 		</div>
 	</div>
 </div>
+
 <script type="text/ng-template" id="infraProvider.tmpl">
 	<div class="modal-header">
 		<h3 class="modal-title">{{title}}</h3>
@@ -332,6 +295,7 @@
 		<ngform></ngform>
 	</div>
 </script>
+
 <script type="text/ng-template" id="vmLogBox.html">
 	<div class="modal-header">
 		<table width="100%">
@@ -346,13 +310,14 @@
 		</table>
 	</div>
 	<div class="modal-body">
-		<alert type="warning" style="text-align:center;" ng-if="message.warning"><span ng-bind-html="message.warning|toTrustedHtml"></span></alert>
+		<alert type="warning" style="text-align:center;" ng-if="message.warning">
+			<span ng-bind-html="message.warning|toTrustedHtml"></span></alert>
 		<div class="w-100 c-both t-right">
 			<a ng-click="refreshLogs()" class="btn btn-sm btn-success">
 				<span class="icon icon-undo"></span>
 				Refresh
 			</a>
-			<br /><br />
+			<br/><br/>
 		</div>
 		<pre id="code" ng-if="!message || !message.warning" class="preBox" scroll-glue><code style="white-space: pre !important;" class="sh" ng-bind-html="data"></code></pre>
 	</div>

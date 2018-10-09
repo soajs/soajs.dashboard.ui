@@ -1,6 +1,6 @@
-<div ng-if="platform === 'docker'">
+<div ng-if="containers.platform === 'docker'">
 	<div class="grid">
-		<alert type="warning" ng-if="oldDocker">
+		<alert type="warning" ng-if="containers.oldDocker">
 			<h4>Docker Deployment has been Upgraded</h4>
 			<p>
 				SOAJS Deployment has been upgraded to use the new <b>Docker Token</b> strategy instead of relying on certificates.<br />
@@ -17,34 +17,34 @@
 				<td width="50%">
 					<b>Master Node IP</b>
 				</td>
-				<td>{{config.nodes}}</td>
+				<td>{{containers.config.nodes}}</td>
 			</tr>
 			<tr class="even">
 				<td width="50%">
 					<b>Docker Port</b>
 				</td>
-				<td>{{config.apiPort}}</td>
+				<td>{{containers.config.apiPort}}</td>
 			</tr>
-			<tr class="odd first" ng-if="!oldDocker">
+			<tr class="odd first" ng-if="!containers.oldDocker">
 				<td width="50%">
 					<b>Protocol</b>
 				</td>
-				<td>{{config.apiProtocol}}</td>
+				<td>{{containers.config.apiProtocol}}</td>
 			</tr>
-			<tr class="odd" ng-if="!oldDocker">
+			<tr class="odd" ng-if="!containers.oldDocker">
 				<td colspan="2"><b>Token</b></td>
 			</tr>
-			<tr class="even last" ng-if="!oldDocker">
-				<td colspan="2">{{config.auth.token}}</td>
+			<tr class="even last" ng-if="!containers.oldDocker">
+				<td colspan="2">{{containers.config.auth.token}}</td>
 			</tr>
-			<tr class="odd" ng-if="oldDocker">
+			<tr class="odd" ng-if="containers.oldDocker">
 				<td colspan="2"><b>Certificates</b></td>
 			</tr>
-			<tr class="even last" ng-if="oldDocker">
+			<tr class="even last" ng-if="containers.oldDocker">
 				<td colspan="2">
 					<div class="staticDiv">
-						<div ng-style="{'padding-top': '10px'}" ng-if="config.certs.length > 0">
-							<div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in config.certs" style="width:32% !important;">
+						<div ng-style="{'padding-top': '10px'}" ng-if="containers.config.certs.length > 0">
+							<div class="entryBox blueBox greyBoxCustom" ng-repeat="cert in containers.config.certs" style="width:32% !important;">
 								<b>{{cert.filename}} [{{cert.certType}}]</b>
 							</div>
 						</div>
@@ -54,23 +54,23 @@
 		</table>
 	</div>
 </div>
-<div class="grid" ng-if="platform === 'kubernetes'">
+<div class="grid" ng-if="containers.platform === 'kubernetes'">
 	<table width="100%" cellspacing="10">
 		<tr class="odd first">
 			<td width="50%">
 				<b>Master Node IP</b>
 			</td>
-			<td>{{config.nodes}}</td>
+			<td>{{containers.config.nodes}}</td>
 		</tr>
-		<tr class="even" ng-class="{ 'red' : !config.namespace.default}">
+		<tr class="even" ng-class="{ 'red' : !containers.config.namespace.default}">
 			<td width="50%">
 				<b>Namespace Configuration</b>
 			</td>
-			<td>{{config.namespace.default || "N/A"}}</td>
+			<td>{{containers.config.namespace.default || "N/A"}}</td>
 		</tr>
 		<tr class="odd">
 			<td><b>Namespace Type</b></td>
-			<td>{{(config.namespace.perService ? 'Per Service' : 'Global')}}</td>
+			<td>{{(containers.config.namespace.perService ? 'Per Service' : 'Global')}}</td>
 		</tr>
 		<tr class="even">
 			<td colspan="2">
@@ -80,7 +80,7 @@
 		<tr class="odd last">
 			<td colspan="2">
 				<div style="overflow: auto;">
-					{{config.auth.token}}
+					{{containers.config.auth.token}}
 				</div>
 			</td>
 		</tr>

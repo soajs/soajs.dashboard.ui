@@ -1,25 +1,26 @@
-<alert type="info">
+<alert type="info" ng-if="!containers.form.formData.selectedProvider">
 	<p>
 		Attach a container technology to this environment by selecting from the options below.
 	</p>
 </alert>
 <br />
 <accordion close-others="true">
-	<accordion-group ng-click="switchDriver('previous')">
+	
+	<accordion-group ng-click="containers.switchDriver('previous')" ng-if="containers.availableEnvironments.length > 0">
 		<accordion-heading>
 			Use an existing Infra Cloud Provider
 		</accordion-heading>
 		I want to use the same technoloyg i already used for environment
-		<select ng-change="changeLikeEnv()" ng-model="form.formData.previousEnvironment" class="form-control w30" style="display: inline-block">
+		<select ng-change="containers.changeLikeEnv()" ng-model="containers.form.formData.previousEnvironment" class="form-control w30" style="display: inline-block">
 			<option value=""> -- Choose Environment --</option>
-			<option ng-repeat="oneBtn in availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
+			<option ng-repeat="oneBtn in containers.availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>
 		</select>
-		<div ng-show="previousPlatformDeployment">
+		<div ng-show="containers.previousPlatformDeployment">
 			<hr>
 			<fieldset>
 				<legend style="width:15%;">
-					<img ng-if="platform === 'docker'" ng-src="{{dockerImagePath}}" width="100%" alt="Docker Logo"/>
-					<img ng-if="platform === 'kubernetes'" ng-src="{{kubernetesImagePath}}" width="100%" alt="Kubernetes Logo"/>
+					<img ng-if="containers.platform === 'docker'" ng-src="{{containers.dockerImagePath}}" width="100%" alt="Docker Logo"/>
+					<img ng-if="containers.platform === 'kubernetes'" ng-src="{{containers.kubernetesImagePath}}" width="100%" alt="Kubernetes Logo"/>
 				</legend>
 				<br/>
 				<div class="entryBoxes entryBoxesGrid">
@@ -35,35 +36,47 @@
 			</fieldset>
 		</div>
 	</accordion-group>
-	<accordion-group is-open="platforms.docker" ng-click="switchDriver('docker')">
+	
+	<accordion-group is-open="containers.platforms.docker" ng-click="containers.switchDriver('docker')" ng-if="(!containers.form.formData.selectedProvider || (containers.form.formData.selectedProvider && containers.showDocker))">
 		<accordion-heading>
 			Use Docker Swarm as my Container Technology
 		</accordion-heading>
 
-		<div>
+		<div ng-if="!containers.form.formData.selectedProvider">
 			<div class="w100 c-both"><label>Select which Docker Swarm Cluster to Use</label><br></div>
-			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
+			<div class="infraProvider f-left" ng-repeat="oneProvider in containers.techProviders" ng-if="oneProvider.technologies.indexOf('docker') !== -1" ng-click="containers.selectProvider(oneProvider, 'docker')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
 				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
-			<div ng-if="!showDocker">
+			<div ng-if="!containers.showDocker">
 				<alert type="warning">No Technologies detected, click here to <a href="#/infra">Connect a Container Technology</a></alert>
 			</div>
 		</div>
+		<div ng-if="containers.form.formData.selectedProvider">
+			<div id="{{containers.form.formData.selectedProvider.name}}_docker"></div>
+		</div>
 	</accordion-group>
-	<accordion-group is-open="platforms.kubernetes" ng-click="switchDriver('kubernetes')">
+	
+	<accordion-group is-open="containers.platforms.kubernetes" ng-click="containers.switchDriver('kubernetes')" ng-if="(!containers.form.formData.selectedProvider || (containers.form.formData.selectedProvider && containers.showKube))">
 		<accordion-heading>
 			Use Kubernetes as my Container Technology
 		</accordion-heading>
 
-		<div>
+		<div ng-if="!containers.form.formData.selectedProvider">
 			<div class="w100 c-both"><label>Select a Kubernetes Technology</label><br></div>
-			<div class="infraProvider f-left" ng-repeat="oneProvider in infraProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
+			<div class="infraProvider f-left" ng-repeat="oneProvider in containers.techProviders" ng-if="oneProvider.technologies.indexOf('kubernetes') !== -1" ng-click="containers.selectProvider(oneProvider, 'kubernetes')" ng-class="{'selectedInfraProvider': oneProvider.deploy}">
 				<img ng-src="{{oneProvider.image}}" alt="" height="18"/>&nbsp;{{oneProvider.label}}
 			</div>
-			<div ng-if="!showKube">
+			<div ng-if="!containers.showKube">
 				<alert type="warning">No Technologies detected, click here to <a href="#/infra">Connect a Container Technology</a></alert>
 			</div>
 		</div>
+		<div ng-if="containers.form.formData.selectedProvider">
+			<div id="{{containers.form.formData.selectedProvider.name}}_kubernetes"></div>
+		</div>
 	</accordion-group>
+	
 </accordion>
-<div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>
+<div class="modal-footer">
+	<br/>
+	<input ng-repeat="formAction in containers.form.actions" type="{{formAction.type}}" value="{{formAction.label}}" ng-click="containers.form.do(formAction)" class="btn btn-sm btn-{{formAction.btn}}"/>
+</div>

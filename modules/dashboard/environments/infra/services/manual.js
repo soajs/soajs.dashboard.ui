@@ -5,14 +5,13 @@ platformManualServices.service('platformManual', ['platformCntnr', 'platformClou
 	function go(currentScope){
 		
 		currentScope.attachContainerTechnology = function(){
-			
 			currentScope.environment.type = 'container';
 			currentScope.attach = true;
-			
 			platformCntnr.go(currentScope, 'attachContainer');
 		};
 		
 		currentScope.selectCloudProvider = function(){
+			currentScope.environment.type = 'singleInfra';
 			platformCloudProvider.go(currentScope, 'selectProvider');
 		};
 	}

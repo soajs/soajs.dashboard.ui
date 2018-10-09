@@ -1,0 +1,117 @@
+<div ng-if="!environment.restriction">
+	
+	<div ng-switch="restrict">
+		<alert type="info">
+			<p>
+				Select which Cloud Provider you want to use for this environment and specify the region and network.
+			</p>
+		</alert>
+		<br/>
+		<accordion close-others="true">
+			<accordion-group ng-repeat="oneProvider in cloud.cloudProviders" ng-click="cloud.switchProvider(oneProvider)" is-open="oneProvider.expanded">
+				<accordion-heading>
+					<img ng-src="{{oneProvider.image}}" alt="" width="24"/>&nbsp;{{oneProvider.label}}
+				</accordion-heading>
+				
+				<div class="row">
+					<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+						<label>Technologies:</label>
+					</div>
+					<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+					<span ng-switch="oneTechnology" ng-repeat="oneTechnology in oneProvider.technologies">
+						<span ng-switch-when="docker">
+							<img ng-src="modules/dashboard/environments/infra/images/docker.png" alt="" height="18"/>
+						</span>
+						<span ng-switch-when="kubernetes">
+							<img ng-src="modules/dashboard/environments/infra/images/kubernetes.png" alt="" height="18"/>
+						</span>
+						<span ng-switch-when="vm">
+							<img ng-src="modules/dashboard/environments/infra/images/vm.png" alt="" height="18"/>
+						</span>
+					</span>
+					</div>
+				</div>
+				<hr/>
+				<div>
+					<label>Region:</label>
+					<select ng-model="cloud.form.formData.region" class="form-control" ng-change="cloud.populateProviderExtra();" ng-required="true">
+						<option value="">-- Choose a Region --</option>
+						<option ng-repeat="oneRegion in oneProvider.regions" value="{{oneRegion.v}}">{{oneRegion.l}}
+						</option>
+					</select>
+					<div>
+						<p class="fieldMsg">Select the region where you would want to create this environment.</p>
+					</div>
+				</div>
+				<div ng-if="cloud.form.formData.selectedProvider.providerExtra">
+					<div ng-repeat="(key,details) in cloud.form.formData.selectedProvider.providerExtra" id="{{cloud.form.formData.region}}_{{key}}}}">
+						<label>{{details.label}}</label>
+						<select ng-model="cloud.form.formData.providerExtra[key]" class="form-control" ng-change="cloud.populateNetworks();" ng-required="{{details.required}}">
+							<option value="">-- Choose a {{details.label}} --</option>
+							<option ng-repeat="oneValue in details.value" value="{{oneValue.v}}">{{oneValue.l}}</option>
+						</select>
+						<div>
+							<p class="fieldMsg">Select a/the {{details.label}} in this region.</p>
+						</div>
+					</div>
+				</div>
+				
+				<div ng-if="cloud.noNetworks === false">
+					<label>Networks</label>
+					<select ng-model="cloud.form.formData.network" class="form-control" ng-change="cloud.showNextButton();" ng-required="true">
+						<option value="">-- Choose a Network --</option>
+						<option ng-repeat="oneValue in cloud.networksList.value" value="{{oneValue.v}}">{{oneValue.l}}
+						</option>
+					</select>
+					<div>
+						<p class="fieldMsg">Select the network in this region to use while creating this environment.
+						</p>
+					</div>
+				</div>
+				<alert type="warning" ng-if="cloud.noNetworks === true">
+					<p>
+						No Networks found for this provider in region {{cloud.form.formData.region}}.
+						Select another region OR <a href="" ng-click="cloud.goToInfraNetworks()">Click Here to create a
+						new network in this region</a>.
+					</p>
+				</alert>
+			
+			</accordion-group>
+		</accordion>
+	</div>
+	
+	<div class="modal-footer">
+		<br/>
+		<input ng-repeat="formAction in cloud.form.actions" type="{{formAction.type}}" value="{{formAction.label}}" ng-click="cloud.form.do(formAction)" class="btn btn-sm btn-{{formAction.btn}}"/>
+	</div>
+</div>
+<div ng-if="environment.restriction">
+	<alert type="info">
+		<h4>Single Cloud Clustering</h4>
+		<hr>
+		<a href="" ng-click="" class="btn btn-sm btn-danger f-right" title="Unlock environment from this cloud provider to choose another">
+			<span class="icon icon-cross"></span> Remove
+		</a>
+		<p>
+			Your environment is deployed on <b>{{cloud.selectedProvider.label}}</b>, under region <b>{{cloud.selectedProvider.region}}</b> using network <b>{{cloud.selectedProvider.network}}</b>
+			<span ng-if="currentScope.cloud.selectedProvider.extra">
+				<span ng-repeat="item in currentScope.cloud.selectedProvider.extra"> and {{item}} <b>{{currentScope.cloud.selectedProvider.extra[item]}}</b></span>
+			</span>
+			.
+		</p>
+	</alert>
+	<br />
+	<tabset>
+		<tab heading="Container Technology" ng-if="((access.platforms.attachContainer || access.platforms.detachContainer) && (cloud.form.formData.selectedProvider.showKube || cloud.form.formData.selectedProvider.showDocker))" active="cloud.tabs.containers">
+			<br/>
+			<div ng-include="'modules/dashboard/environments/infra/directives/container.tmpl'"></div>
+		</tab>
+		<tab heading="Virtual Machines" ng-if="access.vm.list && cloud.form.formData.selectedProvider.showVm" active="cloud.tabs.vms" ng-click="vms.listVMLayers(true)">
+			<br/>
+			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
+		</tab>
+		<tab class="redTab" heading="Failed Virtual Machines" ng-show="vms.errorVMLayers && cloud.form.formData.selectedProvider.showVm" ng-click="vms.listVMLayers(true)">
+			<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
+		</tab>
+	</tabset>
+</div>

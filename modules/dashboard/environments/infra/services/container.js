@@ -5,74 +5,16 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	/*****************************************************
 	 * Attach Container Technology
 	 *****************************************************/
+	
+	/**
+	 * Open container technology form
+	 * @param currentScope
+	 */
 	function openContainerWizard(currentScope){
 		
-		currentScope.selectProvider = function(oneProvider, technology){
-			
-			//remove previous environment if set
-			delete currentScope.previousEnvironment;
-			if(currentScope.form && currentScope.form.formData && currentScope.form.formData.previousEnvironment){
-				delete currentScope.form.formData.previousEnvironment;
-			}
-			renderPreviousDeployInfo(currentScope);
-			
-			//reset all infra records
-			currentScope.infraProviders.forEach((oneInfra) => {
-				delete oneInfra.deploy;
-			});
-			
-			//set the one selected
-			oneProvider.deploy = {
-				technology: technology
-			};
-		};
-		
-		currentScope.changeLikeEnv = function () {
-			currentScope.previousEnvironment = currentScope.form.formData.previousEnvironment;
-			renderPreviousDeployInfo(currentScope);
-		};
-		
-		currentScope.switchDriver = function (driver) {
-			if (!currentScope.platforms) {
-				currentScope.platforms = {
-					docker: false,
-					kubernetes: false,
-					previous: false
-				};
-			}
-			
-			switch (driver) {
-				case 'previous':
-					if (currentScope.form && currentScope.form.formData && currentScope.form.formData && currentScope.form.formData.previousEnvironment) {
-						currentScope.changeLikeEnv();
-					}
-					currentScope.platforms.previous = true;
-					currentScope.platforms.docker = false;
-					currentScope.platforms.kubernetes = false;
-					break;
-				case 'docker':
-					delete currentScope.previousEnvironment;
-					currentScope.platforms.previous = false;
-					currentScope.platforms.docker = true;
-					currentScope.platforms.kubernetes = false;
-					break;
-				case 'kubernetes':
-					delete currentScope.previousEnvironment;
-					currentScope.platforms.previous = false;
-					currentScope.platforms.docker = false;
-					currentScope.platforms.kubernetes = true;
-					break;
-			}
-		};
-		
-		currentScope.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
-		
-		currentScope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
-		
-		let configuration = angular.copy(environmentsConfig.form.add.deploy.entries);
 		let options = {
 			timeout: $timeout,
-			entries: configuration,
+			entries: [],
 			name: 'attachContainer',
 			label: translation.addNewEnvironment[LANG],
 			actions: [
@@ -81,7 +23,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					'label': "Cancel",
 					'btn': 'danger',
 					'action': function () {
-						delete currentScope.form;
+						delete currentScope.containers.form;
 						currentScope.environment.type = 'manual';
 						delete currentScope.attach;
 					}
@@ -89,113 +31,131 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			]
 		};
 		overlayLoading.show();
-		buildForm(currentScope, $modal, options, function () {
+		
+		buildForm(currentScope.containers, $modal, options, function () {
 			
 			getEnvironments(currentScope, () => {
 				listInfraProviders(currentScope, () => {
 					overlayLoading.hide();
-					currentScope.form.actions.unshift({
+					currentScope.containers.form.actions.unshift({
 						'type': 'submit',
 						'label': "Attach Container",
 						'btn': 'primary',
 						'action': function (formData) {
 							
-							let postData = {};
-							
-							if (currentScope.platforms.previous) {
-								if (formData.previousEnvironment === '') {
-									$window.alert("Select the environment your want to clone its infrastructure settings to proceed!");
-									return false;
-								}
-								
-								postData.deployment = {
-									'selectedDriver': currentScope.platform,
-									'previousEnvironment': currentScope.previousEnvironment
-								};
-								
-								//link the infra that was used for this environment
-								currentScope.infraProviders.forEach((oneProvider) => {
-									oneProvider.deployments.forEach((oneDeployment) => {
-										if(oneDeployment.environments.indexOf(currentScope.previousEnvironment) !== -1){
-											postData.selectedInfraProvider = {
-												_id: oneProvider._id,
-												name: oneProvider.name
-											};
-										}
-									});
-								});
-							}
-							else if(currentScope.platforms.docker){
-								delete formData.previousEnvironment;
-								
-								postData.deployment = {
-									'selectedDriver': 'docker'
-								};
-								
-								//link the infra that was used for this environment
-								currentScope.infraProviders.forEach((oneProvider) => {
-									if(oneProvider.deploy){
-										postData.selectedInfraProvider = {
-											_id: oneProvider._id,
-											name: oneProvider.name
-										};
-									}
-								});
-							}
-							else if(currentScope.platforms.kubernetes){
-								delete formData.previousEnvironment;
-								postData.deployment = {
-									'selectedDriver': 'kubernetes'
-								};
-								
-								//link the infra that was used for this environment
-								currentScope.infraProviders.forEach((oneProvider) => {
-									if(oneProvider.deploy){
-										postData.selectedInfraProvider = {
-											_id: oneProvider._id,
-											name: oneProvider.name
-										};
-									}
-								});
-								
-							}
-							else{
-								delete formData.previousEnvironment;
-								// wair nikna !
-								$window.alert("Invalid Configuration Provided, unable to proceed!");
-								return false;
-							}
-							
-							postData.selectedInfraProvider.deploy = {
-								technology: postData.deployment.selectedDriver
-							};
-							
-							overlayLoading.show();
-							getSendDataFromServer(currentScope, ngDataApi, {
-								"method": "post",
-								"routeName": "/dashboard/environment/platforms/attach",
-								"params": {
-									"env": currentScope.envCode
-								},
-								"data": {
-									"data": postData
-								}
-							}, function (error) {
-								overlayLoading.hide();
-								if (error) {
-									currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-								}
-								else {
-									currentScope.displayAlert('success', "Container Technology attached to environment successfully, changes will appear soon.");
-									currentScope.environment.pending = true;
-									getEnvRecord(currentScope);
-								}
-							});
+							attachContainerTechnology(currentScope, formData);
 						}
 					});
 				});
 			});
 			
+		});
+	}
+	
+	/**
+	 * Attach Container Technology
+	 * @param currentScope
+	 * @param formData
+	 * @returns {boolean}
+	 */
+	function attachContainerTechnology(currentScope, formData){
+		let postData = {};
+		
+		if (currentScope.containers.platforms.previous) {
+			if (formData.previousEnvironment === '') {
+				$window.alert("Select the environment your want to clone its infrastructure settings to proceed!");
+				return false;
+			}
+			
+			postData.deployment = {
+				'selectedDriver': currentScope.containers.platform,
+				'previousEnvironment': currentScope.containers.previousEnvironment
+			};
+			
+			//link the infra that was used for this environment
+			currentScope.containers.techProviders.forEach((oneProvider) => {
+				oneProvider.deployments.forEach((oneDeployment) => {
+					if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
+						postData.selectedInfraProvider = {
+							_id: oneProvider._id,
+							name: oneProvider.name
+						};
+					}
+				});
+			});
+		}
+		else if(currentScope.containers.platforms.docker){
+			delete formData.previousEnvironment;
+			
+			postData.deployment = {
+				'selectedDriver': 'docker'
+			};
+			
+			//link the infra that was used for this environment
+			currentScope.containers.techProviders.forEach((oneProvider) => {
+				if(oneProvider.deploy){
+					postData.selectedInfraProvider = {
+						_id: oneProvider._id,
+						name: oneProvider.name
+					};
+				}
+			});
+		}
+		else if(currentScope.containers.platforms.kubernetes){
+			delete formData.previousEnvironment;
+			postData.deployment = {
+				'selectedDriver': 'kubernetes'
+			};
+			
+			//link the infra that was used for this environment
+			currentScope.containers.techProviders.forEach((oneProvider) => {
+				if(oneProvider.deploy){
+					postData.selectedInfraProvider = {
+						_id: oneProvider._id,
+						name: oneProvider.name
+					};
+				}
+			});
+			
+		}
+		else{
+			delete formData.previousEnvironment;
+			// wair nikna !
+			$window.alert("Invalid Configuration Provided, unable to proceed!");
+			return false;
+		}
+		
+		postData.selectedInfraProvider.deploy = {
+			technology: postData.deployment.selectedDriver
+		};
+		
+		if(currentScope.containers.techProviders && currentScope.containers.techProviders[0] && currentScope.containers.techProviders[0].deploy){
+			for(let i in currentScope.containers.techProviders[0].deploy){
+				postData.selectedInfraProvider.deploy[i] = currentScope.containers.techProviders[0].deploy[i];
+			}
+
+		}
+		
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/environment/platforms/attach",
+			"params": {
+				"env": currentScope.envCode
+			},
+			"data": {
+				"data": postData
+			}
+		}, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				currentScope.displayAlert('success', "Container Technology attached to environment successfully, changes will appear soon.");
+				currentScope.environment.pending = true;
+				getEnvRecord(currentScope);
+			}
 		});
 	}
 	
@@ -217,14 +177,38 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			else {
 				delete environments.soajsauth;
 				
-				currentScope.availableEnvironments = environments;
-				if (currentScope.availableEnvironments.length > 0) {
-					for (let i = currentScope.availableEnvironments.length - 1; i >= 0; i--) {
-						if(currentScope.availableEnvironments[i].restriction){
-							currentScope.availableEnvironments.splice(i, 1);
+				if(currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider){
+					for(let i = environments.length -1; i >=0; i--){
+						if(environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()){
+							environments.splice(i, 1);
 						}
-						if (currentScope.availableEnvironments[i].deployer.type === 'manual') {
-							currentScope.availableEnvironments.splice(i, 1);
+						else if(!environments[i].restriction){
+							environments.splice(i, 1);
+						}
+						else if(environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]){
+							environments.splice(i, 1);
+						}
+					}
+					
+					currentScope.containers.availableEnvironments = environments;
+					if (currentScope.containers.availableEnvironments.length > 0) {
+						for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+							if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+								currentScope.containers.availableEnvironments.splice(i, 1);
+							}
+						}
+					}
+				}
+				else{
+					currentScope.containers.availableEnvironments = environments;
+					if (currentScope.containers.availableEnvironments.length > 0) {
+						for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+							if(currentScope.containers.availableEnvironments[i].restriction){
+								currentScope.containers.availableEnvironments.splice(i, 1);
+							}
+							else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+								currentScope.containers.availableEnvironments.splice(i, 1);
+							}
 						}
 					}
 				}
@@ -240,8 +224,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param cb
 	 */
 	function listInfraProviders(currentScope, cb) {
-		currentScope.showDocker = false;
-		currentScope.showKube = false;
+		currentScope.containers.showDocker = false;
+		currentScope.containers.showKube = false;
 		
 		//get the available providers
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -256,16 +240,16 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				currentScope.infraProviders = providers;
-				delete currentScope.infraProviders.soajsauth;
+				currentScope.containers.techProviders = providers;
+				delete currentScope.containers.techProviders.soajsauth;
 				
-				currentScope.infraProviders.forEach((oneProvider) => {
+				currentScope.containers.techProviders.forEach((oneProvider) => {
 					if(oneProvider.technologies.indexOf('docker') !== -1){
-						currentScope.showDocker = true;
+						currentScope.containers.showDocker = true;
 					}
 					
 					if(oneProvider.technologies.indexOf('kubernetes') !== -1){
-						currentScope.showKube = true;
+						currentScope.containers.showKube = true;
 					}
 					
 					let technolog = oneProvider.technologies[0];
@@ -281,21 +265,21 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param currentScope
 	 */
 	function renderPreviousDeployInfo(currentScope) {
-		delete currentScope.platform;
-		delete currentScope.driver;
-		delete currentScope.config;
-		if(currentScope.previousEnvironment && currentScope.previousEnvironment !== ''){
-			currentScope.previousPlatformDeployment = true;
-			for (let i = currentScope.availableEnvironments.length - 1; i >= 0; i--) {
-				if (currentScope.availableEnvironments[i].code === currentScope.previousEnvironment) {
-					currentScope.platform = currentScope.availableEnvironments[i].deployer.selected.split(".")[1];
-					currentScope.driver = currentScope.availableEnvironments[i].deployer.selected.split(".")[2];
-					currentScope.config = currentScope.availableEnvironments[i].deployer.container[currentScope.platform][currentScope.driver];
+		delete currentScope.containers.platform;
+		delete currentScope.containers.driver;
+		delete currentScope.containers.config;
+		if(currentScope.containers.previousEnvironment && currentScope.containers.previousEnvironment !== ''){
+			currentScope.containers.previousPlatformDeployment = true;
+			for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+				if (currentScope.containers.availableEnvironments[i].code === currentScope.containers.previousEnvironment) {
+					currentScope.containers.platform = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[1];
+					currentScope.containers.driver = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[2];
+					currentScope.containers.config = currentScope.containers.availableEnvironments[i].deployer.container[currentScope.containers.platform][currentScope.containers.driver];
 				}
 			}
 		}
 		else{
-			currentScope.previousPlatformDeployment = false;
+			currentScope.containers.previousPlatformDeployment = false;
 		}
 	}
 	
@@ -310,6 +294,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
+				
+				if(currentScope.cloud && currentScope.cloud.selectProvider){
+					$scope.selectedProvider = angular.copy(currentScope.cloud.selectedProvider);
+				}
 
 				$scope.proceed = function(){
 					overlayLoading.show();
@@ -329,8 +317,6 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							currentScope.currentDeployer.type = 'manual';
 							currentScope.displayAlert('success', "Container Technology has been detached from this environment.");
 							getEnvRecord(currentScope);
-							currentScope.switchManual(currentScope);
-							
 						}
 					});
 
@@ -388,7 +374,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				else {
 					let autoRefreshTimeoutProgress = $timeout(() => {
 						if(!currentScope.environment.pending){
-							currentScope.environment = angular.copy(environment);
+							currentScope.getEnvPlatform(true);
 							$timeout.cancel(autoRefreshTimeoutProgress);
 						}
 						else{
@@ -440,7 +426,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param driver
 	 */
 	function updateNamespaceConfig(currentScope, driver) {
-		var currentConfig = angular.copy(currentScope.config);
+		var currentConfig = angular.copy(currentScope.containers.config);
 		var modal = $modal.open({
 			templateUrl: "updateNamespaceConfig.tmpl",
 			backdrop: true,
@@ -553,9 +539,9 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 */
 	function checkContainerTechnology(currentScope) {
 		
-		currentScope.platform = currentScope.environment.selected.split(".")[1];
-		currentScope.driver = currentScope.environment.selected.split(".")[2];
-		currentScope.config = currentScope.environment.container[currentScope.platform][currentScope.driver];
+		currentScope.containers.platform = currentScope.environment.selected.split(".")[1];
+		currentScope.containers.driver = currentScope.environment.selected.split(".")[2];
+		currentScope.containers.config = currentScope.environment.container[currentScope.containers.platform][currentScope.containers.driver];
 		
 		if (currentScope.originalEnvironment.certs) {
 			let certs = [];
@@ -568,40 +554,117 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					});
 				}
 			});
-			currentScope.config.certs = certs;
+			currentScope.containers.config.certs = certs;
 		}
 		
-		currentScope.oldDocker = (!currentScope.config.auth && !currentScope.config.auth.token && currentScope.config.certs && currentScope.config.certs.length > 0);
+		currentScope.containers.oldDocker = (!currentScope.containers.config.auth && !currentScope.containers.config.auth.token && currentScope.containers.config.certs && currentScope.containers.config.certs.length > 0);
 	}
 	
 	/**
-	 * main entry point for this angular service
+	 * main entry point for this angular service, mainly used to bind new functionality to the scope and extend it
 	 * @param currentScope
 	 * @param operation
 	 */
 	function go(currentScope, operation){
 		
-		currentScope.renderDisplay = function(){
+		if(!currentScope.containers){
+			currentScope.containers = currentScope.$new(); //true means detached from main currentScope
+		}
+		
+		currentScope.containers.selectProvider = function(oneProvider, technology){
+			
+			//remove previous environment if set
+			delete currentScope.previousEnvironment;
+			if(currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment){
+				delete currentScope.containers.form.formData.previousEnvironment;
+			}
+			renderPreviousDeployInfo(currentScope);
+			
+			//reset all infra records
+			currentScope.containers.techProviders.forEach((oneInfra) => {
+				delete oneInfra.deploy;
+			});
+			
+			//set the one selected
+			oneProvider.deploy = {
+				technology: technology
+			};
+		};
+		
+		currentScope.containers.changeLikeEnv = function () {
+			currentScope.previousEnvironment = currentScope.containers.form.formData.previousEnvironment;
+			renderPreviousDeployInfo(currentScope);
+		};
+		
+		currentScope.containers.switchDriver = function (driver) {
+			if (!currentScope.containers.platforms) {
+				currentScope.containers.platforms = {
+					docker: false,
+					kubernetes: false,
+					previous: false
+				};
+			}
+			
+			switch (driver) {
+				case 'previous':
+					if (currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment) {
+						currentScope.containers.changeLikeEnv();
+					}
+					currentScope.containers.platforms.previous = true;
+					currentScope.containers.platforms.docker = false;
+					currentScope.containers.platforms.kubernetes = false;
+					break;
+				case 'docker':
+					delete currentScope.previousEnvironment;
+					currentScope.containers.platforms.previous = false;
+					currentScope.containers.platforms.docker = true;
+					currentScope.containers.platforms.kubernetes = false;
+					break;
+				case 'kubernetes':
+					delete currentScope.previousEnvironment;
+					currentScope.containers.platforms.previous = false;
+					currentScope.containers.platforms.docker = false;
+					currentScope.containers.platforms.kubernetes = true;
+					break;
+			}
+		};
+		
+		currentScope.containers.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
+		
+		currentScope.containers.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
+		
+		currentScope.containers.renderDisplay = function(){
 			checkContainerTechnology(currentScope);
 		};
 		
-		currentScope.updateNamespaceConfig = function (driver) {
+		currentScope.containers.updateNamespaceConfig = function (driver) {
 			updateNamespaceConfig(currentScope, driver);
 		};
 		
-		currentScope.attachContainer = function(){
+		currentScope.containers.attachContainer = function(){
 			openContainerWizard(currentScope);
 		};
 		
-		currentScope.detachContainer = function(){
+		currentScope.containers.detachContainer = function(){
 			detachContainerTechnology(currentScope);
 		};
 		
-		currentScope[operation]();
+		currentScope.containers.attachContainerTechnology = function(formData) {
+			attachContainerTechnology(currentScope, formData);
+		};
+		
+		currentScope.containers.getEnvironments = function(cb) {
+			getEnvironments(currentScope, cb);
+		};
+		
+		if(operation){
+			currentScope.containers[operation]();
+		}
 	}
 	
 	return {
 		'go': go,
-		'checkContainerTechnology': checkContainerTechnology
+		'checkContainerTechnology': checkContainerTechnology,
+		'detachContainerTechnology': detachContainerTechnology
 	}
 }]);

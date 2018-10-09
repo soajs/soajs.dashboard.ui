@@ -1,6 +1,6 @@
 "use strict";
 var platformsServices = soajsApp.components;
-platformsServices.service('envPlatforms', ['platformManual', 'platformCntnr', 'platformsVM', function (platformManual, platformCntnr, platformsVM) {
+platformsServices.service('envPlatforms', ['platformManual', 'platformCntnr', 'platformsVM', 'platformCloudProvider', function (platformManual, platformCntnr, platformsVM, platformCloudProvider) {
 	
 	function go(currentScope) {
 		currentScope.originalEnvironment = angular.copy(currentScope.environment);
@@ -9,15 +9,15 @@ platformsServices.service('envPlatforms', ['platformManual', 'platformCntnr', 'p
 		
 		currentScope.switchContainer = platformCntnr.go;
 		
+		currentScope.switchCloud = platformCloudProvider.go;
+		
 		switch (currentScope.environment.type) {
 			case 'container':
-				platformCntnr.checkContainerTechnology(currentScope);
 				platformCntnr.go(currentScope, 'renderDisplay');
+				platformCntnr.checkContainerTechnology(currentScope);
 				break;
 			case 'singleInfra':
-				platformCntnr.checkContainerTechnology(currentScope);
-				platformCntnr.go(currentScope, 'renderDisplay');
-				platformsVM.go(currentScope, 'renderDisplay');
+				platformCloudProvider.go(currentScope, 'printProvider');
 				break;
 			case 'manual':
 			default:

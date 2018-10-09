@@ -4,13 +4,21 @@
 			<span class="icon icon-plus"></span> Add New Network
 		</a>
 	</div>
+	<div class="f-right w30">
 	<div class="f-right">
-		<a class="btn btn-sm btn-success" ng-if="access.addNetwork" ng-click="listNetworks('google')">
+		<a class="btn btn-sm btn-success" ng-if="access.addNetwork" ng-click="listNetworks(oneRegion)">
 			<span class="icon icon-loop2"></span> Refresh
 		</a>
 	</div>
+	<div ng-if="infraRegions.length > 0">
+		Region:
+		<select style="display:inline" class="form-control w50" ng-model="selectedRegion" ng-change="listNetworks(selectedRegion)" ng-options="region.v as region.l for region in infraRegions">
+		</select>
+	</div>
+	</div>
 	<br/><br/>
 </div>
+
 
 <div ng-if="access.list">
 	<alert type="warning" ng-if="!infraNetworks || infraNetworks.length === 0">

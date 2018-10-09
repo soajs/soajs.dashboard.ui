@@ -156,14 +156,14 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 	$scope.listNetworks = function (groupOrRegion) {
 		overlayLoading.show();
 		// if google then skip list vm
-		if (groupOrRegion !== 'google') {
+		if ($scope.currentInfraName !== 'google') {
             infraCommonSrv.getVMLayers($scope, (error, vmlayers) => {
                 overlayLoading.hide();
                 $scope.vmlayers = vmlayers;
                 infraNetworkSrv.listNetworks($scope, groupOrRegion);
             });
 		} else {
-            infraNetworkSrv.listNetworks($scope);
+            infraNetworkSrv.listNetworks($scope, groupOrRegion);
 		}
 	};
 

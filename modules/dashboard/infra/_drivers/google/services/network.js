@@ -139,19 +139,27 @@ googleInfraNetworkSrv.service('googleInfraNetworkSrv', ['ngDataApi', '$localStor
 		});
 	}
 
-	function listNetworks(currentScope, oneProject) {
+	function listNetworks(currentScope, oneRegion) {
+        currentScope.infraRegions = [{ v : 'allregions', l: 'All Regions'}];
+        currentScope.oneRegion = oneRegion;
 		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
+        currentScope.infraRegions = currentScope.infraRegions.concat(oneInfra.regions);
 
 		let listOptions = {
 			method: 'get',
 			routeName: '/dashboard/infra/extras',
 			params: {
 				'id': oneInfra._id,
-				'project': oneProject,
 				'api': oneInfra.api,
 				'extras[]': ['networks']
 			}
 		};
+		if (oneRegion && oneRegion !== 'allregions') {
+            listOptions.params.region = oneRegion
+		} else if (listOptions.params.region) {
+			delete listOptions.params.region
+		}
+		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, listOptions, (error, response) => {
 			overlayLoading.hide();

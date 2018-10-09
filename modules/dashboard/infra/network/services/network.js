@@ -63,7 +63,7 @@ infraNetworkSrv.service('infraNetworkSrv', ['azureInfraNetworkSrv', 'awsInfraNet
                 awsInfraNetworkSrv.listNetworks(currentScope, oneGroup);
                 break;
             case 'google':
-                googleInfraNetworkSrv.listNetworks(currentScope);
+                googleInfraNetworkSrv.listNetworks(currentScope, oneGroup);
                 break;
             default:
                 break;

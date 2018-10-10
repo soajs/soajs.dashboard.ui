@@ -148,7 +148,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		group.expanded = !group.expanded;
 	};
 
-	$scope.getEnvironment = function(){
+	$scope.getEnvironment = function(cb){
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment",
@@ -161,6 +161,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 			}
 			else {
 				$scope.myEnvironment = response;
+				
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
 			}
 		});
 	};
@@ -295,30 +299,31 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	
 	/** VM Operations **/
 	$scope.listInfraProviders = function() {
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/infra",
-			"params":{
-				"exclude": [ "groups", "regions", 'templates']
-			}
-		};
 		
-		getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
-			if(error){
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else{
-				$scope.showVMs = false;
-				$scope.infraProviders = result;
-				//check for vm
-				$scope.infraProviders.forEach((oneProvider) => {
-					if(oneProvider.technologies.includes("vm")){
+		$scope.showVMs = false;
+		if($scope.myEnvironment.restriction){
+			let options = {
+				"method": "get",
+				"routeName": "/dashboard/infra",
+				"params":{
+					"exclude": [ "groups", "regions", 'templates'],
+					"id": Object.keys($scope.myEnvironment.restriction)[0]
+				}
+			};
+			
+			getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
+				if(error){
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else{
+					$scope.cloudProvider = result;
+					//check for vm
+					if($scope.cloudProvider.technologies.includes("vm")){
 						$scope.showVMs = true;
 					}
-				});
-			}
-		});
-		
+				}
+			});
+		}
 	};
 	
 	$scope.listVMLayers = function() {
@@ -379,7 +384,9 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	}
 	
 	if ($scope.access.vm.list) {
-		$scope.listInfraProviders();
+		$scope.getEnvironment(() => {
+			$scope.listInfraProviders();
+		});
 	}
 	
 	$scope.$on("$destroy", function () {

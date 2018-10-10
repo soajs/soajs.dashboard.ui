@@ -6,15 +6,122 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 		//create variable to indicate that we listing VMLayers in Clouds & Deployments
 		currentScope.listingClouds = true;
 		
-		//call common function
-		getInfraProvidersAndVMLayers(currentScope, ngDataApi, currentScope.envCode, currentScope.infraProviders, (vmLayers) => {
-			currentScope.vmLayers = vmLayers;
-			
-			if (Object.keys(currentScope.vmLayers).length > 0) {
-				//create a variable to indicate that there are VMs
-				currentScope.vmsAvailable = true;
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/cloud/vm/list",
+			"params": {
+				"infraId": currentScope.cloudProvider._id,
+				"env": currentScope.envCode,
 			}
-			else currentScope.vmLayers = null;
+		}, function (error, providerVMs) {
+			overlayLoading.hide();
+			if(error){
+				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else{
+				delete providerVMs.soajsauth;
+				let oneProvider = currentScope.cloudProvider;
+				let allVMs = {};
+				
+				//aggregate response and generate layers from list returned
+				if (providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0) {
+					
+					providerVMs[oneProvider.name].forEach((oneVM) => {
+						//aggregate and populate groups
+						//add infra to group details
+						if (!allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
+							let vmTemplate = angular.copy(oneVM.template);
+							delete oneVM.template;
+							if (envCode) {
+								if (oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode) {
+									if (allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
+										allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
+									}
+									else {
+										allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
+											name: oneVM.layer,
+											infraProvider: oneProvider,
+											executeCommand: true,
+											list: [oneVM],
+											template: vmTemplate
+										};
+									}
+									
+								}
+								else {
+									if (vmTemplate === undefined || !vmTemplate) {
+										if (oneVM.labels && !oneVM.labels['soajs.env.code']) {
+											if (allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
+												allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM)
+											}
+											else {
+												allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
+													name: oneVM.layer,
+													infraProvider: oneProvider,
+													executeCommand: true,
+													list: [oneVM]
+												}
+											}
+										}
+									}
+								}
+							}
+							else {
+								if (allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
+									allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
+								}
+								else {
+									allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer] = {
+										name: oneVM.layer,
+										infraProvider: oneProvider,
+										executeCommand: true,
+										list: [oneVM],
+										template: vmTemplate
+									};
+								}
+							}
+						}
+						else {
+							if (envCode) {
+								if (oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode) {
+									delete oneVM.template;
+									allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
+								}
+							}
+							else {
+								delete oneVM.template;
+								allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
+							}
+						}
+						
+						if (Object.hasOwnProperty.call(oneVM, 'executeCommand') && allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
+							//ensure to only update the value of this property if it is true. setting it to false will prevent the user from:
+							// - on boarding and deploying in it
+							if (allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].executeCommand === true) {
+								allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].executeCommand = oneVM.executeCommand;
+							}
+						}
+					});
+				}
+				
+				if (providerVMs.errors) {
+					if (!currentScope.vms.errorVMLayers) {
+						currentScope.vms.errorVMLayers = {};
+					}
+					for (let id in providerVMs.errors) {
+						currentScope.vms.errorVMLayers[id] = providerVMs.errors[id];
+					}
+				}
+				
+				currentScope.vmLayers = allVMs;
+				
+				if (Object.keys(currentScope.vmLayers).length > 0) {
+					//create a variable to indicate that there are VMs
+					currentScope.vmsAvailable = true;
+				}
+				else currentScope.vmLayers = null;
+			}
 		});
 	}
 	
@@ -26,9 +133,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 			"params": {
 				"id": oneVMLayer.template.id,
 				"env": currentScope.envCode,
-				"layerName": oneVMLayer.name,
-				"infraId": oneVMLayer.infraProvider._id,
-				'technology': 'vm'
+				"layerName": oneVMLayer.name
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -48,15 +153,11 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 			"routeName": "/dashboard/cloud/vm/maintenance",
 			"params": {
 				"env": currentScope.envCode,
-				"group": oneVMInstance.labels['soajs.service.vm.group'],
 				"serviceId": oneVMInstance.name,
-				"infraId": oneVMLayer.infraProvider._id,
-				"technology": "vm",
 				'instanceId' : oneVMInstance.id
 			},
 			"data":{
-				"operation": action,
-                'region' : oneVMLayer.list[0].region,
+				"operation": action
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -75,11 +176,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 			"routeName": "/dashboard/cloud/vm/instance",
 			"params": {
 				"env": currentScope.envCode,
-				"group": oneVMInstance.labels['soajs.service.vm.group'],
 				"serviceId": oneVMInstance.name,
-				"infraId": oneVMLayer.infraProvider._id,
-				"technology": "vm",
-				'region' : oneVMLayer.list[0].region,
 			}
 		}, function (error, response) {
 			if (error) {
@@ -176,10 +273,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 				"routeName": "/dashboard/cloud/vm/logs",
 				"params": {
 					"env": currentScope.envCode,
-					"group": oneVMInstance.labels['soajs.service.vm.group'],
 					"serviceId": oneVMInstance.name,
-					"infraId": oneVMLayer.infraProvider._id,
-					"technology": "vm",
 					"numberOfLines": formData.numberOfLines
 				}
 			}, function (error, response) {
@@ -209,10 +303,7 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 									"routeName": "/dashboard/cloud/vm/logs",
 									"params": {
 										"env": currentScope.envCode,
-										"group": oneVMInstance.labels['soajs.service.vm.group'],
 										"serviceId": oneVMInstance.name,
-										"infraId": oneVMLayer.infraProvider._id,
-										"technology": "vm",
 										"numberOfLines": formData.numberOfLines
 									}
 								}, function (error, response) {

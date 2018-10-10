@@ -88,30 +88,35 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	
 	/** VM Operations **/
 	$scope.listInfraProviders = function() {
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/infra",
-			"params":{
-				"exclude": [ "groups", "regions", 'templates']
-			}
-		};
 		
-		getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
-			if(error){
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else{
-				$scope.showVMs = false;
-				$scope.infraProviders = result;
-				//check for vm
-				$scope.infraProviders.forEach((oneProvider) => {
-					if(oneProvider.technologies.includes("vm")){
-						$scope.showVMs = true;
+		$scope.showVMs = false;
+		$scope.getEnvironment($scope.envCode, function () {
+			if($scope.myEnvironment.restriction){
+				
+				let options = {
+					"method": "get",
+					"routeName": "/dashboard/infra",
+					"params":{
+						"exclude": [ "groups", "regions", 'templates'],
+						"id": Object.keys($scope.myEnvironment.restriction)[0]
+					}
+				};
+				
+				getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
+					if(error){
+						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else{
+						$scope.cloudProvider = result;
+						//check for vm
+						if($scope.cloudProvider.technologies.includes("vm")){
+							$scope.showVMs = true;
+						}
 					}
 				});
+				
 			}
 		});
-		
 	};
 	
 	$scope.listVMLayers = function() {

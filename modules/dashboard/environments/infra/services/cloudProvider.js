@@ -6,7 +6,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	 * Function that provides the mechanism to select a cloud provider to restrict the environment to
 	 * @param currentScope
 	 */
-	function selectProvider(currentScope) {
+	function selectProvider(currentScope, cb) {
 		overlayLoading.show();
 		listInfraProviders(currentScope, null, null, () => {
 			let options = {
@@ -30,6 +30,9 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			
 			buildForm(currentScope.cloud, null, options, () => {
 				overlayLoading.hide();
+				if(cb && typeof cb === 'function'){
+					return cb();
+				}
 			});
 		});
 	}
@@ -401,12 +404,14 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	 * @param currentScope
 	 * @param operation
 	 */
-	function go(currentScope, operation) {
+	function go(currentScope, operation, cb) {
 		
-		currentScope.cloud = currentScope.$new(); //true means detached from main currentScope
-		
-		//reset the form and its data
-		currentScope.cloud.form = { formData: {} };
+		if(!currentScope.cloud){
+			currentScope.cloud = currentScope.$new(); //true means detached from main currentScope
+			
+			//reset the form and its data
+			currentScope.cloud.form = { formData: {} };
+		}
 		delete currentScope.cloud.networksList;
 		delete currentScope.cloud.noNetworks;
 		
@@ -441,8 +446,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 				delete currentScope.cloud.form.formData.selectedProvider.providerExtra;
 			}
 			
-			delete currentScope.networksList;
-			delete currentScope.noNetworks;
+			delete currentScope.cloud.networksList;
+			delete currentScope.cloud.noNetworks;
 			
 			if(currentScope.cloud.form.formData.selectedProvider.providerSpecific){
 				currentScope.cloud.form.formData.selectedProvider.providerSpecific.forEach((oneSpecific) => {
@@ -497,8 +502,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		//function that fetches the networks of this provider based on region and provider specific extra inputs selected ( if any )
 		currentScope.cloud.populateNetworks = function(){
-			delete currentScope.networksList;
-			delete currentScope.noNetworks;
+			delete currentScope.cloud.networksList;
+			delete currentScope.cloud.noNetworks;
 			
 			let requestOptions = {
 				"method": "get",
@@ -523,12 +528,12 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
-					delete networks.soajsoauth;
-					delete currentScope.networksList;
+					delete networks.soajsauth;
+					delete currentScope.cloud.networksList;
 					
 					if(networks.networks && networks.networks.length > 0){
-						currentScope.noNetworks = false;
-						currentScope.networksList = {
+						currentScope.cloud.noNetworks = false;
+						currentScope.cloud.networksList = {
 							name: "networks",
 							label: "networks",
 							value: [],
@@ -536,11 +541,11 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 						};
 						
 						networks.networks.forEach((oneNetwork) => {
-							currentScope.networksList.value.push({'v': oneNetwork.name, 'l': oneNetwork.name});
+							currentScope.cloud.networksList.value.push({'v': oneNetwork.name, 'l': oneNetwork.name});
 						});
 					}
 					else{
-						currentScope.noNetworks = true;
+						currentScope.cloud.noNetworks = true;
 					}
 				}
 			});
@@ -615,8 +620,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			}
 		};
 		
-		currentScope.cloud.selectProvider = function () {
-			selectProvider(currentScope);
+		currentScope.cloud.selectProvider = function (cb) {
+			selectProvider(currentScope, cb);
 		};
 		
 		currentScope.cloud.renderDisplay = function () {
@@ -640,7 +645,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		};
 		
 		if(operation){
-			currentScope.cloud[operation]();
+			currentScope.cloud[operation](cb);
 		}
 	}
 	

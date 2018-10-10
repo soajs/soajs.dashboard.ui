@@ -16,11 +16,11 @@
 				</form>
 				<div ng-include="'modules/dashboard/environments/directives/add/manual.tmpl'"></div>
 			</div>
-			<div ng-switch-when="cloudProviders">
+			<div ng-switch-when="cloudProvider">
 				<form>
 					<div class="header"><h3>Cloud Providers</h3></div>
 				</form>
-				<div ng-include="'modules/dashboard/environments/directives/add/cloudProviders.tmpl'"></div>
+				<div ng-include="'modules/dashboard/environments/infra/directives/cloudProvider.tmpl'"></div>
 			</div>
 			<div ng-switch-when="container">
 				<form>

@@ -1,6 +1,6 @@
 "use strict";
 var platformCloudProviderServices = soajsApp.components;
-platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$timeout', '$cookies', '$window', '$compile', 'platformCntnr', 'platformsVM', function (ngDataApi, $timeout, $cookies, $window, $compile, platformCntnr, platformsVM) {
+platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$timeout', '$cookies', '$window', '$compile', '$modal', 'platformCntnr', 'platformsVM', function (ngDataApi, $timeout, $cookies, $window, $compile, $modal, platformCntnr, platformsVM) {
 	
 	/**
 	 * Function that provides the mechanism to select a cloud provider to restrict the environment to
@@ -346,6 +346,57 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	}
 	
 	/**
+	 * call the api to remove the lock of the cloud provider from this environment
+	 * @param currentScope
+	 */
+	function removeCloudProviderLockOnEnvironment(currentScope){
+		
+		$modal.open({
+			templateUrl: "removeCloudProviderLock.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+				
+				$scope.proceed = function(){
+					let requestOptions = {
+						"method": "delete",
+						"routeName": "/dashboard/environment/infra/lock",
+						"params":{
+							"envCode": currentScope.envCode.toUpperCase()
+						}
+					};
+					overlayLoading.show();
+					getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, response) {
+						overlayLoading.hide();
+						if (error) {
+							$modalInstance.close();
+							currentScope.displayAlert('danger', error.message);
+						}
+						else {
+							$modalInstance.close();
+							currentScope.displayAlert('success', `Environment update, cloud provider <b>${currentScope.cloud.selectedProvider.label}</b> is no longer used as infrastructure.`);
+							delete currentScope.cloud;
+							delete currentScope.containers;
+							delete currentScope.vms;
+							delete currentScope.attach;
+							setTimeout(()=> {
+								currentScope.environment.type = 'manual';
+								currentScope.getEnvPlatform(true);
+							}, 500);
+						}
+					});
+				};
+				
+				$scope.cancel = function(){
+					$modalInstance.close();
+				};
+			}
+		});
+	}
+	
+	/**
 	 * main entry point for this angular service
 	 * @param currentScope
 	 * @param operation
@@ -582,6 +633,10 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		currentScope.cloud.printProvider = function (cb) {
 			printProvider(currentScope, cb);
+		};
+		
+		currentScope.cloud.removeProviderLock = function () {
+			removeCloudProviderLockOnEnvironment(currentScope);
 		};
 		
 		if(operation){

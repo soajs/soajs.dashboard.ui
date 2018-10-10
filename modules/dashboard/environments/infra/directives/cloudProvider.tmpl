@@ -89,7 +89,7 @@
 	<alert type="info">
 		<h4>Single Cloud Clustering</h4>
 		<hr>
-		<a href="" ng-click="" class="btn btn-sm btn-danger f-right" title="Unlock environment from this cloud provider to choose another">
+		<a href="" ng-click="cloud.removeProviderLock()" class="btn btn-sm btn-danger f-right" title="Unlock environment from this cloud provider to choose another">
 			<span class="icon icon-cross"></span> Remove
 		</a>
 		<p>
@@ -115,3 +115,25 @@
 		</tab>
 	</tabset>
 </div>
+
+<script type="text/ng-template" id="removeCloudProviderLock.tmpl">
+	<div class="modal-body">
+		<alert type="danger">
+			<h2>Warning !</h2>
+			<hr>
+			<p style="color:black;">
+				If you remove this cloud provider, your environment will not longer support deploying source code and/or resources in containers or virtual machines.
+			</p>
+			<p style="color:black;">
+				You can always assign a new cloud provider later on and re-enable deploying in containers and virtual machines.
+			</p>
+			<p>
+				<b>This operation is irreversible!</b>
+			</p>
+		</alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="proceed()">Proceed</button>
+		<button class="btn btn-danger" ng-click="cancel()">{{translation.cancel[LANG]}}</button>
+	</div>
+</script>

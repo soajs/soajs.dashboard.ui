@@ -10,7 +10,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * Open container technology form
 	 * @param currentScope
 	 */
-	function openContainerWizard(currentScope){
+	function openContainerWizard(currentScope, cb){
 		
 		let options = {
 			timeout: $timeout,
@@ -46,6 +46,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							attachContainerTechnology(currentScope, formData);
 						}
 					});
+					
+					if(cb && typeof cb === 'function'){
+						return cb();
+					}
 				});
 			});
 			
@@ -78,7 +82,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
 						postData.selectedInfraProvider = {
 							_id: oneProvider._id,
-							name: oneProvider.name
+							name: oneProvider.name,
+							label: oneProvider.label
 						};
 					}
 				});
@@ -96,7 +101,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				if(oneProvider.deploy){
 					postData.selectedInfraProvider = {
 						_id: oneProvider._id,
-						name: oneProvider.name
+						name: oneProvider.name,
+						label: oneProvider.label
 					};
 				}
 			});
@@ -112,7 +118,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				if(oneProvider.deploy){
 					postData.selectedInfraProvider = {
 						_id: oneProvider._id,
-						name: oneProvider.name
+						name: oneProvider.name,
+						label: oneProvider.label
 					};
 				}
 			});
@@ -129,12 +136,21 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			technology: postData.deployment.selectedDriver
 		};
 		
-		if(currentScope.containers.techProviders && currentScope.containers.techProviders[0] && currentScope.containers.techProviders[0].deploy){
-			for(let i in currentScope.containers.techProviders[0].deploy){
-				postData.selectedInfraProvider.deploy[i] = currentScope.containers.techProviders[0].deploy[i];
+		currentScope.containers.techProviders.forEach((oneProvider) => {
+			if(oneProvider.deploy) {
+				for(let i in oneProvider.deploy){
+					postData.selectedInfraProvider.deploy[i] = oneProvider.deploy[i];
+				}
 			}
-
-		}
+		});
+		
+		currentScope.containers.defaultAttachContainerAction(currentScope, postData);
+	}
+	
+	function defaultAttachContainerAction(currentScope, formData){
+		
+		let postData = angular.copy(formData);
+		delete postData.selectedInfraProvider.deploy.config;
 		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -315,6 +331,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						else {
 							$modalInstance.close();
 							currentScope.currentDeployer.type = 'manual';
+							delete currentScope.containers;
 							currentScope.displayAlert('success', "Container Technology has been detached from this environment.");
 							getEnvRecord(currentScope);
 						}
@@ -565,7 +582,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param currentScope
 	 * @param operation
 	 */
-	function go(currentScope, operation){
+	function go(currentScope, operation, cb){
 		
 		if(!currentScope.containers){
 			currentScope.containers = currentScope.$new(); //true means detached from main currentScope
@@ -587,7 +604,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			
 			//set the one selected
 			oneProvider.deploy = {
-				technology: technology
+				technology: technology,
+				config: oneProvider.api
 			};
 		};
 		
@@ -641,8 +659,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			updateNamespaceConfig(currentScope, driver);
 		};
 		
-		currentScope.containers.attachContainer = function(){
-			openContainerWizard(currentScope);
+		currentScope.containers.attachContainer = function(cb){
+			openContainerWizard(currentScope, cb);
 		};
 		
 		currentScope.containers.detachContainer = function(){
@@ -653,12 +671,14 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			attachContainerTechnology(currentScope, formData);
 		};
 		
+		currentScope.containers.defaultAttachContainerAction = defaultAttachContainerAction;
+		
 		currentScope.containers.getEnvironments = function(cb) {
 			getEnvironments(currentScope, cb);
 		};
 		
 		if(operation){
-			currentScope.containers[operation]();
+			currentScope.containers[operation](cb);
 		}
 	}
 	

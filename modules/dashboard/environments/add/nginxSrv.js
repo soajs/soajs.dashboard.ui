@@ -33,11 +33,12 @@ nginxServices.service('nginxSrv', ['ngDataApi', '$timeout', '$modal', '$localSto
 		}
 		
 		if (!nginxResourceExists) {
-			currentScope.referringStep = currentScope.currentStep;
 			if (currentScope.referringStep === 'overview') {
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.previousStep();
 			}
 			else {
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.nextStep();
 			}
 		}

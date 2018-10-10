@@ -106,7 +106,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal',
 	
 	$scope.mapUserInputsToOverview = function (fromOverview) {
 		
-		let wizard = $scope.wizard;
+		let wizard = angular.copy($scope.wizard);
 		
 		// in case the wizard skipped steps // make sure u have wizard.template, wizard.gi ....
 		function updateWizardToStandards(wizard) {
@@ -212,10 +212,30 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal',
 		
 		if(wizard.selectedInfraProvider){
 			output.data.infraId = wizard.selectedInfraProvider._id; // required
-		}
-		
-		if(wizard.selectedInfraProvider){
 			output.selectedInfraProvider = wizard.selectedInfraProvider;
+			
+			if(fromOverview){
+				output.containers = {};
+				output.containers.platform = output.selectedInfraProvider.deploy.technology;
+				if(output.selectedInfraProvider.deploy.config){
+					output.containers.config = output.selectedInfraProvider.deploy.config;
+					output.containers.config.nodes = output.containers.config.ipaddress;
+					output.containers.config.apiProtocol = output.containers.config.protocol;
+					output.containers.config.apiPort = output.containers.config.port;
+					output.containers.config.auth = {
+						token: output.containers.config.token
+					};
+				}
+			}
+			else{
+				if(output.selectedInfraProvider.deploy){
+					delete output.selectedInfraProvider.deploy.config;
+				}
+				
+				if(output.data.deploy.selectedInfraProvider && output.data.deploy.selectedInfraProvider.deploy){
+					delete output.data.deploy.selectedInfraProvider.deploy.config;
+				}
+			}
 		}
 		
 		if(wizard.nginx && wizard.nginx && wizard.nginx.domain){

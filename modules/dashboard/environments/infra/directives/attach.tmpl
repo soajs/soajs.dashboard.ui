@@ -6,11 +6,16 @@
 <br />
 <accordion close-others="true">
 	
-	<accordion-group ng-click="containers.switchDriver('previous')" ng-if="containers.availableEnvironments.length > 0">
+	<accordion-group is-open="containers.platforms.previous" ng-click="containers.switchDriver('previous')" ng-if="containers.availableEnvironments.length > 0">
 		<accordion-heading>
-			Use an existing Infra Cloud Provider
+			Use the same infrastructure of a previous environment
 		</accordion-heading>
-		I want to use the same technoloyg i already used for environment
+		<p ng-if="!containers.form.formData.selectedProvider" style="display:inline-block;">
+			I want to use the same container cluster that i already attached to environment
+		</p>
+		<p ng-if="containers.form.formData.selectedProvider" style="display:inline-block;">
+			I want to use the same container cluster that i already created for environment
+		</p>
 		<select ng-change="containers.changeLikeEnv()" ng-model="containers.form.formData.previousEnvironment" class="form-control w30" style="display: inline-block">
 			<option value=""> -- Choose Environment --</option>
 			<option ng-repeat="oneBtn in containers.availableEnvironments" value="{{oneBtn.code}}">{{oneBtn.code}}</option>

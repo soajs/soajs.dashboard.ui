@@ -2,17 +2,17 @@
 	<table width="100%" cellspacing="1" cellpadding="1" style="min-width:auto;">
 		<thead>
 			<tr>
-				<th ng-repeat="(columnName, columnInfo) in wizard.selectedInfraProvider.deploy.grid.columns">{{columnInfo.label}}</th>
+				<th ng-repeat="(columnName, columnInfo) in wizard.deploy.deployment.selectedInfraProvider.deploy.grid.columns">{{columnInfo.label}}</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td valign="top" ng-repeat="(columnName, columnInfo) in wizard.selectedInfraProvider.deploy.grid.columns">
+				<td valign="top" ng-repeat="(columnName, columnInfo) in wizard.deploy.deployment.selectedInfraProvider.deploy.grid.columns">
 					<table width="100%">
 						<tr ng-repeat="oneField in columnInfo.fields" ng-class="{'first': $first, 'last': $last}" ng-class-odd="'odd'" ng-class-even="'even'" class="rows">
 							<td>{{oneField.label}}</td>
-							<td ng-if="wizard.selectedInfraProvider.deploy[oneField.name + 'Label']">{{wizard.selectedInfraProvider.deploy[oneField.name + 'Label']}}</td>
-							<td ng-if="!wizard.selectedInfraProvider.deploy[oneField.name + 'Label']">{{wizard.selectedInfraProvider.deploy[oneField.name]}}</td>
+							<td ng-if="wizard.deploy.deployment.selectedInfraProvider.deploy[oneField.name + 'Label']">{{wizard.deploy.deployment.selectedInfraProvider.deploy[oneField.name + 'Label']}}</td>
+							<td ng-if="!wizard.deploy.deployment.selectedInfraProvider.deploy[oneField.name + 'Label']">{{wizard.deploy.deployment.selectedInfraProvider.deploy[oneField.name]}}</td>
 						</tr>
 					</table>
 				</td>

@@ -39,6 +39,7 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		}
 		else {
 			opts = selectedInfraProvider.deploy;
+			delete opts.config;
 		}
 
 		opts.envCode = currentScope.wizard.gi.code;

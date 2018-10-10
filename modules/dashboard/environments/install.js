@@ -1403,10 +1403,13 @@ var environmentsNav = [
 			'modules/dashboard/environments/add/manualSrv.js',
 			
 			'modules/dashboard/environments/add/cloudProviderSrv.js',
+			'modules/dashboard/environments/infra/services/cloudProvider.js',
 			
 			'modules/dashboard/environments/add/containerSrv.js',
+			'modules/dashboard/environments/infra/services/container.js',
 			
 			'modules/dashboard/environments/add/vmSrv.js',
+			'modules/dashboard/environments/infra/services/vms.js',
 			
 			'modules/dashboard/environments/add/registrySrv.js',
 			

@@ -16,6 +16,11 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		currentScope.mapStorageToWizard($localStorage.addEnv);
 		
 		currentScope.overview = mapUserInputsToOverview(currentScope);
+		
+		if(currentScope.overview.containers){
+			currentScope.containers = currentScope.overview.containers;
+		}
+		
 		//if filled by add environment wizard and only contains vms that are to be created at the end
 		if(currentScope.wizard.vms){
 			currentScope.overview.vms = [];

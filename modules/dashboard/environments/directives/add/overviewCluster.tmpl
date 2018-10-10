@@ -1,17 +1,17 @@
 
 <fieldset>
 	<legend style="width:15%;">
-		<img ng-if="overview.selectedInfraProvider.technologies[0] === 'docker'" ng-src="themes/default/img/docker_logo.png" width="100%" alt="Docker Logo"/>
-		<img ng-if="overview.selectedInfraProvider.technologies[0] === 'kubernetes'" ng-src="themes/default/img/kubernetes_logo.png" width="100%" alt="Kubernetes Logo"/>
+		<img ng-if="overview.data.deploy.technology === 'docker'" ng-src="themes/default/img/docker_logo.png" width="100%" alt="Docker Logo"/>
+		<img ng-if="overview.data.deploy.technology === 'kubernetes'" ng-src="themes/default/img/kubernetes_logo.png" width="100%" alt="Kubernetes Logo"/>
 	</legend>
 	<br />
 	<!--Docker-->
-	<div ng-if="overview.selectedInfraProvider.technologies[0] =='docker'">
-		<div ng-show="previousEnvironment">
+	<div ng-if="overview.data.deploy.technology =='docker'">
+		<div ng-show="overview.data.deploy.previousEnvironment">
 			<div class="alert alert-info">
-				<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+				<p> I am using the same machine(s) i configured for {{overview.data.deploy.previousEnvironment}} Environment</p>
 			</div>
-			<div ng-show="previousPlatformDeployment">
+			<div>
 				<hr>
 				<br />
 				<div class="entryBoxes entryBoxesGrid">
@@ -20,24 +20,25 @@
 							{{driver|uppercase}}
 						</div>
 						<div class="body">
-							<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+							<div ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy">
-			<p>Deploying on: <img ng-src="{{overview.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.selectedInfraProvider.label}}</p><br />
+		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.deploy">
+			<p>Deploying on: <img ng-if="overview.data.deploy.selectedInfraProvider.image" ng-src="{{overview.data.deploy.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.data.deploy.selectedInfraProvider.label}}</p><br />
 		</div>
-		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
+		<div ng-show="overview.data.deploy.selectedInfraProvider.name === 'local'" ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
+		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/infra/directives/selectedInfraDeployment.tmpl'"></div>
 	</div>
 	<!--Kuberenetes-->
-	<div ng-if="overview.selectedInfraProvider.technologies[0] =='kubernetes'">
-		<div ng-show="previousEnvironment">
+	<div ng-if="overview.data.deploy.technology =='kubernetes'">
+		<div ng-show="overview.data.deploy.previousEnvironment">
 			<div class="alert alert-info">
-				<p> I am using the same machine(s) i configured for {{previousEnvironment}} Environment</p>
+				<p> I am using the same machine(s) i configured for {{overview.data.deploy.previousEnvironment}} Environment</p>
 			</div>
-			<div ng-show="previousPlatformDeployment">
+			<div>
 				<hr>
 				<br />
 				<div class="entryBoxes entryBoxesGrid">
@@ -46,16 +47,17 @@
 							{{driver|uppercase}}
 						</div>
 						<div class="body">
-							<div ng-include="'modules/dashboard/environments/directives/platform-display-table.tmpl'"></div>
+							<div ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy">
-			<p>Deploying on: <img ng-src="{{overview.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.selectedInfraProvider.label}}</p><br />
+		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.deploy">
+			<p>Deploying on: <img ng-if="overview.data.deploy.selectedInfraProvider.image" ng-src="{{overview.data.deploy.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.data.deploy.selectedInfraProvider.label}}</p><br />
 		</div>
-		<div ng-show="!previousEnvironment && overview.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/directives/add/selectedInfraDeployment.tmpl'"></div>
+		<div ng-show="overview.data.deploy.selectedInfraProvider.name === 'local'" ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
+		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/infra/directives/selectedInfraDeployment.tmpl'"></div>
 	</div>
 	<!--Manual-->
 	<div ng-if="wizard.deploy.selectedDriver=='manual'">

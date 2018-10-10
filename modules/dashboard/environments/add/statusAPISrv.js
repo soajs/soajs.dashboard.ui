@@ -327,7 +327,6 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 	}
 
 	function go(currentScope){
-		currentScope.addEnvCounter = currentScope.steps.length -1;
 		/**
 		 * automatically make call to environment/add
 		 *

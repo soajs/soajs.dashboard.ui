@@ -285,7 +285,7 @@
 	<accordion-group is-open="true">
 		<accordion-heading>Template</accordion-heading>
 		
-		<accordion-group is-open="true" ng-if="overview.selectedInfraProvider">
+		<accordion-group is-open="true" ng-if="overview.data.deploy.selectedInfraProvider">
 			<div>
 				<accordion-heading>Container Technology</accordion-heading>
 				<div ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>
@@ -293,18 +293,16 @@
 			<br>
 		</accordion-group>
 		
-		<accordion-group is-open="true" ng-if="!overview.selectedInfraProvider">
+		<accordion-group is-open="true" ng-if="!overview.data.deploy.selectedInfraProvider">
 			<accordion-heading>Deployment Strategy</accordion-heading>
 			
 			<fieldset>
 				<!--Manual-->
-				<div ng-if="!overview.selectedInfraProvider">
-					<div class="alert alert-info">
-						<h4><span class="icon icon-info"></span> Info:</h4>
-						<p> I will not use any container technology to deploy my Service(s) and Daemon(s).
-							I will also handle pulling and applying updates on the machines of this Environment myself.
-						</p>
-					</div>
+				<div class="alert alert-info">
+					<h4><span class="icon icon-info"></span> Info:</h4>
+					<p> I will not use any container technology to deploy my Service(s) and Daemon(s).
+						I will also handle pulling and applying updates on the machines of this Environment myself.
+					</p>
 				</div>
 			</fieldset>
 		</accordion-group>

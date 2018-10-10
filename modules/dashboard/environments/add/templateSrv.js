@@ -249,7 +249,7 @@ tmplServices.service('templateSrvDeploy', ['ngDataApi', '$routeParams', '$localS
 							}
 							if (entryName.includes('.resources.')) {
 								showManualOnly = false;
-								if(deployments[deploymentType][entryName].deploy && deployments[deploymentType][entryName].deploy.vm){
+								if(deployments[deploymentType][entryName].deploy && deployments[deploymentType][entryName].deploy.restriction && deployments[deploymentType][entryName].deploy.restriction.type === 'vm'){
 									showContainerOnly = false;
 								}
 							}

@@ -252,6 +252,19 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 							}
 						}
 					});
+					
+					form.actions.push({
+						'type': 'button',
+						'label': "Cancel",
+						'btn': 'danger',
+						'action': function () {
+							currentScope.containers.form.formData = {};
+							currentScope.containers.form.entries.length = 1;
+							currentScope.containers.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
+							
+							form.actions.pop();
+						}
+					});
 				}
 			});
 			
@@ -285,16 +298,6 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 								//call attach container technology api
 								currentScope.containers.attachContainerTechnology(formData);
 							}
-						}
-					},
-					{
-						'type': 'button',
-						'label': "Cancel",
-						'btn': 'danger',
-						'action': function () {
-							currentScope.containers.form.formData = {};
-							currentScope.containers.form.entries.length = 1;
-							currentScope.containers.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
 						}
 					}
 				]
@@ -339,6 +342,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		currentScope.vms.envCode = currentScope.envCode;
 		platformsVM.go(currentScope, 'listVMLayers');
 		currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
+		
 	}
 	
 	/**

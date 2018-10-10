@@ -801,7 +801,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				else {
 					allDeployments = ["container", "vm"]; // enable all if no rest or empty rest & ! manual
 				}
-				let allInfra = currentScope.mainData.deploymentData.infraProviders; // [{_id,name}]
+				let allInfra = [currentScope.mainData.deploymentData.cloudProvider]; // [{_id,name}]
 
 				if (!selectedRecipe) {
 					currentScope.mainData.deploymentData.selectedRestrictionsDep = [];
@@ -1480,10 +1480,10 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 		context.getInfraProviders = function (cb) {
 			overlayLoading.show();
 			let apiParams = {};
-			commonService.getInfraProviders(currentScope, apiParams, function (providers) {
-				delete providers.soajsauth;
-				context.originalInfraProviders = angular.copy(providers);
-				context.mainData.deploymentData.infraProviders = providers;
+			commonService.getInfraProviders(currentScope, apiParams, function (cloudProvider) {
+				delete cloudProvider.soajsauth;
+				context.originalInfraProviders = angular.copy(cloudProvider);
+				context.mainData.deploymentData.cloudProvider = cloudProvider;
 				overlayLoading.hide();
 
 				if (cb) {
@@ -1511,9 +1511,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				if(currentScope.environmentWizard){
 					envCode = null;
 				}
-
+				
 				if(envCode){
-					getInfraProvidersAndVMLayers(currentScope, ngDataApi, envCode, context.mainData.deploymentData.infraProviders, (vms) => {
+					commonService.getInfraProvidersAndVMLayers(currentScope, envCode, context.mainData.deploymentData.cloudProvider, (vms) => {
 						// TODO
 						if(!context.mainData.deploymentData.vmLayers){
 							context.mainData.deploymentData.vmLayers={};

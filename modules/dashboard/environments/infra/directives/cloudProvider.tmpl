@@ -114,6 +114,11 @@
 			<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
 		</tab>
 	</tabset>
+	
+	<div class="modal-footer" ng-if="wizard">
+		<br/>
+		<input ng-repeat="formAction in cloud.form.actions" type="{{formAction.type}}" value="{{formAction.label}}" ng-click="cloud.form.do(formAction)" class="btn btn-sm btn-{{formAction.btn}}"/>
+	</div>
 </div>
 
 <script type="text/ng-template" id="removeCloudProviderLock.tmpl">

@@ -54,18 +54,20 @@ containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				});
 				
-				if(currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'docker'){
-					currentScope.containers.switchDriver('docker');
-					$timeout(() => {
-						currentScope.containers.selectProvider(oneProvider, 'docker');
-					}, 300);
-				}
-				
-				if(currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'kubernetes'){
-					currentScope.containers.switchDriver('kubernetes');
-					$timeout(() => {
-						currentScope.containers.selectProvider(oneProvider, 'kubernetes');
-					}, 300);
+				if(currentScope.wizard.deployment.selectedInfraProvider.deploy){
+					if(currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'docker'){
+						currentScope.containers.switchDriver('docker');
+						$timeout(() => {
+							currentScope.containers.selectProvider(oneProvider, 'docker');
+						}, 300);
+					}
+					
+					if(currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'kubernetes'){
+						currentScope.containers.switchDriver('kubernetes');
+						$timeout(() => {
+							currentScope.containers.selectProvider(oneProvider, 'kubernetes');
+						}, 300);
+					}
 				}
 			}
 		}

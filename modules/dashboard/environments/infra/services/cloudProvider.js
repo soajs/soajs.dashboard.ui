@@ -474,6 +474,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		//function that populates the list of provider specific extra inputs ( if any )
 		currentScope.cloud.populateProviderExtra = function() {
+			let autoTrigger = false;
 			if(currentScope.cloud.form.formData.selectedProvider.providerExtra){
 				delete currentScope.cloud.form.formData.selectedProvider.providerExtra;
 			}
@@ -494,30 +495,32 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 						
 						let dropDownMenu = [];
 						currentScope.cloud.form.formData.selectedProvider[oneSpecific].forEach((oneValue) => {
-							let extraObj;
-							
 							if(!oneValue.region){
-								extraObj = { v: oneValue.name, l: oneValue.name};
-							}
-							else if(oneValue.region === currentScope.cloud.form.formData.region){
-								extraObj = { v: oneValue.name, l: oneValue.name };
-							}
-							
-							if(extraObj){
-								console.log(currentScope.cloud.form.formData);
-								if(currentScope.cloud.form.formData && currentScope.cloud.form.formData.extras){
-									let label = (oneSpecific === 'groups') ? 'group' : oneSpecific;
-									if(currentScope.cloud.form.formData.extras[label] === extraObj.v){
-										extraObj.selected = true;
-									}
-								}
-								console.log(extraObj)
+								let extraObj = { v: oneValue.name, l: oneValue.name};
 								dropDownMenu.push(extraObj);
 							}
+							else if(oneValue.region === currentScope.cloud.form.formData.region){
+								let extraObj = { v: oneValue.name, l: oneValue.name };
+								dropDownMenu.push(extraObj);
+							}
+							
+							if(currentScope.cloud.form.formData && currentScope.cloud.form.formData.extras){
+								if(!currentScope.cloud.form.formData.providerExtra){
+									currentScope.cloud.form.formData.providerExtra = {};
+								}
+								let label = (oneSpecific === 'groups') ? 'group': oneSpecific;
+								currentScope.cloud.form.formData.providerExtra[oneSpecific] = currentScope.cloud.form.formData.extras[label];
+								autoTrigger = true;
+							}
+								
 						});
 						currentScope.cloud.form.formData.selectedProvider.providerExtra[oneSpecific].value = dropDownMenu;
 					}
 				});
+				
+				if(autoTrigger){
+					currentScope.cloud.populateNetworks();
+				}
 			}
 			else{
 				currentScope.cloud.populateNetworks();

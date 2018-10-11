@@ -3,16 +3,201 @@ var cloudProviderServices = soajsApp.components;
 cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$modal', '$localStorage', '$window', 'platformCloudProvider', function (ngDataApi, $timeout, $modal, $localStorage, $window, platformCloudProvider) {
 	
 	/**
+	 * check if previous scope is already filled and highlight the selected container technology chosen
+	 * @param currentScope
+	 */
+	function checkOpenDefaults(currentScope) {
+		if(currentScope.wizard.deployment){
+			
+			if(currentScope.wizard.deployment.deployment && currentScope.wizard.deployment.deployment.previousEnvironment && currentScope.wizard.deployment.deployment.previousEnvironment !== ''){
+				currentScope.containers.form.formData.previousEnvironment = currentScope.wizard.deployment.deployment.previousEnvironment;
+				currentScope.containers.switchDriver('previous');
+			}
+			else if(currentScope.wizard.deployment.selectedInfraProvider){
+				let oneProvider;
+				currentScope.containers.techProviders.forEach((techProvider) => {
+					if(techProvider._id === currentScope.wizard.deployment.selectedInfraProvider._id){
+						oneProvider = techProvider;
+					}
+				});
+				
+				if(currentScope.wizard.deployment.selectedInfraProvider.deploy){
+					if(currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'docker'){
+						currentScope.containers.switchDriver('docker');
+						$timeout(() => {
+							currentScope.attach = true;
+							currentScope.containers.selectProvider(oneProvider, 'docker');
+							
+							$timeout(() => {
+								for(let i in currentScope.wizard.deployment.selectedInfraProvider.deploy){
+									currentScope.containers.form.formData[i] = currentScope.wizard.deployment.selectedInfraProvider.deploy[i];
+									if(i === 'infraCodeTemplate'){
+										currentScope.containers.form.entries[0].onAction(i, currentScope.containers.form.formData[i], currentScope.containers.form);
+									}
+								}
+							}, 500);
+						}, 500);
+					}
+					
+					if(currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'kubernetes'){
+						currentScope.containers.switchDriver('kubernetes');
+						$timeout(() => {
+							currentScope.attach = true;
+							currentScope.containers.selectProvider(oneProvider, 'kubernetes');
+							
+							$timeout(() => {
+								for(let i in currentScope.wizard.deployment.selectedInfraProvider.deploy){
+									currentScope.containers.form.formData[i] = currentScope.wizard.deployment.selectedInfraProvider.deploy[i];
+									if(i === 'infraCodeTemplate'){
+										currentScope.containers.form.entries[0].onAction(i, currentScope.containers.form.formData[i], currentScope.containers.form);
+									}
+								}
+							}, 500);
+						}, 500);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
 	 * handle storing one cloud provider configuration in wizard scope
 	 * @param currentScope
 	 * @param formData
 	 */
-	function handleFormData(currentScope, formData) {
-		currentScope.wizard.deployment = {
-			selectedInfraProvider: angular.copy(formData)
+	function handleFormData(currentScope, cloudProviderFormData) {
+		
+		//mimic behavior as if infra env code was set
+		if(!currentScope.envCode){
+			currentScope.envCode = currentScope.wizard.gi.code;
+		}
+		
+		//if not already set or different than previous
+		if(!currentScope.wizard.deployment || (currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.infraId !== cloudProviderFormData.infraId)){
+			//store the details of this cloud provider so that the next interface opens
+			currentScope.wizard.deployment = {
+				selectedInfraProvider: angular.copy(cloudProviderFormData)
+			};
+			delete currentScope.wizard.deployment.technology;
+			$localStorage.addEnv = angular.copy(currentScope.wizard);
+		}
+		
+		//mimic behavior as if environment has restriction
+		currentScope.environment = {
+			restriction : {
+				[currentScope.wizard.deployment.selectedInfraProvider.infraId] : {
+					[currentScope.wizard.deployment.selectedInfraProvider.region]: {
+						'network': currentScope.wizard.deployment.selectedInfraProvider.network
+					}
+				}
+			}
 		};
-		$localStorage.addEnv = angular.copy(currentScope.wizard);
-		currentScope.nextStep();
+		
+		//call print provider to render the display of available cloud provider infra options
+		currentScope.cloud.printProvider(() => {
+			
+			//check if container form is already filled case of back and refresh
+			if(currentScope.cloud.showDocker || currentScope.cloud.showKube){
+				$timeout(() => {
+					checkOpenDefaults(currentScope);
+				}, 500);
+			}
+			
+			console.log(currentScope.containers);
+			console.log(currentScope.vms);
+			
+			//recalculate and print form buttons
+			currentScope.cloud.form.actions = [
+				{
+					'type': 'submit',
+					'label': "Back",
+					'btn': 'success',
+					'action': function () {
+						go(currentScope);
+					}
+				},
+				{
+					'type': 'submit',
+					'label': "Next",
+					'btn': 'primary',
+					'action': function (formData) {
+						
+						//todo: need to add the ability to choose either container or vms
+						
+						//todo: need to add assertion on restrictions from template
+						//if provider supports containers and containers is set, collect the data.
+						if(currentScope.cloud.showKube || currentScope.cloud.showDocker){
+							//check if he can proceed....
+							let proceed = false;
+							if(currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment){
+								formData = { previousEnvironment: currentScope.containers.form.formData.previousEnvironment };
+								proceed = true;
+							}
+							else{
+								currentScope.containers.techProviders[0].deploy = angular.copy(formData);
+								delete currentScope.containers.techProviders[0].deploy.selectedProvider;
+								proceed = true;
+							}
+							
+							if(!proceed){
+								$window.alert("Either choose to use the same cluster of a previous created environment or select an Infra As Code Template and fill out its inputs so you can proceed.");
+							}
+							else{
+								//override the default behavior of attach container, push information into the scope
+								currentScope.containers.defaultAttachContainerAction = function(currentScope, postData){
+									
+									currentScope.wizard.selectedInfraProvider = postData.selectedInfraProvider;
+									
+									let finalPostData = {
+										selectedDriver: 'container'
+									};
+									
+									//todo: check the extras
+									
+									if(postData.deployment.previousEnvironment){
+										finalPostData.previousEnvironment = postData.deployment.previousEnvironment;
+										finalPostData.technology = postData.deployment.selectedDriver;
+									}
+									else {
+										finalPostData.technology = postData.deployment.selectedDriver;
+									}
+									
+									finalPostData.selectedInfraProvider = postData.selectedInfraProvider;
+									
+									//clone the line 13 to final postData
+									for(let i in currentScope.wizard.deployment.selectedInfraProvider){
+										finalPostData.selectedInfraProvider[i] = currentScope.wizard.deployment.selectedInfraProvider[i]
+									}
+									
+									//update the wizard scope
+									currentScope.wizard.deployment = angular.copy(finalPostData);
+
+									$localStorage.addEnv = angular.copy(currentScope.wizard);
+								};
+								
+								currentScope.containers.attachContainerTechnology(formData);
+							}
+						}
+						
+						//if provider supports vm and vm is set, collect the data.
+						if(currentScope.cloud.showVM){
+						
+						}
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						delete currentScope.cloud;
+						delete currentScope.containers;
+						delete currentScope.vms;
+						currentScope.exitWizard();
+					}
+				}
+			];
+		});
 	}
 	
 	/**
@@ -25,6 +210,10 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 		
 		currentScope.originalEnvironment = angular.copy(currentScope.environment);
 		
+		//reset the section
+		delete currentScope.environment;
+		delete currentScope.attach;
+		
 		if(!currentScope.cloud){
 			currentScope.cloud = currentScope.$new(true); //true means detached from main currentScope
 			
@@ -34,15 +223,14 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			//calculate and set the form buttons
 			currentScope.cloud.form.actions = [
 				{
-					'type': 'button',
+					'type': 'submit',
 					'label': "Back",
 					'btn': 'success',
 					'action': function () {
 						delete currentScope.cloud;
+						delete currentScope.containers;
+						delete currentScope.vms;
 						currentScope.referringStep = currentScope.currentStep;
-						if (currentScope.form && currentScope.form.formData) {
-							currentScope.form.formData = {};
-						}
 						currentScope.previousStep();
 					}
 				},
@@ -51,6 +239,9 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 					'label': translation.cancel[LANG],
 					'btn': 'danger',
 					'action': function () {
+						delete currentScope.cloud;
+						delete currentScope.containers;
+						delete currentScope.vms;
 						currentScope.exitWizard();
 					}
 				}
@@ -76,10 +267,9 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 							'btn': 'success',
 							'action': function () {
 								delete currentScope.cloud;
+								delete currentScope.containers;
+								delete currentScope.vms;
 								currentScope.referringStep = currentScope.currentStep;
-								if (currentScope.form && currentScope.form.formData) {
-									currentScope.form.formData = {};
-								}
 								currentScope.previousStep();
 							}
 						},
@@ -111,12 +301,12 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 								};
 								
 								if(currentScope.cloud.form.formData.providerExtra && Object.keys(currentScope.cloud.form.formData.providerExtra).length > 0){
-									if(!cloudProviderConfig.data.extras){
-										cloudProviderConfig.data.extras = {};
+									if(!cloudProviderConfig.extras){
+										cloudProviderConfig.extras = {};
 									}
 									for(let property in currentScope.cloud.form.formData.providerExtra){
 										let paramProperty = (property === 'groups') ? 'group': property;
-										cloudProviderConfig.data.extras[paramProperty] = currentScope.cloud.form.formData.providerExtra[property];
+										cloudProviderConfig.extras[paramProperty] = currentScope.cloud.form.formData.providerExtra[property];
 									}
 								}
 								
@@ -128,6 +318,9 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 							'label': translation.cancel[LANG],
 							'btn': 'danger',
 							'action': function () {
+								delete currentScope.cloud;
+								delete currentScope.containers;
+								delete currentScope.vms;
 								currentScope.exitWizard();
 							}
 						}

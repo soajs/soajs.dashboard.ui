@@ -288,35 +288,38 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 				timeout: $timeout,
 				entries: formEntries,
 				name: 'createContainer',
-				actions: [
-					{
-						'type': 'button',
-						'label': "Create Container",
-						'btn': 'primary',
-						'action': function (formData) {
-							let proceed = false;
-							if(currentScope.containers.techProviders[0].deploy){
-								currentScope.containers.techProviders[0].deploy = angular.copy(formData);
-								delete currentScope.containers.techProviders[0].deploy.selectedProvider;
-								proceed = true;
-							}
-							
-							if(currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment){
-								formData = { previousEnvironment: currentScope.containers.form.formData.previousEnvironment };
-								proceed = true;
-							}
-							
-							if(!proceed){
-								$window.alert("Either choose to use the same cluster of a previous created environment or select an Infra As Code Template and fill out its inputs so you can proceed.");
-							}
-							else{
-								//call attach container technology api
-								currentScope.containers.attachContainerTechnology(formData);
-							}
+				actions: []
+			};
+			
+			//set the button if this is not the wizard calling the module
+			if(!currentScope.wizard){
+				options.actions.push({
+					'type': 'button',
+					'label': "Create Container",
+					'btn': 'primary',
+					'action': function () {
+						let formData = currentScope.containers.form.formData;
+						let proceed = false;
+						if(formData.previousEnvironment){
+							formData = { previousEnvironment: currentScope.containers.form.formData.previousEnvironment };
+							proceed = true;
+						}
+						else{
+							currentScope.containers.techProviders[0].deploy = angular.copy(formData);
+							delete currentScope.containers.techProviders[0].deploy.selectedProvider;
+							proceed = true;
+						}
+						
+						if(!proceed){
+							$window.alert("Either choose to use the same cluster of a previous created environment or select an Infra As Code Template and fill out its inputs so you can proceed.");
+						}
+						else{
+							//call attach container technology api
+							currentScope.containers.attachContainerTechnology(formData);
 						}
 					}
-				]
-			};
+				});
+			}
 			
 			//calculate and build the similar environment list if any
 			currentScope.containers.getEnvironments((environments) => {
@@ -363,7 +366,12 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		//update the container form entries
 		currentScope.vms = currentScope.cloud.$new();
-		currentScope.vms.envCode = currentScope.envCode;
+		if(currentScope.wizard){
+			currentScope.vms.envCode = null;
+		}
+		else{
+			currentScope.vms.envCode = currentScope.envCode;
+		}
 		platformsVM.go(currentScope, 'listVMLayers');
 		currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
 		
@@ -483,14 +491,28 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 							value: [],
 							required: true
 						};
-						let dropDownMenu = [];
 						
+						let dropDownMenu = [];
 						currentScope.cloud.form.formData.selectedProvider[oneSpecific].forEach((oneValue) => {
+							let extraObj;
+							
 							if(!oneValue.region){
-								dropDownMenu.push({ v: oneValue.name, l: oneValue.name});
+								extraObj = { v: oneValue.name, l: oneValue.name};
 							}
 							else if(oneValue.region === currentScope.cloud.form.formData.region){
-								dropDownMenu.push({ v: oneValue.name, l: oneValue.name });
+								extraObj = { v: oneValue.name, l: oneValue.name };
+							}
+							
+							if(extraObj){
+								console.log(currentScope.cloud.form.formData);
+								if(currentScope.cloud.form.formData && currentScope.cloud.form.formData.extras){
+									let label = (oneSpecific === 'groups') ? 'group' : oneSpecific;
+									if(currentScope.cloud.form.formData.extras[label] === extraObj.v){
+										extraObj.selected = true;
+									}
+								}
+								console.log(extraObj)
+								dropDownMenu.push(extraObj);
 							}
 						});
 						currentScope.cloud.form.formData.selectedProvider.providerExtra[oneSpecific].value = dropDownMenu;
@@ -547,8 +569,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			
 			overlayLoading.show();
 			getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, networks) {
-				overlayLoading.hide();
 				if (error) {
+					overlayLoading.hide();
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
@@ -571,6 +593,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					else{
 						currentScope.cloud.noNetworks = true;
 					}
+					overlayLoading.hide();
 				}
 			});
 		};

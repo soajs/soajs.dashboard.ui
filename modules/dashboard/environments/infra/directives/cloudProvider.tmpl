@@ -89,7 +89,7 @@
 	<alert type="info">
 		<h4>Single Cloud Clustering</h4>
 		<hr>
-		<a href="" ng-click="cloud.removeProviderLock()" class="btn btn-sm btn-danger f-right" title="Unlock environment from this cloud provider to choose another">
+		<a ng-if="!wizard" href="" ng-click="cloud.removeProviderLock()" class="btn btn-sm btn-danger f-right" title="Unlock environment from this cloud provider to choose another">
 			<span class="icon icon-cross"></span> Remove
 		</a>
 		<p>

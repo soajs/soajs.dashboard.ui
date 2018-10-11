@@ -13,7 +13,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal',
 	$scope.steps = {
 		"manual": ['listTemplate', 'generalInfo', 'manualDeployment', 'processDynamicSteps', 'displayOverview', 'checkStatus'],
 		"container": ['listTemplate', 'generalInfo', 'technologyDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'],
-		"singleInfra": ['listTemplate', 'generalInfo', 'selectCloudProvider', 'technologyDeployment', 'vmDeployment', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'],
+		"singleInfra": ['listTemplate', 'generalInfo', 'selectCloudProvider', 'chooseRegistry', 'processDynamicSteps', 'chooseNginx', 'displayOverview', 'checkStatus'],
 	};
 	
 	$scope.addEnvCounter = 0;

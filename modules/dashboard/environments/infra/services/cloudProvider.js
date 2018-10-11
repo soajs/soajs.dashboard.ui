@@ -120,7 +120,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			}
 			
 			cloudProvider.image = "modules/dashboard/environments/images/" + cloudProvider.name + ".png";
-			expandProviderOptions(currentScope);
+			expandProviderOptions(currentScope, cb);
 		});
 	}
 	
@@ -128,8 +128,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	 * function that displays all the details that the cloud provider supports so the user can select how to move forward
 	 * @param currentScope
 	 */
-	function expandProviderOptions(currentScope){
-		
+	function expandProviderOptions(currentScope, callback){
+		let callbackReturned = false;
 		currentScope.cloud.showDocker = currentScope.cloud.form.formData.selectedProvider.showDocker;
 		currentScope.cloud.showKube = currentScope.cloud.form.formData.selectedProvider.showKube;
 		currentScope.cloud.showVm = currentScope.cloud.form.formData.selectedProvider.showVm;
@@ -179,7 +179,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			if (currentScope.cloud.showDocker || currentScope.cloud.showKube) {
 				currentScope.cloud.tabs.containers = true;
 				expandProviderContainerOptions(currentScope, oneProvider, iacTemplates, containerTemplates, () => {
-				
+					returnToCaller();
 				});
 			}
 			
@@ -188,14 +188,21 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					currentScope.cloud.tabs.vms = true;
 				}
 				expandProviderVMOptions(currentScope, oneProvider, iacTemplates, vmTemplates, containerTemplates, () => {
-				
+					returnToCaller();
 				});
 			}
-			overlayLoading.hide();
 		}
 		else{
 			$window.alert("The provider you have selected does not have any SOAJS driver that allow you to provision a Container Cluster or a Virtual Machine!");
 			return false;
+		}
+		
+		function returnToCaller(){
+			overlayLoading.hide();
+			if(!callbackReturned && callback && typeof callback === 'function'){
+				callbackReturned = true;
+				return callback();
+			}
 		}
 	}
 	
@@ -209,7 +216,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		currentScope.containers = currentScope.cloud.$new();
 		
 		//check environment deployer options
-		if(currentScope.environment.selected.includes('container') && (!currentScope.environment.pending || !currentScope.environment.error)){
+		if(currentScope.environment.selected && currentScope.environment.selected.includes('container') && (!currentScope.environment.pending || !currentScope.environment.error)){
 			currentScope.containers.dockerImagePath = "./themes/" + themeToUse + "/img/docker_logo.png";
 			currentScope.containers.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 			
@@ -219,6 +226,10 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			currentScope.containers.detachContainer = function(){
 				platformCntnr.detachContainerTechnology(currentScope);
 			};
+			
+			if(cb && typeof(cb) === 'function'){
+				return cb();
+			}
 		}
 		else{
 			currentScope.attach = true;
@@ -255,19 +266,20 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 							}
 						}
 					});
-					
-					form.actions.push({
-						'type': 'button',
-						'label': "Cancel",
-						'btn': 'danger',
-						'action': function () {
-							currentScope.containers.form.formData = {};
-							currentScope.containers.form.entries.length = 1;
-							currentScope.containers.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
-							
-							form.actions.pop();
-						}
-					});
+					if(!currentScope.wizard){
+						form.actions.push({
+							'type': 'button',
+							'label': "Cancel",
+							'btn': 'danger',
+							'action': function () {
+								currentScope.containers.form.formData = {};
+								currentScope.containers.form.entries.length = 1;
+								currentScope.containers.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
+								
+								form.actions.pop();
+							}
+						});
+					}
 				}
 			});
 			
@@ -306,8 +318,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 				]
 			};
 			
-			//todo: calculate and build the similar environment list if any
-			
+			//calculate and build the similar environment list if any
 			currentScope.containers.getEnvironments((environments) => {
 				buildForm(currentScope.containers, null, options, function () {
 					currentScope.containers.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
@@ -322,12 +333,22 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 							
 							let element = angular.element(document.getElementById(currentScope.cloud.form.formData.selectedProvider.name + "_" + driver));
 							element.html("<div ng-include=\"'engine/lib/form/inputs.tmpl'\"></div>");
-							$compile(element.contents())(currentScope.containers);
+							if(currentScope.wizard){
+								$compile(element.contents())(currentScope.containers);
+							}
+							else{
+								$compile(element.contents())(currentScope.containers);
+							}
 						}
 					};
+					
+					if(cb && typeof(cb) === 'function'){
+						return cb();
+					}
 				});
 			});
 		}
+		
 	}
 	
 	/**
@@ -346,6 +367,9 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		platformsVM.go(currentScope, 'listVMLayers');
 		currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
 		
+		if(cb && typeof(cb) === 'function'){
+			return cb();
+		}
 	}
 	
 	/**
@@ -416,7 +440,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		delete currentScope.cloud.noNetworks;
 		
 		//function used to switch the provider based on the accordion selected and the reset the chosen fields for that provider
-		currentScope.switchProvider = function(oneProvider){
+		currentScope.cloud.switchProvider = function(oneProvider){
 			
 			//for the accordion
 			currentScope.cloud.cloudProviders.forEach((provider) => {
@@ -428,11 +452,11 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 				
 				delete currentScope.cloud.form.formData.region;
 				delete currentScope.cloud.form.formData.providerExtra;
-				delete currentScope.networksList;
-				delete currentScope.noNetworks;
+				delete currentScope.cloud.networksList;
+				delete currentScope.cloud.noNetworks;
 				
 				//remove the next if the provider is switched
-				if(currentScope.cloud.form.actions.length > 1){
+				if(!currentScope.wizard && currentScope.cloud.form.actions.length > 1){
 					currentScope.cloud.form.actions.shift();
 				}
 			}
@@ -638,6 +662,10 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		
 		currentScope.cloud.printProvider = function (cb) {
 			printProvider(currentScope, cb);
+		};
+		
+		currentScope.cloud.expandProviderOptions = function(cb){
+			expandProviderOptions(currentScope, cb);
 		};
 		
 		currentScope.cloud.removeProviderLock = function () {

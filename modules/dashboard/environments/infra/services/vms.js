@@ -13,15 +13,34 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	function getInfraProvidersVMS(currentScope, envCode, oneProvider, includeErrors, cb) {
 		let allVMs = {};
 		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
+		
+		let requestOptions = {
 			"method": "get",
 			"routeName": "/dashboard/cloud/vm/list",
 			"params": {
-				"infraId": oneProvider._id,
-				"env": envCode || null,
 				"includeErrors": includeErrors
 			}
-		}, function (error, providerVMs) {
+		};
+		
+		if(envCode){
+			requestOptions.params.env = envCode;
+		}
+		else{
+			requestOptions.params = {
+				"infraId": oneProvider._id,
+				"region": oneProvider.region,
+				"network": oneProvider.network,
+				"includeErrors": includeErrors
+			};
+		}
+		
+		if (oneProvider.extra) {
+			for(let i in oneProvider.extra){
+				requestOptions.params[i] = oneProvider.extra[i];
+			}
+		}
+		
+		getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, providerVMs) {
 			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
@@ -203,8 +222,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		return cb();
 	}
 	
-	//////////////////////////////////////////////////////////
-	
 	function inspectVMLayer(currentScope, oneVMLayer) {
 		let formConfig = angular.copy(environmentsConfig.form.serviceInfo);
 		formConfig.entries[0].value = angular.copy(oneVMLayer);
@@ -240,7 +257,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			"method": "delete",
 			"routeName": "/dashboard/cloud/vm",
 			"params": {
-				'technology': 'vm',
 				"id": oneVMLayer.template.id,
 				"env": currentScope.vms.envCode,
 				"layerName": oneVMLayer.name
@@ -275,7 +291,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"method": "post",
 					"routeName": "/dashboard/cloud/vm",
 					"params": {
-						'technology': 'vm',
 						"env": currentScope.vms.envCode
 					},
 					"data": {
@@ -341,7 +356,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					"method": "put",
 					"routeName": "/dashboard/cloud/vm",
 					"params": {
-						'technology': 'vm',
 						"env": currentScope.vms.envCode,
 						"id": oneVMLayer.template.id
 					},
@@ -386,7 +400,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 						"method": "get",
 						"routeName": "/dashboard/cloud/vm/layer/status",
 						"params": {
-							'technology': 'vm',
 							"env": currentScope.vms.envCode,
 							"id": oneVMLayer.template.id,
 							"layerName": oneVMLayer.name
@@ -916,8 +929,6 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 		});
 	}
-	
-	//////////////////////////////////////////////////////////
 	
 	function go(currentScope, operation) {
 		

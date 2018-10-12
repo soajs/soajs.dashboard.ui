@@ -238,11 +238,16 @@ vmServices.service('vmSrv', ['$localStorage', '$timeout', 'platformsVM', functio
 				vmLayer.list[0].labels['soajs.env.code'] = currentScope.wizard.gi.code;
 				vmLayer.list[0].labels['soajs.onBoard'] = "true";
 				
-				currentScope.wizard.vmOnBoard.forEach((registeredVM) => {
-					if(registeredVM.data.layerName !== obj.data.layerName && !compareArrays(registeredVM.data.ids, obj.data.ids)){
-						currentScope.wizard.vmOnBoard.push(obj);
-					}
-				});
+				if(currentScope.wizard.vmOnBoard.length > 0){
+					currentScope.wizard.vmOnBoard.forEach((registeredVM) => {
+						if(registeredVM.data.layerName !== obj.data.layerName && !compareArrays(registeredVM.data.ids, obj.data.ids)){
+							currentScope.wizard.vmOnBoard.push(obj);
+						}
+					});
+				}
+				else{
+					currentScope.wizard.vmOnBoard.push(obj);
+				}
 				
 				if (!currentScope.wizard.onboardNames.includes(vmLayer.name + "__" + vmLayer.list[0].network)) {
 					currentScope.wizard.onboardNames.push(vmLayer.name + "__" + vmLayer.list[0].network);

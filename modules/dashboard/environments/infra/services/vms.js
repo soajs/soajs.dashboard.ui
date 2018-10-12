@@ -276,8 +276,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	function addVMLayer(currentScope) {
 		
 		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
-			if (currentScope.saveActionMethodAdd) {
-				currentScope.saveActionMethodAdd(modalScope, oneProvider, formData, modalInstance);
+			if (currentScope.vms.saveActionMethodAdd) {
+				currentScope.vms.saveActionMethodAdd(modalScope, oneProvider, formData, modalInstance);
 			}
 			else {
 				//collect the inputs from formData, formulate API call and trigger it
@@ -341,8 +341,8 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		// oneVMLayerTemplateRecord --> retrieved from db
 		
 		function defaultSaveActionMethod(modalScope, oneProvider, formData, modalInstance) {
-			if (currentScope.saveActionMethodModify) {
-				currentScope.saveActionMethodModify(modalScope, oneVMLayer, oneProvider, formData, modalInstance);
+			if (currentScope.vms.saveActionMethodModify) {
+				currentScope.vms.saveActionMethodModify(modalScope, oneVMLayer, oneProvider, formData, modalInstance);
 			}
 			else {
 				//collect the inputs from formData, formulate API call and trigger it
@@ -383,42 +383,40 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			}
 		}
 		
-		listInfraProviders(currentScope, () => {
-			//if add environment made the call, this vm actually exists only in wizard scope
-			if (currentScope.saveActionMethodModify) {
-				let oneVMLayerTemplateRecord = oneVMLayer.formData;
-				let saveActionMethod = defaultSaveActionMethod;
-				populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
-			}
-			else {
-				/**
-				 * call api and get how this vm layer was created
-				 */
-				$timeout(() => {
-					overlayLoading.show();
-					getSendDataFromServer(currentScope, ngDataApi, {
-						"method": "get",
-						"routeName": "/dashboard/cloud/vm/layer/status",
-						"params": {
-							"env": currentScope.vms.envCode,
-							"id": oneVMLayer.template.id,
-							"layerName": oneVMLayer.name
-						}
-					}, function (error, response) {
-						overlayLoading.hide();
-						if (error) {
-							currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						else {
-							response.infraCodeTemplate = response.template;
-							let oneVMLayerTemplateRecord = response;
-							let saveActionMethod = defaultSaveActionMethod;
-							populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayer.infraProvider.drivers[0].toLowerCase(), oneVMLayerTemplateRecord, saveActionMethod, true);
-						}
-					});
-				}, 500);
-			}
-		});
+		//if add environment made the call, this vm actually exists only in wizard scope
+		if (currentScope.vms.saveActionMethodModify) {
+			let oneVMLayerTemplateRecord = oneVMLayer.formData;
+			let saveActionMethod = defaultSaveActionMethod;
+			populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayerTemplateRecord, saveActionMethod, true);
+		}
+		else {
+			/**
+			 * call api and get how this vm layer was created
+			 */
+			$timeout(() => {
+				overlayLoading.show();
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "get",
+					"routeName": "/dashboard/cloud/vm/layer/status",
+					"params": {
+						"env": currentScope.vms.envCode,
+						"id": oneVMLayer.template.id,
+						"layerName": oneVMLayer.name
+					}
+				}, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
+						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					}
+					else {
+						response.infraCodeTemplate = response.template;
+						let oneVMLayerTemplateRecord = response;
+						let saveActionMethod = defaultSaveActionMethod;
+						populateVMLayerForm(currentScope, oneVMLayer.infraProvider, oneVMLayerTemplateRecord, saveActionMethod, true);
+					}
+				});
+			}, 500);
+		}
 	}
 	
 	function populateVMLayerForm(currentScope, oneProvider, data, submitActionMethod, editMode) {
@@ -444,6 +442,7 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			
 			getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, response) {
 				if (error) {
+					overlayLoading.hide();
 					currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
 				else {
@@ -936,33 +935,37 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 			currentScope.vms = currentScope.$new(); //true means detached from main currentScope
 		}
 		
-		currentScope.vms.listVMLayers = function (includeErrors) {
-			let envCode;
-			if(currentScope.vms.envCode){
-				envCode = currentScope.vms.envCode;
-			}
-			listVMLayers(currentScope, envCode, includeErrors);
-		};
-		
-		currentScope.vms.getOnBoard = function (vmLayer, release) {
-			getOnBoard(currentScope, vmLayer, release);
-		};
-		
-		currentScope.vms.addVMLayer = function () {
-			addVMLayer(currentScope);
-		};
-		
-		currentScope.vms.inspectVMLayer = function (oneVMLayer) {
-			inspectVMLayer(currentScope, oneVMLayer);
-		};
-		
-		currentScope.vms.editVMLayer = function (oneVMLayer) {
-			editVMLayer(currentScope, oneVMLayer);
-		};
-		
-		currentScope.vms.deleteVMLayer = function (oneVMLayer) {
-			deleteVMLayer(currentScope, oneVMLayer);
-		};
+		if(!currentScope.wizard){
+			
+			currentScope.vms.listVMLayers = function (includeErrors, cb) {
+				let envCode;
+				if(currentScope.vms.envCode){
+					envCode = currentScope.vms.envCode;
+				}
+				listVMLayers(currentScope, envCode, includeErrors, cb);
+			};
+			
+			currentScope.vms.getOnBoard = function (vmLayer, release) {
+				getOnBoard(currentScope, vmLayer, release);
+			};
+			
+			currentScope.vms.addVMLayer = function () {
+				addVMLayer(currentScope);
+			};
+			
+			currentScope.vms.inspectVMLayer = function (oneVMLayer) {
+				inspectVMLayer(currentScope, oneVMLayer);
+			};
+			
+			currentScope.vms.editVMLayer = function (oneVMLayer) {
+				editVMLayer(currentScope, oneVMLayer);
+			};
+			
+			currentScope.vms.deleteVMLayer = function (oneVMLayer) {
+				deleteVMLayer(currentScope, oneVMLayer);
+			};
+			
+		}
 		
 		if (operation) {
 			currentScope.vms[operation]();
@@ -970,6 +973,10 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	}
 	
 	return {
-		'go': go
+		'go': go,
+		'listVMLayers': listVMLayers,
+		'inspectVMLayer': inspectVMLayer,
+		'addVMLayer': addVMLayer,
+		'editVMLayer': editVMLayer
 	}
 }]);

@@ -153,8 +153,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			currentScope.cloud.selectedProvider.extra = angular.copy(currentScope.environment.restriction[oneProvider._id][currentScope.cloud.selectedProvider.region]);
 			delete currentScope.cloud.selectedProvider.extra.network;
 			
-			let containerTemplates = [];
-			let vmTemplates = [];
+			let containerTemplates = [{'v': '', 'l': " -- Select Template -- "}];
+			let vmTemplates = [{'v': '', 'l': " -- Select Template -- "}];
 			
 			iacTemplates.forEach((oneTmpl) => {
 				
@@ -268,6 +268,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 						}
 					});
 					if (!currentScope.wizard) {
+						form.actions.length = 1;
 						form.actions.push({
 							'type': 'button',
 							'label': "Cancel",
@@ -306,9 +307,11 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 							proceed = true;
 						}
 						else {
-							currentScope.containers.techProviders[0].deploy = angular.copy(formData);
-							delete currentScope.containers.techProviders[0].deploy.selectedProvider;
-							proceed = true;
+							if(formData.infraCodeTemplate){
+								currentScope.containers.techProviders[0].deploy = angular.copy(formData);
+								delete currentScope.containers.techProviders[0].deploy.selectedProvider;
+								proceed = true;
+							}
 						}
 						
 						if (!proceed) {
@@ -366,15 +369,13 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	function expandProviderVMOptions(currentScope, oneProvider, iacTemplates, vmTemplates, containerTemplates, cb) {
 		
 		//update the container form entries
-		currentScope.vms = currentScope.cloud.$new();
-		if (currentScope.wizard) {
-			currentScope.vms.envCode = null;
-		}
-		else {
+		if(!currentScope.wizard){
+			currentScope.vms = currentScope.cloud.$new();
 			currentScope.vms.envCode = currentScope.envCode;
+			
+			platformsVM.go(currentScope, 'listVMLayers');
+			currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
 		}
-		platformsVM.go(currentScope, 'listVMLayers');
-		currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
 		
 		if (cb && typeof(cb) === 'function') {
 			return cb();

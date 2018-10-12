@@ -114,7 +114,7 @@
 			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
-		<tab class="redTab" heading="Failed Virtual Machines" ng-show="!wizard && vms.errorVMLayers && cloud.showVm" ng-click="vms.listVMLayers(true)">
+		<tab class="redTab" heading="Failed Virtual Machines" ng-if="!wizard && vms.errorVMLayers && cloud.showVm" ng-click="vms.listVMLayers(true)">
 			<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
 		</tab>
 	</tabset>

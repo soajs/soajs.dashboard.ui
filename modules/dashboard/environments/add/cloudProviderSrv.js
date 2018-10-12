@@ -96,15 +96,60 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 		//call print provider to render the display of available cloud provider infra options
 		currentScope.cloud.printProvider(() => {
 			
+			//restrict certain technologies
+			if(currentScope.wizard.template.restriction && currentScope.wizard.template.restriction.deployment){
+				
+				let docker = false;
+				let kubernetes = false;
+				let vm = false;
+				
+				let restriction = currentScope.wizard.template.restriction;
+				restriction.deployment.forEach((oneTechnology) => {
+					if(oneTechnology === 'container'){
+						//check the driver
+						if (restriction.driver) {
+							if (restriction.driver.includes('container.docker')) {
+								docker = true;
+							}
+							if (restriction.driver.includes('container.kubernetes')) {
+								kubernetes = true;
+							}
+						}
+						else {
+							docker = true;
+							kubernetes = true;
+						}
+					}
+					else{
+						//check the driver
+						if (restriction.deployment.includes('vm')) {
+							vm = true;
+						}
+					}
+				});
+				
+				if(currentScope.wizard.deployment.selectedInfraProvider.showDocker){
+					currentScope.wizard.deployment.selectedInfraProvider.showDocker = docker;
+				}
+				
+				if(currentScope.wizard.deployment.selectedInfraProvider.showDocker){
+					currentScope.wizard.deployment.selectedInfraProvider.showKube = kubernetes;
+				}
+				if(currentScope.wizard.deployment.selectedInfraProvider.showVm){
+					currentScope.wizard.deployment.selectedInfraProvider.showVm = vm;
+				}
+				
+				currentScope.cloud.showDocker = docker;
+				currentScope.cloud.showKube = kubernetes;
+				currentScope.cloud.showVm = vm;
+			}
+			
 			//check if container form is already filled case of back and refresh
 			if(currentScope.cloud.showDocker || currentScope.cloud.showKube){
 				$timeout(() => {
 					checkOpenDefaults(currentScope);
 				}, 500);
 			}
-			
-			console.log(currentScope.containers);
-			console.log(currentScope.vms);
 			
 			//recalculate and print form buttons
 			currentScope.cloud.form.actions = [
@@ -121,6 +166,9 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 					'label': "Next",
 					'btn': 'primary',
 					'action': function (formData) {
+						
+						console.log(currentScope.containers);
+						console.log(currentScope.vms);
 						
 						//todo: need to add the ability to choose either container or vms
 						
@@ -179,6 +227,8 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 							}
 						}
 						
+						console.log(currentScope.cloud);
+						
 						//if provider supports vm and vm is set, collect the data.
 						if(currentScope.cloud.showVM){
 						
@@ -219,11 +269,17 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			
 			//reset the form and its data
 			currentScope.cloud.form = { formData: {} };
+		}
+		
+		/**
+		 * invoke the list cloud provider main function
+		 */
+		platformCloudProvider.go(currentScope, 'selectProvider', () => {
 			
 			//calculate and set the form buttons
 			currentScope.cloud.form.actions = [
 				{
-					'type': 'submit',
+					'type': 'button',
 					'label': "Back",
 					'btn': 'success',
 					'action': function () {
@@ -246,12 +302,55 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 					}
 				}
 			];
-		}
-		
-		/**
-		 * invoke the list cloud provider main function
-		 */
-		platformCloudProvider.go(currentScope, 'selectProvider', () => {
+			
+			if(currentScope.wizard.template.restriction){
+				//restrict certain infra
+				if(currentScope.wizard.template.restriction.infra){
+					for(let i = currentScope.cloud.cloudProviders.length -1; i >=0; i--){
+						if(!currentScope.wizard.template.restriction.infra.includes(currentScope.cloud.cloudProviders[i].name)){
+							currentScope.cloud.cloudProviders.splice(i, 1);
+						}
+					}
+				}
+				
+				//restrict certain technologies
+				if(currentScope.wizard.template.restriction.deployment && currentScope.cloud.cloudProviders){
+					for(let i = currentScope.cloud.cloudProviders.length -1; i >=0; i--){
+						let removeInfra = false;
+						
+						currentScope.wizard.template.restriction.deployment.forEach((oneTechnology) => {
+							if(oneTechnology === 'container'){
+								if(currentScope.wizard.template.restriction.driver){
+									
+									let docker = true, kubernetes = true;
+									if(currentScope.wizard.template.restriction.driver.includes("container.docker") && !currentScope.cloud.cloudProviders[i].technologies.includes("docker")){
+										docker = false;
+									}
+									if(currentScope.wizard.template.restriction.driver.includes("container.kubernetes") && !currentScope.cloud.cloudProviders[i].technologies.includes("kubernetes")){
+										kubernetes = false;
+									}
+									
+									if(!docker && !kubernetes){
+										removeInfra = true;
+									}
+								}
+								else if(!currentScope.cloud.cloudProviders[i].technologies.includes('docker') && !currentScope.cloud.cloudProviders[i].technologies.includes('kubernetes')){
+									removeInfra = true;
+								}
+							}
+							else{
+								if(!currentScope.cloud.cloudProviders[i].technologies.includes(oneTechnology)){
+									removeInfra = true;
+								}
+							}
+						});
+						
+						if(removeInfra){
+							currentScope.cloud.cloudProviders.splice(i, 1);
+						}
+					}
+				}
+			}
 			
 			//override the default behavior of the show next button and its functionality
 			currentScope.cloud.showNextButton = function() {
@@ -332,7 +431,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			currentScope.mapStorageToWizard($localStorage.addEnv);
 			
 			//set the region and network and infra information
-			if (currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider) {
+			if (currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.cloud.cloudProviders) {
 				currentScope.cloud.form.formData = angular.copy(currentScope.wizard.deployment.selectedInfraProvider);
 				
 				//locate the previous existing cloud provider and set it

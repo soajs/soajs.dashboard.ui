@@ -15,12 +15,12 @@ containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$
 			let docker = false;
 			let kubernetes = false;
 			
-			if (restrictions.deployment.indexOf('container') !== -1) {
+			if (restrictions.deployment.includes('container')) {
 				if (restrictions.driver) {
-					if (restrictions.driver.indexOf('container.docker') !== -1) {
+					if (restrictions.driver.includes('container.docker')) {
 						docker = true;
 					}
-					if (restrictions.driver.indexOf('container.kubernetes') !== -1) {
+					if (restrictions.driver.includes('container.kubernetes')) {
 						kubernetes = true;
 					}
 				}
@@ -29,7 +29,6 @@ containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$
 					kubernetes = true;
 				}
 			}
-			
 			currentScope.containers.showDocker = docker;
 			currentScope.containers.showKube = kubernetes;
 		}

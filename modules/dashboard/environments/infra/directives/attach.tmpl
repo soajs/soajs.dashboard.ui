@@ -42,7 +42,7 @@
 		</div>
 	</accordion-group>
 	
-	<accordion-group is-open="containers.platforms.docker" ng-click="containers.switchDriver('docker')" ng-if="(!containers.form.formData.selectedProvider || (containers.form.formData.selectedProvider && containers.showDocker))">
+	<accordion-group is-open="containers.platforms.docker" ng-click="containers.switchDriver('docker')" ng-if="containers.showDocker">
 		<accordion-heading>
 			Use Docker Swarm as my Container Technology
 		</accordion-heading>
@@ -61,7 +61,7 @@
 		</div>
 	</accordion-group>
 	
-	<accordion-group is-open="containers.platforms.kubernetes" ng-click="containers.switchDriver('kubernetes')" ng-if="(!containers.form.formData.selectedProvider || (containers.form.formData.selectedProvider && containers.showKube))">
+	<accordion-group is-open="containers.platforms.kubernetes" ng-click="containers.switchDriver('kubernetes')" ng-if="containers.showKube">
 		<accordion-heading>
 			Use Kubernetes as my Container Technology
 		</accordion-heading>

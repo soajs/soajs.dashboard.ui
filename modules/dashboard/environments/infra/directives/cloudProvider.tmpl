@@ -102,19 +102,19 @@
 	</alert>
 	<br />
 	<tabset>
-		<tab heading="Container Technology" ng-if="((access.platforms.attachContainer || access.platforms.detachContainer) && (cloud.form.formData.selectedProvider.showKube || cloud.form.formData.selectedProvider.showDocker))" active="cloud.tabs.containers">
+		<tab heading="Container Technology" ng-if="((access.platforms.attachContainer || access.platforms.detachContainer) && (cloud.showKube || cloud.showDocker))" active="cloud.tabs.containers">
 			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/container.tmpl'"></div>
 		</tab>
-		<tab ng-if="!wizard" heading="Virtual Machines" ng-if="access.vm.list && cloud.form.formData.selectedProvider.showVm" active="cloud.tabs.vms" ng-click="vms.listVMLayers(true)">
+		<tab heading="Virtual Machines" ng-if="!wizard && access.vm.list && cloud.showVm" active="cloud.tabs.vms" ng-click="vms.listVMLayers(true)">
 			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
-		<tab ng-if="wizard" heading="Virtual Machines" ng-if="access.vm.list && cloud.form.formData.selectedProvider.showVm" active="cloud.tabs.vms">
+		<tab heading="Virtual Machines" ng-if="wizard && access.vm.list && cloud.showVm" active="cloud.tabs.vms">
 			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
-		<tab ng-if="!wizard" class="redTab" heading="Failed Virtual Machines" ng-show="vms.errorVMLayers && cloud.form.formData.selectedProvider.showVm" ng-click="vms.listVMLayers(true)">
+		<tab class="redTab" heading="Failed Virtual Machines" ng-show="!wizard && vms.errorVMLayers && cloud.showVm" ng-click="vms.listVMLayers(true)">
 			<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
 		</tab>
 	</tabset>

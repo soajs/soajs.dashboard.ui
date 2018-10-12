@@ -24,11 +24,9 @@ regServices.service('registrySrv', ['ngDataApi', '$timeout', '$modal', '$localSt
 		
 		//no controller, do not show this page
 		if (!controllerRepoExist) {
-			
-			currentScope.referringStep = currentScope.currentStep;
-			
 			//i am coming from dynamic srv, hit previous page
 			if(currentScope.referringStep === 'dynamicSrv'){
+				currentScope.referringStep = currentScope.currentStep;
 				currentScope.previousStep();
 			}
 			//go forward

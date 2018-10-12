@@ -298,7 +298,9 @@ vmServices.service('vmSrv', ['$localStorage', '$timeout', 'platformsVM', functio
 						template: oneVM.data.infraCodeTemplate,
 						specs: vmSpecs
 					};
-					
+					if(!currentScope.vms.vmLayers){
+						currentScope.vms.vmLayers = {};
+					}
 					currentScope.vms.vmLayers = insertObjFirst(currentScope.vms.vmLayers, myProvider.name + "_" + myVM.name, myVM);
 				});
 				$localStorage.addEnv = angular.copy(currentScope.wizard);

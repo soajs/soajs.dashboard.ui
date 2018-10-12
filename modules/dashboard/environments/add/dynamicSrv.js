@@ -58,7 +58,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				
 				//this template has no deployment workflow go to overview
 				if (stack.length === 0) {
-					if(['overview'].indexOf(currentScope.referringStep) !== -1){
+					if(['overview', 'nginx'].indexOf(currentScope.referringStep) !== -1){
 						currentScope.referringStep = currentScope.currentStep;
 						currentScope.deploymentStackStep = 0;
 						if (currentScope.form && currentScope.form.formData) {
@@ -73,7 +73,7 @@ dynamicServices.service('dynamicSrv', ['ngDataApi', '$timeout', '$modal', '$loca
 				}
 				else {
 					currentScope.deploymentStackStep = 0;
-					if(['registry', 'container', 'vm'].indexOf(currentScope.referringStep) === -1){
+					if(['registry', 'container', 'cloudProvider'].indexOf(currentScope.referringStep) === -1){
 						currentScope.deploymentStackStep = stack.length -1;
 					}
 					processStack(currentScope, stack);

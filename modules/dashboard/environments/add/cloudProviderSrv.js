@@ -163,7 +163,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 					'label': "Back",
 					'btn': 'success',
 					'action': function () {
-						go(currentScope);
+						go(currentScope, true);
 					}
 				},
 				{
@@ -359,7 +359,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 	 * main section driver
 	 * @param currentScope
 	 */
-	function go(currentScope) {
+	function go(currentScope, forcePageOne) {
 		
 		currentScope.currentStep = 'cloudProvider';
 		currentScope.mapStorageToWizard($localStorage.addEnv);
@@ -384,13 +384,14 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 		/**
 		 * invoke the list cloud provider main function
 		 */
+		overlayLoading.show();
 		platformCloudProvider.go(currentScope, 'selectProvider', () => {
 			
 			if(!currentScope.cloudProviders){
 				currentScope.cloudProviders = angular.copy(currentScope.cloud.cloudProviders);
 			}
 			
-			if(currentScope.referringStep === 'gi'){
+			if(currentScope.referringStep === 'gi' || forcePageOne){
 				//calculate and set the form buttons
 				currentScope.cloud.form.actions = [
 					{
@@ -526,6 +527,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 							//expand other inputs
 							currentScope.cloud.populateProviderExtra();
 							$timeout(() => {
+								overlayLoading.hide();
 								currentScope.cloud.showNextButton();
 							}, 500);
 						}
@@ -533,6 +535,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 				}
 			}
 			else{
+				overlayLoading.hide();
 				currentScope.cloud.form.formData.selectedProvider = currentScope.wizard.deployment.selectedInfraProvider;
 				currentScope.cloud.form.formData.region = currentScope.wizard.deployment.selectedInfraProvider.region;
 				currentScope.cloud.form.formData.network = currentScope.wizard.deployment.selectedInfraProvider.network;

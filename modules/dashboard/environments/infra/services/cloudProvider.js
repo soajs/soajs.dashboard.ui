@@ -7,7 +7,9 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	 * @param currentScope
 	 */
 	function selectProvider(currentScope, cb) {
-		overlayLoading.show();
+		if(!currentScope.wizard) {
+			overlayLoading.show();
+		}
 		listInfraProviders(currentScope, null, null, () => {
 			let options = {
 				timeout: $timeout,
@@ -29,7 +31,9 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			};
 			
 			buildForm(currentScope.cloud, null, options, () => {
-				overlayLoading.hide();
+				if(!currentScope.wizard) {
+					overlayLoading.hide();
+				}
 				if (cb && typeof cb === 'function') {
 					return cb();
 				}
@@ -581,11 +585,14 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					requestOptions.params[paramProperty] = currentScope.cloud.form.formData.providerExtra[property];
 				}
 			}
-			
-			overlayLoading.show();
+			if(!currentScope.wizard){
+				overlayLoading.show();
+			}
 			getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, networks) {
-				if (error) {
+				if(!currentScope.wizard) {
 					overlayLoading.hide();
+				}
+				if (error) {
 					currentScope.displayAlert('danger', error.message);
 				}
 				else {
@@ -608,7 +615,6 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					else {
 						currentScope.cloud.noNetworks = true;
 					}
-					overlayLoading.hide();
 				}
 			});
 		};

@@ -12,7 +12,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 	 */
 	function getInfraProvidersVMS(currentScope, envCode, oneProvider, includeErrors, cb) {
 		let allVMs = {};
-		overlayLoading.show();
+		if(!currentScope.wizard){
+			overlayLoading.show();
+		}
 		
 		let requestOptions = {
 			"method": "get",
@@ -41,7 +43,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 		}
 		
 		getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, providerVMs) {
-			overlayLoading.hide();
+			if(!currentScope.wizard) {
+				overlayLoading.hide();
+			}
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			}

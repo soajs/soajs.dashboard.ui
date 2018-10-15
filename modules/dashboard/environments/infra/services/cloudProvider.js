@@ -43,6 +43,11 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	 * @param cb
 	 */
 	function listInfraProviders(currentScope, id, exclude, cb) {
+		
+		if((!id || id ==='') && currentScope.cloud.cloudProviders && currentScope.wizard){
+			return cb();
+		}
+		
 		//get the available providers
 		let requestOptions = {
 			"method": "get",
@@ -52,6 +57,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 				"exclude[]": exclude || ['templates']
 			}
 		};
+		
 		if (id && id !== '') {
 			requestOptions.params.id = id;
 		}
@@ -100,12 +106,16 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	 * @param cb
 	 */
 	function printProvider(currentScope, cb) {
-		overlayLoading.show();
+		if(!currentScope.wizard){
+			overlayLoading.show();
+		}
 		let infraId = Object.keys(currentScope.environment.restriction)[0];
 		let excludes = ['regions', 'groups', 'extra'];
 		
 		listInfraProviders(currentScope, infraId, excludes, (cloudProvider) => {
-			overlayLoading.hide();
+			if(!currentScope.wizard) {
+				overlayLoading.hide();
+			}
 			currentScope.cloud.form.formData.selectedProvider = cloudProvider;
 			
 			if (cloudProvider.technologies.indexOf('docker') !== -1) {

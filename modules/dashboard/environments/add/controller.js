@@ -275,6 +275,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal',
 		delete $scope.reusableData;
 		delete $scope.referringStep;
 		delete $scope.currentStep;
+		delete currentScope.cloudProviders
 		$scope.form.formData = {};
 		$location.url($location.path());
 		$scope.$parent.go("/environments");

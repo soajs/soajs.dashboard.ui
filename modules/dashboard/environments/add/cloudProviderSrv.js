@@ -23,7 +23,6 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 				
 				if (currentScope.wizard.deployment.selectedInfraProvider.deploy) {
 					if (currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'docker') {
-						overlayLoading.show();
 						$timeout(() => {
 							currentScope.containers.selectProvider(oneProvider, 'docker');
 							currentScope.containers.switchDriver('docker');
@@ -33,12 +32,10 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 									currentScope.containers.form.entries[0].onAction(i, currentScope.containers.form.formData[i], currentScope.containers.form);
 								}
 							}
-							overlayLoading.hide();
 						}, 1500);
 					}
 					
 					if (currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'kubernetes') {
-						overlayLoading.show();
 						$timeout(() => {
 							currentScope.containers.selectProvider(oneProvider, 'kubernetes');
 							currentScope.containers.switchDriver('kubernetes');
@@ -48,7 +45,6 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 									currentScope.containers.form.entries[0].onAction(i, currentScope.containers.form.formData[i], currentScope.containers.form);
 								}
 							}
-							overlayLoading.hide();
 						}, 1500);
 					}
 				}
@@ -70,7 +66,6 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 	 * @param formData
 	 */
 	function handleFormData(currentScope, cloudProviderFormData) {
-		currentScope.attach = true;
 		//mimic behavior as if infra env code was set
 		if (!currentScope.envCode) {
 			currentScope.envCode = currentScope.wizard.gi.code;
@@ -86,6 +81,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
 		}
 		
+		currentScope.attach = true;
 		//mimic behavior as if environment has restriction
 		currentScope.environment = {
 			restriction: {
@@ -97,8 +93,8 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			}
 		};
 		
+		overlayLoading.show();
 		currentScope.cloud.printProvider(() => {
-			
 			//restrict certain technologies
 			if (currentScope.wizard.template.restriction && currentScope.wizard.template.restriction.deployment) {
 				
@@ -159,6 +155,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 				});
 			}
 			
+			overlayLoading.hide();
 			//recalculate and print form buttons
 			currentScope.cloud.form.actions = [
 				{
@@ -380,10 +377,18 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			currentScope.cloud.form = {formData: {}};
 		}
 		
+		if(currentScope.cloudProviders){
+			currentScope.cloud.cloudProviders = angular.copy(currentScope.cloudProviders);
+		}
+		
 		/**
 		 * invoke the list cloud provider main function
 		 */
 		platformCloudProvider.go(currentScope, 'selectProvider', () => {
+			
+			if(!currentScope.cloudProviders){
+				currentScope.cloudProviders = angular.copy(currentScope.cloud.cloudProviders);
+			}
 			
 			if(currentScope.referringStep === 'gi'){
 				//calculate and set the form buttons

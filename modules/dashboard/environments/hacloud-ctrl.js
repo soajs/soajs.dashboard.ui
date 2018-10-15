@@ -326,27 +326,31 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		}
 	};
 	
-	$scope.listVMLayers = function() {
+	if (!$scope.vms){
+		$scope.vms = {};
+	}
+	
+	$scope.vms.listVMLayers = function() {
 		orchestrateVMS.listVMLayers($scope);
 	};
 	
-	$scope.inspectVMLayer = function(oneVMLayer){
+	$scope.vms.inspectVMLayer = function(oneVMLayer){
 		orchestrateVMS.inspectVMLayer($scope, oneVMLayer);
 	};
 	
-	$scope.deleteVMLayer = function(oneVMLayer) {
+	$scope.vms.deleteVMLayer = function(oneVMLayer) {
 		orchestrateVMS.deleteVMLayer($scope, oneVMLayer);
 	};
 	
-	$scope.maintenanceOp = function(oneVMLayer, oneVMInstance, operation) {
+	$scope.vms.maintenanceOp = function(oneVMLayer, oneVMInstance, operation) {
 		orchestrateVMS.maintenanceOp($scope, oneVMLayer, oneVMInstance, operation);
 	};
 	
-	$scope.getVMLogs = function(oneVMLayer, oneVMInstance) {
+	$scope.vms.getVMLogs = function(oneVMLayer, oneVMInstance) {
 		orchestrateVMS.getVMLogs($scope, oneVMLayer, oneVMInstance);
 	};
 	
-	$scope.deleteVM = function(oneVMLayer, oneVMInstance) {
+	$scope.vms.deleteVM = function(oneVMLayer, oneVMInstance) {
 		orchestrateVMS.deleteVM($scope, oneVMLayer, oneVMInstance);
 	};
 

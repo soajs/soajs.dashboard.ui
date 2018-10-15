@@ -24,7 +24,7 @@
 		<div ng-repeat="oneVMLayer in vms.vmLayers">
 			
 			<!--if vm was created by soajs or onboarded-->
-			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'])" ng-hide="!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.layer.name']">
+			<div ng-if="oneVMLayer.template || (!oneVMLayer.template && oneVMLayer.list[0].labels['soajs.env.code'])">
 				
 				<div class="entryBox mb20" ng-class="{'tempVMLayer': oneVMLayer.forceEditDelete }">
 					<div class="header table">

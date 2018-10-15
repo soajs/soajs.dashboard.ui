@@ -132,6 +132,7 @@ ul {
 
 .nameHeader {
      width: 18% !important;
+    word-break: keep-all !important;
  }
 
 .ipHeader {

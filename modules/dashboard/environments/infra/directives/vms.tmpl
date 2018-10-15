@@ -73,7 +73,7 @@
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
 									<tr class="header">
-										<td class="nameHeader">Operations</td>
+										<td class="nameHeader" ng-if="listingClouds">Operations</td>
 										<td class="nameHeader">Instance Name</td>
 										<td class="nameHeader">OS Name</td>
 										<td class="nameHeader">DiskSize</td>
@@ -85,7 +85,7 @@
 								</thead>
 								<tbody>
 									<tr class="cloud-tr-bgColor">
-										<td>
+										<td ng-if="listingClouds">
 											<a href="" ng-if="access.vm.maintenance" ng-click="vms.maintenanceOp(oneVMLayer, instance, 'startVM')" tooltip="Start VM Instance">
 												<span class="icon icon-switch"></span>&nbsp;
 											</a>
@@ -192,7 +192,7 @@
 							<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 								<thead>
 									<tr class="header">
-										<td class="nameHeader">Operations</td>
+										<td class="nameHeader" ng-if="listingClouds">Operations</td>
 										<td class="nameHeader">Instance Name</td>
 										<td class="nameHeader">OS Name</td>
 										<td class="nameHeader">DiskSize</td>
@@ -204,7 +204,7 @@
 								</thead>
 								<tbody>
 									<tr class="cloud-tr-bgColor">
-										<td>
+										<td ng-if="listingClouds">
 											<a href="" ng-if="access.vm.maintenance"
 											   ng-click="vms.maintenanceOp(oneVMLayer, instance, 'startVM')"
 											   tooltip="Start VM Instance">

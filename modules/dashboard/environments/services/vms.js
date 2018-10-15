@@ -33,8 +33,8 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 						if (!allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
 							let vmTemplate = angular.copy(oneVM.template);
 							delete oneVM.template;
-							if (envCode) {
-								if (oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode) {
+							if (currentScope.envCode) {
+								if (oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === currentScope.envCode) {
 									if (allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer]) {
 										allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
 									}
@@ -83,8 +83,8 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 							}
 						}
 						else {
-							if (envCode) {
-								if (oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === envCode) {
+							if (currentScope.envCode) {
+								if (oneVM.labels && oneVM.labels['soajs.env.code'] && oneVM.labels['soajs.env.code'] === currentScope.envCode) {
 									delete oneVM.template;
 									allVMs[oneProvider.name + "_" + oneVM.network + "_" + oneVM.layer].list.push(oneVM);
 								}

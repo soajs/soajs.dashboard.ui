@@ -489,7 +489,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		};
 		
 		//function that populates the list of provider specific extra inputs ( if any )
-		currentScope.cloud.populateProviderExtra = function () {
+		currentScope.cloud.populateProviderExtra = function (cb) {
 			let autoTrigger = false;
 			if (currentScope.cloud.form.formData.selectedProvider.providerExtra) {
 				delete currentScope.cloud.form.formData.selectedProvider.providerExtra;
@@ -535,11 +535,16 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 				});
 				
 				if (autoTrigger) {
-					currentScope.cloud.populateNetworks();
+					currentScope.cloud.populateNetworks(cb);
+				}
+				else{
+					if(cb && typeof cb === 'function'){
+						return cb();
+					}
 				}
 			}
 			else {
-				currentScope.cloud.populateNetworks();
+				currentScope.cloud.populateNetworks(cb);
 			}
 		};
 		
@@ -566,7 +571,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 		};
 		
 		//function that fetches the networks of this provider based on region and provider specific extra inputs selected ( if any )
-		currentScope.cloud.populateNetworks = function () {
+		currentScope.cloud.populateNetworks = function (cb) {
 			delete currentScope.cloud.networksList;
 			delete currentScope.cloud.noNetworks;
 			
@@ -585,11 +590,11 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					requestOptions.params[paramProperty] = currentScope.cloud.form.formData.providerExtra[property];
 				}
 			}
-			if(!currentScope.wizard){
+			if(!cb){
 				overlayLoading.show();
 			}
 			getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, networks) {
-				if(!currentScope.wizard) {
+				if(!cb) {
 					overlayLoading.hide();
 				}
 				if (error) {
@@ -615,6 +620,9 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 					else {
 						currentScope.cloud.noNetworks = true;
 					}
+				}
+				if(cb && typeof cb === 'function'){
+					return cb();
 				}
 			});
 		};

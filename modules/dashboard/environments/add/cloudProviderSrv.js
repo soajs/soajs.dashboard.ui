@@ -6,12 +6,13 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 	 * check if previous scope is already filled and highlight the selected container technology chosen
 	 * @param currentScope
 	 */
-	function checkOpenDefaults(currentScope) {
+	function checkOpenDefaults(currentScope, cb) {
 		if (currentScope.wizard.deployment) {
 			
 			if (currentScope.wizard.deployment.deployment && currentScope.wizard.deployment.deployment.previousEnvironment && currentScope.wizard.deployment.deployment.previousEnvironment !== '') {
 				currentScope.containers.form.formData.previousEnvironment = currentScope.wizard.deployment.deployment.previousEnvironment;
 				currentScope.containers.switchDriver('previous');
+				return cb();
 			}
 			else if (currentScope.wizard.deployment.selectedInfraProvider) {
 				let oneProvider;
@@ -32,10 +33,10 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 									currentScope.containers.form.entries[0].onAction(i, currentScope.containers.form.formData[i], currentScope.containers.form);
 								}
 							}
+							return cb();
 						}, 1500);
 					}
-					
-					if (currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'kubernetes') {
+					else if (currentScope.wizard.deployment.selectedInfraProvider.deploy.technology === 'kubernetes') {
 						$timeout(() => {
 							currentScope.containers.selectProvider(oneProvider, 'kubernetes');
 							currentScope.containers.switchDriver('kubernetes');
@@ -45,11 +46,19 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 									currentScope.containers.form.entries[0].onAction(i, currentScope.containers.form.formData[i], currentScope.containers.form);
 								}
 							}
+							return cb();
 						}, 1500);
 					}
+					else {
+						return cb();
+					}
+				}
+				else {
+					return cb();
 				}
 			}
 		}
+		else return cb();
 	}
 	
 	/**
@@ -81,6 +90,7 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
 		}
 		
+		let containerCheck = false, vmCheck = false;
 		currentScope.attach = true;
 		//mimic behavior as if environment has restriction
 		currentScope.environment = {
@@ -145,17 +155,20 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			
 			//check if container form is already filled case of back and refresh
 			if (currentScope.cloud.showDocker || currentScope.cloud.showKube) {
-				checkOpenDefaults(currentScope);
+				checkOpenDefaults(currentScope, () => {
+					containerCheck = true;
+					moveOn();
+				});
 			}
 			
 			//check if vm is already filled
 			if (currentScope.cloud.showVm) {
 				encapsulateDefaultVMServiceFunctions(currentScope, () => {
-				
+					vmCheck = true;
+					moveOn();
 				});
 			}
 			
-			overlayLoading.hide();
 			//recalculate and print form buttons
 			currentScope.cloud.form.actions = [
 				{
@@ -353,6 +366,12 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 				}
 			];
 		});
+		
+		function moveOn(){
+			if(containerCheck && vmCheck){
+				overlayLoading.hide();
+			}
+		}
 	}
 	
 	/**
@@ -525,17 +544,15 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 							oneProvider.expanded = true;
 							
 							//expand other inputs
-							currentScope.cloud.populateProviderExtra();
-							$timeout(() => {
-								overlayLoading.hide();
+							currentScope.cloud.populateProviderExtra(() => {
 								currentScope.cloud.showNextButton();
-							}, 500);
+								overlayLoading.hide();
+							});
 						}
 					});
 				}
 			}
 			else{
-				overlayLoading.hide();
 				currentScope.cloud.form.formData.selectedProvider = currentScope.wizard.deployment.selectedInfraProvider;
 				currentScope.cloud.form.formData.region = currentScope.wizard.deployment.selectedInfraProvider.region;
 				currentScope.cloud.form.formData.network = currentScope.wizard.deployment.selectedInfraProvider.network;

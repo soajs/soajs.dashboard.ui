@@ -114,13 +114,13 @@ vmsServices.service('orchestrateVMS', ['ngDataApi', '$timeout', '$modal', '$cook
 					}
 				}
 				
-				currentScope.vmLayers = allVMs;
+				currentScope.vms.vmLayers = allVMs;
 				
-				if (Object.keys(currentScope.vmLayers).length > 0) {
+				if (Object.keys(currentScope.vms.vmLayers).length > 0) {
 					//create a variable to indicate that there are VMs
 					currentScope.vmsAvailable = true;
 				}
-				else currentScope.vmLayers = null;
+				else currentScope.vms.vmLayers = null;
 			}
 		});
 	}

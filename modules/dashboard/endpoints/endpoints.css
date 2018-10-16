@@ -262,6 +262,14 @@ a.tooltipToggle {
 }
 
 .commonGreenButtonsClass {
+    float: right;
+    position: relative;
+    top: -10px;
+}
+
+.commonGreenButtonsClassRefresh {
+    float: right;
+    position: relative;
     color: #fff;
     background-color: #449d44;
     border-color: #398439;

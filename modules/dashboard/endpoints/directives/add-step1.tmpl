@@ -1,0 +1,87 @@
+<div class="modal-body">
+	<div class="form">
+		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+		<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
+			<div class="form-group">
+				<label>{{translation.serviceName[LANG]}}</label>
+				<input type="text" class="form-control" ng-model="form.formData.serviceName" ng-required="true" placeholder="myservice"/>
+				<span class="manualToolTip">Service Name should be alphanumeric and does not contain any space or dot or hyphen characters</span>
+				<br>
+				<label>{{translation.groupName[LANG]}}</label>
+				<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="group" minlength="3"/>
+				<span class="manualToolTip">Service group name should be 3 characters at least</span>
+				<br>
+				<label>{{translation.servicePort[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" placeholder="4100"/>
+				<span class="manualToolTip">The service port should be equal or greater than 4100</span>
+				<br>
+				<label>{{translation.serviceVersion[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.serviceVersion" ng-required="true" placeholder="1"/>
+				<span class="manualToolTip">The service version should be equal or greater than 1</span>
+				<br>
+				<label>{{translation.requestTimeout[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="true" placeholder="30"/>
+				<span class="manualToolTip">Specify how many seconds the controller should wait before considering the request as a timeout, value must be equal or greater than 1.</span>
+				<br>
+				<label>{{translation.requestTimeoutRenewal[LANG]}}</label>
+				<input type="number" class="form-control" ng-model="form.formData.requestTimeoutRenewal" ng-required="true" placeholder="5"/>
+				<span class="manualToolTip">Specify how many attempts the controller should make after timing out before eventually giving up, value must be equal or greater than 1.</span>
+			</div>
+			
+			<div>
+				<label class="ng-binding ng-scope">Endpoint type</label>
+				<select class="form-control" ng-model="form.formData.epType" ng-required="true">
+					<option value="soap">Soap</option>
+					<option value="rest">Rest</option>
+				</select>
+				<span class="manualToolTip">Your endpoint can be either a SOAP service or a Rest service</span>
+			</div>
+			
+			<div>
+				<label>oAuth</label>
+				&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="form.formData.oauth"/>&nbsp;
+				<label for="oauth_0">true</label>
+				&nbsp;-&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="form.formData.oauth"/>&nbsp;
+				<label for="oauth_1">false</label>
+				<br>
+				<span class="manualToolTip">If set to true, the service becomes protected by oauth. Only requests that have a valid access_token are permitted to use the APIs of this service</span>
+			</div>
+			
+			<div>
+				<label>Ext Key</label>
+				&nbsp;<input id="extKey_0" type="radio" ng-value=true ng-model="form.formData.extKeyRequired"/>&nbsp;
+				<label for="extKey_0">true</label>
+				&nbsp;-&nbsp;<input id="extKey_1" type="radio" ng-value=false ng-model="form.formData.extKeyRequired"/>&nbsp;
+				<label for="extKey_1">false</label>
+				<br>
+				<span class="manualToolTip">SOAJS evolves the service and makes it multitenant supportive</span>
+			</div>
+			
+			<br>
+			<div ng-if="access.getEndpointResources">
+				<label>Authentication Method (Resources) :</label>
+				<br>
+				<span class="manualToolTip">Create your resource under: Deploy/Resources/Add New/Authorization/ and configure it appropriately</span>
+				<br>
+				<span class="manualToolTip">In this section, enable your methods, and in each api select the corresponding</span>
+				<br>
+				
+				<div class="scrollable">
+					<ul class="blueListing">
+						<li ng-class-even="'evenSerial'" class="blueLi row-list" ng-repeat="resource in availableResources">
+							<input id="resource{{$index}}" type="checkbox" ng-model="resource.isSelected" ng-click="onSelectResource(resource)">
+							<label title="{{resource.name}}" for="resource{{$index}}" ng-class="{'red': resource.isDefault}">
+								<span>{{resource.name}} ({{resource.category}})</span>
+							</label>
+							<a href="" ng-click="onDefaultResourceSelection(resource)" class="btn defaultResourceButtons" ng-class="{'btn-success': resource.isDefault, 'btn-danger': !resource.isDefault}">
+								<span class="icon icon-switch"></span>{{(resource.isDefault)? 'Default' :
+								'Set as default'}}
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			
+		</form>
+	</div>
+</div>

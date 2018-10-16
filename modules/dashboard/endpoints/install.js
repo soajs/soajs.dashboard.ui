@@ -29,15 +29,6 @@ var srTranslation = {
 		"ENG": "Request Timeout Renewal",
 		"FRA": "Request Timeout Renewal"
 	},
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	"apiCatalog": {
 		"ENG": "API Catalog",
 		"FRA": "API Catalog"
@@ -440,6 +431,27 @@ var endpointsNav = [
 		'tracker': true,
 		'order': 3,
 		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/controller.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'add-endpoints',
+		'label': translation.endpoints[LANG],
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/apiBuilder/add',
+			'method': 'post'
+		},
+		'url': '#/endpoints/addEditEndpoint/:id',
+		'tplPath': 'modules/dashboard/endpoints/directives/addEditEndpoint.tmpl',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'development',
+			'label': translation.develop[LANG],
+			'position': 1
+		},
+		'tracker': true,
+		'order': 3,
+		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditEndpoint.js'],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

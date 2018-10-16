@@ -9,16 +9,24 @@ var apiBuilderConfig = {
 		
 		'editEndpoints': ['dashboard', '/apiBuilder/edit', 'put'],
 		
+		'getEndpointResources': ['dashboard', '/apiBuilder/getResources', 'get'],
+		
+		'addEndpoint': ['dashboard', '/apiBuilder/add', 'post'],
+		
+		'updateAPIAuthMethod': ['dashboard', '/apiBuilder/authentication/update', 'post'],
+		
 		'swaggertoIMFV': ['dashboard', '/apiBuilder/convertSwaggerToImfv', 'post'],
 		
 		'IMFVToSwagger': ['dashboard', '/apiBuilder/convertImfvToSwagger', 'post'],
 		
 		'updateEndpointSchema': ['dashboard', '/apiBuilder/updateSchemas', 'put'],
 		
+		'publish': ['dashboard', '/apiBuilder/publish', 'get'],
+		
 		'deleteEndpoint': ['dashboard', '/apiBuilder/delete', 'delete'],
 		
-		'generateService': ['dashboard', '/dashboard/swagger/generate', 'post'],
+		'generateService': ['dashboard', '/swagger/generate', 'post'],
 		
-		'regenerateService': ['dashboard', '/dashboard/swagger/generateExistingService', 'post']
+		'regenerateService': ['dashboard', '/swagger/generateExistingService', 'post']
 	}
 };

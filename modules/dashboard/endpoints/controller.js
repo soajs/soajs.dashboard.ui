@@ -105,7 +105,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onEditEndpoint = function (mainType, id) {
-		$scope.$parent.go("#/swaggerEditor/" + id);
+		if(mainType === 'services'){
+			$scope.$parent.go("#/swaggerEditor/" + id);
+		}else{
+			$scope.$parent.go("#/endpoints/addEditEndpoint/" + id);
+		}
 	};
 	
 	$scope.onEnableEdit = function (endpointId, schemaKey, routeKey) {
@@ -229,6 +233,56 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			delete endpoint.schema.commonFields[commonFieldKey];
 		}
 	}
+	
+	$scope.publish = function (mainType, endpoint) {
+		
+		let openOnPublishResponseUnusedNow = function (error) {
+			$modal.open({
+				templateUrl: 'onPublishResponse.tmpl',
+				size: 'm',
+				backdrop: 'static',
+				keyboard: false,
+				controller: function ($scope, $modalInstance) {
+					if (error) {
+						$scope.errorDescrition = error.message;
+					}else{
+						$scope.validResponse = true;
+					}
+					$scope.cancel = function () {
+						$modalInstance.close();
+					};
+				}
+			});
+		};
+		
+		let openOnPublishResponse = function (error) {
+			if(error){
+				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+			}else{
+				$scope.displayAlert('success', 'Endpoint published successfully');
+			}
+		};
+		
+		if($scope.tempo.isPublishEnabled[endpoint._id]){
+			overlayLoading.show();
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/apiBuilder/publish",
+				"params": {
+					mainType,
+					"endpointId": endpoint._id
+				}
+			}, function (error, response) {
+				overlayLoading.hide();
+				openOnPublishResponse(error);
+			});
+		}else{
+			let error = {
+				message : 'Please save your updates first!'
+			};
+			openOnPublishResponse(error);
+		}
+	};
 	
 	$scope.updateSchemas = function (mainType, endpoint) {
 		let schemas = {};
@@ -808,22 +862,22 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							
 							if (newObject.validation) {
 								newObject.validation.type = formData.type;
-								if (formData.validation && formData.validation.properties) { // for objects
+								if(formData.validation && formData.validation.properties){ // for objects
 									newObject.validation.properties = formData.validation.properties;
 								}
-								if (formData.validation && formData.validation.items) { // for arrays
+								if(formData.validation && formData.validation.items){ // for arrays
 									newObject.validation.items = formData.validation.items;
 								}
 							} else {
 								newObject.type = formData.type;
-								if (formData.properties) {
+								if(formData.properties){
 									newObject.properties = formData.properties;
 								}
 							}
 							
 							// applicable for arrays only
 							if (onRoot) {
-								if (formData.items) {
+								if(formData.items){
 									newObject.validation.items = formData.items;
 								}
 							} else {
@@ -1095,7 +1149,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.addNewEndpoint = function (mainType) {
-		$scope.$parent.go("#/swaggerEditor/new");
+		if (mainType === 'services') {
+			$scope.$parent.go("#/swaggerEditor/new");
+		} else {
+			$scope.$parent.go("#/endpoints/addEditEndpoint/new");
+		}
 	};
 	
 	$scope.setActiveTab = function (schemaTab) {
@@ -1127,6 +1185,76 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		
 		commonFieldsUsedWithinRoute.forEach(function (eachCommon) {
 			checkAndDeleteCommonField(endpoint, eachCommon);
+		});
+	};
+	
+	$scope.onUpdateResources = function (mainType, serviceName, authUsed, endpointId, schemaKey, routeKey) {
+		
+		var currentScope = $scope;
+		$modal.open({
+			templateUrl: "updateResources.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				$scope.title = 'Update authentication';
+				$scope.availableResources = currentScope.tempo.selectedResources[serviceName];
+				
+				$scope.availableResources.forEach(function (each) {
+					each.isSelected = each.name === authUsed;
+				});
+				
+				$scope.selectResource = function (index) {
+					$scope.availableResources.forEach(function (each, currentIndex) {
+						if(index === currentIndex){
+							if(each.isSelected){
+								each.isSelected = false; // deselect if previously selected
+							}else{
+								each.isSelected = true;
+							}
+						}else{
+							each.isSelected = false;
+						}
+					});
+				};
+				
+				$scope.onSubmit = function () {
+					
+					let authenticationSelected;
+					for (var i = 0; i < $scope.availableResources.length; i++) {
+						if ($scope.availableResources[i].isSelected) {
+							authenticationSelected = $scope.availableResources[i].name;
+						}
+					}
+					
+					overlayLoading.show();
+					getSendDataFromServer($scope, ngDataApi, {
+						"method": "post",
+						"routeName": "/dashboard/apiBuilder/authentication/update",
+						"data": {
+							mainType,
+							"endpointId": endpointId,
+							"schemaKey": schemaKey,
+							"routeKey": routeKey,
+							"authentication": authenticationSelected
+						}
+					}, function (error, response) {
+						overlayLoading.hide();
+						$modalInstance.close();
+						if (error) {
+							$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
+						}
+						else {
+							currentScope.displayAlert('success', 'Authentication updated successfully');
+							currentScope.listEndpoints('endpoints');
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					$modalInstance.close();
+				};
+			}
 		});
 	};
 	
@@ -1267,6 +1395,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 							$scope.recursiveInitImfv(custom[each], 1);
 						});
 						
+						
 						let commonFields = imfv.commonFields;
 						imfv.tempoCommonFields = {}; // object // similar to custom // will hold common fields complete objects
 						if (commonFields) {
@@ -1376,8 +1505,13 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		_editor.setShowPrintMargin(false);
 	};
 	
+	$scope.swaggerOnEdit = function (endpoint) {
+		$scope.tempo.isPublishEnabled[endpoint._id] = false;
+	};
+	
 	if ($scope.access.listEndpoints) {
 		injectFiles.injectCss("modules/dashboard/endpoints/endpoints.css");
+		$scope.listEndpoints('endpoints');
 		$scope.listEndpoints('services');
 	}
 }]);

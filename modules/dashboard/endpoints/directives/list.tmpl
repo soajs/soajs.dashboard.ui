@@ -60,6 +60,22 @@
 	</div>
 </script>
 
+<script type="text/ng-template" id="onPublishResponse.tmpl">
+	<div class="modal-header">
+		<h3 ng-if="errorDescrition" class="modal-title">Warning</h3>
+		<h3 ng-if="validResponse" class="modal-title">Publish Response</h3>
+	</div>
+	<div class="modal-body">
+		<alert ng-if="errorDescrition" type="danger" >{{errorDescrition}}</alert>
+		<alert ng-if="validResponse" type="success" >Published successfully!</alert>
+	</div>
+	<div class="modal-footer">
+		<div>
+			<button class="btn btn-success" ng-click="cancel()">Ok</button>
+		</div>
+	</div>
+</script>
+
 <script type="text/ng-template" id="imfv_renderer.html">
 	<div>
 		<span ng-if="tempo.editEnabled[endpoint._id][schemaKey][routeKey]" class='red'><span class='icon icon-cross' title='Delete' ng-click="onDeleteImfv(mainType, endpoint,schemaKey,routeKey,inputKey,input,input.xxKeyxx,isCommonField)"></span></span>
@@ -113,16 +129,17 @@
 
 <section ng-controller="endpointController">
 	<tabset>
-		<tab ng-repeat="mainType in ['services']" heading="{{mainType}}">
+		<tab ng-repeat="mainType in ['services','endpoints']" heading="{{mainType}}">
 			
 			<div class="entryBoxes" ng-show="grid.rows">
 				<div ng-if="access.listEndpoints">
-					<a href="" ng-click="listEndpoints(mainType)" class="btn btn-primary f-right commonButtonsClass commonGreenButtonsClass">
+					<a href="" ng-click="listEndpoints(mainType)" class="btn f-right commonButtonsClass btn-success">
 						<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
 					</a>
-					<a href="" ng-click="addNewEndpoint(mainType)" class="btn btn-primary f-right commonButtonsClass" ng-if="access.generateService">
+					<a href="" ng-click="addNewEndpoint(mainType)" class="btn btn-primary f-right commonButtonsClass" ng-if="access.generateService || access.addEndpoint">
 						<span class="icon icon-plus"></span>
-						<span>Add new Service</span>
+						<span ng-if="mainType==='endpoints'" ng-show="access.addEndpoint">Add new Endpoint</span>
+						<span ng-if="mainType!=='endpoints'" ng-if="access.generateService">Add new Service</span>
 					</a>
 					<br/><br/>
 				</div>
@@ -149,15 +166,15 @@
 								
 								</td>
 								
-								<td>
+								<td ng-if="mainType === 'services'" class="apiBuilderActions">
 									<span class='blueIcon' ng-if="access.regenerateService"><span class='icon icon-download2' title='Regenerate and Download' ng-click="onDownloadEndpoint(mainType, endpoint)"></span></span>
 								</td>
 								
-								<td>
+								<td class="apiBuilderActions">
 									<span class='blueIcon' ng-if="access.getEndpoints && access.editEndpoints"><span class='icon icon-pencil2' title='Edit' ng-click="onEditEndpoint(mainType, endpoint._id)"></span></span>
 								</td>
 								
-								<td>
+								<td class="apiBuilderActions">
 									<span class='red' ng-if="access.deleteEndpoint"><span class='icon icon-cross' title='Remove' ng-confirm-click="Are you sure you want to delete this entry ?" ng-click="onRemoveEndpoint(mainType, endpoint._id)"></span></span>
 								</td>
 							</tr>
@@ -199,12 +216,23 @@
 									<div>
 										<ul class="blueListing">
 											<li class="blueLi" ng-repeat="(routeKey,routeObj) in schemaObj" class="row-list">
+												
 												<fieldset>
+													<legend ng-if="mainType==='endpoints'">
+														Api : {{routeKey}}
+														<span class='blueIcon'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
+														- Authentication :
+														{{(routeObj._authorization &&
+														routeObj._authorization!=='')?routeObj._authorization:endpoint.defaultAuthentication+'(Default)'}}
+														<span class='blueIcon' ng-if="access.updateAPIAuthMethod">
+															<span class='icon icon-lock buttonHover' title='Edit' ng-click="onUpdateResources(mainType,endpoint.serviceName,routeObj._authorization,endpoint._id,schemaKey,routeKey)"></span>
+														</span>
+													</legend>
 													<legend style="float:right;">
 														<span class='blueIcon'><span class='icon red icon-cross' title='Delete Route' ng-click="onDeleteRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
 													
-													<legend>
+													<legend ng-if="mainType!=='endpoints'">
 														Api : {{routeKey}}
 														<span class='blueIcon'><span class='icon icon-pencil buttonHover' title='Edit' ng-click="onAddEditRoute(endpoint,schemaKey,routeKey)"></span></span>
 													</legend>
@@ -276,7 +304,7 @@
 							
 							<div class="w100 c-both">
 								<div class="f-left w49" ng-class="{'block': !tempo.swagger[endpoint._id].collapsed, 'hidden': tempo.swagger[endpoint._id].collapsed}">
-									<div id="schemaCode" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded, onChange: updateScopeValue}" ng-model="endpoint.swaggerInput"></div>
+									<div ng-change="swaggerOnEdit(endpoint)" id="schemaCode" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded, onChange: updateScopeValue}" ng-model="endpoint.swaggerInput"></div>
 								</div>
 								<div class="f-left w2" ng-class="{'block': !tempo.swagger[endpoint._id].collapsed, 'hidden': tempo.swagger[endpoint._id].collapsed}">
 									<span>&nbsp;</span>
@@ -290,6 +318,9 @@
 						
 						<div class="w100 c-both">
 							<br/>
+							<button ng-if="access.publish && mainType === 'endpoints'" ng-confirm-click="Are you sure you want to proceed ? if Yes, your changes will be applied to the API Catalog" class="btn btn-success commonButtonsClass commonGreenButtonsClass" ng-click="publish(mainType, endpoint)">
+								Publish
+							</button>
 							<button ng-if="access.updateEndpointSchema" class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType, endpoint)">
 								Save
 							</button>

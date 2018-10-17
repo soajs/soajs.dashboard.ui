@@ -551,6 +551,9 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 						}
 					});
 				}
+				else{
+					overlayLoading.hide();
+				}
 			}
 			else{
 				currentScope.cloud.form.formData.selectedProvider = currentScope.wizard.deployment.selectedInfraProvider;

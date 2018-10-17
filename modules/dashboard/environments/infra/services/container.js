@@ -64,32 +64,51 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 */
 	function attachContainerTechnology(currentScope, formData){
 		let postData = {};
+		
 		if (currentScope.containers.platforms && currentScope.containers.platforms.previous) {
-			if (formData.previousEnvironment === '') {
+			if (currentScope.containers.form.formData.previousEnvironment === '') {
 				$window.alert("Select the environment your want to clone its infrastructure settings to proceed!");
 				return false;
 			}
 			
-			postData.deployment = {
-				'selectedDriver': currentScope.containers.platform,
-				'previousEnvironment': currentScope.containers.previousEnvironment
-			};
-			
-			//link the infra that was used for this environment
-			currentScope.containers.techProviders.forEach((oneProvider) => {
-				oneProvider.deployments.forEach((oneDeployment) => {
-					if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
-						postData.selectedInfraProvider = {
-							_id: oneProvider._id,
-							name: oneProvider.name,
-							label: oneProvider.label
-						};
+			if(currentScope.wizard){
+				postData.deployment = {
+					// 'selectedDriver': currentScope.containers.platform,
+					'previousEnvironment': currentScope.containers.form.formData.previousEnvironment
+				};
+				postData.selectedInfraProvider = {
+					_id: currentScope.containers.form.formData.selectedProvider._id,
+					name: currentScope.containers.form.formData.selectedProvider.name,
+					label: currentScope.containers.form.formData.selectedProvider.label
+				};
+				currentScope.containers.form.formData.selectedProvider.deployments.forEach((oneDeployment) => {
+					if(oneDeployment.environments.includes(currentScope.containers.form.formData.previousEnvironment.toUpperCase())){
+						postData.deployment.selectedDriver = oneDeployment.technology;
 					}
 				});
-			});
+			}
+			else{
+				postData.deployment = {
+					'selectedDriver': currentScope.containers.platform,
+					'previousEnvironment': currentScope.containers.previousEnvironment
+				};
+				
+				//link the infra that was used for this environment
+				currentScope.containers.techProviders.forEach((oneProvider) => {
+					oneProvider.deployments.forEach((oneDeployment) => {
+						if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
+							postData.selectedInfraProvider = {
+								_id: oneProvider._id,
+								name: oneProvider.name,
+								label: oneProvider.label
+							};
+						}
+					});
+				});
+			}
 		}
 		else if(currentScope.containers.platforms && currentScope.containers.platforms.docker){
-			delete formData.previousEnvironment;
+			delete currentScope.containers.form.previousEnvironment;
 			
 			postData.deployment = {
 				'selectedDriver': 'docker'
@@ -107,7 +126,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			});
 		}
 		else if(currentScope.containers.platforms && currentScope.containers.platforms.kubernetes){
-			delete formData.previousEnvironment;
+			delete currentScope.containers.form.previousEnvironment;
 			postData.deployment = {
 				'selectedDriver': 'kubernetes'
 			};
@@ -125,7 +144,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			
 		}
 		else{
-			delete formData.previousEnvironment;
+			delete currentScope.containers.form.previousEnvironment;
 			// wair nikna !
 			$window.alert("Invalid Configuration Provided, unable to proceed!");
 			return false;
@@ -180,57 +199,68 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param cb
 	 */
 	function getEnvironments(currentScope, cb) {
-		//get the available providers
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/environment/list"
-		}, function (error, environments) {
-			if(error){
-				overlayLoading.hide();
-				currentScope.$parent.displayAlert('danger', error.message);
-			}
-			else {
-				delete environments.soajsauth;
-				
-				if(currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider){
-					for(let i = environments.length -1; i >=0; i--){
-						if(environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()){
-							environments.splice(i, 1);
-						}
-						else if(!environments[i].restriction){
-							environments.splice(i, 1);
-						}
-						else if(environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]){
-							environments.splice(i, 1);
-						}
-					}
-					
-					currentScope.containers.availableEnvironments = environments;
-					if (currentScope.containers.availableEnvironments.length > 0) {
-						for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-							if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
-								currentScope.containers.availableEnvironments.splice(i, 1);
-							}
-						}
-					}
+		if(currentScope.wizard && currentScope.availableEnvironments && Array.isArray(currentScope.availableEnvironments) && currentScope.availableEnvironments.length > 0){
+			filterEnvironments(angular.copy(currentScope.availableEnvironments));
+		}
+		else{
+			//get the available providers
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/environment/list"
+			}, function (error, environments) {
+				if (error) {
+					overlayLoading.hide();
+					currentScope.$parent.displayAlert('danger', error.message);
 				}
-				else{
-					currentScope.containers.availableEnvironments = environments;
-					if (currentScope.containers.availableEnvironments.length > 0) {
-						for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-							if(currentScope.containers.availableEnvironments[i].restriction){
-								currentScope.containers.availableEnvironments.splice(i, 1);
-							}
-							else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
-								currentScope.containers.availableEnvironments.splice(i, 1);
-							}
-						}
+				else {
+					delete environments.soajsauth;
+					filterEnvironments(environments);
+				}
+			});
+		}
+		
+		function filterEnvironments(environments){
+			if(currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider){
+				for(let i = environments.length -1; i >=0; i--){
+					if(environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()){
+						environments.splice(i, 1);
+					}
+					else if(!environments[i].restriction){
+						environments.splice(i, 1);
+					}
+					else if(environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]){
+						environments.splice(i, 1);
 					}
 				}
 				
-				return cb(environments);
+				currentScope.containers.availableEnvironments = environments;
+				if (currentScope.containers.availableEnvironments.length > 0) {
+					for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+						if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+							currentScope.containers.availableEnvironments.splice(i, 1);
+						}
+					}
+				}
 			}
-		});
+			else{
+				currentScope.containers.availableEnvironments = environments;
+				if (currentScope.containers.availableEnvironments.length > 0) {
+					for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+						if(currentScope.containers.availableEnvironments[i].restriction){
+							currentScope.containers.availableEnvironments.splice(i, 1);
+						}
+						else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+							currentScope.containers.availableEnvironments.splice(i, 1);
+						}
+					}
+				}
+			}
+			
+			if(currentScope.wizard){
+				currentScope.availableEnvironments = angular.copy(currentScope.containers.availableEnvironments);
+			}
+			return cb(environments);
+		}
 	}
 	
 	/**
@@ -285,11 +315,14 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		delete currentScope.containers.config;
 		if(currentScope.containers.previousEnvironment && currentScope.containers.previousEnvironment !== ''){
 			currentScope.containers.previousPlatformDeployment = true;
-			for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-				if (currentScope.containers.availableEnvironments[i].code === currentScope.containers.previousEnvironment) {
-					currentScope.containers.platform = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[1];
-					currentScope.containers.driver = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[2];
-					currentScope.containers.config = currentScope.containers.availableEnvironments[i].deployer.container[currentScope.containers.platform][currentScope.containers.driver];
+			
+			if(currentScope.containers.availableEnvironments){
+				for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+					if (currentScope.containers.availableEnvironments[i].code === currentScope.containers.previousEnvironment) {
+						currentScope.containers.platform = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[1];
+						currentScope.containers.driver = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[2];
+						currentScope.containers.config = currentScope.containers.availableEnvironments[i].deployer.container[currentScope.containers.platform][currentScope.containers.driver];
+					}
 				}
 			}
 		}
@@ -590,7 +623,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		currentScope.containers.selectProvider = function(oneProvider, technology){
 			
 			//remove previous environment if set
-			delete currentScope.previousEnvironment;
+			delete currentScope.containers.previousEnvironment;
 			if(currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment){
 				delete currentScope.containers.form.formData.previousEnvironment;
 			}
@@ -609,7 +642,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		};
 		
 		currentScope.containers.changeLikeEnv = function () {
-			currentScope.previousEnvironment = currentScope.containers.form.formData.previousEnvironment;
+			currentScope.containers.previousEnvironment = currentScope.containers.form.formData.previousEnvironment;
 			renderPreviousDeployInfo(currentScope);
 		};
 		
@@ -632,13 +665,13 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					currentScope.containers.platforms.kubernetes = false;
 					break;
 				case 'docker':
-					delete currentScope.previousEnvironment;
+					delete currentScope.containers.previousEnvironment;
 					currentScope.containers.platforms.previous = false;
 					currentScope.containers.platforms.docker = true;
 					currentScope.containers.platforms.kubernetes = false;
 					break;
 				case 'kubernetes':
-					delete currentScope.previousEnvironment;
+					delete currentScope.containers.previousEnvironment;
 					currentScope.containers.platforms.previous = false;
 					currentScope.containers.platforms.docker = false;
 					currentScope.containers.platforms.kubernetes = true;

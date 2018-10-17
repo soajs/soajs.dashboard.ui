@@ -1,0 +1,103 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #e5eaee;
+    color: #676775;
+}
+
+a {
+    color:#4f819f;
+}
+
+#header {
+    height: 50px;
+    background: #325169;
+    min-width: 1300px;
+}
+
+#header #pillars .one-pillar button {
+    background-color: #30414f;
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+    border: none;
+    border-right: solid 1px #3b3b5b;
+    height: 50px;
+    float: left;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 16px;
+    border-radius:0;
+}
+
+#header #pillars .one-pillar button:hover {
+    background-color: #F4B500;
+}
+
+#header #pillars .one-pillar button.selected:hover {
+    background-color: #FFFFFF;
+}
+
+#header #userMenu ul li {
+    float: left;
+    margin-right: 10px;
+    color: #bfc0c1;
+    position: relative;
+    height: 36px;
+}
+
+li#myUser {
+    min-width: 120px;
+}
+
+#header #userMenu li#myUser:hover > .myMenu {
+    display:block;
+}
+
+#header #userMenu li .myMenu {
+    font-size: 14px;
+    position: absolute;
+    cursor: pointer;
+    display:none;
+    left: -10px;
+    /*right: -10px;*/
+    top: 35px;
+    min-width: 160px;
+    width: 100%;
+    padding:10px;
+    background-color: #325169;
+}
+
+#header #userMenu li .myMenu li{
+    float:none;
+    border-bottom: solid 1px #F5F2F2;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+#header #userMenu li .myMenu li:last-child{
+    border-bottom:none;
+    margin-bottom: 0;
+}
+
+#header #userMenu .userMenu-portal {
+    background-color: #f2bf52 !important;
+    color: #333333;
+    font-weight: normal;
+    text-shadow: none;
+    border: solid 1px #f2bf52 !important;
+}
+
+#mainMenu {
+    background-color: #325169;
+    float: left;
+    min-height: 525px;
+    position: relative;
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+}
+
+#mainMenu ul li:hover {
+    background-color: #30414f;
+    color: white;
+}

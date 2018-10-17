@@ -8,11 +8,13 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 	 */
 	function checkOpenDefaults(currentScope, cb) {
 		if (currentScope.wizard.deployment) {
-			
-			if (currentScope.wizard.deployment.deployment && currentScope.wizard.deployment.deployment.previousEnvironment && currentScope.wizard.deployment.deployment.previousEnvironment !== '') {
-				currentScope.containers.form.formData.previousEnvironment = currentScope.wizard.deployment.deployment.previousEnvironment;
-				currentScope.containers.switchDriver('previous');
-				return cb();
+			if (currentScope.wizard.deployment && currentScope.wizard.deployment.previousEnvironment && currentScope.wizard.deployment.previousEnvironment !== '') {
+				currentScope.containers.getEnvironments(() => {
+					currentScope.containers.form.formData.previousEnvironment = currentScope.wizard.deployment.previousEnvironment;
+					currentScope.containers.changeLikeEnv();
+					currentScope.containers.switchDriver("previous");
+					return cb();
+				});
 			}
 			else if (currentScope.wizard.deployment.selectedInfraProvider) {
 				let oneProvider;
@@ -340,7 +342,8 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 									//or if vms onboarded
 									(currentScope.wizard.vmOnBoard && currentScope.wizard.vmOnBoard.length > 0) ||
 									//or if cluster created
-									(currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.deploy && currentScope.wizard.deployment.selectedInfraProvider.deploy.infraCodeTemplate)
+									(currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.deploy && currentScope.wizard.deployment.selectedInfraProvider.deploy.infraCodeTemplate) ||
+									(currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.deploy && currentScope.wizard.deployment.previousEnvironment && currentScope.wizard.deployment.selectedDriver && currentScope.wizard.deployment.technology)
 								){
 									currentScope.referringStep = currentScope.currentStep;
 									$localStorage.addEnv = angular.copy(currentScope.wizard);
@@ -550,6 +553,9 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 							});
 						}
 					});
+				}
+				else{
+					overlayLoading.hide();
 				}
 			}
 			else{

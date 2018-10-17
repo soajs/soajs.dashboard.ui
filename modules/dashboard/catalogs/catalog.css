@@ -1,5 +1,5 @@
 .recipe-box {
-    width: 100% !important;
+    width: 32% !important;
     float: left !important;
     margin-right: 1% !important;
     text-align: left;
@@ -56,7 +56,7 @@ fieldset pre{
 }
 
 .catalogRecipeForm h2{
-    background-color:#d9edf7;
+    background-color:#c0dded;
     color:#31708f;
     border-color: #bce8f1;
     padding:15px;
@@ -127,13 +127,13 @@ fieldset pre{
     float:right;
     position: absolute;
     right: 30px;
+    top: 30px;
     cursor:pointer;
 }
 
 .catalogRecipeForm tr[class^="form-group tr-rVolume"]{
     color:#a94442;
     float:right;
-    top: 35px;
     position: absolute;
     right: 20px;
     cursor:pointer;
@@ -152,7 +152,7 @@ fieldset pre{
 .catalogRecipeForm tr[class^="form-group tr-userInputVar"],
 .catalogRecipeForm tr[class^="form-group tr-staticVar"],
 .catalogRecipeForm tr[class^="form-group tr-computedVar"],
-.catalogRecipeForm tr[class^="form-group tr-docker"],
+.catalogRecipeForm tr[class^="form-group tr-volume"],
 .catalogRecipeForm tr[class^="form-group tr-port"]{
     float: left;
     width: 100%;

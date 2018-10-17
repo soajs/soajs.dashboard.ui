@@ -86,7 +86,11 @@ hr{
 }
 
 .blueAccordion .panel-heading{
-    background: #DEF1F7;
+    /*border: solid 1px #51819e;*/
+    /*width: 100%;*/
+    /*border-radius: 5px;*/
+    /*background-color: #c0dded;*/
+    background: #c0dded;
 }
 
 .blueAccordion .panel-body{

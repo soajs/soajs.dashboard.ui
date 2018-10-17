@@ -64,8 +64,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 */
 	function attachContainerTechnology(currentScope, formData){
 		let postData = {};
-		
-		if (currentScope.containers.platforms.previous) {
+		if (currentScope.containers.platforms && currentScope.containers.platforms.previous) {
 			if (formData.previousEnvironment === '') {
 				$window.alert("Select the environment your want to clone its infrastructure settings to proceed!");
 				return false;
@@ -89,7 +88,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				});
 			});
 		}
-		else if(currentScope.containers.platforms.docker){
+		else if(currentScope.containers.platforms && currentScope.containers.platforms.docker){
 			delete formData.previousEnvironment;
 			
 			postData.deployment = {
@@ -107,7 +106,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				}
 			});
 		}
-		else if(currentScope.containers.platforms.kubernetes){
+		else if(currentScope.containers.platforms && currentScope.containers.platforms.kubernetes){
 			delete formData.previousEnvironment;
 			postData.deployment = {
 				'selectedDriver': 'kubernetes'

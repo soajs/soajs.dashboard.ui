@@ -66,31 +66,49 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		let postData = {};
 		
 		if (currentScope.containers.platforms.previous) {
-			if (formData.previousEnvironment === '') {
+			if (currentScope.containers.form.formData.previousEnvironment === '') {
 				$window.alert("Select the environment your want to clone its infrastructure settings to proceed!");
 				return false;
 			}
 			
-			postData.deployment = {
-				'selectedDriver': currentScope.containers.platform,
-				'previousEnvironment': currentScope.containers.previousEnvironment
-			};
-			
-			//link the infra that was used for this environment
-			currentScope.containers.techProviders.forEach((oneProvider) => {
-				oneProvider.deployments.forEach((oneDeployment) => {
-					if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
-						postData.selectedInfraProvider = {
-							_id: oneProvider._id,
-							name: oneProvider.name,
-							label: oneProvider.label
-						};
+			if(currentScope.wizard){
+				postData.deployment = {
+					// 'selectedDriver': currentScope.containers.platform,
+					'previousEnvironment': currentScope.containers.form.formData.previousEnvironment
+				};
+				postData.selectedInfraProvider = {
+					_id: currentScope.containers.form.formData.selectedProvider._id,
+					name: currentScope.containers.form.formData.selectedProvider.name,
+					label: currentScope.containers.form.formData.selectedProvider.label
+				};
+				currentScope.containers.form.formData.selectedProvider.deployments.forEach((oneDeployment) => {
+					if(oneDeployment.environments.includes(currentScope.containers.form.formData.previousEnvironment.toUpperCase())){
+						postData.deployment.selectedDriver = oneDeployment.technology;
 					}
 				});
-			});
+			}
+			else{
+				postData.deployment = {
+					'selectedDriver': currentScope.containers.platform,
+					'previousEnvironment': currentScope.containers.previousEnvironment
+				};
+				
+				//link the infra that was used for this environment
+				currentScope.containers.techProviders.forEach((oneProvider) => {
+					oneProvider.deployments.forEach((oneDeployment) => {
+						if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
+							postData.selectedInfraProvider = {
+								_id: oneProvider._id,
+								name: oneProvider.name,
+								label: oneProvider.label
+							};
+						}
+					});
+				});
+			}
 		}
 		else if(currentScope.containers.platforms.docker){
-			delete formData.previousEnvironment;
+			delete currentScope.containers.form.previousEnvironment;
 			
 			postData.deployment = {
 				'selectedDriver': 'docker'
@@ -108,7 +126,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			});
 		}
 		else if(currentScope.containers.platforms.kubernetes){
-			delete formData.previousEnvironment;
+			delete currentScope.containers.form.previousEnvironment;
 			postData.deployment = {
 				'selectedDriver': 'kubernetes'
 			};
@@ -126,7 +144,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			
 		}
 		else{
-			delete formData.previousEnvironment;
+			delete currentScope.containers.form.previousEnvironment;
 			// wair nikna !
 			$window.alert("Invalid Configuration Provided, unable to proceed!");
 			return false;
@@ -591,7 +609,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		currentScope.containers.selectProvider = function(oneProvider, technology){
 			
 			//remove previous environment if set
-			delete currentScope.previousEnvironment;
+			delete currentScope.containers.previousEnvironment;
 			if(currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment){
 				delete currentScope.containers.form.formData.previousEnvironment;
 			}
@@ -610,7 +628,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		};
 		
 		currentScope.containers.changeLikeEnv = function () {
-			currentScope.previousEnvironment = currentScope.containers.form.formData.previousEnvironment;
+			currentScope.containers.previousEnvironment = currentScope.containers.form.formData.previousEnvironment;
 			renderPreviousDeployInfo(currentScope);
 		};
 		
@@ -633,13 +651,13 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					currentScope.containers.platforms.kubernetes = false;
 					break;
 				case 'docker':
-					delete currentScope.previousEnvironment;
+					delete currentScope.containers.previousEnvironment;
 					currentScope.containers.platforms.previous = false;
 					currentScope.containers.platforms.docker = true;
 					currentScope.containers.platforms.kubernetes = false;
 					break;
 				case 'kubernetes':
-					delete currentScope.previousEnvironment;
+					delete currentScope.containers.previousEnvironment;
 					currentScope.containers.platforms.previous = false;
 					currentScope.containers.platforms.docker = false;
 					currentScope.containers.platforms.kubernetes = true;

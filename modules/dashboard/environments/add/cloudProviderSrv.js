@@ -340,7 +340,8 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 									//or if vms onboarded
 									(currentScope.wizard.vmOnBoard && currentScope.wizard.vmOnBoard.length > 0) ||
 									//or if cluster created
-									(currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.deploy && currentScope.wizard.deployment.selectedInfraProvider.deploy.infraCodeTemplate)
+									(currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.deploy && currentScope.wizard.deployment.selectedInfraProvider.deploy.infraCodeTemplate) ||
+									(currentScope.wizard.deployment && currentScope.wizard.deployment.selectedInfraProvider && currentScope.wizard.deployment.selectedInfraProvider.deploy && currentScope.wizard.deployment.previousEnvironment && currentScope.wizard.deployment.selectedDriver && currentScope.wizard.deployment.technology)
 								){
 									currentScope.referringStep = currentScope.currentStep;
 									$localStorage.addEnv = angular.copy(currentScope.wizard);

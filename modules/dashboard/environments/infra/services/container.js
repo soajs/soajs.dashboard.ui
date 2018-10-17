@@ -199,57 +199,68 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param cb
 	 */
 	function getEnvironments(currentScope, cb) {
-		//get the available providers
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/environment/list"
-		}, function (error, environments) {
-			if(error){
-				overlayLoading.hide();
-				currentScope.$parent.displayAlert('danger', error.message);
-			}
-			else {
-				delete environments.soajsauth;
-				
-				if(currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider){
-					for(let i = environments.length -1; i >=0; i--){
-						if(environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()){
-							environments.splice(i, 1);
-						}
-						else if(!environments[i].restriction){
-							environments.splice(i, 1);
-						}
-						else if(environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]){
-							environments.splice(i, 1);
-						}
-					}
-					
-					currentScope.containers.availableEnvironments = environments;
-					if (currentScope.containers.availableEnvironments.length > 0) {
-						for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-							if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
-								currentScope.containers.availableEnvironments.splice(i, 1);
-							}
-						}
-					}
+		if(currentScope.wizard && currentScope.availableEnvironments && Array.isArray(currentScope.availableEnvironments) && currentScope.availableEnvironments.length > 0){
+			filterEnvironments(angular.copy(currentScope.availableEnvironments));
+		}
+		else{
+			//get the available providers
+			getSendDataFromServer(currentScope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/environment/list"
+			}, function (error, environments) {
+				if (error) {
+					overlayLoading.hide();
+					currentScope.$parent.displayAlert('danger', error.message);
 				}
-				else{
-					currentScope.containers.availableEnvironments = environments;
-					if (currentScope.containers.availableEnvironments.length > 0) {
-						for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-							if(currentScope.containers.availableEnvironments[i].restriction){
-								currentScope.containers.availableEnvironments.splice(i, 1);
-							}
-							else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
-								currentScope.containers.availableEnvironments.splice(i, 1);
-							}
-						}
+				else {
+					delete environments.soajsauth;
+					filterEnvironments(environments);
+				}
+			});
+		}
+		
+		function filterEnvironments(environments){
+			if(currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider){
+				for(let i = environments.length -1; i >=0; i--){
+					if(environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()){
+						environments.splice(i, 1);
+					}
+					else if(!environments[i].restriction){
+						environments.splice(i, 1);
+					}
+					else if(environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]){
+						environments.splice(i, 1);
 					}
 				}
 				
-				return cb(environments);
+				currentScope.containers.availableEnvironments = environments;
+				if (currentScope.containers.availableEnvironments.length > 0) {
+					for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+						if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+							currentScope.containers.availableEnvironments.splice(i, 1);
+						}
+					}
+				}
 			}
-		});
+			else{
+				currentScope.containers.availableEnvironments = environments;
+				if (currentScope.containers.availableEnvironments.length > 0) {
+					for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+						if(currentScope.containers.availableEnvironments[i].restriction){
+							currentScope.containers.availableEnvironments.splice(i, 1);
+						}
+						else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
+							currentScope.containers.availableEnvironments.splice(i, 1);
+						}
+					}
+				}
+			}
+			
+			if(currentScope.wizard){
+				currentScope.availableEnvironments = angular.copy(currentScope.containers.availableEnvironments);
+			}
+			return cb(environments);
+		}
 	}
 	
 	/**
@@ -304,11 +315,14 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		delete currentScope.containers.config;
 		if(currentScope.containers.previousEnvironment && currentScope.containers.previousEnvironment !== ''){
 			currentScope.containers.previousPlatformDeployment = true;
-			for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-				if (currentScope.containers.availableEnvironments[i].code === currentScope.containers.previousEnvironment) {
-					currentScope.containers.platform = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[1];
-					currentScope.containers.driver = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[2];
-					currentScope.containers.config = currentScope.containers.availableEnvironments[i].deployer.container[currentScope.containers.platform][currentScope.containers.driver];
+			
+			if(currentScope.containers.availableEnvironments){
+				for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
+					if (currentScope.containers.availableEnvironments[i].code === currentScope.containers.previousEnvironment) {
+						currentScope.containers.platform = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[1];
+						currentScope.containers.driver = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[2];
+						currentScope.containers.config = currentScope.containers.availableEnvironments[i].deployer.container[currentScope.containers.platform][currentScope.containers.driver];
+					}
 				}
 			}
 		}

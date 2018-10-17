@@ -8,11 +8,13 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 	 */
 	function checkOpenDefaults(currentScope, cb) {
 		if (currentScope.wizard.deployment) {
-			
-			if (currentScope.wizard.deployment.deployment && currentScope.wizard.deployment.deployment.previousEnvironment && currentScope.wizard.deployment.deployment.previousEnvironment !== '') {
-				currentScope.containers.form.formData.previousEnvironment = currentScope.wizard.deployment.deployment.previousEnvironment;
-				currentScope.containers.switchDriver('previous');
-				return cb();
+			if (currentScope.wizard.deployment && currentScope.wizard.deployment.previousEnvironment && currentScope.wizard.deployment.previousEnvironment !== '') {
+				currentScope.containers.getEnvironments(() => {
+					currentScope.containers.form.formData.previousEnvironment = currentScope.wizard.deployment.previousEnvironment;
+					currentScope.containers.changeLikeEnv();
+					currentScope.containers.switchDriver("previous");
+					return cb();
+				});
 			}
 			else if (currentScope.wizard.deployment.selectedInfraProvider) {
 				let oneProvider;

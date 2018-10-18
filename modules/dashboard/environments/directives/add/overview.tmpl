@@ -285,7 +285,7 @@
 	<accordion-group is-open="true">
 		<accordion-heading>Template</accordion-heading>
 		
-		<accordion-group is-open="true" ng-if="overview.data.deploy.selectedInfraProvider">
+		<accordion-group is-open="true" ng-if="overview.data.deploy.selectedInfraProvider && (['docker', 'kubernetes'].includes(overview.data.deploy.technology))">
 			<div>
 				<accordion-heading>Container Technology</accordion-heading>
 				<div ng-include="'modules/dashboard/environments/directives/add/overviewCluster.tmpl'"></div>

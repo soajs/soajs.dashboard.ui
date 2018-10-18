@@ -36,8 +36,8 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 				resource.scope.wizardVMs = currentScope.wizard.vms;
 			}
 			
-			if (currentScope.vmLayers) {
-				resource.scope.mainData.deploymentData.vmLayers = currentScope.vmLayers;
+			if (currentScope.vms.vmLayers) {
+				resource.scope.mainData.deploymentData.vmLayers = currentScope.vms.vmLayers;
 			}
 			
 			for (let type in currentScope.recipes) {
@@ -73,7 +73,7 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 				record.canBeDeployed = true;
 				resource.scope.context.envType = 'container';
 				resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver;
-				if (resource.scope.context.envPlatform === 'ondemand') {
+				if (!currentScope.wizard.deployment.selectedDriver) {
 					resource.scope.context.envType = 'manual';
 				}
 				
@@ -225,6 +225,7 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 			}
 			
 			let alreadyFilledFormData = record;
+			
 			resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, angular.copy(record), 'add', settings, () => {
 				if (currentScope.wizard.template.content.deployments.resources[key].deploy) {
 					resource.scope.hideDeployButton = true;
@@ -313,13 +314,11 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 								}
 								
 								//if wizard, and template container only, do not show the platform picker !
-								if (currentScope.restrictions) {
-									if (currentScope.restrictions.vm && (currentScope.restrictions.docker || currentScope.restrictions.kubernetes)) {
-										resource.scope.displayPlatformPicker = true;
-									}
-								}
-								else {
+								if (currentScope.cloud.selectedProvider.technologies.includes('vm') && (currentScope.cloud.selectedProvider.technologies.includes('docker')|| currentScope.cloud.selectedProvider.technologies.includes('kubernetes'))) {
 									resource.scope.displayPlatformPicker = true;
+								}
+								else{
+									resource.scope.displayPlatformPicker = false;
 								}
 								
 								if (resource.deployOptions && resource.deployOptions.deployConfig && resource.deployOptions.deployConfig.type && resource.deployOptions.deployConfig.type === 'vm') {
@@ -431,10 +430,10 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 						resource.deployOptions.vms = [];
 						let vmLayer = resource.deployOptions.deployConfig.vmConfiguration.vmLayer;
 						
-						if (vmLayer && currentScope.vmLayers[vmLayer]) {
-							resource.deployOptions.deployConfig.infra = currentScope.vmLayers[vmLayer].infraProvider._id;
-							if (currentScope.vmLayers[vmLayer].list && currentScope.vmLayers[vmLayer].list.length > 0) {
-								currentScope.vmLayers[vmLayer].list.forEach(function (oneVM) {
+						if (vmLayer && currentScope.vms.vmLayers[vmLayer]) {
+							resource.deployOptions.deployConfig.infra = currentScope.vms.vmLayers[vmLayer].infraProvider._id;
+							if (currentScope.vms.vmLayers[vmLayer].list && currentScope.vms.vmLayers[vmLayer].list.length > 0) {
+								currentScope.vms.vmLayers[vmLayer].list.forEach(function (oneVM) {
 									resource.deployOptions.vms.push(oneVM.id);
 									if (!resource.deployOptions.deployConfig.vmConfiguration.group) {
 										resource.deployOptions.deployConfig.vmConfiguration.group = oneVM.labels['soajs.service.vm.group'];
@@ -446,10 +445,10 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 							}
 							else {
 								if (!resource.deployOptions.deployConfig.vmConfiguration.group) {
-									resource.deployOptions.deployConfig.vmConfiguration.group = currentScope.vmLayers[vmLayer].group;
+									resource.deployOptions.deployConfig.vmConfiguration.group = currentScope.wizard.deployment.selectedInfraProvider.extras.group;
 								}
 								if (!resource.deployOptions.deployConfig.region) {
-									resource.deployOptions.deployConfig.region = currentScope.vmLayers[vmLayer].region;
+									resource.deployOptions.deployConfig.region = currentScope.wizard.deployment.selectedInfraProvider.region;
 								}
 							}
 						}

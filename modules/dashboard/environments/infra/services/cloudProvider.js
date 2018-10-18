@@ -49,7 +49,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 	function listInfraProviders(currentScope, id, exclude, cb) {
 		
 		if((!id || id ==='') && currentScope.cloud.cloudProviders && currentScope.wizard){
-			return cb();
+			return cb(currentScope.cloud.cloudProviders);
 		}
 		
 		//get the available providers

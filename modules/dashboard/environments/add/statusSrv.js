@@ -75,14 +75,9 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 	}
 
 	function mapVMInfra(currentScope, oneVMLayer) {
-
-		let providerName;
-		currentScope.infraProviders.forEach((oneProvider) => {
-			if (oneProvider._id === oneVMLayer.params.infraId) {
-				providerName = oneProvider.name;
-			}
-		});
-
+		
+		let providerName = currentScope.cloud.selectedProvider.name;
+		
 		let opts = oneVMLayer;
 		opts.params.env = currentScope.wizard.gi.code;
 
@@ -115,12 +110,9 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 	}
 
 	function mapVMOnboard(currentScope, oneVMLayer) {
-		let providerName;
-		currentScope.infraProviders.forEach((oneProvider) => {
-			if (oneProvider._id === oneVMLayer.params.infraId) {
-				providerName = oneProvider.name;
-			}
-		});
+		
+		let providerName = currentScope.cloud.selectedProvider.name;
+		
 		let opts = oneVMLayer;
 		opts.params.env = currentScope.wizard.gi.code;
 
@@ -167,7 +159,7 @@ statusServices.service('statusSrv', ['statusAPISrv', 'ngDataApi', function (stat
 		listInfraProviders(currentScope, () => {
 			resumeDeployment();
 		});
-
+		
 		function resumeDeployment() {
 			if (currentScope.wizard.selectedInfraProvider) {
 				let deployments = currentScope.wizard.template.deploy;

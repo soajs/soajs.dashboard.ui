@@ -593,9 +593,20 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			//call api and lock the infra then update the environment scope
 			let cloudProviderConfig = {
 				"infraId": currentScope.cloud.form.formData.selectedProvider._id || currentScope.cloud.form.formData.selectedProvider.infraId,
+				"name": currentScope.cloud.form.formData.selectedProvider.name,
+				"label": currentScope.cloud.form.formData.selectedProvider.label,
 				"region": currentScope.cloud.form.formData.region,
 				"network": currentScope.cloud.form.formData.network
 			};
+			
+			if(!cloudProviderConfig.name){
+				currentScope.cloudProviders.forEach((oneProvider) => {
+					if(oneProvider._id === cloudProviderConfig.infraId){
+						cloudProviderConfig.name = oneProvider.name;
+						cloudProviderConfig.label = oneProvider.label;
+					}
+				});
+			}
 			
 			if (currentScope.cloud.form.formData.providerExtra && Object.keys(currentScope.cloud.form.formData.providerExtra).length > 0) {
 				if (!cloudProviderConfig.extras) {

@@ -286,13 +286,32 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 
 	function getVMLayers(currentScope, cb){
 		let oneProvider = currentScope.getFromParentScope('currentSelectedInfra');
-		getSendDataFromServer(currentScope, ngDataApi, {
+		
+		let requestOptions = {
 			"method": "get",
 			"routeName": "/dashboard/cloud/vm/list",
 			"params":{
-				"infraId": oneProvider._id
+				"infraId": oneProvider._id,
 			}
-		}, function (error, providerVMs) {
+		};
+		
+		switch(currentScope.currentInfraName){
+			case 'aws':
+				if(currentScope.selectedRegion){
+					requestOptions.params.region = currentScope.selectedRegion;
+				}
+				break;
+			case 'azure':
+				if(currentScope.selectedGroup){
+					requestOptions.params.group = currentScope.selectedGroup.name;
+					requestOptions.params.region = currentScope.selectedGroup.region;
+				}
+				break;
+			default:
+				break;
+		}
+		
+		getSendDataFromServer(currentScope, ngDataApi, requestOptions, function (error, providerVMs) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 				return cb();

@@ -634,12 +634,14 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
         };
 
         //adding the api call to commonService
-		context.getCatalogRecipes = function (cb) {
+		context.getCatalogRecipes = function (modifyName, cb) {
 
 			// this function is the on-action when selecting a vm layer
 			if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm') {
-				// get the public ips from the layer and update the resource configuration
-				context.buildComputedHostname();
+				if(modifyName){
+					// get the public ips from the layer and update the resource configuration
+					context.buildComputedHostname();
+				}
 
 				// get the available security groups from the layer in case a port update is required
 				context.getLayerSecurityGroups();
@@ -960,7 +962,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 					}
 
 					//get the new catalog recipes
-					context.getCatalogRecipes(() => {
+					context.getCatalogRecipes(true, () => {
 						context.buildComputedHostname(resourceName);
 					});
 				});
@@ -1714,7 +1716,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 		if (!context.noCDoverride) {
 			context.getInfraProviders(() => {
 				context.getSecrets((cb) => {
-					context.getCatalogRecipes(cb);
+					context.getCatalogRecipes(true, cb);
 				});
 				if (context.formData && context.formData.canBeDeployed && resource && resource.name) {
 					if(context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.type === 'vm'){

@@ -164,6 +164,10 @@ vmServices.service('vmSrv', ['$localStorage', '$timeout', 'platformsVM', functio
 			}
 		};
 		
+		currentScope.vms.getVMs = function(){
+			return (!currentScope.vms.vmLayers || Object.keys(currentScope.vms.vmLayers).length === 0);
+		};
+		
 		function compareArrays(arr1, arr2){
 			// if the other array is a falsy value, return
 			if (!arr2)

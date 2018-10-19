@@ -142,7 +142,17 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 					}
 				}
 				
+				//remove layer if it has no instances
 				currentScope.vms.vmLayers = allVMs;
+				
+				let myVMKeys = Object.keys(currentScope.vms.vmLayers);
+				
+				for(let i = myVMKeys.length -1; i >=0; i--){
+					if(!currentScope.vms.vmLayers[myVMKeys[i]].list || currentScope.vms.vmLayers[myVMKeys[i]].list.length === 0){
+						delete currentScope.vms.vmLayers[myVMKeys[i]];
+					}
+				}
+				
 				if(Object.keys(currentScope.vms.vmLayers).length === 0){
 					delete currentScope.vms.vmLayers;
 				}
@@ -969,6 +979,9 @@ vmsServices.service('platformsVM', ['ngDataApi', '$timeout', '$modal', '$cookies
 				deleteVMLayer(currentScope, oneVMLayer);
 			};
 			
+			currentScope.vms.getVMs = function(){
+				return (!currentScope.vms.vmLayers || Object.keys(currentScope.vms.vmLayers).length === 0);
+			};
 		}
 		
 		if (operation) {

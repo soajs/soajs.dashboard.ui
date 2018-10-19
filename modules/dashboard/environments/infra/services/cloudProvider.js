@@ -387,7 +387,8 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			currentScope.vms = currentScope.cloud.$new();
 			currentScope.vms.envCode = currentScope.envCode;
 			
-			platformsVM.go(currentScope, 'listVMLayers');
+			platformsVM.go(currentScope);
+			currentScope.vms.listVMLayers(true);
 			currentScope.vms.form.formData.selectedProvider = currentScope.cloud.form.formData.selectedProvider;
 		}
 		

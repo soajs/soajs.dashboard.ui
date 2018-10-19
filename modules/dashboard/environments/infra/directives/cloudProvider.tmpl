@@ -106,15 +106,11 @@
 			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/container.tmpl'"></div>
 		</tab>
-		<tab heading="Virtual Machines" ng-if="!wizard && access.vm.list && cloud.showVm" active="cloud.tabs.vms" ng-click="vms.listVMLayers(true)">
+		<tab heading="Virtual Machines" ng-if="access.vm.list && cloud.showVm" active="cloud.tabs.vms">
 			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
-		<tab heading="Virtual Machines" ng-if="wizard && access.vm.list && cloud.showVm" active="cloud.tabs.vms">
-			<br/>
-			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
-		</tab>
-		<tab class="redTab" heading="Failed Virtual Machines" ng-if="!wizard && vms.errorVMLayers && cloud.showVm" ng-click="vms.listVMLayers(true)">
+		<tab class="redTab" heading="Failed Virtual Machines" ng-if="!wizard && vms.errorVMLayers && cloud.showVm">
 			<div ng-include="'modules/dashboard/environments/infra/directives/broken.tmpl'"></div>
 		</tab>
 	</tabset>

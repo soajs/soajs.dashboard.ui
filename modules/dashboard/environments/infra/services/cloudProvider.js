@@ -238,6 +238,10 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 			currentScope.containers.form.formData.selectedProvider = oneProvider;
 			platformCntnr.checkContainerTechnology(currentScope);
 			
+			currentScope.containers.updateNamespaceConfig = function(driver){
+				platformCntnr.updateNamespaceConfig(currentScope, driver);
+			};
+			
 			currentScope.containers.detachContainer = function () {
 				platformCntnr.detachContainerTechnology(currentScope);
 			};

@@ -717,6 +717,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	return {
 		'go': go,
 		'checkContainerTechnology': checkContainerTechnology,
-		'detachContainerTechnology': detachContainerTechnology
+		'detachContainerTechnology': detachContainerTechnology,
+		"updateNamespaceConfig": updateNamespaceConfig
 	}
 }]);

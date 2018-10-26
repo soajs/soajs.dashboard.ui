@@ -731,6 +731,9 @@ var environmentsConfig = {
 				nodejs: {
 					l: 'NodeJs'
 				},
+				golang: {
+					l: 'GoLang'
+				},
 				php: {
 					l: 'PHP'
 				},
@@ -753,6 +756,9 @@ var environmentsConfig = {
 				},
 				nodejs: {
 					l: 'NodeJs'
+				},
+				golang: {
+					l: 'GoLang'
 				},
 				php: {
 					l: 'PHP'

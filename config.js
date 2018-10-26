@@ -92,5 +92,6 @@ var whitelistedRepos = [
 	'soajs/soajs.quick.demo',
 	'soajs/soajs.nodejs.express',
 	'soajs/soajs.nodejs.hapi',
-	'soajs/soajs.java.jaxrs_jersey'
+	'soajs/soajs.java.jaxrs_jersey',
+	'soajs/soajs.golang.mux'
 ];

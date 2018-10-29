@@ -284,7 +284,12 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
 			}
 			else if ($scope.currentDeployer.type === 'manual') {
-				hide = (['secrets', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				if(currentSelectedEnvironment === 'dashboard'){
+					hide = (['secrets', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				}
+				else{
+					hide = (['secrets', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				}
 			}
 			else {
 				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)

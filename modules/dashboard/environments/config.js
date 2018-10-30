@@ -643,6 +643,8 @@ var environmentsConfig = {
 		"getEnvironmentProfile": ['dashboard', '/environment/profile', 'get'],
 		"tenantKeyUpdate": ['dashboard', '/environment/key/update', 'put'],
 		"listHosts": ['dashboard', '/hosts/list', 'get'],
+		"startHost": ['dashboard', '/hosts/start', 'post'],
+		"stopHost": ['dashboard', '/hosts/stop', 'post'],
 		"cd": ['dashboard', '/cd', 'post'],
 		"dbs": {
 			"list": ['dashboard', '/environment/dbs/list', 'get'],

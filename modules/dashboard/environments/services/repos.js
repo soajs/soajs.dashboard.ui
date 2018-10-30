@@ -14,6 +14,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	 * @param cb
 	 */
 	function displaySOAJSRMS(currentScope, cb) {
+		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
 			'routeName': '/dashboard/gitAccounts/accounts/list',
@@ -23,6 +24,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		}, function (error, response) {
 			if (error) {
+				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
@@ -55,6 +57,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							'operation': "awarenessStat"
 						}
 					}, function (error, response) {
+						overlayLoading.hide();
 						currentScope.accounts[0].repos.forEach((oneRepo) => {
 							if (oneRepo.type === 'service') {
 								let versions = [];
@@ -137,7 +140,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
-				displaySOAJSRMS(currentScope);
+				setTimeout(() => {
+					displaySOAJSRMS(currentScope);
+				}, 1000);
 			}
 		});
 	}
@@ -165,7 +170,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
-				displaySOAJSRMS(currentScope);
+				setTimeout(() => {
+					displaySOAJSRMS(currentScope);
+				}, 1000);
 			}
 		});
 	}
@@ -536,6 +543,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			"routeName": "/dashboard/services/list"
 		}, function (error, response) {
 			if (error) {
+				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.message);
 			} else {
 				currentScope.services = angular.copy(response.records);

@@ -124,6 +124,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	 * @param version
 	 */
 	function startService(currentScope, oneRepo, version){
+		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'post',
 			'routeName': '/dashboard/hosts/start',
@@ -135,6 +136,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				"serviceVersion": parseInt(version.version)
 			}
 		}, function (error) {
+			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
@@ -150,6 +152,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 	 * @param version
 	 */
 	function stopService(currentScope, oneRepo, version){
+		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'post',
 			'routeName': '/dashboard/hosts/stop',
@@ -161,6 +164,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				"serviceVersion": parseInt(version.version)
 			}
 		}, function (error) {
+			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {

@@ -130,7 +130,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 						let oneAwareness = response[i];
 						if(oneAwareness.ip === defaultControllerHost.ip){
 							let dottedIP = defaultControllerHost.ip.replace(/\./g,'_dot_');
-							if(!oneAwareness.data.services.controller.awarenessStats[dottedIP].healthy){
+							if(oneAwareness.data.services.controller.awarenessStats && !oneAwareness.data.services.controller.awarenessStats[dottedIP].healthy){
 								defaultControllerHost.heartbeat = false;
 								continue;
 							}
@@ -321,53 +321,75 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 	}
 
 	function executeHeartbeatTest(currentScope, env, oneHost) {
-		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/heartbeat";
-		showDialogBox(currentScope, env, curlCommand, oneHost.name);
+		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'heartbeat');
 	}
 
 	function executeAwarenessTest(currentScope, env, oneHost) {
-		
-		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/awarenessStat?update=true";
-		showDialogBox(currentScope, env, curlCommand, oneHost.name);
+		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'awarenessStat');
 	}
 
 	//ok from down here
 	function reloadRegistry(currentScope, env, oneHost, cb) {
-		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/reloadRegistry";
-		showDialogBox(currentScope, env, curlCommand, oneHost.name);
+		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'reloadRegistry');
 	}
 
 	function loadProvisioning(currentScope, env, oneHost) {
-		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/loadProvision";
-		showDialogBox(currentScope, env, curlCommand, oneHost.name);
+		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'loadProvision');
 	}
 
 	function loadDaemonStats(currentScope, env, oneHost) {
-		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/daemonStats";
-		showDialogBox(currentScope, env, curlCommand, oneHost.name);
+		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'daemonStats');
 	}
 	
 	function loadDaemonGroupConfig(currentScope, env, oneHost) {
-		let curlCommand = "http://" + oneHost.ip + ":" + (oneHost.port + currentScope.myEnvironment.services.config.ports.maintenanceInc) + "/reloadDaemonConf";
-		showDialogBox(currentScope, env, curlCommand, oneHost.name);
+		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'reloadDaemonConf');
 	}
 	
-	function showDialogBox(currentScope, env, curlCommand, oneHostName){
-		
-		$modal.open({
-			templateUrl: "commandBox.tmpl",
-			size: 'm',
-			backdrop: true,
-			keyboard: true,
-			controller: function($scope, $modalInstance){
-				fixBackDrop();
-				$scope.title = oneHostName;
-				$scope.commandTip = "Please run the following command on the machine hosting the " + oneHostName + " in the " + env + " environment";
-				$scope.commandToRun = "curl -X GET " + curlCommand;
+	function showDialogBox(currentScope, env, serviceName, serviceVersion, operation){
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			'method': 'get',
+			'routeName': '/dashboard/hosts/maintenance',
+			"params": {
+				"env": currentScope.envCode,
+				"serviceName": serviceName,
+				"serviceVersion": parseInt(serviceVersion),
+				"operation": operation
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			} else {
 				
-				$scope.ok = function(){
-					$modalInstance.close();
-				}
+				let formConfig = angular.copy(environmentsConfig.form.multiServiceInfo);
+				formConfig.entries = [
+					{
+						'name': serviceName,
+						'type': 'jsoneditor',
+						'height': '200px',
+						"value": response.data || response
+					}
+				];
+				
+				let options = {
+					timeout: $timeout,
+					form: formConfig,
+					name: operation,
+					label: serviceName + ": " + operation,
+					actions: [
+						{
+							'type': 'reset',
+							'label': translation.ok[LANG],
+							'btn': 'primary',
+							'action': function (formData) {
+								currentScope.modalInstance.dismiss('cancel');
+								currentScope.form.formData = {};
+							}
+						}
+					]
+				};
+				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
 	}

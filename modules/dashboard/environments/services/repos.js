@@ -69,14 +69,14 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 												oneService.versions[oneVersion].v = oneVersion;
 												myVersion.version = 1;
 												if(response){
-													for(let oneService in response.services){
-														if(oneRepo.serviceName === oneService && response.services[oneService].hosts){
-															if(response.services[oneService].hosts[oneVersion.toString()] && parseInt(response.services[oneService].version) === parseInt(oneVersion)){
+													for(let oneService in response.data.services){
+														if(oneRepo.serviceName === oneService && response.data.services[oneService].hosts){
+															if(response.data.services[oneService].hosts[oneVersion.toString()] && parseInt(response.data.services[oneService].version) === parseInt(oneVersion)){
 																myVersion = {
 																	healthy : true,
 																	version: oneVersion,
-																	hosts : response.services[oneService].hosts,
-																	port : response.services[oneService].port
+																	hosts : response.data.services[oneService].hosts,
+																	port : response.data.services[oneService].port
 																};
 															}
 														}
@@ -88,14 +88,14 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 											let oneVersion = 1;
 											myVersion.version = oneVersion;
 											if(response){
-												for(let oneService in response.services){
-													if(oneRepo.serviceName === oneService && response.services[oneService].hosts){
-														if(response.services[oneService].hosts[oneVersion.toString()]){
+												for(let oneService in response.data.services){
+													if(oneRepo.serviceName === oneService && response.data.services[oneService].hosts){
+														if(response.data.services[oneService].hosts[oneVersion.toString()]){
 															myVersion = {
 																healthy : true,
 																version: oneVersion.toString(),
-																hosts : response.services[oneService].hosts,
-																port : response.services[oneService].port
+																hosts : response.data.services[oneService].hosts,
+																port : response.data.services[oneService].port
 															};
 														}
 													}

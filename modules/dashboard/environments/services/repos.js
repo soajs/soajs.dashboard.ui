@@ -55,20 +55,17 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 							'operation': "awarenessStat"
 						}
 					}, function (error, response) {
-						if (error) {
-							currentScope.displayAlert('danger', error.message);
-						} else {
-							currentScope.accounts[0].repos.forEach((oneRepo) => {
-								
-								if (oneRepo.type === 'service') {
-									let versions = [];
-									currentScope.services.forEach((oneService) => {
-										if(oneService.name === oneRepo.serviceName) {
-											let myVersion = {};
-											if(oneService.versions){
-												Object.keys(oneService.versions).forEach(function (oneVersion) {
-													oneService.versions[oneVersion].v = oneVersion;
-													myVersion.version = 1;
+						currentScope.accounts[0].repos.forEach((oneRepo) => {
+							if (oneRepo.type === 'service') {
+								let versions = [];
+								currentScope.services.forEach((oneService) => {
+									if(oneService.name === oneRepo.serviceName) {
+										let myVersion = {};
+										if(oneService.versions){
+											Object.keys(oneService.versions).forEach(function (oneVersion) {
+												oneService.versions[oneVersion].v = oneVersion;
+												myVersion.version = 1;
+												if(response){
 													for(let oneService in response.services){
 														if(oneRepo.serviceName === oneService && response.services[oneService].hosts){
 															if(response.services[oneService].hosts[oneVersion.toString()] && parseInt(response.services[oneService].version) === parseInt(oneVersion)){
@@ -81,11 +78,13 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 															}
 														}
 													}
-												});
-											}
-											else{
-												let oneVersion = 1;
-												myVersion.version = oneVersion;
+												}
+											});
+										}
+										else{
+											let oneVersion = 1;
+											myVersion.version = oneVersion;
+											if(response){
 												for(let oneService in response.services){
 													if(oneRepo.serviceName === oneService && response.services[oneService].hosts){
 														if(response.services[oneService].hosts[oneVersion.toString()]){
@@ -99,19 +98,17 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 													}
 												}
 											}
-											versions.push(myVersion);
 										}
-									});
-									
-									if(versions.length > 0){
-										oneRepo.versions = versions;
+										versions.push(myVersion);
 									}
+								});
+								
+								if(versions.length > 0){
+									oneRepo.versions = versions;
 								}
-							});
-							console.log(currentScope.accounts);
-						}
+							}
+						});
 					});
-					
 				});
 			}
 		});

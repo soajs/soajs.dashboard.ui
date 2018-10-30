@@ -128,7 +128,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			'method': 'post',
 			'routeName': '/dashboard/hosts/start',
 			"params": {
-				"env": currentScope.envCode,
+				"env": currentScope.envCode
+			},
+			"data": {
 				"serviceName": oneRepo.serviceName,
 				"serviceVersion": parseInt(version.version)
 			}
@@ -152,7 +154,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			'method': 'post',
 			'routeName': '/dashboard/hosts/stop',
 			"params": {
-				"env": currentScope.envCode,
+				"env": currentScope.envCode
+			},
+			"data": {
 				"serviceName": oneRepo.serviceName,
 				"serviceVersion": parseInt(version.version)
 			}

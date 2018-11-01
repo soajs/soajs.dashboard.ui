@@ -36,7 +36,7 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 				resource.scope.wizardVMs = currentScope.wizard.vms;
 			}
 			
-			if (currentScope.vms.vmLayers) {
+			if (currentScope.vms && currentScope.vms.vmLayers) {
 				resource.scope.mainData.deploymentData.vmLayers = currentScope.vms.vmLayers;
 			}
 			

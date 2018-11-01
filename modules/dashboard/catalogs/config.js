@@ -37,6 +37,7 @@ var catalogAppConfig = {
 				'type': 'select',
 				'value' : [
 					{'v': 'soajs', 'l': "SOAJS", "group": "service"},
+					{'v': 'golang', 'l': "GoLang", "group": "service"},
 					{'v': 'nodejs', 'l': "NodeJs", "group": "service"},
 					{'v': 'php', 'l': "PHP", "group": "service"},
 					{'v': 'java', 'l': "Java", "group": "service"},
@@ -44,6 +45,7 @@ var catalogAppConfig = {
 					{'v': 'other', 'l': "Other", "group": "service"},
 
 					{'v': 'soajs', 'l': "SOAJS", "group": "daemon"},
+					{'v': 'golang', 'l': "GoLang", "group": "daemon"},
 					{'v': 'nodejs', 'l': "NodeJs", "group": "daemon"},
 					{'v': 'php', 'l': "PHP", "group": "daemon"},
 					{'v': 'java', 'l': "Java", "group": "daemon"},

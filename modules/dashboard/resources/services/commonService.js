@@ -212,7 +212,7 @@ commonService.service('commonService', ['ngDataApi', function (ngDataApi) {
     
     function getInfraProvidersAndVMLayers($scope, envCode, oneProvider, cb){
 	    let allVMs = {};
-	    if(oneProvider.technologies.includes('vm') && $scope.context && $scope.context.envDeployer && $scope.context.envDeployer.restriction) {
+	    if(oneProvider && oneProvider.technologies && oneProvider.technologies.includes('vm') && $scope.context && $scope.context.envDeployer && $scope.context.envDeployer.restriction) {
 		    overlayLoading.show();
 		    getSendDataFromServer($scope, ngDataApi, {
 			    "method": "get",

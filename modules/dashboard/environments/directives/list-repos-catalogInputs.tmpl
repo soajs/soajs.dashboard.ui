@@ -20,6 +20,36 @@
 	<br />
 </div>
 
+<div ng-show="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private">
+	
+	<div ng-if="isKubernetes">
+		<div>
+			<div ng-show="registrySecrets.length > 0">
+				<label>Image Registry Secret</label>
+				<select class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.registrySecret" ng-options="secret.name as secret.name for secret in registrySecrets">
+				</select>
+				<label class="fieldMsg">Choose a Registry Secret to use when deploying this resource. Registry Secrets are of type <b>kubernetes.io/dockercfg</b></label>
+			</div>
+			<alert type="warning" ng-show="!formData.deployOptions.custom.image.registrySecret && registrySecrets.length === 0" class="c-both">
+				<p>
+					No Registry Secrets found that can be used to deploy this resource , <a href="" ng-click="gotoSecrets();">Click Here</a> to create a new Registry Secret.
+				</p>
+			</alert>
+			<br/>
+			<div/>
+		</div>
+	</div>
+	<div ng-if="!isKubernetes">
+		<alert type="warning" class="c-both">
+			<p>
+				Only Kubernetes supports creating pods from <b>Private Registries</b> using <b>Registry Secrets</b>.
+				Docker Support for for Private Registry deployment will be coming soon...
+			</p>
+		</alert>
+		<br/>
+	</div>
+</div>
+
 <div ng-repeat="(userInputName,userInput) in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom">
 	<label>{{userInput.label || userInput.name}}</label>
 	<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName]" value="{{userInput.value}}" ng-required="userInput.required"/>

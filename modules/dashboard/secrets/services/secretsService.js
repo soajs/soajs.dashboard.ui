@@ -47,51 +47,57 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', functi
 			let input = {
 				name: formData.secretName,
 				env: currentScope.selectedEnvironment.code,
-				type: 'Opaque',
-				namespace: currentScope.namespaceConfig.namespace
+				type: formData.secretType,
+				namespace: currentScope.namespaceConfig.namespace,
 			};
-
-			if (!input.data && formData.file) {
-				delete $scope.editor;
-				delete formData.secretData;
-				input.data = formData.file;
-				input.datatype = "file";
+			if (formData.secretType === 'kubernetes.io/dockercfg') {
+				input.data = {};
+				input.data.username = formData.registryUsername;
+				input.data.password = formData.registryPassword;
+				input.data.server = formData.registryServer;
+				input.data.email = formData.registryEmail;
 			}
-
-			if (formData.secretData) {
-				input.data = formData.secretData;
-				input.datatype = "text";
-				delete formData.file;
-			}
-
-			if (!input.data && $scope.editor) {
-				input.data = $scope.editor.ngModel;
-				input.datatype = "editor";
-				delete formData.file;
-			}
-
-			if(input.datatype ==='editor'){
-				try{
-					let x = JSON.parse(input.data);
+			else {
+				if (!input.data && formData.file) {
+					delete $scope.editor;
+					delete formData.secretData;
+					input.data = formData.file;
+					input.datatype = "file";
 				}
-				catch(e){
-					$window.alert("Invalid JSON Content Provided");
+				
+				if (formData.secretData) {
+					input.data = formData.secretData;
+					input.datatype = "text";
+					delete formData.file;
+				}
+				
+				if (!input.data && $scope.editor) {
+					input.data = $scope.editor.ngModel;
+					input.datatype = "editor";
+					delete formData.file;
+				}
+				
+				if (input.datatype === 'editor') {
+					try {
+						let x = JSON.parse(input.data);
+					}
+					catch (e) {
+						$window.alert("Invalid JSON Content Provided");
+						$scope.$valid = false;
+						return false;
+					}
+				}
+				if (!input.data || input.data === "" || ((input.data === "{}" || (typeof input.data === 'object' && Object.keys(input.data).length === 0)) && !formData.secretData && !formData.file)) {
+					$window.alert("Provide a value for your secret to proceed!");
 					$scope.$valid = false;
 					return false;
 				}
 			}
-
-			if (!input.data || input.data === "" || ((input.data === "{}" || (typeof input.data === 'object' && Object.keys(input.data).length === 0)) && !formData.secretData && !formData.file)) {
-				$window.alert("Provide a value for your secret to proceed!");
-				$scope.$valid = false;
-				return false;
-			}
-
-			if($scope.$valid && $modalInstance){
+			if(formData.type === 'kubernetes.io/dockercfg' || ($scope.$valid && $modalInstance)){
 				if (typeof input.data === "object") {
 					input.data = JSON.stringify(input.data);
 				}
-				
+				$modalInstance.close();
 				getSendDataFromServer(currentScope, ngDataApi, {
 					method: 'post',
 					routeName: '/dashboard/secrets/add',
@@ -131,6 +137,7 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', functi
 
 		formConfig[1].tabs[0].onAction = function (id, value, form) {
 			delete form.formData.file;
+			form.formData.secretType = "Opaque";
 		};
 
 		formConfig[1].tabs[1].onAction = function (id, value, form) {
@@ -138,8 +145,19 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', functi
 			if ($scope.editor) {
 				$scope.editor.ngModel = "{}";
 			}
+			form.formData.secretType = "Opaque";
 		};
-
+		if (currentScope.envPlatform === 'kubernetes'
+			|| currentScope.wizard
+			&& currentScope.wizard.deployment
+			&& currentScope.wizard.deployment.technology === 'kubernetes'){
+			formConfig[1].tabs[2].onAction = function (id, value, form) {
+				form.formData.secretType =  "kubernetes.io/dockercfg";
+			};
+		}
+		else {
+			delete formConfig[1].tabs[2];
+		}
 		$scope.showContent = function (id, value, form) {
 			if (!form.formData.file) {
 				form.formData.file = value;

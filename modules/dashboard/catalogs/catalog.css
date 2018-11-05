@@ -174,10 +174,12 @@ fieldset pre{
 .catalogRecipeForm .tr-network-wrapper,
 .catalogRecipeForm .tr-maxAttempts-wrapper,
 .catalogRecipeForm .tr-condition-wrapper,
+
 .catalogRecipeForm .tr-imagePullPolicy-wrapper,
+.catalogRecipeForm .tr-imageRepositoryType-wrapper,
 .catalogRecipeForm .tr-imageOverride-wrapper{
     float:left;
-    width:50%;
+    width:33%;
 }
 
 .form .modal-header{

@@ -94,9 +94,9 @@
 	    <div class="modal-footer">
 
 		    <span ng-if="options.allowEdit">
-	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid" ng-click="save('save')">Save</button>
-	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid" ng-click="save('saveAndDeploy')">Save & Deploy</button>
-	            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id && formData.deployOptions.deployConfig.type !=='vm'" ng-disabled="!valid" ng-click="save('saveAndRebuild')">Save & Rebuild</button>
+	            <button class="btn btn-success" ng-if="access.update && !notsupported" ng-disabled="!valid || formData.invalidImageType" ng-click="save('save')">Save</button>
+	            <button class="btn btn-primary" ng-if="access.update && access.deploy && !notsupported && !formData.isDeployed && formData.canBeDeployed && (!formData.instance || !formData.instance.id)" ng-disabled="!valid || formData.invalidImageType" ng-click="save('saveAndDeploy')">Save & Deploy</button>
+	            <button class="btn btn-primary" ng-if="access.update && access.rebuild && !notsupported && formData.isDeployed && formData.canBeDeployed && formData.instance && formData.instance.id && formData.deployOptions.deployConfig.type !=='vm'" ng-disabled="!valid || formData.invalidImageType" ng-click="save('saveAndRebuild')">Save & Rebuild</button>
 	        </span>
 	        <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
 		</div>

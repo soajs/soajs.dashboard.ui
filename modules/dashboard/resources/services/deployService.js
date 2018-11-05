@@ -207,6 +207,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 			}
 			$location.path("/catalog-recipes");
 		};
+		
+		context.gotoSecrets = function(){
+			if($modalInstance){
+				$modalInstance.close();
+			}
+			$location.path("/secrets");
+		};
 
 		// adding the api call to commonService
 		context.fetchBranches = function (confOrCustom) {
@@ -859,24 +866,40 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 							}
 						}
 
-						if (recipes[i].recipe.deployOptions && recipes[i].recipe.deployOptions.image && recipes[i].recipe.deployOptions.image.override) {
-							context.mainData.recipeUserInput.image = {
-								override: true,
-								prefix: recipes[i].recipe.deployOptions.image.prefix || '',
-								name: recipes[i].recipe.deployOptions.image.name || '',
-								tag: recipes[i].recipe.deployOptions.image.tag || ''
-							};
-
-							if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.image && Object.keys(context.formData.deployOptions.custom.image).length > 0) {
+						if (recipes[i].recipe.deployOptions && recipes[i].recipe.deployOptions.image ) {
+							if (recipes[i].recipe.deployOptions.image.override){
 								context.mainData.recipeUserInput.image = {
 									override: true,
-									prefix: context.formData.deployOptions.custom.image.prefix || '',
-									name: context.formData.deployOptions.custom.image.name || '',
-									tag: context.formData.deployOptions.custom.image.tag || ''
+									prefix: recipes[i].recipe.deployOptions.image.prefix || '',
+									name: recipes[i].recipe.deployOptions.image.name || '',
+									tag: recipes[i].recipe.deployOptions.image.tag || ''
 								};
+								
+								if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.image && Object.keys(context.formData.deployOptions.custom.image).length > 0) {
+									context.mainData.recipeUserInput.image = {
+										override: true,
+										prefix: context.formData.deployOptions.custom.image.prefix || '',
+										name: context.formData.deployOptions.custom.image.name || '',
+										tag: context.formData.deployOptions.custom.image.tag || '',
+										registrySecret: context.formData.deployOptions.custom.image.registrySecret || ''
+									};
+								}
+							}
+							if (recipes[i].recipe.deployOptions.image.repositoryType && recipes[i].recipe.deployOptions.image.repositoryType === "private"){
+								context.mainData.recipeUserInput.image.private = true;
+							}
+							if (context.options.envPlatform === 'kubernetes'){
+								if (context.secrets && context.secrets.length > 0){
+									context.mainData.secrets = context.secrets.filter(function(element) {
+										return element.type === 'kubernetes.io/dockercfg' &&  element.namespace ==="soajs";
+									});
+								}
+							}
+							if (context.options.envPlatform !== 'kubernetes' && context.mainData.recipeUserInput.image.private){
+								context.formData.invalidImageType = true;
 							}
 						}
-
+						
 						//add check, if recipe does not support certificates, do not show the secrets input at all
 						context.mainData.secretsAllowed = 'none';
 						if (recipes[i].recipe.deployOptions.certificates && recipes[i].recipe.deployOptions.certificates !== 'none') {

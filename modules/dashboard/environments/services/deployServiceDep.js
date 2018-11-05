@@ -1,6 +1,6 @@
 "use strict";
 var deployService = soajsApp.components;
-deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$cookies', function (ngDataApi, $timeout, $modal, $cookies) {
+deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$cookies', '$location', function (ngDataApi, $timeout, $modal, $cookies, $location) {
 	
 	function getServiceBranches(currentScope, opts, cb) {
 		currentScope.loadingBranches = true;
@@ -389,7 +389,12 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			
 			$scope.injectCatalogEntries(oneEnv, version, oneSrv);
 		};
-		
+		$scope.gotoSecrets = function(){
+			if($modalInstance){
+				$modalInstance.close();
+			}
+			$location.path("/secrets");
+		};
 		$scope.injectCatalogEntries = function (oneEnv, version, oneSrv, ui) {
 			$scope.allowGitOverride = false;
 			if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom) {
@@ -405,9 +410,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			for (var type in $scope.recipes) {
 				$scope.recipes[type].forEach(function (catalogRecipe) {
 					if (catalogRecipe._id === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe) {
+						console.log(angular.copy($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image))
 						if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image && catalogRecipe.recipe.deployOptions.image.override) {
 							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
 						}
+						console.log(angular.copy($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image))
 						if (catalogRecipe.recipe.deployOptions.image.override) {
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix)
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix = catalogRecipe.recipe.deployOptions.image.prefix;
@@ -418,8 +425,25 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag)
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag = catalogRecipe.recipe.deployOptions.image.tag;
 						}
-						else if (!catalogRecipe.recipe.deployOptions.image.override) {
+						if (catalogRecipe.recipe.deployOptions.image.repositoryType && catalogRecipe.recipe.deployOptions.image.repositoryType === "private"){
+							console.log($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom)
+							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image){
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
+							}
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private = true;
+						}
+						if (!catalogRecipe.recipe.deployOptions.image.override && catalogRecipe.recipe.deployOptions.image.repositoryType !== "private") {
 							delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image;
+						}
+						if ($scope.isKubernetes){
+							if ($scope.secrets && $scope.secrets.length > 0){
+								$scope.registrySecrets = $scope.secrets.filter(function(element) {
+									return element.type === 'kubernetes.io/dockercfg' &&  element.namespace ==="soajs";
+								});
+							}
+						}
+						if (!$scope.isKubernetes&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private){
+							$scope.invalidImageType = true;
 						}
 						//append inputs whose type is userInput
 						for (var envVariable in catalogRecipe.recipe.buildOptions.env) {

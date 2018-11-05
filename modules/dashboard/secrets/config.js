@@ -33,8 +33,10 @@ var secretsAppConfig = {
 								'fieldMsg': "Provide the content of the secret as text/json",
 								'height': 100
 							}
-						]
-
+						],
+						"onAction": function (id, data, form) {
+							form.formData.secretType = "Opaque";
+						}
 					},
 					{
 						"label": "File Content",
@@ -47,8 +49,59 @@ var secretsAppConfig = {
 								"directive": "modules/dashboard/secrets/directives/file.tmpl",
 								"required": false
 							}
-						]
-
+						],
+						"onAction": function (id, data, form) {
+							form.formData.secretType = "Opaque";
+						}
+					},
+					{
+						"label": "Registry Secret",
+						"description": "",
+						"entries":[
+							{
+								'type': 'text',
+								'value': '',
+								'name': 'registryServer',
+								'label': 'Registry Server',
+								'placeholder': 'https://index.docker.io/v1/',
+								'tooltip': "Enter the Registry Server",
+								'fieldMsg': "Enter the  Registry Server",
+								'required': true
+							},
+							{
+								'type': 'text',
+								'value': '',
+								'name': 'registryEmail',
+								'label': 'registryEmail',
+								'placeholder': 'email',
+								'tooltip': "Enter your Registry Email",
+								'fieldMsg': "Enter the  Registry Email",
+								'required': true
+							},
+							{
+								'type': 'text',
+								'value': '',
+								'name': 'registryUsername',
+								'label': 'Registry Username',
+								'placeholder': 'username',
+								'tooltip': "Enter the Registry Username",
+								'fieldMsg': "Enter the  Registry Username",
+								'required': true
+							},
+							{
+								'type': 'password',
+								'value': '',
+								'name': 'registryPassword',
+								'label': 'Registry Password',
+								'placeholder': 'password',
+								'tooltip': "Enter the Registry Password",
+								'fieldMsg': "Enter the  Registry Password",
+								'required': true
+							}
+						],
+						"onAction": function (id, data, form) {
+							form.formData.secretType = "kubernetes.io/dockercfg";
+						}
 					}
 				]
 			}

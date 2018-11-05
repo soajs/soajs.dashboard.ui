@@ -72,7 +72,7 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 				
 				record.canBeDeployed = true;
 				resource.scope.context.envType = 'container';
-				resource.scope.context.envPlatform = currentScope.wizard.deployment.selectedDriver;
+				resource.scope.context.envPlatform = currentScope.wizard.deployment.technology;
 				if (!currentScope.wizard.deployment.selectedDriver) {
 					resource.scope.context.envType = 'manual';
 				}
@@ -225,7 +225,14 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 			}
 			
 			let alreadyFilledFormData = record;
+			resource.scope.secrets = currentScope.secrets;
 			
+			if (resource.scope.secrets && resource.scope.secrets.length > 0) {
+				resource.scope.secrets = angular.copy(resource.scope.secrets);
+				resource.scope.secrets.forEach((oneTemplateSecret) => {
+					oneTemplateSecret.uid = "from-template-" + oneTemplateSecret.name.toLowerCase();
+				});
+			}
 			resourceDeploy.buildDeployForm(resource.scope, resource.scope, null, angular.copy(record), 'add', settings, () => {
 				if (currentScope.wizard.template.content.deployments.resources[key].deploy) {
 					resource.scope.hideDeployButton = true;

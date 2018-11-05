@@ -1532,6 +1532,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				imageName: data.recipe.deployOptions.image.name,
 				imageTag: data.recipe.deployOptions.image.tag,
 				imagePullPolicy: data.recipe.deployOptions.image.pullPolicy,
+				imageRepositoryType: data.recipe.deployOptions.image.repositoryType || 'public',
 				condition: (data.recipe.deployOptions.restartPolicy) ? data.recipe.deployOptions.restartPolicy.condition : '',
 				maxAttempts: (data.recipe.deployOptions.restartPolicy) ? data.recipe.deployOptions.restartPolicy.maxAttempts : '',
 				network: data.recipe.deployOptions.container.network,
@@ -1835,6 +1836,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						"name": formData.imageName,
 						"tag": formData.imageTag,
 						"pullPolicy": formData.imagePullPolicy,
+						"repositoryType": formData.imageRepositoryType,
 						"override": (formData.imageOverride === 'true')
 					},
 					'sourceCode': {},

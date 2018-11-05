@@ -166,6 +166,7 @@ dynamicSecretsServices.service('dynamicSecretsSrv', ['ngDataApi', '$compile', 's
 			
 			defaultWizardSecretValues = [];
 			let entriesCount = 0;
+			currentScope.secrets = [];
 			for (let secretName in secretEntries) {
 				let oneSecret = secretEntries[secretName];
 				oneSecret.scope.form.do({
@@ -183,6 +184,10 @@ dynamicSecretsServices.service('dynamicSecretsSrv', ['ngDataApi', '$compile', 's
 								delete oneSecret.scope;
 								currentScope.wizard.template.deploy[context.stage][context.group][context.stepPath].imfv.push(oneSecret);
 								defaultWizardSecretValues.push(oneSecret);
+								if (!oneSecret.namespace){
+									oneSecret.namespace = 'soajs';
+								}
+								currentScope.secrets.push(oneSecret);
 								entriesCount++;
 								if (entriesCount === Object.keys(secretEntries).length) {
 									//trigger next here

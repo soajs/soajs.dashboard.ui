@@ -154,6 +154,18 @@ var catalogAppConfig = {
 							},
 							{
 								'type': 'select',
+								'label': 'Image Repository Type',
+								'name': 'imageRepositoryType',
+								'value': [
+									{'v': 'public', 'l': 'Public', 'selected': true},
+									{'v': 'private', 'l': 'Private'},
+								],
+								'tooltip': "Select the Update Image Policy",
+								'fieldMsg': "Select the Update Image Policy",
+								'required': false
+							},
+							{
+								'type': 'select',
 								'label': 'Image Pull Policy',
 								'name': 'imagePullPolicy',
 								'value': [

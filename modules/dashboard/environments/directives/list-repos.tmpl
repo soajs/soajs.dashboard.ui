@@ -163,13 +163,13 @@
 			</form>
 		</div>
 		<div class="modal-footer">
-			<button ng-show="maxEntries > 0 && controllerScope.access.cd" ng-disabled="deployRepo.$invalid" class="btn btn-success" ng-click="saveRecipe()">
+			<button ng-show="maxEntries > 0 && controllerScope.access.cd" ng-disabled="deployRepo.$invalid || invalidImageType" class="btn btn-success" ng-click="saveRecipe()">
 				Save
 			</button>
-			<button ng-show="maxEntries > 0 && controllerScope.access.hacloud.services.add" ng-disabled="deployRepo.$invalid" ng-if="!deployed" class="btn btn-primary" ng-click="saveRecipe('deploy')">
+			<button ng-show="maxEntries > 0 && controllerScope.access.hacloud.services.add" ng-disabled="deployRepo.$invalid || invalidImageType" ng-if="!deployed" class="btn btn-primary" ng-click="saveRecipe('deploy')">
 				First Time Deploy
 			</button>
-			<button ng-show="maxEntries > 0 && controllerScope.access.hacloud.services.redeploy" ng-disabled="deployRepo.$invalid" ng-if="deployed" class="btn btn-info" ng-click="saveRecipe('rebuild')">
+			<button ng-show="maxEntries > 0 && controllerScope.access.hacloud.services.redeploy" ng-disabled="deployRepo.$invalid || invalidImageType" ng-if="deployed" class="btn btn-info" ng-click="saveRecipe('rebuild')">
 				Rebuild Service
 			</button>
 			<button class="btn btn-danger" ng-click="cancel()">Close</button>

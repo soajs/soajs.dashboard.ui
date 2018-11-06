@@ -16,6 +16,15 @@
 				</div>
 			</td>
 		</tr>
+		<tr class="form-group machinePort-wrapper">
+			<td>
+				<div id="port-wrapper">
+					<label class="f-left">Gateway Port</label>
+					<input type="number" ng-model="form.formData.deployment.manual.port" class="form-control"/>
+					<div class="fieldMsg hint">Provide the port value of the SOAJS API Gateway.</div>
+				</div>
+			</td>
+		</tr>
 	</tbody>
 </table>
 <div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>

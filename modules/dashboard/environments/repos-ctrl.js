@@ -28,6 +28,10 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 	$scope.listGitAccounts = function () {
 		deployRepos.listGitAccounts($scope);
 	};
+	
+	$scope.displaySOAJSRMS = function () {
+		deployRepos.displaySOAJSRMS($scope);
+	};
 
 	$scope.listRepos = function (account, action) {
 		deployRepos.listRepos($scope, account, action);
@@ -56,14 +60,30 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 	$scope.checkHeapster = function () {
 		deployRepos.checkHeapster($scope);
 	};
+	
+	$scope.startService = function(oneRepo, version){
+		deployRepos.startService($scope, oneRepo, version);
+	};
+	
+	$scope.stopService = function(oneRepo, version){
+		deployRepos.stopService($scope, oneRepo, version);
+	};
 
 	injectFiles.injectCss("modules/dashboard/environments/environments.css");
 	//default operation
-	if ($scope.access.git.listAccounts && $scope.$parent.currentDeployer.type !== 'manual') {
+	if ($scope.access.git.listAccounts) {
 		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+		}
+		
+		if($scope.$parent.currentDeployer.type !== 'manual'){
+			$scope.manualDeployment = false;
 			$scope.listGitAccounts();
 			$scope.checkHeapster();
+		}
+		else{
+			$scope.manualDeployment = true;
+			$scope.displaySOAJSRMS();
 		}
 	}
 }]);

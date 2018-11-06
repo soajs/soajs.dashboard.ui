@@ -7,6 +7,176 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		var isKubernetes = (envPlatform && envPlatform.toLowerCase() === "kubernetes");
 	}
 	
+	/**
+	 * get soajs rms, get services, get awareness stat for this enviornment
+	 * aggregate and build json list to show who is running and who is not
+	 * @param currentScope
+	 * @param cb
+	 */
+	function displaySOAJSRMS(currentScope, cb) {
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			'method': 'get',
+			'routeName': '/dashboard/gitAccounts/accounts/list',
+			"params": {
+				"fullList": true,
+				'rms': true
+			}
+		}, function (error, response) {
+			if (error) {
+				overlayLoading.hide();
+				currentScope.displayAlert('danger', error.message);
+			}
+			else {
+				currentScope.accounts = angular.copy(response);
+				
+				if (!Array.isArray(currentScope.accounts)) {
+					currentScope.accounts = [currentScope.accounts];
+				}
+				
+				if (currentScope.accounts.length > 0) {
+					if (cb && typeof cb === 'function') {
+						return cb();
+					}
+				}
+				
+				if(currentScope.accounts.length === 1){
+					currentScope.accounts[0].hide = false;
+					currentScope.accounts[0].icon = 'minus';
+				}
+				
+				getServices(currentScope, () => {
+					
+					//get controller awareness
+					getSendDataFromServer(currentScope, ngDataApi, {
+						'method': 'get',
+						'routeName': '/dashboard/hosts/maintenance',
+						"params": {
+							"env": currentScope.envCode,
+							"serviceName": "controller",
+							'operation': "awarenessStat"
+						}
+					}, function (error, response) {
+						overlayLoading.hide();
+						currentScope.accounts[0].repos.forEach((oneRepo) => {
+							if (oneRepo.type === 'service') {
+								let versions = [];
+								currentScope.services.forEach((oneService) => {
+									if(oneService.name === oneRepo.serviceName) {
+										let myVersion = {};
+										if(oneService.versions){
+											Object.keys(oneService.versions).forEach(function (oneVersion) {
+												oneService.versions[oneVersion].v = oneVersion;
+												myVersion.version = 1;
+												if(response){
+													for(let oneService in response.data.services){
+														if(oneRepo.serviceName === oneService && response.data.services[oneService].hosts){
+															if(response.data.services[oneService].hosts[oneVersion.toString()] && parseInt(response.data.services[oneService].version) === parseInt(oneVersion)){
+																myVersion = {
+																	healthy : true,
+																	version: oneVersion,
+																	hosts : response.data.services[oneService].hosts,
+																	port : response.data.services[oneService].port
+																};
+															}
+														}
+													}
+												}
+											});
+										}
+										else{
+											let oneVersion = 1;
+											myVersion.version = oneVersion;
+											if(response){
+												for(let oneService in response.data.services){
+													if(oneRepo.serviceName === oneService && response.data.services[oneService].hosts){
+														if(response.data.services[oneService].hosts[oneVersion.toString()]){
+															myVersion = {
+																healthy : true,
+																version: oneVersion.toString(),
+																hosts : response.data.services[oneService].hosts,
+																port : response.data.services[oneService].port
+															};
+														}
+													}
+												}
+											}
+										}
+										versions.push(myVersion);
+									}
+								});
+								
+								if(versions.length > 0){
+									oneRepo.versions = versions;
+								}
+							}
+						});
+					});
+				});
+			}
+		});
+	}
+	
+	/**
+	 * call api to start the service in this environment
+	 * @param currentScope
+	 * @param oneRepo
+	 * @param version
+	 */
+	function startService(currentScope, oneRepo, version){
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			'method': 'post',
+			'routeName': '/dashboard/hosts/start',
+			"params": {
+				"env": currentScope.envCode
+			},
+			"data": {
+				"serviceName": oneRepo.serviceName,
+				"serviceVersion": parseInt(version.version)
+			}
+		}, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			} else {
+				setTimeout(() => {
+					displaySOAJSRMS(currentScope);
+				}, 1000);
+			}
+		});
+	}
+	
+	/**
+	 * call api to stop the service in this environment
+	 * @param currentScope
+	 * @param oneRepo
+	 * @param version
+	 */
+	function stopService(currentScope, oneRepo, version){
+		overlayLoading.show();
+		getSendDataFromServer(currentScope, ngDataApi, {
+			'method': 'post',
+			'routeName': '/dashboard/hosts/stop',
+			"params": {
+				"env": currentScope.envCode
+			},
+			"data": {
+				"serviceName": oneRepo.serviceName,
+				"serviceVersion": parseInt(version.version)
+			}
+		}, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.displayAlert('danger', error.message);
+			} else {
+				setTimeout(() => {
+					displaySOAJSRMS(currentScope);
+				}, 1000);
+			}
+		});
+	}
+	
 	function listGitAccounts(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			'method': 'get',
@@ -373,6 +543,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			"routeName": "/dashboard/services/list"
 		}, function (error, response) {
 			if (error) {
+				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.message);
 			} else {
 				currentScope.services = angular.copy(response.records);
@@ -861,12 +1032,15 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 
 	return {
 		'listGitAccounts': listGitAccounts,
+		'displaySOAJSRMS': displaySOAJSRMS,
 		'getCdData': getCdData,
 		'getDeployedServices': getDeployedServices,
 		'deployService': deployService,
 		'doDeploy': doDeploy,
 		'checkHeapster': checkHeapster,
-		'saveRecipe': saveRecipe
+		'saveRecipe': saveRecipe,
+		'startService': startService,
+		'stopService': stopService
 	};
 
 }]);

@@ -888,6 +888,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 							if (recipes[i].recipe.deployOptions.image.repositoryType && recipes[i].recipe.deployOptions.image.repositoryType === "private"){
 								context.mainData.recipeUserInput.image.private = true;
 							}
+							else {
+								context.mainData.recipeUserInput.image.private = false;
+							}
 							if (context.options.envPlatform === 'kubernetes'){
 								if (context.secrets && context.secrets.length > 0){
 									context.mainData.secrets = context.secrets.filter(function(element) {

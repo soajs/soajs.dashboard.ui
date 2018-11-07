@@ -410,11 +410,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			for (var type in $scope.recipes) {
 				$scope.recipes[type].forEach(function (catalogRecipe) {
 					if (catalogRecipe._id === $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.recipe) {
-						console.log(angular.copy($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image))
 						if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image && catalogRecipe.recipe.deployOptions.image.override) {
 							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
 						}
-						console.log(angular.copy($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image))
 						if (catalogRecipe.recipe.deployOptions.image.override) {
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix)
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.prefix = catalogRecipe.recipe.deployOptions.image.prefix;
@@ -426,15 +424,21 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.tag = catalogRecipe.recipe.deployOptions.image.tag;
 						}
 						if (catalogRecipe.recipe.deployOptions.image.repositoryType && catalogRecipe.recipe.deployOptions.image.repositoryType === "private"){
-							console.log($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom)
 							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image){
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
 							}
 							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private = true;
 						}
+						else {
+							if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image){
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image = {};
+							}
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private = false;
+						}
 						if (!catalogRecipe.recipe.deployOptions.image.override && catalogRecipe.recipe.deployOptions.image.repositoryType !== "private") {
 							delete $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image;
 						}
+						
 						if ($scope.isKubernetes){
 							if ($scope.secrets && $scope.secrets.length > 0){
 								$scope.registrySecrets = $scope.secrets.filter(function(element) {

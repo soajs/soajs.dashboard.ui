@@ -104,7 +104,7 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', functi
 					data: input
 				}, function (error) {
 					if (error) {
-						$scope.form.displayAlert('danger', error.message);
+						currentScope.displayAlert('danger', error.message);
 					}
 					else {
 						currentScope.displayAlert('success', 'Secret created successfully.');

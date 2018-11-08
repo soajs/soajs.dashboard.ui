@@ -885,6 +885,18 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 									};
 								}
 							}
+							else {
+								context.mainData.recipeUserInput.image = {
+									override: false
+								};
+								if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.image && Object.keys(context.formData.deployOptions.custom.image).length > 0) {
+									context.mainData.recipeUserInput.image = {
+										override: false,
+										registrySecret: context.formData.deployOptions.custom.image.registrySecret || ''
+									};
+								}
+							}
+							
 							if (recipes[i].recipe.deployOptions.image.repositoryType && recipes[i].recipe.deployOptions.image.repositoryType === "private"){
 								context.mainData.recipeUserInput.image.private = true;
 							}

@@ -455,7 +455,8 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 								});
 							}
 						}
-						if (!$scope.isKubernetes&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private){
+						if (!$scope.isKubernetes && $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image &&
+							$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.image.private){
 							$scope.invalidImageType = true;
 						}
 						//append inputs whose type is userInput

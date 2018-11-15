@@ -183,13 +183,19 @@ li.accountType {
 }
 
 #repoSettings #envs tr[class^="form-group tr-envName"] {
-    width: 35%;
+    width: 40%;
     float:left;
 }
 
 #repoSettings #envs tr[class^="form-group tr-envVal"] {
-    width: 60%;
+    width: 40%;
     float:left;
+}
+
+#repoSettings #envs tr[class^="form-group tr-envType"] {
+    width: 15%;
+    float:left;
+    margin-top: 25px;
 }
 
 #repoSettings #envs tr[class^="form-group tr-removeEnv"] {

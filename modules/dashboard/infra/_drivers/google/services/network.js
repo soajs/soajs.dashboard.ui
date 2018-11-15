@@ -150,7 +150,7 @@ googleInfraNetworkSrv.service('googleInfraNetworkSrv', ['ngDataApi', '$localStor
 			routeName: '/dashboard/infra/extras',
 			params: {
 				'id': oneInfra._id,
-				'api': oneInfra.api,
+				//'api': oneInfra.api,//
 				'extras[]': ['networks']
 			}
 		};

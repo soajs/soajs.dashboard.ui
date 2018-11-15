@@ -104,7 +104,7 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 		switch(provider.provider){
 			case 'travis':
 				formConfig = angular.copy(ciAppConfig.form.f1.travis);
-				formConfig.entries[0].value = 'api.travis-ci.org';
+				formConfig.entries[0].value = 'api.travis-ci.com';
 				break;
 			case 'drone':
 				formConfig = angular.copy(ciAppConfig.form.f1.drone);

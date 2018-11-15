@@ -189,6 +189,7 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 									var oneClone = angular.copy(config.form.envVar);
 									for (var i = 0; i < oneClone.length; i++) {
 										oneClone[i].name = oneClone[i].name.replace("%count%", count);
+										
 										if (oneClone[i].name.indexOf('envName') !== -1) {
 											oneClone[i].value = enVar.name;
 										}
@@ -198,7 +199,22 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 										
 										if(exceptionProviders.indexOf(oneProvider.provider) !== -1 && !oneClone[i].value || oneClone[i].value === ''){
 											oneClone[i].required = false;
-											oneClone[i].fieldMsg = "If you don't want to modify this environment variable, Leave its value empty.";
+											if (oneClone[i] !== "<span class='red'><span class='icon icon-cross' title='Remove'></span></span>"){
+												oneClone[i].fieldMsg = "If you don't want to modify this environment variable, Leave its value empty.";
+											}
+										}
+										if (enVar.hasOwnProperty("public") && enVar.public === false && enVar.value === null) {
+											oneClone[i].required = false;
+											oneClone[i].disabled = true;
+											oneClone[i].placeholder = "*******";
+											if (oneClone[i].name.indexOf('envType') !== -1) {
+												oneClone[i].value = false;
+											}
+										}
+										else {
+											if (oneClone[i].name.indexOf('envType') !== -1) {
+												oneClone[i].value = true
+											}
 										}
 									}
 									formConfig.entries[2].entries = formConfig.entries[2].entries.concat(oneClone);
@@ -206,14 +222,11 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 								}
 							});
 							
-							
 							var oneClone = angular.copy(config.form.envVar);
 							for (var i = 0; i < oneClone.length; i++) {
 								oneClone[i].name = oneClone[i].name.replace("%count%", count);
 							}
-							formConfig.entries[2].entries = formConfig.entries[2].entries.concat(oneClone);
 							count++;
-							
 							formConfig.entries.push({
 								"name": "addEnv",
 								"type": "html",
@@ -317,10 +330,15 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 																	break;
 															}
 															
-															data.variables = {};
+															data.variables = [];
 															for (var i = 0; i < count; i++) {
-																if (!oneProvider.variables[formData['envName' + i]]) {
-																	data.variables[formData['envName' + i]] = formData['envVal' + i];
+																if (formData['envName' + i]
+																&& !oneProvider.variables[formData['envName' + i]]) {
+																	data.variables.push({
+																		name : formData['envName' + i] ,
+																		value: formData['envVal' + i],
+																		public: formData['envType' + i]
+																	})
 																}
 															}
 															

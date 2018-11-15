@@ -11,7 +11,7 @@ var ciAppConfig = {
 						'value': '',
 						'placeholder': "",
 						'required': true,
-						'fieldMsg': "Enter the domain value"
+						'fieldMsg': "Enter the domain value. Use api.travis-ci.com for public and private projects support. "
 					},
 					{
 						'name': 'gitToken',

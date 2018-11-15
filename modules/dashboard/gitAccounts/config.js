@@ -216,6 +216,14 @@ var gitAccountsAppConfig = {
 				'required': true
 			},
 			{
+				'name': 'envType%count%',
+				'label': 'Public',
+				'type': 'buttonSlider',
+				"value": false,
+				'required': true,
+				'tooltip': "Enable/Disable showing value in build log"
+			},
+			{
 				"name": "removeEnv%count%",
 				"type": "html",
 				"value": "<span class='red'><span class='icon icon-cross' title='Remove'></span></span>",
@@ -232,6 +240,9 @@ var gitAccountsAppConfig = {
 									oneEntry.entries.splice(i, 1);
 								}
 								else if (oneEntry.entries[i].name === 'envVal' + number) {
+									oneEntry.entries.splice(i, 1);
+								}
+								else if (oneEntry.entries[i].name === 'envType' + number) {
 									oneEntry.entries.splice(i, 1);
 								}
 								else if (oneEntry.entries[i].name === 'removeEnv' + number) {

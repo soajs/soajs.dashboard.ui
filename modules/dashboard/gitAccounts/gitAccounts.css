@@ -330,3 +330,37 @@ li.accountType {
 }
 
 .ace_text-input {position:absolute!important}
+
+.gitBox {
+    width: 100% !important;
+    float: unset !important;
+}
+
+.gitBranchesBox {
+    width: 25% !important;
+    /*min-height: 196px !important;*/
+    /*height: auto;*/
+    float: left !important;
+}
+
+.mr16 {
+    margin-right: 16% !important;
+}
+
+.activeRepoWithBranches {
+    background-color: #dff0d8 !important;
+}
+
+.greenBoxHeader {
+    background-color: #dff0d8 !important;
+    border-bottom-color: #3c763d !important;
+}
+
+.activeBranchAccordion {
+    border-radius: 4px;
+    margin: 15px 15px 0;
+}
+
+#reposList .blueLi.active {
+    background-color: white !important;
+}

@@ -345,8 +345,10 @@ var gitAccountsAppConfig = {
 		login: ['dashboard', '/gitAccounts/login', 'post'],
 		logout: ['dashboard', '/gitAccounts/logout', 'delete'],
 		activateRepo: ['dashboard', '/gitAccounts/repo/activate', 'post'],
+		activateBranch: ['dashboard', '/gitAccounts/repo/activate', 'post'],
 		deactivateRepo: ['dashboard', '/gitAccounts/repo/deactivate', 'put'],
 		syncRepo: ['dashboard', '/gitAccounts/repo/sync', 'put'],
+		syncRepoBranches: ['dashboard', '/gitAccounts/repo/sync/branches', 'put'],
 		getRepos: ['dashboard', '/gitAccounts/getRepos', 'get'],
 		getBranches: ['dashboard', '/gitAccounts/getBranches', 'get'],
 		

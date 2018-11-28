@@ -114,3 +114,8 @@ hr{
     outline:0;
     text-decoration:none;
 }
+
+.lastSync td {
+    width: 15%;
+    white-space: nowrap;
+}

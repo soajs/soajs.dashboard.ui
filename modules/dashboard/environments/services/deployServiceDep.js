@@ -4,16 +4,24 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 	
 	function getServiceBranches(currentScope, opts, cb) {
 		currentScope.loadingBranches = true;
-		getSendDataFromServer(currentScope, ngDataApi, {
+		let dataOpts =  {
 			method: 'get',
 			routeName: '/dashboard/gitAccounts/getBranches',
 			params: {
 				'id': opts.gitAccount._id,
 				'provider': opts.gitAccount.provider,
 				'name': opts.repo.full_name,
-				'type': 'repo'
+				'type': 'repo',
+				'version': opts.version
 			}
-		}, function (error, response) {
+		};
+		if (opts.repo.type === 'multi'||  opts.repo.type === 'service' || opts.repo.type === 'daemon'){
+			dataOpts.params.version = opts.version;
+			if (opts.repo.type === 'multi'){
+				dataOpts.params.serviceName = currentScope.oneSrv;
+			}
+		}
+		getSendDataFromServer(currentScope, ngDataApi, dataOpts, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);
 			} else {
@@ -75,7 +83,8 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 				getServiceBranches(currentScope, {
 					gitAccount: currentScope.gitAccount,
 					repo: oneRepo,
-					cd: true
+					cd: true,
+					version: currentScope.version
 				}, function () {
 					return cb();
 				});
@@ -813,7 +822,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			});
 		}
 		else{
-			getServiceBranches($scope, {gitAccount: $scope.gitAccount, repo: oneRepo, cd: true}, function (cb) {
+			getServiceBranches($scope, {gitAccount: $scope.gitAccount, repo: oneRepo, cd: true, version: $scope.version}, function (cb) {
 				getServiceInEnv($scope, $scope.oneEnv, $scope.oneSrv, () => {
 					$scope.getSecrets($scope.oneEnv, function () {
 						$scope.setDeploy($scope.oneEnv, $scope.version, $scope.oneSrv, cb);

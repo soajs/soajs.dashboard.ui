@@ -14,7 +14,12 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
     $scope.defaultPerPage = 100;
 
     $scope.imagePath = './themes/' + themeToUse + '/img/loading.gif';
-
+	$scope.showRepos = function (pack) {
+		pack.showDetails = true;
+	};
+	$scope.hideRepos = function (pack) {
+		pack.showDetails = false;
+	};
     $scope.listAccounts = function () {
         getSendDataFromServer($scope, ngDataApi, {
             'method': 'get',
@@ -269,6 +274,9 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                 $scope.displayAlert('danger', error.message);
             }
             else {
+            	let git = {
+            		branches: []
+	            };
                 result.branches.forEach(function (oneBranch) {
                     formConfig.entries[0].value.push({'v': oneBranch.name, 'l': oneBranch.name});
                 });
@@ -285,6 +293,12 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                             'btn': 'primary',
                             'action': function (formData) {
                                 overlayLoading.show();
+	                            result.branches.forEach(function (oneBranch) {
+		                            git.branches.push({
+			                           name : oneBranch.name,
+			                           active : formData.branch === oneBranch.name
+		                            });
+	                            });
 	                            getSendDataFromServer($scope, ngDataApi, {
                                     method: 'post',
                                     routeName: '/dashboard/gitAccounts/repo/activate',
@@ -297,7 +311,8 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                         owner: repo.owner.login,
                                         repo: repo.name,
                                         project: repo.project ? repo.project.key : null,
-                                        configBranch: formData.branch
+                                        configBranch: formData.branch,
+	                                    git
                                     }
                                 }, function (error, response) {
 		                            overlayLoading.hide();
@@ -325,9 +340,7 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                     } else {
                                         $scope.modalInstance.dismiss('cancel');
                                         $scope.form.formData = {};
-
                                         $scope.displayAlert('success', translation.repoHasBeenActivated[LANG]);
-
                                         repo.status = 'active';
                                         if(response.type){
                                         	repo.type = response.type;
@@ -353,6 +366,10 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                                 }
                                             });
                                         }
+			                            repo.configBranch = formData.branch;
+                                        if ( ['service', 'daemon', 'mutli'].indexOf(repo.type) !== -1){
+	                                        repo.git = git;
+                                        }
                                     }
                                 });
                             }
@@ -373,17 +390,117 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
             }
         });
     };
-
-    $scope.deactivateRepo = function (accountId, repo) {
-        getSendDataFromServer($scope, ngDataApi, {
-            method: 'put',
-            routeName: '/dashboard/gitAccounts/repo/deactivate',
-            params: {
-                id: accountId.toString(),
-                owner: repo.owner.login,
-                repo: repo.name
-            }
-        }, function (error, response) {
+	
+	$scope.activateBranch = function (account, repo, branch) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'get',
+			routeName: '/dashboard/gitAccounts/getBranches',
+			params: {
+				name: repo.full_name,
+				type: 'repo',
+				id: account._id.toString(),
+				provider: account.provider
+			}
+		}, function (error, result) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				let git = {
+					branches: []
+				};
+				let found;
+				//check and compare branches
+				//add the activated branch
+				if (repo.git && repo.git.branches ){
+					result.branches.forEach(function (oneBranch) {
+						found = false;
+						for (let i = 0; i < repo.git.branches.length; i++) {
+							if(repo.git.branches[i].name === oneBranch.name){
+								git.branches.push({
+									name : oneBranch.name,
+									active : repo.git.branches[i].active || branch === oneBranch.name
+								});
+								found = true;
+								break;
+							}
+						}
+						if (!found){
+							git.branches.push({
+								name : oneBranch.name,
+								active : branch === oneBranch.name
+							});
+						}
+					});
+				}
+				
+				getSendDataFromServer($scope, ngDataApi, {
+					method: 'post',
+					routeName: '/dashboard/gitAccounts/repo/activate',
+					params: {
+						id: account._id.toString(),
+						provider: account.provider
+					},
+					data: {
+						provider: account.provider,
+						owner: repo.owner.login,
+						repo: repo.name,
+						project: repo.project ? repo.project.key : null,
+						configBranch: branch,
+						git
+					}
+				}, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
+						$scope.modalInstance.dismiss('cancel');
+						$scope.form.formData = {};
+						var outerScope = $scope;
+						var errorDisplay = $modal.open({
+							templateUrl: 'errorDisplay.tmpl',
+							backdrop: true,
+							keyboard: true,
+							controller: function ($scope) {
+								fixBackDrop();
+								
+								$scope.title = translation.repoActivationFailed[LANG];
+								$scope.error = error.message;
+								if($scope.error.indexOf("Error[999]") === -1){
+									$scope.error += "<br>" + outerScope.referToDoc;
+								}
+								$scope.ok = function () {
+									errorDisplay.close();
+								}
+							}
+						});
+					} else {
+						repo.git = git;
+						$scope.displayAlert('success', translation.repoHasBeenActivated[LANG]);
+						repo.status = 'active';
+						if(response.type){
+							repo.type = response.type;
+						}
+					}
+				});
+			}
+		});
+		
+	};
+    
+    $scope.deactivateRepo = function (accountId, repo, branch) {
+    	let opts = {
+		    method: 'put',
+		    routeName: '/dashboard/gitAccounts/repo/deactivate',
+		    params: {
+			    id: accountId.toString(),
+			    owner: repo.owner.login,
+			    repo: repo.name
+		    }
+	    };
+    	if (branch){
+		    opts.params.branch = branch;
+	    }
+        getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
             if (error) {
                 $scope.displayAlert('danger', error.message);
             } else {
@@ -393,7 +510,25 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                         var account = $scope.accounts[i];
                         for (var j = 0; j < account.repos.length; j++) {
                             if (account.repos[j].full_name === repo.full_name) {
-                                account.repos[j].status = '';
+                            	if (branch){
+                            		let active = false;
+                            		if ( account.repos[j].git && account.repos[j].git.branches){
+			                            account.repos[j].git.branches.forEach((oneBranch)=>{
+			                            	if (oneBranch.name === branch){
+					                            oneBranch.active = false;
+				                            }
+				                            if (oneBranch.active){
+					                            active = true;
+				                            }
+			                            });
+		                            }
+		                            if (!active){
+			                            account.repos[j].status = '';
+		                            }
+	                            }
+	                            else {
+		                            account.repos[j].status = '';
+	                            }
                             }
                         }
                     }
@@ -402,21 +537,25 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
         });
     };
 
-    $scope.syncRepo = function (account, repo) {
+    $scope.syncRepo = function (account, repo, branch) {
         overlayLoading.show();
-        getSendDataFromServer($scope, ngDataApi, {
-            method: 'put',
-            routeName: '/dashboard/gitAccounts/repo/sync',
-            params: {
-                id: account._id.toString()
-            },
-            data: {
-                provider: account.provider,
-                project: repo.project ? repo.project.key : null,
-                owner: repo.owner.login,
-                repo: repo.name
-            }
-        }, function (error, response) {
+        let opsData = {
+	        method: 'put',
+	        routeName: '/dashboard/gitAccounts/repo/sync',
+	        params: {
+		        id: account._id.toString()
+	        },
+	        data: {
+		        provider: account.provider,
+		        project: repo.project ? repo.project.key : null,
+		        owner: repo.owner.login,
+		        repo: repo.name
+	        }
+        };
+        if (branch){
+	        opsData.data.branch = branch;
+        }
+        getSendDataFromServer($scope, ngDataApi, opsData, function (error, response) {
             overlayLoading.hide();
             if (error) {
                 $scope.displayAlert('danger', error.message);
@@ -488,6 +627,31 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
             }
         });
     };
+	
+	$scope.syncRepoBranches = function (account, repo) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/dashboard/gitAccounts/repo/sync/branches',
+			params: {
+				id: account._id.toString(),
+			},
+			data: {
+				name: repo.full_name,
+				type: repo.type,
+				provider: account.provider
+			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				repo.git = result.git;
+			}
+			
+		});
+	};
 
 	$scope.configureRepo = function (oneRepo, gitAccount) {
 		repoSrv.configureRepo($scope, oneRepo, gitAccount, gitAccountsAppConfig);

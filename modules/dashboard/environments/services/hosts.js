@@ -38,57 +38,119 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				"params": {
 					"env": env
 				}
-			}, function (error, response) {
-				if (error || !response) {
+			}, function (error, result) {
+				if (error || !result) {
 					currentScope.generateNewMsg(env, 'danger', translation.unableRetrieveServicesHostsInformation[LANG]);
 				}
 				else {
-					currentScope.profile = response.profile;
-					currentScope.deployer = response.deployer;
-					currentScope.hostList = response.hosts;
-					if (response.hosts && response.hosts.length > 0) {
-						currentScope.hosts = {
-							'controller': {
-								'color': 'red',
-								'heartbeat': false,
-								'port': currentScope.myEnvironment.services.config.ports.controller,
-								'ips': []
-							}
-						};
-
-						for (var j = 0; j < response.hosts.length; j++) {
-							if (response.hosts[j].name === 'controller') {
-								var info = {
-									'name': 'controller',
-									'hostname': response.hosts[j].hostname,
-									'ip': response.hosts[j].ip,
-									'cid': response.hosts[j].cid,
-									'version': response.hosts[j].version,
+					getMaintenanceObj(result, (err, response) => {
+						if (err) {
+							currentScope.generateNewMsg(env, 'danger', translation.unableRetrieveServicesHostsInformation[LANG]);
+						}
+						currentScope.profile = response.profile;
+						currentScope.deployer = response.deployer;
+						currentScope.hostList = response.hosts;
+						if (response.hosts && response.hosts.length > 0) {
+							currentScope.hosts = {
+								'controller': {
 									'color': 'red',
+									'heartbeat': false,
 									'port': currentScope.myEnvironment.services.config.ports.controller,
-									'type': 'service'
-								};
-								if (response.hosts[j].src && response.hosts[j].src.branch) {
-									info.branch = response.hosts[j].src.branch;
+									'ips': []
 								}
-								controllers.push(info);
+							};
+							for (var j = 0; j < response.hosts.length; j++) {
+								if (response.hosts[j].name === 'controller') {
+									var info = {
+										'name': 'controller',
+										'hostname': response.hosts[j].hostname,
+										'ip': response.hosts[j].ip,
+										'cid': response.hosts[j].cid,
+										'version': response.hosts[j].version,
+										'color': 'red',
+										'port': currentScope.myEnvironment.services.config.ports.controller,
+										'type': 'service',
+										'maintenance': response.hosts[j].maintenance
+									};
+									if (response.hosts[j].src && response.hosts[j].src.branch) {
+										info.branch = response.hosts[j].src.branch;
+									}
+									controllers.push(info);
+								}
+							}
+							if (controllers.length > 0) {
+								controllers.forEach(function (oneController) {
+									getControllerAwarenessFromDB(oneController);
+									currentScope.hosts.controller.ips.push(oneController);
+								});
+								
+							} else {
+								delete currentScope.hosts.controller;
 							}
 						}
-						if (controllers.length > 0) {
-							controllers.forEach(function (oneController) {
-								getControllerAwarenessFromDB(oneController);
-								currentScope.hosts.controller.ips.push(oneController);
-							});
-							
-						}
-						else {
-							delete currentScope.hosts.controller;
-						}
-					}
+					});
 				}
 			});
 		}
-
+		function getMaintenanceObj(response, cb){
+			let serviceNames = [];
+			if (response && response.hosts) {
+				response.hosts.forEach((service) => {
+					serviceNames.push(service.name);
+				});
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "post",
+					"routeName": "/dashboard/services/list",
+					"params": {
+						"includeEnvs": false,
+						"serviceNames": serviceNames
+					}
+				}, function (error, result) {
+					if (result && result.records && result.records.length > 0) {
+						for (let i = 0; i < response.hosts.length; i++) {
+							for (let j = 0; j < result.records.length; j++) {
+								if (response.hosts[i].name === 'controller' && result.records[j] && response.hosts[i].name === result.records[j].name) {
+									response.hosts[i].maintenance = extractMaintenanceInfo(result.records[j].maintenance);
+									break;
+								}
+							}
+						}
+					}
+					return cb(null, response)
+				});
+			} else {
+				return cb(null, response)
+			}
+		}
+		function extractMaintenanceInfo(maintenance){
+			let mainArray = [];
+			if (maintenance.readiness && maintenance.readiness === "/heartbeat"){
+				mainArray.push({
+					icon: iconsAllowed.heartbeat,
+					title: translation.executeHeartbeatOperation[LANG],
+					action: function (envCode, oneIp){
+						showDialogBox (currentScope, envCode, oneIp.name, oneIp.version, maintenance.readiness.replace(/\//, ""));
+					}
+				});
+			}
+			if (maintenance.commands) {
+				maintenance.commands.forEach((onCom) => {
+					if (onCom){
+						if (onCom.path && onCom.icon && iconsAllowed[onCom.icon]){
+							mainArray.push({
+								icon: iconsAllowed[onCom.icon],
+								title: onCom.label,
+								action: function (envCode, oneIp){
+									showDialogBox (currentScope, envCode, oneIp.name, oneIp.version, onCom.path.replace(/\//, ""));
+								}
+							});
+						}
+					}
+				})
+			}
+			return mainArray
+		}
+		
 		function updateParent() {
 			var color = 'red';
 			var healthy = false;
@@ -252,7 +314,9 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 										'downCount': 'N/A',
 										'downSince': 'N/A',
 										'port': regServices[serviceName].port,
-										'type': regServices[serviceName].type
+										'type': regServices[serviceName].type,
+										'version': version,
+										'maintenance': extractMaintenanceInfo(regServices[serviceName].maintenance)
 									};
 
 									currentScope.hostList.forEach(function (origHostRec) {

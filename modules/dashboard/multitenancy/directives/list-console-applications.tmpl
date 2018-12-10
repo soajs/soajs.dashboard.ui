@@ -1,16 +1,4 @@
 <br/>
-
-<div>
-	<a ng-if="access.tenant.oauth.update && row.atLeastOneKey && row.oauth.secret && row.oauth.disabled===0" class="btn btn-sm btn-success" ng-click="tenantsList.actions.turnOffOAuth.command(row)">{{translation.turnOffOAuth[LANG]}}</a>
-	
-	<a ng-if="access.tenant.oauth.update && row.atLeastOneKey && row.oauth.disabled===1" class="btn btn-sm btn-danger" ng-click="tenantsList.actions.turnOnOAuth.command(row)">{{translation.turnOnOAuth[LANG]}}</a>
-	
-	<a ng-if="access.tenant.oauth.update && row.atLeastOneKey" class="btn btn-sm btn-primary" ng-click="tenantsList.actions.updateOAuth.command(row)">{{translation.updateOAuth[LANG]}}</a>
-	
-	<a ng-if="access.tenant.application.add" class="btn btn-sm btn-primary" href="" ng-click="addTenantApplication(row['_id'])">{{translation.addNewApplication[LANG]}}</a>
-	
-</div>
-
 <div class="applicationsGrid">
     <label ng-show="row.applications.length > 0">{{translation.availableApplications[LANG]}}:</label>
     <ul class="blueListing">
@@ -21,11 +9,8 @@
             <a ng-click="closeKeys(row['_id'], application)" href="" ng-show="application.showKeys">
                 <span class="icon icon-minus" tooltip="{{translation.collapseApplications[LANG]}}"></span>
             </a>
-            [{{application['package']}}] &nbsp; <span title="TTL" ng-if="application['_TTL']">( {{application['_TTL'] | TTL}} hours )</span>
+	        [{{application['package']}}] &nbsp; <span title="TTL" ng-if="application['_TTL']">( {{application['_TTL'] | TTL}} hours )</span>
             <span class="rightActions">
-                <a ng-if="access.tenant.application.delete" href="" ng-confirm-click="{{translation.areYouSureRemoveSelectedApp[LANG]}} ?" ng-click="removeTenantApplication(row['_id'], application['appId']);">
-                    <span class="icon icon-cross" tooltip="{{translation.removeApplication[LANG]}}"></span>
-                </a>
 
                 <a ng-if="access.tenant.application.update" href="" ng-click="editTenantApplication(row['_id'], application)">
                     <span class="icon icon-pencil2" tooltip="{{translation.editApplication[LANG]}}"></span>

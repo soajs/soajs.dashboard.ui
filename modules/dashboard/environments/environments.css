@@ -795,3 +795,36 @@ input.secretMountPathRepo{
 .environmentBox3 .content:hover > hr{
     border-top: solid 1px #337ab7;
 }
+
+pre.bash{
+    background: #f0f0f0;
+}
+.installStepButton {
+    background: transparent;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    border-radius: 50%;
+    border-top: 1px solid rgb(65, 100, 126);
+    border-right: 1px solid rgb(65, 100, 126);
+    border-bottom: 1px solid rgb(65, 100, 126);
+    border-left: 1px solid rgb(65, 100, 126);
+    color: rgb(65, 100, 126);
+    display: inline-block;
+    line-height: 60px;
+    margin-right: 25px;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    font-weight: 600;
+    vertical-align: middle;
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+.installSteps{
+    border: solid 1px #ededed;
+    border-radius:8px;
+    width: 50%;
+}

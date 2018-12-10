@@ -6,7 +6,7 @@ var importNav = [
         'label': "Import/Export",
         'checkPermission': {
             'service': 'dashboard',
-            'route': '/templates',
+            'route': '/templates/import',
             'method': 'get'
         },
         'url': '#/importExport',

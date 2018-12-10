@@ -62,6 +62,10 @@ var membersConfig = {
 	},
 	
 	permissions: {
+		"tenant": {
+			'listConsoleTenants': ['dashboard', 'console/tenant/list', 'get'],
+			'listTenant': ['dashboard', 'tenant/list', 'get'],
+		},
 		"adminAll": ['urac', '/admin/all', 'get'],
 		'adminUser': {
 			'list': ['urac', '/admin/listUsers', 'get'],

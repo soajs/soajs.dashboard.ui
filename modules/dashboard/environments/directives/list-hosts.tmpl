@@ -20,12 +20,55 @@
 					</div>
 					<br/><br/>
 					<div ng-show="!hosts.controller">
-						<alert type="warning" ng-if="deployer.type ==='manual'">
-							{{translation.thisEnvironmentConfiguredDeployed[LANG]}} <b>{{translation.manually[LANG]}}</b>.
-							{{translation.allServicesRunningEnvironmentHaveStartedStoppedAdministrator[LANG]}}</br>
-							Please download the profile by clicking the button above and use it as the <strong>SOAJS_PROFILE</strong> environment variable prior to starting your controller(s).</br>
-							For more information <a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61975478/Environment+Variables" target="_blank">click here</a>.
+						<!--<alert type="warning" ng-if="deployer.type ==='manual'">-->
+						<!--{{translation.thisEnvironmentConfiguredDeployed[LANG]}} <b>{{translation.manually[LANG]}}</b>.-->
+						<!--{{translation.allServicesRunningEnvironmentHaveStartedStoppedAdministrator[LANG]}}</br>-->
+						<!--Please download the profile by clicking the button above and use it as the <strong>SOAJS_PROFILE</strong> environment variable prior to starting your controller(s).</br>-->
+						<!--For more information <a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/61975478/Environment+Variables" target="_blank">click here</a>.-->
+						<!--</alert>-->
+						<alert type="info">
+							<h4 class="left">Your Environment have been created.</h4>
 						</alert>
+						</br>
+						<fieldset>
+							<div class="row">
+								<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+									<span class="installStepButton">1</span>
+								</div>
+								<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+									<h3>Start the Gateway:</h3>
+								</div>
+								<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+								<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+									<pre class="bash"><code><br> # Run this in your terminal to start the Gateway.<br/> > soajs service start gateway --env={{envCode.toUpperCase()}} --port=8000 </br></br></code></pre>
+									<p>
+										<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;For more
+										information,
+										<a href="https://soajsorg.atlassian.net/wiki/x/DQB8O" target="_blank">Click Here</a>
+									</p>
+								</div>
+							</div>
+						</fieldset>
+							<fieldset>
+							<div class="row">
+								<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+									<span class="installStepButton">2</span>
+								</div>
+								<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+									<h3>Start your Services:</h3>
+								</div>
+								<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+								<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+									<pre class="bash"><br> # Add these environment variables in your terminal before you start your service.<br> > export SOAJS_ENV={{envCode.toUpperCase()}} <br> > export SOAJS_SRVIP={{SRVIP}} <br> > export SOAJS_DEPLOY_MANUAL=1</br></br></code></pre>
+									<p>
+										<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;For more
+										information,
+										<a href="https://soajsorg.atlassian.net/wiki/x/QQDaBQ" target="_blank">Click
+											Here</a>
+									</p>
+								</div>
+							</div>
+						</fieldset>
 					</div>
 					<div class="entryBoxes entryBoxesGrid" ng-init="" style="padding-left: 5px;" ng-show="hosts.controller || nginxHosts.length > 0">
 						<fieldset class="groupFieldset" ng-if="hosts.controller">
@@ -56,22 +99,15 @@
 														</td>
 													</tr>
 													<tr>
-														<td valign="top" width="15%">
-															<a href="" ng-click="executeHeartbeatTest(envCode, oneIp)" title="{{translation.executeHeartbeatOperation[LANG]}}">
-																<span class="icon icon-heart"></span>&nbsp;
-															</a>
-
-															<a href="" ng-show="oneIp.heartbeat" ng-click="executeAwarenessTest(envCode, oneIp)" title="{{translation.executeAwarenessOperation[LANG]}}">
-																<span class="icon icon-connection"></span>&nbsp;
-															</a>
-
-															<a href="" ng-show="oneIp.heartbeat" ng-click="reloadRegistry(envCode, oneIp)" title="{{translation.reloadRegistryOperation[LANG]}}">
-																<span class="icon icon-undo"></span>&nbsp;
-															</a>
-
-															<a href="" ng-show="oneIp.heartbeat" ng-click="loadProvisioning(envCode, oneIp)" title="{{translation.loadProvisionOperation[LANG]}}">
-																<span class="icon icon-download3"></span>&nbsp;
-															</a>
+														<td valign="top" width="15%" >
+															<div ng-repeat="operation in  oneIp.maintenance">
+																<div class="f-left">
+																	<a href="" ng-click="operation.action(envCode, oneIp)" title="{{operation.title}}">
+																		<span class="{{operation.icon}}"></span>&nbsp;
+																	</a>
+																</div>
+															
+															</div>
 														</td>
 													</tr>
 												</tbody>
@@ -130,24 +166,13 @@
 																		</tr>
 																		<tr>
 																			<td valign="top" width="26%">
-																				<a href="" ng-click="executeHeartbeatTest(envCode, oneIp)" title="{{translation.executeHeartbeatOperation[LANG]}}">
-																					<span class="icon icon-heart"></span>&nbsp;
-																				</a>
-																				<a href="" ng-show="oneIp.healthy" ng-click="reloadRegistry(envCode, oneIp)" title="{{translation.reloadRegistryOperation[LANG]}}">
-																					<span class="icon icon-undo"></span>&nbsp;
-																				</a>
-
-																				<a href="" ng-show="oneIp.healthy && hosts[service].name === 'oauth'" ng-click="loadProvisioning(envCode, oneIp)" title="{{translation.loadProvisionOperation[LANG]}}">
-																					<span class="icon icon-download3"></span>&nbsp;
-																				</a>
-
-																				<a href="" ng-show="oneIp.healthy && hosts[service].type === 'daemon'" ng-click="loadDaemonStats(envCode, oneIp)" title="{{translation.loadDaemonStatisticsOperation[LANG]}}">
-																					<span class="icon icon-stats-dots"></span>&nbsp;
-																				</a>
-
-																				<a href="" ng-show="oneIp.healthy && hosts[service].type === 'daemon'" ng-click="loadDaemonGroupConfig(envCode, oneIp)" title="{{translation.loadDaemonGroupConfig[LANG]}}">
-																					<span class="icon icon-equalizer"></span>&nbsp;
-																				</a>
+																				<div ng-repeat="operation in  oneIp.maintenance">
+																					<div class="f-left">
+																						<a href="" ng-click="operation.action(envCode, oneIp)" title="{{operation.title}}">
+																							<span class="{{operation.icon}}"></span>&nbsp;
+																						</a>
+																					</div>
+																				</div>
 																			</td>
 																		</tr>
 																	</tbody>

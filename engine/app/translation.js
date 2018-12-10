@@ -5,6 +5,7 @@ var translation = {
 		"ENG": "Home",
 		"FRA": "Acceuil"
 	},
+	
 	'welcome': {
 		"ENG": "Welcome",
 		"FRA": "Bienvenue"
@@ -100,6 +101,10 @@ var translation = {
 	"member": {
 		"ENG": "Member",
 		"FRA": "Member"
+	},
+	'type': {
+		"ENG": "Type",
+		"FRA": "Type"
 	},
 	"product": {
 		"ENG": "Product",
@@ -338,6 +343,10 @@ var translation = {
 		"ENG": "Edit Tenant",
 		"FRA": "Edit Tenant"
 	},
+	"viewTenant": {
+		"ENG": "View Tenant",
+		"FRA": "View Tenant"
+	},
 	"updateOAuth": {
 		"ENG": "Update oAuth",
 		"FRA": "Update oAuth"
@@ -485,6 +494,10 @@ var translation = {
 	"multiTenancy": {
 		"ENG": "Multi-Tenancy",
 		"FRA": "Multi-Tenancy"
+	},
+	"consoleTenants": {
+		"ENG": "Console Tenants",
+		"FRA": "Console Tenants"
 	},
 	"ok": {
 		"ENG": "OK",
@@ -884,9 +897,9 @@ var translation = {
 		"FRA": "Secrets"
 	},
 	/////// Members ////
-	"tenantOrganizationChart": {
-		"ENG": "Tenant Organization Chart",
-		"FRA": "Tenant Organization Chart"
+	"tenantUser": {
+		"ENG": "Tenant Users",
+		"FRA": "Tenant Users"
 	},
 	"addNewMember": {
 		"ENG": "Add New Member",
@@ -896,9 +909,9 @@ var translation = {
 		"ENG": "Add New Group",
 		"FRA": "Ajouter New Group"
 	},
-	"myOrganizationChart": {
-		"ENG": "My Organization Chart",
-		"FRA": "My Organization Chart"
+	"consoleUsers": {
+		"ENG": "Console Users",
+		"FRA": "Console Users"
 	},
 	"userACL": {
 		"ENG": "User ACL",

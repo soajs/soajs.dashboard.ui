@@ -128,6 +128,10 @@ var mtTranslation = {
 		"ENG": "oAuth type",
 		"FRA": "oAuth type"
 	},
+	"oAuthUserType": {
+		"ENG": "oAuth User Authentication Type",
+		"FRA": "oAuth User Authentication Type"
+	},
 	"updateTenant": {
 		"ENG": "Update Tenant",
 		"FRA": "Update Tenant"
@@ -232,6 +236,28 @@ var multitenancyNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
+		'id': 'console-tenants',
+		'label': translation.consoleTenants[LANG],
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/console/product/list',
+			'method': 'get'
+		},
+		'url': '#/consoleTenants',
+		'tplPath': 'modules/dashboard/multitenancy/directives/listConsole.tmpl',
+		'icon': 'tree',
+		'pillar': {
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 7,
+		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js', 'modules/dashboard/multitenancy/services/servicesConfig.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
 		'id': 'tenant-app-acl',
 		'label': translation.editAppACL[LANG],
 		'url': '#/multi-tenancy/:tId/editAcl/:appId',
@@ -249,6 +275,25 @@ var multitenancyNav = [
 		},
 		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js'],
 		'ancestor': [translation.home[LANG], translation.multiTenancy[LANG]]
-	}
+	},
+	{
+		'id': 'tenant-app-console-acl',
+		'label': translation.editAppACL[LANG],
+		'url': '#/consoleTenants/:tId/editConsoleAcl/:appId',
+		'tplPath': 'modules/dashboard/multitenancy/directives/editConsoleAcl.tmpl',
+		'tracker': true,
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'/tenant/application/update',
+			'method': 'put'
+		},
+		'pillar': {
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js'],
+		'ancestor': [translation.home[LANG], translation.consoleTenants[LANG]]
+	},
 ];
 navigation = navigation.concat(multitenancyNav);

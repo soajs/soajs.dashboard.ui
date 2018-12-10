@@ -176,7 +176,24 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function editAcl(currentScope, data) {
-		currentScope.$parent.go('/members/' + data._id + '/editUserAcl');
+		let product = false;
+		if (currentScope.tenant && currentScope.tenant.applications) {
+			for (let x = currentScope.tenant.applications.length - 1; x >= 0; x--) {
+				if (currentScope.tenant.applications[x]
+					&& currentScope.tenant.applications[x].product
+					&& currentScope.tenant.applications[x].product === "DSBRD") {
+					product = true;
+					break
+				}
+			}
+		}
+		if (product){
+			currentScope.$parent.go('/tenants-members/' + data._id + '/editConsoleUserAcl');
+		}
+		else {
+			currentScope.$parent.go('/members/' + data._id + '/editUserAcl');
+		}
+		
 	}
 	
 	function editMember(currentScope, moduleConfig, data, useCookie) {

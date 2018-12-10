@@ -101,6 +101,7 @@ var productizationConfig = {
 	},
 	'permissions':{
 		'listProduct' :['dashboard', '/product/list', 'get'],
+		'listConsoleProducts' :['dashboard', '/console/product/list', 'get'],
 		'addProduct' : ['dashboard', '/product/add', 'post'],
 		'deleteProduct' :['dashboard', '/product/delete', 'delete'],
 		'editProduct':['dashboard', '/product/update', 'put'],

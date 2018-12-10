@@ -42,8 +42,7 @@ var modules = {
 		"dashboard": {
 			productization: 'modules/dashboard/productization/install.js',
 			multitenancy: 'modules/dashboard/multitenancy/install.js',
-			members: 'modules/dashboard/members/install.js',
-			settings: 'modules/dashboard/settings/install.js'
+			members: 'modules/dashboard/members/install.js'
 		}
 	},
 	"deploy": {

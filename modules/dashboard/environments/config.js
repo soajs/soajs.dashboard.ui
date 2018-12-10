@@ -828,3 +828,13 @@ var environmentsConfig = {
 		}
 	}
 };
+
+var iconsAllowed = {
+	'heartbeat': 'icon icon-heart',
+	'awareness': 'icon icon-connection',
+	'registry': 'icon icon-undo',
+	'provision': 'icon icon-download3',
+	'info': 'icon icon-search',
+	'statistic': 'icon-stats-dots',
+	'Configuration': 'icon icon-equalizer'
+};

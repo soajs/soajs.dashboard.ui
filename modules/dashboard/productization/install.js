@@ -6,6 +6,10 @@ var ProdTranslation = {
 		"ENG": "Productization",
 		"FRA": "Productization"
 	},
+	"consolePackages": {
+		"ENG": "Console Packages",
+		"FRA": "Console Package"
+	},
 	"editPackageACL": {
 		"ENG": "Edit Package ACL",
 		"FRA": "Edit Package ACL"
@@ -68,6 +72,10 @@ var ProdTranslation = {
 		"ENG": "Edit Product",
 		"FRA": "Edit Product"
 	},
+	"viewProduct": {
+		"ENG": "View Product",
+		"FRA": "View Product"
+	},
 	"addNewPackage": {
 		"ENG": "Add New Package",
 		"FRA": "Add New Package"
@@ -79,6 +87,10 @@ var ProdTranslation = {
 	"editPackage": {
 		"ENG": "Edit Package",
 		"FRA": "Edit Package"
+	},
+	"viewPackage": {
+		"ENG": "View Package",
+		"FRA": "View Package"
 	},
 	"areYouSureWantRemoveProduct": {
 		"ENG": "Are you sure you want to remove this product?",
@@ -156,6 +168,28 @@ var productizationNav =[
 		'ancestor': [translation.home[LANG]]
 	},
 	{
+		'id': 'consolepackages',
+		'label': translation.consolePackages[LANG],
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'/console/product/list',
+			'method': 'get'
+		},
+		'url': '#/consolePackages',
+		'tplPath': 'modules/dashboard/productization/directives/listConsole.tmpl',
+		'icon': 'list',
+		'pillar':{
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 6,
+		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
 		'id': 'product-acl',
 		'label': translation.editPackageACL[LANG],
 		'url': '#/productization/:pid/editAcl/:code',
@@ -173,6 +207,25 @@ var productizationNav =[
 		},
 		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
 		'ancestor': [translation.home[LANG], translation.productization[LANG]]
+	},
+	{
+		'id': 'product-console-acl',
+		'label': translation.editPackageACL[LANG],
+		'url': '#/consolePackages/:pid/editConsoleAcl/:code',
+		'tplPath': 'modules/dashboard/productization/directives/editConsoleAcl.tmpl',
+		'tracker': true,
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'/product/packages/update',
+			'method': 'put'
+		},
+		'pillar':{
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
+		'ancestor': [translation.home[LANG], translation.consolePackages[LANG]]
 	}
 ];
 navigation = navigation.concat(productizationNav);

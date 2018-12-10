@@ -31,7 +31,7 @@ if(customSettings && customSettings.api && customSettings.api !== ''){
 }
 
 //set the key
-var myKey = "9b96ba56ce934ded56c3f21ac9bdaddc8ba4782b7753cf07576bfabcace8632eba1749ff1187239ef1f56dd74377aa1e5d0a1113de2ed18368af4b808ad245bc7da986e101caddb7b75992b14d6a866db884ea8aee5ab02786886ecf9f25e974";
+var myKey = "3d90163cf9d6b3076ad26aa5ed58556348069258e5c6c941ee0f18448b570ad1c5c790e2d2a1989680c55f4904e2005ff5f8e71606e4aa641e67882f4210ebbc5460ff305dcb36e6ec2a2299cf0448ef60b9e38f41950ec251c1cf41f05f3ce9";
 if(customSettings && customSettings.key && customSettings.key !== ''){
 	myKey = customSettings.key;
 }
@@ -67,8 +67,7 @@ var modules = {
 		"dashboard": {
 			productization: 'modules/dashboard/productization/install.js',
 			multitenancy: 'modules/dashboard/multitenancy/install.js',
-			members: 'modules/dashboard/members/install.js',
-			settings: 'modules/dashboard/settings/install.js'
+			members: 'modules/dashboard/members/install.js'
 		}
 	},
 	"deploy": {

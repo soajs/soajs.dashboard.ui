@@ -165,8 +165,47 @@ var tenantConfig = {
 					'required': true
 				},
 				{
-					'name': 'oauthType',
+					'name': 'type',
 					'label': translation.oAuthType[LANG],
+					'type': 'radio',
+					'value': [
+						{
+							'v': 2,
+							'l': 'oAuth 2.0'
+						},
+						{
+							'v': 0,
+							'l': 'oAuth 0'
+						}
+					],
+					'required': true,
+					'onAction': function (id, selected, form) {
+						if (selected === "2" && !form.entries[3]){
+							form.entries[3] = {
+								'name': 'loginMode',
+								'label': translation.oAuthUserType[LANG],
+								'type': 'radio',
+								'value': [
+									{
+										'v': 'urac',
+										'l': 'Client to server authentication (URAC)'
+									},
+									{
+										'v': 'miniurac',
+										'l': 'Server to server authentication (miniURAC)'
+									}
+								],
+								'required': true,
+							}
+						}
+						else if(selected === "0" && form.entries[3]){
+							form.entries.splice(3, 1);
+						}
+					}
+				},
+				{
+					'name': 'loginMode',
+					'label': translation.oAuthUserType[LANG],
 					'type': 'radio',
 					'value': [
 						{
@@ -179,7 +218,7 @@ var tenantConfig = {
 						}
 					],
 					'required': true,
-				},
+				}
 			]
 		},
 		'tenantAdd': {
@@ -234,7 +273,7 @@ var tenantConfig = {
 					'label': translation.dashboardPackage[LANG],
 					'type': 'select',
 					'tooltip': translation.formDashboardPackagePlaceHolder[LANG],
-					'required': false,
+					'required': true,
 					'fieldMsg': translation.formDashboardPackageToolTip[LANG]
 				},
 				{
@@ -455,26 +494,6 @@ var tenantConfig = {
 							]
 						},
 						{
-							"name": "oauthTab",
-							"label": "oAuth",
-							"description": {
-								"type": "info",
-								"content":  "<p>Enable or Disable oAuth Security for this key in this environment.</p>" +
-											"<hr /><p>If you are not familiar with how oAuth Security works, <a href='https://soajsorg.atlassian.net/wiki/spaces/OAUT/overview' target='_blank'>Click Here</a></p>"
-							},
-							"entries": [
-								{
-									'name': 'disableOauth',
-									'label': "Disable oAuth",
-									'type': 'buttonSlider',
-									"value": false,
-									'required': true,
-									'tooltip': "Enable/Disable oAuth security for this key in this environment"
-								}
-							]
-							
-						},
-						{
 							"name": "imfvTab",
 							"label": "IMFV",
 							"description": {
@@ -592,7 +611,8 @@ var tenantConfig = {
 			'list': ['dashboard', '/services/list', 'post']
 		},
 		'product': {
-			'list': ['dashboard', '/product/list', 'get']
+			'list': ['dashboard', '/product/list', 'get'],
+			'listConsoleProducts' :['dashboard', '/console/product/list', 'get'],
 		},
 		'environment': {
 			'list': ['dashboard', '/environment/list', 'get']
@@ -602,6 +622,7 @@ var tenantConfig = {
 			'delete': ['dashboard', '/tenant/delete', 'delete'],
 			'update': ['dashboard', '/tenant/update', 'put'],
 			'list': ['dashboard', '/tenant/list', 'get'],
+			'listConsoleTenants': ['dashboard', 'console/tenant/list', 'get'],
 			'oauth': {
 				'list': ['dashboard', '/tenant/oauth/list', 'get'],
 				'update': ['dashboard', '/tenant/oauth/update', 'put'],

@@ -21,6 +21,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			if (env){
 				if (env.services && env.services.config && env.services.config.ports && env.services.config.ports.controller){
 					$scope.controllerPort = env.services.config.ports.controller;
+					$scope.SRVPORT = env.services.config.ports.controller + env.services.config.ports.maintenanceInc;
 				}
 				if (env.deployer && env.deployer.type === 'manual' && env.deployer.manual && env.deployer.manual.nodes){
 					$scope.SRVIP = env.deployer.manual.nodes;

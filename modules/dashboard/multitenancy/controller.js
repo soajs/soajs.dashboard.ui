@@ -604,10 +604,12 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'action': function (formData) {
 						var postData = {
 							'secret': formData.secret,
-							'oauthType': formData.loginMode,
 							'availableEnv': $scope.availableEnv,
 							'type': parseInt(formData.type)
 						};
+						if (formData.loginMode){
+							postData.oauthType = formData.loginMode;
+						}
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
 							"routeName": "/dashboard/tenant/oauth/update",

@@ -124,7 +124,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 		}
 		function extractMaintenanceInfo(maintenance){
 			let mainArray = [];
-			if (maintenance.readiness && maintenance.readiness === "/heartbeat"){
+			if (maintenance && maintenance.readiness && maintenance.readiness === "/heartbeat"){
 				mainArray.push({
 					icon: iconsAllowed.heartbeat,
 					title: translation.executeHeartbeatOperation[LANG],

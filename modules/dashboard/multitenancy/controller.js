@@ -607,7 +607,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'availableEnv': $scope.availableEnv,
 							'type': parseInt(formData.type)
 						};
-						if (formData.loginMode){
+						if (formData.loginMode && typeof formData.loginMode === "string"){
 							postData.oauthType = formData.loginMode;
 						}
 						getSendDataFromServer($scope, ngDataApi, {

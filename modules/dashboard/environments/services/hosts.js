@@ -127,7 +127,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				return [];
 			}
 			let mainArray = [];
-			if (readiness && maintenance.readiness === "/heartbeat"){
+			if (maintenance.readiness === "/heartbeat"){
 				mainArray.push({
 					icon: iconsAllowed.heartbeat,
 					title: translation.executeHeartbeatOperation[LANG],

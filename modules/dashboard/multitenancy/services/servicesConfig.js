@@ -486,31 +486,33 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 					
 					//reshape apisList based on methods
 					let contractSchema = {};
-					response.records[x].apisList.forEach((oneAPI) => {
-						if (!contractSchema[oneAPI.m]) {
-							contractSchema[oneAPI.m] = [];
-						}
-						contractSchema[oneAPI.m].push(oneAPI);
-					});
-					
-					response.records[x].apisList = contractSchema;
-					delete response.records[x].versions;
-					
-					//remove apis that tenant has no access to
-					for (let method in response.records[x].apisList) {
-						for (let i = response.records[x].apisList[method].length - 1; i >= 0; i--) {
-							let oneAPI = response.records[x].apisList[method][i];
-							let aclClone = {};
-							aclClone[env] = angular.copy(acl[env]);
-							checkApiHasAccess(aclClone, response.records[x].name, oneAPI.v, method, null, (access) => {
-								if (!access) {
-									response.records[x].apisList[method].splice(i, 1);
-								}
-							});
-						}
+					if(response.records[x].apisList) {
+						response.records[x].apisList.forEach((oneAPI) => {
+							if (!contractSchema[oneAPI.m]) {
+								contractSchema[oneAPI.m] = [];
+							}
+							contractSchema[oneAPI.m].push(oneAPI);
+						});
 						
-						if(response.records[x].apisList[method].length === 0){
-							delete response.records[x].apisList[method];
+						response.records[x].apisList = contractSchema;
+						delete response.records[x].versions;
+						
+						//remove apis that tenant has no access to
+						for (let method in response.records[x].apisList) {
+							for (let i = response.records[x].apisList[method].length - 1; i >= 0; i--) {
+								let oneAPI = response.records[x].apisList[method][i];
+								let aclClone = {};
+								aclClone[env] = angular.copy(acl[env]);
+								checkApiHasAccess(aclClone, response.records[x].name, oneAPI.v, method, null, (access) => {
+									if (!access) {
+										response.records[x].apisList[method].splice(i, 1);
+									}
+								});
+							}
+							
+							if (response.records[x].apisList[method].length === 0) {
+								delete response.records[x].apisList[method];
+							}
 						}
 					}
 				}

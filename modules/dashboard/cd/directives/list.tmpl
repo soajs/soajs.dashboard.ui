@@ -14,8 +14,8 @@
 				</a>
 			</div>
 			<div ng-repeat="(oneSrv, cdData) in configuration" class="entryBox customEntryBox">
-				<div class="header opened">{{oneSrv}}</div>
-
+				<div class="header opened" ng-if="!cdData.full_name">{{oneSrv}}</div>
+				<div class="header opened" ng-if="cdData.full_name">{{cdData.full_name}}: {{oneSrv}}</div>
 				<div class="body">
 					<div class="entryAction">
 						<a href="" ng-click="cdShowHide(oneSrv)">
@@ -31,7 +31,7 @@
 							</p>
 							<div>
 								<div class="halfPage branchLabel">
-									<label>Branch:</label>&nbsp;{{cdData.branch}}
+									<label>Branch: {{cdData.branch}}</label>&nbsp;
 								</div>
 								<div class="halfPage">
 									<label>Strategy:</label>&nbsp;
@@ -51,7 +51,8 @@
 								<td>
 									<fieldset>
 										<legend class="font-14">
-											<label class="version">Version:</label>&nbsp;{{version}}
+											<label class="version"> Version: </label>&nbsp;
+											<span class = "f-right"> {{version}} </span>
 										</legend>
 										<div ng-show="cdData.versions[version]">
 											<p>
@@ -61,7 +62,8 @@
 											<div ng-show="cdData.type ==='daemon'">
 												<div class="c-both w100" ng-repeat="(groupName, versionInfo) in versionInfo">
 													<div class="thirdPage  branchLabel">
-														<label class="">Daemon Group:</label>&nbsp;{{groupName}}
+														<label class="">Daemon Group: {{groupName}}</label>&nbsp;
+														
 													</div>
 													<div class="thirdPage  branchLabel">
 														<label class="">Branch:</label>&nbsp;{{versionInfo.branch}}

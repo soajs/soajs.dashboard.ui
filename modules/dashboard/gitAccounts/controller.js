@@ -453,8 +453,6 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
 				}, function (error, response) {
 					overlayLoading.hide();
 					if (error) {
-						$scope.modalInstance.dismiss('cancel');
-						$scope.form.formData = {};
 						var outerScope = $scope;
 						var errorDisplay = $modal.open({
 							templateUrl: 'errorDisplay.tmpl',
@@ -523,10 +521,12 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
 			                            });
 		                            }
 		                            if (!active){
+		                            	delete  account.repos[j].git;
 			                            account.repos[j].status = '';
 		                            }
 	                            }
 	                            else {
+		                            delete  account.repos[j].git;
 		                            account.repos[j].status = '';
 	                            }
                             }

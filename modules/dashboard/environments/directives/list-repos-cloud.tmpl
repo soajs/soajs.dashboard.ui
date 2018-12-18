@@ -26,8 +26,11 @@
 			</div>
 			<div class="entryBoxes">
 				<div ng-repeat="repo in account.repos| filter: searchKeyword" class="entryBox pl0" ng-style="{'width': '99%'}">
-					<div class="header opened">
+					<div ng-if = "!repo.full_name" class="header opened">
 						{{repo.name}}
+					</div>
+					<div class="header opened" ng-if = "repo.full_name">
+						{{repo.full_name}}
 					</div>
 					<div class="body">
 						<accordion close-others="true" ng-if="repo.servicesList && repo.servicesList.length > 0">

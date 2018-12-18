@@ -67,6 +67,14 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 										$scope.configuration[service].versions[i] = {};
 										for (var groupName in $scope.configuration[service][i]) {
 											$scope.configuration[service].versions[i][groupName] = angular.copy($scope.configuration[service][i][groupName]);
+											if ($scope.configuration[service].versions[i][groupName]
+												&& $scope.configuration[service].versions[i][groupName].options
+												&& $scope.configuration[service].versions[i][groupName].options.gitSource
+												&& $scope.configuration[service].versions[i][groupName].options.gitSource.owner
+												&& $scope.configuration[service].versions[i][groupName].options.gitSource.repo) {
+												$scope.configuration[service].full_name = angular.copy($scope.configuration[service][i][groupName].options.gitSource.owner) + "/" + angular.copy($scope.configuration[service][i][groupName].options.gitSource.repo);
+											}
+											
 											delete $scope.configuration[service].versions[i].branch;
 										}
 										delete $scope.configuration[service][i];
@@ -79,6 +87,15 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 									
 									if (['type', 'branch', 'strategy', 'versions', 'icon', 'deploy', 'options', 'status'].indexOf(i) === -1) {
 										$scope.configuration[service].versions[i] = angular.copy($scope.configuration[service][i]);
+										
+										if ($scope.configuration[service][i].options
+											&& $scope.configuration[service][i].options.gitSource
+											&& $scope.configuration[service][i].options.gitSource.owner
+											&& $scope.configuration[service][i].options.gitSource.repo) {
+											$scope.configuration[service].full_name = angular.copy($scope.configuration[service][i].options.gitSource.owner) + "/" + angular.copy($scope.configuration[service][i].options.gitSource.repo);
+										}
+										console.log("34534354534")
+										console.log($scope.configuration[service].full_name)
 										delete $scope.configuration[service][i];
 									}
 								}

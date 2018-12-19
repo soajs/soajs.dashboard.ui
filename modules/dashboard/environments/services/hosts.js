@@ -412,18 +412,28 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 		showDialogBox(currentScope, env, oneHost.name, oneHost.version, 'reloadDaemonConf');
 	}
 	
-	function showDialogBox(currentScope, env, serviceName, serviceVersion, operation){
+	function showDialogBox(currentScope, env, serviceName, serviceVersion, operation, port){
 		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
-			'method': 'get',
-			'routeName': '/dashboard/hosts/maintenance',
-			"params": {
-				"env": currentScope.envCode,
-				"serviceName": serviceName,
-				"serviceVersion": parseInt(serviceVersion),
-				"operation": operation
+		let optionData = {
+				'method': 'get',
+				'routeName': '/dashboard/hosts/maintenance',
+				"params": {
+					"env": currentScope.envCode,
+					"serviceName": serviceName,
+					"serviceVersion": parseInt(serviceVersion),
+					"operation": operation
+					
+				}
+			};
+		if (port){
+			if (port.type){
+				optionData.params.portType = port.type;
 			}
-		}, function (error, response) {
+			if (port.type === "custom" && port.value){
+				optionData.params.portValue = port.value;
+			}
+		}
+		getSendDataFromServer(currentScope, ngDataApi, optionData, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert('danger', error.message);

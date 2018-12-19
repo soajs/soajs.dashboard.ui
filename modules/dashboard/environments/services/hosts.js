@@ -132,7 +132,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 					icon: iconsAllowed.heartbeat,
 					title: translation.executeHeartbeatOperation[LANG],
 					action: function (envCode, oneIp){
-						showDialogBox (currentScope, envCode, oneIp.name, oneIp.version, maintenance.readiness.replace(/\//, ""));
+						showDialogBox (currentScope, envCode, oneIp.name, oneIp.version, maintenance.readiness.replace(/\//, ""), maintenance.port);
 					}
 				});
 			}
@@ -144,7 +144,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 								icon: iconsAllowed[onCom.icon],
 								title: onCom.label,
 								action: function (envCode, oneIp){
-									showDialogBox (currentScope, envCode, oneIp.name, oneIp.version, onCom.path.replace(/\//, ""));
+									showDialogBox (currentScope, envCode, oneIp.name, oneIp.version, onCom.path.replace(/\//, "", maintenance.port));
 								}
 							});
 						}
@@ -425,6 +425,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 					
 				}
 			};
+		console.log()
 		if (port){
 			if (port.type){
 				optionData.params.portType = port.type;

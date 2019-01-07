@@ -88,6 +88,20 @@
 			</div>
 		</fieldset>
 		
+		<fieldset ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.allowExposeServicePort">
+			<legend>Service
+				Ports<label class="switch"><input type="checkbox" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.exposeServicePort"><span class="buttonSlider round"></span></label>
+			</legend>
+			<label ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.exposeServicePort">Value</label>
+			<input ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.exposeServicePort" type="number" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.exposeServicePortValue" ng-disabled="false" min="1" max="2767" ng-required="true"/>
+			<label class="fieldMsg">This recipe allows Service ports to be exposed only.
+				Enter a value if you want to expose this resource to a specific port; Port values are limited to a range
+				between 0 and 2767.
+				The following port(s) will be exposed internally.
+			</label>
+			<br/><br/>
+		</fieldset>
+		
 		<fieldset class="repos" ng-if="secrets && secretsAllowed !=='none'">
 			<legend>Secret</legend>
 			<div>
@@ -113,6 +127,7 @@
 				</fieldset>
 			</div>
 		</fieldset>
+		
 		<fieldset>
 			<legend>Environment Scaling</legend>
 			<div>

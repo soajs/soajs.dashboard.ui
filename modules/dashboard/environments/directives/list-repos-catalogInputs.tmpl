@@ -51,8 +51,23 @@
 </div>
 
 <div ng-repeat="(userInputName,userInput) in cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom">
-	<label>{{userInput.label || userInput.name}}</label>
-	<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName]" value="{{userInput.value}}" ng-required="userInput.required"/>
-	<div class="fieldMsg hint">{{userInput.fieldMsg}}</div>
-	<br />
+	<div ng-if="userInput.type ==='userInput'">
+		<label>{{userInput.label || userInput.name}}</label>
+		<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName]" value="{{userInput.value}}" ng-required="userInput.required"/>
+		<div class="fieldMsg hint">{{userInput.fieldMsg}}</div>
+		<br />
+	</div>
+	<div ng-if="userInput.type ==='secret'">
+		<fieldset>
+			<legend>{{userInput.name}}</legend>
+			<label>{{userInput.fields[0].label || userInput.fields[0].name}}</label>
+			<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName].secret" ng-value="userInput.fields[0].value" ng-required="userInput.fields[0].required"/>
+			<div class="fieldMsg hint">{{userInput.fields[0].fieldMsg}}</div>
+			
+			<label>{{userInput.fields[1].label || userInput.fields[1].name}}</label>
+			<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName].key" ng-value="userInput.fields[1].value" ng-required="userInput.fields[1].required"/>
+			<div class="fieldMsg hint">{{userInput.fields[1].fieldMsg}}</div>
+			<br />
+		</fieldset>
+	</div>
 </div>

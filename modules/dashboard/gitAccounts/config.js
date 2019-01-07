@@ -193,6 +193,12 @@ var gitAccountsAppConfig = {
 					'collapsed': true
 				},
 				{
+					'name': 'customEnvs',
+					'label': 'Custom Environment Variables',
+					'type': 'accordion',
+					'entries': []
+				},
+				{
 					'name': 'envs',
 					'label': 'Other Environment Variables',
 					'type': 'accordion',

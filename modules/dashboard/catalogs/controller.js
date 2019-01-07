@@ -86,6 +86,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			case 'static':
 				tmp = angular.copy(catalogAppConfig.form.staticVar);
 				break;
+			case 'secret':
+				tmp = angular.copy(catalogAppConfig.form.secretVar);
+				tmp.entries.forEach(function (oneEntry) {
+					oneEntry.name += counter;
+				});
+				break;
 			case 'userInput':
 				tmp = angular.copy(catalogAppConfig.form.userInputVar);
 				tmp.entries.forEach(function (oneEntry) {
@@ -1233,7 +1239,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								if (form.entries[7].tabs[1].entries[i].name === 'envVarGroup' + count) {
 									//remove from formData
 									for (var fieldname in form.formData) {
-										if (['envVarName' + count, 'envVarType' + count, 'computedVar' + count, 'staticVar' + count, 'userInputLabel' + count, 'userInputDefault' + count, 'userInputFieldMsg' + count].indexOf(fieldname) !== -1) {
+										if (['envVarName' + count, 'envVarType' + count, 'computedVar' + count, 'staticVar' + count, 'userInputLabel' + count, 'userInputDefault' + count, 'secretName'+ count, 'secretKey'+ count, 'userInputFieldMsg' + count].indexOf(fieldname) !== -1) {
 											delete form.formData[fieldname];
 										}
 									}
@@ -1536,9 +1542,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				condition: (data.recipe.deployOptions.restartPolicy) ? data.recipe.deployOptions.restartPolicy.condition : '',
 				maxAttempts: (data.recipe.deployOptions.restartPolicy) ? data.recipe.deployOptions.restartPolicy.maxAttempts : '',
 				network: data.recipe.deployOptions.container.network,
-				workingDir: data.recipe.deployOptions.container.workingDir
+				workingDir: data.recipe.deployOptions.container.workingDir,
+				allowExposeServicePort: data.recipe.deployOptions.allowExposeServicePort || false,
 			};
-
+			
 			if (data.recipe.buildOptions.cmd
 				&& data.recipe.buildOptions.cmd.deploy
 				&& data.recipe.buildOptions.cmd.deploy.command) {
@@ -1723,6 +1730,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								output['userInputDefault' + envCounter] = data.recipe.buildOptions.env[oneVar].default;
 								output['userInputFieldMsg' + envCounter] = data.recipe.buildOptions.env[oneVar].fieldMsg;
 								break;
+							case 'secret':
+								output['secretName' + envCounter] = data.recipe.buildOptions.env[oneVar].secret;
+								output['secretKey' + envCounter] = data.recipe.buildOptions.env[oneVar].key;
+								break;
 						}
 						modalScope.addNewEnvVar();
 						//counter got incremented in method above, refill data starting from 0 instead of 1
@@ -1851,7 +1862,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					"container": {
 						"network": formData.network,
 						"workingDir": formData.workingDir
-					}
+					},
+					"allowExposeServicePort": formData.allowExposeServicePort
 				},
 				buildOptions: {
 					"env": {}
@@ -2037,6 +2049,14 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						apiData.recipe.buildOptions.env[formData['envVarName' + i]].label = formData['userInputLabel' + i];
 						apiData.recipe.buildOptions.env[formData['envVarName' + i]].default = formData['userInputDefault' + i];
 						apiData.recipe.buildOptions.env[formData['envVarName' + i]].fieldMsg = formData['userInputFieldMsg' + i];
+						break;
+					case 'secret':
+						if (formData['secretName' + i]){
+							apiData.recipe.buildOptions.env[formData['envVarName' + i]].secret = formData['secretName' + i];
+						}
+						if (formData['secretKey' + i]){
+							apiData.recipe.buildOptions.env[formData['envVarName' + i]].key = formData['secretKey' + i];
+						}
 						break;
 				}
 				//nothing to push

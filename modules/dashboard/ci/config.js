@@ -20,9 +20,46 @@ var ciAppConfig = {
 						'value': '',
 						'required': true,
 						'fieldMsg': "Enter the GIT Token Value"
+					},
+					{
+						'type': 'html',
+						'value': "<input type='button' value='Add Custom Environment Variable' class='btn btn-sm btn-success f-right'/>",
+						'name': 'addCustomEnvVariables'
 					}
 				]
 			},
+			customEnv: [
+				{
+					'type': 'html',
+					'name': 'hr',
+					'value': '<hr>'
+				},
+				{
+					'name': 'labelName',
+					'label': 'Name',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the name of the Environment Variable',
+					'fieldMsg': 'Enter the name of the Environment Variable',
+					'placeholder': "name"
+				},
+				{
+					'name': 'labelValue',
+					'label': 'Value',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the value of the Environment Variable',
+					'fieldMsg': 'Enter the value of the Environment Variable',
+					'placeholder': "value"
+				},
+				{
+					'type': 'html',
+					'name': 'rLabel',
+					'value': '<span class="icon icon-cross f-right"></span>'
+				}
+			],
 			drone: {
 				entries: [
 					{

@@ -298,8 +298,15 @@ var catalogAppConfig = {
 						'entries': [
 							{
 								'type': 'html',
-								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Expose New Port'/>",
+								'value': "<input type='button' class='btn btn-sm btn-success f-right exposeNewPort' value='Expose New Port'/>",
 								'name': 'addPort'
+							},
+							{
+								'name': 'allowExposeServicePort',
+								'label': 'Allow Exposing Service Port',
+								'type': 'buttonSlider',
+								"value": false,
+								'tooltip': "Enable/Disable exposing service port to the outside"
 							}
 						]
 					},
@@ -400,6 +407,7 @@ var catalogAppConfig = {
 					'value': [
 						{'v': 'computed', 'l': "Computed", 'selected': true},
 						{'v': 'static', 'l': "Static"},
+						{'v': 'secret', 'l': "Secret"},
 						{'v': 'userInput', 'l': "User Input"}
 					],
 					'required': true,
@@ -470,7 +478,36 @@ var catalogAppConfig = {
 			'tooltip': 'Select which entry this variable should be mapped to.',
 			'fieldMsg': 'Select which entry this variable should be mapped to.'
 		},
-
+		
+		secretVar: {
+			'type': 'group',
+			'name': 'secretVar',
+			'label': 'Secret Variable Options',
+			'icon': 'minus',
+			'entries': [
+				{
+					'name': 'secretName',
+					'label': 'Default Secret Variable Name',
+					'type': 'text',
+					'value': '',
+					'required': false,
+					'tooltip': 'Enter the default secret name for your environment variable',
+					'fieldMsg': 'Enter the default secret name for your environment variable',
+					"placeholder": "secret"
+				},
+				{
+					'name': 'secretKey',
+					'label': 'Secret Variable Key',
+					'type': 'text',
+					'value': '',
+					'required': false,
+					'tooltip': 'Enter a default secret key your environment variable',
+					'fieldMsg': 'Enter a default secret key of your environment variable',
+					"placeholder": "key"
+				}
+			]
+		},
+		
 		staticVar: {
 			'name': 'staticVar',
 			'label': 'Static Variable Value',

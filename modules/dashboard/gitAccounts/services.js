@@ -176,16 +176,31 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 									'type': 'text'
 								});
 							}
-							
 							formConfig.entries[1].entries.push({
 								"type": "html",
 								"value": "<br /><p><em>Once you submit this form, the above SOAJS environment variables will be added to your repository configuration.</em></p>"
 							});
+							if (oneProvider.customeVariables && Object.keys(oneProvider.customeVariables).length > 0){
+								for (var oneVar in oneProvider.customeVariables) {
+									formConfig.entries[2].entries.push({
+										'name': oneVar,
+										'label': oneVar,
+										'value': oneProvider.customeVariables[oneVar],
+										'disabled': true,
+										'type': 'text'
+									});
+								}
+							}
+							
+							formConfig.entries[2].entries.push({
+								"type": "html",
+								"value": "<br /><p><em>Once you submit this form, the above custom environment variables will be added to your repository configuration.</em></p>"
+							});
 							
 							var count = 0;
-							formConfig.entries[2].entries = [];
+							formConfig.entries[3].entries = [];
 							customEnvs.forEach(function (enVar) {
-								if (!oneProvider.variables[enVar.name]) {
+								if (!oneProvider.variables[enVar.name] && !oneProvider.customeVariables[enVar.name]) {
 									var oneClone = angular.copy(config.form.envVar);
 									for (var i = 0; i < oneClone.length; i++) {
 										oneClone[i].name = oneClone[i].name.replace("%count%", count);
@@ -217,7 +232,7 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 											}
 										}
 									}
-									formConfig.entries[2].entries = formConfig.entries[2].entries.concat(oneClone);
+									formConfig.entries[3].entries = formConfig.entries[3].entries.concat(oneClone);
 									count++;
 								}
 							});
@@ -236,7 +251,7 @@ repoService.service('repoSrv', ['ngDataApi', '$timeout', '$modal', '$cookies', '
 									for (var i = 0; i < oneClone.length; i++) {
 										oneClone[i].name = oneClone[i].name.replace("%count%", count);
 									}
-									form.entries[2].entries = form.entries[2].entries.concat(oneClone);
+									form.entries[3].entries = form.entries[3].entries.concat(oneClone);
 									count++;
 								}
 							});

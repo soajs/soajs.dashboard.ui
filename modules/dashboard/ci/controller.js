@@ -111,7 +111,86 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				formConfig.entries[0].value = '';
 				break;
 		}
-
+		let envCounter = 0;
+		if (provider.variables && provider.variables.length > 0){
+			formConfig.entries.push({
+				'type': 'html',
+				'value': "<h4>Environment Variables</h4>",
+				'name': 'addCustomEnvVariables'
+			});
+			provider.variables.forEach((oneVariable)=>{
+				let oneEnv = angular.copy(ciAppConfig.form.f1.customEnv);
+				oneEnv[0].name += envCounter;
+				oneEnv[1].name += envCounter;
+				oneEnv[1].value = oneVariable.name;
+				oneEnv[2].name += envCounter;
+				oneEnv[2].value = oneVariable.value;
+				oneEnv[2].disabled = true;
+				oneEnv[3].name += envCounter;
+				formConfig.entries = formConfig.entries.concat(oneEnv);
+				envCounter++;
+				oneEnv[3].onAction= function (id, value, form){
+					var count = parseInt(id.replace('rLabel', ''));
+					for (let i = form.entries.length - 1; i >= 0; i--) {
+						if (form.entries[i].name === 'labelName' + count
+							|| form.entries[i].name === 'labelValue' + count
+							|| form.entries[i].name === 'rLabel' + count
+							|| form.entries[i].name === 'hr' + count) {
+							//remove from formData
+							for (var fieldname in form.formData) {
+								if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+									delete form.formData[fieldname];
+								}
+							}
+							//remove from formEntries
+							form.entries.splice(i, 1);
+						}
+					}
+					if(form.entries.length === 4){
+						form.entries.pop();
+					}
+				};
+			});
+		}
+		formConfig.entries[2].onAction = function (id, value, formData){
+			let customEnv = angular.copy(ciAppConfig.form.f1.customEnv);
+			customEnv[0].name += envCounter;
+			customEnv[1].name += envCounter;
+			customEnv[2].name += envCounter;
+			customEnv[3].name += envCounter;
+			if(formData.entries.length === 3){
+				formData.entries.push({
+					'type': 'html',
+					'value': "<h4>Environment Variables</h4>",
+					'name': 'addCustomEnvVariables'
+				});
+			}
+			formData.entries = formData.entries.concat(customEnv);
+			envCounter++;
+			customEnv[3].onAction= function (id, value, form){
+				var count = parseInt(id.replace('rLabel', ''));
+				for (let i = form.entries.length - 1; i >= 0; i--) {
+					if (form.entries[i].name === 'labelName' + count
+						|| form.entries[i].name === 'labelValue' + count
+						|| form.entries[i].name === 'rLabel' + count
+						|| form.entries[i].name === 'hr' + count) {
+						//remove from formData
+						for (var fieldname in form.formData) {
+							if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+								delete form.formData[fieldname];
+							}
+						}
+						//remove from formEntries
+						form.entries.splice(i, 1);
+					}
+				}
+				if(formData.entries.length === 4){
+					formData.entries.pop();
+				}
+			};
+			
+			
+		};
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -127,9 +206,19 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							"domain": formData.domain,
 							"gitToken": formData.gitToken,
 							"owner": owner,
-							"provider": provider.provider
+							"provider": provider.provider,
+							"variables": []
 						};
-
+						let count = 0;
+						for (var fieldname in formData) {
+							if (['labelName' + count].indexOf(fieldname) !== -1) {
+								data.variables.push({
+									name : formData['labelName' + count],
+									value : formData['labelValue' + count]
+								});
+								count++;
+							}
+						}
 						if(formData.version){
 							if(Array.isArray(formData.version)){
 								data.version = formData.version[0];
@@ -180,10 +269,9 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 		};
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.updateAccount = function(provider){
 		var formConfig;
-
 		switch(provider.provider){
 			case 'travis':
 				formConfig = angular.copy(ciAppConfig.form.f1.travis);
@@ -194,7 +282,84 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 				formConfig.entries[0].value = '';
 				break;
 		}
-
+		let envCounter = 0;
+		if (provider.variables && provider.variables.length > 0){
+			formConfig.entries.push({
+				'type': 'html',
+				'value': "<h4>Environment Variables</h4>",
+				'name': 'addCustomEnvVariables'
+			});
+			provider.variables.forEach((oneVariable)=>{
+				let oneEnv = angular.copy(ciAppConfig.form.f1.customEnv);
+				oneEnv[0].name += envCounter;
+				oneEnv[1].name += envCounter;
+				oneEnv[1].value = oneVariable.name;
+				oneEnv[2].name += envCounter;
+				oneEnv[2].value = oneVariable.value;
+				oneEnv[2].disabled = true;
+				oneEnv[3].name += envCounter;
+				formConfig.entries = formConfig.entries.concat(oneEnv);
+				envCounter++;
+				oneEnv[3].onAction= function (id, value, form){
+					var count = parseInt(id.replace('rLabel', ''));
+					for (let i = form.entries.length - 1; i >= 0; i--) {
+						if (form.entries[i].name === 'labelName' + count
+							|| form.entries[i].name === 'labelValue' + count
+							|| form.entries[i].name === 'rLabel' + count
+							|| form.entries[i].name === 'hr' + count) {
+							//remove from formData
+							for (var fieldname in form.formData) {
+								if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+									delete form.formData[fieldname];
+								}
+							}
+							//remove from formEntries
+							form.entries.splice(i, 1);
+						}
+					}
+					if(form.entries.length === 4){
+						form.entries.pop();
+					}
+				};
+			});
+		}
+		formConfig.entries[2].onAction = function (id, value, formData){
+			let customEnv = angular.copy(ciAppConfig.form.f1.customEnv);
+			customEnv[0].name += envCounter;
+			customEnv[1].name += envCounter;
+			customEnv[2].name += envCounter;
+			customEnv[3].name += envCounter;
+			if(formData.entries.length === 3){
+				formData.entries.push({
+					'type': 'html',
+					'value': "<h4>Environment Variables</h4>",
+					'name': 'addCustomEnvVariables'
+				});
+			}
+			formData.entries = formData.entries.concat(customEnv);
+			envCounter++;
+			customEnv[3].onAction= function (id, value, form){
+				var count = parseInt(id.replace('rLabel', ''));
+				for (let i = form.entries.length - 1; i >= 0; i--) {
+					if (form.entries[i].name === 'labelName' + count
+						|| form.entries[i].name === 'labelValue' + count
+						|| form.entries[i].name === 'rLabel' + count
+						|| form.entries[i].name === 'hr' + count) {
+						//remove from formData
+						for (var fieldname in form.formData) {
+							if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
+								delete form.formData[fieldname];
+							}
+						}
+						//remove from formEntries
+						form.entries.splice(i, 1);
+					}
+				}
+				if(formData.entries.length === 4){
+					formData.entries.pop();
+				}
+			};
+		};
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -212,9 +377,19 @@ ciApp.controller('ciAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 							"domain": formData.domain,
 							"gitToken": formData.gitToken,
 							"owner": provider.owner,
-							"provider": provider.provider
+							"provider": provider.provider,
+							"variables": []
 						};
-
+						let count = 0;
+						for (var fieldname in formData) {
+							if (['labelName' + count].indexOf(fieldname) !== -1) {
+								data.variables.push({
+									name : formData['labelName' + count],
+									value : formData['labelValue' + count]
+								});
+								count++;
+							}
+						}
 						if(formData.version){
 							if(Array.isArray(formData.version)){
 								data.version = formData.version[0];

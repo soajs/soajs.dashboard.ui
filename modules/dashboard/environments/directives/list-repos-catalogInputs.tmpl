@@ -61,9 +61,9 @@
 		<fieldset>
 			<legend>{{userInput.name}}</legend>
 			<label>{{userInput.fields[0].label || userInput.fields[0].name}}</label>
-			<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName].secret" ng-value="userInput.fields[0].value" ng-required="userInput.fields[0].required"/>
+			<select class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName].secret" ng-options="secret.name as secret.name for secret in userInput.fields[0].value" ng-required="userInput.fields[0].required">
+			</select>
 			<div class="fieldMsg hint">{{userInput.fields[0].fieldMsg}}</div>
-			
 			<label>{{userInput.fields[1].label || userInput.fields[1].name}}</label>
 			<input type="text" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[userInputName].key" ng-value="userInput.fields[1].value" ng-required="userInput.fields[1].required"/>
 			<div class="fieldMsg hint">{{userInput.fields[1].fieldMsg}}</div>

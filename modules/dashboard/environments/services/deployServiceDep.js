@@ -473,7 +473,14 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";
 								}
 							}
+							
 							if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'secret') {
+								let secrets = [];
+								$scope.secrets.forEach((oneSecret) => {
+									if (oneSecret.namespace === 'soajs') {
+										secrets.push(oneSecret);
+									}
+								});
 								let newCatalogInput = {
 									type: 'secret',
 									name: envVariable,
@@ -481,7 +488,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 										{
 											label: "Secret",
 											name: "secretName",
-											value: catalogRecipe.recipe.buildOptions.env[envVariable].secret || "",
+											value: secrets,
 											fieldMsg: "Enter the value of the secret",
 											required: true,
 										},
@@ -494,6 +501,11 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 										}
 									]
 								};
+								if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom.env
+									&& $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom.env[envVariable]
+									&&  $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom.env[envVariable].key){
+									newCatalogInput.fields[1].value = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom.env[envVariable].key;
+								}
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
 								if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
 									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = {

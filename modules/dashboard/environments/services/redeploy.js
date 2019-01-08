@@ -221,6 +221,51 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							formConfig.entries[0].entries.push(newInput);
 						}
 					}
+					for (var envVariableS in catalogRecipe.recipe.buildOptions.env) {
+						if (catalogRecipe.recipe.buildOptions.env[envVariableS].type === 'secret') {
+							var defaultValueS = catalogRecipe.recipe.buildOptions.env[envVariableS].default || '';
+							//todo: get value from service.env
+							service.env.forEach(function (oneEnv) {
+								if (oneEnv.indexOf(envVariable) !== -1) {
+									defaultValueS = oneEnv.split("=")[1];
+								}
+							});
+							//push a new input for this variable
+							let data = JSON.parse(defaultValueS);
+							let label = catalogRecipe.recipe.buildOptions.env[envVariableS].label || envVariableS;
+							var secretEnv = [
+								{
+									'type': 'html',
+									'name': 'hr' + envVariableS,
+									'value': '<hr>'
+								},
+								{
+									'type': 'html',
+									'name': 'name' + envVariableS,
+									'value': `<h4>${label}</h4>`
+								},
+								{
+									'name': '_cis_' + envVariableS,
+									'label': 'Secret',
+									'type': 'text',
+									'value': data.secretKeyRef.name,
+									'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
+									'required': false
+								},
+								{
+									'name': '_cik_' + envVariableS,
+									'label': 'Key',
+									'type': 'text',
+									'value': data.secretKeyRef.key,
+									'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
+									'required': false
+								}];
+							if (formConfig.entries[0].entries.length === 0){
+								secretEnv.shift();
+							}
+							formConfig.entries[0].entries = formConfig.entries[0].entries.concat(secretEnv);
+						}
+					}
 
 					checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
 						for (let i = formConfig.entries.length - 1; i >= 0; i--) {
@@ -881,13 +926,21 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 						params.custom.commit = t.commit.sha;
 					}
 				}
-
 				for (var input in formData) {
 					if (input.indexOf('_ci_') !== -1) {
 						if (!params.custom.env) {
 							params.custom.env = {};
 						}
 						params.custom.env[input.replace('_ci_', '')] = formData[input];
+					}
+					if (input.indexOf('_cis_') !== -1) {
+						if (!params.custom.env) {
+							params.custom.env = {};
+						}
+						params.custom.env[input.replace('_cis_', '')] = {
+							secret : formData[input],
+							key: formData[input.replace('_cis_', '_cik_')]
+						};
 					}
 				}
 

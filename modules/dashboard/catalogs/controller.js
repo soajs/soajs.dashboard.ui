@@ -228,8 +228,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	};
 
 	function proceedWithForm(currentScope, mainFormConfig, data, submitAction) {
-		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0;
-
+		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0
+		
+		if (["service"].indexOf(data.type) === -1){
+			mainFormConfig[5].tabs[6].entries.pop();
+		}
 		if (data.type !== 'server' && mainFormConfig[5].tabs[1].entries[2]) {
 			mainFormConfig[5].tabs[1].entries.pop();
 		}

@@ -368,19 +368,21 @@ function buildForm(context, modal, configuration, cb) {
 	context.form.refresh(false);
 
 	function assignListener(elementName) {
-		context.$watchCollection(elementName, function (newCol, oldCol) {
-			if (newCol && oldCol && newCol.length !== oldCol.length) {
-				context.form.refresh(true);
-			}
-
-			if (oldCol && oldCol.length > 0) {
-				for (var i = 0; i < oldCol.length; i++) {
-					if (oldCol[i].type === 'group') {
-						assignListener(elementName + '[' + i + "].entries");
+		if(context.$watchCollection){
+			context.$watchCollection(elementName, function (newCol, oldCol) {
+				if (newCol && oldCol && newCol.length !== oldCol.length) {
+					context.form.refresh(true);
+				}
+				
+				if (oldCol && oldCol.length > 0) {
+					for (var i = 0; i < oldCol.length; i++) {
+						if (oldCol[i].type === 'group') {
+							assignListener(elementName + '[' + i + "].entries");
+						}
 					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	assignListener('form.entries');

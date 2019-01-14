@@ -79,8 +79,12 @@ containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$
 	 */
 	function handleFormData(currentScope, formData) {
 		currentScope.containers.defaultAttachContainerAction = function(currentScope, postData){
-			
 			currentScope.wizard.selectedInfraProvider = postData.selectedInfraProvider;
+			if (currentScope.wizard.selectedInfraProvider
+				&& currentScope.wizard.selectedInfraProvider.deploy
+				&& currentScope.wizard.selectedInfraProvider.deploy.config) {
+				currentScope.wizard.selectedInfraProvider.deploy.config.namespace.default = currentScope.wizard.gi.code;
+			}
 			
 			let finalPostData = {
 				selectedDriver: 'container',

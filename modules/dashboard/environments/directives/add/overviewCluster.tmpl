@@ -56,7 +56,7 @@
 		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.deploy">
 			<p>Deploying on: <img ng-if="overview.data.deploy.selectedInfraProvider.image" ng-src="{{overview.data.deploy.selectedInfraProvider.image}}" alt="" height="18"/>&nbsp;{{overview.data.deploy.selectedInfraProvider.label}}</p><br />
 		</div>
-		<div ng-show="overview.data.deploy.selectedInfraProvider.name === 'local'" ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
+		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.name === 'local'" ng-include="'modules/dashboard/environments/infra/directives/platform-display-table.tmpl'"></div>
 		<div ng-show="!overview.data.deploy.previousEnvironment && overview.data.deploy.selectedInfraProvider.deploy.grid" ng-include="'modules/dashboard/environments/infra/directives/selectedInfraDeployment.tmpl'"></div>
 	</div>
 	<!--Manual-->

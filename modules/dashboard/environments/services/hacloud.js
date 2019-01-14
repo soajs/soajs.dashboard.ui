@@ -307,14 +307,33 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				currentScope.namespaces = [currentScope.namespaceConfig.defaultValue];
-				currentScope.namespaces = currentScope.namespaces.concat(response);
-
-				currentScope.namespaceConfig.namespace = currentScope.namespaceConfig.defaultValue.id; //setting current selected to 'All Namespaces'
-
-				if (cb && typeof(cb) === 'function') {
-					return cb();
-				}
+				getSendDataFromServer(currentScope, ngDataApi, {
+					"method": "get",
+					"routeName": "/dashboard/environment/list"
+				}, function (error, envList) {
+					if (error) {
+						currentScope.displayAlert('danger', error.message);
+					}
+					for (let i = response.length - 1; i >= 0; i--) {
+						envList.forEach((oneEnv) => {
+							let deployerInfo = oneEnv.deployer.selected.split(".");
+							if (oneEnv.deployer.selected.indexOf("container.kubernetes") !== -1) {
+								if (oneEnv.code.toLowerCase() !== currentScope.envCode.toLowerCase())
+								if (response[i] && response[i].name && response[i].name === oneEnv.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].namespace.default){
+									response.splice(i, 1);
+								}
+							}
+						});
+					}
+					currentScope.namespaces = [currentScope.namespaceConfig.defaultValue];
+					currentScope.namespaces = currentScope.namespaces.concat(response);
+					
+					currentScope.namespaceConfig.namespace = currentScope.namespaceConfig.defaultValue.id; //setting current selected to 'All Namespaces'
+					
+					if (cb && typeof(cb) === 'function') {
+						return cb();
+					}
+				});
 			}
 		});
 	}

@@ -73,22 +73,6 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			
 			if(currentScope.wizard){
 				postData.deployment = {
-					// 'selectedDriver': currentScope.containers.platform,
-					'previousEnvironment': currentScope.containers.form.formData.previousEnvironment
-				};
-				postData.selectedInfraProvider = {
-					_id: currentScope.containers.form.formData.selectedProvider._id,
-					name: currentScope.containers.form.formData.selectedProvider.name,
-					label: currentScope.containers.form.formData.selectedProvider.label
-				};
-				currentScope.containers.form.formData.selectedProvider.deployments.forEach((oneDeployment) => {
-					if(oneDeployment.environments.includes(currentScope.containers.form.formData.previousEnvironment.toUpperCase())){
-						postData.deployment.selectedDriver = oneDeployment.technology;
-					}
-				});
-			}
-			else{
-				postData.deployment = {
 					'selectedDriver': currentScope.containers.platform,
 					'previousEnvironment': currentScope.containers.previousEnvironment
 				};

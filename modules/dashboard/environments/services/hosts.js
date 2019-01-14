@@ -425,7 +425,6 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 					
 				}
 			};
-		console.log()
 		if (port){
 			if (port.type){
 				optionData.params.portType = port.type;

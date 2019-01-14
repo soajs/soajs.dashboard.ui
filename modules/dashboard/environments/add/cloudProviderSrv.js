@@ -91,7 +91,11 @@ cloudProviderServices.service('cloudProviderSrv', ['ngDataApi', '$timeout', '$mo
 			delete currentScope.wizard.deployment.technology;
 			$localStorage.addEnv = angular.copy(currentScope.wizard);
 		}
-		
+		if (currentScope.wizard.selectedInfraProvider
+			&& currentScope.wizard.selectedInfraProvider.deploy
+			&& currentScope.wizard.selectedInfraProvider.deploy.config){
+			currentScope.wizard.selectedInfraProvider.deploy.config.namespace.default = currentScope.wizard.gi.code;
+		}
 		let containerCheck = false, vmCheck = false;
 		currentScope.attach = true;
 		//mimic behavior as if environment has restriction

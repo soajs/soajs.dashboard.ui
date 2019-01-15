@@ -366,6 +366,22 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                                 }
                                             });
                                         }
+                                        if (response.noApi){
+	                                        let noSwaggerFile = $modal.open({
+		                                        templateUrl: 'noSwagger.tmpl',
+		                                        backdrop: true,
+		                                        keyboard: true,
+		                                        controller: function ($scope) {
+			                                        fixBackDrop();
+			
+			                                        $scope.title = translation.repoActivationSucceeded[LANG];
+			                                        $scope.error = translation.repoNoSwaggerFileDetected[LANG];
+			                                        $scope.ok = function () {
+				                                        noSwaggerFile.close();
+			                                        }
+		                                        }
+	                                        });
+                                        }
 			                            repo.configBranch = formData.branch;
                                         if ( ['service', 'daemon', 'mutli'].indexOf(repo.type) !== -1){
 	                                        repo.git = git;
@@ -462,7 +478,11 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
 								fixBackDrop();
 								
 								$scope.title = translation.repoActivationFailed[LANG];
+								
 								$scope.error = error.message;
+								if (error.code === 762){
+									$scope.error = "Detected Service Name / Port mismatch for branch " + branch + ". Make sure the branch has the same Service Name / Port."
+								}
 								if($scope.error.indexOf("Error[999]") === -1){
 									$scope.error += "<br>" + outerScope.referToDoc;
 								}
@@ -475,6 +495,22 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
 						repo.git = git;
 						$scope.displayAlert('success', translation.repoHasBeenActivated[LANG]);
 						repo.status = 'active';
+						if (response.noApi){
+							let noSwaggerFile = $modal.open({
+								templateUrl: 'noSwagger.tmpl',
+								backdrop: true,
+								keyboard: true,
+								controller: function ($scope) {
+									fixBackDrop();
+									
+									$scope.title = translation.repoActivationSucceeded[LANG];
+									$scope.error = translation.repoNoSwaggerFileDetected[LANG];
+									$scope.ok = function () {
+										noSwaggerFile.close();
+									}
+								}
+							});
+						}
 						if(response.type){
 							repo.type = response.type;
 						}

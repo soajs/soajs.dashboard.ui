@@ -182,7 +182,14 @@ var gaTranslation = {
         ENG: "Repository activation failed",
         FRA: "Repository activation failed"
     },
-
+	repoActivationSucceeded: {
+		ENG: "Repository activation Succeeded",
+		FRA: "Repository activation Succeeded"
+	},
+	repoNoSwaggerFileDetected: {
+		ENG: "Repository was activated successfully, but no swagger file was detected. ACL Authorization on the Api Level is not going to be available until a valid swagger file is added. Only ACL Authorization at the service level will be available.",
+		FRA: "Repository was activated successfully, but no swagger file was detected. ACL Authorization on the Api Level is not going to be available until a valid swagger file is added. Only ACL Authorization at the service level will be available.",
+	},
     repoHasBeenDeactivated: {
         ENG: "Repository has been deactivated",
         FRA: "Repository has been deactivated"

@@ -131,7 +131,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			};
 		}
 		//cdData was saved before, fill entries from arriving db of cdData
-		var cdData
+		var cdData;
 		if (currentScope.cdData[env.toUpperCase()][serviceName]) {
 			currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData = angular.copy(currentScope.cdData[env.toUpperCase()][serviceName]);
 			cdData = currentScope.cdConfiguration[serviceName][env.toUpperCase()].cdData;
@@ -477,7 +477,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 							if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'secret') {
 								let secrets = [];
 								$scope.secrets.forEach((oneSecret) => {
-									if (oneSecret.namespace === 'soajs') {
+									if (oneSecret.namespace === oneEnv.toLowerCase()) {
 										secrets.push(oneSecret);
 									}
 								});

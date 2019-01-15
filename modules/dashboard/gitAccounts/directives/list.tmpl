@@ -87,15 +87,15 @@
 										                <div class="header opened" style="border-bottom: unset" ng-class="{greenBoxHeader: branch.activate}">
 											                {{branch.name}}
 											                <div style="float: right;">
-												                <span ng-if="branch.active" style="margin-right: 30px;"><span class="icon icon-checkmark"></span>Active Branch</span>
+												                <span ng-if="branch.active" style="margin-right: 0px; margin-left: 0px "><span class="icon icon-checkmark"></span>Active Branch</span>
 												                <a href="" ng-if="access.activateBranch && !branch.active" ng-click="activateBranch(account, repo, branch.name)">
 													                <span class="icon icon-switch" tooltip="{{translation.activate[LANG]}} Branch"></span>
 												                </a>
-												                <a href="" ng-if="access.deactivateRepo && branch.active" ng-click="deactivateRepo(account._id, repo, branch.name)" ng-confirm-click="Are you sure you want to deactivate this branch?">
-													                <span class="icon icon-cross" tooltip="{{translation.deactivate[LANG]}} Branch"></span>
-												                </a>
 												                <a href="" ng-if="access.syncRepo && branch.active" ng-click="syncRepo(account, repo, branch.name)">
-													                <span class="icon icon-loop2" tooltip="{{translation.sync[LANG]}}"></span>
+													                <span class="icon icon-loop2" style="margin-right: 0px;margin-left: 0px" tooltip="{{translation.sync[LANG]}}"></span>
+												                </a>
+												                <a href="" ng-if="access.deactivateRepo && branch.active" ng-click="deactivateRepo(account._id, repo, branch.name)" ng-confirm-click="Are you sure you want to deactivate this branch?">
+													                <span class="icon icon-cross" style="margin-right: 0px;margin-left: 0px" tooltip="{{translation.deactivate[LANG]}} Branch"></span>
 												                </a>
 											                </div>
 										                </div>
@@ -156,6 +156,16 @@
     <div class="modal-footer">
         <button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
     </div>
+</script>
+
+<script type="text/ng-template" id="noSwagger.tmpl">
+	<div class="modal-body">
+		<h4>{{title}}</h4>
+		<alert type="danger" ng-bind-html="error"></alert>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
+	</div>
 </script>
 
 <script type="text/ng-template" id="syncSuccess.tmpl">

@@ -367,15 +367,19 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                                             });
                                         }
                                         if (response.noApi){
+	                                        var outerScope = $scope;
 	                                        let noSwaggerFile = $modal.open({
 		                                        templateUrl: 'noSwagger.tmpl',
 		                                        backdrop: true,
 		                                        keyboard: true,
 		                                        controller: function ($scope) {
 			                                        fixBackDrop();
-			
 			                                        $scope.title = translation.repoActivationSucceeded[LANG];
 			                                        $scope.error = translation.repoNoSwaggerFileDetected[LANG];
+			                                        if(response.reason && [983, 984, 985, 986].indexOf(response.reason) !== -1){
+				                                        $scope.error = "Your repository got turned on, you have a problem with the swagger file, you will not be able to browse and secure the API of this service"
+			                                        }
+			                                        $scope.error += "<br>" + outerScope.referToDoc;
 			                                        $scope.ok = function () {
 				                                        noSwaggerFile.close();
 			                                        }
@@ -496,15 +500,20 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
 						$scope.displayAlert('success', translation.repoHasBeenActivated[LANG]);
 						repo.status = 'active';
 						if (response.noApi){
+							var outerScope = $scope;
 							let noSwaggerFile = $modal.open({
 								templateUrl: 'noSwagger.tmpl',
 								backdrop: true,
 								keyboard: true,
 								controller: function ($scope) {
 									fixBackDrop();
-									
+								
 									$scope.title = translation.repoActivationSucceeded[LANG];
 									$scope.error = translation.repoNoSwaggerFileDetected[LANG];
+									if(response.reason && [983, 984, 985, 986].indexOf(response.reason) !== -1){
+										$scope.error = "Your repository got turned on, you have a problem with the swagger file, you will not be able to browse and secure the API of this service"
+									}
+									$scope.error += "<br>" + outerScope.referToDoc;
 									$scope.ok = function () {
 										noSwaggerFile.close();
 									}

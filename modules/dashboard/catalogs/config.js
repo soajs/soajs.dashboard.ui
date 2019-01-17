@@ -443,6 +443,8 @@ var catalogAppConfig = {
 
 				{'v': '$SOAJS_DEPLOY_HA', 'l': "$SOAJS_DEPLOY_HA", "group": "SOAJS Deployer"},
 				{'v': '$SOAJS_HA_NAME', 'l': "$SOAJS_HA_NAME", "group": "SOAJS Deployer"},
+				{'v': '$SOAJS_CONTROLLER_PORT_MAINTENANCE', 'l': "$SOAJS_CONTROLLER_PORT_MAINTENANCE", "group": "SOAJS Deployer"},
+				{'v': '$SOAJS_REGISTRY_API', 'l': "$SOAJS_REGISTRY_API", "group": "SOAJS Deployer"},
 
 				{'v': '$SOAJS_GC_NAME', 'l': "$SOAJS_GC_NAME", "group": "SOAJS GCS"},
 				{'v': '$SOAJS_GC_VERSION', 'l': "$SOAJS_GC_VERSION", "group": "SOAJS GCS"},

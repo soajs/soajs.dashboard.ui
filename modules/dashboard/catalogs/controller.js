@@ -1426,29 +1426,32 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 					labelCounter++;
 				};
-
 				if (submitAction) {
-					formConfig[5].tabs[5].entries[0].onAction = function (id, value, form) {
-						$scope.addNewVolume();
-					};
-
-					formConfig[5].tabs[6].entries[0].onAction = function (id, value, form) {
-						$scope.addNewPort();
-					};
-
-					formConfig[5].tabs[7].entries[0].onAction = function (id, value, form) {
-						$scope.addNewLabel();
-					};
-
-					formConfig[7].tabs[1].entries[0].onAction = function (id, value, form) {
-						$scope.addNewEnvVar();
-					};
-				}
-				else {
-					formConfig[5].tabs[5].entries.pop();
-					formConfig[5].tabs[6].entries.pop();
-					formConfig[5].tabs[7].entries.pop();
-					formConfig[7].tabs[1].entries.pop();
+					if (formConfig[5].tabs[5].entries[0]) {
+						formConfig[5].tabs[5].entries[0].onAction = function (id, value, form) {
+							$scope.addNewVolume();
+						};
+					}
+					if (formConfig[5].tabs[6].entries[0]) {
+						formConfig[5].tabs[6].entries[0].onAction = function (id, value, form) {
+							$scope.addNewPort();
+						};
+					}
+					if (formConfig[5].tabs[7].entries[0]) {
+						formConfig[5].tabs[7].entries[0].onAction = function (id, value, form) {
+							$scope.addNewLabel();
+						};
+					}
+					if (formConfig[5].tabs[1].entries[0]) {
+						formConfig[7].tabs[1].entries[0].onAction = function (id, value, form) {
+							$scope.addNewEnvVar();
+						};
+					}
+				} else {
+					if (formConfig[5].tabs[5].entries[0]) formConfig[5].tabs[5].entries.pop();
+					if (formConfig[5].tabs[6].entries[0]) formConfig[5].tabs[6].entries.pop();
+					if (formConfig[5].tabs[7].entries[0]) formConfig[5].tabs[7].entries.pop();
+					if (formConfig[5].tabs[1].entries) formConfig[7].tabs[1].entries.pop();
 				}
 
 				var formData = mapDataToForm($scope, false);
@@ -2432,6 +2435,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
         if (data.restriction && Object.keys(data.restriction).length > 0) {
             listInfraProviders(currentScope, () => {
             	//if ($scope.form && $scope.form.entries) {
+	            //
+	            console.log($scope.form.entries)
                     $scope.form.entries.push({
                         'name': 'deploymentType',
                         'label': 'Deployment Type',

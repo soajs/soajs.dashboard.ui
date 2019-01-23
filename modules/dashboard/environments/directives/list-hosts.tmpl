@@ -74,15 +74,25 @@
 						<fieldset class="groupFieldset" ng-if="hosts.controller">
 							<legend>
 								<a href="" class="icon" ng-class="{'icon-minus': showCtrlHosts, 'icon-plus': !showCtrlHosts}" ng-click="showHideContent('controller')"></a>SOAJS
-								Controllers
+								GATEWAYS
 							</legend>
 							<alert type="info">
-								Because this Environment is deployed manually, whenever a service or daemon starts or stops, make sure you run the <b>Awareness Operation</b> on all healthy <b>Controllers</b> in order to update the list and the display of this page.
+								Because this Environment is deployed manually, whenever a service or daemon starts or stops, make sure you run the <b>Awareness Operation</b> on all healthy <b>Gateways</b> in order to update the list and the display of this page.
 							</alert><br />
 							<div ng-repeat="(serviceName, serviceInfo) in hosts">
 								<div ng-if="serviceName === 'controller'" class="serviceBox controllerEnvelop" ng-show="showCtrlHosts">
-									<div style="width: 100%;" class="head {{serviceInfo.color}}">
-										<span class="icon" ng-class="serviceInfo.healthy===true? 'icon-smile2': 'icon-sad2'"></span>&nbsp;{{serviceName}}&nbsp;{{translation.port[LANG]}}:&nbsp;{{serviceInfo.port}}
+									<div style="width: 100%;" class="head {{serviceInfo.color}}" ng-click="showHideContent('controllerInfo')">
+										<span class="icon" ng-class="serviceInfo.healthy===true? 'icon-smile2': 'icon-sad2'" ></span>&nbsp;gateway&nbsp;{{translation.port[LANG]}}:&nbsp;{{serviceInfo.port}}
+										
+										<div ng-show = "showHideControllerInfo">
+											<p><br> # Run this in your terminal to start the Gateway.<br/> > soajs service start gateway --env={{envCode.toUpperCase()}} </br></p>
+											<p>
+												<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;For more
+												information,
+												<a href="https://soajsorg.atlassian.net/wiki/x/QQDaBQ" target="_blank">Click
+													Here</a>
+											</p>
+										</div>
 									</div>
 									<div class="service-ips clearfix">
 										<div ng-repeat="oneIp in serviceInfo.ips" style="float:left; margin:0 1px; width: 49.5%;">
@@ -183,7 +193,7 @@
 																	<thead>
 																		<tr>
 																			<th width="15%" colspan="2">
-																				{{translation.controllerUpperCase[LANG]}}
+																				{{translation.gatwayUpperCase[LANG]}}
 																			</th>
 																			<th width="15%">{{translation.status[LANG]}}
 																			</th>

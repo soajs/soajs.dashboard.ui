@@ -22,6 +22,9 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 		if (type === 'nginx') {
 			$scope.showNginxHosts = !$scope.showNginxHosts;
 		}
+		if (type === 'controllerInfo') {
+			$scope.showHideControllerInfo = !$scope.showHideControllerInfo;
+		}
 		else if (type === 'controller') {
 			$scope.showCtrlHosts = !$scope.showCtrlHosts;
 		}

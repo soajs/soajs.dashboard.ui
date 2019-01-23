@@ -811,6 +811,10 @@ var envTranslation = {
 		"ENG": "Controller",
 		"FRA": "Controller"
 	},
+	"gatwayUpperCase": {
+		"ENG": "Gateway",
+		"FRA": "Gateway"
+	},
 	"provideTheControllerDefaultPort": {
 		"ENG": "Provide the controller default port",
 		"FRA": "Provide the controller default port"

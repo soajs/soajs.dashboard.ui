@@ -65,41 +65,66 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 					"gcs": [],
 					"services": []
 				};
-				
 				response.records.forEach((oneRecord) => {
 					if (oneRecord.src){
+					
 						if(oneRecord.src.repo === 'gcs' && oneRecord.src.owner === 'HerronTech'){
-							$scope.tabs.daas.push(oneRecord);
+							$scope.appendToGroup(oneRecord, 'daas');
 						}
 						else if(oneRecord.src.repo === 'soajs.gcs'){
-							$scope.tabs.gcs.push(oneRecord);
+							$scope.appendToGroup(oneRecord, 'gcs');
 						}
 						else if(oneRecord.src.repo === 'soajs.epg'){
-							$scope.tabs.ep.push(oneRecord);
+							$scope.appendToGroup(oneRecord, 'ep');
 						}
 						else if(oneRecord.src && oneRecord.src.owner === 'soajs'){
 							if(SOAJSRMS.indexOf(oneRecord.src.repo) !== -1){
-								$scope.tabs.soajs.push(oneRecord);
+								$scope.appendToGroup(oneRecord, 'soajs');
 							}
 							else{
-								$scope.tabs.services.push(oneRecord);
+								$scope.appendToGroup(oneRecord, 'services');
 							}
 						}
 						else{
-							$scope.tabs.services.push(oneRecord);
+							$scope.appendToGroup(oneRecord, 'services');
 						}
 					} else if (oneRecord.group === "SOAJS Core Services") {
-						$scope.tabs.soajs.push(oneRecord);
+						$scope.appendToGroup(oneRecord, 'soajs');
 					} else {
-						$scope.tabs.services.push(oneRecord);
+						$scope.appendToGroup(oneRecord, 'services');
 					}
 				});
-				
 				$scope.envs = response.envs;
 			}
 		});
 	};
-
+	$scope.appendToGroup = function (oneRecord, type) {
+		let group = oneRecord.group;
+		if (!oneRecord.group) {
+			group = "Gateway";
+		}
+		if ($scope.tabs[type].length === 0) {
+			$scope.tabs[type].push({
+				group: group,
+				services: [oneRecord]
+			});
+		} else {
+			let found = false;
+			$scope.tabs[type].forEach((one) => {
+				if (one.group === group) {
+					one.services.push(oneRecord);
+					found = true;
+				}
+			});
+			if (!found){
+				$scope.tabs[type].push({
+					group: group,
+					services: [oneRecord]
+				});
+			}
+		}
+	};
+	
 	$scope.sortByDescending = function (versions) {
 		function compareNumbers(a, b) {
 			return b - a;

@@ -242,7 +242,13 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 					if (apiParams.options && apiParams.options.custom && !apiParams.options.custom.env) {
                         apiParams.options.custom.env = {}
 					}
-
+					rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
+					if (!apiParams.rebuildOptions){
+						apiParams.rebuildOptions = {};
+					}
+					if (!apiParams.rebuildOptions.type) {
+						apiParams.rebuildOptions.type = 'resource';
+					}
 					commonService.addEditResourceApi($scope, apiParams, function (response) {
 						$scope.newResource = response;
 						if (type === 'saveAndRebuild') {

@@ -22,42 +22,67 @@
 	<tabset>
 		<tab heading="SOAJS" ng-show="tabs.soajs.length > 0">
 			<br />
-			<div class="entryBoxes" ng-show="tabs.soajs">
-				<div id="s_{{service._id}}" ng-repeat="service in tabs.soajs" class="entryBox" ng-init="service.hide = true;">
-					<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
-				</div>
+			<div id="s_{{group._id}}" ng-repeat="groupService in tabs.soajs">
+				<fieldset class="custom-fieldset" ng-show="tabs.soajs">
+					<legend>{{groupService.group}}</legend>
+					<div class="entryBoxes">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services" class="entryBox" ng-init="service.hide = true;">
+							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 		</tab>
 		<tab heading="End Point"  ng-show="tabs.ep.length > 0">
 			<br />
-			<div class="entryBoxes" ng-show="tabs.ep">
-				<div id="s_{{service._id}}" ng-repeat="service in tabs.ep" class="entryBox" ng-init="service.hide = true;">
-					<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
-				</div>
+			<div id="s_{{group._id}}" ng-repeat="groupService in tabs.ep">
+				<fieldset class="custom-fieldset" ng-show="tabs.ep">
+					<legend>{{groupService.group}}</legend>
+					<div class="entryBoxes">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services" class="entryBox" ng-init="service.hide = true;">
+							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 		</tab>
 		<tab heading="GCS" ng-show="tabs.gcs.length > 0">
 			<br />
-			<div class="entryBoxes" ng-show="tabs.gcs">
-				<div id="s_{{service._id}}" ng-repeat="service in tabs.gcs" class="entryBox" ng-init="service.hide = true;">
-					<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
-				</div>
+			<div id="s_{{group._id}}" ng-repeat="groupService in tabs.gcs">
+				<fieldset class="custom-fieldset" ng-show="tabs.gcs">
+					<legend>{{groupService.group}}</legend>
+					<div class="entryBoxes">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services" class="entryBox" ng-init="service.hide = true;">
+							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 		</tab>
 		<tab heading="DAAS" ng-show="tabs.daas.length > 0">
 			<br />
-			<div class="entryBoxes" ng-show="tabs.daas">
-				<div id="s_{{service._id}}" ng-repeat="service in tabs.daas" class="entryBox" ng-init="service.hide = true;">
-					<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
-				</div>
+			<div id="s_{{group._id}}" ng-repeat="groupService in tabs.daas">
+				<fieldset class="custom-fieldset" ng-show="tabs.daas">
+					<legend>{{groupService.group}}</legend>
+					<div class="entryBoxes">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services" class="entryBox" ng-init="service.hide = true;">
+							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 		</tab>
 		<tab heading="Services" ng-show="tabs.services.length > 0">
 			<br />
-			<div class="entryBoxes" ng-show="tabs.services">
-				<div id="s_{{service._id}}" ng-repeat="service in tabs.services" class="entryBox" ng-init="service.hide = true;">
-					<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+			<div id="s_{{group._id}}" ng-repeat="groupService in tabs.services">
+			<fieldset class="custom-fieldset" ng-show="tabs.services">
+				<legend>{{groupService.group}}</legend>
+				<div class="entryBoxes">
+					<div id="s_{{service._id}}" ng-repeat="service in groupService.services" class="entryBox" ng-init="service.hide = true;">
+						<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+					</div>
 				</div>
+			</fieldset>
 			</div>
 		</tab>
 	</tabset>

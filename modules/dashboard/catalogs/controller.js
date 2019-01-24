@@ -1442,7 +1442,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							$scope.addNewLabel();
 						};
 					}
-					if (formConfig[5].tabs[1].entries[0]) {
+					if (formConfig[7].tabs[1].entries[0]) {
 						formConfig[7].tabs[1].entries[0].onAction = function (id, value, form) {
 							$scope.addNewEnvVar();
 						};
@@ -1451,7 +1451,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					if (formConfig[5].tabs[5].entries[0]) formConfig[5].tabs[5].entries.pop();
 					if (formConfig[5].tabs[6].entries[0]) formConfig[5].tabs[6].entries.pop();
 					if (formConfig[5].tabs[7].entries[0]) formConfig[5].tabs[7].entries.pop();
-					if (formConfig[5].tabs[1].entries) formConfig[7].tabs[1].entries.pop();
+					if (formConfig[7].tabs[1].entries) formConfig[7].tabs[1].entries.pop();
 				}
 
 				var formData = mapDataToForm($scope, false);

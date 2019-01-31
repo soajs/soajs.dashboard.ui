@@ -44,7 +44,7 @@
 					                <span ng-if="repo.status === 'active'" class="f-right mr11"><span class="icon icon-checkmark"></span>{{translation.activeRepo[LANG]}}</span>
 					                <span ng-if="repo.status === 'outOfSync'" class="f-right mr11"><span class="icon icon-warning"></span>{{translation.repoOutOfSync[LANG]}}</span>
 					                <span ng-if="repo.type && repo.status === 'active'" class="f-right mr11"><span class="icon icon-price-tag"></span>{{repo.type}}</span>
-					                <span ng-if="repo.type && repo.status === 'active' && repo.configBranch" class="f-right mr11"><span class="icon icon-git"></span>{{repo.configBranch}}</span>
+					                <span ng-if="repo.type && repo.status === 'active' && repo.configBranch" class="f-right mr9"><span class="icon icon-git"></span>{{repo.configBranch}}</span>
 					                <div class="rightActions">
 						                <a href="" ng-if="repo.status === 'active' && repo.git && repo.git.branches" ng-click="showRepos(repo)" ng-style="{'margin-top': '-19px'}" ng-hide="repo.showDetails">
 							                <span class="icon icon-plus" tooltip="expand"></span>

@@ -111,6 +111,9 @@ li.accountType {
 .mr11 {
     margin-right: 11% !important;
 }
+.mr9 {
+    margin-right: 9% !important;
+}
 
 #repoSettings #allow_push-wrapper label,
 #repoSettings #allow_pr-wrapper label,

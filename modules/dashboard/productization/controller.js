@@ -365,15 +365,8 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				for (var i = 0; i < response.length; i++) {
-					if (response[i].locked) {
-						var lockedProd = response[i];
-						response.splice(i, 1);
-						response.unshift(lockedProd);
-					}
-				}
 				$scope.grid = {
-					rows: response
+					row: response
 				};
 				
 				$scope.grid.actions = {
@@ -536,10 +529,9 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				for (var i = 0; i < $scope.grid.rows.length; i++) {
-					if ($scope.grid.rows[i]['_id'] === productId) {
-						$scope.grid.rows[i].packages = response;
-					}
+				$scope.grid.row = response;
+				if ($scope.grid.row['_id'] === productId) {
+					$scope.grid.row.packages = response;
 				}
 			}
 		});
@@ -617,13 +609,15 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 		recordData._TTL = recordData._TTL / 3600000;
 		if (data.locked){
 			formConfig.entries.forEach((oneEntry)=>{
+				if (oneEntry.type === 'select'){
+					oneEntry.value = '';
+				}
 				oneEntry.type = 'readonly';
 			});
 		}
 		else {
 			formConfig.entries[0].type = 'readonly';
 		}
-		
 		var options = {
 			timeout: $timeout,
 			form: formConfig,

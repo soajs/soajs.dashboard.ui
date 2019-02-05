@@ -1,12 +1,27 @@
 <section ng-controller="tenantConsoleCtrl">
     <div ng-if="access.tenant.list">
-	    <span ng-if="access.tenant.add"><a href="" ng-click="addTenant()" class="btn btn-primary">{{translation.addNewTenant[LANG]}}</a></span><br/><br/>
 	    <br/>
 	    <div ng-if="tenantsList.length === 0 && !query">
 		    <alert type="warning">
 			    {{translation.haveBeenAddedYet[LANG]}}.
 		    </alert>
 	    </div>
+	    <accordion>
+		    <accordion-group>
+			    <accordion-heading>
+				    <span>{{consoleTenants1.name}}</span>
+			    </accordion-heading>
+			    <div class="description">{{consoleTenants1['description']}}</div>
+			    <div ng-if="access.tenant.application.list || access.tenant.oauth.users.list">
+				    <br/>
+				    <tabset>
+					    <tab heading="{{translation.manageApplications[LANG]}}" ng-if="access.tenant.application.list">
+						    <div ng-include="'modules/dashboard/multitenancy/directives/list-console-applications.tmpl'"></div>
+					    </tab>
+				    </tabset>
+			    </div>
+		    </accordion-group>
+	    </accordion>
 	    <div class="entryBoxes">
 		    <div ng-repeat="row in consoleTenants" class="entryBox">
 			    <div class="header closed">

@@ -102,6 +102,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	
 	$scope.getProds = function (cb) {
 		$scope.availablePackages = [];
+		$scope.availableProducts = [];
 		$scope.availableLockedPackages = [];
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -118,6 +119,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				var p = {};
 				for (v = 0; v < len; v++) {
 					p = response[v];
+					$scope.availableProducts.push({
+						'v': p.code,
+						'l': p.code,
+					});
 					var ll = p.packages.length;
 					for (i = 0; i < ll; i++) {
 						prods.push({
@@ -668,9 +673,32 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				formConfig.entries[x].value.splice(1, 1);
 				
 			}
-			if (formConfig.entries[x].name === 'package'){
+			if (formConfig.entries[x].name === 'dashboardPackage'){
 				formConfig.entries.splice(x, 1);
 				
+			}
+			
+			if (formConfig.entries[x].name === 'product'){
+				formConfig.entries[x].value = $scope.availableProducts;
+				formConfig.entries[x].onAction =  function (id, selected, form) {
+					let packages = [];
+					$scope.availablePackages.forEach((pack)=>{
+						if (pack.prodCode === selected){
+							packages.push(pack);
+						}
+					});
+					let pack = {
+							'name': 'package',
+							'label': translation.package[LANG],
+							'type': 'select',
+							'tooltip': translation.formPackagePlaceHolder[LANG],
+							'required': false,
+							'fieldMsg': translation.formPackageToolTip[LANG],
+							'value':  packages
+						};
+					//insert at a the package after the product
+					form.entries.splice(4, 0, pack);
+				}
 			}
 		}
 		var options = {
@@ -698,12 +726,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'tag': formData.tag,
 							'console': true
 						};
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
 							"routeName": "/dashboard/tenant/add",
 							"data": postData
 						}, function (error, response) {
-							
+
 							if (error) {
 								$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 								$scope.modalInstance.close();
@@ -720,7 +749,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 										'productCode': formData.package.split("_")[0],
 										'packageCode': formData.package.split("_")[1]
 									};
-									
+
 									getSendDataFromServer($scope, ngDataApi, {
 										"method": "post",
 										"routeName": "/dashboard/tenant/application/add",
@@ -773,10 +802,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 															$scope.listTenants();
 														}
 													});
-													
+
 												}
 											});
-											
+
 										}
 									});
 								} else {
@@ -2043,31 +2072,30 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 			else {
 				var prods = [];
 				var lockedProds = [];
-				var len = response.length;
-				var v, i;
+				var i;
 				var p = {};
-				for (v = 0; v < len; v++) {
-					p = response[v];
-					var ll = p.packages.length;
-					for (i = 0; i < ll; i++) {
-						prods.push({
+				if (response) {
+					p = response;
+				}
+				var ll = p.packages.length;
+				for (i = 0; i < ll; i++) {
+					prods.push({
+						'pckCode': p.packages[i].code,
+						'prodCode': p.code,
+						'locked': p.locked || false,
+						'v': p.packages[i].code,
+						'l': p.packages[i].code,
+						'acl': p.packages[i].acl
+					});
+					
+					if (p.locked) {
+						lockedProds.push({
 							'pckCode': p.packages[i].code,
 							'prodCode': p.code,
-							'locked': p.locked || false,
 							'v': p.packages[i].code,
 							'l': p.packages[i].code,
 							'acl': p.packages[i].acl
 						});
-						
-						if (p.locked) {
-							lockedProds.push({
-								'pckCode': p.packages[i].code,
-								'prodCode': p.code,
-								'v': p.packages[i].code,
-								'l': p.packages[i].code,
-								'acl': p.packages[i].acl
-							});
-						}
 					}
 				}
 				$scope.availablePackages = prods;
@@ -2113,33 +2141,31 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/console/tenant/list"
-		}, function (error, response) {
+		}, function (error, tenantFromAPI) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				$scope.splitTenantsByType(response, function () {
+				$scope.splitTenantsByType(tenantFromAPI, function () {
 					if($scope.tenantsList && $scope.tenantsList.rows){
-						response.forEach((tenantFromAPI) => {
-							$scope.tenantsList.rows.forEach((tenantInUI) => {
-								if(tenantInUI.code === tenantFromAPI.code){
-									tenantFromAPI.showKeys = tenantInUI.showKeys;
-									tenantInUI.applications.forEach((oneAppInUI) => {
-										tenantFromAPI.applications.forEach((oneAppFromAPI) => {
-											if(oneAppInUI.appId === oneAppFromAPI.appId){
-												oneAppFromAPI.showKeys = oneAppInUI.showKeys;
-											}
-										});
+						$scope.tenantsList.rows.forEach((tenantInUI) => {
+							if(tenantInUI.code === tenantFromAPI.code){
+								tenantFromAPI.showKeys = tenantInUI.showKeys;
+								tenantInUI.applications.forEach((oneAppInUI) => {
+									tenantFromAPI.applications.forEach((oneAppFromAPI) => {
+										if(oneAppInUI.appId === oneAppFromAPI.appId){
+											oneAppFromAPI.showKeys = oneAppInUI.showKeys;
+										}
 									});
-								}
-							});
+								});
+							}
 						});
 					}
 					$scope.tenantsList = {
-						rows: angular.copy(response)
+						rows: angular.copy(tenantFromAPI)
 					};
-					
+					console.log($scope.consoleTenants)
 					$scope.tenantsList.actions = {
 						'viewTenant': {
 							'label': translation.viewTenant[LANG],
@@ -2200,30 +2226,28 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		return output;
 	};
 	
-	$scope.splitTenantsByType = function (tenants, callback) {
+	$scope.splitTenantsByType = function (oneTenant, callback) {
 		$scope.consoleTenants = [];
-		tenants.forEach(function (oneTenant) {
-			var tenantInfo = $scope.getTenantLoginMode(oneTenant);
-			oneTenant.loginMode = tenantInfo.loginMode;
-			oneTenant.atLeastOneKey = tenantInfo.atLeastOneKey;
-			$scope.consoleTenants.push(oneTenant);
-			
-			//re-render allowed environments
-			oneTenant.applications.forEach((oneApplication) => {
-				$scope.availablePackages.forEach((onePackage) => {
-					if(onePackage.pckCode === oneApplication.package) {
-						if(!oneApplication.availableEnvs){
-							oneApplication.availableEnvs = [];
-						}
-						
-						let packAclEnv = Object.keys(onePackage.acl);
-						packAclEnv.forEach((onePackAclEnv) => {
-							if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
-								oneApplication.availableEnvs.push(onePackAclEnv);
-							}
-						});
+		var tenantInfo = $scope.getTenantLoginMode(oneTenant);
+		oneTenant.loginMode = tenantInfo.loginMode;
+		oneTenant.atLeastOneKey = tenantInfo.atLeastOneKey;
+		$scope.consoleTenants.push(oneTenant);
+		$scope.consoleTenants1 = oneTenant;
+		//re-render allowed environments
+		oneTenant.applications.forEach((oneApplication) => {
+			$scope.availablePackages.forEach((onePackage) => {
+				if(onePackage.pckCode === oneApplication.package) {
+					if(!oneApplication.availableEnvs){
+						oneApplication.availableEnvs = [];
 					}
-				});
+					
+					let packAclEnv = Object.keys(onePackage.acl);
+					packAclEnv.forEach((onePackAclEnv) => {
+						if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
+							oneApplication.availableEnvs.push(onePackAclEnv);
+						}
+					});
+				}
 			});
 		});
 		callback();
@@ -2282,11 +2306,10 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 			//remove product
 			if (formConfig.entries[x].name === 'type'){
 				formConfig.entries[x].value.splice(0, 1);
-				
 			}
-			if (formConfig.entries[x].name === 'package'){
-				formConfig.entries[x].value = $scope.availableLockedPackages;
-				
+			
+			if (formConfig.entries[x].name === 'product'){
+				formConfig.entries.splice(x, 1);
 			}
 		}
 		var options = {

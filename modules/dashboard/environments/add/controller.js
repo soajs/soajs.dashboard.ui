@@ -153,7 +153,7 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal',
 									oneRepoImfv.options = oneRepoImfv.version.options;
 									oneRepoImfv.deploy = true;
 									oneRepoImfv.options.custom.type = oneRepoImfv.type;
-									oneRepoImfv.options.custom.version = parseInt(oneRepoImfv.options.custom.version);
+									oneRepoImfv.options.custom.version = parseFloat(oneRepoImfv.options.custom.version);
 									delete oneRepoImfv.serviceName;
 									delete oneRepoImfv.version;
 								}

@@ -67,6 +67,22 @@ var mtTranslation = {
 		"ENG": "If this tenant logs in to the dashboard, pick a package for it from the list above.",
 		"FRA": "If this tenant logs in to the dashboard, pick a package for it from the list above."
 	},
+	"formProductPlaceHolder": {
+		"ENG": "Choose a product for this tenant",
+		"FRA": "Choose a product for this tenant"
+	},
+	"formProductToolTip": {
+		"ENG": "Pick a product for it from the list above.",
+		"FRA": "Pick a product for it from the list above."
+	},
+	"formPackagePlaceHolder": {
+		"ENG": "Choose a package for this tenant",
+		"FRA": "Choose a package for this tenant"
+	},
+	"formPackageToolTip": {
+		"ENG": "Pick a package for it from the list above.",
+		"FRA": "Pick a package for it from the list above."
+	},
 	"userId": {
 		"ENG": "user Id",
 		"FRA": "user Id"

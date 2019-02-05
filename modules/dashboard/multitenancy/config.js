@@ -269,11 +269,11 @@ var tenantConfig = {
 					'required': false
 				},
 				{
-					'name': 'package',
-					'label': translation.dashboardPackage[LANG],
+					'name': 'product',
+					'label': translation.product[LANG],
 					'type': 'select',
-					'tooltip': translation.formDashboardPackagePlaceHolder[LANG],
-					'required': true,
+					'tooltip': translation.formProductPlaceHolder[LANG],
+					'required': false,
 					'fieldMsg': translation.formDashboardPackageToolTip[LANG]
 				},
 				{

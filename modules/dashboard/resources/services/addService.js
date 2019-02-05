@@ -242,7 +242,9 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 					if (apiParams.options && apiParams.options.custom && !apiParams.options.custom.env) {
                         apiParams.options.custom.env = {}
 					}
-					rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
+					if(formData.deployOptions.deployConfig && formData.deployOptions.deployConfig.cpuLimit){
+						rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
+					}
 					if (!apiParams.rebuildOptions){
 						apiParams.rebuildOptions = {};
 					}

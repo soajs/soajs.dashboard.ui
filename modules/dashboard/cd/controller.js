@@ -94,8 +94,6 @@ cdApp.controller('cdAppCtrl', ['$scope', '$timeout', '$modal', '$cookies', 'ngDa
 											&& $scope.configuration[service][i].options.gitSource.repo) {
 											$scope.configuration[service].full_name = angular.copy($scope.configuration[service][i].options.gitSource.owner) + "/" + angular.copy($scope.configuration[service][i].options.gitSource.repo);
 										}
-										console.log("34534354534")
-										console.log($scope.configuration[service].full_name)
 										delete $scope.configuration[service][i];
 									}
 								}

@@ -1,6 +1,6 @@
 <section ng-controller="deployEndpointCtrl">
 	<div ng-if="!account">
-		<alert type="warning">{{translation.noGitAccountsAdded[LANG]}}</alert>
+		<alert type="warning">{{translation.noEndPointsAdded[LANG]}}</alert>
 	</div>
 	<div ng-if="accounts">
 		<div ng-if="access.git.listAccounts" id="a_{{account._id}}">

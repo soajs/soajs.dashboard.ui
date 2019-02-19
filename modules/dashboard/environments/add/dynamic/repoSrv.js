@@ -40,9 +40,9 @@ dynamicReposServices.service('dynamicReposSrv', ['$compile', 'deployRepos', 'dep
 					if (oneService.name === oneRepo.name && oneService.name !== 'controller') {
 						let tempV = 0;
 						for (let v in oneService.versions) {
-							if (parseInt(v) > tempV) {
+							if (parseFloat(v) > tempV) {
 								version = v;
-								tempV = parseInt(v);
+								tempV = parseFloat(v);
 							}
 						}
 					}
@@ -54,9 +54,9 @@ dynamicReposServices.service('dynamicReposSrv', ['$compile', 'deployRepos', 'dep
 							oneDaemon.versions[v].grpConf.forEach((oneGrpConf) => {
 								
 								if (oneRepo.group === oneGrpConf.daemonConfigGroup) {
-									if (parseInt(v) > tempV) {
+									if (parseFloat(v) > tempV) {
 										version = v;
-										tempV = parseInt(v);
+										tempV = parseFloat(v);
 									}
 								}
 							});
@@ -250,9 +250,9 @@ dynamicReposServices.service('dynamicReposSrv', ['$compile', 'deployRepos', 'dep
 									else {
 										let tempV = 0;
 										service.versions.forEach((oneVersion) => {
-											if (parseInt(oneVersion.v) > tempV) {
+											if (parseFloat(oneVersion.v) > tempV) {
 												version = oneVersion;
-												tempV = parseInt(oneVersion.v);
+												tempV = parseFloat(oneVersion.v);
 											}
 										});
 									}

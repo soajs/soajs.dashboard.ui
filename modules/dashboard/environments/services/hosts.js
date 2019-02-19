@@ -340,7 +340,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 									}
 									
 									for(let serviceCtrl in regServices[serviceName].awarenessStats){
-										if(parseInt(regServices[serviceName].awarenessStats[serviceCtrl].version) === parseInt(version)){
+										if(parseFloat(regServices[serviceName].awarenessStats[serviceCtrl].version) === parseFloat(version)){
 											if(!regServices[serviceName].awarenessStats[serviceCtrl].healthy){
 												oneHost.color= "red";
 												oneHost.healthy = false;
@@ -420,7 +420,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 				"params": {
 					"env": currentScope.envCode,
 					"serviceName": serviceName,
-					"serviceVersion": parseInt(serviceVersion),
+					"serviceVersion": parseFloat(serviceVersion),
 					"operation": operation
 					
 				}

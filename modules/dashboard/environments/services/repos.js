@@ -71,7 +71,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 												if(response){
 													for(let oneService in response.data.services){
 														if(oneRepo.serviceName === oneService && response.data.services[oneService].hosts){
-															if(response.data.services[oneService].hosts[oneVersion.toString()] && parseInt(response.data.services[oneService].version) === parseInt(oneVersion)){
+															if(response.data.services[oneService].hosts[oneVersion.toString()] && parseFloat(response.data.services[oneService].version) === parseFloat(oneVersion)){
 																myVersion = {
 																	healthy : true,
 																	version: oneVersion,
@@ -133,7 +133,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			},
 			"data": {
 				"serviceName": oneRepo.serviceName,
-				"serviceVersion": parseInt(version.version)
+				"serviceVersion": parseFloat(version.version)
 			}
 		}, function (error) {
 			overlayLoading.hide();
@@ -163,7 +163,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			},
 			"data": {
 				"serviceName": oneRepo.serviceName,
-				"serviceVersion": parseInt(version.version)
+				"serviceVersion": parseFloat(version.version)
 			}
 		}, function (error) {
 			overlayLoading.hide();
@@ -392,8 +392,11 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								login: oneAccount.owner
 							};
 						}
+						if (oneAccount.repos[i].full_name === "soajs/soajs.epg"){
+							oneAccount.repos.splice(i, 1);
+						}
 						
-						if(oneAccount.repos[i].type === 'multi'){
+						if(oneAccount.repos[i] && oneAccount.repos[i].type === 'multi'){
 							if(oneAccount.repos[i].configSHA.length === 0){
 								oneAccount.repos.splice(i, 1);
 							}
@@ -408,7 +411,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								}
 							}
 						}
-						else if(['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
+						else if(oneAccount.repos[i] && ['service','daemon', 'custom','component'].indexOf(oneAccount.repos[i].type) === -1){
 							oneAccount.repos.splice(i, 1);
 						}
 					}
@@ -431,7 +434,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 								repoServices.push(oneSub);
 							});
 						}
-						else if (oneRepo.type === 'component' && oneAccount.name !== "soajs/soajs.epg"){
+						else if (oneRepo.type === 'component'){
 							if(repoComponentsNames.indexOf(oneRepo.name) === -1){
 								repoComponentsNames.push(oneRepo.name);
 								repoComponents.push(oneRepo);
@@ -887,7 +890,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					}
 					configuration.version.options.custom.gc = {
 						"gcName": currentScope.oneSrv,
-						"gcVersion": parseInt(currentScope.version)
+						"gcVersion": parseFloat(currentScope.version)
 					}
 				}
 				if((!currentScope.autoScale || !currentScope.isAutoScalable || configuration.version.options.deployConfig.replication.mode !== 'deployment') && configuration.version.options.autoScale){
@@ -961,7 +964,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				controllerScope = currentScope
 			}
 			if (params && params.custom && params.custom.version) {
-				params.custom.version = parseInt(params.custom.version);
+				params.custom.version = parseFloat(params.custom.version);
 			}
 			var config = {
 				"method": "post",

@@ -281,7 +281,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			
 			let hide = false;
 			if ($scope.currentDeployer.type !== 'manual' && currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
-				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery'].indexOf(link.id) !== -1);
+				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery',  'endpoints'].indexOf(link.id) !== -1);
 			}
 			else if ($scope.currentDeployer.type === 'manual') {
 				if(currentSelectedEnvironment === 'dashboard'){

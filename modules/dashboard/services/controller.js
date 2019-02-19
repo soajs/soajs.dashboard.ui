@@ -133,7 +133,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 		var keys = Object.keys(versions);
 		var keysInt = [];
 		keys.forEach(function (key) {
-			keysInt.push(parseInt(key));
+			keysInt.push(parseFloat(key));
 		});
 		// sort in descending order
 		keysInt = keysInt.sort(compareNumbers);

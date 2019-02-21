@@ -10,3 +10,7 @@
 .entryServiceBoxes .service-container .apiLabel label {
 
 }
+
+.width50 {
+    width: 50% !important;
+}

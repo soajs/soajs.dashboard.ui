@@ -15,9 +15,9 @@
 					<legend class="perMethod">{{method}}</legend>
 					<div class="apiListing-container">
 						<div class="clearfix apiListing" ng-repeat="my1Api in apisList" ng-class-even="'even'" ng-class-odd="'odd'" ng-class="{'first': $first, 'last': $last, selected:api.selected}" style="">
-							<div class="apiLabel">
+							<div class="apiLabel width50">
 								<input id="{{oneEnv.code}}_{{service.name}}_{{grp}}_{{method}}_{{$index}}" ng-model="aclFill[oneEnv.code][service.name][method].apis[my1Api.v].include" ng-click="checkForGroupDefault(oneEnv.code,service,grp,val,my1Api)" ng-disabled="(val.defaultApi && my1Api.groupMain!==true && val.defaultIncluded===false)" type="checkbox" value="true" ng-show="aclFill[oneEnv.code][service.name].apisRestrictPermission"/>
-								<label for="{{oneEnv.code}}_{{service.name}}_{{grp}}_{{method}}_{{$index}}">{{my1Api.l}}</label>
+								<label for="{{oneEnv.code}}_{{service.name}}_{{grp}}_{{method}}_{{$index}}"><span>{{my1Api.v}}</span> - {{my1Api.l}}</label>
 							</div>
 							<div class="apiAccess" ng-hide="(aclFill[oneEnv.code][service.name].apisRestrictPermission && (aclFill[oneEnv.code][service.name][method].apis[my1Api.v].include!==true))">
 								<div class="f-left">

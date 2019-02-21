@@ -217,10 +217,10 @@ var catalogAppConfig = {
 						'entries': [
                             {
                                 'name': 'certificates',
-                                'label': 'Require Certificates',
+                                'label': 'Allow File Attachments',
                                 'type': 'select',
                                 'tooltip': "",
-                                'fieldMsg': "Specify if this recipe requires a certificates when deploying",
+                                'fieldMsg': "Specify if this recipe requires a file attachments when deploying",
                                 'value': [{"l":"No" , "v": "none"}, {"l":"Yes" , "v": "required"},{"l":"Maybe" , "v": "optional"}],
                                 'required': false
                             },

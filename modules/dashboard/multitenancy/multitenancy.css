@@ -55,3 +55,7 @@ div.entryBox .body .btn-primary {
 .tenantTab .entryBoxes .applicationsGrid {
     margin-top:15px;
 }
+
+.width50 {
+    width: 50% !important;
+}

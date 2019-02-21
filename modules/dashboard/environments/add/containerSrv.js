@@ -82,7 +82,8 @@ containerServices.service('containerSrv', ['ngDataApi', '$timeout', '$modal', '$
 			currentScope.wizard.selectedInfraProvider = postData.selectedInfraProvider;
 			if (currentScope.wizard.selectedInfraProvider
 				&& currentScope.wizard.selectedInfraProvider.deploy
-				&& currentScope.wizard.selectedInfraProvider.deploy.config) {
+				&& currentScope.wizard.selectedInfraProvider.deploy.config
+				&& currentScope.wizard.selectedInfraProvider.deploy.config.namespace) {
 				currentScope.wizard.selectedInfraProvider.deploy.config.namespace.default = currentScope.wizard.gi.code;
 			}
 			

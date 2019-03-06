@@ -16,6 +16,10 @@ var srTranslation = {
 		"ENG": "Daemon Catalog",
 		"FRA": "Daemon Catalog"
 	},
+	"repository": {
+		"ENG": "Repository",
+		"FRA": "Repository"
+	},
 	//controller
 	"updateService": {
 		"ENG": "Update Service",

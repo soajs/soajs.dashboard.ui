@@ -10,7 +10,7 @@
 				<span>[ {{service['port']}} ]</span>
 			</td>
 			<td>
-				<span ng-if="service['group']"><b>{{translation.serviceGroup[LANG]}}</b>:<span>{{service['group'] || 'Misc.'}}</span></span>
+				<span ng-if="service.src['repo']"><b>{{translation.repository[LANG]}}</b>:<span>{{service.src['repo']}}</span></span>
 			</td>
 			<td>
 				<b>{{translation.requestTimeout[LANG]}}</b>:<span>{{service['requestTimeout'] || 0}}</span>

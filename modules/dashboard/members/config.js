@@ -85,6 +85,7 @@ var membersConfig = {
 };
 
 var groupsConfig = {
+	consoleTenant : "DBTN",
 	grid: {
 		recordsPerPageArray: [5, 10, 50, 100],
 		'columns': [
@@ -133,6 +134,15 @@ var groupsConfig = {
 				'value': '',
 				'tooltip': '',
 				'required': true
+			},
+			{
+				'name': 'package',
+				'label': translation.package[LANG],
+				'type': 'select',
+				'value': [],
+				'required': false,
+				'tooltip': 'Specify which package to use',
+				'fieldMsg': 'Specify which package to use'
 			}
 		]
 	},

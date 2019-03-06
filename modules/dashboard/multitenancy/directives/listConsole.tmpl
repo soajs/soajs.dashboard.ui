@@ -7,7 +7,7 @@
 		    </alert>
 	    </div>
 	    <accordion>
-		    <accordion-group>
+		    <accordion-group is-open="true">
 			    <accordion-heading>
 				    <span>{{consoleTenants1.name}}</span>
 			    </accordion-heading>
@@ -22,40 +22,5 @@
 			    </div>
 		    </accordion-group>
 	    </accordion>
-	    <div class="entryBoxes">
-		    <div ng-repeat="row in consoleTenants" class="entryBox">
-			    <div class="header closed">
-				    <a ng-click="openKeys(row['_id'], row)" href="" ng-hide="row.showKeys">
-					    <span class="icon icon-plus" tooltip="{{translation.expandApplications[LANG]}}"></span>
-				    </a>
-				    <a ng-click="closeKeys(row['_id'], row)" href="" ng-show="row.showKeys">
-					    <span class="icon icon-minus" tooltip="{{translation.collapseApplications[LANG]}}"></span>
-				    </a>
-				    <span class="icon icon-star-full no-margin" ng-if="row['dashboardAccess']"></span>{{row['name']}}<span>[ {{row['code']}}  - {{row['_id']}} ]</span>
-			    </div>
-			    <div class="body" ng-show="row.showKeys">
-				    <div class="description">{{row['description']}}</div>
-				    <div ng-if="access.tenant.application.list || access.tenant.oauth.users.list">
-					    <br/>
-					    <div class="keyAlerts" ng-show="mt[row['_id']].alerts.length >0" id="{{row['_id']}}">
-						    <alert ng-repeat="alert in mt[row['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert($index, row['_id'])">
-							    {{alert.msg}}
-						    </alert>
-						    <br/>
-					    </div>
-					    <tabset>
-						    <tab heading="{{translation.manageApplications[LANG]}}" ng-if="access.tenant.application.list">
-							    <div ng-include="'modules/dashboard/multitenancy/directives/list-console-applications.tmpl'"></div>
-						    </tab>
-					    </tabset>
-				    </div>
-				    <div class="entryAction">
-					    <a ng-if="access.tenant.update" href="" ng-click="tenantsList.actions.viewTenant.command(row);">
-						    <span class="icon icon-search" tooltip="{{translation.viewTenant[LANG]}}"></span>
-					    </a>
-				    </div>
-			    </div>
-		    </div>
-	    </div>
     </div>
 </section>

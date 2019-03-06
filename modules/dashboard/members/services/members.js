@@ -55,13 +55,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'handler': 'editMember'
 			});
 		}
-		if (currentScope.access.adminUser.editUserConfig) {
-			options.left.push({
-				'label': translation.editACL[LANG],
-				'icon': 'unlocked',
-				'handler': 'editAcl'
-			});
-		}
 		if (currentScope.access.adminUser.changeStatusAccess) {
 			options.top = [
 				{
@@ -109,7 +102,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				config.entries.push({
 					'name': 'groups',
 					'label': translation.groups[LANG],
-					'type': 'checkbox',
+					'type': 'radio',
 					'value': grps,
 					'tooltip': translation.assignGroups[LANG]
 				});
@@ -129,7 +122,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'firstName': formData.firstName,
 									'lastName': formData.lastName,
 									'email': formData.email,
-									'groups': formData.groups,
+									'groups': [formData.groups],
 									'tId': tenantId,
 									'tCode': tenantCode
 								};
@@ -175,27 +168,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 
 	}
 	
-	function editAcl(currentScope, data) {
-		let product = false;
-		if (currentScope.tenant && currentScope.tenant.applications) {
-			for (let x = currentScope.tenant.applications.length - 1; x >= 0; x--) {
-				if (currentScope.tenant.applications[x]
-					&& currentScope.tenant.applications[x].product
-					&& currentScope.tenant.applications[x].product === "DSBRD") {
-					product = true;
-					break
-				}
-			}
-		}
-		if (product){
-			currentScope.$parent.go('/tenants-members/' + data._id + '/editConsoleUserAcl');
-		}
-		else {
-			currentScope.$parent.go('/members/' + data._id + '/editUserAcl');
-		}
-		
-	}
-	
 	function editMember(currentScope, moduleConfig, data, useCookie) {
 		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(moduleConfig.form);
@@ -228,7 +200,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				config.entries.push({
 					'name': 'groups',
 					'label': translation.groups[LANG],
-					'type': 'checkbox',
+					'type': 'radio',
 					'value': grps,
 					'tooltip': translation.assignGroups[LANG]
 				});
@@ -257,7 +229,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'firstName': formData.firstName,
 									'lastName': formData.lastName,
 									'email': formData.email,
-									'groups': formData.groups,
+									'groups': [formData.groups],
 									'tId': tenantId,
 									'status': (Array.isArray(formData.status)) ? formData.status.join(",") : formData.status
 								};
@@ -347,7 +319,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		'listMembers': listMembers,
 		'printMembers': printMembers,
 		'addMember': addMember,
-		'editAcl': editAcl,
 		'editMember': editMember,
 		'activateMembers': activateMembers,
 		'deactivateMembers': deactivateMembers

@@ -11,6 +11,27 @@
 
 }
 
-.width50 {
-    width: 50% !important;
+.width1 {
+    width: 100% !important;
+    margin-bottom: 8px;
+}
+
+.width2 {
+    width: 53% !important;
+    margin-bottom: 8px;
+    padding-left: 5px;
+}
+
+.spanPadding {
+    padding-left: 35px;
+}
+
+.fieldsetBack {
+    background-color: #E6F0F7;
+    display: block;
+    box-sizing: border-box;
+}
+
+.greyedOut {
+    color: #0f6ab4 !important;
 }

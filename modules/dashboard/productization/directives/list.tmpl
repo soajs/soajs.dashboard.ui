@@ -26,7 +26,7 @@
 									<span class="icon icon-unlocked" tooltip="{{translation.editPackageACL[LANG]}}"></span>
 								</a>&nbsp;
 
-								<a ng-if="access.updatePck" href="" ng-click="editPackage(row['_id'], package)">
+								<a ng-if="access.updatePck" href="" ng-click="editPackage(row['_id'], package['code'])">
 									<span class="icon icon-pencil2" tooltip="{{translation.editPackage[LANG]}}"></span>
 								</a>
                         	</span>
@@ -37,6 +37,9 @@
 				<div class="entryAction">
 					<a href="" ng-if="access.editProduct" ng-click="grid.actions.edit.command(row);">
 						<span class="icon icon-pencil2" tooltip="{{translation.editProduct[LANG]}}"></span>
+					</a>
+					<a ng-if="access.updateProdScope" href="" ng-click="editProdAcl(row['_id'])">
+						<span class="icon icon-unlocked" tooltip="{{translation.modifyProductPackage[LANG]}}"></span>
 					</a>
 					<a href="" ng-if="access.deleteProduct" ng-confirm-click="{{grid.actions.delete.commandMsg}}" ng-click="grid.actions.delete.command(row);">
 						<span class="icon icon-cross" tooltip="{{translation.removeProduct[LANG]}}"></span>

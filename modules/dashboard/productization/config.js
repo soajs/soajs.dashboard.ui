@@ -108,6 +108,7 @@ var productizationConfig = {
 		'listPck' : ['dashboard', '/product/packages/list', 'get'],
 		'addPck' : ['dashboard', '/product/packages/add', 'post'],
 		'deletePck' : ['dashboard', '/product/packages/delete', 'delete'],
-		'updatePck' : ['dashboard', '/product/packages/update', 'put']
+		'updatePck' : ['dashboard', '/product/packages/update', 'put'],
+		'updateProdScope' : ['dashboard', '/product/scope/update', 'put']
 	}
 };

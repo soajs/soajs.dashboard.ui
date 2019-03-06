@@ -2,6 +2,30 @@
 var groupsService = soajsApp.components;
 groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', function (ngDataApi, $timeout, $modal) {
 	
+	function listConsoleProducts (currentScope, callback) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/console/product/list"
+		}, function (error, response) {
+			if (!error) {
+				currentScope.products = [response];
+			}
+			return callback (error, response);
+		});
+	}
+	
+	function listProducts (currentScope, callback) {
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/product/list"
+		}, function (error, response) {
+			if (!error) {
+				currentScope.products = response;
+			}
+			return callback (error, response);
+		});
+	}
+	
 	function listGroups(currentScope, groupsConfig, callback) {
 		var userCookie = currentScope.$parent.userCookie;
 		var tenantId = (callback) ? currentScope.tId : userCookie.tenant.id;
@@ -41,13 +65,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 			left: [],
 			top: []
 		};
-		if (currentScope.access.adminGroup.addUsers) {
-			options.left.push({
-				'label': translation.linkUsersGroup[LANG],
-				'icon': 'link',
-				'handler': 'assignUsers'
-			});
-		}
 
 		if (currentScope.access.adminGroup.edit) {
 			options.left.push({
@@ -79,60 +96,191 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 		var config = angular.copy(groupsConfig.form);
 		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
 		var tenantCode = (useCookie) ? userCookie.tenant.code : currentScope.tenant.code;
-
-		var options = {
-			timeout: $timeout,
-			form: config,
-			name: 'addGroup',
-			label: translation.addNewGroup[LANG],
-			actions: [
-				{
-					'type': 'submit',
-					'label': translation.addGroup[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						var postData = {
-							'name': formData.name,
-							'code': formData.code,
-							'description': formData.description,
-							'tId': tenantId,
-							'tCode': tenantCode
-						};
-						var opts = {
-							"method": "post",
-							"routeName": "/urac/admin/group/add",
-							"data": postData
-						};
-						if (currentScope.key) {
-							opts.headers = {
-								"key": currentScope.key
-							}
-						}
-						getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
-							if (error) {
-								currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
-							}
-							else {
-								currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
-								currentScope.modalInstance.close();
-								currentScope.form.formData = {};
-								currentScope.listGroups();
-							}
-						});
-					}
-				},
-				{
-					'type': 'reset',
-					'label': 'Cancel',
-					'btn': 'danger',
-					'action': function () {
-						currentScope.modalInstance.dismiss('cancel');
-						currentScope.form.formData = {};
-					}
+		overlayLoading.show();
+		if (currentScope.tenant.code === groupsConfig.consoleTenant){
+			listConsoleProducts (currentScope, (error)=>{
+				overlayLoading.hide();
+				if (error) {
+					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
-			]
-		};
-		buildFormWithModal(currentScope, $modal, options);
+				else {
+					let selectablePackages = [];
+					currentScope.products.forEach((OneProduct)=>{
+						if (OneProduct.packages){
+							OneProduct.packages.forEach((onePack)=>{
+								let temp = {};
+								temp.l = onePack.code;
+								temp.v = onePack.code + "$%$" + OneProduct.code;
+								selectablePackages.push(temp)
+							});
+						}
+					});
+					config.entries[3].value = selectablePackages;
+					var options = {
+						timeout: $timeout,
+						form: config,
+						name: 'addGroup',
+						label: translation.addNewGroup[LANG],
+						actions: [
+							{
+								'type': 'submit',
+								'label': translation.addGroup[LANG],
+								'btn': 'primary',
+								'action': function (formData) {
+									let allowedPackages = {};
+									Object.keys(formData).forEach((key)=>{
+										if(key && key.indexOf("package")!== -1){
+											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+										}
+									});
+									var postData = {
+										'name': formData.name,
+										'code': formData.code,
+										'description': formData.description,
+										'tId': tenantId,
+										'tCode': tenantCode,
+										'config' : {allowedPackages}
+									};
+									
+									var opts = {
+										"method": "post",
+										"routeName": "/urac/admin/group/add",
+										"data": postData
+									};
+									if (currentScope.key) {
+										opts.headers = {
+											"key": currentScope.key
+										}
+									}
+									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+										if (error) {
+											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
+										}
+										else {
+											currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
+											currentScope.modalInstance.close();
+											currentScope.form.formData = {};
+											currentScope.listGroups();
+										}
+									});
+								}
+							},
+							{
+								'type': 'reset',
+								'label': 'Cancel',
+								'btn': 'danger',
+								'action': function () {
+									currentScope.modalInstance.dismiss('cancel');
+									currentScope.form.formData = {};
+								}
+							}
+						]
+					};
+					buildFormWithModal(currentScope, $modal, options);
+				}
+			});
+		}
+		else {
+			let prodCod = [];
+			if (currentScope.tenant && currentScope.tenant.applications){
+				currentScope.tenant.applications.forEach((prod)=>{
+					prodCod.push(prod.product);
+				});
+			}
+			listProducts (currentScope, (error)=>{
+				overlayLoading.hide();
+				if (error) {
+					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					let packageForm = angular.copy(config.entries[3]);
+					config.entries.splice(3, 1);
+					
+					let count = 0;
+					currentScope.products.forEach((OneProduct)=>{
+						let selectablePackages = [];
+						let temp = angular.copy(packageForm);
+						if (prodCod.indexOf(OneProduct.code) !== -1){
+							if (OneProduct.packages){
+								OneProduct.packages.forEach((onePack)=>{
+									let temp = {};
+									temp.l = onePack.name;
+									temp.v = onePack.code + "$%$" + OneProduct.code;
+									selectablePackages.push(temp)
+								});
+							}
+							temp.label = "Product: " + OneProduct.name;
+							temp.name = "package" + count;
+							count++;
+							temp.value = selectablePackages
+							config.entries.push(temp);
+						}
+					});
+					var options = {
+						timeout: $timeout,
+						form: config,
+						name: 'addGroup',
+						label: translation.addNewGroup[LANG],
+						actions: [
+							{
+								'type': 'submit',
+								'label': translation.addGroup[LANG],
+								'btn': 'primary',
+								'action': function (formData) {
+									let allowedPackages = {};
+									Object.keys(formData).forEach((key)=>{
+										if(key && key.indexOf("package")!== -1){
+											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+										}
+									});
+									var postData = {
+										'name': formData.name,
+										'code': formData.code,
+										'description': formData.description,
+										'tId': tenantId,
+										'tCode': tenantCode,
+										'config' : {allowedPackages}
+									};
+									
+									var opts = {
+										"method": "post",
+										"routeName": "/urac/admin/group/add",
+										"data": postData
+									};
+									if (currentScope.key) {
+										opts.headers = {
+											"key": currentScope.key
+										}
+									}
+									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+										if (error) {
+											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
+										}
+										else {
+											currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
+											currentScope.modalInstance.close();
+											currentScope.form.formData = {};
+											currentScope.listGroups();
+										}
+									});
+								}
+							},
+							{
+								'type': 'reset',
+								'label': 'Cancel',
+								'btn': 'danger',
+								'action': function () {
+									currentScope.modalInstance.dismiss('cancel');
+									currentScope.form.formData = {};
+								}
+							}
+						]
+					};
+					buildFormWithModal(currentScope, $modal, options);
+				}
+			});
+		}
+		
 		
 	}
 	
@@ -140,58 +288,208 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 		var config = angular.copy(groupsConfig.form);
 		config.entries[0].type = 'readonly';
 		delete data.tenant;
-		var options = {
-			timeout: $timeout,
-			form: config,
-			'name': 'editGroup',
-			'label': translation.editGroup[LANG],
-			'data': data,
-			'actions': [
-				{
-					'type': 'submit',
-					'label': translation.editGroup[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						var postData = {
-							'name': formData.name,
-							'description': formData.description
-						};
-						var opts = {
-							"method": "post",
-							"routeName": "/urac/admin/group/edit",
-							"params": {"gId": data['_id']},
-							"data": postData
-						};
-						if (currentScope.key) {
-							opts.headers = {
-								"key": currentScope.key
-							}
-						}
-						getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
-							if (error) {
-								currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
-							}
-							else {
-								currentScope.$parent.displayAlert('success', translation.groupUpdatedSuccessfully[LANG]);
-								currentScope.modalInstance.close();
-								currentScope.form.formData = {};
-								currentScope.listGroups();
-							}
-						});
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						currentScope.modalInstance.dismiss('cancel');
-						currentScope.form.formData = {};
-					}
+		overlayLoading.show();
+		let prod, pack;
+		
+		if (currentScope.tenant.code === groupsConfig.consoleTenant){
+			listConsoleProducts (currentScope, (error)=>{
+				overlayLoading.hide();
+				if (error) {
+					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				}
-			]
-		};
-		buildFormWithModal(currentScope, $modal, options);
+				else {
+					if (data.config && data.config.allowedPackages && Object.keys(data.config.allowedPackages).length>0 ){
+						prod = Object.keys(data.config.allowedPackages)[0];
+						if (data.config.allowedPackages[prod]){
+							pack = data.config.allowedPackages[prod][0];
+						}
+					}
+					let selectablePackages = [];
+					currentScope.products.forEach((oneProd)=>{
+						if (oneProd.packages){
+							oneProd.packages.forEach((onePack)=>{
+								let temp = {};
+								temp.l = onePack.code;
+								temp.v = onePack.code + "$%$" + oneProd.code;
+								temp.group = "Product " + oneProd.code;
+								if (onePack.code === pack && oneProd.code === prod){
+									temp.selected = true;
+								}
+								selectablePackages.push(temp)
+							});
+						}
+					});
+					config.entries[3].value = selectablePackages;
+					var options = {
+						timeout: $timeout,
+						form: config,
+						'name': 'editGroup',
+						'label': translation.editGroup[LANG],
+						'data': data,
+						'actions': [
+							{
+								'type': 'submit',
+								'label': translation.editGroup[LANG],
+								'btn': 'primary',
+								'action': function (formData) {
+									let allowedPackages = {};
+									Object.keys(formData).forEach((key)=>{
+										if(key && key.indexOf("package")!== -1){
+											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+										}
+									});
+									var postData = {
+										'name': formData.name,
+										'description': formData.description,
+										'config': {allowedPackages}
+									};
+									var opts = {
+										"method": "post",
+										"routeName": "/urac/admin/group/edit",
+										"params": {"gId": data['_id']},
+										"data": postData
+									};
+									if (currentScope.key) {
+										opts.headers = {
+											"key": currentScope.key
+										}
+									}
+									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+										if (error) {
+											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
+										}
+										else {
+											currentScope.$parent.displayAlert('success', translation.groupUpdatedSuccessfully[LANG]);
+											currentScope.modalInstance.close();
+											currentScope.form.formData = {};
+											currentScope.listGroups();
+										}
+									});
+								}
+							},
+							{
+								'type': 'reset',
+								'label': translation.cancel[LANG],
+								'btn': 'danger',
+								'action': function () {
+									currentScope.modalInstance.dismiss('cancel');
+									currentScope.form.formData = {};
+								}
+							}
+						]
+					};
+					buildFormWithModal(currentScope, $modal, options);
+				}
+			});
+		}
+		else {
+			let prodCod = [];
+			if (currentScope.tenant && currentScope.tenant.applications){
+				currentScope.tenant.applications.forEach((prod)=>{
+					prodCod.push(prod.product);
+				});
+			}
+			listProducts (currentScope, (error)=>{
+				overlayLoading.hide();
+				if (error) {
+					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					if (data.config && data.config.allowedPackages && Object.keys(data.config.allowedPackages).length>0 ){
+						prod = Object.keys(data.config.allowedPackages);
+					}
+					let packageForm = angular.copy(config.entries[3]);
+					config.entries.splice(3, 1);
+					
+					let count = 0;
+					currentScope.products.forEach((OneProduct)=>{
+						let selectablePackages = [];
+						let temp = angular.copy(packageForm);
+						if (prodCod.indexOf(OneProduct.code) !== -1){
+							if (OneProduct.packages){
+								OneProduct.packages.forEach((onePack)=>{
+									let temp = {};
+									temp.l = onePack.name;
+									temp.v = onePack.code + "$%$" + OneProduct.code;
+									if (data.config.allowedPackages[OneProduct.code]){
+										if(data.config.allowedPackages[OneProduct.code].indexOf(onePack.code) !== -1){
+											temp.selected = true;
+										}
+									}
+									selectablePackages.push(temp)
+								});
+							}
+						
+							temp.label = "Product: " + OneProduct.name;
+							temp.name = "package" + count;
+							count++;
+							temp.value = selectablePackages
+							config.entries.push(temp);
+						}
+					});
+					var options = {
+						timeout: $timeout,
+						form: config,
+						'name': 'editGroup',
+						'label': translation.editGroup[LANG],
+						'data': data,
+						'actions': [
+							{
+								'type': 'submit',
+								'label': translation.editGroup[LANG],
+								'btn': 'primary',
+								'action': function (formData) {
+									let allowedPackages = {};
+									Object.keys(formData).forEach((key)=>{
+										if(key && key.indexOf("package")!== -1){
+											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+										}
+									});
+									var postData = {
+										'name': formData.name,
+										'description': formData.description,
+										'config': {allowedPackages}
+									};
+									var opts = {
+										"method": "post",
+										"routeName": "/urac/admin/group/edit",
+										"params": {"gId": data['_id']},
+										"data": postData
+									};
+									if (currentScope.key) {
+										opts.headers = {
+											"key": currentScope.key
+										}
+									}
+									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+										if (error) {
+											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
+										}
+										else {
+											currentScope.$parent.displayAlert('success', translation.groupUpdatedSuccessfully[LANG]);
+											currentScope.modalInstance.close();
+											currentScope.form.formData = {};
+											currentScope.listGroups();
+										}
+									});
+								}
+							},
+							{
+								'type': 'reset',
+								'label': translation.cancel[LANG],
+								'btn': 'danger',
+								'action': function () {
+									currentScope.modalInstance.dismiss('cancel');
+									currentScope.form.formData = {};
+								}
+							}
+						]
+					};
+					buildFormWithModal(currentScope, $modal, options);
+				}
+			});
+		}
+		
 
 	}
 
@@ -241,96 +539,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 		});
 	}
 	
-	function assignUsers(currentScope, groupsConfig, data, event, useCookie) {
-		var userCookie = currentScope.$parent.userCookie;
-		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
-		var opts = {
-			"method": "get",
-			"routeName": "/urac/admin/listUsers",
-			"params": {'tId': tenantId}
-		};
-		if (currentScope.key) {
-			opts.headers = {
-				"key": currentScope.key
-			}
-		}
-		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-			}
-			else {
-				var value = [];
-				var sel = false;
-				for (var x = 0; x < response.length; x++) {
-					sel = ((response[x].groups) && response[x].groups.indexOf(data.code) > -1);
-					value.push({
-						'v': response[x].username,
-						'l': response[x].username + '(' + response[x].firstName + ' ' + response[x].lastName + ')',
-						'selected': sel
-					});
-				}
-				
-				var config = angular.copy(groupsConfig.users);
-				config.entries[0].value = value;
-
-				var options = {
-					timeout: $timeout,
-					form: config,
-					name: 'addGroup',
-					label: translation.addUsersGroup[LANG] + ': ' + data.name,
-					'msgs': {},
-					actions: [
-						{
-							'type': 'submit',
-							'label': translation.addingUsers[LANG],
-							'btn': 'primary',
-							'action': function (formData) {
-								var postData = {
-									'groupCode': data.code,
-									'users': formData.users
-								};
-								var opts = {
-									"method": "post",
-									"routeName": "/urac/admin/group/addUsers",
-									"params": {'tId': tenantId},
-									"data": postData
-								};
-								if (currentScope.key) {
-									opts.headers = {
-										"key": currentScope.key
-									}
-								}
-								getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
-									if (error) {
-										currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
-									}
-									else {
-										currentScope.$parent.displayAlert('success', translation.UserAddedSuccessfully[LANG]);
-										currentScope.modalInstance.close();
-										currentScope.form.formData = {};
-										currentScope.listGroups();
-										currentScope.$parent.$emit(event.name, event.params);
-									}
-								});
-								
-							}
-						},
-						{
-							'type': 'reset',
-							'label': translation.cancel[LANG],
-							'btn': 'danger',
-							'action': function () {
-								currentScope.modalInstance.dismiss('cancel');
-								currentScope.form.formData = {};
-							}
-						}
-					]
-				};
-				buildFormWithModal(currentScope, $modal, options);
-			}
-		});
-	}
-	
 	return {
 		'listGroups': listGroups,
 		'printGroups': printGroups,
@@ -338,6 +546,5 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 		'editGroup': editGroup,
 		'deleteGroups': deleteGroups,
 		'delete1Group': delete1Group,
-		'assignUsers': assignUsers
 	}
 }]);

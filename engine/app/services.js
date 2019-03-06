@@ -1,7 +1,7 @@
 "use strict";
-soajsApp.service('SOAJSStore', ['$http', function($http) {
+soajsApp.service('SOAJSStore', ['$http', function ($http) {
 	
-	function check(currentScope){
+	function check(currentScope) {
 		var config = {
 			url: _soajsStore,
 			method: "options",
@@ -9,7 +9,7 @@ soajsApp.service('SOAJSStore', ['$http', function($http) {
 			timeout: 10000
 		};
 		$http(config).success(function (response, status, headers, config) {
-			if(status === 204){
+			if (status === 204) {
 				currentScope.showSOAJSStoreLink = _soajsStore;
 			}
 		}).error(function (errData) {
@@ -25,17 +25,17 @@ soajsApp.service('SOAJSStore', ['$http', function($http) {
 soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', function ($http, $cookies, $localStorage, Upload) {
 	
 	function logoutUser(scope) {
-		$cookies.remove('soajs_username', { 'domain': interfaceDomain });
-		$cookies.remove('access_token', { 'domain': interfaceDomain });
-		$cookies.remove('refresh_token', { 'domain': interfaceDomain });
-		$cookies.remove('soajs_dashboard_key', { 'domain': interfaceDomain });
-		$cookies.remove('myEnv', { 'domain': interfaceDomain });
-		$cookies.remove('myInfra', { 'domain': interfaceDomain });
-		$cookies.remove('soajsID', { 'domain': interfaceDomain });
-		$cookies.remove('soajs_auth', { 'domain': interfaceDomain });
-		$cookies.remove('soajs_current_route', { 'domain': interfaceDomain });
-		$cookies.remove('selectedInterval', { 'domain': interfaceDomain });
-		$cookies.remove("soajs_dashboard_login", { 'domain': interfaceDomain });
+		$cookies.remove('soajs_username', {'domain': interfaceDomain});
+		$cookies.remove('access_token', {'domain': interfaceDomain});
+		$cookies.remove('refresh_token', {'domain': interfaceDomain});
+		$cookies.remove('soajs_dashboard_key', {'domain': interfaceDomain});
+		$cookies.remove('myEnv', {'domain': interfaceDomain});
+		$cookies.remove('myInfra', {'domain': interfaceDomain});
+		$cookies.remove('soajsID', {'domain': interfaceDomain});
+		$cookies.remove('soajs_auth', {'domain': interfaceDomain});
+		$cookies.remove('soajs_current_route', {'domain': interfaceDomain});
+		$cookies.remove('selectedInterval', {'domain': interfaceDomain});
+		$cookies.remove("soajs_dashboard_login", {'domain': interfaceDomain});
 		
 		$localStorage.infraProviders = null;
 		$localStorage.soajs_user = null;
@@ -69,17 +69,17 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			getNewAccessToken.headers.Authorization = authValue;
 			delete getNewAccessToken.params;
 			getNewAccessToken.data = {
-				'refresh_token': $cookies.get('refresh_token', { 'domain': interfaceDomain }),
+				'refresh_token': $cookies.get('refresh_token', {'domain': interfaceDomain}),
 				'grant_type': "refresh_token"
 			};
 			
 			$http(getNewAccessToken).success(function (response) {
-				$cookies.put('access_token', response.access_token, { 'domain': interfaceDomain });
-				$cookies.put('refresh_token', response.refresh_token, { 'domain': interfaceDomain });
+				$cookies.put('access_token', response.access_token, {'domain': interfaceDomain});
+				$cookies.put('refresh_token', response.refresh_token, {'domain': interfaceDomain});
 				
 				//repeat the main call
 				var MainAPIConfig = angular.copy(config);
-				MainAPIConfig.params.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
+				MainAPIConfig.params.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 				$http(MainAPIConfig).success(function (response, status, headers, config) {
 					returnAPIResponse(scope, response, config, cb)
 				}).error(function (errData, status, headers, config) {
@@ -108,12 +108,10 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		//try to get a new access token from the refresh
 		if (errData && errData.errors && errData.errors.details[0].code === 401 && ["The access token provided is invalid.", "The access token provided has expired."].indexOf(errData.errors.details[0].message) !== -1) {
 			revalidateTokens(scope, config, cb);
-		}
-		else {
+		} else {
 			if (errData && errData.errors) {
 				return cb(new Error(errData.errors.details[0].code + ":" + errData.errors.details[0].message));
-			}
-			else {
+			} else {
 				returnErrorOutput(opts, status, headers, config, cb)
 			}
 		}
@@ -140,51 +138,43 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 						errorObj.code = res.errors.codes[0];
 					}
 					return cb(errorObj);
-				}
-				else {
+				} else {
 					return cb(null, response);
 				}
-			}
-			catch (e) {
+			} catch (e) {
 				console.log("Unable to parse arraybuffer response. Possible reason: response is a stream and too large.");
 				return cb(null, response);
 			}
-		}
-		else if (response && !Object.hasOwnProperty.call(response, "result")) {
+		} else if (response && !Object.hasOwnProperty.call(response, "result")) {
 			return cb(null, response);
-		}
-		else if (response && response.result === true) {
-			if (response.soajsauth && $cookies.get('soajs_auth', { 'domain': interfaceDomain })) {
-				$cookies.put("soajs_auth", response.soajsauth, { 'domain': interfaceDomain });
+		} else if (response && response.result === true) {
+			if (response.soajsauth && $cookies.get('soajs_auth', {'domain': interfaceDomain})) {
+				$cookies.put("soajs_auth", response.soajsauth, {'domain': interfaceDomain});
 			}
 			var resp = {};
 			for (var i in response) {
 				resp[i] = response[i];
 			}
 			if (resp.data) {
-				if (typeof(resp.data) !== 'object') {
-					if (typeof(resp.data) === 'string') {
+				if (typeof (resp.data) !== 'object') {
+					if (typeof (resp.data) === 'string') {
 						resp.data = {
 							data: resp.data
 						};
-					}
-					else {
+					} else {
 						resp.data = {};
 					}
 				}
-			}
-			else {
+			} else {
 				resp.data = {};
 			}
 			resp.data.soajsauth = resp.soajsauth;
 			return cb(null, resp.data);
-		}
-		else {
+		} else {
 			//try to refresh the access token before logging out the user
 			if (response.errors.details[0].code === 401 && ["The access token provided is invalid.", "The access token provided has expired."].indexOf(response.errors.details[0].message) !== -1) {
 				revalidateTokens(scope, config, cb);
-			}
-			else {
+			} else {
 				var str = '';
 				for (var i = 0; i < response.errors.details.length; i++) {
 					str += "Error[" + response.errors.details[i].code + "]: " + response.errors.details[i].message;
@@ -217,26 +207,24 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			json: true
 		};
 		
-		var soajsAuthCookie = $cookies.get('soajs_auth', { 'domain': interfaceDomain });
+		var soajsAuthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
 		if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
 			config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 		}
 		
 		if (opts.headers.key) {
 			config.headers.key = opts.headers.key;
-		}
-		else if ($cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain })) {
-			config.headers.key = $cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain }).replace(/\"/g, '');
-		}
-		else {
+		} else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
+			config.headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
+		} else {
 			config.headers.key = apiConfiguration.key;
 		}
 		
-		var access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
+		var access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 		if (access_token && config.token) {
 			config.params.access_token = access_token;
 		}
-		var project = $cookies.get('soajs_project', { 'domain': interfaceDomain });
+		var project = $cookies.get('soajs_project', {'domain': interfaceDomain});
 		if (project) {
 			config.params.soajs_project = project;
 		}
@@ -244,11 +232,10 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		if (opts.proxy) {
 			if (!config.params.__env) {
 				var env;
-				if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-					env = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+				if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+					env = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 					config.params.__env = env.toUpperCase();
-				}
-				else {
+				} else {
 					console.log("Missing Env object");
 				}
 			}
@@ -266,8 +253,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			};
 			if (opts.file) {
 				config.file = opts.file;
-			}
-			else {
+			} else {
 				console.log('Missing File for Upload');
 			}
 			Upload.upload(config).progress(function (evt) {
@@ -278,8 +264,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			}).error(function (data, status, header, config) {
 				returnAPIError(scope, opts, status, headers, data, config, cb);
 			});
-		}
-		else {
+		} else {
 			$http(config).success(function (response, status, headers, config) {
 				returnAPIResponse(scope, response, config, cb);
 			}).error(function (errData, status, headers, config) {
@@ -326,10 +311,9 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 
 soajsApp.service('isUserLoggedIn', ['$cookies', '$localStorage', 'ngDataApi', function ($cookies, $localStorage, ngDataApi) {
 	return function (currentScope) {
-		if ($localStorage.soajs_user && $cookies.get('soajs_username', { 'domain': interfaceDomain }) && $cookies.get('access_token', { 'domain': interfaceDomain })) {
+		if ($localStorage.soajs_user && $cookies.get('soajs_username', {'domain': interfaceDomain}) && $cookies.get('access_token', {'domain': interfaceDomain})) {
 			return true;
-		}
-		else {
+		} else {
 			ngDataApi.logoutUser(currentScope);
 			return false;
 		}
@@ -349,18 +333,15 @@ soajsApp.service('checkApiHasAccess', function () {
 				i++;
 				if (i === environments.length) {
 					return cb(false);
-				}
-				else {
+				} else {
 					validateAccess(environments, i, cb);
 				}
-			}
-			else {
+			} else {
 				var system = aclObject[envCode][serviceName];
 				if (system) {
 					var access = checkSystem(system);
 					return cb(access);
-				}
-				else {
+				} else {
 					return cb(false);
 				}
 			}
@@ -385,17 +366,14 @@ soajsApp.service('checkApiHasAccess', function () {
 						}
 						if (aclObj[method].hasOwnProperty('apisPermission')) {
 							newAclObj.apisPermission = aclObj[method].apisPermission;
-						}
-						else if (aclObj.hasOwnProperty('apisPermission')) {
+						} else if (aclObj.hasOwnProperty('apisPermission')) {
 							newAclObj.apisPermission = aclObj.apisPermission;
 						}
 						return newAclObj;
-					}
-					else {
+					} else {
 						return aclObj;
 					}
-				}
-				else {
+				} else {
 					return aclObj;
 				}
 			}
@@ -432,8 +410,7 @@ soajsApp.service('checkApiHasAccess', function () {
 			
 			if (api || (system && system.apisPermission === 'restricted')) {
 				return api_checkPermission(system, userGroups, api);
-			}
-			else {
+			} else {
 				return true;
 			}
 		}
@@ -470,8 +447,7 @@ soajsApp.service('checkApiHasAccess', function () {
 					}
 				}
 				return found;
-			}
-			else {
+			} else {
 				return true;
 			}
 		}
@@ -511,9 +487,6 @@ soajsApp.service("aclDrawHelpers", function () {
 					result[defaultGroupName].apisRest = {};
 				}
 			}
-			if (!apisArray[i].m) {
-				//apisArray[i].m = 'all';
-			}
 			if (apisArray[i].m) {
 				if (!result[defaultGroupName].apisRest[apisArray[i].m]) {
 					result[defaultGroupName].apisRest[apisArray[i].m] = [];
@@ -529,110 +502,151 @@ soajsApp.service("aclDrawHelpers", function () {
 		return result;
 	}
 	
+	function groupApisForPackageDisplay(apisArray, apiGroupName) {
+		var result = {};
+		var defaultGroupName = 'General';
+		var len = (apisArray) ? apisArray.length : 0;
+		if (len === 0) {
+			return result;
+		}
+		for (var i = 0; i < len; i++) {
+			if (apisArray[i][apiGroupName]) {
+				defaultGroupName = apisArray[i][apiGroupName];
+			}
+			
+			if (!result[defaultGroupName]) {
+				result[defaultGroupName] = [];
+			}
+			
+			if (apisArray[i].m && result[defaultGroupName].indexOf(apisArray[i].m) === -1) {
+				result[defaultGroupName].push(apisArray[i].m);
+			}
+		}
+		
+		return result;
+	}
+	
 	function applyApiRestriction(aclFill, service) {
 		if (service.name) {
-			var aclService = aclFill[service.name];
+			var aclServiceVersions = aclFill[service.name];
 		}
-		if (aclService && aclService.apisRestrictPermission === true) {
-			for (var grpLabel in service.fixList) {
-				if (service.fixList.hasOwnProperty(grpLabel)) {
-					var defaultApi = service.fixList[grpLabel]['defaultApi'];
-					if (defaultApi) {
-						var found = false;
-						if (service.fixList[grpLabel].apisRest) {
-							for (var m in service.fixList[grpLabel].apisRest) {
-								if (aclService[m]) {
-									if (aclService[m].apis && aclService[m].apis[defaultApi] && aclService[m].apis[defaultApi].include === true) {
-										found = true;
-										break;
+		for (var version in aclServiceVersions) {
+			if (aclServiceVersions.hasOwnProperty(version)) {
+				let aclService = aclServiceVersions[version];
+				if (aclService && aclService.apisRestrictPermission === true) {
+					for (var grpLabel in service.fixList) {
+						if (service.fixList.hasOwnProperty(grpLabel)) {
+							var defaultApi = service.fixList[grpLabel]['defaultApi'];
+							if (defaultApi) {
+								var found = false;
+								if (service.fixList[grpLabel].apisRest) {
+									for (var m in service.fixList[grpLabel].apisRest) {
+										if (aclService[m]) {
+											if (aclService[m].apis && aclService[m].apis[defaultApi] && aclService[m].apis[defaultApi].include === true) {
+												found = true;
+												break;
+											}
+										}
 									}
-								}
-							}
-							if (!found) {
-								for (var m in service.fixList[grpLabel].apisRest) {
-									if (aclService[m]) {
-										service.fixList[grpLabel].apisRest[m].forEach(function (oneApi) {
-											if (aclService[m].apis && aclService[m].apis[oneApi.v]) {
-												aclService[m].apis[oneApi.v].include = false;
+									if (!found) {
+										for (var m in service.fixList[grpLabel].apisRest) {
+											if (aclService[m]) {
+												service.fixList[grpLabel].apisRest[m].forEach(function (oneApi) {
+													if (aclService[m].apis && aclService[m].apis[oneApi.v]) {
+														aclService[m].apis[oneApi.v].include = false;
+													}
+												});
+											}
+										}
+									}
+								} else if (aclService.apis) {
+									if ((!aclService.apis[defaultApi]) || aclService.apis[defaultApi].include !== true) {
+										service.fixList[grpLabel]['apis'].forEach(function (oneApi) {
+											if (aclService.apis[oneApi.v]) {
+												aclService.apis[oneApi.v].include = false;
 											}
 										});
 									}
 								}
+								service.fixList[grpLabel].defaultIncluded = found;
 							}
 						}
-						else if (aclService.apis) {
-							if ((!aclService.apis[defaultApi]) || aclService.apis[defaultApi].include !== true) {
-								service.fixList[grpLabel]['apis'].forEach(function (oneApi) {
-									if (aclService.apis[oneApi.v]) {
-										aclService.apis[oneApi.v].include = false;
-									}
-								});
-							}
-						}
-						service.fixList[grpLabel].defaultIncluded = found;
 					}
 				}
 			}
 		}
 	}
 	
-	function checkForGroupDefault(aclFill, service, grp, val, myApi) {
-		var defaultApi = service.fixList[grp]['defaultApi'];
+	function checkForGroupDefault(aclFill, service, grp, val, myApi, v) {
+		var defaultApi;
+		if (service.fixList && service.fixList.length > 0) {
+			service.fixList.forEach((oneVersion) => {
+				if (oneVersion['%v%'] === v) {
+					defaultApi = oneVersion[grp]['defaultApi'];
+				}
+			});
+		}
 		var found = true;
 		if (myApi.groupMain === true) {
 			if (val.apisRest && myApi.m) {
-				if (aclFill[service.name][myApi.m].apis) {
-					if (aclFill[service.name][myApi.m].apis[defaultApi] && aclFill[service.name][myApi.m].apis[defaultApi].include !== true) {
+				if (aclFill[service.name][v][myApi.m].apis) {
+					if (aclFill[service.name][v][myApi.m].apis[defaultApi] && aclFill[service.name][v][myApi.m].apis[defaultApi].include !== true) {
 						found = false;
 						for (var m in val.apisRest) {
-							if (aclFill[service.name][m]) {
+							if (aclFill[service.name][v][m]) {
 								val.apisRest[m].forEach(function (one) {
-									if (aclFill[service.name][m].apis[one.v]) {
-										aclFill[service.name][m].apis[one.v].include = false;
+									if (aclFill[service.name][v][m].apis[one.v]) {
+										aclFill[service.name][v][m].apis[one.v].include = false;
 									}
 								});
 							}
 						}
 					}
 				}
-			}
-			else if (aclFill[service.name].apis) {
-				if ((aclFill[service.name].apis[defaultApi]) && aclFill[service.name].apis[defaultApi].include !== true) {
+			} else if (aclFill[service.name][v].apis) {
+				if ((aclFill[service.name][v].apis[defaultApi]) && aclFill[service.name][v].apis[defaultApi].include !== true) {
 					found = false;
 					val.apis.forEach(function (one) {
-						if (aclFill[service.name].apis[one.v]) {
-							aclFill[service.name].apis[one.v].include = false;
+						if (aclFill[service.name][v].apis[one.v]) {
+							aclFill[service.name][v].apis[one.v].include = false;
 						}
 					});
 				}
 			}
-			service.fixList[grp].defaultIncluded = found;
+			service.fixList[v][grp].defaultIncluded = found;
 		}
 	}
 	
 	function fillServiceAccess(service, currentService) {
-		service.include = true;
-		service.collapse = false;
-		if (service.access) {
-			if (service.access === true) {
-				service.accessType = 'private';
+		if (currentService.versions) {
+			service.collapse = false;
+			service.include = true;
+			for (var version in currentService.versions) {
+				if (currentService.versions.hasOwnProperty(version) ) {
+					if (!service[version]){
+						service[version] = {};
+					}
+					service[version].include = true;
+					if (service[version].access) {
+						if (service[version].access === true) {
+							service[version].accessType = 'private';
+						} else if (service[version].access === false) {
+							service[version].accessType = 'public';
+						} else if (Array.isArray(service[version].access)) {
+							service[version].accessType = 'groups';
+							service[version].grpCodes = {};
+							service[version].access.forEach(function (c) {
+								service[version].grpCodes[c] = true;
+							});
+						}
+					} else {
+						service[version].accessType = 'public';
+					}
+					if (service[version].apisPermission === 'restricted') {
+						service[version].apisRestrictPermission = true;
+					}
+				}
 			}
-			else if (service.access === false) {
-				service.accessType = 'public';
-			}
-			else if (Array.isArray(service.access)) {
-				service.accessType = 'groups';
-				service.grpCodes = {};
-				service.access.forEach(function (c) {
-					service.grpCodes[c] = true;
-				});
-			}
-		}
-		else {
-			service.accessType = 'public';
-		}
-		if (service.apisPermission === 'restricted') {
-			service.apisRestrictPermission = true;
 		}
 	}
 	
@@ -644,15 +658,12 @@ soajsApp.service("aclDrawHelpers", function () {
 				if (forcePrivate === true) {
 					// This variable is set to true only in the user ACL.
 					apis[apiName].accessType = 'clear';
-				}
-				else {
+				} else {
 					if (apis[apiName].access === true) {
 						apis[apiName].accessType = 'private';
-					}
-					else if (apis[apiName].access === false) {
+					} else if (apis[apiName].access === false) {
 						apis[apiName].accessType = 'public';
-					}
-					else {
+					} else {
 						if (Array.isArray(apis[apiName].access)) {
 							apis[apiName].accessType = 'groups';
 							apis[apiName].grpCodes = {};
@@ -693,19 +704,24 @@ soajsApp.service("aclDrawHelpers", function () {
 			}
 		}
 		
-		if (!service.get && !service.post && !service.put && !service.delete) {
-			grpByMethod(service, currentService.fixList);
-		}
-		
-		if (service.get || service.post || service.put || service.delete) {
-			for (var method in service) {
-				if (service[method].apis) {
-					fillApiAccess(service[method].apis, forcePrivate);
+		if (currentService.versions) {
+			for (var version in currentService.versions) {
+				if (currentService.versions.hasOwnProperty(version)) {
+					if (!service[version].get && !service[version].post && !service[version].put && !service[version].delete) {
+						grpByMethod(service, currentService.fixList);
+					}
+					
+					if (service[version].get || service[version].post || service[version].put || service[version].delete) {
+						for (var method in service[version]) {
+							if (service[version][method].apis) {
+								fillApiAccess(service[version][method].apis, forcePrivate);
+							}
+						}
+					} else if (service[version].apis) {
+						fillApiAccess(service[version].apis, forcePrivate);
+					}
 				}
 			}
-		}
-		else if (service.apis) {
-			fillApiAccess(service.apis, forcePrivate);
 		}
 	}
 	
@@ -713,113 +729,153 @@ soajsApp.service("aclDrawHelpers", function () {
 		var code, grpCodes;
 		for (var serviceName in aclEnvFill) {
 			if (aclEnvFill.hasOwnProperty(serviceName)) {
-				var service = angular.copy(aclEnvFill[serviceName]);
-				if (service.include === true) {
+				if (aclEnvFill[serviceName].include) {
 					aclEnvObj[serviceName] = {};
-					
-					if (service.accessType === 'private') {
-						aclEnvObj[serviceName].access = true;
-					}
-					else if (service.accessType === 'public') {
-						aclEnvObj[serviceName].access = false;
-					}
-					else if (service.accessType === 'groups') {
-						aclEnvObj[serviceName].access = [];
-						grpCodes = aclEnvFill[serviceName].grpCodes;
-						if (grpCodes) {
-							for (code in grpCodes) {
-								if (grpCodes.hasOwnProperty(code)) {
-									aclEnvObj[serviceName].access.push(code);
-								}
-							}
-						}
-						if (aclEnvObj[serviceName].access.length === 0) {
-							return { 'valid': false };
-						}
-					}
-					
-					if (service.apisRestrictPermission === true) {
-						aclEnvObj[serviceName].apisPermission = 'restricted';
-					}
-					
-					if (service.get || service.post || service.put || service.delete) {
-						for (var method in service) {
-							if (service[method].apis) {
-								aclEnvObj[serviceName][method] = {
-									apis: {}
-								};
-								
-								for (var apiName in service[method].apis) {
-									if (service[method].apis.hasOwnProperty(apiName)) {
-										var api = service[method].apis[apiName];
-										if (( service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
-											/// need to also check for the default api if restricted
-											aclEnvObj[serviceName][method].apis[apiName] = {};
-											if (api.accessType === 'private') {
-												aclEnvObj[serviceName][method].apis[apiName].access = true;
-											}
-											else if (api.accessType === 'public') {
-												aclEnvObj[serviceName][method].apis[apiName].access = false;
-											}
-											else if (api.accessType === 'groups') {
-												aclEnvObj[serviceName][method].apis[apiName].access = [];
-												grpCodes = aclEnvFill[serviceName][method].apis[apiName].grpCodes;
-												if (grpCodes) {
-													for (code in grpCodes) {
-														if (grpCodes.hasOwnProperty(code)) {
-															aclEnvObj[serviceName][method].apis[apiName].access.push(code);
-														}
-													}
-												}
-												if (aclEnvObj[serviceName][method].apis[apiName].access.length === 0) {
-													return { 'valid': false };
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-						if (service.apis) {
-							delete service.apis;
-						}
-					}
-					else if (service.apis) {
-						aclEnvObj[serviceName].apis = {};
-						for (apiName in service.apis) {
-							if (service.apis.hasOwnProperty(apiName)) {
-								var api = service.apis[apiName];
-								if (( service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
-									/// need to also check for the default api if restricted
-									aclEnvObj[serviceName].apis[apiName] = {};
-									if (api.accessType === 'private') {
-										aclEnvObj[serviceName].apis[apiName].access = true;
-									}
-									else if (api.accessType === 'public') {
-										aclEnvObj[serviceName].apis[apiName].access = false;
-									}
-									else if (api.accessType === 'groups') {
-										aclEnvObj[serviceName].apis[apiName].access = [];
-										grpCodes = aclEnvFill[serviceName].apis[apiName].grpCodes;
+					for (var version in aclEnvFill[serviceName]) {
+						if (aclEnvFill[serviceName].hasOwnProperty(version)) {
+							if (aclEnvFill[serviceName][version].include) {
+								var service = angular.copy(aclEnvFill[serviceName][version]);
+								if (service.include === true) {
+									aclEnvObj[serviceName][version] = {};
+									if (service.accessType === 'private') {
+										aclEnvObj[serviceName][version].access = true;
+									} else if (service.accessType === 'public') {
+										aclEnvObj[serviceName][version].access = false;
+									} else if (service.accessType === 'groups') {
+										aclEnvObj[serviceName][version].access = [];
+										grpCodes = aclEnvFill[version][serviceName].grpCodes;
 										if (grpCodes) {
 											for (code in grpCodes) {
 												if (grpCodes.hasOwnProperty(code)) {
-													aclEnvObj[serviceName].apis[apiName].access.push(code);
+													aclEnvObj[serviceName][version].access.push(code);
 												}
 											}
 										}
-										if (aclEnvObj[serviceName].apis[apiName].access.length === 0) {
-											return { 'valid': false };
+										if (aclEnvObj[serviceName][version].access.length === 0) {
+											return {'valid': false};
+										}
+									}
+									
+									if (service.apisRestrictPermission === true) {
+										aclEnvObj[serviceName][version].apisPermission = 'restricted';
+									}
+									if (service.Read || service.Add || service.Update || service.Delete) {
+										for (let method in service) {
+											
+											if (service[method].apis) {
+												aclEnvObj[serviceName][version][m] = {
+													apis: {}
+												};
+												
+												for (var apiName in service[method].apis) {
+													if (service[method].apis.hasOwnProperty(apiName)) {
+														var api = service[method].apis[apiName];
+														if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
+															/// need to also check for the default api if restricted
+															aclEnvObj[serviceName][version][method].apis[apiName] = {};
+															if (api.accessType === 'private') {
+																aclEnvObj[serviceName][version][m].apis[apiName].access = true;
+															} else if (api.accessType === 'public') {
+																aclEnvObj[serviceName][version][m].apis[apiName].access = false;
+															} else if (api.accessType === 'groups') {
+																aclEnvObj[serviceName][version][method].apis[apiName].access = [];
+																grpCodes = aclEnvFill[version][serviceName][method].apis[apiName].grpCodes;
+																if (grpCodes) {
+																	for (code in grpCodes) {
+																		if (grpCodes.hasOwnProperty(code)) {
+																			aclEnvObj[serviceName][version][method].apis[apiName].access.push(code);
+																		}
+																	}
+																}
+																if (aclEnvObj[serviceName][version][method].apis[apiName].access.length === 0) {
+																	return {'valid': false};
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+										if (service.apis) {
+											delete service.apis;
+										}
+									}
+									else if (service.apis) {
+										aclEnvObj[serviceName][version].apis = {};
+										for (apiName in service.apis) {
+											if (service.apis.hasOwnProperty(apiName)) {
+												var api = service.apis[apiName];
+												if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
+													/// need to also check for the default api if restricted
+													aclEnvObj[serviceName][version].apis[apiName] = {};
+													if (api.accessType === 'private') {
+														aclEnvObj[serviceName][version].apis[apiName].access = true;
+													} else if (api.accessType === 'public') {
+														aclEnvObj[serviceName][version].apis[apiName].access = false;
+													} else if (api.accessType === 'groups') {
+														aclEnvObj[serviceName][version].apis[apiName].access = [];
+														grpCodes = aclEnvFill[version][serviceName].apis[apiName].grpCodes;
+														if (grpCodes) {
+															for (code in grpCodes) {
+																if (grpCodes.hasOwnProperty(code)) {
+																	aclEnvObj[serviceName][version].apis[apiName].access.push(code);
+																}
+															}
+														}
+														if (aclEnvObj[serviceName][version].apis[apiName].access.length === 0) {
+															return {'valid': false};
+														}
+													}
+												}
+											}
 										}
 									}
 								}
 							}
 						}
+					}
+					if (Object.keys(aclEnvObj[serviceName]).length === 0){
+						delete aclEnvObj[serviceName];
 					}
 				}
 			}
 		}
-		return { 'valid': true };
+		return {'valid': true};
+	}
+	
+	function prepareSaveObjectPack(aclEnvFill, aclEnvObj) {
+		for (var serviceName in aclEnvFill) {
+			if (aclEnvFill.hasOwnProperty(serviceName)) {
+				if (aclEnvFill[serviceName].include) {
+					aclEnvObj[serviceName] = [];
+					for (var version in aclEnvFill[serviceName]) {
+						if (aclEnvFill[serviceName].hasOwnProperty(version) && version !== "collapse" && version !== "include" && aclEnvFill[serviceName][version].include) {
+							let temp = {};
+							temp.version = version + "";
+							temp.version = temp.version.replace(".", "x");
+							for (var group in aclEnvFill[serviceName][version]) {
+								if (aclEnvFill[serviceName][version].hasOwnProperty(group)) {
+									for (var method in aclEnvFill[serviceName][version][group]) {
+										if (aclEnvFill[serviceName][version][group].hasOwnProperty(method) && aclEnvFill[serviceName][version][group][method]) {
+											if (!temp[method]){
+												temp[method] = [];
+											}
+											temp[method].push(group);
+										}
+									}
+								}
+							}
+							aclEnvObj[serviceName].push(temp);
+						}
+					}
+					if (aclEnvObj[serviceName].length === 0){
+						delete aclEnvObj[serviceName];
+					}
+				}
+			}
+		}
+		console.log(angular.copy(aclEnvObj))
+		return {'valid': true};
 	}
 	
 	return {
@@ -829,7 +885,9 @@ soajsApp.service("aclDrawHelpers", function () {
 		'groupApisForDisplay': groupApisForDisplay,
 		'checkForGroupDefault': checkForGroupDefault,
 		'applyApiRestriction': applyApiRestriction,
-		'prepareSaveObject': prepareSaveObject
+		'prepareSaveObject': prepareSaveObject,
+		'prepareSaveObjectPack': prepareSaveObjectPack,
+		'groupApisForPackageDisplay': groupApisForPackageDisplay
 	}
 });
 
@@ -864,7 +922,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 		
 		$localStorage.environments = null;
 		$localStorage.acl_access = null;
-
+		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/key/permission/get"
@@ -873,9 +931,8 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
-			}
-			else {
-				$cookies.put("soajs_dashboard_key", response.extKey, { 'domain': interfaceDomain });
+			} else {
+				$cookies.put("soajs_dashboard_key", response.extKey, {'domain': interfaceDomain});
 				
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "get",
@@ -891,7 +948,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 							$localStorage.soajs_user.locked = response.locked;
 						}
 					}
-
+					
 					if (response.acl) {
 						$localStorage.acl_access = response.acl;
 					} else {
@@ -912,15 +969,13 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 								ngDataApi.logoutUser(currentScope);
 								currentScope.displayAlert('danger', "Login Failed !");
 								return cb(false);
-							}
-							else {
+							} else {
 								console.log('Failed to get environments');
-								$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+								$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
 								return cb(true);
 							}
-						}
-						else {
-							$cookies.put("soajs_dashboard_login", true, { 'domain': interfaceDomain });
+						} else {
+							$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
 							$localStorage.environments = angular.copy(envs);
 							$timeout(function () {
 								overlayLoading.hide();
@@ -945,7 +1000,7 @@ soajsApp.service('detectBrowser', ['$window', function ($window) {
 		
 		var userAgent = $window.navigator.userAgent;
 		
-		var browsers = { chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i };
+		var browsers = {chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i};
 		
 		for (var key in browsers) {
 			if (browsers[key].test(userAgent)) {
@@ -1026,8 +1081,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				"type": "array",
 				"items": getIMFVfromCommonFields(commonFields, tempInput.schema.items['$ref'])
 			};
-		}
-		else if (tempInput.schema && tempInput.schema.properties && tempInput.schema.properties.items && tempInput.schema.properties.items.type === 'array' && tempInput.schema.properties.items.items['$ref']) {
+		} else if (tempInput.schema && tempInput.schema.properties && tempInput.schema.properties.items && tempInput.schema.properties.items.type === 'array' && tempInput.schema.properties.items.items['$ref']) {
 			inputObj.validation = {
 				"type": "array",
 				"items": getIMFVfromCommonFields(commonFields, tempInput.schema.properties.items.items['$ref'])
@@ -1057,22 +1111,18 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			if (source.type === 'array') {
 				if (source.items['$ref'] || source.items.type === 'object') {
 					source.items = mapSimpleField(source.items);
-				}
-				else if (source.items.type === 'object') {
+				} else if (source.items.type === 'object') {
 					recursiveMapping(source.items);
 				}
-			}
-			else if (source.type === 'object') {
+			} else if (source.type === 'object') {
 				for (var property in source.properties) {
 					if (source.properties[property]['$ref']) {
 						source.properties[property] = mapSimpleField(source.properties[property]);
-					}
-					else if (source.properties[property].type === 'object' || source.properties[property].type === 'array') {
+					} else if (source.properties[property].type === 'object' || source.properties[property].type === 'array') {
 						recursiveMapping(source.properties[property]);
 					}
 				}
-			}
-			else {
+			} else {
 				//map simple inputs if nay
 				source = mapSimpleField(source);
 			}
@@ -1082,8 +1132,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 		function mapSimpleField(oneField) {
 			if (oneField['$ref']) {
 				return getIMFVfromCommonFields(commonFields, oneField['$ref']);
-			}
-			else {
+			} else {
 				return oneField;
 			}
 		}
@@ -1109,8 +1158,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			populateCommonFields(commonFields, function () {
 				resumeE();
 			});
-		}
-		else {
+		} else {
 			resumeE();
 		}
 		
@@ -1139,15 +1187,13 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				
 				customBody.imfv[swaggerParam.name] = inputObj;
 				
-				if (typeof(oldValues[swaggerParam.name]) === 'string' && oldValues[swaggerParam.name] !== '' && (inputObj.validation.type === 'object' || inputObj.validation.type === 'array')) {
+				if (typeof (oldValues[swaggerParam.name]) === 'string' && oldValues[swaggerParam.name] !== '' && (inputObj.validation.type === 'object' || inputObj.validation.type === 'array')) {
 					try {
 						customBody.input[swaggerParam.name] = JSON.parse(oldValues[swaggerParam.name]);
-					}
-					catch (e) {
+					} catch (e) {
 						customBody.input[swaggerParam.name] = oldValues[swaggerParam.name];
 					}
-				}
-				else {
+				} else {
 					customBody.input[swaggerParam.name] = oldValues[swaggerParam.name];
 				}
 			});
@@ -1180,10 +1226,9 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			/**
 			 * hook the headers
 			 */
-			if ($cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain })) {
-				headers.key = $cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain }).replace(/\"/g, '');
-			}
-			else {
+			if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
+				headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
+			} else {
 				headers.key = apiConfiguration.key;
 			}
 			
@@ -1192,9 +1237,9 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			// headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
 			// }
 			
-			var soajsAccessToken = $cookies.get('access_token', { 'domain': interfaceDomain });
+			var soajsAccessToken = $cookies.get('access_token', {'domain': interfaceDomain});
 			if (soajsAccessToken) {
-				query.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
+				query.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 			}
 			
 			// build request
@@ -1235,8 +1280,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				});
 			
 			return deferred.promise;
-		}
-		else {
+		} else {
 			var deferred = $q.defer(),
 				query = {},
 				headers = {
@@ -1306,23 +1350,20 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			 */
 			if (swagger.tenantKey) {
 				headers.key = swagger.tenantKey;
-			}
-			else if ($cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain })) {
-				headers.key = $cookies.get("soajs_dashboard_key", { 'domain': interfaceDomain }).replace(/\"/g, '');
-			}
-			else {
+			} else if ($cookies.get("soajs_dashboard_key", {'domain': interfaceDomain})) {
+				headers.key = $cookies.get("soajs_dashboard_key", {'domain': interfaceDomain}).replace(/\"/g, '');
+			} else {
 				headers.key = apiConfiguration.key;
 			}
 			
-			var soajsAccessToken = $cookies.get('access_token', { 'domain': interfaceDomain });
+			var soajsAccessToken = $cookies.get('access_token', {'domain': interfaceDomain});
 			if (soajsAccessToken) {
-				query.access_token = $cookies.get('access_token', { 'domain': interfaceDomain });
+				query.access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 			}
 			
 			if (Object.hasOwnProperty.call(swagger, 'tenant_access_token')) {
 				query.access_token = swagger.tenant_access_token;
-			}
-			else{
+			} else {
 				query.access_token = '';
 			}
 			

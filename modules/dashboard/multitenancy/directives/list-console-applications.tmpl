@@ -16,13 +16,9 @@
                     <span class="icon icon-pencil2" tooltip="{{translation.editApplication[LANG]}}"></span>
                 </a>
 
-                <a ng-if="access.tenant.application.update" href="" ng-click="editAppAcl(consoleTenants1['_id'], application['appId'])">
-                    <span class="icon icon-unlocked" tooltip="{{translation.editAppACL[LANG]}}"></span>
-                </a>
-
             </span>
             <div class="appKeys" id="appKeys{{application['appId']}}" ng-show="application.showKeys">
-                <div ng-include="'modules/dashboard/multitenancy/directives/list-keys.tmpl'"></div>
+                <div ng-include="'modules/dashboard/multitenancy/directives/list-keys-console.tmpl'"></div>
             </div>
         </li>
     </ul>

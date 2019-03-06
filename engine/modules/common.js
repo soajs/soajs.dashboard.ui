@@ -170,6 +170,7 @@ function getCodeMessage(code, service, orgMesg) {
 	return msg;
 }
 
+//check this later
 function returnLatestVersion(service) {
 	function compareNumbers(a, b) {
 		return b - a;

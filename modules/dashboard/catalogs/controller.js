@@ -2436,7 +2436,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
             listInfraProviders(currentScope, () => {
             	//if ($scope.form && $scope.form.entries) {
 	            //
-	            console.log($scope.form.entries)
                     $scope.form.entries.push({
                         'name': 'deploymentType',
                         'label': 'Deployment Type',

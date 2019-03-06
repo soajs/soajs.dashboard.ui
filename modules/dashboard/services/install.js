@@ -288,6 +288,10 @@ var srTranslation = {
 		"ENG": "Global",
 		"FRA": "Global"
 	},
+	"Method": {
+		"ENG": "Method",
+		"FRA": "Method"
+	},
 	"htmlFormJobsLabelFieldMsg": {
 		"ENG": "For sequential processing, specify the order of execution in the text boxes that appear next to job names",
 		"FRA": "For sequential processing, specify the order of execution in the text boxes that appear next to job names"

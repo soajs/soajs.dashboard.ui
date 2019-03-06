@@ -14,6 +14,10 @@ var ProdTranslation = {
 		"ENG": "Edit Package ACL",
 		"FRA": "Edit Package ACL"
 	},
+	"editProductACL": {
+		"ENG": "Edit Product ACL",
+		"FRA": "Edit Product ACL"
+	},
 	//config
 	"formProductNamePlaceholder": {
 		"ENG": "Test Product...",
@@ -117,6 +121,18 @@ var ProdTranslation = {
 		"ENG": "Modify ACL of Package",
 		"FRA": "Modify ACL of Package"
 	},
+	"modifyProductPackage": {
+		"ENG": "Modify Scope ACL of Product",
+		"FRA": "Modify Scope ACL of Product"
+	},
+	"selectAccessType": {
+		"ENG": "Select the type of access of this service",
+		"FRA": "Select the type of access of this service"
+	},
+	"checkRestrictAccessSelectedApi": {
+		"ENG": "Check if you want to restrict the access to certain selected api only",
+		"FRA": "Check if you want to restrict the access to certain selected api only"
+	},
 	//list
 	"areYouSureWantRemoveSelectedPackage": {
 		"ENG": "Are you sure you want to remove the selected package",
@@ -137,6 +153,10 @@ var ProdTranslation = {
 	"removeProduct": {
 		"ENG": "Remove Product",
 		"FRA": "Remove Product"
+	},
+	"includeVersion":{
+		"ENG": "Check to include this version of the service in your ACL",
+		"FRA": "Check to include this version of the service in your ACL"
 	}
 };
 
@@ -191,9 +211,47 @@ var productizationNav =[
 	},
 	{
 		'id': 'product-acl',
-		'label': translation.editPackageACL[LANG],
-		'url': '#/productization/:pid/editAcl/:code',
+		'label': translation.editProductACL[LANG],
+		'url': '#/productization/:pid/editProdAcl',
 		'tplPath': 'modules/dashboard/productization/directives/editAcl.tmpl',
+		'tracker': true,
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'product/scope/update',
+			'method': 'put'
+		},
+		'pillar':{
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
+		'ancestor': [translation.home[LANG], translation.productization[LANG]]
+	},
+	{
+		'id': 'product-console-acl',
+		'label': translation.editPackageACL[LANG],
+		'url': '#/consolePackages/:pid/editConsoleProdAcl/',
+		'tplPath': 'modules/dashboard/productization/directives/editConsoleProductAcl.tmpl',
+		'tracker': true,
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'product/scope/update',
+			'method': 'put'
+		},
+		'pillar':{
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
+		'ancestor': [translation.home[LANG], translation.consolePackages[LANG]]
+	},
+	{
+		'id': 'package-acl',
+		'label': translation.editPackageACL[LANG],
+		'url': '#/productization/:pid/editPackageAcl/:code',
+		'tplPath': 'modules/dashboard/productization/directives/editPackageAcl.tmpl',
 		'tracker': true,
 		'checkPermission':{
 			'service':'dashboard',
@@ -209,10 +267,10 @@ var productizationNav =[
 		'ancestor': [translation.home[LANG], translation.productization[LANG]]
 	},
 	{
-		'id': 'product-console-acl',
+		'id': 'package-acl',
 		'label': translation.editPackageACL[LANG],
-		'url': '#/consolePackages/:pid/editConsoleAcl/:code',
-		'tplPath': 'modules/dashboard/productization/directives/editConsoleAcl.tmpl',
+		'url': '#/productization/:pid/editConsolePackageAcl/:code',
+		'tplPath': 'modules/dashboard/productization/directives/editConsolePackageAcl.tmpl',
 		'tracker': true,
 		'checkPermission':{
 			'service':'dashboard',
@@ -225,7 +283,7 @@ var productizationNav =[
 			'position': 2
 		},
 		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
-		'ancestor': [translation.home[LANG], translation.consolePackages[LANG]]
-	}
+		'ancestor': [translation.home[LANG], translation.productization[LANG]]
+	},
 ];
 navigation = navigation.concat(productizationNav);

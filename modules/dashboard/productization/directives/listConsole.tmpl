@@ -1,17 +1,27 @@
 <section ng-controller="consoleCtrl" ng-show="grid.row">
-	<div class="body clearfix">
-		<a ng-if="access.addPck" style="top:0 " class="btn btn-sm btn-primary" href="" ng-click="addPackage(grid.row['_id'])">{{translation.addNewPackage[LANG]}}</a>
-		<div ng-if="access.listPck">
-			<ul class="blueListing">
-				<li class="blueLi" ng-repeat="package in grid.row.packages">
-					<a ng-click="viewPackage(package)" href="" ng-hide="package.showDetails">
-						<span class="icon icon-plus" tooltip="{{translation.expandPackages[LANG]}}"></span>
-					</a>
-					<a ng-click="closePackage(package)" href="" ng-show="package.showDetails">
-						<span class="icon icon-minus" tooltip="{{translation.collapsePackages[LANG]}}"></span>
-					</a>
-					<b>{{package['name']}}</b>&nbsp;[ {{package['code']}} ]  ( {{package['_TTL'] | TTL}} {{translation.hours[LANG]}} )
-					<span class="rightActions">
+	<accordion>
+		<accordion-group is-open="true">
+			<accordion-heading>
+				<span>{{grid.row["name"]}}</span>
+				<a ng-if="access.updateProdScope" href="" ng-click="editProdAcl(grid.row['_id'])">
+					<span style="float:right" class="icon icon-unlocked" tooltip="{{translation.modifyProductPackage[LANG]}}"></span>
+				</a>
+			</accordion-heading>
+			<div class="description">{{grid.row['description']}}</div>
+				<br/>
+				<div class="body clearfix">
+					<a ng-if="access.addPck" style="top:0 " class="btn btn-sm btn-primary" href="" ng-click="addPackage(grid.row['_id'])">{{translation.addNewPackage[LANG]}}</a>
+					<div ng-if="access.listPck">
+						<ul class="blueListing">
+							<li class="blueLi" ng-repeat="package in grid.row.packages">
+								<a ng-click="viewPackage(package)" href="" ng-hide="package.showDetails">
+									<span class="icon icon-plus" tooltip="{{translation.expandPackages[LANG]}}"></span>
+								</a>
+								<a ng-click="closePackage(package)" href="" ng-show="package.showDetails">
+									<span class="icon icon-minus" tooltip="{{translation.collapsePackages[LANG]}}"></span>
+								</a>
+								<b>{{package['name']}}</b>&nbsp;[ {{package['code']}} ]  ( {{package['_TTL'] | TTL}} {{translation.hours[LANG]}} )
+								<span class="rightActions">
 								<a ng-if="access.deletePck && !package.locked" href="" ng-confirm-click="{{translation.areYouSureWantRemoveSelectedPackage[LANG]}} ?" ng-click="removeProductPackage(grid.row['_id'], package['code']);">
 									<span class="icon icon-cross" tooltip="{{translation.removePackage[LANG]}}"></span>
 								</a>
@@ -28,9 +38,11 @@
 									<span class="icon icon-search" tooltip="{{translation.viewPackage[LANG]}}"></span>
 								</a>
                         	</span>
-					<div ng-show="package.showDetails"><em>{{package['description']}}</em></div>
-				</li>
-			</ul>
-		</div>
-	</div>
+								<div ng-show="package.showDetails"><em>{{package['description']}}</em></div>
+							</li>
+						</ul>
+					</div>
+				</div>
+		</accordion-group>
+	</accordion>
 </section>

@@ -1,8 +1,7 @@
 <section>
-	<div class='form' ng-controller="aclCtrl as formCtrl">
+	<div class='form' ng-controller="aclPackageCtrl as formCtrl">
 		<form novalidate="" class="css-form ng-pristine" name="">
-			<div class="header"><h3 class="">{{translation.modifyProductPackage[LANG]}}: {{product.name}}</h3></div>
-			
+			<div class="header"><h3 class="">{{translation.modifyACLPackage[LANG]}}: {{product.name}}</h3></div>
 			<div class="body">
 				<div ng-if="msg.type">
 					<alert type="{{msg.type}}">{{msg.msg}}</alert>
@@ -20,11 +19,11 @@
 								<fieldset class="custom-fieldset">
 									<legend>{{group}}</legend>
 									<div ng-repeat="service in allServiceApis" class="clearfix service-container" ng-if="service.name !== 'controller' && service.group ===group">
-										<div class="clearfix serviceNameHead">
-											<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
-										</div>
-										<div ng-include="'modules/dashboard/productization/directives/api-permission.tmpl'"></div>
-									</div>
+								<div class="clearfix serviceNameHead">
+									<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
+								</div>
+								<div ng-include="'modules/dashboard/productization/directives/api-permission-package.tmpl'"></div>
+							</div>
 								</fieldset>
 							</div>
 						</div>

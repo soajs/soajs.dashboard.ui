@@ -46,6 +46,15 @@ div.entryBox .body .btn-primary {
     margin-bottom: 10px;
 }
 
+.consoleKey {
+    float: right;
+    top: -10px;
+    position: inherit;
+    padding-top: 3px;
+    padding-bottom: 2px;
+    margin-left: 10px;
+}
+
 .tenantTab .entryBoxes .btn {
     float: right;
     margin-right: 5px;

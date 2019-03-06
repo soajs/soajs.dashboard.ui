@@ -67,32 +67,75 @@
 						<legend>{{grp}}</legend>
 						<span ng-if="val.defaultApi"><label>{{translation.defaultRoute[LANG]}}:</label> {{val.defaultApi}}<br></span>
 						
-						<table cellspacing="0" cellpadding="0" border="0" class="serviceApis" style="margin-right:15px">
-							<tbody>
-								<tr>
-									<th class="labelApi">{{translation.label[LANG]}}</th>
-									<th class="routeApi">{{translation.route[LANG]}}</th>
-								</tr>
-								<tr ng-repeat="myApi in val.apis1" ng-class-odd="'sApisOdd'" ng-class-even="'sApisEven'">
-									<td>{{myApi.l}}
-									</td>
-									<td><span>{{myApi.v}}</span>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-						<table ng-if="val.apis2.length>0" cellspacing="0" cellpadding="0" border="0" class="serviceApis">
-							<tbody>
-								<tr>
-									<th class="labelApi">{{translation.label[LANG]}}</th>
-									<th class="routeApi">{{translation.route[LANG]}}</th>
-								</tr>
-								<tr ng-repeat="myApi in val.apis2" ng-class-odd="'sApisOdd'" ng-class-even="'sApisEven'">
-									<td>{{myApi.l}}</td>
-									<td class=""><span>{{myApi.v}}</span></td>
-								</tr>
-							</tbody>
-						</table>
+						<div ng-if="val.Read">
+							<accordion close-others="true">
+							<accordion-group id="blueAccordion">
+								<accordion-heading>Read</accordion-heading>
+								<fieldset>
+									<div  ng-repeat="myApi in val.Read.apis">
+										<div class ="readApi">
+											<span class="readMethodApi">{{myApi.m}}</span>
+											<span class="readRouteApi">{{myApi.v}}</span>
+											<span class="readDescriptionApi">{{myApi.l}}</span>
+										</div>
+									</div>
+								</fieldset>
+							</accordion-group>
+							</accordion>
+						</div>
+						
+						<div ng-if="val.Add">
+							<accordion close-others="true">
+								<accordion-group id="greenAccordion">
+									<accordion-heading>Add</accordion-heading>
+									<fieldset>
+										<div  ng-repeat="myApi in val.Add.apis">
+											<div class ="addApi">
+												<span class="addMethodApi">{{myApi.m}}</span>
+												<span class="addRouteApi">{{myApi.v}}</span>
+												<span class="addDescriptionApi">{{myApi.l}}</span>
+											</div>
+										</div>
+									</fieldset>
+								</accordion-group>
+							</accordion>
+						</div>
+						
+						<div  ng-if="val.Update">
+							<accordion close-others="true">
+								<accordion-group id="orangeAccordion">
+									<accordion-heading>Update</accordion-heading>
+									<fieldset>
+										<div  ng-repeat="myApi in val.Update.apis">
+											<div class ="updateApi">
+												<span class="updateMethodApi">{{myApi.m}}</span>
+												<span class="updateRouteApi">{{myApi.v}}</span>
+												<span class="updateDescriptionApi">{{myApi.l}}</span>
+											</div>
+										</div>
+									</fieldset>
+								</accordion-group>
+							</accordion>
+							
+						</div>
+						
+						<div ng-if="val.Delete">
+							<accordion close-others="true">
+								<accordion-group id="redAccordion">
+									<accordion-heading>Delete</accordion-heading>
+									<fieldset>
+										<div  ng-repeat="myApi in val.Delete.apis">
+											<div class ="deleteApi">
+												<span class="deleteMethodApi">{{myApi.m}}</span>
+												<span class="deleteRouteApi">{{myApi.v}}</span>
+												<span class="deleteDescriptionApi">{{myApi.l}}</span>
+											</div>
+										</div>
+									</fieldset>
+								</accordion-group>
+							</accordion>
+						</div>
+						
 					</fieldset>
 				</accordion-group>
 			</accordion>

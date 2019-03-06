@@ -144,30 +144,39 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 		var result = { groups: {} };
 		var l = (arr) ? arr.length: 0;
 		var g = 'General';
+		let m = 'Read';
 		for (var i = 0; i < l; i++) {
 			if (arr[i][f]) {
 				g = arr[i][f];
 			}
-			if (!result.groups[g]) {
-				result.groups[g] = {};
-				result.groups[g].apis = [];
-			}
-			if (arr[i].groupMain === true) {
-				result.groups[g]['defaultApi'] = arr[i].v;
-			}
-			result.groups[g].apis.push(arr[i]);
-		}
-
-		var label;
-		for (label in result.groups) {
-			if (result.groups.hasOwnProperty(label)) {
-				if (result.groups[label].apis) {
-					var v = result.groups[label].apis.length / 2;
-					var c = Math.ceil(v);
-					result.groups[label].apis1 = result.groups[label].apis.slice(0, c);
-					result.groups[label].apis2 = result.groups[label].apis.slice(c, l);
+			if (arr[i].m) {
+				switch(arr[i].m.toLowerCase()) {
+					case 'get':
+						m = 'Read';
+						break;
+					case 'post':
+						m = 'Add';
+						break;
+					case 'put':
+						m = 'Update';
+						break;
+					case 'delete':
+						m = 'Delete';
+						break;
+					default:
+						m = 'Read';
 				}
 			}
+			if (!result.groups[g]) {
+				result.groups[g] = {};
+				result.groups[g][m] = {};
+				result.groups[g][m].apis = [];
+			}
+			if (!result.groups[g][m]){
+				result.groups[g][m] = {};
+				result.groups[g][m].apis = [];
+			}
+			result.groups[g][m].apis.push(arr[i]);
 		}
 		result._ver = version;
 		return result;

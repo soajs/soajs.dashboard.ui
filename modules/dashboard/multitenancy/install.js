@@ -248,7 +248,7 @@ var multitenancyNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'order': 2,
-		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js', 'modules/dashboard/multitenancy/services/servicesConfig.js'],
+		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/servicesConfig.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -270,46 +270,8 @@ var multitenancyNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'order': 7,
-		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js', 'modules/dashboard/multitenancy/services/servicesConfig.js'],
+		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/servicesConfig.js'],
 		'ancestor': [translation.home[LANG]]
-	},
-	{
-		'id': 'tenant-app-acl',
-		'label': translation.editAppACL[LANG],
-		'url': '#/multi-tenancy/:tId/editAcl/:appId',
-		'tplPath': 'modules/dashboard/multitenancy/directives/editAcl.tmpl',
-		'tracker': true,
-		'checkPermission':{
-			'service':'dashboard',
-			'route':'/tenant/application/update',
-			'method': 'put'
-		},
-		'pillar': {
-			'name': 'management',
-			'label': translation.manage[LANG],
-			'position': 2
-		},
-		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js'],
-		'ancestor': [translation.home[LANG], translation.multiTenancy[LANG]]
-	},
-	{
-		'id': 'tenant-app-console-acl',
-		'label': translation.editAppACL[LANG],
-		'url': '#/consoleTenants/:tId/editConsoleAcl/:appId',
-		'tplPath': 'modules/dashboard/multitenancy/directives/editConsoleAcl.tmpl',
-		'tracker': true,
-		'checkPermission':{
-			'service':'dashboard',
-			'route':'/tenant/application/update',
-			'method': 'put'
-		},
-		'pillar': {
-			'name': 'management',
-			'label': translation.manage[LANG],
-			'position': 2
-		},
-		'scripts': ['modules/dashboard/multitenancy/config.js', 'modules/dashboard/multitenancy/controller.js', 'modules/dashboard/multitenancy/services/multitenancy.js'],
-		'ancestor': [translation.home[LANG], translation.consoleTenants[LANG]]
-	},
+	}
 ];
 navigation = navigation.concat(multitenancyNav);

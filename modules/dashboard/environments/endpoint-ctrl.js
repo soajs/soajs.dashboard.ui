@@ -74,7 +74,6 @@ environmentsApp.controller('deployEndpointCtrl', ['$scope', '$cookies', 'injectF
 		
 		if($scope.$parent.currentDeployer.type !== 'manual'){
 			$scope.manualDeployment = false;
-			console.log(1)
 			$scope.listEndpoints();
 			$scope.checkHeapster();
 		}

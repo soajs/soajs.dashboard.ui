@@ -974,7 +974,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				console.log(angular.copy(response))
 				//var code = $routeParams.code;
 				if (!response.locked) {
 					for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {

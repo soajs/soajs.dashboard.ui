@@ -5,7 +5,7 @@
 				<br>
 				<div ng-show="aclFill[oneEnv.code][service.name].include" style="float: left;">
 					<span><b>{{translation.includeVersion[LANG]}}</b></span>
-					<span style="padding-left: 15px;"><input ng-model="aclFill[oneEnv.code][service.name][version['%v%']].include" type="checkbox" value ="{{aclFill[oneEnv.code][service.name][version['%v%']].include}}" ng-checked="aclFill[oneEnv.code][service.name][version['%v%']].include===true" /></span>
+					<span style="padding-left: 15px;"><input ng-model="aclFill[oneEnv.code][service.name][version['%v%']].include" type="checkbox" value ="{{aclFill[oneEnv.code][service.name][version['%v%']].include}}" ng-checked="aclFill[oneEnv.code][service.name][version['%v%']].include===true" ng-click="includeVersion(oneEnv.code, service, [version['%v%']], aclFill[oneEnv.code][service.name][version['%v%']].include)"/></span>
 				</div>
 				<div ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include">
 					<br> <br>

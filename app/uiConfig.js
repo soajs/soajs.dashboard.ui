@@ -6,8 +6,7 @@ var _soajsStore = "https://www.soajs.io/store";
 
 var protocol = window.location.protocol;
 
-const config = require('./app/config');
-var mydomain = config.host+":4000";
+var mydomain = "localhost:4000";
 
 //set the key
 var myKey = "";

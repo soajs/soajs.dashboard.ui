@@ -10,14 +10,14 @@
 				<br> <br>
 				<fieldset >
 					<div ng-repeat="(grp, val) in version" ng-if="grp !== '%v%' && grp !== '%group%'" class="width1 fieldsetBack">
-						<div ng-class="{greyedOut: aclFill[oneEnv.code][service.name][version['%v%']].include===true}" class="f-left width2">
+						<div ng-class="{unGreyedOut: aclFill[oneEnv.code][service.name][version['%v%']].include===true}" class="f-left width2">
 							<label > {{grp}}</label>
 						</div>
 						<div class="f-left" ng-repeat="method in val">
 							<div class="f-left">
 								<span class="spanPadding">
-									<input ng-class="{greyedOut: aclFill[oneEnv.code][service.name][version['%v%']].include===true}" ng-model="aclFill[oneEnv.code][service.name][version['%v%']][grp][method]" value="{{method}}" ng-disabled="!aclFill[oneEnv.code][service.name][version['%v%']].include" type="checkbox"/>
-									<label ng-class="{greyedOut: aclFill[oneEnv.code][service.name][version['%v%']].include===true}" style="padding-left: 4px; color: #333;">{{normalizeMethod(method)}}</label>
+									<input ng-class="{unGreyedOut: aclFill[oneEnv.code][service.name][version['%v%']].include===true}" ng-model="aclFill[oneEnv.code][service.name][version['%v%']][grp][method]" value="{{method}}" ng-disabled="!aclFill[oneEnv.code][service.name][version['%v%']].include" type="checkbox"/>
+									<label ng-class="{unGreyedOut: aclFill[oneEnv.code][service.name][version['%v%']].include===true}" style="padding-left: 4px; color: #333;">{{normalizeMethod(method)}}</label>
 								</span>
 							</div>
 						</div>

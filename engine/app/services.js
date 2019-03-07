@@ -726,6 +726,8 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	function prepareSaveObject(aclEnvFill, aclEnvObj) {
+		console.log(angular.copy(aclEnvFill))
+		console.log(angular.copy(aclEnvObj))
 		var code, grpCodes;
 		for (var serviceName in aclEnvFill) {
 			if (aclEnvFill.hasOwnProperty(serviceName)) {
@@ -759,11 +761,11 @@ soajsApp.service("aclDrawHelpers", function () {
 									if (service.apisRestrictPermission === true) {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
-									if (service.Read || service.Add || service.Update || service.Delete) {
+									if (service.get || service.put || service.post || service.delete) {
 										for (let method in service) {
 											
 											if (service[method].apis) {
-												aclEnvObj[serviceName][version][m] = {
+												aclEnvObj[serviceName][version][method] = {
 													apis: {}
 												};
 												
@@ -774,9 +776,9 @@ soajsApp.service("aclDrawHelpers", function () {
 															/// need to also check for the default api if restricted
 															aclEnvObj[serviceName][version][method].apis[apiName] = {};
 															if (api.accessType === 'private') {
-																aclEnvObj[serviceName][version][m].apis[apiName].access = true;
+																aclEnvObj[serviceName][version][method].apis[apiName].access = true;
 															} else if (api.accessType === 'public') {
-																aclEnvObj[serviceName][version][m].apis[apiName].access = false;
+																aclEnvObj[serviceName][version][method].apis[apiName].access = false;
 															} else if (api.accessType === 'groups') {
 																aclEnvObj[serviceName][version][method].apis[apiName].access = [];
 																grpCodes = aclEnvFill[version][serviceName][method].apis[apiName].grpCodes;

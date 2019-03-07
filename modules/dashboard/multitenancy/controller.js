@@ -733,33 +733,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 													$scope.listTenants();
 												}
 												else {
-													var key = response.key;
-													var postData = {
-														'expDate': null,
-														'device': null,
-														'geo': null,
-														'env': 'DASHBOARD'
-													};
-													getSendDataFromServer($scope, ngDataApi, {
-														"method": "post",
-														"routeName": "/dashboard/tenant/application/key/ext/add",
-														"data": postData,
-														"params": { "id": tId, "appId": appId, "key": key }
-													}, function (error) {
-														if (error) {
-															$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-															$scope.modalInstance.close();
-															$scope.form.formData = {};
-															$scope.listTenants();
-														}
-														else {
-															$scope.$parent.displayAlert('success', translation.TenantAddedSuccessfully[LANG]);
-															$scope.modalInstance.close();
-															$scope.form.formData = {};
-															$scope.listTenants();
-														}
-													});
-
+													$scope.modalInstance.close();
+													$scope.form.formData = {};
+													$scope.listTenants();
 												}
 											});
 

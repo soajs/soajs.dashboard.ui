@@ -2327,7 +2327,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		};
 		if (customSettings.key === data.extKey){
 			$scope.mt.displayAlert('danger', '0', tId, true, 'dashboard', 'Unable to Delete the tenant application ext Key.' +
-				' This key is being used to access console. Add a new External link and link it to the UI First.');
+				' This key is being used to access console. Add a new ext Key and link it to the console UI to be able to delete this one.');
 		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {

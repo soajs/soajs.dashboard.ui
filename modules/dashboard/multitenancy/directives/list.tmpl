@@ -36,7 +36,7 @@
                                         <div ng-include="'modules/dashboard/multitenancy/directives/list-applications.tmpl'"></div>
                                     </tab>
                                     <tab heading="{{translation.oAuthUsers[LANG]}}" ng-click="listOauthUsers(row)" ng-if="access.tenant.oauth.users.list"
-                                         ng-show="row.oauth.secret && row.oauth.secret!=='' && row.oauth.disabled === 0 && row.oauth.loginMode==='oauth'" >
+                                         ng-show="row.oauth.secret && row.oauth.secret!=='' && row.oauth.disabled === 0 && row.oauth.type!==0" >
                                         <div ng-include="'modules/dashboard/multitenancy/directives/list-oauth-users.tmpl'"></div>
                                     </tab>
                                 </tabset>

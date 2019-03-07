@@ -594,6 +594,10 @@ var translation = {
 		"ENG": "Tenant Application Keys",
 		"FRA": "Tenant Application Keys"
 	},
+	"tenantProductsKeys": {
+		"ENG": "Tenant Product Keys",
+		"FRA": "Tenant Product Keys"
+	},
 	"addkey": {
 		"ENG": "Add New Key",
 		"FRA": "Ajouter New key"
@@ -630,6 +634,10 @@ var translation = {
 		"ENG": "External Keys",
 		"FRA": "External Keys"
 	},
+	"addNewProductExternalKey": {
+		"ENG": "Add New Product External Key",
+		"FRA": "Add New Product External Key"
+	},
 	"addNewApplicationExternalKey": {
 		"ENG": "Add New Application External Key",
 		"FRA": "Add New Application External Key"
@@ -645,6 +653,10 @@ var translation = {
 	"addNewApplicationKey": {
 		"ENG": "Add New Application Key",
 		"FRA": "Add New Application Key"
+	},
+	"addNewProductKey": {
+		"ENG": "Add New Product Key",
+		"FRA": "Add New Product Key"
 	},
 	"removeApplicationKey": {
 		"ENG": "Remove Application Key",

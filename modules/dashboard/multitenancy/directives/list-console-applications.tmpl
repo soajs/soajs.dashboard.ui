@@ -11,7 +11,7 @@
             </a>
 	        [{{application['product']}} - {{application['package']}}] &nbsp; <span title="TTL" ng-if="application['_TTL']">( {{application['_TTL'] | TTL}} hours )</span>
             <span class="rightActions">
-
+	            
                 <a ng-if="access.tenant.application.update" href="" ng-click="editTenantApplication(consoleTenants1['_id'], application)">
                     <span class="icon icon-pencil2" tooltip="{{translation.editApplication[LANG]}}"></span>
                 </a>

@@ -2,8 +2,8 @@
 <em>{{translation.defaultPackage[LANG]}} - <b>{{application['package']}}</b></em>
 <br>
 <div ng-if="access.tenant.appKeys.list">
-    <div style="clear:both; height:30px; padding-bottom:5px;"><b>{{translation.tenantApplicationKeys[LANG]}}:</b>
-        <a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm" ng-click="addNewKey(row['_id'],application['appId'])" tooltip="{{translation.addNewApplicationKey[LANG]}}">{{translation.addkey[LANG]}}</a>
+    <div style="clear:both; height:30px; padding-bottom:5px;"><b>{{translation.tenantProductsKeys[LANG]}}:</b>
+        <a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm" ng-click="addNewKey(row['_id'],application['appId'])" tooltip="{{translation.addNewProductKey[LANG]}}">{{translation.addkey[LANG]}}</a>
     </div>
     <div class="keysAccordion">
         <accordion close-others="true" ng-show="application.keys.length > 0">
@@ -35,7 +35,7 @@
                     </tab>
                     <tab heading="{{translation.externalKeys[LANG]}}" ng-if="access.tenant.externalKeys.list">
                         <span ng-if="access.tenant.externalKeys.add"><br/>
-                            <button ng-click="addNewExtKey(row['_id'], application['appId'], key.key, application['package'])" class="btn btn-primary btn-sm">{{translation.addNewApplicationExternalKey[LANG]}}</button>
+                            <button ng-click="addNewExtKey(row['_id'], application['appId'], key.key, application['package'])" class="btn btn-primary btn-sm">{{translation.addNewProductExternalKey[LANG]}}</button>
                         </span>
                         <br/>
                         <div class="small-text" id="externalKeys{{$index}}">

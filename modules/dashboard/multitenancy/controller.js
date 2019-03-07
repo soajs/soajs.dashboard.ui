@@ -633,10 +633,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	$scope.addTenant = function () {
 		var formConfig = angular.copy(tenantConfig.form.tenantAdd);
 		for (let x = formConfig.entries.length - 1; x >= 0; x--) {
-			//remove client
-			// if (formConfig.entries[x].name === 'type'){
-			// 	formConfig.entries[x].value.splice(1, 1);
-			// }
 			
 			if (formConfig.entries[x].name === 'product'){
 				formConfig.entries[x].value = $scope.availableProducts;
@@ -2323,12 +2319,17 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	};
 	
 	$scope.removeExtKey = function (tId, appId, data, key) {
-		getSendDataFromServer($scope, ngDataApi, {
+		let opts = {
 			"method": "post",
 			"routeName": "/dashboard/tenant/application/key/ext/delete",
 			"data": { 'extKey': data.extKey, 'extKeyEnv': data.env },
 			"params": { "id": tId, "appId": appId, "key": key }
-		}, function (error) {
+		};
+		if (customSettings.key === data.extKey){
+			$scope.mt.displayAlert('danger', '0', tId, true, 'dashboard', 'Unable to Delete the tenant application ext Key.' +
+				' This key is being used to access console. Add a new External link and link it to the UI First.');
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
 			}

@@ -14,6 +14,10 @@
 			    <div class="description">{{consoleTenants1['description']}}</div>
 			    <div ng-if="access.tenant.application.list || access.tenant.oauth.users.list">
 				    <br/>
+				    <div class="keyAlerts" ng-show="mt[consoleTenants1['_id']].alerts.length >0" id="{{consoleTenants1['_id']}}">
+					    <alert ng-repeat="alert in mt[consoleTenants1['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert($index, consoleTenants1['_id'])">{{alert.msg}}</alert>
+					    <br/>
+				    </div>
 				    <tabset>
 					    <tab heading="{{translation.manageProducts[LANG]}}" ng-if="access.tenant.application.list">
 						    <div ng-include="'modules/dashboard/multitenancy/directives/list-console-applications.tmpl'"></div>

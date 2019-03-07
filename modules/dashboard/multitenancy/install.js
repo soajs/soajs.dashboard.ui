@@ -160,6 +160,10 @@ var mtTranslation = {
 		"ENG": "Add New Application",
 		"FRA": "Add New Application"
 	},
+	"addNewProduct": {
+		"ENG": "Add New Product",
+		"FRA": "Add New Product"
+	},
 	"addApplication": {
 		"ENG": "Add Application",
 		"FRA": "Add Application"

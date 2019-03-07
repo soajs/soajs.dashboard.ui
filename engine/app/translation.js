@@ -307,6 +307,10 @@ var translation = {
 		"ENG": "Manage Applications",
 		"FRA": "Manage Applications"
 	},
+	"manageProducts": {
+		"ENG": "Manage Products",
+		"FRA": "Manage Products"
+	},
 	"formTntNamePlaceHolder": {
 		"ENG": "Test Tenant",
 		"FRA": "Test Tenant"
@@ -556,6 +560,14 @@ var translation = {
 	"availableApplications": {
 		"ENG": "Available Applications",
 		"FRA": "Available Applications"
+	},
+	"availableProducts": {
+		"ENG": "Available Products",
+		"FRA": "Available Products"
+	},
+	"defaultPackage": {
+		"ENG": "Default Package",
+		"FRA": "Default Package"
 	},
 	"areYouSureRemoveSelectedApp": {
 		"ENG": "Are you sure you want to remove the selected application",

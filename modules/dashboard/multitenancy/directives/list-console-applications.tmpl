@@ -1,6 +1,6 @@
 <br/>
 <div class="applicationsGrid">
-    <label ng-show="consoleTenants1.applications.length > 0">{{translation.availableApplications[LANG]}}:</label>
+    <label ng-show="consoleTenants1.applications.length > 0">{{translation.availableProducts[LANG]}}:</label>
     <ul class="blueListing">
         <li class="blueLi" ng-repeat="application in consoleTenants1.applications" class="consoleTenants1-list">
             <a ng-click="openKeys(consoleTenants1['_id'], application)" href="" ng-hide="application.showKeys">
@@ -9,7 +9,7 @@
             <a ng-click="closeKeys(consoleTenants1['_id'], application)" href="" ng-show="application.showKeys">
                 <span class="icon icon-minus" tooltip="{{translation.collapseApplications[LANG]}}"></span>
             </a>
-	        [{{application['package']}}] &nbsp; <span title="TTL" ng-if="application['_TTL']">( {{application['_TTL'] | TTL}} hours )</span>
+	        [{{application['product']}} - {{application['package']}}] &nbsp; <span title="TTL" ng-if="application['_TTL']">( {{application['_TTL'] | TTL}} hours )</span>
             <span class="rightActions">
 
                 <a ng-if="access.tenant.application.update" href="" ng-click="editTenantApplication(consoleTenants1['_id'], application)">

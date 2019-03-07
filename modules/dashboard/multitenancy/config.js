@@ -226,29 +226,30 @@ var tenantConfig = {
 			'label': '',
 			'actions': {},
 			'entries': [
-				{
-					'name': 'type',
-					'label': translation.role[LANG],
-					'type': 'select',
-					'value': [
-						/*{
-						 'v': 'admin',
-						 'l': 'Administration Tenant'
-						 },*/
-						{
-							'v': 'product',
-							'l': translation.productTenant[LANG]
-						},
-						{
-							'v': 'client',
-							'l': translation.clientTenant[LANG],
-							'selected': true
-						}
-					],
-					'tooltip': translation.formTntTypeToolTip[LANG],
-					'required': true,
-					'fieldMsg': translation.formTntTypeFieldMsg[LANG]
-				},
+				// {
+				// 	'name': 'type',
+				// 	'label': translation.role[LANG],
+				// 	'type': 'select',
+				// 	'value': [
+				// 		{
+				// 		 'v': 'admin',
+				// 		 'l': 'Administration Tenant'
+				// 		{
+				// 			'v': 'product',
+				// 			'l': translation.productTenant[LANG],
+				// 			'selected': true
+				// 		},
+				// 		{
+				// 			'v': 'client',
+				// 			'l': translation.clientTenant[LANG],
+				// 			'selected': true
+				// 		}
+				// 	],
+				// 	'tooltip': '',
+				// 	'required': true,
+				// 	'fieldMsg': '',
+				// 	'disabled': true
+				// },
 				{
 					'name': 'name',
 					'label': 'Name',
@@ -367,17 +368,17 @@ var tenantConfig = {
 					'placeholder': translation.formpProductPlaceHolder[LANG],
 					'value': '',
 					'tooltip': '',
-					'required': false
-				},
-				{
-					'name': 'package',
-					'label': translation.productPackage[LANG],
-					'type': 'text',
-					'placeholder': translation.formProductPackagePlaceHolder[LANG],
-					'value': '',
-					'tooltip': translation.formProductPackageToolTip[LANG],
 					'required': true
 				},
+				// {
+				// 	'name': 'package',
+				// 	'label': translation.productPackage[LANG],
+				// 	'type': 'text',
+				// 	'placeholder': translation.formProductPackagePlaceHolder[LANG],
+				// 	'value': '',
+				// 	'tooltip': translation.formProductPackageToolTip[LANG],
+				// 	'required': true
+				// },
 				{
 					'name': 'description',
 					'label': translation.description[LANG],

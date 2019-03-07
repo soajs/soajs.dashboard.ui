@@ -370,12 +370,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		//formConfig.entries[0].type = 'readonly';
 		//formConfig.label = 'Edit Basic Tenant Information';
 		formConfig.timeout = $timeout;
-		
-		/*
-		 if(oAuth.redirectURI) {
-		 data.redirectURI = oAuth.redirectURI;
-		 }
-		 */
 		var keys = Object.keys(data);
 		
 		for (let i = formConfig.entries.length - 1; i >= 0; i--) {
@@ -418,11 +412,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'label': translation.updateTenant[LANG],
 					'btn': 'primary',
 					'action': function (formData) {
-						if (Array.isArray(formData.type)) var tType = formData.type[0];
-						else var tType = formData.type;
 						
 						var postData = {
-							'type': tType,
+							'type': 'product',
 							'name': formData.name,
 							'description': formData.description,
 							'tag': formData.tag
@@ -473,33 +465,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				}
 			]
 		};
-		
-		/*if ($scope.access.tenant.oauth.delete) {
-		 options.actions.push(
-		 {
-		 'type': 'submit',
-		 'label': translation.deleteoAuthInfo[LANG],
-		 'btn': 'danger',
-		 'action': function () {
-		 getSendDataFromServer($scope, ngDataApi, {
-		 "method": "delete",
-		 "routeName": "/dashboard/tenant/oauth/delete",
-		 "params": {"id": data['_id']}
-		 }, function (error) {
-		 if (error) {
-		 $scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-		 }
-		 else {
-		 $scope.$parent.displayAlert('success', translation.TenantOAuthDeletedSuccessfully[LANG]);
-		 $scope.modalInstance.close();
-		 $scope.form.formData = {};
-		 $scope.listTenants();
-		 }
-		 });
-		 }
-		 }
-		 );
-		 }*/
 		
 		buildFormWithModal($scope, $modal, options);
 	};
@@ -669,14 +634,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		var formConfig = angular.copy(tenantConfig.form.tenantAdd);
 		for (let x = formConfig.entries.length - 1; x >= 0; x--) {
 			//remove client
-			if (formConfig.entries[x].name === 'type'){
-				formConfig.entries[x].value.splice(1, 1);
-				
-			}
-			if (formConfig.entries[x].name === 'dashboardPackage'){
-				formConfig.entries.splice(x, 1);
-				
-			}
+			// if (formConfig.entries[x].name === 'type'){
+			// 	formConfig.entries[x].value.splice(1, 1);
+			// }
 			
 			if (formConfig.entries[x].name === 'product'){
 				formConfig.entries[x].value = $scope.availableProducts;
@@ -692,15 +652,16 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'label': translation.package[LANG],
 							'type': 'select',
 							'tooltip': translation.formPackagePlaceHolder[LANG],
-							'required': false,
+							'required': true,
 							'fieldMsg': translation.formPackageToolTip[LANG],
 							'value':  packages
 						};
 					//insert at a the package after the product
-					form.entries.splice(4, 0, pack);
-					if (form.entries[5].name !== "tag"){
-						form.entries.splice(5, 1);
+					form.entries.splice(3, 0, pack);
+					if (form.entries[4].name !== "tag"){
+						form.entries.splice(4, 1);
 					}
+					
 				}
 			}
 		}
@@ -717,12 +678,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'btn': 'primary',
 					'action': function (formData) {
 						var tCode = $scope.generateTenantCode(formData.name);
-						var tType = "";
-						if (Array.isArray(formData.type)) tType = formData.type[0];
-						else tType = formData.type;
 						
 						var postData = {
-							'type': tType,
+							'type': 'product',
 							'code': tCode,
 							'name': formData.name,
 							'description': formData.description,
@@ -918,7 +876,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		user.confirmPassword = null;
 		var options = {
 			timeout: $timeout,
-			form: tenantConfig.form.oauthUserUpdate,
+			form: angular.copy(tenantConfig.form.oauthUserUpdate),
 			name: 'updateUser',
 			label: translation.updateUser[LANG],
 			data: user,
@@ -975,7 +933,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	$scope.addOauthUser = function (tId) {
 		var options = {
 			timeout: $timeout,
-			form: tenantConfig.form.oauthUser,
+			form: angular.copy(tenantConfig.form.oauthUse),
 			name: 'add_oauthUser',
 			label: translation.addNewoAuthUser[LANG],
 			data: {
@@ -1035,15 +993,33 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			if (oneEn.type === 'select') {
 				oneEn.value[0].selected = true;
 			}
-			if (oneEn.name === 'package') {
-				oneEn.type = "select";
-				oneEn.value = $scope.availablePackages;
-			}
-			if (oneEn.name === 'product') {
-				oneEn.name = 'Prod';
+			if (oneEn.name === 'product'){
+				oneEn.type = 'select';
+				oneEn.value = $scope.availableProducts;
+				oneEn.onAction =  function (id, selected, form) {
+					let packages = [];
+					$scope.availablePackages.forEach((pack)=>{
+						if (pack.prodCode === selected){
+							packages.push(pack);
+						}
+					});
+					let pack = {
+						'name': 'package',
+						'label': translation.package[LANG],
+						'type': 'select',
+						'tooltip': translation.formPackagePlaceHolder[LANG],
+						'required': false,
+						'fieldMsg': translation.formPackageToolTip[LANG],
+						'value':  packages
+					};
+					//insert at a the package after the product
+					form.entries.splice(1, 0, pack);
+					if (form.entries[2].name !== "description"){
+						form.entries.splice(2, 1);
+					}
+				}
 			}
 		});
-		
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -1067,12 +1043,14 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							var packageCode = formData.package.split("_")[1];
 							postData.productCode = productCode;
 							postData.packageCode = packageCode;
-							getSendDataFromServer($scope, ngDataApi, {
+							overlayLoading.hide();
+							let opts = {
 								"method": "post",
 								"routeName": "/dashboard/tenant/application/add",
 								"data": postData,
 								"params": { "id": tId }
-							}, function (error) {
+							};
+							getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 								overlayLoading.hide();
 								if (error) {
 									$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -1102,8 +1080,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			]
 		};
 		
-		formConfig.entries.splice(0, 1);
-		
 		buildFormWithModal($scope, $modal, options);
 	};
 	
@@ -1111,9 +1087,18 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		var formConfig = angular.copy(tenantConfig.form.application);
 		var recordData = angular.copy(data);
 		recordData._TTL = recordData._TTL / 3600000;
-		
-		formConfig.entries[1].type = "html";
-		formConfig.entries[0].type = "html";
+		let pack = {
+			'name': 'package',
+			'label': translation.productPackage[LANG],
+			'type': 'text',
+			'placeholder': translation.formProductPackagePlaceHolder[LANG],
+			'value': '',
+			'tooltip': translation.formProductPackageToolTip[LANG],
+			'required': true
+		};
+		formConfig.entries.splice(1, 0, pack);
+		formConfig.entries[0].disabled = true;
+		formConfig.entries[1].disabled = true;
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -2012,8 +1997,18 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		var recordData = angular.copy(data);
 		recordData._TTL = recordData._TTL / 3600000;
 		
-		formConfig.entries[1].type = "html";
-		formConfig.entries[0].type = "html";
+		let pack = {
+			'name': 'package',
+			'label': translation.productPackage[LANG],
+			'type': 'text',
+			'placeholder': translation.formProductPackagePlaceHolder[LANG],
+			'value': '',
+			'tooltip': translation.formProductPackageToolTip[LANG],
+			'required': true
+		};
+		formConfig.entries.splice(1, 0, pack);
+		formConfig.entries[0].disabled = true;
+		formConfig.entries[1].disabled = true;
 		var options = {
 			timeout: $timeout,
 			form: formConfig,

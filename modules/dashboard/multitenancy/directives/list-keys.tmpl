@@ -1,4 +1,6 @@
-<em>{{application['description']}}</em>
+<em>{{application['description']}}</em><br>
+<em>{{translation.defaultPackage[LANG]}} - <b>{{application['package']}}</b></em>
+<br>
 <div ng-if="access.tenant.appKeys.list">
     <div style="clear:both; height:30px; padding-bottom:5px;"><b>{{translation.tenantApplicationKeys[LANG]}}:</b>
         <a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm" ng-click="addNewKey(row['_id'],application['appId'])" tooltip="{{translation.addNewApplicationKey[LANG]}}">{{translation.addkey[LANG]}}</a>

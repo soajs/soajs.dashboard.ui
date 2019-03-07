@@ -118,12 +118,12 @@ var ProdTranslation = {
 	},
 	//editAcl
 	"modifyACLPackage": {
-		"ENG": "Modify ACL of Package",
-		"FRA": "Modify ACL of Package"
+		"ENG": "Modify ACL For Package",
+		"FRA": "Modify ACL For Package"
 	},
 	"modifyProductPackage": {
-		"ENG": "Modify Scope ACL of Product",
-		"FRA": "Modify Scope ACL of Product"
+		"ENG": "Modify Scope ACL For Product",
+		"FRA": "Modify Scope ACL For Product"
 	},
 	"selectAccessType": {
 		"ENG": "Select the type of access of this service",

@@ -726,8 +726,6 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	function prepareSaveObject(aclEnvFill, aclEnvObj) {
-		console.log(angular.copy(aclEnvFill))
-		console.log(angular.copy(aclEnvObj))
 		var code, grpCodes;
 		for (var serviceName in aclEnvFill) {
 			if (aclEnvFill.hasOwnProperty(serviceName)) {

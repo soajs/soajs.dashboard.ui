@@ -122,10 +122,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'firstName': formData.firstName,
 									'lastName': formData.lastName,
 									'email': formData.email,
-									'groups': [formData.groups],
+									'groups': formData.groups ? [formData.groups] : [],
 									'tId': tenantId,
 									'tCode': tenantCode
 								};
+								
 								overlayLoading.show();
 								var opts = {
 									"method": "post",

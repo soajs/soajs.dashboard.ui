@@ -13,7 +13,7 @@
 					<tab heading="Members">
 						<br/>
 
-						<div ng-controller="tenantMembersCtrl">\
+						<div ng-controller="tenantMembersCtrl">
                                 <span ng-if="tenantMembers.access.adminUser.addUser" ng-init="tenantMembers.initialize(row)">
                                     <a href="" ng-click="tenantMembers.addMember()" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
 	                                <br/><br/>

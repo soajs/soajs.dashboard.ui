@@ -711,6 +711,9 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	$scope.msg = {};
 	
 	$scope.normalizeMethod = function (method) {
+		if (!method){
+			return null
+		}
 		let newMethod;
 		switch(method.toLowerCase()) {
 			case 'get':
@@ -896,17 +899,6 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
 			$scope.aclFill[envCode][service.name][version].accessType= "public";
-			
-			if (service.versions[version] && service.versions[version].apis && service.versions[version].apis.length > 0){
-				service.versions[version].apis.forEach((oneApi)=>{
-					if(!$scope.aclFill[envCode][service.name][version][oneApi.m]){
-						$scope.aclFill[envCode][service.name][version][oneApi.m] = {
-							apis: {}
-						};
-					}
-					$scope.aclFill[envCode][service.name][version][oneApi.m].apis[oneApi.v] = {accessType: "public"};
-				});
-			}
 		}
 	};
 	
@@ -1104,17 +1096,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
 			$scope.aclFill[envCode][service.name][version].accessType= "public";
-
-			if (service.versions[version] && service.versions[version].apis && service.versions[version].apis.length > 0){
-				service.versions[version].apis.forEach((oneApi)=>{
-					if(!$scope.aclFill[envCode][service.name][version][oneApi.m]){
-						$scope.aclFill[envCode][service.name][version][oneApi.m] = {
-							apis: {}
-						};
-					}
-					$scope.aclFill[envCode][service.name][version][oneApi.m].apis[oneApi.v] = {accessType: "public"};
-				});
-			}
 		}
 	};
 	
@@ -1137,6 +1118,9 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 	
 	$scope.normalizeMethod = function (method) {
 		let newMethod;
+		if (!method){
+			return null;
+		}
 		switch(method.toLowerCase()) {
 			case 'get':
 				newMethod = 'Read';
@@ -1157,19 +1141,19 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 	};
 	
 	$scope.minimize = function (envCode, service) {
-		if(!$scope.aclFill[envCode][service.name]){
-			$scope.aclFill[envCode][service.name] = {};
+		if(!$scope.aclFill[envCode][service]){
+			$scope.aclFill[envCode][service] = {};
 		}
-		$scope.aclFill[envCode][service.name].collapse = false;
-		$scope.aclFill[envCode][service.name].include = true;
+		$scope.aclFill[envCode][service].collapse = false;
+		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if(!$scope.aclFill[envCode][service.name]){
-			$scope.aclFill[envCode][service.name] = {};
+		if(!$scope.aclFill[envCode][service]){
+			$scope.aclFill[envCode][service] = {};
 		}
-		$scope.aclFill[envCode][service.name].collapse = true;
-		$scope.aclFill[envCode][service.name].include = true;
+		$scope.aclFill[envCode][service].collapse = true;
+		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.getPackageAcl = function () {
@@ -1205,9 +1189,10 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 					return;
 				}
 				$scope.product = response;
-				$scope.aclFill = response.scope && response.scope.acl  ? response.scope.acl : {};
+				$scope.aclFill = $scope.currentPackage.acl;
+				$scope.scopeFill = response.scope && response.scope.acl  ? response.scope.acl : {};
 				$scope.$evalAsync(function ($scope) {
-					aclHelpers.fillAcl($scope);
+					aclHelpers.fillPackageAcl($scope);
 				});
 			}
 		});
@@ -1246,33 +1231,33 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				response.records.forEach(function (serv) {
-					if (serv.apis) {
-						if($scope.serviceGroup.indexOf(serv.group) === -1){
-							$scope.serviceGroup.push(serv.group);
-						}
-						let aclVersion = aclHelpers.groupApisForPackageDisplay(serv.versions[version].apis, 'group');
-						aclVersion["%v%"] = 1;
-						serv.fixList = aclVersion;
-						delete serv.apis;
-					}
-					else {
-						let acl = [];
-						if (serv.versions) {
-							for (let version in serv.versions) {
-								if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
-									if($scope.serviceGroup.indexOf(serv.group) === -1){
-										$scope.serviceGroup.push(serv.group);
-									}
-									let aclVersion = aclHelpers.groupApisForPackageDisplay(serv.versions[version].apis, 'group');
-									aclVersion["%v%"] = version;
-									acl.push(aclVersion);
-								}
-							}
-							serv.fixList = acl;
-						}
-					}
-				});
+				// response.records.forEach(function (serv) {
+				// 	if (serv.apis) {
+				// 		if($scope.serviceGroup.indexOf(serv.group) === -1){
+				// 			$scope.serviceGroup.push(serv.group);
+				// 		}
+				// 		let aclVersion = aclHelpers.groupApisForPackageDisplay(serv.versions[version].apis, 'group');
+				// 		aclVersion["%v%"] = 1;
+				// 		serv.fixList = aclVersion;
+				// 		delete serv.apis;
+				// 	}
+				// 	else {
+				// 		let acl = [];
+				// 		if (serv.versions) {
+				// 			for (let version in serv.versions) {
+				// 				if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
+				// 					if($scope.serviceGroup.indexOf(serv.group) === -1){
+				// 						$scope.serviceGroup.push(serv.group);
+				// 					}
+				// 					let aclVersion = aclHelpers.groupApisForPackageDisplay(serv.versions[version].apis, 'group');
+				// 					aclVersion["%v%"] = version;
+				// 					acl.push(aclVersion);
+				// 				}
+				// 			}
+				// 			serv.fixList = acl;
+				// 		}
+				// 	}
+				// });
 				$scope.allServiceApis = response.records;
 				$scope.getEnvironments();
 			}
@@ -1282,8 +1267,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.saveACL = function () {
 		var productId = $routeParams.pid;
 		var postData = $scope.currentPackage;
-		console.log($scope)
-		console.log(angular.copy($scope.aclFill))
 		var result = aclHelpers.constructAclFromPost($scope.aclFill, true);
 		postData.acl = result.data;
 		if (!result.valid) {
@@ -1301,7 +1284,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 				'_TTL': postData._TTL
 			}
 		};
-		overlayLoading.hide();
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
 			overlayLoading.hide();
 			if (error) {
@@ -1341,6 +1323,9 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	
 	$scope.normalizeMethod = function (method) {
 		let newMethod;
+		if (!method){
+			return null;
+		}
 		switch(method.toLowerCase()) {
 			case 'get':
 				newMethod = 'Read';
@@ -1450,33 +1435,6 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				response.records.forEach(function (serv) {
-					if (serv.apis) {
-						if($scope.serviceGroup.indexOf(serv.group) === -1){
-							$scope.serviceGroup.push(serv.group);
-						}
-						let aclVersion = aclHelpers.groupApisForDisplay(serv.versions.apis, 'group');
-						aclVersion["%v%"] = 1;
-						serv.fixList = aclVersion;
-						delete serv.apis;
-					}
-					else {
-						let acl = [];
-						if (serv.versions) {
-							for (let version in serv.versions) {
-								if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
-									if($scope.serviceGroup.indexOf(serv.group) === -1){
-										$scope.serviceGroup.push(serv.group);
-									}
-									let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
-									aclVersion["%v%"] = version;
-									acl.push(aclVersion);
-								}
-							}
-							serv.fixList = acl;
-						}
-					}
-				});
 				$scope.allServiceApis = response.records;
 				$scope.getEnvironments();
 			}
@@ -1502,21 +1460,19 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				"code": postData.code.split("_")[1],
 				'_TTL': postData._TTL
 			}
-		}
-		console.log(angular.copy(options));
+		};
 		overlayLoading.show();
-		overlayLoading.hide();
-		// getSendDataFromServer($scope, ngDataApi, options, function (error) {
-		// 	overlayLoading.hide();
-		// 	if (error) {
-		// 		$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-		// 	}
-		// 	else {
-		// 		$scope.msg.type = '';
-		// 		$scope.msg.msg = '';
-		// 		$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
-		// 	}
-		// });
+		getSendDataFromServer($scope, ngDataApi, options, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$scope.msg.type = '';
+				$scope.msg.msg = '';
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+			}
+		});
 	};
 	
 	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi, v) {

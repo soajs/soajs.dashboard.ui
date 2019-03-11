@@ -12,23 +12,6 @@
 						Add your environment before you can edit the ACL.
 					</alert>
 				</div>
-				<!--<tabset>-->
-					<!--<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>-->
-						<!--<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">-->
-							<!--<div id="s_{{oneEnv}}_{{group._id}}" ng-repeat="group in serviceGroup">-->
-								<!--<fieldset class="custom-fieldset">-->
-									<!--<legend>{{group}}</legend>-->
-									<!--<div ng-repeat="service in allServiceApis" class="clearfix service-container" ng-if="service.name !== 'controller' && service.group ===group">-->
-								<!--<div class="clearfix spearHead">-->
-									<!--<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>-->
-								<!--</div>-->
-								<!--<div ng-include="'modules/dashboard/productization/directives/api-permission-package.tmpl'"></div>-->
-							<!--</div>-->
-								<!--</fieldset>-->
-							<!--</div>-->
-						<!--</div>-->
-					<!--</tab>-->
-				<!--</tabset>-->
 				<tabset>
 					<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
 						<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">

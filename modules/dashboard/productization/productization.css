@@ -27,7 +27,11 @@
 }
 
 .spanPadding {
-    padding-left: 35px;
+    padding-left: 5px;
+}
+
+.spanWidth {
+    width: 76px;
 }
 
 .fieldsetBack {

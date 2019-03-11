@@ -13,14 +13,12 @@
 						<div ng-class="{unGreyedOut: aclFill[oneEnv.code][s][v].include===true}" class="f-left width2">
 							<label > {{grp}}</label>
 						</div>
-						<div class="f-left" ng-repeat="method in val">
-							<div class="f-left">
+						<div class="f-left spanWidth" ng-repeat="method in val">
 								<span class="spanPadding">
 									
 									<input ng-class="{unGreyedOut: aclFill[oneEnv.code][s][v].include===true}" ng-model="aclFill[oneEnv.code][s][v][grp][method]" value="{{method}}" ng-disabled="!aclFill[oneEnv.code][s][v].include" type="checkbox"/>
-									<label ng-class="{unGreyedOut: aclFill[oneEnv.code][s][v].include===true}" style="padding-left: 4px; color: #333;">{{normalizeMethod(method)}}</label>
+									<label ng-class="{unGreyedOut: aclFill[oneEnv.code][s][v].include===true}" style="padding-left: 1%; color: #333;">{{normalizeMethod(method)}}</label>
 								</span>
-							</div>
 						</div>
 						<br>
 					</div>

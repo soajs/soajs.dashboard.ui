@@ -80,7 +80,7 @@ var gitAccountsAppConfig = {
 									currentProvider = formConfig.entries[0].value[i];
 								}
 							}
-							if (currentProvider.v === 'bitbucket' && !formConfig.entries[6] && !formConfig.entries[7]) {
+							if (currentProvider && currentProvider.v === 'bitbucket' && !formConfig.entries[6] && !formConfig.entries[7]) {
 								var oauth = [
 									{
 										'name': 'oauthKey',
@@ -106,7 +106,7 @@ var gitAccountsAppConfig = {
 								];
 								formConfig.entries.splice(6, 0, oauth[0], oauth[1], oauth[2]);
 							}
-							else if (currentProvider.v === 'github') {
+							else if (currentProvider && currentProvider.v === 'github') {
 								var githubMessage = {
 									"name": "tokenMessage",
 									"type": "html",

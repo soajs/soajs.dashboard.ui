@@ -164,8 +164,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 			else {
 				response.forEach(function (oneEnv) {
-					$scope.availableEnv.push(oneEnv.code.toLowerCase());
-					
 					if(oneEnv.services && oneEnv.services.config){
 						$scope.availableEnvThrottling[oneEnv.code.toLowerCase()] = oneEnv.services.config.throttling || null;
 					}
@@ -175,7 +173,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						if (response[x].code.toUpperCase() === "DASHBOARD") {
 							response.splice(x, 1);
 						} else {
-							$scope.availableEnv.push(response[x].code.toLowerCase());
+							if (response[x].code.toUpperCase() !== "DASHBOARD" && $scope.availableEnv.indexOf(response[x].code.toLowerCase() === -1)){
+								$scope.availableEnv.push(response[x].code.toLowerCase());
+							}
 							if (response[x].services && response[x].services.config) {
 								$scope.availableEnvThrottling[response[x].code.toLowerCase()] = response[x].services.config.throttling || null;
 							}
@@ -319,22 +319,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			
 			//re-render allowed environments
 			oneTenant.applications.forEach((oneApplication) => {
-				$scope.availablePackages.forEach((onePackage) => {
-					if(onePackage.pckCode === oneApplication.package) {
-						if(!oneApplication.availableEnvs){
-							oneApplication.availableEnvs = [];
-						}
-						
-						let packAclEnv = Object.keys(onePackage.acl);
-						packAclEnv.forEach((onePackAclEnv) => {
-							if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
-								oneApplication.availableEnvs.push(onePackAclEnv);
-							}
-						});
-					}
-				});
+				oneApplication.availableEnvs = $scope.availableEnv;
 			});
 		});
+		
 		$scope.originalTenants = angular.copy($scope.tenantTabs);
 		callback();
 	};
@@ -1150,21 +1138,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 									break;
 								}
 							}
-							
-							$scope.availablePackages.forEach((onePackage) => {
-								if(onePackage.pckCode === app.package) {
-									if(!app.availableEnvs){
-										app.availableEnvs = [];
-									}
-									
-									let packAclEnv = Object.keys(onePackage.acl);
-									packAclEnv.forEach((onePackAclEnv) => {
-										if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
-											app.availableEnvs.push(onePackAclEnv);
-										}
-									});
-								}
-							});
+							app.availableEnvs = $scope.availableEnv
 						});
 						
 						
@@ -2060,21 +2034,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 									break;
 								}
 							}
-							
-							$scope.availablePackages.forEach((onePackage) => {
-								if(onePackage.pckCode === app.package) {
-									if(!app.availableEnvs){
-										app.availableEnvs = [];
-									}
-									
-									let packAclEnv = Object.keys(onePackage.acl);
-									packAclEnv.forEach((onePackAclEnv) => {
-										if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
-											app.availableEnvs.push(onePackAclEnv);
-										}
-									});
-								}
-							});
+							app.availableEnvs = $scope.availableEnv
 						});
 						
 						

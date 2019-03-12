@@ -957,7 +957,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.getConsoleScope = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/product/get",
+			"routeName": "/dashboard/console/product/list",
 			"params": {
 				"id": $routeParams.pid
 			}
@@ -966,15 +966,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				//var code = $routeParams.code;
-				if (!response.locked) {
-					for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
-						if ($scope.environments_codes[i].code === 'DASHBOARD') {
-							$scope.environments_codes.splice(i, 1);
-							break;
-						}
-					}
-				}
 			
 				if ($scope.environments_codes.length === 0) {
 					overlayLoading.hide();
@@ -1141,19 +1132,25 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 	};
 	
 	$scope.minimize = function (envCode, service) {
+		if (!$scope.aclFill[envCode]){
+			$scope.aclFill[envCode] = {};
+		}
 		if(!$scope.aclFill[envCode][service]){
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = false;
-		$scope.aclFill[envCode][service].include = true;
+		$scope.aclFill[envCode][service].include = false;
 	};
 	
 	$scope.expand = function (envCode, service) {
+		if (!$scope.aclFill[envCode]){
+			$scope.aclFill[envCode] = {};
+		}
 		if(!$scope.aclFill[envCode][service]){
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = true;
-		$scope.aclFill[envCode][service].include = true;
+		$scope.aclFill[envCode][service].include = false;
 	};
 	
 	$scope.getPackageAcl = function () {
@@ -1346,19 +1343,25 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	};
 	
 	$scope.minimize = function (envCode, service) {
-		if(!$scope.aclFill[envCode][service.name]){
-			$scope.aclFill[envCode][service.name] = {};
+		if (!$scope.aclFill[envCode]){
+			$scope.aclFill[envCode] = {};
 		}
-		$scope.aclFill[envCode][service.name].collapse = false;
-		$scope.aclFill[envCode][service.name].include = true;
+		if(!$scope.aclFill[envCode][service]){
+			$scope.aclFill[envCode][service] = {};
+		}
+		$scope.aclFill[envCode][service].collapse = false;
+		$scope.aclFill[envCode][service].include = false;
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if(!$scope.aclFill[envCode][service.name]){
-			$scope.aclFill[envCode][service.name] = {};
+		if (!$scope.aclFill[envCode]){
+			$scope.aclFill[envCode] = {};
 		}
-		$scope.aclFill[envCode][service.name].collapse = true;
-		$scope.aclFill[envCode][service.name].include = true;
+		if(!$scope.aclFill[envCode][service]){
+			$scope.aclFill[envCode][service] = {};
+		}
+		$scope.aclFill[envCode][service].collapse = true;
+		$scope.aclFill[envCode][service].include = false;
 	};
 	
 	$scope.getPackageAcl = function () {
@@ -1376,7 +1379,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				var code = $routeParams.code;
 				if (!response.locked) {
 					for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
-						if ($scope.environments_codes[i].code === 'DASHBOARD') {
+						if ($scope.environments_codes[i].code !== 'DASHBOARD') {
 							$scope.environments_codes.splice(i, 1);
 							break;
 						}

@@ -1139,7 +1139,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = false;
-		$scope.aclFill[envCode][service].include = false;
+		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.expand = function (envCode, service) {
@@ -1150,7 +1150,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = true;
-		$scope.aclFill[envCode][service].include = false;
+		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.getPackageAcl = function () {
@@ -1323,7 +1323,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = false;
-		$scope.aclFill[envCode][service].include = false;
+		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.expand = function (envCode, service) {
@@ -1334,7 +1334,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = true;
-		$scope.aclFill[envCode][service].include = false;
+		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.getPackageAcl = function () {
@@ -1413,7 +1413,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		var productId = $routeParams.pid;
 		var postData = $scope.currentPackage;
 		
-		var result = aclHelpers.constructAclFromPost($scope.aclFill);
+		var result = aclHelpers.constructAclFromPost($scope.aclFill, true);
 		postData.acl = result.data;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);

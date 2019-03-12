@@ -1,9 +1,9 @@
-<div class="body listApis" ng-class="{openApis: aclFill[oneEnv.code][s].collapse }">
+<div class="body listApis" ng-class="{openApis: aclFill[oneEnv.code][s].include===true && aclFill[oneEnv.code][s].collapse }">
 	<div>
 		<tabset>
 			<tab ng-repeat="(v, version) in service" heading="v{{v}}">
 				<br>
-				<div  style="float: left;">
+				<div ng-show="aclFill[oneEnv.code][s].include" style="float: left;">
 					<span><b>{{translation.includeVersion[LANG]}}</b></span>
 					<span style="padding-left: 15px;"><input id="{{oneEnv.code}}_{{s}}_{{v}}_none" ng-model="aclFill[oneEnv.code][s][v].include" value="false" type="checkbox"/></span>
 				</div>

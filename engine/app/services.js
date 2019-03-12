@@ -874,7 +874,6 @@ soajsApp.service("aclDrawHelpers", function () {
 				}
 			}
 		}
-		console.log(angular.copy(aclEnvObj))
 		return {'valid': true};
 	}
 	

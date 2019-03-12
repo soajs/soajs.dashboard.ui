@@ -1228,33 +1228,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				// response.records.forEach(function (serv) {
-				// 	if (serv.apis) {
-				// 		if($scope.serviceGroup.indexOf(serv.group) === -1){
-				// 			$scope.serviceGroup.push(serv.group);
-				// 		}
-				// 		let aclVersion = aclHelpers.groupApisForPackageDisplay(serv.versions[version].apis, 'group');
-				// 		aclVersion["%v%"] = 1;
-				// 		serv.fixList = aclVersion;
-				// 		delete serv.apis;
-				// 	}
-				// 	else {
-				// 		let acl = [];
-				// 		if (serv.versions) {
-				// 			for (let version in serv.versions) {
-				// 				if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
-				// 					if($scope.serviceGroup.indexOf(serv.group) === -1){
-				// 						$scope.serviceGroup.push(serv.group);
-				// 					}
-				// 					let aclVersion = aclHelpers.groupApisForPackageDisplay(serv.versions[version].apis, 'group');
-				// 					aclVersion["%v%"] = version;
-				// 					acl.push(aclVersion);
-				// 				}
-				// 			}
-				// 			serv.fixList = acl;
-				// 		}
-				// 	}
-				// });
 				$scope.allServiceApis = response.records;
 				$scope.getEnvironments();
 			}
@@ -1377,14 +1350,6 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			}
 			else {
 				var code = $routeParams.code;
-				if (!response.locked) {
-					for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
-						if ($scope.environments_codes[i].code !== 'DASHBOARD') {
-							$scope.environments_codes.splice(i, 1);
-							break;
-						}
-					}
-				}
 				for (var x = 0; x < response.packages.length; x++) {
 					if (response.packages[x].code === code) {
 						$scope.currentPackage = angular.copy(response.packages[x]);
@@ -1397,8 +1362,8 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 					return;
 				}
 				$scope.product = response;
-				$scope.aclFill = angular.copy($scope.currentPackage.acl);
-				$scope.aclScopeFill = response.scope ? angular.copy(response.scope.acl) : {};
+				$scope.aclFill = $scope.currentPackage.acl;
+				$scope.scopeFill = response.scope && response.scope.acl  ? response.scope.acl : {};
 				$scope.$evalAsync(function ($scope) {
 					aclHelpers.fillPackageAcl($scope);
 				});

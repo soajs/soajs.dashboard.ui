@@ -33,6 +33,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
+				console.log(response)
 				var l = response.records.length;
 				for (var x = 0; x < l; x++) {
 					if (response.records[x].apis) {

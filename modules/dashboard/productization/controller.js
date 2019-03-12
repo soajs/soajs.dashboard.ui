@@ -787,7 +787,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 					$scope.oldACL = false;
 					$scope.aclFill = response.scope.acl;
 					$scope.$evalAsync(function ($scope) {
-						aclHelpers.fillPackageAcl($scope);
+						aclHelpers.fillAcl($scope);
 					});
 				}
 				else {
@@ -1005,7 +1005,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 					$scope.aclFill = response.scope.acl;
 					$scope.oldACL = false;
 					$scope.$evalAsync(function ($scope) {
-						aclHelpers.fillPackageAcl($scope);
+						aclHelpers.fillAcl($scope);
 					});
 				}
 				else {

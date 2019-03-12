@@ -24,19 +24,6 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 				}
 			}
 		});
-		
-		if (count === 0) {
-			//old schema
-			myAcl[envCodes[0].code.toUpperCase()] = aclFill;
-			propagateAcl(currentScope, myAcl[envCodes[0].code.toUpperCase()]);
-			envCodes.forEach(function (oneEnv) {
-				if (oneEnv.code !== envCodes[0].code) {
-					myAcl[oneEnv.code.toUpperCase()] = angular.copy(myAcl[envCodes[0].code]);
-				}
-			});
-			currentScope.msg.type = 'warning';
-			currentScope.msg.msg = translation.warningMsgAcl[LANG];
-		}
 		currentScope.aclFill = myAcl;
 		
 		overlayLoading.hide();

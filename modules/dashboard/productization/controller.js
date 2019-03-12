@@ -783,10 +783,17 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 					return;
 				}
 				$scope.product = response;
-				$scope.aclFill = response.scope && response.scope.acl  ? response.scope.acl : {};
-				$scope.$evalAsync(function ($scope) {
-					aclHelpers.fillAcl($scope);
-				});
+				if (response.scope && response.scope.acl){
+					$scope.oldACL = false;
+					$scope.aclFill = response.scope.acl;
+					$scope.$evalAsync(function ($scope) {
+						aclHelpers.fillPackageAcl($scope);
+					});
+				}
+				else {
+					$scope.oldACL = true;
+					overlayLoading.hide();
+				}
 			}
 		});
 	};
@@ -901,7 +908,29 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			$scope.aclFill[envCode][service.name][version].accessType= "public";
 		}
 	};
-	
+	$scope.purgeACL = function () {
+		var productId = $routeParams.pid;
+		let options = {
+			"method": "get",
+			"routeName": "/dashboard/product/purge",
+			"params": {
+				"id": productId
+			}
+		};
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, options, function (error) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				overlayLoading.hide();
+			}
+			else {
+				$scope.msg.type = '';
+				$scope.msg.msg = '';
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.getAllServicesList();
+			}
+		});
+	};
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
 	overlayLoading.show(function () {
@@ -972,10 +1001,17 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 					return;
 				}
 				$scope.product = response;
-				$scope.aclFill = response.scope && response.scope.acl  ? response.scope.acl : {};
-				$scope.$evalAsync(function ($scope) {
-					aclHelpers.fillAcl($scope);
-				});
+				if (response.scope && response.scope.acl){
+					$scope.aclFill = response.scope.acl;
+					$scope.oldACL = false;
+					$scope.$evalAsync(function ($scope) {
+						aclHelpers.fillPackageAcl($scope);
+					});
+				}
+				else {
+					$scope.oldACL = true;
+					overlayLoading.hide();
+				}
 			}
 		});
 	};
@@ -1089,7 +1125,29 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			$scope.aclFill[envCode][service.name][version].accessType= "public";
 		}
 	};
-	
+	$scope.purgeACL = function () {
+		var productId = $routeParams.pid;
+		let options = {
+			"method": "get",
+			"routeName": "/dashboard/product/purge",
+			"params": {
+				"id": productId
+			}
+		};
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, options, function (error) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				overlayLoading.hide();
+			}
+			else {
+				$scope.msg.type = '';
+				$scope.msg.msg = '';
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.getAllServicesList();
+			}
+		});
+	};
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
 	overlayLoading.show(function () {
@@ -1187,10 +1245,17 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 				}
 				$scope.product = response;
 				$scope.aclFill = $scope.currentPackage.acl;
-				$scope.scopeFill = response.scope && response.scope.acl  ? response.scope.acl : {};
-				$scope.$evalAsync(function ($scope) {
-					aclHelpers.fillPackageAcl($scope);
-				});
+				if (response.scope && response.scope.acl){
+					$scope.scopeFill = response.scope.acl;
+					$scope.oldACL = false;
+					$scope.$evalAsync(function ($scope) {
+						aclHelpers.fillPackageAcl($scope);
+					});
+				}
+				else {
+					$scope.oldACL = true;
+					overlayLoading.hide();
+				}
 			}
 		});
 	};
@@ -1245,7 +1310,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 		}
 		overlayLoading.show();
 		let options = {
-			"method": "put",
+			"method": "get",
 			"routeName": "/dashboard/product/packages/update",
 			"data": postData,
 			"params": {
@@ -1266,7 +1331,29 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 			}
 		});
 	};
-	
+	$scope.purgeACL = function () {
+		var productId = $routeParams.pid;
+		let options = {
+			"method": "get",
+			"routeName": "/dashboard/product/purge",
+			"params": {
+				"id": productId
+			}
+		};
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, options, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				$scope.msg.type = '';
+				$scope.msg.msg = '';
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.$parent.go("/productization");
+			}
+		});
+	};
 	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi) {
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi);
 	};
@@ -1363,10 +1450,17 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				}
 				$scope.product = response;
 				$scope.aclFill = $scope.currentPackage.acl;
-				$scope.scopeFill = response.scope && response.scope.acl  ? response.scope.acl : {};
-				$scope.$evalAsync(function ($scope) {
-					aclHelpers.fillPackageAcl($scope);
-				});
+				if (response.scope && response.scope.acl){
+					$scope.scopeFill = response.scope.acl;
+					$scope.oldACL = false;
+					$scope.$evalAsync(function ($scope) {
+						aclHelpers.fillPackageAcl($scope);
+					});
+				}
+				else {
+					$scope.oldACL = true;
+					overlayLoading.hide();
+				}
 			}
 		});
 	};
@@ -1439,6 +1533,31 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+			}
+		});
+	};
+	
+	$scope.purgeACL = function () {
+		var productId = $routeParams.pid;
+		let options = {
+			"method": "get",
+			"routeName": "/dashboard/product/purge",
+			"params": {
+				"id": productId
+			}
+		};
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, options, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				
+			}
+			else {
+				$scope.msg.type = '';
+				$scope.msg.msg = '';
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.$parent.go("/consolePackages");
 			}
 		});
 	};

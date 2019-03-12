@@ -82,11 +82,9 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 											if(v[method].length > 0){
 												v[method].forEach((group)=>{
 													if (!fixAcl[env][service][v.version][group]){
-														fixAcl[env][service][v.version][group] = [];
+														fixAcl[env][service][v.version][group] = {};
 													}
-													if (fixAcl[env][service][v.version][group].indexOf(method) === -1){
-														fixAcl[env][service][v.version][group].push(method);
-													}
+													fixAcl[env][service][v.version][group][method]= true;
 												});
 											}
 										}

@@ -16,8 +16,8 @@
 				<span class="manualToolTip">The service port should be equal or greater than 4100</span>
 				<br>
 				<label>{{translation.serviceVersion[LANG]}}</label>
-				<input type="number" class="form-control" ng-model="form.formData.serviceVersion" ng-required="true" placeholder="1"/>
-				<span class="manualToolTip">The service version should be equal or greater than 1</span>
+				<input type="text" class="form-control" ng-model="form.formData.serviceVersion" ng-required="true" ng-pattern="/^(\d+\.)?(\d+\.)?(\*|\d+)$/" placeholder="1"/>
+				<span class="manualToolTip">The service version should be equal or greater than 123</span>
 				<br>
 				<label>{{translation.requestTimeout[LANG]}}</label>
 				<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="true" placeholder="30"/>

@@ -109,8 +109,8 @@ var swaggerEditorConfig = {
 			{
 				'name': 'serviceVersion',
 				'label': "Service version",
-				'type': 'number',
-				'min': 1,
+				'type': 'text',
+				'pattern': /^(\d+\.)?(\d+\.)?(\*|\d+)$/,
 				'placeholder': "1",
 				'value': '',
 				'tooltip': "Enter your service version",

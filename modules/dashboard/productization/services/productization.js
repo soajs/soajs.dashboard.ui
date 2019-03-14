@@ -129,9 +129,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 							}
 							fixList[env][group][service] = {};
 							for (let version in scopeAcl[env][service]) {
-								fixList[env][group][service] = {
-									[version] : {}
-								};
+								fixList[env][group][service][version] = {};
 								if (scopeAcl[env][service].hasOwnProperty(version)) {
 									if (scopeAcl[env][service][version].apisPermission === "restricted" && (scopeAcl[env][service][version].get || scopeAcl[env][service][version].post || scopeAcl[env][service][version].delete || scopeAcl[env][service][version].put)){
 										let methods = ["get", "post", "delete", "put"];

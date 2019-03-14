@@ -605,7 +605,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 	};
 	
 	$scope.editPackAcl = function (productId, code) {
-		$scope.$parent.go("/productization/" + productId + "/editConsolePackageAcl/" + code);
+		$scope.$parent.go("/consolePackages/" + productId + "/editConsolePackageAcl/" + code);
 	};
 	
 	$scope.editPackage = function (productId, data) {

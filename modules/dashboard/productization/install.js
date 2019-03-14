@@ -267,9 +267,9 @@ var productizationNav =[
 		'ancestor': [translation.home[LANG], translation.productization[LANG]]
 	},
 	{
-		'id': 'package-acl',
+		'id': 'console-package-acl',
 		'label': translation.editPackageACL[LANG],
-		'url': '#/productization/:pid/editConsolePackageAcl/:code',
+		'url': '#/consolePackages/:pid/editConsolePackageAcl/:code',
 		'tplPath': 'modules/dashboard/productization/directives/editConsolePackageAcl.tmpl',
 		'tracker': true,
 		'checkPermission':{
@@ -283,7 +283,7 @@ var productizationNav =[
 			'position': 2
 		},
 		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
-		'ancestor': [translation.home[LANG], translation.productization[LANG]]
+		'ancestor': [translation.home[LANG], translation.consolePackages[LANG]]
 	},
 ];
 navigation = navigation.concat(productizationNav);

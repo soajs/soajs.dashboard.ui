@@ -19,7 +19,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 			if (aclFill && aclFill[oneEnv.code.toLowerCase()]) {
 				if (objectIsEnv(aclFill[oneEnv.code.toLowerCase()])) {
 					count++;
-					myAcl[oneEnv.code.toUpperCase()] = aclFill[oneEnv.code.toLowerCase()];
+					myAcl[oneEnv.code.toUpperCase()] = reFormACL(aclFill[oneEnv.code.toLowerCase()]);
 					propagateAcl(currentScope, myAcl[oneEnv.code.toUpperCase()]);
 				}
 			}
@@ -27,6 +27,45 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		currentScope.aclFill = myAcl;
 		
 		overlayLoading.hide();
+	}
+	
+	function reFormACL(acl) {
+		let newForm = {};
+		if (acl && Object.keys(acl).length > 0){
+			for (let service in acl){
+				if (acl.hasOwnProperty(service) && acl[service]){
+					newForm[service] = {};
+					for (let version in acl[service]){
+						if ( acl[service].hasOwnProperty(version) &&  acl[service][version]){
+							newForm[service][version] = {};
+							if (acl[service][version].apisPermission){
+								newForm[service][version].apisPermission = acl[service][version].apisPermission;
+							}
+							if (acl[service][version].get || acl[service][version].post || acl[service][version].put || acl[service][version].delete) {
+								for (var method in acl[service][version]) {
+									if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['get', 'put', 'post', 'delete'].indexOf(method)!== -1 && acl[service][version][method].length > 0) {
+										if (!newForm[service][version][method]){
+											newForm[service][version][method] = {};
+										}
+										acl[service][version][method].forEach((oneMethod)=>{
+											if (oneMethod.group && oneMethod.apis){
+												if (!newForm[service][version][method][oneMethod.group]){
+													newForm[service][version][method][oneMethod.group] = {
+														apis: {}
+													};
+												}
+												newForm[service][version][method][oneMethod.group].apis = oneMethod.apis;
+											}
+										});
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return newForm;
 	}
 	
 	function propagateAcl(currentScope, aclFill) {
@@ -87,6 +126,42 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		overlayLoading.hide();
 	}
 	
+	function reFormPackACL(acl) {
+		let newForm = {};
+		if (acl && Object.keys(acl).length > 0){
+			for (let service in acl){
+				if (acl.hasOwnProperty(service) && acl[service]){
+					newForm[service] = {};
+					for (let version in acl[service]){
+						if ( acl[service].hasOwnProperty(version) &&  acl[service][version]){
+							newForm[service][version] = {};
+							if (acl[service][version].apisPermission){
+								newForm[service][version].apisPermission = acl[service][version].apisPermission;
+							}
+							if (acl[service][version].get || acl[service][version].post || acl[service][version].put || acl[service][version].delete) {
+								for (var method in acl[service][version]) {
+									if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['get', 'put', 'post', 'delete'].indexOf(method)!== -1 && acl[service][version][method].length > 0) {
+										acl[service][version][method].forEach((oneMethod)=>{
+											if (oneMethod.group && oneMethod.apis){
+												if (!newForm[service][version][oneMethod.group]){
+													newForm[service][version][oneMethod.group] = [];
+												}
+												if (newForm[service][version][oneMethod.group].indexOf(method) === -1){
+													newForm[service][version][oneMethod.group].push(method);
+												}
+											}
+										});
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return newForm;
+	}
+	
 	function compareWithScope(currentScope) {
 		let scopeAcl = angular.copy(currentScope.scopeFill);
 		let allServiceApis = angular.copy(currentScope.allServiceApis);
@@ -113,11 +188,14 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 			}
 		});
 		let fixList = {};
+		let reformedScope = {};
 		currentScope.serviceGroup = [];
 		if (scopeAcl && Object.keys(scopeAcl.length > 0)){
 			for (let env in scopeAcl){
-				if(scopeAcl.hasOwnProperty(env)){
+				if(scopeAcl.hasOwnProperty(env) && scopeAcl[env]){
 					fixList[env] = {};
+					reformedScope = reFormPackACL(scopeAcl[env]);
+					
 					groups.forEach((oneGroup)=>{
 						fixList[env][oneGroup] = {};
 					});
@@ -132,24 +210,9 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 								fixList[env][group][service][version] = {};
 								if (scopeAcl[env][service].hasOwnProperty(version)) {
 									if (scopeAcl[env][service][version].apisPermission === "restricted" && (scopeAcl[env][service][version].get || scopeAcl[env][service][version].post || scopeAcl[env][service][version].delete || scopeAcl[env][service][version].put)){
-										let methods = ["get", "post", "delete", "put"];
-										methods.forEach((oneMethod)=>{
-											if(scopeAcl[env][service][version][oneMethod] && scopeAcl[env][service][version][oneMethod].apis){
-												for (let api in scopeAcl[env][service][version][oneMethod].apis){
-													if (scopeAcl[env][service][version][oneMethod].apis.hasOwnProperty(api)){
-														
-														if (serviceList[service][version] && serviceList[service][version][api]){
-															if (!fixList[env][group][service][version][serviceList[service][version][api].group]){
-																fixList[env][group][service][version][serviceList[service][version][api].group] = [];
-															}
-															if (fixList[env][group][service][version][serviceList[service][version][api].group].indexOf(oneMethod) === -1){
-																fixList[env][group][service][version][serviceList[service][version][api].group].push(oneMethod);
-															}
-														}
-													}
-												}
-											}
-										});
+										fixList[env][group][service][version] = reformedScope[service][version];
+										delete fixList[env][group][service][version].apisPermission;
+										
 									}
 									else {
 										for (let api in serviceList[service][version]){

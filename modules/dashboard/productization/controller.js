@@ -1104,7 +1104,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			}
 		};
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			overlayLoading.hide();
+		overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
@@ -1314,7 +1314,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 		}
 		overlayLoading.show();
 		let options = {
-			"method": "get",
+			"method": "put",
 			"routeName": "/dashboard/product/packages/update",
 			"data": postData,
 			"params": {

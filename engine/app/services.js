@@ -493,12 +493,8 @@ soajsApp.service("aclDrawHelpers", function () {
 				}
 				result[defaultGroupName].apisRest[apisArray[i].m].push(apisArray[i]);
 			}
-			if (apisArray[i].groupMain === true) {
-				result[defaultGroupName]['defaultApi'] = apisArray[i].v;
-			}
 			result[defaultGroupName].apis.push(apisArray[i]);
 		}
-		
 		return result;
 	}
 	
@@ -527,94 +523,89 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	function applyApiRestriction(aclFill, service) {
-		if (service.name) {
-			var aclServiceVersions = aclFill[service.name];
-		}
-		for (var version in aclServiceVersions) {
-			if (aclServiceVersions.hasOwnProperty(version)) {
-				let aclService = aclServiceVersions[version];
-				if (aclService && aclService.apisRestrictPermission === true) {
-					for (var grpLabel in service.fixList) {
-						if (service.fixList.hasOwnProperty(grpLabel)) {
-							var defaultApi = service.fixList[grpLabel]['defaultApi'];
-							if (defaultApi) {
-								var found = false;
-								if (service.fixList[grpLabel].apisRest) {
-									for (var m in service.fixList[grpLabel].apisRest) {
-										if (aclService[m]) {
-											if (aclService[m].apis && aclService[m].apis[defaultApi] && aclService[m].apis[defaultApi].include === true) {
-												found = true;
-												break;
-											}
-										}
-									}
-									if (!found) {
-										for (var m in service.fixList[grpLabel].apisRest) {
-											if (aclService[m]) {
-												service.fixList[grpLabel].apisRest[m].forEach(function (oneApi) {
-													if (aclService[m].apis && aclService[m].apis[oneApi.v]) {
-														aclService[m].apis[oneApi.v].include = false;
-													}
-												});
-											}
-										}
-									}
-								} else if (aclService.apis) {
-									if ((!aclService.apis[defaultApi]) || aclService.apis[defaultApi].include !== true) {
-										service.fixList[grpLabel]['apis'].forEach(function (oneApi) {
-											if (aclService.apis[oneApi.v]) {
-												aclService.apis[oneApi.v].include = false;
-											}
-										});
-									}
-								}
-								service.fixList[grpLabel].defaultIncluded = found;
-							}
-						}
-					}
-				}
-			}
-		}
+		
+		// if (service.name) {
+		// 	var aclServiceVersions = aclFill[service.name];
+		// }
+		// for (var version in aclServiceVersions) {
+		// 	if (aclServiceVersions.hasOwnProperty(version)) {
+		// 		let aclService = aclServiceVersions[version];
+		// 		if (aclService && aclService.apisRestrictPermission === true) {
+		// 			for (var grpLabel in service.fixList) {
+		// 				if (service.fixList.hasOwnProperty(grpLabel)) {
+		// 					var defaultApi = service.fixList[grpLabel]['defaultApi'];
+		// 					if (defaultApi) {
+		// 						var found = false;
+		// 						if (service.fixList[grpLabel].apisRest) {
+		// 							for (var m in service.fixList[grpLabel].apisRest) {
+		// 								if (aclService[m]) {
+		// 									if (aclService[m].apis && aclService[m].apis[defaultApi] && aclService[m].apis[defaultApi].include === true) {
+		// 										found = true;
+		// 										break;
+		// 									}
+		// 								}
+		// 							}
+		// 							if (!found) {
+		// 								for (var m in service.fixList[grpLabel].apisRest) {
+		// 									if (aclService[m]) {
+		// 										service.fixList[grpLabel].apisRest[m].forEach(function (oneApi) {
+		// 											if (aclService[m].apis && aclService[m].apis[oneApi.v]) {
+		// 												aclService[m].apis[oneApi.v].include = false;
+		// 											}
+		// 										});
+		// 									}
+		// 								}
+		// 							}
+		// 						}
+		// 						service.fixList[grpLabel].defaultIncluded = found;
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 	
 	function checkForGroupDefault(aclFill, service, grp, val, myApi, v) {
-		var defaultApi;
-		if (service.fixList && service.fixList.length > 0) {
-			service.fixList.forEach((oneVersion) => {
-				if (oneVersion['%v%'] === v) {
-					defaultApi = oneVersion[grp]['defaultApi'];
-				}
-			});
-		}
-		var found = true;
-		if (myApi.groupMain === true) {
-			if (val.apisRest && myApi.m) {
-				if (aclFill[service.name][v][myApi.m].apis) {
-					if (aclFill[service.name][v][myApi.m].apis[defaultApi] && aclFill[service.name][v][myApi.m].apis[defaultApi].include !== true) {
-						found = false;
-						for (var m in val.apisRest) {
-							if (aclFill[service.name][v][m]) {
-								val.apisRest[m].forEach(function (one) {
-									if (aclFill[service.name][v][m].apis[one.v]) {
-										aclFill[service.name][v][m].apis[one.v].include = false;
-									}
-								});
-							}
-						}
-					}
-				}
-			} else if (aclFill[service.name][v].apis) {
-				if ((aclFill[service.name][v].apis[defaultApi]) && aclFill[service.name][v].apis[defaultApi].include !== true) {
-					found = false;
-					val.apis.forEach(function (one) {
-						if (aclFill[service.name][v].apis[one.v]) {
-							aclFill[service.name][v].apis[one.v].include = false;
-						}
-					});
-				}
-			}
-			service.fixList[v][grp].defaultIncluded = found;
-		}
+		
+		// var defaultApi;
+		// if (service.fixList && service.fixList.length > 0) {
+		// 	service.fixList.forEach((oneVersion) => {
+		// 		if (oneVersion['%v%'] === v) {
+		// 			defaultApi = oneVersion[grp]['defaultApi'];
+		// 		}
+		// 	});
+		// }
+		// var found = true;
+		// if (myApi.groupMain === true) {
+		//
+		// 	if (val.apisRest && myApi.m) {
+		// 		if (aclFill[service.name][v][myApi.m].apis) {
+		// 			if (aclFill[service.name][v][myApi.m].apis[defaultApi] && aclFill[service.name][v][myApi.m].apis[defaultApi].include !== true) {
+		// 				found = false;
+		// 				for (var m in val.apisRest) {
+		// 					if (aclFill[service.name][v][m]) {
+		// 						val.apisRest[m].forEach(function (one) {
+		// 							if (aclFill[service.name][v][m].apis[one.v]) {
+		// 								aclFill[service.name][v][m].apis[one.v].include = false;
+		// 							}
+		// 						});
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	} else if (aclFill[service.name][v].apis) {
+		// 		if ((aclFill[service.name][v].apis[defaultApi]) && aclFill[service.name][v].apis[defaultApi].include !== true) {
+		// 			found = false;
+		// 			val.apis.forEach(function (one) {
+		// 				if (aclFill[service.name][v].apis[one.v]) {
+		// 					aclFill[service.name][v].apis[one.v].include = false;
+		// 				}
+		// 			});
+		// 		}
+		// 	}
+		// 	service.fixList[v][grp].defaultIncluded = found;
+		// }
 	}
 	
 	function fillServiceAccess(service, currentService) {
@@ -650,26 +641,25 @@ soajsApp.service("aclDrawHelpers", function () {
 		}
 	}
 	
-	function fillApiAccess(apis, forcePrivate) {
-		for (var apiName in apis) {
-			if (apis.hasOwnProperty(apiName)) {
-				apis[apiName].include = true;
-				apis[apiName].accessType = 'clear';
-				if (forcePrivate === true) {
-					// This variable is set to true only in the user ACL.
-					apis[apiName].accessType = 'clear';
-				} else {
-					if (apis[apiName].access === true) {
-						apis[apiName].accessType = 'private';
-					} else if (apis[apiName].access === false) {
-						apis[apiName].accessType = 'public';
-					} else {
-						if (Array.isArray(apis[apiName].access)) {
-							apis[apiName].accessType = 'groups';
-							apis[apiName].grpCodes = {};
-							apis[apiName].access.forEach(function (c) {
-								apis[apiName].grpCodes[c] = true;
-							});
+	function fillApiAccess(method) {
+		for (var group in method) {
+			if (method.hasOwnProperty(group) && method[group]) {
+				for (var apiName in method[group].apis) {
+					if (method[group].apis.hasOwnProperty(apiName) && method[group].apis[apiName]) {
+						method[group].apis[apiName].include = true;
+						method[group].apis[apiName].accessType = 'clear';
+						if (method[group].apis[apiName].access === true) {
+							method[group].apis[apiName].accessType = 'private';
+						} else if (method[group].apis[apiName].access === false) {
+							method[group].apis[apiName].accessType = 'public';
+						} else {
+							if (Array.isArray(method[group].apis[apiName].access)) {
+								method[group].apis[apiName].accessType = 'groups';
+								method[group].apis[apiName].grpCodes = {};
+								method[group].apis[apiName].access.forEach(function (c) {
+									method[group].apis[apiName].grpCodes[c] = true;
+								});
+							}
 						}
 					}
 				}
@@ -677,48 +667,16 @@ soajsApp.service("aclDrawHelpers", function () {
 		}
 	}
 	
-	function fillServiceApiAccess(service, currentService, forcePrivate) {
-		function grpByMethod(service, fixList) {
-			var byMethod = false;
-			for (var grp in fixList) {
-				if (fixList[grp].apisRest) {
-					byMethod = true;
-					for (var method in fixList[grp].apisRest) {
-						if (!service[method]) {
-							service[method] = {
-								apis: {}
-							};
-						}
-						fixList[grp].apisRest[method].forEach(function (api) {
-							if (service.apis) {
-								if (service.apis[api.v]) {
-									service[method].apis[api.v] = service.apis[api.v];
-								}
-							}
-						});
-					}
-				}
-			}
-			if (byMethod) {
-				delete service.apis;
-			}
-		}
-		
-		if (currentService.versions) {
+	function fillServiceApiAccess(service, currentService) {
+	if (currentService.versions) {
 			for (var version in currentService.versions) {
 				if (currentService.versions.hasOwnProperty(version)) {
-					if (!service[version].get && !service[version].post && !service[version].put && !service[version].delete) {
-						grpByMethod(service, currentService.fixList);
-					}
-					
 					if (service[version].get || service[version].post || service[version].put || service[version].delete) {
 						for (var method in service[version]) {
-							if (service[version][method].apis) {
-								fillApiAccess(service[version][method].apis, forcePrivate);
+							if (service[version][method] && ['get', 'put', 'post', 'delete'].indexOf(method)!== -1 && Object.keys(service[version][method]).length > 0) {
+								fillApiAccess(service[version][method]);
 							}
 						}
-					} else if (service[version].apis) {
-						fillApiAccess(service[version].apis, forcePrivate);
 					}
 				}
 			}
@@ -761,69 +719,47 @@ soajsApp.service("aclDrawHelpers", function () {
 									}
 									if (service.get || service.put || service.post || service.delete) {
 										for (let method in service) {
-											
-											if (service[method].apis) {
-												aclEnvObj[serviceName][version][method] = {
-													apis: {}
-												};
-												
-												for (var apiName in service[method].apis) {
-													if (service[method].apis.hasOwnProperty(apiName)) {
-														var api = service[method].apis[apiName];
-														if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
-															/// need to also check for the default api if restricted
-															aclEnvObj[serviceName][version][method].apis[apiName] = {};
-															if (api.accessType === 'private') {
-																aclEnvObj[serviceName][version][method].apis[apiName].access = true;
-															} else if (api.accessType === 'public') {
-																aclEnvObj[serviceName][version][method].apis[apiName].access = false;
-															} else if (api.accessType === 'groups') {
-																aclEnvObj[serviceName][version][method].apis[apiName].access = [];
-																grpCodes = aclEnvFill[version][serviceName][method].apis[apiName].grpCodes;
-																if (grpCodes) {
-																	for (code in grpCodes) {
-																		if (grpCodes.hasOwnProperty(code)) {
-																			aclEnvObj[serviceName][version][method].apis[apiName].access.push(code);
+											if (service[method] && ['get', 'put', 'post', 'delete'].indexOf(method)!== -1){
+												for (let group in service[method]) {
+													if(service[method][group] && service[method][group].apis){
+														aclEnvObj[serviceName][version][method] = [];
+														for (var apiName in service[method][group].apis) {
+															if (service[method][group].apis.hasOwnProperty(apiName)) {
+																let api = service[method][group].apis[apiName];
+																if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
+																	/// need to also check for the default api if restricted
+																	let groupApi = {
+																		group: group,
+																		apis: {
+																			[apiName] : {
+																			
+																			}
+																		}
+																	};
+																	if (api.accessType === 'private') {
+																		groupApi.apis[apiName].access = true;
+																	} else if (api.accessType === 'public') {
+																		groupApi.apis[apiName].access = false;
+																	} else if (api.accessType === 'groups') {
+																		groupApi.apis[apiName].access = [];
+																		grpCodes = aclEnvFill[version][serviceName][method][group].apis[apiName].grpCodes;
+																		if (grpCodes) {
+																			for (code in grpCodes) {
+																				if (grpCodes.hasOwnProperty(code)) {
+																					groupApi.apis[apiName].access.push(code);
+																				}
+																			}
+																		}
+																		if (groupApi.apis[apiName].access.length === 0) {
+																			return {'valid': false};
 																		}
 																	}
-																}
-																if (aclEnvObj[serviceName][version][method].apis[apiName].access.length === 0) {
-																	return {'valid': false};
+																	aclEnvObj[serviceName][version][method].push(groupApi);
 																}
 															}
 														}
-													}
-												}
-											}
-										}
-										if (service.apis) {
-											delete service.apis;
-										}
-									}
-									else if (service.apis) {
-										aclEnvObj[serviceName][version].apis = {};
-										for (apiName in service.apis) {
-											if (service.apis.hasOwnProperty(apiName)) {
-												var api = service.apis[apiName];
-												if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
-													/// need to also check for the default api if restricted
-													aclEnvObj[serviceName][version].apis[apiName] = {};
-													if (api.accessType === 'private') {
-														aclEnvObj[serviceName][version].apis[apiName].access = true;
-													} else if (api.accessType === 'public') {
-														aclEnvObj[serviceName][version].apis[apiName].access = false;
-													} else if (api.accessType === 'groups') {
-														aclEnvObj[serviceName][version].apis[apiName].access = [];
-														grpCodes = aclEnvFill[version][serviceName].apis[apiName].grpCodes;
-														if (grpCodes) {
-															for (code in grpCodes) {
-																if (grpCodes.hasOwnProperty(code)) {
-																	aclEnvObj[serviceName][version].apis[apiName].access.push(code);
-																}
-															}
-														}
-														if (aclEnvObj[serviceName][version].apis[apiName].access.length === 0) {
-															return {'valid': false};
+														if (aclEnvObj[serviceName][version][method].length === 0){
+															delete aclEnvObj[serviceName][version][method];
 														}
 													}
 												}

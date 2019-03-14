@@ -161,6 +161,7 @@ redAccordion .panel-heading a:focus{
 .readDescriptionApi {
     color: #0f6ab4;
     margin: 2px 10px 5px 0;
+    padding-left: 15px;
 }
 
 .readApi {
@@ -191,6 +192,7 @@ redAccordion .panel-heading a:focus{
 .addDescriptionApi {
     color: #00AB50;
     margin: 2px 10px 5px 0;
+    padding-left: 15px;
 }
 
 .addApi{
@@ -221,6 +223,7 @@ redAccordion .panel-heading a:focus{
 .updateDescriptionApi {
     color: #C48638;
     margin: 2px 10px 5px 0;
+    padding-left: 15px;
 }
 
 .updateApi{
@@ -251,6 +254,7 @@ redAccordion .panel-heading a:focus{
 .deleteDescriptionApi {
     color: #A81E2E;
     margin: 2px 10px 5px 0;
+    padding-left: 15px;
 }
 
 .deleteApi{

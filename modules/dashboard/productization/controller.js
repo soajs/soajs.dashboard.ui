@@ -743,6 +743,9 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	};
 	
 	$scope.expand = function (envCode, service) {
+		if (!$scope.aclFill[envCode]){
+			$scope.aclFill[envCode] = {};
+		}
 		if(!$scope.aclFill[envCode][service.name]){
 			$scope.aclFill[envCode][service.name] = {};
 		}
@@ -935,6 +938,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	// default operation
 	overlayLoading.show(function () {
 		$scope.getAllServicesList();
+		console.log()
 	});
 }]);
 

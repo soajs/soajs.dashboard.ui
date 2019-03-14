@@ -719,10 +719,10 @@ soajsApp.service("aclDrawHelpers", function () {
 									}
 									if (service.get || service.put || service.post || service.delete) {
 										for (let method in service) {
-											if (service[method] && ['get', 'put', 'post', 'delete'].indexOf(method)!== -1){
+											if (service[method] && ['get', 'put', 'post', 'delete'].indexOf(method) !== -1){
+												aclEnvObj[serviceName][version][method] = [];
 												for (let group in service[method]) {
 													if(service[method][group] && service[method][group].apis){
-														aclEnvObj[serviceName][version][method] = [];
 														for (var apiName in service[method][group].apis) {
 															if (service[method][group].apis.hasOwnProperty(apiName)) {
 																let api = service[method][group].apis[apiName];

@@ -846,7 +846,7 @@ soajsApp.service("aclDrawHelpers", function () {
 	function prepareSaveObjectPack(aclEnvFill, aclEnvObj) {
 		for (var serviceName in aclEnvFill) {
 			if (aclEnvFill.hasOwnProperty(serviceName)) {
-				if (aclEnvFill[serviceName].include) {
+				if (aclEnvFill[serviceName]) {
 					aclEnvObj[serviceName] = [];
 					for (var version in aclEnvFill[serviceName]) {
 						if (aclEnvFill[serviceName].hasOwnProperty(version) && version !== "collapse" && version !== "include" && aclEnvFill[serviceName][version].include) {

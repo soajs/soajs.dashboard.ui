@@ -103,7 +103,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 					}
 					if (service.versions[version] && service.versions[version].apis){
 						service.versions[version].apis.forEach((oneApi)=>{
-							serviceList[service.name][version][oneApi.v] = {
+							serviceList[service.name][version][oneApi.v + "%%" + oneApi.m + "%%"] = { // this is used only to allow same rout different method
 								m: oneApi.m,
 								group: oneApi.group? oneApi.group : "General"
 							}

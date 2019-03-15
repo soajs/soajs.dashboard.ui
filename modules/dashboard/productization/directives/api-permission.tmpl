@@ -54,7 +54,7 @@
 														<span ng-class="{readDescriptionApi: method==='get', addDescriptionApi: method==='post', updateDescriptionApi: method==='put', deleteDescriptionApi: method==='delete' }">{{my1Api.l}}</span>
 														
 														
-														<div class="apiAccess inputApi" ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include" ng-hide="(aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission && (aclFill[oneEnv.code][service.name][version['%v%']][method].apis[my1Api.v].include!==true))">
+														<div class="apiAccess inputApi" ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include" ng-hide="(aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission && (aclFill[oneEnv.code][service.name][version['%v%']][method][grp].apis[my1Api.v].include!==true))">
 													
 															<span style="padding-left: 0px;">
 														<input ng-model="aclFill[oneEnv.code][service.name][version['%v%']][method][grp].apis[my1Api.v].accessType" value="clear" type="radio"/>

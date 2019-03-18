@@ -33,7 +33,6 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				console.log(response)
 				var l = response.records.length;
 				for (var x = 0; x < l; x++) {
 					if (response.records[x].apis) {
@@ -1175,4 +1174,21 @@ servicesApp.filter('statusDisplay', function () {
 
 		return "Unknown";
 	};
+});
+servicesApp.filter('reposSearchFilter', function() {
+	return function(input, searchKeyword) {
+		if(!searchKeyword) return input;
+		if(!input || !Array.isArray(input) || input.length === 0) return input;
+		var output = [];
+		input.forEach(function(oneInput) {
+			if(oneInput) {
+				//using full_name since it's composed of owner + name
+				if(oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
+					output.push(oneInput);
+				}
+			}
+		});
+		
+		return output;
+	}
 });

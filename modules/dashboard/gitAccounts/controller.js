@@ -11,7 +11,7 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
     $scope.whitelistedRepos = whitelistedRepos;
 
     $scope.defaultPageNumber = 1;
-    $scope.defaultPerPage = 100;
+    $scope.defaultPerPage = 50;
 
     $scope.imagePath = './themes/' + themeToUse + '/img/loading.gif';
 	$scope.showRepos = function (pack) {

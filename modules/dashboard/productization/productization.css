@@ -268,4 +268,11 @@ redAccordion .panel-heading a:focus{
     width: 100%;
 }
 
+.acl-search {
+    width: 16%;
+    margin-right: 10px;
+    float: right;
+    margin-bottom: 10px;
+}
+
 

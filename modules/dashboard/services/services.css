@@ -51,6 +51,9 @@ fieldset.serviceAPIs table tr[class^="form-group tr-removeAPI"] {
 .w2{
     width:2%;
 }
+.w100{
+    width: 100%;
+}
 
 .block{
     display:block;
@@ -296,4 +299,11 @@ hr{
     display: block;
     box-sizing: border-box;
     margin-bottom: 5px;
+}
+
+.apiCatalog-search {
+    width: 16%;
+    margin-right: 10px;
+    float: right;
+    margin-bottom: 10px;
 }

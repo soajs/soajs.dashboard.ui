@@ -209,10 +209,11 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 							for (let version in scopeAcl[env][service]) {
 								fixList[env][group][service][version] = {};
 								if (scopeAcl[env][service].hasOwnProperty(version)) {
-									if (scopeAcl[env][service][version].apisPermission === "restricted" && (scopeAcl[env][service][version].get || scopeAcl[env][service][version].post || scopeAcl[env][service][version].delete || scopeAcl[env][service][version].put)){
-										fixList[env][group][service][version] = reformedScope[service][version];
-										delete fixList[env][group][service][version].apisPermission;
-										
+									if (scopeAcl[env][service][version].apisPermission === "restricted") {
+										if (scopeAcl[env][service][version].get || scopeAcl[env][service][version].post || scopeAcl[env][service][version].delete || scopeAcl[env][service][version].put) {
+											fixList[env][group][service][version] = reformedScope[service][version];
+											
+										}
 									}
 									else {
 										for (let api in serviceList[service][version]){

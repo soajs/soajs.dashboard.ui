@@ -1215,6 +1215,30 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 		$scope.aclFill[envCode][service].include = true;
 	};
 	
+	$scope.checkApiPermission = function (version) {
+		if (version && version.apisPermission === 'restricted'){
+			return false;
+		}
+		else {
+			return true;
+		}
+	};
+	
+	$scope.checkGroupEmpty = function (version) {
+		let empty = true;
+		if (version && version.apisPermission){
+			if (Object.keys(version).length > 1){
+				empty = false;
+			}
+		}
+		else {
+			if (Object.keys(version).length > 0){
+				empty = false;
+			}
+		}
+		return empty;
+	};
+	
 	$scope.getPackageAcl = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -1428,6 +1452,29 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		$scope.aclFill[envCode][service].include = true;
 	};
 	
+	$scope.checkApiPermission = function (version) {
+		if (version && version.apisPermission === 'restricted'){
+			return false;
+		}
+		else {
+			return true;
+		}
+	};
+	
+	$scope.checkGroupEmpty = function (version) {
+		let empty = true;
+		if (version && version.apisPermission){
+			if (Object.keys(version).length > 1){
+				empty = false;
+			}
+		}
+		else {
+			if (Object.keys(version).length > 0){
+				empty = false;
+			}
+		}
+		return empty;
+	};
 	$scope.getPackageAcl = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",

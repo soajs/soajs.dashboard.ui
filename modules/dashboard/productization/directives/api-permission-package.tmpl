@@ -8,10 +8,9 @@
 					<span style="padding-left: 15px;"><input id="{{oneEnv.code}}_{{s}}_{{v}}_none" ng-model="aclFill[oneEnv.code][s][v].include" value="false" type="checkbox"/></span>
 				</div>
 				<br>
+				<em ng-if="checkApiPermission(version)"> If you do not specifically specify what API Group Roles you want to <b>include</b>, all the API Group Roles from the list below will be included.</em>
 				
-				<em ng-if="!checkApiPermission(version)"> If you do not specifically specify what API Group Roles you want to <b>include</b>, all the API Group Roles from the list below will be included.</em>
-				
-				<em ng-if="checkApiPermission(version)"> The API Permission of this Service at the product scope is <b>restricted</b>, Only the selected API Group Roles from the list below will be included in the ACL of this service.</em>
+				<em ng-if="!checkApiPermission(version)"> The API Permission of this Service at the product scope is <b>restricted</b>, Only the selected API Group Roles from the list below will be included in the ACL of this service.</em>
 				
 				<br>
 				<div ng-if="!checkGroupEmpty(version)">

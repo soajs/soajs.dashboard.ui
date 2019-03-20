@@ -22,7 +22,7 @@
 						<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
 							<input type="text" class="form-control acl-search" ng-model="searchKeyword" placeholder="Search ..." />
 							<div id="s_{{oneEnv.code}}_{{group._id}}" ng-repeat="group in serviceGroup">
-								<fieldset class="custom-fieldset width100">
+								<fieldset class="width100">
 									<legend>{{group}}</legend>
 									<div ng-repeat="service in allServiceApis | reposSearchFilter:searchKeyword" class="clearfix service-container" ng-if="service.name !== 'controller' && service.group ===group">
 								<div class="clearfix serviceNameHead">

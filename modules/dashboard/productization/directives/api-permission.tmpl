@@ -48,10 +48,10 @@
 													<div ng-class="{readApi: method==='get', addApi: method==='post', updateApi: method==='put', deleteApi: method==='delete' }">
 														<input id="{{oneEnv.code}}_{{service.name}}_{{version['%v%']}}_{{grp}}_{{method}}_{{$index}}" ng-model="aclFill[oneEnv.code][service.name][version['%v%']][method][grp].apis[my1Api.v].include" ng-click="checkForGroupDefault(oneEnv.code,service,grp,val,my1Api, version['%v%'])" ng-disabled="(val.defaultApi && my1Api.groupMain!==true && val.defaultIncluded===false)" type="checkbox" value="true" ng-show="aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission"/>
 														
-														<span ng-class="{readMethodApi: method==='get', addMethodApi: method==='post', updateMethodApi: method==='put', deleteMethodApi: method==='delete' }">{{method}}</span>
-														<span ng-class="{readRouteApi: method==='get', addRouteApi: method==='post', updatedRouteApi: method==='put', deleteRouteApi: method==='delete' }">{{my1Api.v}}</span>
+														<span ng-class="{readMethodApis: method==='get', addMethodApis: method==='post', updateMethodApis: method==='put', deleteMethodApis: method==='delete' }">{{method}}</span>
+														<span ng-class="{readRouteApis: method==='get', addRouteApis: method==='post', updatedRouteApis: method==='put', deleteRouteApis: method==='delete' }">{{my1Api.v}}</span>
 														<br>
-														<span ng-class="{readDescriptionApi: method==='get', addDescriptionApi: method==='post', updateDescriptionApi: method==='put', deleteDescriptionApi: method==='delete' }">{{my1Api.l}}</span>
+														<span ng-class="{readDescriptionApis: method==='get', addDescriptionApis: method==='post', updateDescriptionApis: method==='put', deleteDescriptionApis: method==='delete' }">{{my1Api.l}}</span>
 														
 														
 														<div class="apiAccess inputApi" ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include" ng-hide="(aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission && (aclFill[oneEnv.code][service.name][version['%v%']][method][grp].apis[my1Api.v].include!==true))">

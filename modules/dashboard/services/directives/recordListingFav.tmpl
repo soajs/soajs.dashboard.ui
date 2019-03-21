@@ -2,8 +2,8 @@
 	<table width="100%" class="servicesList">
 		<tr>
 			<td>
-				<a href="" ng-click="showHide(service)">
-					<span class="icon icon-{{service.icon || 'plus'}}"></span>
+				<a href="" ng-click="showHideFav(service)">
+					<span class="icon icon-{{service.iconFav || 'plus'}}"></span>
 				</a>
 				<span ng-show="service['name'] !== 'controller'"><b style="margin:0;">{{service['name']|uppercase}}</b></span>
 				<span ng-show="service['name'] === 'controller'"><b style="margin:0;">SOAJS API GATEWAY</b></span>

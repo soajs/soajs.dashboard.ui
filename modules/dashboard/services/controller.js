@@ -7,6 +7,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
 
 	$scope.showHide = function (service) {
+		
 		if (!service.hide) {
 			jQuery('#s_' + service._id + " .body").slideUp();
 			service.icon = 'plus';
@@ -20,7 +21,161 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 			service.hide = false;
 		}
 	};
-
+	
+	$scope.showHideFav = function (service) {
+		if (!service.hideFav) {
+			jQuery('#s_fav_' + service._id + " .body").slideUp();
+			service.iconFav = 'plus';
+			service.hideFav = true;
+			jQuery('#s_fav_' + service._id + " .header").addClass("closed");
+		}
+		else {
+			jQuery('#s_fav_' + service._id + " .body").slideDown();
+			jQuery('#s_fav_' + service._id + " .header").removeClass("closed");
+			service.iconFav = 'minus';
+			service.hideFav = false;
+		}
+	};
+	
+	$scope.setFavorite = function (service) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/services/favorite",
+			"params": {
+				"service": service.name,
+				"type": 'apiCatalog'
+			}
+		}, function (error) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				service.favorite = true;
+				let type;
+				let group = service.group;
+				if (!service.group) {
+					group = "Gateway";
+				}
+				if (service.src){
+					if(service.src.repo === 'gcs' && service.src.owner === 'HerronTech'){
+						type = 'daas';
+					}
+					else if(service.src.repo === 'soajs.gcs'){
+						type = 'gcs';
+					}
+					else if(service.src.repo === 'soajs.epg'){
+						type = 'ep';
+					}
+					else if(service.src && service.src.owner === 'soajs'){
+						if(SOAJSRMS.indexOf(service.src.repo) !== -1){
+							type = 'soajs';
+						}
+						else{
+							type = 'services';
+						}
+					}
+					else{
+						type = 'services';
+					}
+				} else if (service.group === "SOAJS Core Services") {
+					type = 'soajs';
+				} else {
+					type = 'services';
+				}
+				if ($scope.favoriteTabs[type].length === 0) {
+					$scope.favoriteTabs[type].push({
+						group: group,
+						services: [service]
+					});
+				} else {
+					let found = false;
+					$scope.favoriteTabs[type].forEach((one) => {
+						if (one.group === group) {
+							one.services.push(service);
+							found = true;
+						}
+					});
+					if (!found){
+						$scope.favoriteTabs[type].push({
+							group: group,
+							services: [service]
+						});
+					}
+				}
+			}
+		});
+	};
+	
+	$scope.removeFavorite = function (service) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "delete",
+			"routeName": "/dashboard/services/favorite",
+			"params": {
+				"service": service.name,
+				"type": 'apiCatalog'
+			}
+		}, function (error) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			else {
+				service.favorite = false;
+				let type;
+				let group = service.group;
+				if (!service.group) {
+					group = "Gateway";
+				}
+				if (service.src){
+					if(service.src.repo === 'gcs' && service.src.owner === 'HerronTech'){
+						type = 'daas';
+					}
+					else if(service.src.repo === 'soajs.gcs'){
+						type = 'gcs';
+					}
+					else if(service.src.repo === 'soajs.epg'){
+						type = 'ep';
+					}
+					else if(service.src && service.src.owner === 'soajs'){
+						if(SOAJSRMS.indexOf(service.src.repo) !== -1){
+							type = 'soajs';
+						}
+						else{
+							type = 'services';
+						}
+					}
+					else{
+						type = 'services';
+					}
+				} else if (service.group === "SOAJS Core Services") {
+					type = 'soajs';
+				} else {
+					type = 'services';
+				}
+				let found = false;
+				if ($scope.favoriteTabs[type]){
+					for (var y = 0; y < $scope.favoriteTabs[type].length; y++) {
+						if (found){
+							break;
+						}
+						if ($scope.favoriteTabs[type][y].group === group && $scope.favoriteTabs[type][y].services){
+							for (var i = 0; i < $scope.favoriteTabs[type][y].services.length; i++) {
+								if ($scope.favoriteTabs[type][y].services[i].name === service.name){
+									$scope.favoriteTabs[type][y].services.splice(i, 1);
+									found = true;
+									if ($scope.favoriteTabs[type][y].services.length === 0){
+										$scope.favoriteTabs[type].splice(y, 1);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	};
+	
+	
 	$scope.listServices = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
@@ -33,75 +188,102 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				var l = response.records.length;
-				for (var x = 0; x < l; x++) {
-					if (response.records[x].apis) {
-						response.records[x].fixList = $scope.arrGroupByField(response.records[x].apis, 'group');
+				var user = $cookies.get('soajs_username', {'domain': interfaceDomain});
+				getSendDataFromServer($scope, ngDataApi, {
+					"method": "get",
+					"routeName": "/dashboard/services/favorite/list",
+					"params": {
+						"username": user,
+						"type": 'apiCatalog'
 					}
-					else {
-						if (response.records[x].versions && Object.keys(response.records[x].versions).length > 0) {
-							var v = $scope.sortByDescending(response.records[x].versions);
-							response.records[x].latest = v[0].toString();
-							response.records[x].fixList = [];
-							for (var y = 0; y < v.length; y++) {
-								var k = v[y].toString();
-								if (response.records[x].versions[k]) {
-									var listEntry = $scope.arrGroupByField(response.records[x].versions[k].apis, 'group', k);
-									listEntry.settings = $scope.addServiceSettings(response.records[x].versions[k]);
-									if(Object.keys(listEntry.groups).length === 0){
-										delete listEntry.groups;
+				}, function (error, favoriteResponse) {
+					if (error) {
+						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					} else {
+						var l = response.records.length;
+						for (var x = 0; x < l; x++) {
+							//show favorite star
+							if (favoriteResponse
+								&& favoriteResponse.favorites
+								&& favoriteResponse.favorites.indexOf(response.records[x].name) !== -1){
+								response.records[x].favorite = true;
+							}
+							if (response.records[x].apis) {
+								response.records[x].fixList = $scope.arrGroupByField(response.records[x].apis, 'group');
+							}
+							else {
+								if (response.records[x].versions && Object.keys(response.records[x].versions).length > 0) {
+									var v = $scope.sortByDescending(response.records[x].versions);
+									response.records[x].latest = v[0].toString();
+									response.records[x].fixList = [];
+									for (var y = 0; y < v.length; y++) {
+										var k = v[y].toString();
+										if (response.records[x].versions[k]) {
+											var listEntry = $scope.arrGroupByField(response.records[x].versions[k].apis, 'group', k);
+											listEntry.settings = $scope.addServiceSettings(response.records[x].versions[k]);
+											if(Object.keys(listEntry.groups).length === 0){
+												delete listEntry.groups;
+											}
+											response.records[x].fixList.push(listEntry);
+										}
 									}
-									response.records[x].fixList.push(listEntry);
 								}
 							}
 						}
-					}
-				}
-				
-				$scope.tabs = {
-					"soajs": [],
-					"daas": [],
-					"ep": [],
-					"gcs": [],
-					"services": []
-				};
-				$scope.paginations = {
-					"daas": {},
-					"ep": {},
-					"gcs": {},
-					"services": {},
-					"soajs": {}
-				};
-				response.records.forEach((oneRecord) => {
-					if (oneRecord.src){
-					
-						if(oneRecord.src.repo === 'gcs' && oneRecord.src.owner === 'HerronTech'){
-							$scope.appendToGroup(oneRecord, 'daas');
-						}
-						else if(oneRecord.src.repo === 'soajs.gcs'){
-							$scope.appendToGroup(oneRecord, 'gcs');
-						}
-						else if(oneRecord.src.repo === 'soajs.epg'){
-							$scope.appendToGroup(oneRecord, 'ep');
-						}
-						else if(oneRecord.src && oneRecord.src.owner === 'soajs'){
-							if(SOAJSRMS.indexOf(oneRecord.src.repo) !== -1){
+						
+						$scope.tabs = {
+							"soajs": [],
+							"daas": [],
+							"ep": [],
+							"gcs": [],
+							"services": []
+						};
+						$scope.favoriteTabs = {
+							"soajs": [],
+							"daas": [],
+							"ep": [],
+							"gcs": [],
+							"services": []
+						};
+						$scope.paginations = {
+							"daas": {},
+							"ep": {},
+							"gcs": {},
+							"services": {},
+							"soajs": {}
+						};
+						response.records.forEach((oneRecord) => {
+							if (oneRecord.src){
+								
+								if(oneRecord.src.repo === 'gcs' && oneRecord.src.owner === 'HerronTech'){
+									$scope.appendToGroup(oneRecord, 'daas');
+								}
+								else if(oneRecord.src.repo === 'soajs.gcs'){
+									$scope.appendToGroup(oneRecord, 'gcs');
+								}
+								else if(oneRecord.src.repo === 'soajs.epg'){
+									$scope.appendToGroup(oneRecord, 'ep');
+								}
+								else if(oneRecord.src && oneRecord.src.owner === 'soajs'){
+									if(SOAJSRMS.indexOf(oneRecord.src.repo) !== -1){
+										$scope.appendToGroup(oneRecord, 'soajs');
+									}
+									else{
+										$scope.appendToGroup(oneRecord, 'services');
+									}
+								}
+								else{
+									$scope.appendToGroup(oneRecord, 'services');
+								}
+							} else if (oneRecord.group === "SOAJS Core Services") {
 								$scope.appendToGroup(oneRecord, 'soajs');
-							}
-							else{
+							} else {
 								$scope.appendToGroup(oneRecord, 'services');
 							}
-						}
-						else{
-							$scope.appendToGroup(oneRecord, 'services');
-						}
-					} else if (oneRecord.group === "SOAJS Core Services") {
-						$scope.appendToGroup(oneRecord, 'soajs');
-					} else {
-						$scope.appendToGroup(oneRecord, 'services');
+						});
+						$scope.envs = response.envs;
 					}
 				});
-				$scope.envs = response.envs;
 			}
 		});
 	};
@@ -141,6 +323,28 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 					group: group,
 					services: [oneRecord]
 				});
+			}
+		}
+		if (oneRecord.favorite){
+			if ($scope.favoriteTabs[type].length === 0) {
+				$scope.favoriteTabs[type].push({
+					group: group,
+					services: [oneRecord]
+				});
+			} else {
+				let found = false;
+				$scope.favoriteTabs[type].forEach((one) => {
+					if (one.group === group) {
+						one.services.push(oneRecord);
+						found = true;
+					}
+				});
+				if (!found){
+					$scope.favoriteTabs[type].push({
+						group: group,
+						services: [oneRecord]
+					});
+				}
 			}
 		}
 	};

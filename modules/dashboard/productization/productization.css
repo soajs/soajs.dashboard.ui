@@ -81,35 +81,35 @@
     border-top-color: #337ab7 !important;
 }
 
-.redAccordion .panel-body{
+.redAccordion .panel-body {
     border-top-color: #F4E7E8 !important;
 }
 
-.redAccordion{
+.redAccordion {
     border-color: #F4DDE8 !important;
 }
 
-.redAccordion .panel-heading{
+.redAccordion .panel-heading {
     background-color: #F4E7E8 !important;
 }
 
-.orangeAccordion .panel-body{
+.orangeAccordion .panel-body {
     border-top-color: #F9F2E9 !important;
 }
 
-.orangeAccordion{
+.orangeAccordion {
     border-color: #F7EFF0 !important;
 }
 
-.orangeAccordion .panel-heading{
+.orangeAccordion .panel-heading {
     background-color: #F9F2E9 !important;
 }
 
-.blueAccordion{
+.blueAccordion {
     border: solid 1px #337ab7 !important;
 }
 
-.blueAccordion .panel-heading{
+.blueAccordion .panel-heading {
     /*border: solid 1px #51819e;*/
     /*width: 100%;*/
     /*border-radius: 5px;*/
@@ -117,13 +117,14 @@
     background: #E6F0F7 !important;
 }
 
-.blueAccordion .panel-body{
+.blueAccordion .panel-body {
     border-top-color: #337ab7 !important;
 }
+
 .greenAccordion .panel-heading a:focus,
 blueAccordion .panel-heading a:focus,
 orangeAccordion .panel-heading a:focus,
-redAccordion .panel-heading a:focus{
+redAccordion .panel-heading a:focus {
     outline: 0;
     text-decoration: none;
 }
@@ -140,7 +141,7 @@ redAccordion .panel-heading a:focus{
     padding-right: 5px;
 }
 
-.readMethodApi {
+.readMethodApis {
     color: #0f6ab4;
     padding: 7px 0 4px;
     text-align: center;
@@ -151,27 +152,27 @@ redAccordion .panel-heading a:focus{
     text-transform: uppercase;
 }
 
-.readRouteApi {
+.readRouteApis {
     color: #000;
     padding-left: 10px;
     display: inline-block;
 
 }
 
-.readDescriptionApi {
+.readDescriptionApis {
     color: #0f6ab4;
     margin: 2px 10px 5px 0;
     padding-left: 15px;
 }
 
-.readApi {
+.readApis {
     display: block;
     box-sizing: border-box;
     margin-bottom: 5px;
     background-color: #E6F0F7;
 }
 
-.addMethodApi {
+.addMethodApis {
     color: #00AB50;
     padding: 7px 0 4px;
     text-align: center;
@@ -182,27 +183,27 @@ redAccordion .panel-heading a:focus{
     text-transform: uppercase;
 }
 
-.addRouteApi {
+.addRouteApis {
     color: #000;
     padding-left: 10px;
     display: inline-block;
 
 }
 
-.addDescriptionApi {
+.addDescriptionApis {
     color: #00AB50;
     margin: 2px 10px 5px 0;
     padding-left: 15px;
 }
 
-.addApi{
+.addApis {
     background-color: #E6F7ED;
     display: block;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
 
-.updateMethodApi {
+.updateMethodApis {
     color: #C48638;
     padding: 7px 0 4px;
     text-align: center;
@@ -213,27 +214,27 @@ redAccordion .panel-heading a:focus{
     text-transform: uppercase;
 }
 
-.updatedRouteApi {
+.updatedRouteApis {
     color: #000;
     padding-left: 10px;
     display: inline-block;
 
 }
 
-.updateDescriptionApi {
+.updateDescriptionApis {
     color: #C48638;
     margin: 2px 10px 5px 0;
     padding-left: 15px;
 }
 
-.updateApi{
+.updateApis {
     background-color: #F9F2E9;
     display: block;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
 
-.deleteMethodApi {
+.deleteMethodApis {
     color: #A81E2E;
     padding: 7px 0 4px;
     text-align: center;
@@ -244,27 +245,27 @@ redAccordion .panel-heading a:focus{
     text-transform: uppercase;
 }
 
-.deleteRouteApi {
+.deleteRouteApis {
     color: #000;
     padding-left: 10px;
     display: inline-block;
 
 }
 
-.deleteDescriptionApi {
+.deleteDescriptionApis {
     color: #A81E2E;
     margin: 2px 10px 5px 0;
     padding-left: 15px;
 }
 
-.deleteApi{
+.deleteApis {
     background-color: #F4E7E8;
     display: block;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
 
-.width100{
+.width100 {
     width: 100% !important;
 }
 

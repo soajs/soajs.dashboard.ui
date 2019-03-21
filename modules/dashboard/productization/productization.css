@@ -265,7 +265,7 @@ redAccordion .panel-heading a:focus{
 }
 
 .width100{
-    width: 100%;
+    width: 100% !important;
 }
 
 .acl-search {

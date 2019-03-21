@@ -72,10 +72,14 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		for (var serviceName in aclFill) {
 			if (aclFill.hasOwnProperty(serviceName)) {
 				var currentService = {};
-				for (var x = 0; x < currentScope.allServiceApis.length; x++) {
-					if (currentScope.allServiceApis[x].name === serviceName) {
-						currentService = currentScope.allServiceApis[x];
-						break;
+				for (let group in currentScope.allServiceApis){
+					if (group && currentScope.allServiceApis[group]){
+						for (var x = 0; x < currentScope.allServiceApis[group].length; x++) {
+							if (currentScope.allServiceApis[group][x].name === serviceName) {
+								currentService = currentScope.allServiceApis[group][x];
+								break;
+							}
+						}
 					}
 				}
 				aclDrawHelpers.fillServiceAccess(aclFill[serviceName], currentService);

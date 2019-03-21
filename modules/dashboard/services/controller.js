@@ -65,6 +65,13 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 					"gcs": [],
 					"services": []
 				};
+				$scope.paginations = {
+					"daas": {},
+					"ep": {},
+					"gcs": {},
+					"services": {},
+					"soajs": {}
+				};
 				response.records.forEach((oneRecord) => {
 					if (oneRecord.src){
 					
@@ -98,10 +105,23 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 			}
 		});
 	};
+	
+	$scope.itemsPerPage = 20;
+	$scope.maxSize = 5;
+	
 	$scope.appendToGroup = function (oneRecord, type) {
 		let group = oneRecord.group;
 		if (!oneRecord.group) {
 			group = "Gateway";
+		}
+		if (!$scope.paginations[type][group]){
+			$scope.paginations[type][group] = {
+				currentPage : 1,
+				totalItems : 1
+			}
+		}
+		else {
+			$scope.paginations[type][group].totalItems++;
 		}
 		if ($scope.tabs[type].length === 0) {
 			$scope.tabs[type].push({
@@ -1175,6 +1195,7 @@ servicesApp.filter('statusDisplay', function () {
 		return "Unknown";
 	};
 });
+
 servicesApp.filter('reposSearchFilter', function() {
 	return function(input, searchKeyword) {
 		if(!searchKeyword) return input;

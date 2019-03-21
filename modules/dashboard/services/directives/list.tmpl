@@ -21,7 +21,7 @@
 	
 	<tabset>
 		<tab heading="SOAJS" ng-show="tabs.soajs.length > 0">
-			<br />
+			<br/>
 			<div id="s_soajs_{{group._id}}" ng-repeat="groupService in tabs.soajs">
 				<fieldset class="custom-fieldset" ng-show="tabs.soajs">
 					<legend>{{groupService.group}}</legend>
@@ -33,60 +33,87 @@
 				</fieldset>
 			</div>
 		</tab>
-		<tab heading="End Point"  ng-show="tabs.ep.length > 0">
-			<br />
+		<tab heading="End Point" ng-show="tabs.ep.length > 0">
+			<br/>
 			<div id="s_ep_{{group._id}}" ng-repeat="groupService in tabs.ep">
-				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..." />
+				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..."/>
 				<fieldset class="custom-fieldset w100" ng-show="tabs.ep">
 					<legend>{{groupService.group}}</legend>
 					<div class="entryBoxes">
-						<div id="s_{{service._id}}" ng-repeat="service in groupService.services | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services.slice(((paginations['ep'][groupService.group].currentPage-1)*itemsPerPage), ((paginations['ep'][groupService.group].currentPage)*itemsPerPage)) | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
 							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
 						</div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+							<tr>
+								<td align="right">
+									<pagination total-items="paginations['ep'][groupService.group].totalItems" ng-model="paginations['ep'][groupService.group].currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</fieldset>
 			</div>
 		</tab>
 		<tab heading="GCS" ng-show="tabs.gcs.length > 0">
-			<br />
+			<br/>
 			<div id="s_gcs_{{group._id}}" ng-repeat="groupService in tabs.gcs">
-				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..." />
+				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..."/>
 				<fieldset class="custom-fieldset w100" ng-show="tabs.gcs">
 					<legend>{{groupService.group}}</legend>
 					<div class="entryBoxes">
-						<div id="s_{{service._id}}" ng-repeat="service in groupService.services | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services.slice(((paginations['gcs'][groupService.group].currentPage-1)*itemsPerPage), ((paginations['gcs'][groupService.group].currentPage)*itemsPerPage)) | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
 							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
 						</div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+							<tr>
+								<td align="right">
+									<pagination total-items="paginations['gcs'][groupService.group].totalItems" ng-model="paginations['gcs'][groupService.group].currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</fieldset>
 			</div>
 		</tab>
 		<tab heading="DAAS" ng-show="tabs.daas.length > 0">
-			<br />
+			<br/>
 			<div id="s_daas_{{group._id}}" ng-repeat="groupService in tabs.daas">
-				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..." />
+				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..."/>
 				<fieldset class="custom-fieldset w100" ng-show="tabs.daas">
 					<legend>{{groupService.group}}</legend>
 					<div class="entryBoxes">
-						<div id="s_{{service._id}}" ng-repeat="service in groupService.services | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services.slice(((paginations['daas'][groupService.group].currentPage-1)*itemsPerPage), ((paginations['daas'][groupService.group].currentPage)*itemsPerPage)) | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
 							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
 						</div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+							<tr>
+								<td align="right">
+									<pagination total-items="paginations['daas'][groupService.group].totalItems" ng-model="paginations['daas'][groupService.group].currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</fieldset>
 			</div>
 		</tab>
 		<tab heading="Services" ng-show="tabs.services.length > 0">
-			<br />
-			<div id="s_services_{{group._id}}" ng-repeat="groupService in tabs.services">
-				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..." />
-			<fieldset class="custom-fieldset w100" ng-show="tabs.services">
-				<legend>{{groupService.group}}</legend>
-				<div class="entryBoxes">
-					<div id="s_{{service._id}}" ng-repeat="service in groupService.services | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
-						<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
-					</div>
-				</div>
-			</fieldset>
+			<br/>
+			<div id="s_services_{{group._id}}" ng-repeat="groupService in tabs.services track by $index">
+				<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..."/>
+				<fieldset class="custom-fieldset w100" ng-show="tabs.services">
+					<legend>{{groupService.group}}</legend>
+					<div class="entryBoxes">
+						<div id="s_{{service._id}}" ng-repeat="service in groupService.services.slice(((paginations['services'][groupService.group].currentPage-1)*itemsPerPage), ((paginations['services'][groupService.group].currentPage)*itemsPerPage)) | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
+							<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+						</div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+							<tr>
+								<td align="right">
+									<pagination total-items="paginations['services'][groupService.group].totalItems" ng-model="paginations['services'][groupService.group].currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+								</td>
+							</tr>
+						</table>
+				</fieldset>
 			</div>
 		</tab>
 	</tabset>
@@ -151,7 +178,7 @@
 							</a>
 						</td>
 					</tr>
-					
+				
 				</tbody>
 			</table>
 		</div>

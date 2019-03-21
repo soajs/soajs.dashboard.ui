@@ -705,7 +705,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	
 	$scope.environments_codes = [];
 	$scope.serviceGroup = [];
-	$scope.allServiceApis = [];
+	$scope.allServiceApis = {};
 	$scope.aclFill = {};
 	$scope.currentPackage = {};
 	$scope.msg = {};
@@ -823,6 +823,8 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			}
 		});
 	};
+	$scope.itemsPerPage = 20;
+	$scope.maxSize = 5;
 	
 	//default operation
 	$scope.getAllServicesList = function () {
@@ -834,22 +836,26 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
+				$scope.paginations = {};
+				let allServiceApis = {};
 				response.records.forEach(function (serv) {
-					if (serv.apis) {
-						if($scope.serviceGroup.indexOf(serv.group) !== -1){
-							$scope.serviceGroup.push(serv.group);
+					let acl = [];
+					if (serv.group) {
+						if (!allServiceApis[serv.group]) {
+							allServiceApis[serv.group] = []
 						}
-						let aclVersion = aclHelpers.groupApisForDisplay(serv.versions.apis, 'group');
-						aclVersion["%v%"] = 1;
-						serv.fixList = aclVersion;
-						delete serv.apis;
-					}
-					else {
-						let acl = [];
+						if (!$scope.paginations[serv.group]) {
+							$scope.paginations[serv.group] = {
+								currentPage: 1,
+								totalItems: 1
+							}
+						} else {
+							$scope.paginations[serv.group].totalItems++;
+						}
 						if (serv.versions) {
 							for (let version in serv.versions) {
 								if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
-									if($scope.serviceGroup.indexOf(serv.group) === -1){
+									if ($scope.serviceGroup.indexOf(serv.group) === -1) {
 										$scope.serviceGroup.push(serv.group);
 									}
 									let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
@@ -859,9 +865,10 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 							}
 							serv.fixList = acl;
 						}
+						allServiceApis[serv.group].push(serv);
 					}
 				});
-				$scope.allServiceApis = response.records;
+				$scope.allServiceApis = allServiceApis;
 				$scope.getEnvironments();
 			}
 		});
@@ -946,7 +953,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.$parent.isUserLoggedIn();
 	$scope.environments_codes = [];
 	$scope.serviceGroup = [];
-	$scope.allServiceApis = [];
+	$scope.allServiceApis = {};
 	$scope.aclFill = {};
 	$scope.currentPackage = {};
 	$scope.msg = {};
@@ -1041,7 +1048,8 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			}
 		});
 	};
-	
+	$scope.itemsPerPage = 20;
+	$scope.maxSize = 5;
 	//default operation
 	$scope.getAllServicesList = function () {
 		getSendDataFromServer($scope, ngDataApi, {
@@ -1052,24 +1060,28 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
+				$scope.paginations = {};
+				let allServiceApis = {};
 				response.records.forEach(function (serv) {
-					if (serv.apis) {
-						if($scope.serviceGroup.indexOf(serv.group) === -1){
-							$scope.serviceGroup.push(serv.group);
+					let acl = [];
+					if (serv.group) {
+						if (!allServiceApis[serv.group]) {
+							allServiceApis[serv.group] = []
 						}
-						let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
-						aclVersion["%v%"] = 1;
-						serv.fixList = aclVersion;
-						delete serv.apis;
-					}
-					else {
-						let acl = [];
-						if (serv.versions) {
-							if($scope.serviceGroup.indexOf(serv.group) === -1){
-								$scope.serviceGroup.push(serv.group);
+						if (!$scope.paginations[serv.group]) {
+							$scope.paginations[serv.group] = {
+								currentPage: 1,
+								totalItems: 1
 							}
+						} else {
+							$scope.paginations[serv.group].totalItems++;
+						}
+						if (serv.versions) {
 							for (let version in serv.versions) {
 								if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
+									if ($scope.serviceGroup.indexOf(serv.group) === -1) {
+										$scope.serviceGroup.push(serv.group);
+									}
 									let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
 									aclVersion["%v%"] = version;
 									acl.push(aclVersion);
@@ -1077,9 +1089,10 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 							}
 							serv.fixList = acl;
 						}
+						allServiceApis[serv.group].push(serv);
 					}
 				});
-				$scope.allServiceApis = response.records;
+				$scope.allServiceApis = allServiceApis;
 				$scope.getEnvironments();
 			}
 		});

@@ -17,13 +17,20 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 			$scope.waitMessage.type = '';
 		}
 	};
-
+	$scope.iconContrl = 'plus';
 	$scope.showHideContent = function (type) {
 		if (type === 'nginx') {
 			$scope.showNginxHosts = !$scope.showNginxHosts;
 		}
 		if (type === 'controllerInfo') {
 			$scope.showHideControllerInfo = !$scope.showHideControllerInfo;
+			if ($scope.iconContrl === 'plus'){
+				$scope.iconContrl = 'minus';
+			}
+			else if ($scope.iconContrl === 'minus'){
+				$scope.iconContrl = 'plus';
+			}
+			
 		}
 		else if (type === 'controller') {
 			$scope.showCtrlHosts = !$scope.showCtrlHosts;

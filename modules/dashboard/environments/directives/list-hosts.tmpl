@@ -81,11 +81,20 @@
 							</alert><br />
 							<div ng-repeat="(serviceName, serviceInfo) in hosts">
 								<div ng-if="serviceName === 'controller'" class="serviceBox controllerEnvelop" ng-show="showCtrlHosts">
-									<div style="width: 100%;" class="head {{serviceInfo.color}}" ng-click="showHideContent('controllerInfo')">
+									<div style="width: 100%;" class="head {{serviceInfo.color}}" >
 										<span class="icon" ng-class="serviceInfo.healthy===true? 'icon-smile2': 'icon-sad2'" ></span>&nbsp;gateway&nbsp;{{translation.port[LANG]}}:&nbsp;{{serviceInfo.port}}
-										
+										<span class="icon icon-{{iconContrl}} f-right iconPlus" ng-click="showHideContent('controllerInfo')"></span>
 										<div ng-show = "showHideControllerInfo">
-											<p><br> # Run this in your terminal to start the Gateway.<br/> > soajs service start gateway --env={{envCode.toUpperCase()}} </br></p>
+											<p><br> # Run this in your terminal to start the Gateway.
+												<br/> > soajs service start gateway --env={{envCode.toUpperCase()}} </br></p>
+											<p>
+												<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;For more
+												information,
+												<a href="https://soajsorg.atlassian.net/wiki/x/DQB8O" target="_blank">Click
+													Here</a>
+											</p>
+											<br>
+											<p># Add these environment variables in your terminal before you start your service.<br> > export SOAJS_ENV={{envCode.toUpperCase()}} <br> > export SOAJS_REGISTRY_API={{SRVIP}}:{{SRVPORT}} <br> > export SOAJS_DEPLOY_MANUAL=1</br></code></p>
 											<p>
 												<span class="glyphicon glyphicon-chevron-right"></span>&nbsp;For more
 												information,

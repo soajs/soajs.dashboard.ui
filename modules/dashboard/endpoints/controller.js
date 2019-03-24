@@ -30,7 +30,21 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, apiBuilderConfig.permissions);
+	$scope.endpointTabs = [
+		{heading: 'services', active: true},
+		{heading: 'endpoints', active: false}
+	];
 	
+	if ($routeParams.id === "0"){
+		$scope.endpointTabs[0].active = true;
+	}
+	
+	else if ($routeParams.id === "1"){
+		$scope.endpointTabs[1].active = true;
+	}
+	else {
+		$scope.endpointTabs[0].active = true;
+	}
 	$scope.showHide = function (service) {
 		if (!service.hide) {
 			jQuery('#s_' + service._id + " .body").slideUp();

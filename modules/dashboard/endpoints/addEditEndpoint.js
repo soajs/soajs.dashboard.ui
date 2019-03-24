@@ -199,7 +199,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 						$scope.form.formData = {};
 						$scope.remoteCertificates = {};
 						delete $scope.wizard;
-						$scope.$parent.go("/endpoints");
+						$scope.$parent.go("/endpoints/1");
 					}
 				}
 			]
@@ -252,7 +252,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 						$scope.form.formData = {};
 						$scope.remoteCertificates = {};
 						delete $scope.wizard;
-						$scope.$parent.go("/endpoints");
+						$scope.$parent.go("/endpoints/1");
 					}
 				}
 			]
@@ -345,7 +345,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 						$scope.form.formData = {};
 						$scope.remoteCertificates = {};
 						delete $scope.wizard;
-						$scope.$parent.go("/endpoints");
+						$scope.$parent.go("/endpoints/1");
 					}
 				}
 			]
@@ -407,7 +407,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');
 			}
 			else {
-				$scope.$parent.go("/endpoints");
+				$scope.$parent.go("/endpoints/1");
 				$localStorage.addEnv.step1 = {};
 			}
 		});

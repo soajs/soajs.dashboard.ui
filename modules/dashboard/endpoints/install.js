@@ -434,6 +434,27 @@ var endpointsNav = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
+		'id': 'endpoints',
+		'label': translation.endpoints[LANG],
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/apiBuilder/list',
+			'method': 'get'
+		},
+		'url': '#/endpoints/:id?',
+		'tplPath': 'modules/dashboard/endpoints/directives/list.tmpl',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'development',
+			'label': translation.develop[LANG],
+			'position': 1
+		},
+		'tracker': true,
+		'order': 3,
+		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/controller.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
 		'id': 'add-endpoints',
 		'label': translation.endpoints[LANG],
 		'checkPermission': {

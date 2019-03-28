@@ -32,7 +32,8 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	constructModulePermissions($scope, $scope.access, apiBuilderConfig.permissions);
 	$scope.endpointTabs = [
 		{heading: 'services', active: true},
-		{heading: 'endpoints', active: false}
+		{heading: 'endpoints', active: false},
+		{heading: 'passThroughs', active: false},
 	];
 	
 	if ($routeParams.id === "0"){
@@ -41,6 +42,9 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	
 	else if ($routeParams.id === "1"){
 		$scope.endpointTabs[1].active = true;
+	}
+	else if ($routeParams.id === "2"){
+		$scope.endpointTabs[2].active = true;
 	}
 	else {
 		$scope.endpointTabs[0].active = true;
@@ -121,8 +125,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	$scope.onEditEndpoint = function (mainType, id) {
 		if(mainType === 'services'){
 			$scope.$parent.go("#/swaggerEditor/" + id);
-		}else{
+		}else if (mainType === 'endpoints'){
 			$scope.$parent.go("#/endpoints/addEditEndpoint/" + id);
+		}
+		else {
+			$scope.$parent.go("#/endpoints/addEditPassThrough/" + id);
 		}
 	};
 	
@@ -1165,8 +1172,11 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	$scope.addNewEndpoint = function (mainType) {
 		if (mainType === 'services') {
 			$scope.$parent.go("#/swaggerEditor/new");
-		} else {
+		} else if (mainType === 'endpoints'){
 			$scope.$parent.go("#/endpoints/addEditEndpoint/new");
+		}
+		else {
+			$scope.$parent.go("#/endpoints/addEditPassThrough/new");
 		}
 	};
 	
@@ -1439,7 +1449,16 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.onRemoveEndpoint = function (mainType, id) {
-		let description = mainType === 'services' ? 'Service' : 'Endpoint';
+		let description ;
+		if (mainType === 'services'){
+			description = 'Service';
+		}
+		else if (mainType === 'endpoints'){
+			description = 'Endpoint';
+		}
+		else {
+			description = "PassThrough Endpoint"
+		}
 		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
@@ -1527,5 +1546,6 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		injectFiles.injectCss("modules/dashboard/endpoints/endpoints.css");
 		$scope.listEndpoints('endpoints');
 		$scope.listEndpoints('services');
+		$scope.listEndpoints('passThroughs');
 	}
 }]);

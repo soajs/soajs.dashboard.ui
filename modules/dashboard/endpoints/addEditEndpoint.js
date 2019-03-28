@@ -149,7 +149,7 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 		let environmentsConfigStep1Entries = [
 			{
 				"name": "generalInfo",
-				"directive": "modules/dashboard/endpoints/directives/add-step1.tmpl"
+				"directive": "modules/dashboard/endpoints/directives/add-endpoint.tmpl"
 			}
 		];
 		var configuration = angular.copy(environmentsConfigStep1Entries);
@@ -209,7 +209,13 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 			if (mode !== 'edit' && $localStorage.addEnv && $localStorage.addEnv.step1) {
 				$scope.form.formData = angular.copy($localStorage.addEnv.step1);
 			}
-			
+			$scope.form.closeModal = function(){
+				delete $localStorage.addEnv;
+				$scope.form.formData = {};
+				$scope.remoteCertificates = {};
+				delete $scope.wizard;
+				$scope.$parent.go("/endpoints/1");
+			};
 			overlayLoading.hide();
 		});
 	};

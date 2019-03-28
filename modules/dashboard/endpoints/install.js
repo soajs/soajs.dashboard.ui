@@ -403,6 +403,30 @@ var srTranslation = {
 	"externalKeyEnv": {
 		"ENG": "Ext Key Environment",
 		"FRA": "Ext Key Environment"
+	},
+	"path": {
+		"ENG": "Path",
+		"FRA": "Path"
+	},
+	"port": {
+		"ENG": "Port",
+		"FRA": "Port"
+	},
+	"heartbeat": {
+		"ENG": "Heartbeat",
+		"FRA": "Heartbeat"
+	},
+	"addVersion": {
+		"ENG": "Add Version",
+		"FRA": "Add Version",
+	},
+	"editVersion": {
+		"ENG": "Edit Version",
+		"FRA": "edit Version",
+	},
+	"addEditSwagger": {
+		"ENG": "Add/Edit Version",
+		"FRA": "Add/Edit Version",
 	}
 };
 
@@ -473,6 +497,27 @@ var endpointsNav = [
 		'tracker': true,
 		'order': 3,
 		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditEndpoint.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'add-passThroughs',
+		'label': translation.endpoints[LANG],
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/apiBuilder/add',
+			'method': 'post'
+		},
+		'url': '#/endpoints/addEditPassThrough/:id',
+		'tplPath': 'modules/dashboard/endpoints/directives/addEditPassThrough.tmpl',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'development',
+			'label': translation.develop[LANG],
+			'position': 1
+		},
+		'tracker': true,
+		'order': 3,
+		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditPassThrough.js'],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

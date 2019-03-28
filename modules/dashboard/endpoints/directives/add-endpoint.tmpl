@@ -36,27 +36,6 @@
 				</select>
 				<span class="manualToolTip">Your endpoint can be either a SOAP service or a Rest service</span>
 			</div>
-			
-			<div>
-				<label>oAuth</label>
-				&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="form.formData.oauth"/>&nbsp;
-				<label for="oauth_0">true</label>
-				&nbsp;-&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="form.formData.oauth"/>&nbsp;
-				<label for="oauth_1">false</label>
-				<br>
-				<span class="manualToolTip">If set to true, the service becomes protected by oauth. Only requests that have a valid access_token are permitted to use the APIs of this service</span>
-			</div>
-			
-			<div>
-				<label>Ext Key</label>
-				&nbsp;<input id="extKey_0" type="radio" ng-value=true ng-model="form.formData.extKeyRequired"/>&nbsp;
-				<label for="extKey_0">true</label>
-				&nbsp;-&nbsp;<input id="extKey_1" type="radio" ng-value=false ng-model="form.formData.extKeyRequired"/>&nbsp;
-				<label for="extKey_1">false</label>
-				<br>
-				<span class="manualToolTip">SOAJS evolves the service and makes it multitenant supportive</span>
-			</div>
-			
 			<br>
 			<div ng-if="access.getEndpointResources">
 				<label>Authentication Method (Resources) :</label>
@@ -81,7 +60,29 @@
 					</ul>
 				</div>
 			</div>
-			
+			<br>
+			<fieldset>
+				<legend>Security</legend>
+				<div>
+					<label>oAuth</label>
+					&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="form.formData.oauth"/>&nbsp;
+					<label for="oauth_0">true</label>
+					&nbsp;-&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="form.formData.oauth"/>&nbsp;
+					<label for="oauth_1">false</label>
+					<br>
+					<span class="manualToolTip">If set to true, the service becomes protected by oAuth. Only requests that have a valid access_token are permitted to use the APIs of this service.</span>
+				</div>
+				
+				<div>
+					<label>Ext Key</label>
+					&nbsp;<input id="extKey_0" type="radio" ng-value=true ng-model="form.formData.extKeyRequired"/>&nbsp;
+					<label for="extKey_0">true</label>
+					&nbsp;-&nbsp;<input id="extKey_1" type="radio" ng-value=false ng-model="form.formData.extKeyRequired"/>&nbsp;
+					<label for="extKey_1">false</label>
+					<br>
+					<span class="manualToolTip">If set to true, the service becomes protected by key and multi-tenancy will become available. To control multi-tenancy click on the manage tab.</span>
+				</div>
+			</fieldset>
 		</form>
 	</div>
 </div>

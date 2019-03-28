@@ -1,6 +1,18 @@
 var apiBuilderConfig = {
 	form: {
-		
+		addVersion :{
+			'entries': [
+				{
+					'name': 'version',
+					'label': 'Enter Version',
+					'type': 'text',
+					'value': '',
+					'pattern': /^(\d+\.)?(\d+\.)?(\*|\d+)$/,
+					'required': true,
+					'placeholder': '1.0'
+				}
+			]
+		}
 	},
 	permissions: {
 		'listEndpoints': ['dashboard', '/apiBuilder/list', 'get'],

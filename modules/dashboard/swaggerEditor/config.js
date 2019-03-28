@@ -152,82 +152,96 @@ var swaggerEditorConfig = {
 				'fieldMsg': "If set to true, SOAJS creates a persistent session and adds it to the request object"
 			},
 			{
-				'name': 'oauth',
-				'label': "oauth",
-				'type': 'radio',
-				'value': [
-					{l: 'true', v: 'true'},
-					{l: 'false', v: 'false', selected: true}
-				],
-				'tooltip': "Choose your property",
-				'required': true,
-				'fieldMsg': "if set to true, the service becomes protected by oauth. Only requests that have a valid access_token are permitted to use the APIs of this service"
-				
+				'name': 'security',
+				'type': 'group',
+				'label': 'Security',
+				'entries': [
+					{
+						'name': 'oauth',
+						'label': "oauth",
+						'type': 'radio',
+						'value': [
+							{l: 'true', v: 'true'},
+							{l: 'false', v: 'false', selected: true}
+						],
+						'tooltip': "Choose your property",
+						'required': true,
+						'fieldMsg': "If set to true, the service becomes protected by oAuth. Only requests that have a valid access_token are permitted to use the APIs of this service"
+						
+					},
+					{
+						'name': 'extKeyRequired',
+						'label': "extKeyRequired",
+						'type': 'radio',
+						'value': [
+							{l: 'true', v: 'true'},
+							{l: 'false', v: 'false', selected: true}
+						],
+						'tooltip': "Choose your property",
+						'required': true,
+						'fieldMsg': "If set to true, the service becomes protected by key and multi-tenancy will become available. To control multi-tenancy click on the manage tab."
+						
+					}
+				]
 			},
 			{
-				'name': 'extKeyRequired',
-				'label': "extKeyRequired",
-				'type': 'radio',
-				'value': [
-					{l: 'true', v: 'true'},
-					{l: 'false', v: 'false', selected: true}
-				],
-				'tooltip': "Choose your property",
-				'required': true,
-				'fieldMsg': "SOAJS evolves the service and makes it multitenant supportive"
-				
-			},
-			{
-				'name': 'urac',
-				'label': "urac",
-				'type': 'radio',
-				'value': [
-					{l: 'true', v: 'true'},
-					{l: 'false', v: 'false', selected: true}
-				],
-				'tooltip': "Choose your property",
-				'required': true,
-				'fieldMsg': "This service requires access to the logged in user record in its business logic"
-				
-			},
-			{
-				'name': 'urac_Profile',
-				'label': "urac_Profile",
-				'type': 'radio',
-				'value': [
-					{l: 'true', v: 'true'},
-					{l: 'false', v: 'false', selected: true}
-				],
-				'tooltip': "Choose your property",
-				'required': true,
-				'fieldMsg': "This service requires access to the logged in user profile in its business logic"
-				
-			},
-			{
-				'name': 'urac_ACL',
-				'label': "urac_ACL",
-				'type': 'radio',
-				'value': [
-					{l: 'true', v: 'true'},
-					{l: 'false', v: 'false', selected: true}
-				],
-				'tooltip': "Choose your property",
-				'required': true,
-				'fieldMsg': "This service requires access to the logged in user Access Level in its business logic"
-				
-			},
-			{
-				'name': 'provision_ACL',
-				'label': "provision_ACL",
-				'type': 'radio',
-				'value': [
-					{l: 'true', v: 'true'},
-					{l: 'false', v: 'false', selected: true}
-				],
-				'tooltip': "Choose your property",
-				'required': true,
-				'fieldMsg': "This service requires access to package and tenant ACL in its business logic"
-				
+				'name': 'design',
+				'type': 'group',
+				'label': 'Augment the Request data between SOAJS Gateway and the API',
+				'entries': [
+					{
+						'name': 'urac',
+						'label': "urac",
+						'type': 'radio',
+						'value': [
+							{l: 'true', v: 'true'},
+							{l: 'false', v: 'false', selected: true}
+						],
+						'tooltip': "Choose your property",
+						'required': true,
+						'fieldMsg': "Add logged in user information to the request"
+						
+					},
+					{
+						'name': 'urac_Profile',
+						'label': "urac_Profile",
+						'type': 'radio',
+						'value': [
+							{l: 'true', v: 'true'},
+							{l: 'false', v: 'false', selected: true}
+						],
+						'tooltip': "Choose your property",
+						'required': true,
+						'fieldMsg': "Add logged in user profile additional information to the request"
+						
+					},
+					{
+						'name': 'urac_ACL',
+						'label': "urac_ACL",
+						'type': 'radio',
+						'value': [
+							{l: 'true', v: 'true'},
+							{l: 'false', v: 'false', selected: true}
+						],
+						'tooltip': "Choose your property",
+						'required': true,
+						'fieldMsg': "Add logged in user ACL (Access Control Level settings) to the request"
+						
+					},
+					{
+						'name': 'provision_ACL',
+						'label': "provision_ACL",
+						'type': 'radio',
+						'value': [
+							{l: 'true', v: 'true'},
+							{l: 'false', v: 'false', selected: true}
+						],
+						'tooltip': "Choose your property",
+						'required': true,
+						'fieldMsg': "Add product ACL (Access Control Level settings) to the request"
+						
+					},
+				]
 			},
 			{
 				'name': 'dbs',

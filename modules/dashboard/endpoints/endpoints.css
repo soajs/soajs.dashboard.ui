@@ -58,6 +58,10 @@ fieldset.serviceAPIs table tr[class^="form-group tr-removeAPI"] {
     width: 2%;
 }
 
+.w100 {
+    width: 100%;
+}
+
 .block {
     display: block;
 }
@@ -313,4 +317,14 @@ a.tooltipToggle {
 .defaultResourceButtons{
     float: right;
     width:150px;
+}
+
+.endpointHeader {
+    padding: 5px;
+    font-weight: bold;
+    background-color: #eeeeee;
+}
+
+div.entryBox .endpointHeader.closed {
+    border-bottom: none;
 }

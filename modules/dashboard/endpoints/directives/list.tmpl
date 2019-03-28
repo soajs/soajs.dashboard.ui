@@ -36,7 +36,7 @@
 		<h3 class="modal-title">Warning</h3>
 	</div>
 	<div class="modal-body">
-		<alert type="danger" >{{errorDescrition}}</alert>
+		<alert type="danger">{{errorDescrition}}</alert>
 	</div>
 	<div class="modal-footer">
 		<div>
@@ -50,7 +50,7 @@
 		<h3 class="modal-title">Warning</h3>
 	</div>
 	<div class="modal-body">
-		<alert type="danger" >{{errorDescrition}}</alert>
+		<alert type="danger">{{errorDescrition}}</alert>
 	</div>
 	<div class="modal-footer">
 		<div>
@@ -66,8 +66,8 @@
 		<h3 ng-if="validResponse" class="modal-title">Publish Response</h3>
 	</div>
 	<div class="modal-body">
-		<alert ng-if="errorDescrition" type="danger" >{{errorDescrition}}</alert>
-		<alert ng-if="validResponse" type="success" >Published successfully!</alert>
+		<alert ng-if="errorDescrition" type="danger">{{errorDescrition}}</alert>
+		<alert ng-if="validResponse" type="success">Published successfully!</alert>
 	</div>
 	<div class="modal-footer">
 		<div>
@@ -129,7 +129,7 @@
 
 <section ng-controller="endpointController">
 	<tabset>
-		<tab ng-repeat="mainType in endpointTabs" heading="{{mainType.heading}}" active = "mainType.active">
+		<tab ng-repeat="mainType in endpointTabs" heading="{{mainType.heading}}" active="mainType.active">
 			
 			<div class="entryBoxes" ng-show="grid.rows">
 				<div ng-if="access.listEndpoints">
@@ -138,8 +138,9 @@
 					</a>
 					<a href="" ng-click="addNewEndpoint(mainType.heading)" class="btn btn-primary f-right commonButtonsClass" ng-if="access.generateService || access.addEndpoint">
 						<span class="icon icon-plus"></span>
-						<span ng-if="mainType.heading==='endpoints'" ng-show="access.addEndpoint">Add new Endpoint</span>
-						<span ng-if="mainType.heading!=='endpoints'" ng-if="access.generateService">Add new Service</span>
+						<span ng-if="mainType.heading==='endpoints'" ng-show="access.addEndpoint">Add New Endpoint</span>
+						<span ng-if="mainType.heading==='services'" ng-if="access.generateService">Add New Service</span>
+						<span ng-if="mainType.heading==='passThroughs'" ng-if="access.addEndpoint">Add New Pass Through</span>
 					</a>
 					<br/><br/>
 				</div>
@@ -184,20 +185,20 @@
 					</div>
 					<div class="body grid" style="display:none;">
 						
-						<div ng-if="access.swaggertoIMFV && tempo.switchView[endpoint._id] === 'swagger'" class="form schemasClass">
+						<div ng-if="mainType.heading !== 'passThroughs' && access.swaggertoIMFV && tempo.switchView[endpoint._id] === 'swagger'" class="form schemasClass">
 							<button class="btn btn-primary" ng-click="switchView(mainType.heading, endpoint)">
 								Switch to IMFV
 							</button>
 						</div>
 						
-						<div ng-if="access.IMFVToSwagger && tempo.switchView[endpoint._id] !== 'swagger'">
+						<div ng-if="mainType.heading !== 'passThroughs' && access.IMFVToSwagger && tempo.switchView[endpoint._id] !== 'swagger'">
 							<a style="float:right; padding-right: 25px; margin-top: 5px" href="" ng-click="switchView(mainType.heading, endpoint)" title="click to run swagger simulation">
 								<span><img style="height: 25px; width:25px;" src="modules/dashboard/services/directives/images/swagger-icon.png">
 								</span>
 							</a>
 						</div>
 						
-						<div ng-if="tempo.switchView[endpoint._id] !== 'swagger'">
+						<div ng-if="mainType.heading !== 'passThroughs' && tempo.switchView[endpoint._id] !== 'swagger'">
 							
 							<tabset>
 								<tab ng-if="schemaKey!=='commonFields'" ng-repeat="(schemaKey, schemaObj) in endpoint.schema" heading="{{schemaKey}}" ng-init="isActive = isActiveTab(schemaKey, 0)" active="isActive" select="setActiveTab(schemaKey)">
@@ -274,7 +275,7 @@
 							</tabset>
 						</div>
 						
-						<div ng-if="tempo.switchView[endpoint._id] === 'swagger'">
+						<div ng-if="mainType.heading !== 'passThroughs' && tempo.switchView[endpoint._id] === 'swagger'">
 							<!--<div class="grouped clearfix" style="vertical-align: top">-->
 							<!--<div id="loggerEditor" ui-ace="{maxLines: Infinity, useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}" ng-model="endpoint.swaggerInput" style="height: 500px;"></div>-->
 							<!--<div>-->
@@ -316,12 +317,82 @@
 						
 						</div>
 						
+						<div ng-if="mainType.heading === 'passThroughs'">
+							<tabset>
+								<tab ng-repeat="(v, version) in endpoint.versions" heading="v{{v}}">
+									<fieldset >
+										<legend>Security</legend>
+										<div>
+											<label>oAuth</label>
+											&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="version.oauth" ng-disabled="true"/>&nbsp;
+											<label for="oauth_0">true</label>
+											&nbsp;-&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="version.oauth" ng-disabled="true"/>&nbsp;
+											<label for="oauth_1">false</label>
+											<br>
+											<span class="manualToolTip">If set to true, the service becomes protected by oAuth. Only requests that have a valid access_token are permitted to use the APIs of this service</span>
+										</div>
+										<div>
+											<label>Ext Key</label>
+											&nbsp;<input id="extKey_0" type="radio" ng-value=true ng-model="version.extKeyRequired" ng-disabled="true"/>&nbsp;
+											<label for="extKey_0">true</label>
+											&nbsp;-&nbsp;<input id="extKey_1" type="radio" ng-value=false ng-model="version.extKeyRequired" ng-disabled="true"/>&nbsp;
+											<label for="extKey_1">false</label>
+											<br>
+											<span class="manualToolTip">If set to true, the service becomes protected by oauth. Only requests that have a valid access_token are permitted to use the APIs of this service</span>
+										</div>
+									</fieldset>
+									<br>
+									<fieldset>
+										<legend>Augment the Request data between SOAJS Gateway and the API</legend>
+										<div>
+											<label>URAC</label>
+											&nbsp;<input id="urac_0" type="radio" ng-value=true ng-model="version.urac" ng-disabled="true"/>&nbsp;
+											<label for="urac_0">true</label>
+											&nbsp;-&nbsp;<input id="urac_1" type="radio" ng-value=false ng-model="version.urac" ng-disabled="true"/>&nbsp;
+											<label for="urac_1">false</label>
+											<br>
+											<span class="manualToolTip">Add logged in user information to the request.</span>
+										</div>
+										
+										<div>
+											<label>URAC Profile</label>
+											&nbsp;<input id="urac_profile_0" type="radio" ng-value=true ng-model="version.urac_Profile" ng-disabled="true"/>&nbsp;
+											<label for="urac_profile_0">true</label>
+											&nbsp;-&nbsp;<input id="urac_profile_1" type="radio" ng-value=false ng-model="version.urac_Profile" ng-disabled="true"/>&nbsp;
+											<label for="urac_profile_1">false</label>
+											<br>
+											<span class="manualToolTip">Add logged in user profile additional information to the request</span>
+										</div>
+										<div>
+											<label>URAC ACL</label>
+											&nbsp;<input id="urac_acl_0" type="radio" ng-value=true ng-model="version.urac_ACL" ng-disabled="true"/>&nbsp;
+											<label for="urac_acl_0">true</label>
+											&nbsp;-&nbsp;<input id="urac_acl_1" type="radio" ng-value=false ng-model="version.urac_ACL" ng-disabled="true"/>&nbsp;
+											<label for="urac_acl_1">false</label>
+											<br>
+											<span class="manualToolTip">Add logged in user ACL (Access Control Level settings) to the request</span>
+										</div>
+										
+										<div>
+											<label>Provision ACL</label>
+											&nbsp;<input id="provision_acl_0" type="radio" ng-value=true ng-model="version.provision_ACL" ng-disabled="true"/>&nbsp;
+											<label for="provision_acl_0">true</label>
+											&nbsp;-&nbsp;<input id="provision_acl_1" type="radio" ng-value=false ng-model="version.provision_ACL" ng-disabled="true"/>&nbsp;
+											<label for="provision_acl_1">false</label>
+											<br>
+											<span class="manualToolTip">Add logged in user ACL (Access Control Level settings) to the request</span>
+										</div>
+									</fieldset>
+								</tab>
+							</tabset>
+						</div>
+						
 						<div class="w100 c-both">
 							<br/>
-							<button ng-if="access.publish && mainType.heading === 'endpoints'" ng-confirm-click="Are you sure you want to proceed ? if Yes, your changes will be applied to the API Catalog" class="btn btn-success commonButtonsClass commonGreenButtonsClass" ng-click="publish(mainType.heading, endpoint)">
+							<button ng-if="access.publish && mainType.heading !== 'services'" ng-confirm-click="Are you sure you want to proceed ? if Yes, your changes will be applied to the API Catalog" class="btn btn-success commonButtonsClass commonGreenButtonsClass" ng-click="publish(mainType.heading, endpoint)">
 								Publish
 							</button>
-							<button ng-if="access.updateEndpointSchema" class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType.heading, endpoint)">
+							<button ng-if="access.updateEndpointSchema && mainType.heading !== 'passThroughs'" class="btn btn-primary commonButtonsClass" ng-click="updateSchemas(mainType.heading, endpoint)">
 								Save
 							</button>
 						</div>
@@ -329,7 +400,9 @@
 				</div>
 				
 				<div ng-if="grid.rows[mainType.heading].length === 0" class="modal-body">
-					<alert type="warning" >You don't have any {{mainType.heading}}. Click on add new {{mainType.heading==='services'?'Service':'Endpoint'}} to add a new entry.</alert>
+					<alert type="warning">You don't have any {{mainType.heading}}. Click on add new
+						{{mainType.heading==='services'?'Service':'Endpoint'}} to add a new entry.
+					</alert>
 				</div>
 			</div>
 		</tab>

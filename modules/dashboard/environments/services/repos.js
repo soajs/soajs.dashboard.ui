@@ -71,7 +71,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 												if(response){
 													for(let oneService in response.data.services){
 														if(oneRepo.serviceName === oneService && response.data.services[oneService].hosts){
-															if(response.data.services[oneService].hosts[oneVersion.toString()] && parseFloat(response.data.services[oneService].version) === parseFloat(oneVersion)){
+															if(response.data.services[oneService].hosts[oneVersion.toString()] && response.data.services[oneService].version.toString() === oneVersion.toString()){
 																myVersion = {
 																	healthy : true,
 																	version: oneVersion,
@@ -133,7 +133,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			},
 			"data": {
 				"serviceName": oneRepo.serviceName,
-				"serviceVersion": parseFloat(version.version)
+				"serviceVersion": version.version.toString()
 			}
 		}, function (error) {
 			overlayLoading.hide();
@@ -163,7 +163,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			},
 			"data": {
 				"serviceName": oneRepo.serviceName,
-				"serviceVersion": parseFloat(version.version)
+				"serviceVersion": version.version.toString()
 			}
 		}, function (error) {
 			overlayLoading.hide();
@@ -890,7 +890,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 					}
 					configuration.version.options.custom.gc = {
 						"gcName": currentScope.oneSrv,
-						"gcVersion": parseFloat(currentScope.version)
+						"gcVersion": currentScope.version.toString()
 					}
 				}
 				if((!currentScope.autoScale || !currentScope.isAutoScalable || configuration.version.options.deployConfig.replication.mode !== 'deployment') && configuration.version.options.autoScale){
@@ -964,7 +964,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				controllerScope = currentScope
 			}
 			if (params && params.custom && params.custom.version) {
-				params.custom.version = parseFloat(params.custom.version);
+				params.custom.version = params.custom.version.toString();
 			}
 			var config = {
 				"method": "post",

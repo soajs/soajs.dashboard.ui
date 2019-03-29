@@ -3,7 +3,7 @@
 <br>
 <div ng-if="access.tenant.appKeys.list">
 	<div style="clear:both; height:30px; padding-bottom:5px;"><b>{{translation.tenantProductsKeys[LANG]}}:</b>
-		<a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm consoleKey" ng-click="updateConfiguration(consoleTenants1['_id'], application['appId'], application['package'],  application.keys[0], 'dashboard', application.keys[0].config['dashboard']);">{{translation.editServiceConfiguration[LANG]}}</a>
+		<a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm consoleKey" ng-click="updateConfiguration(consoleTenants1['_id'], application['appId'], application['package'],  application.keys[0].key, 'dashboard', application.keys[0].config['dashboard']);">{{translation.editServiceConfiguration[LANG]}}</a>
 	</div>
 	<div class="keysAccordion">
 		<accordion close-others="true" ng-show="application.keys.length > 0">

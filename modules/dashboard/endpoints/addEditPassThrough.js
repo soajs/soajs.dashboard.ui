@@ -16,7 +16,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		];
 	
 	$scope.replaceDot = function (v) {
-		return v.replace(/./g, 'x');
+		return v.replace(/\./g, 'x');
 	};
 	$scope.showHideFav = function (v, version) {
 		if (!version.hide) {

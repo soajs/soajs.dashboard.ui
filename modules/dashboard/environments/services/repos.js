@@ -725,7 +725,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			}
 			
 			var deployService = $modal.open({
-				templateUrl: 'deployService.tmpl',
+				templateUrl: 'deployEndpoint.tmpl',
 				size: 'lg',
 				backdrop: true,
 				keyboard: true,

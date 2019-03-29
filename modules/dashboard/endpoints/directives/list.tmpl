@@ -389,22 +389,22 @@
 											<span class="manualToolTip">Add logged in user ACL (Access Control Level settings) to the request</span>
 										</div>
 									</fieldset>
-									<fieldset ng-if="endpoint.src && endpoint.src.swagger && swag.version === v" ng-repeat="swag in endpoint.src.swagger">
+									<fieldset >
 										<legend>Swagger</legend>
-										<div>
-											<label>Type: </label>
-											<span style=" text-transform: capitalize;">{{swag.content.type}}</span>
-											<br>
+										<div ng-if="endpoint.src && endpoint.src.swagger && swag.version === v" ng-repeat="swag in endpoint.src.swagger">
+											<div>
+												<label>Type: </label>
+												<span style=" text-transform: capitalize;">{{swag.content.type}}</span>
+												<br>
+											</div>
+											
+											<alert ng-if="!swag.content || !swag.content.content" type="warning">
+												Swagger file not found. Please add one.
+											</alert>
+											<alert ng-if="swag.content && swag.content.content" type="info">
+												Swagger file added.
+											</alert>
 										</div>
-										
-										<alert ng-if="!swag.content || !swag.content.content" type="warning">
-											Swagger file not found. Please add one.
-										</alert>
-										<alert ng-if="swag.content && swag.content.content" type="info">
-											Swagger file added.
-										</alert>
-									
-									
 									</fieldset>
 								</tab>
 							</tabset>

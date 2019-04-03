@@ -51,7 +51,6 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				if (data.maintenance) {
 					data.port = data.maintenance.port ? data.maintenance.port.value : null;
 					data.path = data.maintenance.readiness;
-					
 				}
 				if (!data.versions) {
 					data.versions = {};
@@ -63,6 +62,9 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								data.versions[oneUrl.version].url = oneUrl.url;
 							}
 						});
+					}
+					if (data.src.url) {
+						data.simulateUrl = data.src.url;
 					}
 					if (data.src.swagger) {
 						data.src.swagger.forEach((oneSwagger) => {

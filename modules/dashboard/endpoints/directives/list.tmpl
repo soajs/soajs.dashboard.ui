@@ -391,7 +391,7 @@
 									</fieldset>
 									<fieldset >
 										<legend>Swagger</legend>
-										<div ng-if="endpoint.src && endpoint.src.swagger && swag.version === v" ng-repeat="swag in endpoint.src.swagger">
+										<div ng-repeat="swag in endpoint.src.swagger" ng-if="endpoint.src && endpoint.src.swagger && swag.version === v">
 											<div>
 												<label>Type: </label>
 												<span style=" text-transform: capitalize;">{{swag.content.type}}</span>

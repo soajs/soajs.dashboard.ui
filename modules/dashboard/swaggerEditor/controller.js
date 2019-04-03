@@ -89,7 +89,6 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 	function watchSwaggerSimulator(cb) {
 		//grab the swagger info
 		var x = swaggerParser.fetch();
-		console.log(swaggerParser)
 		if (!x || x.length === 0 || typeof(x[3]) !== 'object' || Object.keys(x[3]).length === 0) {
 			$timeout(function () {
 				watchSwaggerSimulator(cb);

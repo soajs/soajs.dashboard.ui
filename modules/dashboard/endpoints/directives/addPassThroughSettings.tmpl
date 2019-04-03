@@ -14,17 +14,17 @@
 				<a href="" ng-click="deleteVersion(v)">
 					<span class="icon icon-cross"></span>
 				</a>
-			</td >
+			</td>
 		</tr>
 	</table>
 </div>
 <div class="body" style="display:none;">
 	<div>
-	<label>URL</label>
-	<input type="text" class="form-control" ng-model="form.formData.versions[v].url" ng-required="true" placeholder="http://example.com"/>
-	<span class="manualToolTip">The url of your endpoint</span>
-	<br>
-</div>
+		<label>URL</label>
+		<input type="text" class="form-control" ng-model="form.formData.versions[v].url" ng-required="true" placeholder="http://example.com"/>
+		<span class="manualToolTip">The url of your endpoint</span>
+		<br>
+	</div>
 	<fieldset>
 		<legend>Security</legend>
 		<div>
@@ -88,7 +88,7 @@
 			<span class="manualToolTip">Add logged in user ACL (Access Control Level settings) to the request</span>
 		</div>
 	</fieldset>
-	<fieldset >
+	<fieldset>
 		<legend>Swagger</legend>
 		<div ng-if="form.formData.versions[v].swagger">
 			<label>Type: </label>
@@ -102,16 +102,16 @@
 		<alert ng-if="form.formData.versions[v].swagger" type="info">
 			Swagger file added.
 		</alert>
-		
-		
+	
+	
 	</fieldset>
 	<br>
 	<div>
 		<a ng-if="!form.formData.versions[v].swagger" class="btn btn-primary f-right mr5 c-both" ng-click="addSwagger(v, version)">
-			<span >Add Swagger</span>
+			<span>Add Swagger</span>
 		</a>
 		<a ng-if="form.formData.versions[v].swagger" class="btn btn-primary f-right mr5 c-both" ng-click="addSwagger(v, version)">
-			<span >Edit Swagger</span>
+			<span>Edit Swagger</span>
 		</a>
 	</div>
 </div>

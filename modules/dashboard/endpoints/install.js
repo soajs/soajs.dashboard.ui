@@ -427,6 +427,10 @@ var srTranslation = {
 	"addEditSwagger": {
 		"ENG": "Add/Edit Version",
 		"FRA": "Add/Edit Version",
+	},
+	"simulateUrl": {
+		"ENG": "Simulate URL",
+		"FRA": "Simulate URL",
 	}
 };
 

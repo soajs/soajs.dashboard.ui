@@ -349,3 +349,7 @@ div.entryBox .endpointHeader.closed {
 .loadMoreEndPoint {
     width: 100% !important;
 }
+
+.onClickRepo {
+    background-color: #dff0d8 !important;
+}

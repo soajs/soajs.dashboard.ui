@@ -3,7 +3,10 @@
 </div>
 <div class="modal-body">
 	<div class="form">
-		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+		<div ng-if="message.danger">
+			<alert type="danger" >{{message.danger}}</alert>
+			<br>
+		</div>
 		<form name="gitInput" id="gitConf" ng-submit="gitInput.$valid && onSubmit()">
 			<div class="form-group">
 				<div>
@@ -33,8 +36,8 @@
 							<br>
 							<div>
 								<ul class="blueListing endpointListing">
-									<li class="blueLi row-list gitEndpointSize" ng-repeat="repo in repos | reposSearchFilter:searchKeyword" >
-										<a href="" class="" ng-click="selectRepoBranch(repo)">{{repo.full_name}}</a>
+									<li class="blueLi row-list gitEndpointSize" id="repo_full_name_{{repo.id}}" ng-repeat="repo in repos | reposSearchFilter:searchKeyword" >
+										<a href="" class="" ng-click="!selectRepoBranch(repo)">{{repo.full_name}}</a>
 									</li>
 								</ul>
 							</div>
@@ -53,7 +56,7 @@
 			</div>
 			<div class="c-both w100 t-right">
 				<hr />
-				<input ng-if="selectedBranch" type="submit" class="btn btn-primary" value="Submit" />
+				<input ng-if="selectedBranch" type="button" ng-click="submit()" class="btn btn-primary" value="Submit" />
 				<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
 			</div>
 		</form>

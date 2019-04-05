@@ -134,6 +134,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				keyboard: true,
 				controller: function ($scope) {
 					fixBackDrop();
+					$scope.message = {};
 					$scope.title = 'Select Git Repository';
 					$scope.gitAccounts = currentScope.gitAccounts;
 					$scope.selectedAccount = null;
@@ -215,6 +216,15 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					};
 					
 					$scope.selectRepoBranch = function (repo) {
+						let selectedRepo = angular.copy($scope.selectedRepo);
+						if (selectedRepo && selectedRepo.id !== repo.id){
+							jQuery('[id^="repo_full_name_"]').removeClass("onClickRepo");
+							jQuery('#repo_full_name_' + repo.id).addClass('onClickRepo');
+						}
+						if ((selectedRepo && selectedRepo.id === repo.id) || !selectedRepo){
+							jQuery('#repo_full_name_' + repo.id).addClass('onClickRepo');
+						}
+					
 						getSendDataFromServer($scope, ngDataApi, {
 							method: 'get',
 							routeName: '/dashboard/gitAccounts/getBranches',
@@ -229,8 +239,10 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							if (error) {
 								$scope.displayAlert('danger', error.message);
 							}
-							$scope.selectedRepo = repo;
-							$scope.repoBranch = result.branches;
+							else if (result){
+								$scope.selectedRepo = repo;
+								$scope.repoBranch = result.branches;
+							}
 						});
 					};
 					$scope.selectBranch = function (branch) {
@@ -238,7 +250,13 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							$scope.selectedBranch = branch.name;
 						}
 					};
-					$scope.onSubmit = function () {
+					$scope.displayAlert = function (type, message) {
+						$scope.message[type] = message;
+						$timeout(() => {
+							$scope.message = {};
+						}, 5000);
+					};
+					$scope.submit = function () {
 						getSendDataFromServer($scope, ngDataApi, {
 							method: 'get',
 							routeName: '/dashboard/gitAccounts/getAnyFile',
@@ -251,7 +269,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 						}, function (error, result) {
 							overlayLoading.hide();
 							if (error) {
-								currentScope.displayAlert('danger', error.message);
+								$scope.displayAlert('danger', error.message);
 							}
 							if (result && result.content) {
 								currentScope.editor.setValue(result.content);
@@ -269,8 +287,8 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								currentScope.schemaCode = result.content;
 								currentScope.schemaCodeF = result.content;
 								currentScope.swaggerUrl = result.downloadLink;
+								$scope.closeModal();
 							}
-							$scope.closeModal();
 						});
 					};
 					

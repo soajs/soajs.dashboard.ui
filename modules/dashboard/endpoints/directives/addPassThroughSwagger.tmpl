@@ -36,6 +36,7 @@
 					</div>
 					
 					<div ng-if="form.formData.swaggerInputType === 'git'">
+						
 						<div class="c-both w100 table">
 							<a class="btn btn-success f-right mr5" ng-click="moveYamlRight()">
 								<span class="icon icon-play3"></span>
@@ -45,12 +46,12 @@
 								<span class="icon icon-loop2"></span>
 								Sync
 							</a>
-							<a class="btn btn-primary f-right mr5" ng-click="editGitSwagger('git')" ng-if="git">
+							<a class="btn btn-primary f-right mr5" ng-click="editGitSwagger('git')" ng-if="form.formData.swaggerInputType">
 								<span class="icon icon-pencil2"></span>
 								Edit
 							</a>
 						</div>
-						<em class="f-left" ng-if="git"><b>Repository:</b> {{getGitInfo(git.gitId)}} </em>
+						<em class="f-left" ng-if="git"><b>Owner:</b> {{getGitInfo(git.gitId)}} </em>
 						<br>
 						<em class="f-left" ng-if="git"><b>Repository:</b> {{git.repo}} </em>
 						<br>
@@ -59,6 +60,7 @@
 						<em class="f-left" ng-if="git"><b>FilePath:</b> {{git.filepath}}</em>
 						<br>
 						<em>Make sure you press <b>Run</b> before you click <b>submit</b> to save your changes.</em>
+						<br>
 						<hr/>
 						<div class="w100 c-both">
 							<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">

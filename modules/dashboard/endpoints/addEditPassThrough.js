@@ -114,12 +114,16 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.selectSwagger = function (type) {
-		if (type === 'text'){
-			$scope.editor.setOptions({
-				readOnly: false,
-				highlightActiveLine: true,
-				highlightGutterLine: true
-			});
+		if (type === 'text') {
+			$timeout(function () {
+				if ($scope.editor){
+					$scope.editor.setOptions({
+						readOnly: false,
+						highlightActiveLine: true,
+						highlightGutterLine: true
+					});
+				}
+			}, 400);
 		}
 		if (type === 'git') {
 			let currentScope = $scope;
@@ -139,7 +143,6 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								$scope.selectedAccount = git;
 							}
 						});
-						overlayLoading.show();
 						if ($scope.selectedAccount) {
 							let counter = 0;
 							$scope.selectedAccount.loading = false;
@@ -153,6 +156,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 						if (!account.nextPageNumber) {
 							account.nextPageNumber = $scope.defaultPageNumber;
 						}
+						overlayLoading.show();
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "get",
 							"routeName": "/dashboard/gitAccounts/getRepos",
@@ -180,7 +184,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							}
 						});
 					};
-					if (currentScope.git){
+					if (currentScope.git) {
 						$scope.filepath = currentScope.git.filepath;
 						$scope.gitAcc = angular.copy(currentScope.git.gitId);
 						overlayLoading.show();
@@ -240,7 +244,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							routeName: '/dashboard/gitAccounts/getAnyFile',
 							params: {
 								accountId: $scope.selectedAccount._id,
-								repo: $scope.selectedRepo.name,
+								repo: $scope.selectedRepo ? $scope.selectedRepo.name : null,
 								filepath: $scope.filepath,
 								branch: $scope.selectedBranch
 							}
@@ -368,8 +372,8 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		});
 	};
 	
-	$scope.syncGitSwagger = function(){
-		if ($scope.git){
+	$scope.syncGitSwagger = function () {
+		if ($scope.git && $scope.git.gitId && $scope.git.repo && $scope.git.filepath && $scope.git.branch) {
 			getSendDataFromServer($scope, ngDataApi, {
 				method: 'get',
 				routeName: '/dashboard/gitAccounts/getAnyFile',
@@ -400,7 +404,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		}
 	};
 	
-	$scope.editGitSwagger = function(){
+	$scope.editGitSwagger = function () {
 		$scope.selectSwagger('git');
 	};
 	
@@ -594,15 +598,14 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					
 					$scope.schemaCode = $localStorage.addPassThrough.step1.versions[v].swagger.swaggerInput;
 					$timeout(function () {
-						if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'git'){
+						if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'git') {
 							$scope.git = $localStorage.addPassThrough.step1.versions[v].swagger.git;
 							$scope.editor.setOptions({
 								readOnly: true,
 								highlightActiveLine: false,
 								highlightGutterLine: false
 							});
-						}
-						else if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'text'){
+						} else if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'text') {
 							$scope.editor.setOptions({
 								readOnly: false,
 								highlightActiveLine: true,
@@ -617,10 +620,10 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		});
 	};
 	
-	$scope.getGitInfo = function(gitId){
+	$scope.getGitInfo = function (gitId) {
 		let owner;
 		$scope.gitAccounts.forEach((git) => {
-			if (git._id ===gitId) {
+			if (git._id === gitId) {
 				owner = git.owner;
 			}
 		});

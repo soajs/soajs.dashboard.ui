@@ -8,7 +8,7 @@
 			<div class="form-group">
 				<div>
 					<label>Select Account: </label>
-					<select id="gitAccount"  ng-required="true" ng-options="git._id as git.label for git in gitAccounts" tooltip="Select Account" ng-model="gitAcc" ng-change="selectGitAccount(git)">
+					<select id="gitAccount"  ng-required="true" ng-options="git._id as git.label for git in gitAccounts" tooltip="Select Account" ng-model="gitAcc" ng-change="selectGitAccount(gitAcc)">
 					</select>
 					<br>
 					<span class="manualToolTip">Select the Git Account where your swagger file is located.</span>
@@ -16,7 +16,7 @@
 				<br>
 				<div>
 					<label>FilePath: </label>
-					<input type="text" class="form-control" ng-model="filepath" placeholder="/swagger.yml" />
+					<input type="text" class="form-control"  ng-required="true" ng-model="filepath" placeholder="/swagger.yml" />
 					<span class="manualToolTip">Select the file path to your swagger.yml/yaml file in your repository.</span>
 				</div>
 				<br>
@@ -53,8 +53,8 @@
 			</div>
 			<div class="c-both w100 t-right">
 				<hr />
-				<input type="submit" class="btn btn-primary" value="select" />
-				<button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+				<input ng-if="selectedBranch" type="submit" class="btn btn-primary" value="Submit" />
+				<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
 			</div>
 		</form>
 	</div>

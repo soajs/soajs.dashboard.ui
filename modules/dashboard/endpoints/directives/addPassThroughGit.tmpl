@@ -1,0 +1,61 @@
+<div class="modal-header">
+	<h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body">
+	<div class="form">
+		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+		<form name="gitInput" id="gitConf" ng-submit="gitInput.$valid && onSubmit()">
+			<div class="form-group">
+				<div>
+					<label>Select Account: </label>
+					<select id="gitAccount"  ng-required="true" ng-options="git._id as git.label for git in gitAccounts" tooltip="Select Account" ng-model="gitAcc" ng-change="selectGitAccount(git)">
+					</select>
+					<br>
+					<span class="manualToolTip">Select the Git Account where your swagger file is located.</span>
+				</div>
+				<br>
+				<div>
+					<label>FilePath: </label>
+					<input type="text" class="form-control" ng-model="filepath" placeholder="/swagger.yml" />
+					<span class="manualToolTip">Select the file path to your swagger.yml/yaml file in your repository.</span>
+				</div>
+				<br>
+				<div ng-if="selectedAccount">
+					<div ng-if="repos && repos.length === 0">
+						<alert type="warning">{{translation.noReposFound[LANG]}}</alert>
+					</div>
+					<fieldset ng-if="selectedAccount.loading">
+						<legent style="text-decoration: underline">{{translation.repositories[LANG]}}</legent>
+						<br>
+						<span class="manualToolTip">Click on a repository to select one.</span>
+						<div id="reposList">
+							<input type="text" class="form-control endpoint-search" ng-model="searchKeyword" placeholder="Search ..." />
+							<br>
+							<div>
+								<ul class="blueListing endpointListing">
+									<li class="blueLi row-list gitEndpointSize" ng-repeat="repo in repos | reposSearchFilter:searchKeyword" >
+										<a href="" class="" ng-click="selectRepoBranch(repo)">{{repo.full_name}}</a>
+									</li>
+								</ul>
+							</div>
+							<br>
+							<a href="" class="loadMoreEndPoint btn btn-block f-left" ng-click="listRepos(selectedAccount, 0, 'loadMore')" ng-if="selectedAccount.allowLoadMore">Load More</a>
+						</div>
+					</fieldset>
+					<div ng-if="selectedAccount.loading && repoBranch">
+						<label>Select Branch: </label>
+						<select id="repoBranch"  ng-required="true" ng-options="branch as branch.name for branch in repoBranch" tooltip="Select Branch" ng-model="selectedBranch" ng-change="selectBranch(selectedBranch)">
+						</select>
+						<br>
+						<span class="manualToolTip">Select the branch where the swagger file is located.</span>
+					</div>
+				</div>
+			</div>
+			<div class="c-both w100 t-right">
+				<hr />
+				<input type="submit" class="btn btn-primary" value="select" />
+				<button class="btn btn-danger" ng-click="closeModal()">Cancel</button>
+			</div>
+		</form>
+	</div>
+</div>

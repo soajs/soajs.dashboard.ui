@@ -12,7 +12,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		[
 			{'v': 'text', 'l': 'Text'},
 			// {'v': 'url', 'l': 'Url'},
-			// {'v': 'git', 'l': 'Git'}
+			{'v': 'git', 'l': 'Git'}
 		];
 	
 	$scope.replaceDot = function (v) {
@@ -58,7 +58,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				if (data.src) {
 					if (data.src.urls) {
 						data.src.urls.forEach((oneUrl) => {
-							if (data.versions[oneUrl.version]){
+							if (data.versions[oneUrl.version]) {
 								data.versions[oneUrl.version].url = oneUrl.url;
 							}
 						});
@@ -68,17 +68,21 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					}
 					if (data.src.swagger) {
 						data.src.swagger.forEach((oneSwagger) => {
-							if (data.versions[oneSwagger.version]){
+							if (data.versions[oneSwagger.version]) {
 								data.versions[oneSwagger.version].swagger = {
 									swaggerInputType: oneSwagger.content.type,
-									swaggerInput: oneSwagger.content.content
-								}
+									swaggerInput: oneSwagger.content.content,
+									git: oneSwagger.content.git
+								};
 							}
 						});
 					}
 				}
 				delete data.src;
-				$scope.form.formData = data;
+				if (!$localStorage.addPassThrough) {
+					$localStorage.addPassThrough = {};
+				}
+				$localStorage.addPassThrough.step1 = angular.copy(data);
 			}
 		});
 	};
@@ -86,6 +90,193 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, apiBuilderConfig.permissions);
+	
+	$scope.listAccounts = function (cb) {
+		getSendDataFromServer($scope, ngDataApi, {
+			'method': 'get',
+			'routeName': '/dashboard/gitAccounts/accounts/list'
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				for (let i = 0; i < response.length; i++) {
+					if (response[i].owner === 'soajs') {
+						response.splice(i, 1);
+						break;
+					}
+				}
+				$scope.gitAccounts = response;
+			}
+			if (cb) {
+				return cb();
+			}
+		});
+	};
+	
+	$scope.selectSwagger = function (type) {
+		if (type === 'text'){
+			$scope.editor.setOptions({
+				readOnly: false,
+				highlightActiveLine: true,
+				highlightGutterLine: true
+			});
+		}
+		if (type === 'git') {
+			let currentScope = $scope;
+			var modal = $modal.open({
+				templateUrl: "modules/dashboard/endpoints/directives/addPassThroughGit.tmpl",
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope) {
+					fixBackDrop();
+					$scope.title = 'Select Git Repository';
+					$scope.gitAccounts = currentScope.gitAccounts;
+					$scope.selectedAccount = null;
+					$scope.selectGitAccount = function (gitAccount) {
+						$scope.gitAccounts.forEach((git) => {
+							if (git._id === gitAccount) {
+								$scope.selectedAccount = git;
+							}
+						});
+						overlayLoading.show();
+						if ($scope.selectedAccount) {
+							let counter = 0;
+							$scope.selectedAccount.loading = false;
+							$scope.listRepos($scope.selectedAccount, counter, 'getRepos');
+						}
+					};
+					$scope.defaultPerPage = 20;
+					$scope.defaultPageNumber = 1;
+					$scope.listRepos = function (account, counter, action) {
+						var id = account._id;
+						if (!account.nextPageNumber) {
+							account.nextPageNumber = $scope.defaultPageNumber;
+						}
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "get",
+							"routeName": "/dashboard/gitAccounts/getRepos",
+							"params": {
+								id: id,
+								provider: account.provider,
+								per_page: $scope.defaultPerPage,
+								page: (action === 'loadMore') ? account.nextPageNumber : $scope.defaultPageNumber
+							}
+						}, function (error, response) {
+							overlayLoading.hide();
+							$scope.selectedAccount.loading = true;
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							} else {
+								if (action === 'loadMore') {
+									$scope.appendNewRepos(account, response);
+								} else if (action === 'getRepos') {
+									
+									$scope.repos = response;
+									
+									account.nextPageNumber = 2;
+									account.allowLoadMore = (response.length === $scope.defaultPerPage);
+								}
+							}
+						});
+					};
+					if (currentScope.git){
+						$scope.filepath = currentScope.git.filepath;
+						$scope.gitAcc = angular.copy(currentScope.git.gitId);
+						overlayLoading.show();
+						$scope.gitAccounts.forEach((git) => {
+							if (git._id === currentScope.git.gitId) {
+								$scope.selectedAccount = git;
+							}
+						});
+						if ($scope.selectedAccount) {
+							let counter = 0;
+							$scope.selectedAccount.loading = false;
+							$scope.listRepos($scope.selectedAccount, counter, 'getRepos');
+						}
+					}
+					
+					$scope.appendNewRepos = function (account, repos) {
+						account.nextPageNumber++;
+						account.allowLoadMore = (repos.length === $scope.defaultPerPage);
+						
+						if (!$scope.repos) {
+							$scope.repos = [];
+						}
+						
+						$scope.repos = $scope.repos.concat(repos);
+						setTimeout(function () {
+							jQuery('#reposList').animate({scrollTop: jQuery('#reposList').prop("scrollHeight")}, 1500);
+						}, 500);
+					};
+					
+					$scope.selectRepoBranch = function (repo) {
+						getSendDataFromServer($scope, ngDataApi, {
+							method: 'get',
+							routeName: '/dashboard/gitAccounts/getBranches',
+							params: {
+								name: repo.full_name,
+								type: 'repo',
+								id: $scope.selectedAccount._id.toString(),
+								provider: $scope.selectedAccount.provider
+							}
+						}, function (error, result) {
+							overlayLoading.hide();
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							}
+							$scope.selectedRepo = repo;
+							$scope.repoBranch = result.branches;
+						});
+					};
+					$scope.selectBranch = function (branch) {
+						if (branch) {
+							$scope.selectedBranch = branch.name;
+						}
+					};
+					$scope.onSubmit = function () {
+						getSendDataFromServer($scope, ngDataApi, {
+							method: 'get',
+							routeName: '/dashboard/gitAccounts/getAnyFile',
+							params: {
+								accountId: $scope.selectedAccount._id,
+								repo: $scope.selectedRepo.name,
+								filepath: $scope.filepath,
+								branch: $scope.selectedBranch
+							}
+						}, function (error, result) {
+							overlayLoading.hide();
+							if (error) {
+								currentScope.displayAlert('danger', error.message);
+							}
+							if (result && result.content) {
+								currentScope.editor.setValue(result.content);
+								currentScope.editor.setOptions({
+									readOnly: true,
+									highlightActiveLine: false,
+									highlightGutterLine: false
+								});
+								currentScope.git = {
+									gitId: $scope.selectedAccount._id,
+									repo: $scope.selectedRepo.name,
+									branch: $scope.selectedBranch,
+									filepath: $scope.filepath,
+								};
+								currentScope.schemaCode = result.content;
+								currentScope.schemaCodeF = result.content;
+								currentScope.swaggerUrl = result.downloadLink;
+							}
+							$scope.closeModal();
+						});
+					};
+					
+					$scope.closeModal = function () {
+						modal.close();
+					};
+				}
+			});
+		}
+	};
 	
 	$scope.Step1 = function () {
 		overlayLoading.show();
@@ -164,18 +355,53 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				}
 			]
 		};
-		
 		buildForm($scope, $modal, options, function () {
 			if ($localStorage.addPassThrough && $localStorage.addPassThrough.step1) {
 				$scope.form.formData = angular.copy($localStorage.addPassThrough.step1);
 			}
-			$scope.form.closeModal = function(){
+			$scope.form.closeModal = function () {
 				delete $localStorage.addPassThrough;
 				$scope.form.formData = {};
 				$scope.$parent.go("/endpoints/2");
 			};
 			overlayLoading.hide();
 		});
+	};
+	
+	$scope.syncGitSwagger = function(){
+		if ($scope.git){
+			getSendDataFromServer($scope, ngDataApi, {
+				method: 'get',
+				routeName: '/dashboard/gitAccounts/getAnyFile',
+				params: {
+					accountId: $scope.git.gitId,
+					repo: $scope.git.repo,
+					filepath: $scope.git.filepath,
+					branch: $scope.git.branch
+				}
+			}, function (error, result) {
+				overlayLoading.hide();
+				if (error) {
+					$scope.displayAlert('danger', error.message);
+				}
+				if (result && result.content) {
+					$scope.editor.setValue(result.content);
+					$scope.editor.setOptions({
+						readOnly: true,
+						highlightActiveLine: false,
+						highlightGutterLine: false
+					});
+					
+					$scope.schemaCode = result.content;
+					$scope.schemaCodeF = result.content;
+					$scope.swaggerUrl = result.downloadLink;
+				}
+			});
+		}
+	};
+	
+	$scope.editGitSwagger = function(){
+		$scope.selectSwagger('git');
 	};
 	
 	$scope.addMoreVersions = function () {
@@ -193,15 +419,12 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					'btn': 'primary',
 					'action': function (formData) {
 						if (!$scope.form.formData.versions) {
-							$scope.form.formData.versions = {
-							
-							};
+							$scope.form.formData.versions = {};
 						}
-						if ($scope.form.formData.versions[formData.version]) {
+						if ($scope.form.formData.versions[formData.version] || (parseFloat(formData.version) && $scope.form.formData.versions[parseFloat(formData.version)])) {
 							$scope.versionScope.form.displayAlert('danger', 'Version already exist!');
 						} else {
-							$scope.form.formData.versions[formData.version] = {
-							};
+							$scope.form.formData.versions[formData.version] = {};
 							$scope.versionScope.modalInstance.close();
 							$scope.versionScope.form.formData = {};
 						}
@@ -331,11 +554,12 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							&& $localStorage.addPassThrough.step1
 							&& $localStorage.addPassThrough.step1.versions
 							&& $localStorage.addPassThrough.step1.versions[v]) {
-							if (swagger){
-								$localStorage.addPassThrough.step1.versions[v].swagger = {
-									"swaggerInput": swagger,
-									"swaggerInputType": formData.swaggerInputType
-								};
+							$localStorage.addPassThrough.step1.versions[v].swagger = {
+								"swaggerInput": swagger,
+								"swaggerInputType": formData.swaggerInputType
+							};
+							if (formData.swaggerInputType === "git" && $scope.git) {
+								$localStorage.addPassThrough.step1.versions[v].swagger.git = $scope.git;
 							}
 						}
 						$scope.schemaCodeF = '';
@@ -370,12 +594,37 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					
 					$scope.schemaCode = $localStorage.addPassThrough.step1.versions[v].swagger.swaggerInput;
 					$timeout(function () {
+						if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'git'){
+							$scope.git = $localStorage.addPassThrough.step1.versions[v].swagger.git;
+							$scope.editor.setOptions({
+								readOnly: true,
+								highlightActiveLine: false,
+								highlightGutterLine: false
+							});
+						}
+						else if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'text'){
+							$scope.editor.setOptions({
+								readOnly: false,
+								highlightActiveLine: true,
+								highlightGutterLine: true
+							});
+						}
 						$scope.editor.setValue($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInput);
 					}, 400);
 				}
 			}
 			overlayLoading.hide();
 		});
+	};
+	
+	$scope.getGitInfo = function(gitId){
+		let owner;
+		$scope.gitAccounts.forEach((git) => {
+			if (git._id ===gitId) {
+				owner = git.owner;
+			}
+		});
+		return owner ? owner : null;
 	};
 	
 	$scope.saveEndpoint = function () {
@@ -405,7 +654,6 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				delete $localStorage.addPassThrough;
 			}
 		});
-		
 	};
 	
 	let mode = "add";
@@ -454,6 +702,26 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	if ($scope.access.addEndpoint || $scope.access.editEndpoints) {
 		injectFiles.injectCss("modules/dashboard/endpoints/endpoints.css");
-		$scope.Step1();
+		$scope.listAccounts(() => {
+			$scope.Step1();
+		});
 	}
 }]);
+
+servicesApp.filter('reposSearchFilter', function () {
+	return function (input, searchKeyword) {
+		if (!searchKeyword) return input;
+		if (!input || !Array.isArray(input) || input.length === 0) return input;
+		
+		var output = [];
+		input.forEach(function (oneInput) {
+			if (oneInput) {
+				//using full_name since it's composed of owner + name
+				if (oneInput.full_name && oneInput.full_name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
+					output.push(oneInput);
+				}
+			}
+		});
+		return output;
+	}
+});

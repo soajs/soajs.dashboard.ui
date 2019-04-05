@@ -431,6 +431,10 @@ var srTranslation = {
 	"simulateUrl": {
 		"ENG": "Simulate URL",
 		"FRA": "Simulate URL",
+	},
+	"selectGitInformation": {
+		"ENG": "Select Git Information",
+		"FRA": "Select Git Information"
 	}
 };
 

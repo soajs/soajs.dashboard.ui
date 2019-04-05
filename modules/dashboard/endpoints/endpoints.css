@@ -32,7 +32,7 @@ fieldset.serviceAPIs table tr[class^="form-group tr-removeAPI"] {
     width: 4%;
 }
 
-.apiBuilderActions span{
+.apiBuilderActions span {
     cursor: pointer;
 }
 
@@ -91,7 +91,7 @@ hr {
     width: 8.5cm;
 }
 
-.blueIcon{
+.blueIcon {
     color: #337ab7;
 }
 
@@ -255,9 +255,11 @@ a.tooltipToggle {
 .floater {
     /*float: left;*/
 }
-.addProperty{
+
+.addProperty {
     padding-left: 40px;
 }
+
 .manualToolTip {
     color: gray;
     font-size: 12px;
@@ -314,9 +316,9 @@ a.tooltipToggle {
     cursor: pointer;
 }
 
-.defaultResourceButtons{
+.defaultResourceButtons {
     float: right;
-    width:150px;
+    width: 150px;
 }
 
 .endpointHeader {
@@ -327,4 +329,23 @@ a.tooltipToggle {
 
 div.entryBox .endpointHeader.closed {
     border-bottom: none;
+}
+
+.endpoint-search {
+    width: 25%;
+    float: right;
+}
+
+.endpointListing {
+    margin: 22px 0 !important;
+}
+
+.gitEndpointSize {
+    width: 48% !important;
+    float: left;
+    margin-left: 2%;
+}
+
+.loadMoreEndPoint {
+    width: 100% !important;
 }

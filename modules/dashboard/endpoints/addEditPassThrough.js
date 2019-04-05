@@ -263,6 +263,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							params: {
 								accountId: $scope.selectedAccount._id,
 								repo: $scope.selectedRepo ? $scope.selectedRepo.name : null,
+								owner: $scope.selectedRepo.owner.login,
 								filepath: $scope.filepath,
 								branch: $scope.selectedBranch
 							}

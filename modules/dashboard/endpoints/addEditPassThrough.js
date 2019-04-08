@@ -17,8 +17,8 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		];
 	$scope.InputTypes =
 		[
-			{'v': 'manual', 'l': 'Manual' , 'description': 'Click here to enter Manually the information about the endpoint. You will be able to add the swagger information as text or point to a GIT repository.'},
-			{'v': 'git', 'l': 'Git' , 'description': 'Click here if you have soa.json and swagger information in your repository.'}
+			{'v': 'manual', 'l': 'Manual' , 'description': ' Select to enter Manually the endpoint information. You will be able to add the swagger information as text (copy/paste) or point to a GIT repository. '},
+			{'v': 'git', 'l': 'Git' , 'description': 'Select if you have the endpoint (soa.json) and the swagger information in a GIT repository.'}
 		];
 	
 	$scope.replaceDot = function (v) {

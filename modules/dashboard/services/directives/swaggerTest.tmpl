@@ -7,12 +7,12 @@
 	<div ng-if = "!passThrough">
 		<label>Test type: </label>
 		<br>
-		&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="environmentTesting" ng-click="selectType(true)"/>&nbsp;
-		<label for="oauth_0">Environment</label>
+		&nbsp;<input id="env_0" type="radio" ng-value=true ng-model="environmentTesting" ng-click="selectType(true)"/>&nbsp;
+		<label for="env_0">Environment</label>
 		<span class="fieldMsg hint f-left">The service will be tested using the environment domain.</span>
 		<br>
-		&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="environmentTesting" ng-click="selectType(false)"/>&nbsp;
-		<label for="oauth_1">Simulate Url</label>
+		&nbsp;<input id="env_1" type="radio" ng-value=false ng-model="environmentTesting" ng-click="selectType(false)"/>&nbsp;
+		<label for="env_1">Simulate Url</label>
 		<span class="fieldMsg hint f-left">The service will be tested using the simulate URl.</span>
 	</div>
 	

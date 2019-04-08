@@ -17,9 +17,9 @@
 					<span class="manualToolTip">Select the Git Account where your swagger file is located.</span>
 				</div>
 				<br>
-				<div>
+				<div ng-if="!hideFilePath">
 					<label>FilePath: </label>
-					<input type="text" class="form-control"  ng-required="true" ng-model="filepath" placeholder="/swagger.yml" />
+					<input type="text" class="form-control"  ng-required="!hideFilePath" ng-model="filepath" placeholder="/swagger.yml" />
 					<span class="manualToolTip">Select the file path to your swagger.yml/yaml file in your repository.</span>
 				</div>
 				<br>

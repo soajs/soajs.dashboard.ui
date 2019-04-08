@@ -1,63 +1,71 @@
-<div class="modal-body">
-	<div class="form">
-		<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
-		<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
-			<div class="form-group">
-				<label>{{translation.serviceName[LANG]}}</label>
-				<input type="text" class="form-control" ng-model="form.formData.serviceName" ng-required="true" placeholder="myservice"/>
-				<span class="manualToolTip">Service Name should be alphanumeric and does not contain any space or dot or hyphen characters</span>
-				<br>
-				<label>{{translation.groupName[LANG]}}</label>
-				<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="group" minlength="3"/>
-				<span class="manualToolTip">Service group name should be 3 characters at least</span>
-				<br>
-				<label>{{translation.servicePort[LANG]}}</label>
-				<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" min="4100" placeholder="4100"/>
-				<span class="manualToolTip">The service port should be equal or greater than 4100</span>
-				<br>
-				<label>{{translation.requestTimeout[LANG]}}</label>
-				<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="false" placeholder="30"/>
-				<span class="manualToolTip">Specify how many seconds the controller should wait before considering the request as a timeout, value must be equal or greater than 1.</span>
-				<br>
-				<label>{{translation.requestTimeoutRenewal[LANG]}}</label>
-				<input type="number" class="form-control" ng-model="form.formData.requestTimeoutRenewal" ng-required="false" placeholder="5"/>
-				<span class="manualToolTip">Specify how many attempts the controller should make after timing out before eventually giving up, value must be equal or greater than 1.</span>
-			</div>
-			<fieldset>
-				<legend>{{translation.heartbeat[LANG]}}</legend>
-				<div>
-					<label>{{translation.path[LANG]}}</label>
-					<input type="text" class="form-control" ng-model="form.formData.path" ng-required="true" ng-pattern = "/^\/([^?\/]+)/" placeholder="/heartbeat"/>
-					<span class="manualToolTip">Specify the port value of the heartbeat path.</span>
+<div>
+	<label>Select Input Type: </label>
+	<select id="swagger_type" ng-options="dv.v as dv.l for dv in InputTypes" tooltip="Select Input Type" ng-model="inputType" ng-change="selectInputType(inputType)">
+	</select>
+</div>
+<hr>
+<div ng-if="inputType">
+	<div class="modal-body">
+		<div class="form">
+			<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+			<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
+				<div class="form-group">
+					<label>{{translation.serviceName[LANG]}}</label>
+					<input type="text" class="form-control" ng-model="form.formData.serviceName" ng-required="true" placeholder="myservice"/>
+					<span class="manualToolTip">Service Name should be alphanumeric and does not contain any space or dot or hyphen characters</span>
+					<br>
+					<label>{{translation.groupName[LANG]}}</label>
+					<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="group" minlength="3"/>
+					<span class="manualToolTip">Service group name should be 3 characters at least</span>
+					<br>
+					<label>{{translation.servicePort[LANG]}}</label>
+					<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" min="4100" placeholder="4100"/>
+					<span class="manualToolTip">The service port should be equal or greater than 4100</span>
+					<br>
+					<label>{{translation.requestTimeout[LANG]}}</label>
+					<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="false" placeholder="30"/>
+					<span class="manualToolTip">Specify how many seconds the controller should wait before considering the request as a timeout, value must be equal or greater than 1.</span>
+					<br>
+					<label>{{translation.requestTimeoutRenewal[LANG]}}</label>
+					<input type="number" class="form-control" ng-model="form.formData.requestTimeoutRenewal" ng-required="false" placeholder="5"/>
+					<span class="manualToolTip">Specify how many attempts the controller should make after timing out before eventually giving up, value must be equal or greater than 1.</span>
 				</div>
-				<div>
-					<label>{{translation.port[LANG]}}</label>
-					<input type="number" class="form-control" ng-model="form.formData.port" ng-required="true" min="4100" placeholder="4100"/>
-					<span class="manualToolTip">Specify the port value of the heartbeat route, value must be equal or greater than 4100.</span>
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend>{{translation.simulateUrl[LANG]}}</legend>
-				<div>
-					<label>URl</label>
-					<input type="text" class="form-control" ng-model="form.formData.simulateUrl" ng-required="false" placeholder="http://simulate.com"/>
-					<span class="manualToolTip">The url of your endpoint you want to to simulate with.</span>
-				</div>
-			</fieldset>
-			<br>
-			<fieldset class="">
-				<legend>Versions</legend>
-				<div class="entryBoxes">
-					<div id="endpoint_{{replaceDot(v)}}" ng-repeat="(v, version) in form.formData.versions" class="entryBox"  ng-init="version.hide = true;">
-						<div ng-include="'modules/dashboard/endpoints/directives/addPassThroughSettings.tmpl'"></div>
+				<fieldset>
+					<legend>{{translation.heartbeat[LANG]}}</legend>
+					<div>
+						<label>{{translation.path[LANG]}}</label>
+						<input type="text" class="form-control" ng-model="form.formData.path" ng-required="true" ng-pattern = "/^\/([^?\/]+)/" placeholder="/heartbeat"/>
+						<span class="manualToolTip">Specify the port value of the heartbeat path.</span>
 					</div>
-				</div>
-				<div>
-					<a class="btn btn-success f-right mr5 c-both" ng-click="addMoreVersions()">
-						<span >Add Version</span>
-					</a>
-				</div>
-			</fieldset>
-		</form>
+					<div>
+						<label>{{translation.port[LANG]}}</label>
+						<input type="number" class="form-control" ng-model="form.formData.port" ng-required="true" min="4100" placeholder="4100"/>
+						<span class="manualToolTip">Specify the port value of the heartbeat route, value must be equal or greater than 4100.</span>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>{{translation.simulateUrl[LANG]}}</legend>
+					<div>
+						<label>URl</label>
+						<input type="text" class="form-control" ng-model="form.formData.simulateUrl" ng-required="false" placeholder="http://simulate.com"/>
+						<span class="manualToolTip">The url of your endpoint you want to to simulate with.</span>
+					</div>
+				</fieldset>
+				<br>
+				<fieldset class="">
+					<legend>Versions</legend>
+					<div class="entryBoxes">
+						<div id="endpoint_{{replaceDot(v)}}" ng-repeat="(v, version) in form.formData.versions" class="entryBox"  ng-init="version.hide = true;">
+							<div ng-include="'modules/dashboard/endpoints/directives/addPassThroughSettings.tmpl'"></div>
+						</div>
+					</div>
+					<div>
+						<a class="btn btn-success f-right mr5 c-both" ng-click="addMoreVersions()">
+							<span >Add Version</span>
+						</a>
+					</div>
+				</fieldset>
+			</form>
+		</div>
 	</div>
 </div>

@@ -14,6 +14,11 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 			// {'v': 'url', 'l': 'Url'},
 			{'v': 'git', 'l': 'Git'}
 		];
+	$scope.InputTypes =
+		[
+			{'v': 'manual', 'l': 'Manual'},
+			{'v': 'git', 'l': 'Git'}
+		];
 	
 	$scope.replaceDot = function (v) {
 		return v.replace(/\./g, 'x');
@@ -29,6 +34,254 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 			jQuery('#endpoint_' + $scope.replaceDot(v) + " .endpointHeader").removeClass("closed");
 			version.icon = 'minus';
 			version.hide = false;
+		}
+	};
+	
+	$scope.selectInputType = function (type) {
+		if (!$localStorage.addPassThrough){
+			$localStorage.addPassThrough = {};
+		}
+		$localStorage.addPassThrough.inputType =  type;
+		let currentScope = $scope;
+		if (type === 'git') {
+			let modal = $modal.open({
+				templateUrl: "modules/dashboard/endpoints/directives/addPassThroughGit.tmpl",
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope) {
+					fixBackDrop();
+					$scope.hideFilePath = true;
+					$scope.message = {};
+					$scope.title = 'Select Git Repository';
+					$scope.gitAccounts = currentScope.gitAccounts;
+					$scope.selectedAccount = null;
+					$scope.defaultPerPage = 20;
+					$scope.defaultPageNumber = 1;
+					
+					function processSoaFile(soa, cb) {
+						let data = {};
+						
+						data.type = soa.json;
+						data.serviceName = soa.serviceName;
+						data.serviceGroup = soa.serviceGroup;
+						data.servicePort = soa.servicePort;
+						
+						if (soa.maintenance && soa.maintenance.port && soa.maintenance.readiness) {
+							data.port = soa.maintenance.port.value;
+							data.readiness = soa.maintenance.readiness;
+						}
+						
+						if (soa.requestTimeout) {
+							data.requestTimeout = soa.requestTimeout;
+						}
+						if (soa.requestTimeoutRenewal) {
+							data.requestTimeoutRenewal = soa.requestTimeoutRenewal;
+						}
+						
+						if (soa.serviceVersion) {
+							data.versions = {
+								[soa.serviceVersion]: {}
+							};
+							data.versions[soa.serviceVersion].extKeyRequired = soa.hasOwnProperty("extKeyRequired") ? !!soa.extKeyRequired : true; //default is true
+							data.versions[soa.serviceVersion].oauth = soa.hasOwnProperty("oauth") ? !!soa.oauth : false; //default is false
+							data.versions[soa.serviceVersion].session = soa.hasOwnProperty("session") ? !!soa.session : false; //default is false
+							data.versions[soa.serviceVersion].urac = soa.hasOwnProperty("urac") ? !!soa.urac : false; //default is false
+							data.versions[soa.serviceVersion].urac_Profile = soa.hasOwnProperty("urac_Profile") ? !!soa.urac_Profile : false; //default is false
+							data.versions[soa.serviceVersion].urac_ACL = soa.hasOwnProperty("urac_ACL") ? !!soa.urac_ACL : false; //default is false
+							data.versions[soa.serviceVersion].provision_ACL = soa.hasOwnProperty("provision_ACL") ? !!soa.provision_ACL : false; //default is false
+						}
+						
+						let swaggerName = "swagger.yml";
+						if (soa.swaggerFilename) {
+							swaggerName = soa.swaggerFilename;
+						}
+						getSendDataFromServer($scope, ngDataApi, {
+							method: 'get',
+							routeName: '/dashboard/gitAccounts/getAnyFile',
+							params: {
+								accountId: $scope.selectedAccount._id,
+								repo: $scope.selectedRepo ? $scope.selectedRepo.name : null,
+								owner: $scope.selectedRepo.owner.login,
+								filepath: "/" + swaggerName,
+								branch: $scope.selectedBranch
+							}
+						}, function (error, result) {
+							overlayLoading.hide();
+							if (error) {
+								return cb(error, data);
+							}
+							if (result && result.content) {
+								data.versions[soa.serviceVersion].swagger = {
+									swaggerInput: result.content,
+									swaggerInputType: "git",
+									git: {
+										gitId: $scope.selectedAccount._id,
+										repo: $scope.selectedRepo.name,
+										branch: $scope.selectedBranch,
+										filepath: "/" + swaggerName
+									}
+								};
+								if (result.downloadLink){
+									currentScope.swaggerUrl = result.downloadLink;
+								}
+								return cb(null, data);
+							}
+						});
+						
+						
+					}
+					
+					$scope.selectGitAccount = function (gitAccount) {
+						$scope.gitAccounts.forEach((git) => {
+							if (git._id === gitAccount) {
+								$scope.selectedAccount = git;
+							}
+						});
+						if ($scope.selectedAccount) {
+							let counter = 0;
+							$scope.selectedAccount.loading = false;
+							$scope.listRepos($scope.selectedAccount, counter, 'getRepos');
+						}
+					};
+					
+					$scope.listRepos = function (account, counter, action) {
+						let id = account._id;
+						if (!account.nextPageNumber) {
+							account.nextPageNumber = $scope.defaultPageNumber;
+						}
+						overlayLoading.show();
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "get",
+							"routeName": "/dashboard/gitAccounts/getRepos",
+							"params": {
+								id: id,
+								provider: account.provider,
+								per_page: $scope.defaultPerPage,
+								page: (action === 'loadMore') ? account.nextPageNumber : $scope.defaultPageNumber
+							}
+						}, function (error, response) {
+							overlayLoading.hide();
+							$scope.selectedAccount.loading = true;
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							} else {
+								if (action === 'loadMore') {
+									$scope.appendNewRepos(account, response);
+								} else if (action === 'getRepos') {
+									
+									$scope.repos = response;
+									
+									account.nextPageNumber = 2;
+									account.allowLoadMore = (response.length === $scope.defaultPerPage);
+								}
+							}
+						});
+					};
+					
+					$scope.appendNewRepos = function (account, repos) {
+						account.nextPageNumber++;
+						account.allowLoadMore = (repos.length === $scope.defaultPerPage);
+						
+						if (!$scope.repos) {
+							$scope.repos = [];
+						}
+						
+						$scope.repos = $scope.repos.concat(repos);
+						setTimeout(function () {
+							jQuery('#reposList').animate({scrollTop: jQuery('#reposList').prop("scrollHeight")}, 1500);
+						}, 500);
+					};
+					
+					$scope.selectRepoBranch = function (repo) {
+						let selectedRepo = angular.copy($scope.selectedRepo);
+						if (selectedRepo && selectedRepo.id !== repo.id) {
+							jQuery('[id^="repo_full_name_"]').removeClass("onClickRepo");
+							jQuery('#repo_full_name_' + repo.id).addClass('onClickRepo');
+						}
+						if ((selectedRepo && selectedRepo.id === repo.id) || !selectedRepo) {
+							jQuery('#repo_full_name_' + repo.id).addClass('onClickRepo');
+						}
+						
+						getSendDataFromServer($scope, ngDataApi, {
+							method: 'get',
+							routeName: '/dashboard/gitAccounts/getBranches',
+							params: {
+								name: repo.full_name,
+								type: 'repo',
+								id: $scope.selectedAccount._id.toString(),
+								provider: $scope.selectedAccount.provider
+							}
+						}, function (error, result) {
+							overlayLoading.hide();
+							if (error) {
+								$scope.displayAlert('danger', error.message);
+							} else if (result) {
+								$scope.selectedRepo = repo;
+								$scope.repoBranch = result.branches;
+							}
+						});
+					};
+					
+					$scope.selectBranch = function (branch) {
+						if (branch) {
+							$scope.selectedBranch = branch.name;
+						}
+					};
+					
+					$scope.displayAlert = function (type, message) {
+						$scope.message[type] = message;
+						$timeout(() => {
+							$scope.message = {};
+						}, 5000);
+					};
+					
+					$scope.submit = function () {
+						getSendDataFromServer($scope, ngDataApi, {
+							method: 'get',
+							routeName: '/dashboard/gitAccounts/getAnyFile',
+							params: {
+								accountId: $scope.selectedAccount._id,
+								repo: $scope.selectedRepo ? $scope.selectedRepo.name : null,
+								owner: $scope.selectedRepo.owner.login,
+								filepath: '/soa.json',
+								branch: $scope.selectedBranch
+							}
+						}, function (error, result) {
+							
+							if (error) {
+								overlayLoading.hide();
+								$scope.displayAlert('danger', error.message);
+							}
+							if (result && result.content) {
+								try {
+									processSoaFile(JSON.parse(result.content), (err, data) => {
+										//todo fix this!
+										if (err) {
+											currentScope.displayAlert('danger', err.message ? err.message : err);
+										}
+										if (!$localStorage.addPassThrough){
+											$localStorage.addPassThrough = {};
+										}
+										$localStorage.addPassThrough.step1 = angular.copy(data);
+										currentScope.form.formData = $localStorage.addPassThrough.step1;
+										modal.close();
+										
+									});
+								} catch (e) {
+									overlayLoading.hide();
+									$scope.displayAlert('danger', "Error parsing contents of soa.js file.");
+									console.log(e);
+								}
+							}
+						});
+					};
+					
+					$scope.closeModal = function () {
+						modal.close();
+					};
+				}
+			});
 		}
 	};
 	
@@ -87,7 +340,6 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		});
 	};
 	
-	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, apiBuilderConfig.permissions);
 	
@@ -116,7 +368,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	$scope.selectSwagger = function (type) {
 		if (type === 'text') {
 			$timeout(function () {
-				if ($scope.editor){
+				if ($scope.editor) {
 					$scope.editor.setOptions({
 						readOnly: false,
 						highlightActiveLine: true,
@@ -127,13 +379,14 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		}
 		if (type === 'git') {
 			let currentScope = $scope;
-			var modal = $modal.open({
+			let modal = $modal.open({
 				templateUrl: "modules/dashboard/endpoints/directives/addPassThroughGit.tmpl",
 				size: 'lg',
 				backdrop: true,
 				keyboard: true,
 				controller: function ($scope) {
 					fixBackDrop();
+					$scope.hideFilePath = false;
 					$scope.message = {};
 					$scope.title = 'Select Git Repository';
 					$scope.gitAccounts = currentScope.gitAccounts;
@@ -153,7 +406,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					$scope.defaultPerPage = 20;
 					$scope.defaultPageNumber = 1;
 					$scope.listRepos = function (account, counter, action) {
-						var id = account._id;
+						let id = account._id;
 						if (!account.nextPageNumber) {
 							account.nextPageNumber = $scope.defaultPageNumber;
 						}
@@ -217,14 +470,14 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					
 					$scope.selectRepoBranch = function (repo) {
 						let selectedRepo = angular.copy($scope.selectedRepo);
-						if (selectedRepo && selectedRepo.id !== repo.id){
+						if (selectedRepo && selectedRepo.id !== repo.id) {
 							jQuery('[id^="repo_full_name_"]').removeClass("onClickRepo");
 							jQuery('#repo_full_name_' + repo.id).addClass('onClickRepo');
 						}
-						if ((selectedRepo && selectedRepo.id === repo.id) || !selectedRepo){
+						if ((selectedRepo && selectedRepo.id === repo.id) || !selectedRepo) {
 							jQuery('#repo_full_name_' + repo.id).addClass('onClickRepo');
 						}
-					
+						
 						getSendDataFromServer($scope, ngDataApi, {
 							method: 'get',
 							routeName: '/dashboard/gitAccounts/getBranches',
@@ -238,8 +491,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							overlayLoading.hide();
 							if (error) {
 								$scope.displayAlert('danger', error.message);
-							}
-							else if (result){
+							} else if (result) {
 								$scope.selectedRepo = repo;
 								$scope.repoBranch = result.branches;
 							}
@@ -302,6 +554,9 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.Step1 = function () {
+		if($localStorage.addPassThrough && $localStorage.addPassThrough.inputType){
+			$scope.inputType = $localStorage.addPassThrough.inputType;
+		}
 		overlayLoading.show();
 		
 		let entries = {
@@ -315,9 +570,18 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				required: true
 			},
 			requestTimeout: {
-				required: true
+				required: false
 			},
 			requestTimeoutRenewal: {
+				required: false
+			},
+			versions: {
+				required: true
+			},
+			path: {
+				required: true
+			},
+			port: {
 				required: true
 			}
 		};
@@ -328,9 +592,10 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				"directive": "modules/dashboard/endpoints/directives/add-passThrough.tmpl"
 			}
 		];
-		var configuration = angular.copy(environmentsConfigStep1Entries);
+		let configuration = angular.copy(environmentsConfigStep1Entries);
+		
 		$scope.tempFormEntries = entries;
-		var options = {
+		let options = {
 			timeout: $timeout,
 			entries: configuration,
 			name: 'addEditEp',
@@ -428,9 +693,9 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.addMoreVersions = function () {
-		var formConfig = angular.copy(apiBuilderConfig.form.addVersion);
+		let formConfig = angular.copy(apiBuilderConfig.form.addVersion);
 		$scope.versionScope = $scope.$new(true);
-		var options = {
+		let options = {
 			timeout: $timeout,
 			form: formConfig,
 			name: 'addVersion',
@@ -472,10 +737,10 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.editVersion = function (v) {
-		var formConfig = angular.copy(apiBuilderConfig.form.addVersion);
+		let formConfig = angular.copy(apiBuilderConfig.form.addVersion);
 		$scope.versionScope = $scope.$new(true);
 		formConfig.entries[0].value = v;
-		var options = {
+		let options = {
 			timeout: $timeout,
 			form: formConfig,
 			name: 'editVersion',
@@ -624,6 +889,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								highlightActiveLine: false,
 								highlightGutterLine: false
 							});
+							$scope.syncGitSwagger();
 						} else if ($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInputType === 'text') {
 							$scope.editor.setOptions({
 								readOnly: false,
@@ -697,13 +963,13 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	 */
 	function watchSwaggerSimulator(cb) {
 		//grab the swagger info
-		var x = swaggerParser.fetch();
+		let x = swaggerParser.fetch();
 		if (!x || x.length === 0 || typeof (x[3]) !== 'object' || Object.keys(x[3]).length === 0) {
 			$timeout(function () {
 				watchSwaggerSimulator(cb);
 			}, 100);
 		} else {
-			var dashboardDomain = apiConfiguration.domain.replace(window.location.protocol + "//", "");
+			let dashboardDomain = apiConfiguration.domain.replace(window.location.protocol + "//", "");
 			//modify the host value with the domain value of dashboard taken dynamically from the main config.js
 			x[3].host = dashboardDomain;
 			x[3].info.host = dashboardDomain;

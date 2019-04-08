@@ -353,3 +353,60 @@ div.entryBox .endpointHeader.closed {
 .onClickRepo {
     background-color: #dff0d8 !important;
 }
+
+div.box-of-3{
+    width:48%;
+    margin:1%;
+}
+
+.endpointsBox {
+    border-radius: 5px;
+    border: solid 1px #eeeeee;
+    padding: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.endpointsBox .title{
+    height:40px;
+    padding:5px;
+}
+
+.endpointsBox .content{
+    height:60px;
+    overflow:scroll;
+    padding:10px;
+}
+
+.endpointsBox:hover{
+    background-color: #DEF1F7;
+    border: solid 1px #337ab7;
+}
+
+.endpointsBox.noHover{
+    pointer-events: none;
+    opacity: 0.7;
+    background:#efefef;
+}
+
+.endpointsBox.noHover .readmore{
+    pointer-events: initial;
+    opacity: 1;
+}
+
+.endpointsBox:hover hr{
+    border-color: #333333;
+}
+
+.envType .endpointsBox ul{
+    text-align: left;
+    list-style-type: circle;
+}
+
+.endpointsBox .fieldMsg {
+    color: #333;
+}
+
+.selectedEndPointType{
+   display: none !important;
+}

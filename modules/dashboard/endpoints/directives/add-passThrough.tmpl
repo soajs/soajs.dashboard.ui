@@ -1,10 +1,18 @@
-<div>
-	<label>Select Input Type: </label>
-	<select id="swagger_type" ng-options="dv.v as dv.l for dv in InputTypes" tooltip="Select Input Type" ng-model="inputType" ng-change="selectInputType(inputType)">
-	</select>
+<div class="table" style="padding:20px 0 0 15px;" ng-class="{'selectedEndPointType': selectedType }">
+	<div ng-repeat="dv in InputTypes" class="text-center table-cell f-left endpointsBox box-of-3">
+		<div ng-click="selectInputType(dv);">
+			<div class="title">
+				<h4>{{dv.l}}</h4>
+			</div>
+			<hr>
+			<div class="content">
+				<div class="fieldMsg">{{dv.description}}</div>
+			</div>
+		</div>
+	</div>
+	<hr>
 </div>
-<hr>
-<div ng-if="inputType">
+<div ng-if="selectedType">
 	<div class="modal-body">
 		<div class="form">
 			<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>

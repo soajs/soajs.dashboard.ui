@@ -8,6 +8,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	$scope.schemaCode = '';
 	$scope.schemaCodeF = '';
 	$scope.swaggerCode = false;
+	$scope.selectedType = false;
 	$scope.swaggerTypes =
 		[
 			{'v': 'text', 'l': 'Text'},
@@ -16,8 +17,8 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		];
 	$scope.InputTypes =
 		[
-			{'v': 'manual', 'l': 'Manual'},
-			{'v': 'git', 'l': 'Git'}
+			{'v': 'manual', 'l': 'Manual' , 'description': 'Select this if you want to manually add the inputs'},
+			{'v': 'git', 'l': 'Git' , 'description': 'Select this if you want to add the inputs from Git Repository'}
 		];
 	
 	$scope.replaceDot = function (v) {
@@ -37,13 +38,10 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		}
 	};
 	
-	$scope.selectInputType = function (type) {
-		if (!$localStorage.addPassThrough){
-			$localStorage.addPassThrough = {};
-		}
-		$localStorage.addPassThrough.inputType =  type;
+	$scope.selectInputType = function (input) {
+		$scope.selectedType = true;
 		let currentScope = $scope;
-		if (type === 'git') {
+		if (input.v === 'git') {
 			let modal = $modal.open({
 				templateUrl: "modules/dashboard/endpoints/directives/addPassThroughGit.tmpl",
 				size: 'lg',
@@ -554,9 +552,6 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.Step1 = function () {
-		if($localStorage.addPassThrough && $localStorage.addPassThrough.inputType){
-			$scope.inputType = $localStorage.addPassThrough.inputType;
-		}
 		overlayLoading.show();
 		
 		let entries = {
@@ -948,6 +943,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	if ($routeParams && $routeParams.id && $routeParams.id !== "new") {
 		mode = "edit";
 		$scope.getEndpoint($routeParams.id);
+		$scope.selectedType = true;
 	}
 	// This function will take the yaml as a string and pass it to the simulator that will generate the APIs documentation
 	$scope.moveYamlRight = function () {

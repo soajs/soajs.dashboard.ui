@@ -504,7 +504,7 @@ var endpointsNav = [
 		},
 		'tracker': true,
 		'order': 3,
-		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditEndpoint.js'],
+		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditEndpoint.js', 'modules/dashboard/endpoints/services/endpointService.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{
@@ -525,7 +525,7 @@ var endpointsNav = [
 		},
 		'tracker': true,
 		'order': 3,
-		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditPassThrough.js'],
+		'scripts': ['modules/dashboard/endpoints/config.js', 'modules/dashboard/endpoints/addEditPassThrough.js', 'modules/dashboard/endpoints/services/endpointService.js'],
 		'ancestor': [translation.home[LANG]]
 	}
 ];

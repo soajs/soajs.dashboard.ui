@@ -8,7 +8,7 @@
 				<span><b style="margin:0;">Version {{v}}</b></span>
 			</td>
 			<td class="t-right">
-				<a href="" ng-click="editVersion(v)">
+				<a href="" ng-click="addMoreVersions('edit', v)">
 					<span class="icon icon-pencil2"></span>
 				</a>
 				<a href="" ng-click="deleteVersion(v)">
@@ -19,6 +19,19 @@
 	</table>
 </div>
 <div class="body" style="display:none;">
+	<div ng-if="selectedType==='git'" style="padding: 0px 0px">
+		<fieldset>
+			<legend> Git Information</legend>
+			<div class="c-both w100 table">
+				<a class="btn btn-danger f-right mr5" ng-click="syncGitInformation(v)">
+					<span class="icon icon-undo"></span>
+					Sync
+				</a>
+				<em class="f-left" ng-if="form.formData.versions[v] && form.formData.versions[v].soaVersion && form.formData.versions[v].soaVersion.git"><b>Branch:</b> {{form.formData.versions[v].soaVersion.git.branch}} </em>
+			</div>
+		</fieldset>
+	</div>
+	<br>
 	<div>
 		<label>URL</label>
 		<input type="text" class="form-control" ng-model="form.formData.versions[v].url" ng-required="true" placeholder="http://example.com"/>
@@ -29,18 +42,18 @@
 		<legend>Security</legend>
 		<div>
 			<label>oAuth</label>
-			&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="form.formData.versions[v].oauth"/>&nbsp;
+			&nbsp;<input id="oauth_0" type="radio" ng-value=true ng-model="form.formData.versions[v].oauth" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="oauth_0">true</label>
-			&nbsp;-&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="form.formData.versions[v].oauth"/>&nbsp;
+			&nbsp;-&nbsp;<input id="oauth_1" type="radio" ng-value=false ng-model="form.formData.versions[v].oauth" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="oauth_1">false</label>
 			<br>
 			<span class="manualToolTip">If set to true, the service becomes protected by oAuth. Only requests that have a valid access_token are permitted to use the APIs of this service</span>
 		</div>
 		<div>
 			<label>Ext Key</label>
-			&nbsp;<input id="extKey_0" type="radio" ng-value=true ng-model="form.formData.versions[v].extKeyRequired"/>&nbsp;
+			&nbsp;<input id="extKey_0" type="radio" ng-value=true ng-model="form.formData.versions[v].extKeyRequired" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="extKey_0">true</label>
-			&nbsp;-&nbsp;<input id="extKey_1" type="radio" ng-value=false ng-model="form.formData.versions[v].extKeyRequired"/>&nbsp;
+			&nbsp;-&nbsp;<input id="extKey_1" type="radio" ng-value=false ng-model="form.formData.versions[v].extKeyRequired" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="extKey_1">false</label>
 			<br>
 			<span class="manualToolTip">If set to true, the service becomes protected by oauth. Only requests that have a valid access_token are permitted to use the APIs of this service</span>
@@ -51,9 +64,9 @@
 		<legend>Augment the Request data between SOAJS Gateway and the API</legend>
 		<div>
 			<label>URAC</label>
-			&nbsp;<input id="urac_0" type="radio" ng-value=true ng-model="form.formData.versions[v].urac"/>&nbsp;
+			&nbsp;<input id="urac_0" type="radio" ng-value=true ng-model="form.formData.versions[v].urac" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="urac_0">true</label>
-			&nbsp;-&nbsp;<input id="urac_1" type="radio" ng-value=false ng-model="form.formData.versions[v].urac"/>&nbsp;
+			&nbsp;-&nbsp;<input id="urac_1" type="radio" ng-value=false ng-model="form.formData.versions[v].urac" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="urac_1">false</label>
 			<br>
 			<span class="manualToolTip">Add logged in user information to the request.</span>
@@ -61,18 +74,18 @@
 		
 		<div>
 			<label>URAC Profile</label>
-			&nbsp;<input id="urac_profile_0" type="radio" ng-value=true ng-model="form.formData.versions[v].urac_Profile"/>&nbsp;
+			&nbsp;<input id="urac_profile_0" type="radio" ng-value=true ng-model="form.formData.versions[v].urac_Profile" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="urac_profile_0">true</label>
-			&nbsp;-&nbsp;<input id="urac_profile_1" type="radio" ng-value=false ng-model="form.formData.versions[v].urac_Profile"/>&nbsp;
+			&nbsp;-&nbsp;<input id="urac_profile_1" type="radio" ng-value=false ng-model="form.formData.versions[v].urac_Profile" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="urac_profile_1">false</label>
 			<br>
 			<span class="manualToolTip">Add logged in user profile additional information to the request</span>
 		</div>
 		<div>
 			<label>URAC ACL</label>
-			&nbsp;<input id="urac_acl_0" type="radio" ng-value=true ng-model="form.formData.versions[v].urac_ACL"/>&nbsp;
+			&nbsp;<input id="urac_acl_0" type="radio" ng-value=true ng-model="form.formData.versions[v].urac_ACL" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="urac_acl_0">true</label>
-			&nbsp;-&nbsp;<input id="urac_acl_1" type="radio" ng-value=false ng-model="form.formData.versions[v].urac_ACL"/>&nbsp;
+			&nbsp;-&nbsp;<input id="urac_acl_1" type="radio" ng-value=false ng-model="form.formData.versions[v].urac_ACL" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="urac_acl_1">false</label>
 			<br>
 			<span class="manualToolTip">Add logged in user ACL (Access Control Level settings) to the request</span>
@@ -80,9 +93,9 @@
 		
 		<div>
 			<label>Provision ACL</label>
-			&nbsp;<input id="provision_acl_0" type="radio" ng-value=true ng-model="form.formData.versions[v].provision_ACL"/>&nbsp;
+			&nbsp;<input id="provision_acl_0" type="radio" ng-value=true ng-model="form.formData.versions[v].provision_ACL" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="provision_acl_0">true</label>
-			&nbsp;-&nbsp;<input id="provision_acl_1" type="radio" ng-value=false ng-model="form.formData.versions[v].provision_ACL"/>&nbsp;
+			&nbsp;-&nbsp;<input id="provision_acl_1" type="radio" ng-value=false ng-model="form.formData.versions[v].provision_ACL" ng-disabled="selectedType==='git'"/>&nbsp;
 			<label for="provision_acl_1">false</label>
 			<br>
 			<span class="manualToolTip">Add logged in user ACL (Access Control Level settings) to the request</span>

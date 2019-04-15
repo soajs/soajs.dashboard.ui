@@ -373,8 +373,8 @@ div.box-of-3{
 }
 
 .endpointsBox .content{
-    height:60px;
-    overflow:scroll;
+    height:80px;
+    overflow: auto;
     padding:10px;
 }
 
@@ -405,6 +405,31 @@ div.box-of-3{
 
 .endpointsBox .fieldMsg {
     color: #333;
+}
+
+.envType .endpointsBox ul{
+    text-align: left;
+    list-style-type: circle;
+}
+
+.endpointsBox .envDescription{
+    padding: 0 10px 10px 10px;
+    color: #337ab7;
+    font-weight: bold;
+    text-align: left;
+}
+
+.endpointsBox .readmore{
+    padding-top: 7px;
+    padding-bottom: 10px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.endpointsBox .readmore a{
+    float: right;
+    padding: 4px 20px 0px 20px;
 }
 
 .selectedEndPointType{

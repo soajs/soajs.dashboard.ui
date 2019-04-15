@@ -12,42 +12,61 @@
 	</div>
 	<hr>
 </div>
+
 <div ng-if="selectedType">
 	<div class="modal-body">
 		<div class="form">
 			<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+			<div ng-if="selectedType==='git'" >
+				<fieldset>
+					<legend> Pass Through Git Information</legend>
+					<div class="c-both w100 table">
+						<a ng-if = "empty(form.formData.versions)" class="btn btn-success f-right mr5" ng-click="editGitInformation()">
+							<span class="icon icon-pencil2"></span>
+							Edit
+						</a>
+						<a ng-if = "empty(form.formData.versions)" class="btn btn-danger f-right mr5" ng-click="syncGitInformation(v)">
+							<span class="icon icon-undo"></span>
+							Sync
+						</a>
+						<em class="f-left" ng-if="git"><b>Owner:</b> {{getGitInfo(git.gitId)}} </em>
+						<br>
+						<em class="f-left" ng-if="git"><b>Repository:</b> {{git.repo}} </em>
+					</div>
+				</fieldset>
+			</div>
 			<form name="grpConf" id="grpConf" novalidate ng-submit="grpConf.$valid && onSubmit()">
 				<div class="form-group">
 					<label>{{translation.serviceName[LANG]}}</label>
-					<input type="text" class="form-control" ng-model="form.formData.serviceName" ng-required="true" placeholder="myservice"/>
+					<input type="text" class="form-control" ng-model="form.formData.serviceName" ng-required="true" placeholder="myservice" ng-disabled="selectedType==='git'"/>
 					<span class="manualToolTip">Service Name should be alphanumeric and does not contain any space or dot or hyphen characters</span>
 					<br>
 					<label>{{translation.groupName[LANG]}}</label>
-					<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="group" minlength="3"/>
+					<input type="text" class="form-control" ng-model="form.formData.serviceGroup" ng-required="true" placeholder="group" minlength="3" ng-disabled="selectedType==='git'"/>
 					<span class="manualToolTip">Service group name should be 3 characters at least</span>
 					<br>
 					<label>{{translation.servicePort[LANG]}}</label>
-					<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" min="4100" placeholder="4100"/>
+					<input type="number" class="form-control" ng-model="form.formData.servicePort" ng-required="true" min="4100" placeholder="4100" ng-disabled="selectedType==='git'"/>
 					<span class="manualToolTip">The service port should be equal or greater than 4100</span>
 					<br>
 					<label>{{translation.requestTimeout[LANG]}}</label>
-					<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="false" placeholder="30"/>
+					<input type="number" class="form-control" ng-model="form.formData.requestTimeout" ng-required="false" placeholder="30" ng-disabled="selectedType==='git'"/>
 					<span class="manualToolTip">Specify how many seconds the controller should wait before considering the request as a timeout, value must be equal or greater than 1.</span>
 					<br>
 					<label>{{translation.requestTimeoutRenewal[LANG]}}</label>
-					<input type="number" class="form-control" ng-model="form.formData.requestTimeoutRenewal" ng-required="false" placeholder="5"/>
+					<input type="number" class="form-control" ng-model="form.formData.requestTimeoutRenewal" ng-required="false" placeholder="5" ng-disabled="selectedType==='git'"/>
 					<span class="manualToolTip">Specify how many attempts the controller should make after timing out before eventually giving up, value must be equal or greater than 1.</span>
 				</div>
 				<fieldset>
 					<legend>{{translation.heartbeat[LANG]}}</legend>
 					<div>
 						<label>{{translation.path[LANG]}}</label>
-						<input type="text" class="form-control" ng-model="form.formData.path" ng-required="true" ng-pattern = "/^\/([^?\/]+)/" placeholder="/heartbeat"/>
+						<input type="text" class="form-control" ng-model="form.formData.path" ng-required="false" ng-pattern="/^\/([^?\/]+)/" placeholder="/heartbeat" ng-disabled="selectedType==='git'"/>
 						<span class="manualToolTip">Specify the port value of the heartbeat path.</span>
 					</div>
 					<div>
 						<label>{{translation.port[LANG]}}</label>
-						<input type="number" class="form-control" ng-model="form.formData.port" ng-required="true" min="4100" placeholder="4100"/>
+						<input type="number" class="form-control" ng-model="form.formData.port" ng-required="false" min="4100" placeholder="4100" ng-disabled="selectedType==='git'"/>
 						<span class="manualToolTip">Specify the port value of the heartbeat route, value must be equal or greater than 4100.</span>
 					</div>
 				</fieldset>
@@ -63,13 +82,13 @@
 				<fieldset class="">
 					<legend>Versions</legend>
 					<div class="entryBoxes">
-						<div id="endpoint_{{replaceDot(v)}}" ng-repeat="(v, version) in form.formData.versions" class="entryBox"  ng-init="version.hide = true;">
+						<div id="endpoint_{{replaceDot(v)}}" ng-repeat="(v, version) in form.formData.versions" class="entryBox" ng-init="version.hide = true;">
 							<div ng-include="'modules/dashboard/endpoints/directives/addPassThroughSettings.tmpl'"></div>
 						</div>
 					</div>
 					<div>
 						<a class="btn btn-success f-right mr5 c-both" ng-click="addMoreVersions()">
-							<span >Add Version</span>
+							<span>Add Version</span>
 						</a>
 					</div>
 				</fieldset>

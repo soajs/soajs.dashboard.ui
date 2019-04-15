@@ -893,7 +893,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	$scope.addOauthUser = function (tId) {
 		var options = {
 			timeout: $timeout,
-			form: angular.copy(tenantConfig.form.oauthUse),
+			form: angular.copy(tenantConfig.form.oauthUser),
 			name: 'add_oauthUser',
 			label: translation.addNewoAuthUser[LANG],
 			data: {

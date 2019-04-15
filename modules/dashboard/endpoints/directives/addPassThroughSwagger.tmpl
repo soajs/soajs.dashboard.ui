@@ -46,21 +46,23 @@
 								<span class="icon icon-loop2"></span>
 								Sync
 							</a>
-							<a class="btn btn-primary f-right mr5" ng-click="editGitSwagger('git')" ng-if="form.formData.swaggerInputType">
+							
+							<a ng-if="gitSoa" class="btn btn-primary f-right mr5" ng-click="editGitSwagger('git')" ng-if="form.formData.swaggerInputType">
 								<span class="icon icon-pencil2"></span>
 								Edit Git Information
 							</a>
+							<em class="f-left" ng-if="git"><b>Owner:</b> {{getGitInfo(git.gitId)}} </em>
+							<br>
+							<em class="f-left" ng-if="git"><b>Repository:</b> {{git.repo}} </em>
+							<br>
+							<em class="f-left" ng-if="git"><b>Branch:</b> {{git.branch}} </em>
+							<br>
+							<em class="f-left" ng-if="git"><b>FilePath:</b> {{git.filepath}}</em>
+							<br>
+							<em>Make sure you press <b>Run</b> before you click <b>submit</b> to save your changes.</em>
+							<br>
 						</div>
-						<em class="f-left" ng-if="git"><b>Owner:</b> {{getGitInfo(git.gitId)}} </em>
-						<br>
-						<em class="f-left" ng-if="git"><b>Repository:</b> {{git.repo}} </em>
-						<br>
-						<em class="f-left" ng-if="git"><b>Branch:</b> {{git.branch}} </em>
-						<br>
-						<em class="f-left" ng-if="git"><b>FilePath:</b> {{git.filepath}}</em>
-						<br>
-						<em>Make sure you press <b>Run</b> before you click <b>submit</b> to save your changes.</em>
-						<br>
+					
 						<hr/>
 						<div class="w100 c-both">
 							<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">
@@ -70,10 +72,9 @@
 								<span>&nbsp;</span>
 							</div>
 							<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
-								<div swagger-ui parser="yaml" url="swaggerUrl" loading="true" trusted-sources="true" api-explorer="true"></div>
+								<div swagger-ui parser={{computeParser(swaggerUrl)}} url="swaggerUrl" loading="true" trusted-sources="true" api-explorer="true"></div>
 							</div>
 						</div>
-					
 					</div>
 				</div>
 			</fieldset>

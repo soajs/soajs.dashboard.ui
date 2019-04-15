@@ -38,8 +38,11 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 					for (let version in acl[service]){
 						if ( acl[service].hasOwnProperty(version) &&  acl[service][version]){
 							newForm[service][version] = {};
-							if (acl[service][version].apisPermission){
+							if (acl[service][version].hasOwnProperty('apisPermission')){
 								newForm[service][version].apisPermission = acl[service][version].apisPermission;
+							}
+							if (acl[service][version].hasOwnProperty('access')){
+								newForm[service][version].access = acl[service][version].access;
 							}
 							if (acl[service][version].get || acl[service][version].post || acl[service][version].put || acl[service][version].delete) {
 								for (var method in acl[service][version]) {

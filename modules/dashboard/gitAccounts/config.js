@@ -101,7 +101,7 @@ var gitAccountsAppConfig = {
 									{
 										"name": "bitbucketMessage",
 										"type": "html",
-										"value": "<br><p><b>In order to generate OAuth consumer key/secret, follow the following steps:</b><br><ul><li>Login to your bitbucket account, go to Bitbucket Settings > OAuth</li><li>Under OAuth consumers section, click on Add consumer and fill in the required information</li><li>Make sure you grant this consumer permission to read repositories</li><li>Finally, grab the generated key and secret and use them to login to SOAJS Git app using your bitbucket account</li></ul></p>"
+										"value": "<br><p><b>In order to generate OAuth consumer key/secret, follow the following steps:</b><br><ul><li>Login to your bitbucket account, go to Bitbucket Settings > OAuth</li><li>Under OAuth consumers section, click on Add consumer and fill in the required information</li><li>Make sure you grant this consumer permission to: [repositories - read] and [account - read] </li><li>Finally, grab the generated key and secret and use them to login to SOAJS Git app using your bitbucket account</li></ul></p>"
 									}
 								];
 								formConfig.entries.splice(6, 0, oauth[0], oauth[1], oauth[2]);

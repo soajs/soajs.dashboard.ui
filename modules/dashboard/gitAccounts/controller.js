@@ -142,8 +142,6 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
                         'action': function (formData) {
                             var params = {
                                 id: account._id.toString(),
-                                provider: account.provider,
-                                username: account.owner,
                                 password: formData.password
                             };
                             getSendDataFromServer($scope, ngDataApi, {

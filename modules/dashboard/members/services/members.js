@@ -230,10 +230,12 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'firstName': formData.firstName,
 									'lastName': formData.lastName,
 									'email': formData.email,
-									'groups': [formData.groups],
 									'tId': tenantId,
 									'status': (Array.isArray(formData.status)) ? formData.status.join(",") : formData.status
 								};
+								if (formData.groups){
+									postData.groups = [formData.groups];
+								}
 								var opts = {
 									"method": "post",
 									"routeName": "/urac/admin/editUser",

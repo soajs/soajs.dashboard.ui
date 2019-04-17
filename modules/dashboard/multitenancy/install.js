@@ -148,6 +148,10 @@ var mtTranslation = {
 		"ENG": "oAuth User Authentication Type",
 		"FRA": "oAuth User Authentication Type"
 	},
+	"pin": {
+		"ENG": "Pin Login",
+		"FRA": "Pin Login"
+	},
 	"updateTenant": {
 		"ENG": "Update Tenant",
 		"FRA": "Update Tenant"

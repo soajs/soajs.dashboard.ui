@@ -26,8 +26,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	];
 	
 	$scope.currentEnv = '';
-	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-		$scope.currentEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+		$scope.currentEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 	}
 	
 	$scope.mt = {};
@@ -38,12 +38,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			var msgT = getCodeMessage(msg, service);
 			if (msgT) {
 				msg = msgT;
-			}
-			else if (orgMesg) {
+			} else if (orgMesg) {
 				msg = orgMesg;
 			}
 		}
-		$scope.mt[id].alerts.push({ 'type': type, 'msg': msg });
+		$scope.mt[id].alerts.push({'type': type, 'msg': msg});
 		$scope.mt.closeAllAlerts(id);
 	};
 	
@@ -85,12 +84,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/tenant/application/key/delete",
-			"params": { "id": id, "appId": app.appId, "key": key }
+			"params": {"id": id, "appId": app.appId, "key": key}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, id, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.applicationKeyRemovedSuccessfully[LANG], id);
 				$scope.listKeys(id, app.appId);
 			}
@@ -110,8 +108,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				var prods = [];
 				var lockedProds = [];
 				var len = response.length;
@@ -161,10 +158,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				response.forEach(function (oneEnv) {
-					if(oneEnv.services && oneEnv.services.config){
+					if (oneEnv.services && oneEnv.services.config) {
 						$scope.availableEnvThrottling[oneEnv.code.toLowerCase()] = oneEnv.services.config.throttling || null;
 					}
 				});
@@ -173,7 +169,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						if (response[x].code.toUpperCase() === "DASHBOARD") {
 							response.splice(x, 1);
 						} else {
-							if (response[x].code.toUpperCase() !== "DASHBOARD" && $scope.availableEnv.indexOf(response[x].code.toLowerCase() === -1)){
+							if (response[x].code.toUpperCase() !== "DASHBOARD" && $scope.availableEnv.indexOf(response[x].code.toLowerCase() === -1)) {
 								$scope.availableEnv.push(response[x].code.toLowerCase());
 							}
 							if (response[x].services && response[x].services.config) {
@@ -182,7 +178,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						}
 					}
 				}
-				if(cb && typeof cb === 'function'){
+				if (cb && typeof cb === 'function') {
 					return cb();
 				}
 			}
@@ -198,19 +194,18 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.splitTenantsByType(response, function () {
 					
-					if($scope.tenantsList && $scope.tenantsList.rows){
+					if ($scope.tenantsList && $scope.tenantsList.rows) {
 						response.forEach((tenantFromAPI) => {
 							$scope.tenantsList.rows.forEach((tenantInUI) => {
-								if(tenantInUI.code === tenantFromAPI.code){
+								if (tenantInUI.code === tenantFromAPI.code) {
 									tenantFromAPI.showKeys = tenantInUI.showKeys;
 									
 									tenantInUI.applications.forEach((oneAppInUI) => {
 										tenantFromAPI.applications.forEach((oneAppFromAPI) => {
-											if(oneAppInUI.appId === oneAppFromAPI.appId){
+											if (oneAppInUI.appId === oneAppFromAPI.appId) {
 												oneAppFromAPI.showKeys = oneAppInUI.showKeys;
 											}
 										});
@@ -259,7 +254,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						}
 					};
 					
-					if(cb && typeof cb === 'function'){
+					if (cb && typeof cb === 'function') {
 						return cb();
 					}
 				});
@@ -333,12 +328,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
 				"routeName": "/dashboard/tenant/oauth/users/list",
-				"params": { "id": tId }
+				"params": {"id": tId}
 			}, function (error, response) {
 				if (error) {
 					$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-				}
-				else {
+				} else {
 					row.alreadyGotAuthUsers = true;
 					if (response.length > 0) {
 						for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
@@ -361,7 +355,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		var keys = Object.keys(data);
 		
 		for (let i = formConfig.entries.length - 1; i >= 0; i--) {
-			if (formConfig.entries[i].name === 'type'){
+			if (formConfig.entries[i].name === 'type') {
 				formConfig.entries[i].value.splice(1, 1);
 			}
 			keys.forEach(function (inputName) {
@@ -411,12 +405,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"method": "put",
 							"routeName": "/dashboard/tenant/update",
 							"data": postData,
-							"params": { "id": data['_id'] }
+							"params": {"id": data['_id']}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								if (formData.secret && $scope.access.tenant.oauth.update) {
 									var oAuthData = {
 										'secret': formData.secret,
@@ -428,20 +421,18 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 										"method": "put",
 										"routeName": "/dashboard/tenant/oauth/update",
 										"data": oAuthData,
-										"params": { "id": data['_id'] }
+										"params": {"id": data['_id']}
 									}, function (error) {
 										if (error) {
 											$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-										}
-										else {
+										} else {
 											$scope.$parent.displayAlert('success', translation.TenantInfoUpdatedSuccessfully[LANG]);
 											$scope.modalInstance.close();
 											$scope.form.formData = {};
 											$scope.listTenants();
 										}
 									});
-								}
-								else {
+								} else {
 									$scope.$parent.displayAlert('success', translation.TenantUpdatedSuccessfully[LANG]);
 									$scope.modalInstance.close();
 									$scope.form.formData = {};
@@ -467,14 +458,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			"method": "put",
 			"routeName": "/dashboard/tenant/oauth/update",
 			"data": postData,
-			"params": { "id": data['_id'] }
+			"params": {"id": data['_id']}
 		}, function (error) {
 			if (error) {
 				$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.TenantInfoUpdatedSuccessfully[LANG]);
-				if($scope.form && $scope.form.formData){
+				if ($scope.form && $scope.form.formData) {
 					$scope.form.formData = {};
 				}
 				$scope.listTenants();
@@ -486,18 +476,17 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		var postData = {
 			'availableEnv': $scope.availableEnv,
 			'secret': data.oauth.secret,
-			'oauthType': (data.oauth.loginMode === 'oauth' )? 'miniurac' : data.oauth.loginMode
+			'oauthType': (data.oauth.loginMode === 'oauth') ? 'miniurac' : data.oauth.loginMode
 		};
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "put",
 			"routeName": "/dashboard/tenant/oauth/update",
 			"data": postData,
-			"params": { "id": data['_id'] }
+			"params": {"id": data['_id']}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.TenantInfoUpdatedSuccessfully[LANG]);
 				$scope.listTenants();
 			}
@@ -517,13 +506,67 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			data.oauthType = data.loginMode;
 		}
 		
-		var keys = Object.keys(data.oauth);
+		function loginMode(id, selected, form) {
+			if (selected === "urac" && !form.entries[4]) {
+				form.entries.splice(4, 0, {
+					'name': 'pin',
+					'label': translation.pin[LANG],
+					'type': 'checkbox',
+					'value': $scope.availableProducts,
+					'required': false,
+					'labelMsg': 'Pin login is available when oAuth User Authentication Type is "client to server". Kindly select what product from the list below to turn on pin login for:',
+				});
+			} else if (selected === "miniurac" && form.entries[4] && form.entries[4].name === 'pin') {
+				form.entries.splice(4, 1);
+			}
+		}
 		
-		for (var i = 0; i < formConfig.entries.length; i++) {
+		formConfig.entries[1].onAction = function (id, selected, form) {
+			if (selected === "2" && !form.entries[3]) {
+				form.entries.splice(3, 0, {
+					'name': 'loginMode',
+					'label': translation.oAuthUserType[LANG],
+					'type': 'radio',
+					'value': [
+						{
+							'v': 'urac',
+							'l': 'Client to server authentication (URAC)'
+						},
+						{
+							'v': 'miniurac',
+							'l': 'Server to server authentication (miniURAC)'
+						}
+					],
+					'required': true,
+					'onAction': function (id, selected, form) {
+						loginMode(id, selected, form);
+					},
+				});
+			} else if (selected === "0" && form.entries[3].name === 'loginMode') {
+				if (form.entries[4]) {
+					form.entries.splice(4, 1);
+				}
+				form.entries.splice(3, 1);
+				
+			}
+		};
+		
+		formConfig.entries[2].onAction = function (id, selected, form) {
+			loginMode(id, selected, form);
+		};
+		
+		if (formConfig.entries[1].value[1].selected && formConfig.entries[2].name === 'loginMode') {
+			formConfig.entries.splice(2, 1);
+		}
+		
+		let keys = Object.keys(data.oauth);
+		
+		//add value of products on edit
+		for (let i = 0; i < formConfig.entries.length; i++) {
 			keys.forEach(function (inputName) {
 				if (formConfig.entries[i].name === inputName) {
-					if (inputName === 'loginMode' || inputName ==='type') {
-						for (var j = 0; j < formConfig.entries[i].value.length; j++) {
+					if (inputName === 'loginMode' || inputName === 'type') {
+						for (let j = 0; j < formConfig.entries[i].value.length; j++) {
 							if ((data.oauth[inputName] === 'oauth' && formConfig.entries[i].value[j].v === "miniurac") || (formConfig.entries[i].value[j].v === data.oauth[inputName])) {
 								formConfig.entries[i].value[j].selected = true;
 							}
@@ -535,17 +578,34 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			});
 		}
 		
-		if (formConfig.entries[1].value[1].selected && formConfig.entries[2]){
-			formConfig.entries.splice(2, 1);
+		if (formConfig.entries[2] && formConfig.entries[2].value[0].selected) {
+			formConfig.entries.splice(4, 0, {
+				'name': 'pin',
+				'label': translation.pin[LANG],
+				'type': 'checkbox',
+				'value': $scope.availableProducts,
+				'required': false,
+				'labelMsg': 'Pin login is available when oAuth User Authentication Type is "client to server". Kindly select what product from the list below to turn on pin login for:',
+			});
 		}
-		
+		if (data.oauth['pin'] && formConfig.entries[3] && formConfig.entries[3].name === "pin") {
+			if (formConfig.entries[3].value.length > 0) {
+				for (let l = 0; l < formConfig.entries[3].value.length; l++) {
+					if (data.oauth['pin'].hasOwnProperty(formConfig.entries[3].value[l].v)
+						&& data.oauth['pin'][formConfig.entries[3].value[l].v]
+						&& data.oauth['pin'][formConfig.entries[3].value[l].v].enabled) {
+						formConfig.entries[3].value[l].selected = true;
+					}
+				}
+			}
+		}
 		// on edit end
 		formConfig.entries.unshift({
 			type: "html",
 			value: "<div class='alert alert-warning'>" +
-						"<h4><span class='icon icon-info'></span>&nbsp;Warning</h4><hr />" +
-						"<p>Be advised that when turning ON and OFF or modifying the oAuth Security of a tenant, all the keys configuration for all the applications belonging to this tenant will be modified based on the option you select. <a href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/61979922/Multitenancy#Multitenancy-oauth' target='_blank'>Learn More</a></p>" +
-					"</div>"
+				"<h4><span class='icon icon-info'></span>&nbsp;Warning</h4><hr />" +
+				"<p>Be advised that when turning ON and OFF or modifying the oAuth Security of a tenant, all the keys configuration for all the applications belonging to this tenant will be modified based on the option you select. <a href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/61979922/Multitenancy#Multitenancy-oauth' target='_blank'>Learn More</a></p>" +
+				"</div>"
 		});
 		
 		var options = {
@@ -565,19 +625,38 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'availableEnv': $scope.availableEnv,
 							'type': parseInt(formData.type)
 						};
-						if (formData.loginMode && typeof formData.loginMode === "string"){
+						if (formData.loginMode && typeof formData.loginMode === "string") {
 							postData.oauthType = formData.loginMode;
 						}
-						getSendDataFromServer($scope, ngDataApi, {
+						if (formData.loginMode === "urac"){
+							let products = angular.copy($scope.availableProducts);
+							let pin = {};
+							products.forEach((oneProduct) => {
+								if (oneProduct.v) {
+									pin[oneProduct.v] = {
+										enabled: false
+									};
+									if (formData.pin && Array.isArray(formData.pin) && formData.pin.indexOf(oneProduct.v) !== -1) {
+										pin[oneProduct.v] = {
+											enabled: true
+										};
+									}
+								}
+							});
+							if (Object.keys(pin).length > 0) {
+								postData.pin = pin;
+							}
+						}
+						let opts = {
 							"method": "put",
 							"routeName": "/dashboard/tenant/oauth/update",
 							"data": postData,
-							"params": { "id": data['_id'] }
-						}, function (error) {
+							"params": {"id": data['_id']}
+						};
+						getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.$parent.displayAlert('success', translation.TenantInfoUpdatedSuccessfully[LANG]);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -606,12 +685,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/tenant/delete",
-			"params": { "id": row._id }
+			"params": {"id": row._id}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.TenantRemovedSuccessfully[LANG]);
 				$scope.listTenants();
 			}
@@ -622,27 +700,27 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		var formConfig = angular.copy(tenantConfig.form.tenantAdd);
 		for (let x = formConfig.entries.length - 1; x >= 0; x--) {
 			
-			if (formConfig.entries[x].name === 'product'){
+			if (formConfig.entries[x].name === 'product') {
 				formConfig.entries[x].value = $scope.availableProducts;
-				formConfig.entries[x].onAction =  function (id, selected, form) {
+				formConfig.entries[x].onAction = function (id, selected, form) {
 					let packages = [];
-					$scope.availablePackages.forEach((pack)=>{
-						if (pack.prodCode === selected){
+					$scope.availablePackages.forEach((pack) => {
+						if (pack.prodCode === selected) {
 							packages.push(pack);
 						}
 					});
 					let pack = {
-							'name': 'package',
-							'label': translation.package[LANG],
-							'type': 'select',
-							'tooltip': translation.formPackagePlaceHolder[LANG],
-							'required': true,
-							'fieldMsg': translation.formPackageToolTip[LANG],
-							'value':  packages
-						};
+						'name': 'package',
+						'label': translation.package[LANG],
+						'type': 'select',
+						'tooltip': translation.formPackagePlaceHolder[LANG],
+						'required': true,
+						'fieldMsg': translation.formPackageToolTip[LANG],
+						'value': packages
+					};
 					//insert at a the package after the product
 					form.entries.splice(3, 0, pack);
-					if (form.entries[4].name !== "tag"){
+					if (form.entries[4].name !== "tag") {
 						form.entries.splice(4, 1);
 					}
 					
@@ -677,16 +755,15 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"routeName": "/dashboard/tenant/add",
 							"data": postData
 						}, function (error, response) {
-
+							
 							if (error) {
 								$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
 								$scope.listTenants();
-							}
-							else {
+							} else {
 								var tId = response.id;
-								if (formData.package && (typeof(formData.package) === 'string')) {
+								if (formData.package && (typeof (formData.package) === 'string')) {
 									var ttl = 7 * 24;
 									var postData = {
 										'description': 'Dashboard application for ' + formData.package + ' package',
@@ -694,39 +771,37 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 										'productCode': formData.package.split("_")[0],
 										'packageCode': formData.package.split("_")[1]
 									};
-
+									
 									getSendDataFromServer($scope, ngDataApi, {
 										"method": "post",
 										"routeName": "/dashboard/tenant/application/add",
 										"data": postData,
-										"params": { "id": tId }
+										"params": {"id": tId}
 									}, function (error, response) {
 										if (error) {
 											$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 											$scope.modalInstance.close();
 											$scope.form.formData = {};
 											$scope.listTenants();
-										}
-										else {
+										} else {
 											var appId = response.appId;
 											getSendDataFromServer($scope, ngDataApi, {
 												"method": "post",
 												"routeName": "/dashboard/tenant/application/key/add",
-												"params": { "id": tId, "appId": appId }
+												"params": {"id": tId, "appId": appId}
 											}, function (error, response) {
 												if (error) {
 													$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 													$scope.modalInstance.close();
 													$scope.form.formData = {};
 													$scope.listTenants();
-												}
-												else {
+												} else {
 													$scope.modalInstance.close();
 													$scope.form.formData = {};
 													$scope.listTenants();
 												}
 											});
-
+											
 										}
 									});
 								} else {
@@ -799,12 +874,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/oauth/users/list",
-			"params": { "id": tId }
+			"params": {"id": tId}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						$scope.tenantsList.rows[i].oAuthUsers = response;
@@ -819,12 +893,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/tenant/oauth/users/delete",
-			"params": { "id": tId, 'uId': user['_id'] }
+			"params": {"id": tId, 'uId': user['_id']}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.userDeletedSuccessfully[LANG], tId);
 				$scope.reloadOauthUsers(tId);
 			}
@@ -861,12 +934,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"method": "put",
 							"routeName": "/dashboard/tenant/oauth/users/update",
 							"data": postData,
-							"params": { "id": tId, 'uId': user['_id'] }
+							"params": {"id": tId, 'uId': user['_id']}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.userUpdatedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -919,12 +991,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"method": "post",
 							"routeName": "/dashboard/tenant/oauth/users/add",
 							"data": postData,
-							"params": { "id": tId }
+							"params": {"id": tId}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.userAddedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -953,13 +1024,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			if (oneEn.type === 'select') {
 				oneEn.value[0].selected = true;
 			}
-			if (oneEn.name === 'product'){
+			if (oneEn.name === 'product') {
 				oneEn.type = 'select';
 				oneEn.value = $scope.availableProducts;
-				oneEn.onAction =  function (id, selected, form) {
+				oneEn.onAction = function (id, selected, form) {
 					let packages = [];
-					$scope.availablePackages.forEach((pack)=>{
-						if (pack.prodCode === selected){
+					$scope.availablePackages.forEach((pack) => {
+						if (pack.prodCode === selected) {
 							packages.push(pack);
 						}
 					});
@@ -970,11 +1041,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						'tooltip': translation.formPackagePlaceHolder[LANG],
 						'required': false,
 						'fieldMsg': translation.formPackageToolTip[LANG],
-						'value':  packages
+						'value': packages
 					};
 					//insert at a the package after the product
 					form.entries.splice(1, 0, pack);
-					if (form.entries[2].name !== "description"){
+					if (form.entries[2].name !== "description") {
 						form.entries.splice(2, 1);
 					}
 				}
@@ -997,7 +1068,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'description': formData.description,
 							'_TTL': Array.isArray(formData._TTL) ? formData._TTL.join("") : formData._TTL.toString()
 						};
-						if (formData.package && (typeof(formData.package) == 'string')) {
+						if (formData.package && (typeof (formData.package) == 'string')) {
 							overlayLoading.show();
 							var productCode = formData.package.split("_")[0];
 							var packageCode = formData.package.split("_")[1];
@@ -1008,22 +1079,20 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 								"method": "post",
 								"routeName": "/dashboard/tenant/application/add",
 								"data": postData,
-								"params": { "id": tId }
+								"params": {"id": tId}
 							};
 							getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 								overlayLoading.hide();
 								if (error) {
 									$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-								}
-								else {
+								} else {
 									$scope.mt.displayAlert('success', translation.applicationAddedSuccessfully[LANG], tId);
 									$scope.modalInstance.close();
 									$scope.form.formData = {};
 									$scope.reloadApplications(tId);
 								}
 							});
-						}
-						else {
+						} else {
 							$scope.form.displayAlert('danger', translation.choosePackage[LANG]);
 						}
 					}
@@ -1088,12 +1157,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"method": "put",
 							"routeName": "/dashboard/tenant/application/update",
 							"data": postData,
-							"params": { "id": tId, "appId": data.appId }
+							"params": {"id": tId, "appId": data.appId}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.applicationUpdatedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -1122,12 +1190,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/list",
-			"params": { "id": tId }
+			"params": {"id": tId}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						var currentApps = $scope.tenantsList.rows[i].applications;
@@ -1165,12 +1232,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/tenant/application/delete",
-			"params": { "id": tId, "appId": appId }
+			"params": {"id": tId, "appId": appId}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.selectedAppRemoved[LANG], tId);
 				$scope.reloadApplications(tId);
 			}
@@ -1181,12 +1247,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/tenant/application/key/add",
-			"params": { "id": tId, "appId": appId }
+			"params": {"id": tId, "appId": appId}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.applicationKeyAddedSuccessfully[LANG], tId);
 				$scope.listKeys(tId, appId, true);
 			}
@@ -1204,12 +1269,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			"method": "put",
 			"routeName": "/dashboard/tenant/application/key/config/update",
 			"data": postData,
-			"params": { "id": tId, "appId": appId, "key": key }
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
 				$scope.reloadConfiguration(tId, appId, key);
 			}
@@ -1218,7 +1282,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	};
 	
 	$scope.updateConfiguration = function (tId, appId, appPackage, key, env, value) {
-		mtsc.updateConfiguration ($scope, tId, appId, appPackage, key, env, value);
+		mtsc.updateConfiguration($scope, tId, appId, appPackage, key, env, value);
 	};
 	
 	$scope.addNewExtKey = function (tId, appId, key, packageCode) {
@@ -1245,8 +1309,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							availableEnvs.forEach(function (envCode) {
 								if (envCode.toUpperCase() === 'DASHBOARD' && hideDashboard) {
 									
-								}
-								else {
+								} else {
 									list.push({
 										"v": envCode,
 										"l": envCode,
@@ -1287,12 +1350,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"method": "post",
 							"routeName": "/dashboard/tenant/application/key/ext/add",
 							"data": postData,
-							"params": { "id": tId, "appId": appId, "key": key }
+							"params": {"id": tId, "appId": appId, "key": key}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.externalKeyAddedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -1373,12 +1435,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							"method": "put",
 							"routeName": "/dashboard/tenant/application/key/ext/update",
 							"data": postData,
-							"params": { "id": tId, "appId": appId, "key": key, 'extKeyEnv': data.env }
+							"params": {"id": tId, "appId": appId, "key": key, 'extKeyEnv': data.env}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.externalKeyUpdatedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -1405,13 +1466,12 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/tenant/application/key/ext/delete",
-			"data": { 'extKey': data.extKey, 'extKeyEnv': data.env },
-			"params": { "id": tId, "appId": appId, "key": key }
+			"data": {'extKey': data.extKey, 'extKeyEnv': data.env},
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.externalKeyRemovedSuccessfully[LANG], tId);
 				//$scope.modalInstance.close();
 				//$scope.form.formData = {};
@@ -1424,12 +1484,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/ext/list",
-			"params": { "id": tId, "appId": appId, "key": key }
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						var apps = $scope.tenantsList.rows[i].applications;
@@ -1476,12 +1535,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/list",
-			"params": { "id": tId, "appId": appId }
+			"params": {"id": tId, "appId": appId}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						delete response['soajsauth'];
@@ -1517,12 +1575,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/config/list",
-			"params": { "id": tId, "appId": appId, "key": key }
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
 				}
@@ -1567,7 +1624,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 		}
 	};
-
+	
 	//default operation
 	if ($scope.access.tenant.list && $scope.access.product.list && $scope.access.environment.list) {
 		$scope.getProds(() => {
@@ -1587,8 +1644,8 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	constructModulePermissions($scope, $scope.access, tenantConfig.permissions);
 	
 	$scope.currentEnv = '';
-	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-		$scope.currentEnv = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code.toLowerCase();
+	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+		$scope.currentEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 	}
 	
 	$scope.mt = {};
@@ -1599,12 +1656,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 			var msgT = getCodeMessage(msg, service);
 			if (msgT) {
 				msg = msgT;
-			}
-			else if (orgMesg) {
+			} else if (orgMesg) {
 				msg = orgMesg;
 			}
 		}
-		$scope.mt[id].alerts.push({ 'type': type, 'msg': msg });
+		$scope.mt[id].alerts.push({'type': type, 'msg': msg});
 		$scope.mt.closeAllAlerts(id);
 	};
 	
@@ -1646,12 +1702,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/tenant/application/key/delete",
-			"params": { "id": id, "appId": app.appId, "key": key }
+			"params": {"id": id, "appId": app.appId, "key": key}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, id, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.applicationKeyRemovedSuccessfully[LANG], id);
 				$scope.listKeys(id, app.appId);
 			}
@@ -1670,8 +1725,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				var prods = [];
 				var lockedProds = [];
 				var i;
@@ -1716,22 +1770,20 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (let x = response.length - 1; x >= 0; x--) {
-					if(response && response[x] && response[x].code){
-						if (response[x].code.toUpperCase() !== "DASHBOARD"){
+					if (response && response[x] && response[x].code) {
+						if (response[x].code.toUpperCase() !== "DASHBOARD") {
 							response.splice(x, 1);
-						}
-						else{
+						} else {
 							$scope.availableEnv.push(response[x].code.toLowerCase());
-							if(response[x].services && response[x].services.config){
+							if (response[x].services && response[x].services.config) {
 								$scope.availableEnvThrottling[response[x].code.toLowerCase()] = response[x].services.config.throttling || null;
 							}
 						}
 					}
 				}
-				if(cb && typeof cb === 'function'){
+				if (cb && typeof cb === 'function') {
 					return cb();
 				}
 			}
@@ -1747,16 +1799,15 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.splitTenantsByType(tenantFromAPI, function () {
-					if($scope.tenantsList && $scope.tenantsList.rows){
+					if ($scope.tenantsList && $scope.tenantsList.rows) {
 						$scope.tenantsList.rows.forEach((tenantInUI) => {
-							if(tenantInUI.code === tenantFromAPI.code){
+							if (tenantInUI.code === tenantFromAPI.code) {
 								tenantFromAPI.showKeys = tenantInUI.showKeys;
 								tenantInUI.applications.forEach((oneAppInUI) => {
 									tenantFromAPI.applications.forEach((oneAppFromAPI) => {
-										if(oneAppInUI.appId === oneAppFromAPI.appId){
+										if (oneAppInUI.appId === oneAppFromAPI.appId) {
 											oneAppFromAPI.showKeys = oneAppInUI.showKeys;
 										}
 									});
@@ -1788,7 +1839,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 						}
 					};
 					
-					if(cb && typeof cb === 'function'){
+					if (cb && typeof cb === 'function') {
 						return cb();
 					}
 				});
@@ -1835,14 +1886,14 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		//re-render allowed environments
 		oneTenant.applications.forEach((oneApplication) => {
 			$scope.availablePackages.forEach((onePackage) => {
-				if(onePackage.pckCode === oneApplication.package) {
-					if(!oneApplication.availableEnvs){
+				if (onePackage.pckCode === oneApplication.package) {
+					if (!oneApplication.availableEnvs) {
 						oneApplication.availableEnvs = [];
 					}
 					
 					let packAclEnv = Object.keys(onePackage.acl);
 					packAclEnv.forEach((onePackAclEnv) => {
-						if($scope.availableEnv.indexOf(onePackAclEnv) !== -1){
+						if ($scope.availableEnv.indexOf(onePackAclEnv) !== -1) {
 							oneApplication.availableEnvs.push(onePackAclEnv);
 						}
 					});
@@ -1984,12 +2035,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 							"method": "put",
 							"routeName": "/dashboard/tenant/application/update",
 							"data": postData,
-							"params": { "id": tId, "appId": data.appId }
+							"params": {"id": tId, "appId": data.appId}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.applicationUpdatedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -2018,12 +2068,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/list",
-			"params": { "id": tId }
+			"params": {"id": tId}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						var currentApps = $scope.tenantsList.rows[i].applications;
@@ -2057,12 +2106,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 			"method": "put",
 			"routeName": "/dashboard/tenant/application/key/config/update",
 			"data": postData,
-			"params": { "id": tId, "appId": appId, "key": key }
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.keyConfigurationUpdatedSuccessfully[LANG], tId);
 				$scope.reloadConfiguration(tId, appId, key);
 			}
@@ -2071,7 +2119,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	};
 	
 	$scope.updateConfiguration = function (tId, appId, appPackage, key, env, value) {
-		mtsc.updateConfiguration ($scope, tId, appId, appPackage, key, env, value);
+		mtsc.updateConfiguration($scope, tId, appId, appPackage, key, env, value);
 	};
 	
 	$scope.addNewExtKey = function (tId, appId, key, packageCode) {
@@ -2098,8 +2146,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 							availableEnvs.forEach(function (envCode) {
 								if (envCode.toUpperCase() === 'DASHBOARD' && hideDashboard) {
 								
-								}
-								else {
+								} else {
 									list.push({
 										"v": envCode,
 										"l": envCode,
@@ -2140,12 +2187,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 							"method": "post",
 							"routeName": "/dashboard/tenant/application/key/ext/add",
 							"data": postData,
-							"params": { "id": tId, "appId": appId, "key": key }
+							"params": {"id": tId, "appId": appId, "key": key}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.externalKeyAddedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -2226,12 +2272,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 							"method": "put",
 							"routeName": "/dashboard/tenant/application/key/ext/update",
 							"data": postData,
-							"params": { "id": tId, "appId": appId, "key": key, 'extKeyEnv': data.env }
+							"params": {"id": tId, "appId": appId, "key": key, 'extKeyEnv': data.env}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.mt.displayAlert('success', translation.externalKeyUpdatedSuccessfully[LANG], tId);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -2258,18 +2303,17 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		let opts = {
 			"method": "post",
 			"routeName": "/dashboard/tenant/application/key/ext/delete",
-			"data": { 'extKey': data.extKey, 'extKeyEnv': data.env },
-			"params": { "id": tId, "appId": appId, "key": key }
+			"data": {'extKey': data.extKey, 'extKeyEnv': data.env},
+			"params": {"id": tId, "appId": appId, "key": key}
 		};
-		if (customSettings.key === data.extKey){
+		if (customSettings.key === data.extKey) {
 			$scope.mt.displayAlert('danger', '0', tId, true, 'dashboard', 'Unable to Delete the tenant application ext Key.' +
 				' This key is being used to access console. Add a new ext Key and link it to the console UI to be able to delete this one.');
 		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.mt.displayAlert('success', translation.externalKeyRemovedSuccessfully[LANG], tId);
 				//$scope.modalInstance.close();
 				//$scope.form.formData = {};
@@ -2282,12 +2326,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/ext/list",
-			"params": { "id": tId, "appId": appId, "key": key }
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						var apps = $scope.tenantsList.rows[i].applications;
@@ -2334,12 +2377,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/list",
-			"params": { "id": tId, "appId": appId }
+			"params": {"id": tId, "appId": appId}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 					if ($scope.tenantsList.rows[i]['_id'] === tId) {
 						delete response['soajsauth'];
@@ -2374,12 +2416,11 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/config/list",
-			"params": { "id": tId, "appId": appId, "key": key }
+			"params": {"id": tId, "appId": appId, "key": key}
 		}, function (error, response) {
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
 				}

@@ -178,30 +178,7 @@ var tenantConfig = {
 							'l': 'oAuth 0'
 						}
 					],
-					'required': true,
-					'onAction': function (id, selected, form) {
-						if (selected === "2" && !form.entries[3]){
-							form.entries[3] = {
-								'name': 'loginMode',
-								'label': translation.oAuthUserType[LANG],
-								'type': 'radio',
-								'value': [
-									{
-										'v': 'urac',
-										'l': 'Client to server authentication (URAC)'
-									},
-									{
-										'v': 'miniurac',
-										'l': 'Server to server authentication (miniURAC)'
-									}
-								],
-								'required': true,
-							}
-						}
-						else if(selected === "0" && form.entries[3]){
-							form.entries.splice(3, 1);
-						}
-					}
+					'required': true
 				},
 				{
 					'name': 'loginMode',

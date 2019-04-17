@@ -24,19 +24,33 @@
 				</div>
 				<div ng-if="selectedAccount">
 					<div ng-if="!gitSoa">
-						<div ng-if="repos && repos.length === 0">
+						<div ng-if="repos && repos.length === 0" style="margin-bottom: 10px">
 							<alert type="warning">{{translation.noReposFound[LANG]}}</alert>
 						</div>
 						<fieldset ng-if="selectedAccount.loading">
 							<legent style="text-decoration: underline">{{translation.repositories[LANG]}}</legent>
 							<br>
 							<span class="manualToolTip">Click on a repository to select one.</span>
-							<div id="reposList">
+							<div id="reposListGithub" ng-if="selectedAccount.provider === 'github'">
 								<input type="text" class="form-control endpoint-search" ng-model="searchKeyword" placeholder="Search ..." />
 								<br>
 								<div>
 									<ul class="blueListing endpointListing">
 										<li class="blueLi row-list gitEndpointSize" id="repo_full_name_{{repo.id}}" ng-repeat="repo in repos | reposSearchFilter:searchKeyword" >
+											<a href="" class="" ng-click="!selectRepoBranch(repo)">{{repo.full_name}}</a>
+										</li>
+									</ul>
+								</div>
+								<br>
+								<a href="" class="loadMoreEndPoint btn btn-block f-left" ng-click="listRepos(selectedAccount, 0, 'loadMore')" ng-if="selectedAccount.allowLoadMore">Load More</a>
+							</div>
+							
+							<div id="reposList" ng-show="selectedAccount.provider === 'bitbucket_enterprise' || selectedAccount.provider === 'bitbucket'">
+								<input type="text" class="form-control endpoint-search" ng-model="searchValue"  ng-change="listRepos(selectedAccount, 0, 'loadMore', searchValue)" placeholder="Search ..." />
+								<br>
+								<div>
+									<ul class="blueListing endpointListing">
+										<li class="blueLi row-list gitEndpointSize" id="repo_full_name_{{repo.id}}" ng-repeat="repo in repos" >
 											<a href="" class="" ng-click="!selectRepoBranch(repo)">{{repo.full_name}}</a>
 										</li>
 									</ul>

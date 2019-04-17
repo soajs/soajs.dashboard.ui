@@ -137,14 +137,17 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							$scope.listRepos($scope.selectedAccount, counter, 'getRepos');
 						}
 					};
-					
-					$scope.listRepos = function (account, counter, action) {
+					let disablePaginations = false;
+					$scope.listRepos = function (account, counter, action, name) {
 						let id = account._id;
+						if (name){
+							disablePaginations = true;
+						}
 						if (!account.nextPageNumber) {
 							account.nextPageNumber = $scope.defaultPageNumber;
 						}
-						overlayLoading.show();
-						getSendDataFromServer($scope, ngDataApi, {
+						
+						let opts = {
 							"method": "get",
 							"routeName": "/dashboard/gitAccounts/getRepos",
 							"params": {
@@ -153,22 +156,41 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								per_page: $scope.defaultPerPage,
 								page: (action === 'loadMore') ? account.nextPageNumber : $scope.defaultPageNumber
 							}
-						}, function (error, response) {
-							overlayLoading.hide();
-							$scope.selectedAccount.loading = true;
-							if (error) {
-								$scope.displayAlert('danger', error.message);
-							} else {
-								if (action === 'loadMore') {
-									$scope.appendNewRepos(account, response);
-								} else if (action === 'getRepos') {
-									
-									$scope.repos = response;
-									account.nextPageNumber = 2;
-									account.allowLoadMore = (response.length === $scope.defaultPerPage);
+						};
+						if(name && name.length > 2 && ($scope.selectedAccount.provider === "bitbucket" || $scope.selectedAccount.provider === "bitbucket_enterprise")){
+							opts.params.name = name;
+						}
+						
+						if (disablePaginations){
+							opts.params.page = $scope.defaultPageNumber;
+						}
+						if (!name || name.length > 2){
+							overlayLoading.show();
+							getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+								overlayLoading.hide();
+								$scope.selectedAccount.loading = true;
+								if (error) {
+									if (!opts.params.name){
+										disablePaginations = false;
+									}
+									$scope.displayAlert('danger', error.message);
+								} else {
+									if (opts.params.name || disablePaginations){
+										$scope.repos = response;
+									}
+									else if (action === 'loadMore') {
+										$scope.appendNewRepos(account, response);
+									} else if (action === 'getRepos') {
+										$scope.repos = response;
+										account.nextPageNumber = 2;
+										account.allowLoadMore = (response.length === $scope.defaultPerPage);
+									}
+									if (!opts.params.name){
+										disablePaginations = false;
+									}
 								}
-							}
-						});
+							});
+						}
 					};
 					
 					$scope.appendNewRepos = function (account, repos) {
@@ -428,15 +450,19 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							$scope.listRepos($scope.selectedAccount, counter, 'getRepos');
 						}
 					};
-					$scope.defaultPerPage = 20;
+					$scope.defaultPerPage = 50;
 					$scope.defaultPageNumber = 1;
-					$scope.listRepos = function (account, counter, action) {
+					let disablePaginations = false;
+					$scope.listRepos = function (account, counter, action, name) {
+						if (name){
+							disablePaginations = true;
+						}
 						let id = account._id;
 						if (!account.nextPageNumber) {
 							account.nextPageNumber = $scope.defaultPageNumber;
 						}
-						overlayLoading.show();
-						getSendDataFromServer($scope, ngDataApi, {
+						
+						let opts = {
 							"method": "get",
 							"routeName": "/dashboard/gitAccounts/getRepos",
 							"params": {
@@ -445,23 +471,43 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								per_page: $scope.defaultPerPage,
 								page: (action === 'loadMore') ? account.nextPageNumber : $scope.defaultPageNumber
 							}
-						}, function (error, response) {
-							overlayLoading.hide();
-							$scope.selectedAccount.loading = true;
-							if (error) {
-								$scope.displayAlert('danger', error.message);
-							} else {
-								if (action === 'loadMore') {
-									$scope.appendNewRepos(account, response);
-								} else if (action === 'getRepos') {
-									
-									$scope.repos = response;
-									
-									account.nextPageNumber = 2;
-									account.allowLoadMore = (response.length === $scope.defaultPerPage);
+						};
+						if(name && name.length > 2 && ($scope.selectedAccount.provider === "bitbucket" || $scope.selectedAccount.provider === "bitbucket_enterprise")){
+							opts.params.name = name;
+						}
+						
+						if (disablePaginations){
+							opts.params.page = $scope.defaultPageNumber;
+						}
+						if (!name || name.length > 2) {
+							overlayLoading.show();
+							getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+								overlayLoading.hide();
+								$scope.selectedAccount.loading = true;
+								if (error) {
+									if (!opts.params.name){
+										disablePaginations = false;
+									}
+									$scope.displayAlert('danger', error.message);
+								} else {
+									if (opts.params.name || disablePaginations){
+										$scope.repos = response;
+									}
+									else if (action === 'loadMore') {
+										$scope.appendNewRepos(account, response);
+									} else if (action === 'getRepos') {
+										
+										$scope.repos = response;
+										
+										account.nextPageNumber = 2;
+										account.allowLoadMore = (response.length === $scope.defaultPerPage);
+										if (!opts.params.name){
+											disablePaginations = false;
+										}
+									}
 								}
-							}
-						});
+							});
+						}
 					};
 					$scope.appendNewRepos = function (account, repos) {
 						account.nextPageNumber++;

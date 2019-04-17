@@ -175,7 +175,75 @@ gitAccountsApp.controller ('gitAccountsAppCtrl', ['$scope', '$timeout', '$modal'
             buildFormWithModal($scope, $modal, options);
         }
     };
-
+    
+	let disablePaginations = false;
+	
+	$scope.listReposWithSearch = function (oneAccount, counter, action, name) {
+		if ((oneAccount.provider === "bitbucket" || oneAccount.provider === "bitbucket_enterprise")) {
+			if (name) {
+				disablePaginations = true;
+			}
+			let id = oneAccount._id;
+			
+			if (!oneAccount.nextPageNumber) {
+				oneAccount.nextPageNumber = $scope.defaultPageNumber;
+			}
+			let opts = {
+				"method": "get",
+				"routeName": "/dashboard/gitAccounts/getRepos",
+				"params": {
+					id: id,
+					provider: oneAccount.provider,
+					per_page: $scope.defaultPerPage,
+					page: (action === 'loadMore') ? oneAccount.nextPageNumber : $scope.defaultPageNumber
+				}
+			};
+			
+			if (name && name.length > 2) {
+				opts.params.name = name;
+			}
+			
+			if (disablePaginations) {
+				opts.params.page = $scope.defaultPageNumber;
+			}
+			if (!name || name.length > 2) {
+				overlayLoading.show();
+				getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
+						if (!opts.params.name) {
+							disablePaginations = false;
+						}
+						$scope.displayAlert('danger', error.message);
+					} else {
+						if (opts.params.name || disablePaginations) {
+							oneAccount.repos = response;
+						} else if (action === 'loadMore') {
+							$scope.appendNewRepos(oneAccount, response);
+						} else if (action === 'getRepos') {
+							
+							if (oneAccount.owner === 'soajs') {
+								oneAccount.repos = [];
+								response.forEach(function (oneRepo) {
+									if ($scope.whitelistedRepos.indexOf(oneRepo.full_name) !== -1) {
+										oneAccount.repos.push(oneRepo);
+									}
+								});
+							} else {
+								oneAccount.repos = response;
+							}
+							oneAccount.nextPageNumber = 2;
+							oneAccount.allowLoadMore = (response.length === $scope.defaultPerPage);
+						}
+						if (!opts.params.name) {
+							disablePaginations = false;
+						}
+					}
+				});
+			}
+		}
+	};
+	
     $scope.listRepos = function (accounts, counter, action) {
         if (!Array.isArray(accounts)) {
             accounts = [accounts];

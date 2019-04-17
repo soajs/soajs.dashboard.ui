@@ -25,7 +25,7 @@
 	                <div class="inner" ng-class="{'hidden': account.hide}">
                         <label>{{translation.repositories[LANG]}}</label>
                         <span style="float: right; padding-right: 1%">&nbsp;
-                            <input type="text" class="form-control gitRepos-search" ng-model="searchKeyword" placeholder="Search ..." />
+                            <input type="text" class="form-control gitRepos-search" ng-model="searchKeyword"  ng-change="listReposWithSearch(account, 0, 'loadMore', searchKeyword)" placeholder="Search ..." />
                             <a href="" ng-if="access.getRepos" ng-click="listRepos(account, 0, 'getRepos');" ng-if="access.getRepos">
                                 <span class="icon icon-loop2" tooltip="{{translation.syncRepo[LANG]}}"></span>
                             </a>
@@ -33,10 +33,10 @@
                                 <span class="icon icon-cross" tooltip="{{translation.deleteAccount[LANG]}}"></span>
                             </a>
                         </span>
-		                <div ng-if="account.repo && account.repo.length === 0">
+		                <div ng-if="account.repo && account.repo.length ===0">
 			                <alert type="warning">{{translation.noReposFound[LANG]}}</alert>
 		                </div>
-		                <div ng-if="access.getRepos" id="reposList">
+		                <div ng-if="access.getRepos && account.provider ==='github'" id="reposListGithub">
 			                <ul class="blueListing">
 				                <li class="blueLi row-list {{repo.status}}" ng-repeat="repo in account.repos | reposSearchFilter:searchKeyword" ng-style="{'width': '99%'}">
 					                <span class="repoFullName">{{repo.full_name}}</span>
@@ -107,6 +107,78 @@
 				                </li>
 			                </ul>
 			                <a href="" class="loadMore btn btn-block" ng-click="listRepos(account, 0, 'loadMore')" ng-if="account.allowLoadMore">Load More</a>
+		                </div>
+		                <div ng-if="access.getRepos && (account.provider ==='bitbucket' || account.provider ==='bitbucket_enterprise')" id="reposList">
+			                <ul class="blueListing">
+				                <li class="blueLi row-list {{repo.status}}" ng-repeat="repo in account.repos" ng-style="{'width': '99%'}">
+					                <span class="repoFullName">{{repo.full_name}}</span>
+					                <span ng-if="repo.status === 'deleted'" class="f-right mr11"><span class="icon icon-warning"></span>{{translation.repoHasBeenDeleted[LANG]}}</span>
+					                <span ng-if="repo.status === 'active'" class="f-right mr11"><span class="icon icon-checkmark"></span>{{translation.activeRepo[LANG]}}</span>
+					                <span ng-if="repo.status === 'outOfSync'" class="f-right mr11"><span class="icon icon-warning"></span>{{translation.repoOutOfSync[LANG]}}</span>
+					                <span ng-if="repo.type && repo.status === 'active'" class="f-right mr11"><span class="icon icon-price-tag"></span>{{repo.type}}</span>
+					                <span ng-if="repo.type && repo.status === 'active' && repo.configBranch" class="f-right mr9"><span class="icon icon-git"></span>{{repo.configBranch}}</span>
+					                <div class="rightActions">
+						                <a href="" ng-if="repo.status === 'active' && repo.git && repo.git.branches" ng-click="showRepos(repo)" ng-style="{'margin-top': '-19px'}" ng-hide="repo.showDetails">
+							                <span class="icon icon-plus" tooltip="expand"></span>
+						                </a>
+						                <a href="" ng-if="repo.status === 'active'  && repo.git && repo.git.branches" ng-click="hideRepos(repo)" ng-style="{'margin-top': '-19px'}" ng-show="repo.showDetails">
+							                <span class="icon icon-minus" tooltip="collapse"></span>
+							                <a href="" ng-if="access.activateRepo && !repo.status" ng-click="activateRepo(account, repo, null)" ng-style="{'margin-top': '-19px'}">
+								                <span class="icon icon-switch" tooltip="Turn On"></span>
+							                </a>
+							                <a href="" ng-if="access.deactivateRepo && repo.status && !(repo.git && repo.git.branches)" ng-click="deactivateRepo(account._id, repo)" ng-style="{'margin-top': '-19px'}" ng-confirm-click="Are you sure you want to deactivate this repository?">
+								                <span class="icon icon-cross" tooltip="Turn Off"></span>
+							                </a>
+							                <a href="" ng-if="access.syncRepoBranches && repo.status && repo.git && repo.git.branches" ng-click="syncRepoBranches(account, repo)" ng-style="{'margin-top': '-19px'}">
+								                <span class="icon icon-loop2" tooltip="{{translation.sync[LANG]}}"></span>
+							                </a>
+							                <a href="" ng-if="access.syncRepo && repo.status && !(repo.git && repo.git.branches)" ng-click="syncRepo(account, repo)" ng-style="{'margin-top': '-19px'}">
+								                <span class="icon icon-loop2" tooltip="{{translation.sync[LANG]}}"></span>
+							                </a>
+							                <a href="" ng-if="access.getCIRepoSettings && access.getCIAccountInfo && repo.status" ng-click="configureRepo(repo, account)" ng-style="{'margin-top': '-19px'}">
+								                <span tooltip="Configure" class="icon icon-cog"></span>
+							                </a>
+						                </a>
+					                </div>
+					                <div ng-if="access.activateRepo && repo.status === 'active'" ng-show="repo.showDetails">
+						                <accordion ng-if="repo.git && repo.git.branches" >
+							                <accordion-group is-open="true" ng-repeat="(label, branches) in repo.git" class="activeBranchAccordion">
+								                <accordion-heading>
+									                <span>{{label}}</span>
+									                <div style="float: right;">
+										                <a href="" ng-if="access.deactivateRepo && repo.status" ng-click="deactivateRepo(account._id, repo)" ng-style="{'margin-top': '-19px'}" ng-confirm-click="Are you sure you want to deactivate this repository?">
+											                <span class="icon icon-cross" tooltip="Turn Off"></span>
+										                </a>
+										                <a href="" ng-if="access.activateRepo && !repo.status" ng-click="activateRepo(account, repo, null)" ng-style="{'margin-top': '-19px'}">
+											                <span class="icon icon-switch" tooltip="Turn On"></span>
+										                </a>
+									                </div>
+								                </accordion-heading>
+								                <div class="entryBoxes entryBoxesGrid" ng-if="repo.git">
+									                <div class="entryBox pl0" style="width: 32%; background-color: #eeeeee" ng-repeat="branch in branches" ng-class="{greenBox: branch.activate}">
+										                <div class="header opened" style="border-bottom: unset" ng-class="{greenBoxHeader: branch.activate}">
+											                {{branch.name}}
+											                <div style="float: right;">
+												                <span ng-if="branch.active" style="margin-right: 0px; margin-left: 0px "><span class="icon icon-checkmark"></span>Active Branch</span>
+												                <a href="" ng-if="access.activateBranch && !branch.active" ng-click="activateBranch(account, repo, branch.name)">
+													                <span class="icon icon-switch" tooltip="{{translation.activate[LANG]}} Branch"></span>
+												                </a>
+												                <a href="" ng-if="access.syncRepo && branch.active" ng-click="syncRepo(account, repo, branch.name)">
+													                <span class="icon icon-loop2" style="margin-right: 0px;margin-left: 0px" tooltip="{{translation.sync[LANG]}}"></span>
+												                </a>
+												                <a href="" ng-if="access.deactivateRepo && branch.active" ng-click="deactivateRepo(account._id, repo, branch.name)" ng-confirm-click="Are you sure you want to deactivate this branch?">
+													                <span class="icon icon-cross" style="margin-right: 0px;margin-left: 0px" tooltip="{{translation.deactivate[LANG]}} Branch"></span>
+												                </a>
+											                </div>
+										                </div>
+									                </div>
+								                </div>
+							                </accordion-group>
+						                </accordion>
+					                </div>
+				                </li>
+			                </ul>
+			                <a href="" class="loadMore btn btn-block" ng-click="listReposWithSearch(account, 0, 'loadMore')" ng-if="account.allowLoadMore">Load More</a>
 		                </div>
 	                </div>
 

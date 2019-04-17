@@ -364,6 +364,10 @@ li.accountType {
     margin: 15px 15px 0;
 }
 
+#reposListGithub .blueLi.active {
+    background-color: white !important;
+}
+
 #reposList .blueLi.active {
     background-color: white !important;
 }

@@ -71,7 +71,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					function processSoaFile(soa, cb) {
 						let data = {};
 						endpointService.processSoaJSON(data, soa);
-						let swaggerName = "swagger.yml";
+						let swaggerName = "/swagger.yml";
 						if (soa.swaggerFilename) {
 							swaggerName = soa.swaggerFilename;
 						}

@@ -19,6 +19,18 @@ var mtTranslation = {
 		"ENG": "Client Tenant",
 		"FRA": "Client Tenant"
 	},
+	"mainTenant": {
+		"ENG": "Main Tenant",
+		"FRA": "Main Tenant"
+	},
+	"subTenant": {
+		"ENG": "Sub Tenant",
+		"FRA": "Sub Tenant"
+	},
+	"manageSubTenants": {
+		"ENG": "Manage Sub Tenants",
+		"FRA": "Manage Sub Tenants"
+	},
 	"tag": {
 		"ENG": "Tag",
 		"FRA": "Tag"
@@ -115,6 +127,10 @@ var mtTranslation = {
 		"ENG": "Edit Basic Tenant Information",
 		"FRA": "Modifie Basic Tenant Information"
 	},
+	"editBasicSubTenantApplication": {
+		"ENG": "Edit Basic Sub Tenant Information",
+		"FRA": "Modifie Basic Sub Tenant Information"
+	},
 	"environment": {
 		"ENG": "Environment",
 		"FRA": "Environment"
@@ -159,6 +175,10 @@ var mtTranslation = {
 	"addNewTenant": {
 		"ENG": "Add New Tenant",
 		"FRA": "Add New Tenant"
+	},
+	"addNewSubTenant": {
+		"ENG": "Add New Sub Tenant",
+		"FRA": "Add New Sub Tenant"
 	},
 	"addNewApplication": {
 		"ENG": "Add New Application",

@@ -19,8 +19,13 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		// 	'tenants': []
 		// },
 		{
-			'label': translation.product[LANG],
+			'label': translation.mainTenant[LANG],
 			'type': 'product',
+			'tenants': []
+		},
+		{
+			'label': translation.subTenant[LANG],
+			'type': 'client',
 			'tenants': []
 		}
 	];
@@ -62,6 +67,14 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	
 	$scope.closeKeys = function (id, app) {
 		app.showKeys = false;
+	};
+	
+	$scope.openSubKeys = function (id, app) {
+		app.showSubKeys = true;
+	};
+	
+	$scope.closeSubKeys = function (id, app) {
+		app.showSubKeys = false;
 	};
 	
 	$scope.removeAppKey = function (id, app, key, event) {
@@ -202,6 +215,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							$scope.tenantsList.rows.forEach((tenantInUI) => {
 								if (tenantInUI.code === tenantFromAPI.code) {
 									tenantFromAPI.showKeys = tenantInUI.showKeys;
+									tenantFromAPI.showSubKeys = tenantInUI.showSubKeys;
 									
 									tenantInUI.applications.forEach((oneAppInUI) => {
 										tenantFromAPI.applications.forEach((oneAppFromAPI) => {
@@ -355,20 +369,9 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		var keys = Object.keys(data);
 		
 		for (let i = formConfig.entries.length - 1; i >= 0; i--) {
-			if (formConfig.entries[i].name === 'type') {
-				formConfig.entries[i].value.splice(1, 1);
-			}
 			keys.forEach(function (inputName) {
 				if (formConfig.entries[i].name === inputName) {
-					if (inputName === 'type') {
-						for (var j = 0; j < formConfig.entries[i].value.length; j++) {
-							if (formConfig.entries[i].value[j].v === data[inputName]) {
-								formConfig.entries[i].value[j].selected = true;
-							}
-						}
-					} else {
-						formConfig.entries[i].value = data[inputName];
-					}
+					formConfig.entries[i].value = data[inputName];
 				}
 			});
 		}
@@ -377,7 +380,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			timeout: $timeout,
 			form: formConfig,
 			name: 'editTenant',
-			label: translation.editBasicTenantApplication[LANG],
+			label: data.type === 'product' ? translation.editBasicTenantApplication[LANG] :  translation.editBasicTenantApplication[LANG],
 			data: {},
 			actions: [
 				{
@@ -396,7 +399,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'action': function (formData) {
 						
 						var postData = {
-							'type': 'product',
+							'type': data.type,
 							'name': formData.name,
 							'description': formData.description,
 							'tag': formData.tag
@@ -827,6 +830,166 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			]
 		};
 		
+		buildFormWithModal($scope, $modal, options);
+	};
+	
+	$scope.addSubTenant = function (tenant) {
+		console.log(tenant);
+		
+		var formConfig = angular.copy(tenantConfig.form.tenantAdd);
+		formConfig.entries.unshift({
+			'name': 'mainTenant',
+			'label': 'Main Name',
+			'type': 'text',
+			'value': tenant.code,
+			'required': false,
+			'disabled': true
+		});
+		
+		let availableProducts = [];
+		if (tenant && tenant.applications){
+			tenant.applications.forEach((oneApp)=>{
+				if (availableProducts.length === 0 ){
+					availableProducts.push({l:oneApp.product, v: oneApp.product});
+				}
+				else {
+					let found = availableProducts.find(product => product && (product.v === oneApp.product));
+					if (!found){
+						availableProducts.push({l:oneApp.product, v: oneApp.product});
+					}
+				}
+				
+			});
+		}
+		
+		for (let x = formConfig.entries.length - 1; x >= 0; x--) {
+			if (formConfig.entries[x].name === 'product') {
+				formConfig.entries[x].value =availableProducts;
+				formConfig.entries[x].onAction = function (id, selected, form) {
+					let packages = [];
+					$scope.availablePackages.forEach((pack) => {
+						if (pack.prodCode === selected) {
+							packages.push(pack);
+						}
+					});
+					let pack = {
+						'name': 'package',
+						'label': translation.package[LANG],
+						'type': 'select',
+						'tooltip': translation.formPackagePlaceHolder[LANG],
+						'required': true,
+						'fieldMsg': translation.formPackageToolTip[LANG],
+						'value': packages
+					};
+					//insert at a the package after the product
+					form.entries.splice(4, 0, pack);
+					if (form.entries[5].name !== "tag") {
+						form.entries.splice(5, 1);
+					}
+
+				}
+			}
+		}
+		var options = {
+			timeout: $timeout,
+			form: formConfig,
+			type: 'tenant',
+			name: 'addTenant',
+			label: translation.addNewSubTenant[LANG],
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.addTenant[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						var tCode = $scope.generateTenantCode(formData.name);
+
+						var postData = {
+							'type': 'client',
+							'code': tCode,
+							'name': formData.name,
+							'description': formData.description,
+							'tag': formData.tag,
+							'console': true,
+							'subTenant': tenant._id
+						};
+						console.log(postData);
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/tenant/add",
+							"data": postData
+						}, function (error, response) {
+
+							if (error) {
+								$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								$scope.modalInstance.close();
+								$scope.form.formData = {};
+								$scope.listTenants();
+							} else {
+								var tId = response.id;
+								if (formData.package && (typeof (formData.package) === 'string')) {
+									var ttl = 7 * 24;
+									var postData = {
+										'description': 'Dashboard application for ' + formData.package + ' package',
+										'_TTL': ttl.toString(),
+										'productCode': formData.package.split("_")[0],
+										'packageCode': formData.package.split("_")[1]
+									};
+
+									getSendDataFromServer($scope, ngDataApi, {
+										"method": "post",
+										"routeName": "/dashboard/tenant/application/add",
+										"data": postData,
+										"params": {"id": tId}
+									}, function (error, response) {
+										if (error) {
+											$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+											$scope.modalInstance.close();
+											$scope.form.formData = {};
+											$scope.listTenants();
+										} else {
+											var appId = response.appId;
+											getSendDataFromServer($scope, ngDataApi, {
+												"method": "post",
+												"routeName": "/dashboard/tenant/application/key/add",
+												"params": {"id": tId, "appId": appId}
+											}, function (error, response) {
+												if (error) {
+													$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+													$scope.modalInstance.close();
+													$scope.form.formData = {};
+													$scope.listTenants();
+												} else {
+													$scope.modalInstance.close();
+													$scope.form.formData = {};
+													$scope.listTenants();
+												}
+											});
+
+										}
+									});
+								} else {
+									$scope.$parent.displayAlert('success', translation.TenantAddedSuccessfully[LANG]);
+									$scope.modalInstance.close();
+									$scope.form.formData = {};
+									$scope.listTenants();
+								}
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						$scope.modalInstance.dismiss('cancel');
+						$scope.form.formData = {};
+					}
+				}
+			]
+		};
+
 		buildFormWithModal($scope, $modal, options);
 	};
 	

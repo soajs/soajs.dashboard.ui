@@ -9,9 +9,10 @@
 .text-field-align-right {
     float: right !important;
     width: 250px !important;
-    position: absolute;
-    right: 0;
-    top: 0px;
+    margin-top: 17px;
+    margin-bottom: 20px;
+    /*position: absolute;*/
+    /*top: 0px;*/
 }
 
 .buttonSelected {
@@ -80,4 +81,14 @@ div.entryBox .body .btn-primary {
 div#pin-wrapper li {
     float: left;
     width: 33%;
+}
+
+.addTenantButton {
+    margin-top: 17px;
+    margin-bottom: 20px;
+    display: block;
+    float: left;
+}
+.width100percent {
+    width: 100%;
 }

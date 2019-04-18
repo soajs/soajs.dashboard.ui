@@ -79,28 +79,6 @@ var tenantConfig = {
 					'required': true
 				},
 				{
-					'name': 'type',
-					'label': translation.role[LANG],
-					'type': 'select',
-					'value': [
-						/*{
-						 'v': 'admin',
-						 'l': 'Administration Tenant'
-						 },*/
-						{
-							'v': 'product',
-							'l': translation.productTenant[LANG]
-						},
-						{
-							'v': 'client',
-							'l': translation.clientTenant[LANG]
-						}
-					],
-					'tooltip': translation.formTntTypeToolTip[LANG],
-					'required': true,
-					'fieldMsg': translation.formTntTypeFieldMsg[LANG]
-				},
-				{
 					'name': 'name',
 					'label': translation.name[LANG],
 					'type': 'text',

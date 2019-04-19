@@ -1,6 +1,6 @@
 "use strict";
 var groupsService = soajsApp.components;
-groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', function (ngDataApi, $timeout, $modal) {
+groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$localStorage', function (ngDataApi, $timeout, $modal, $localStorage) {
 	
 	function listConsoleProducts (currentScope, callback) {
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -55,6 +55,27 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 				}
 			});
 		}
+	}
+	
+	function listEnvironments(currentScope, callback) {
+		var options = {
+			"method": "get",
+			"routeName": "/dashboard/environment/list",
+			"params": {}
+		};
+		getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			}
+			else {
+				if (callback && typeof(callback) === 'function') {
+					return callback(response);
+				}
+				else {
+					$localStorage.environments = angular.copy(response);
+				}
+			}
+		});
 	}
 	
 	function printGroups(currentScope, groupsConfig, response) {
@@ -116,6 +137,21 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 						}
 					});
 					config.entries[3].value = selectablePackages;
+					let envs = [];
+					if ($localStorage.environments){
+						$localStorage.environments.forEach((env)=>{
+							envs.push({l: env.code, v:env.code});
+						});
+					}
+					config.entries.push({
+						'name': 'allowedEnvironments',
+						'label': translation.environments[LANG],
+						'type': 'checkbox',
+						'value': envs,
+						'required': false,
+						'tooltip': 'Specify which environment this group have access to use',
+						'labelMsg': 'Specify which environment this group have access to use'
+					});
 					var options = {
 						timeout: $timeout,
 						form: config,
@@ -128,9 +164,15 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 								'btn': 'primary',
 								'action': function (formData) {
 									let allowedPackages = {};
+									let allowedEnvironments = {};
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
 											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+										}
+										if(key && key.indexOf("allowedEnvironments")!== -1){
+											formData[key].forEach((oneKey)=>{
+												allowedEnvironments[oneKey] = {};
+											});
 										}
 									});
 									var postData = {
@@ -139,7 +181,10 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 										'description': formData.description,
 										'tId': tenantId,
 										'tCode': tenantCode,
-										'config' : {allowedPackages}
+										'config' : {
+											allowedPackages : allowedPackages,
+											allowedEnvironments: allowedEnvironments
+										}
 									};
 									
 									var opts = {
@@ -157,10 +202,12 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
 										}
 										else {
-											currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
-											currentScope.modalInstance.close();
-											currentScope.form.formData = {};
-											currentScope.listGroups();
+											listEnvironments(currentScope, ()=>{
+												currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
+												currentScope.modalInstance.close();
+												currentScope.form.formData = {};
+												currentScope.listGroups();
+											});
 										}
 									});
 								}
@@ -320,6 +367,29 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 						}
 					});
 					config.entries[3].value = selectablePackages;
+					
+					let envs = [];
+					if ($localStorage.environments){
+						$localStorage.environments.forEach((env)=>{
+							let temp = {l: env.code, v:env.code};
+							if (data.config && data.config.allowedEnvironments &&  data.config.allowedEnvironments[env.code]){
+								temp.selected = true;
+							}
+							envs.push(temp);
+						});
+						delete data.config.allowedEnvironments;
+					}
+					
+					config.entries.push({
+						'name': 'allowedEnvironments',
+						'label': translation.environments[LANG],
+						'type': 'checkbox',
+						'value': envs,
+						'required': false,
+						'tooltip': 'Specify which environment this group have access to use',
+						'labelMsg': 'Specify which environment this group have access to use'
+					});
+					
 					var options = {
 						timeout: $timeout,
 						form: config,
@@ -333,15 +403,24 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 								'btn': 'primary',
 								'action': function (formData) {
 									let allowedPackages = {};
+									let allowedEnvironments = {};
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
 											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+										}
+										if(key && key.indexOf("allowedEnvironments")!== -1){
+											formData[key].forEach((oneKey)=>{
+												allowedEnvironments[oneKey] = {};
+											});
 										}
 									});
 									var postData = {
 										'name': formData.name,
 										'description': formData.description,
-										'config': {allowedPackages}
+										'config': {
+											allowedPackages : allowedPackages,
+											allowedEnvironments: allowedEnvironments
+										}
 									};
 									var opts = {
 										"method": "post",
@@ -359,10 +438,12 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
 										}
 										else {
-											currentScope.$parent.displayAlert('success', translation.groupUpdatedSuccessfully[LANG]);
-											currentScope.modalInstance.close();
-											currentScope.form.formData = {};
-											currentScope.listGroups();
+											listEnvironments(currentScope, ()=>{
+												currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
+												currentScope.modalInstance.close();
+												currentScope.form.formData = {};
+												currentScope.listGroups();
+											});
 										}
 									});
 								}

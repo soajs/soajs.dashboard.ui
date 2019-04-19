@@ -1,15 +1,16 @@
 "use strict";
 var membersApp = soajsApp.components;
-membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage', function ($scope, $cookies, $localStorage) {
+membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage', 'injectFiles', function ($scope, $cookies, $localStorage, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, membersConfig.permissions);
 	
 	$scope.userCookie = $localStorage.soajs_user;
+	injectFiles.injectCss("modules/dashboard/members/members.css");
 }]);
 
-membersApp.controller('tenantsCtrl', ['$scope', '$timeout', '$routeParams', 'ngDataApi', function ($scope, $timeout, $routeParams, ngDataApi) {
+membersApp.controller('tenantsCtrl', ['$scope', '$timeout', '$routeParams', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $routeParams, ngDataApi, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -72,10 +73,10 @@ membersApp.controller('tenantsCtrl', ['$scope', '$timeout', '$routeParams', 'ngD
 			$scope.listTenants();
 		}, 10);
 	}
-	
+	injectFiles.injectCss("modules/dashboard/members/members.css");
 }]);
 
-membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams', 'ngDataApi', function ($scope, $timeout, $routeParams, ngDataApi) {
+membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $routeParams, ngDataApi, injectFiles) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -138,10 +139,10 @@ membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams
 			$scope.listTenants();
 		}, 10);
 	}
-	
+	injectFiles.injectCss("modules/dashboard/members/members.css");
 }]);
 
-membersApp.controller('tenantMembersCtrl', ['$scope', 'membersHelper', '$timeout', function ($scope, membersHelper, $timeout) {
+membersApp.controller('tenantMembersCtrl', ['$scope', 'membersHelper', '$timeout', 'injectFiles', function ($scope, membersHelper, $timeout, injectFiles) {
 	
 	$timeout(function () {
 		$scope.tenantMembers = angular.extend($scope);
@@ -188,9 +189,10 @@ membersApp.controller('tenantMembersCtrl', ['$scope', 'membersHelper', '$timeout
 			$scope.tenantMembers.listMembers();
 		});
 	}, 1000);
+	injectFiles.injectCss("modules/dashboard/members/members.css");
 }]);
 
-membersApp.controller('tenantGroupsCtrl', ['$scope', 'groupsHelper', '$timeout', function ($scope, groupsHelper, $timeout) {
+membersApp.controller('tenantGroupsCtrl', ['$scope', 'groupsHelper', '$timeout', 'injectFiles', function ($scope, groupsHelper, $timeout, injectFiles) {
 	
 	$timeout(function () {
 		$scope.tenantGroups = angular.extend($scope);
@@ -228,4 +230,6 @@ membersApp.controller('tenantGroupsCtrl', ['$scope', 'groupsHelper', '$timeout',
 			groupsHelper.delete1Group($scope.tenantGroups, data, false);
 		};
 	}, 1000);
+	
+	injectFiles.injectCss("modules/dashboard/members/members.css");
 }]);

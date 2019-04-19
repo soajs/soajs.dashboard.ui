@@ -157,47 +157,63 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 		});
 	}
 
+	function appendGroupEnvs (currentScope, callback){
+		var options = {
+			"method": "post",
+			"routeName": "/urac/admin/group/addEnvironment",
+			"data": {
+				"groups": $localStorage.soajs_user.groups,
+				"env": currentScope.wizard.gi.code.toUpperCase()
+			}
+		};
+		getSendDataFromServer(currentScope, ngDataApi, options, callback)
+	}
 	function finalResponse(currentScope) {
 		function getPermissions(cb) {
-			var options = {
-				"method": "get",
-				"routeName": "/dashboard/environment/list",
-				"params": {}
-			};
-			getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
-				overlayLoading.hide();
-				if (error) {
-					displayStickError(currentScope, error);
+			appendGroupEnvs (currentScope, (err)=>{
+				if (err) {
+					displayStickError(currentScope, err);
 				}
-				else {
-					$localStorage.environments = response;
-					response.forEach(function (oneEnv) {
-						if (oneEnv.code.toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) {
-							currentScope.$parent.currentDeployer.type = oneEnv.deployer.type;
-
-							var data = {
-								"_id": oneEnv._id,
-								"code": oneEnv.code,
-								"sensitive": oneEnv.sensitive,
-								"domain": oneEnv.domain,
-								"profile": oneEnv.profile,
-								"sitePrefix": oneEnv.sitePrefix,
-								"apiPrefix": oneEnv.apiPrefix,
-								"description": oneEnv.description,
-								"deployer": oneEnv.deployer
-							};
-							for(let container in data.deployer.container){
-								for(let driver in data.deployer.container[container]){
-									if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
-										delete data.deployer.container[container][driver].auth.token;
+				var options = {
+					"method": "get",
+					"routeName": "/dashboard/environment/list",
+					"params": {}
+				};
+				getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
+						displayStickError(currentScope, error);
+					}
+					else {
+						$localStorage.environments = response;
+						response.forEach(function (oneEnv) {
+							if (oneEnv.code.toLowerCase() === currentScope.wizard.gi.code.toLowerCase()) {
+								currentScope.$parent.currentDeployer.type = oneEnv.deployer.type;
+								
+								var data = {
+									"_id": oneEnv._id,
+									"code": oneEnv.code,
+									"sensitive": oneEnv.sensitive,
+									"domain": oneEnv.domain,
+									"profile": oneEnv.profile,
+									"sitePrefix": oneEnv.sitePrefix,
+									"apiPrefix": oneEnv.apiPrefix,
+									"description": oneEnv.description,
+									"deployer": oneEnv.deployer
+								};
+								for(let container in data.deployer.container){
+									for(let driver in data.deployer.container[container]){
+										if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
+											delete data.deployer.container[container][driver].auth.token;
+										}
 									}
 								}
+								$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 							}
-							$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
-						}
-					});
-					return cb();
-				}
+						});
+						return cb();
+					}
+				});
 			});
 		}
 

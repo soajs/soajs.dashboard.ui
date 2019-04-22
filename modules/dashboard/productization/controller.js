@@ -987,6 +987,9 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	};
 	
 	$scope.expand = function (envCode, service) {
+		if (!$scope.aclFill[envCode]){
+			$scope.aclFill[envCode] = {};
+		}
 		if(!$scope.aclFill[envCode][service.name]){
 			$scope.aclFill[envCode][service.name] = {};
 		}
@@ -1038,13 +1041,9 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				for (let x = response.length - 1; x >= 0; x--) {
-					if(response && response[x] && response[x].code && response[x].code.toUpperCase() !== "DASHBOARD"){
-						response.splice(x, 1);
-					}
-				}
 				$scope.environments_codes = response;
-				$scope.getConsoleScope();
+				$scope.getAllServicesList();
+				
 			}
 		});
 	};
@@ -1052,9 +1051,19 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.maxSize = 5;
 	//default operation
 	$scope.getAllServicesList = function () {
+		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
+			if($scope.environments_codes  && $scope.environments_codes[x] && $scope.environments_codes [x].code && $scope.environments_codes[x].code.toUpperCase() === "DASHBOARD"){
+				if($scope.environments_codes[x].services && $scope.environments_codes[x].services.controller && $scope.environments_codes[x].services.controller.services){
+					consoleAclConfig.DASHBOARD = $scope.environments_codes[x].services.controller.services;
+				}
+			}
+		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "send",
-			"routeName": "/dashboard/services/list"
+			"routeName": "/dashboard/services/list",
+			"data": {
+				"serviceNames": consoleAclConfig.DASHBOARD
+			}
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -1093,7 +1102,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 					}
 				});
 				$scope.allServiceApis = allServiceApis;
-				$scope.getEnvironments();
+				$scope.getConsoleScope();
 			}
 		});
 	};
@@ -1168,7 +1177,8 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
 	overlayLoading.show(function () {
-		$scope.getAllServicesList();
+		$scope.getEnvironments();
+		$scope.consoleAclConfig = consoleAclConfig;
 	});
 }]);
 
@@ -1540,11 +1550,6 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				for (let x = response.length - 1; x >= 0; x--) {
-					if(response && response[x] && response[x].code && response[x].code.toUpperCase() !== "DASHBOARD"){
-						response.splice(x, 1);
-					}
-				}
 				$scope.environments_codes = response;
 				$scope.getPackageAcl();
 			}

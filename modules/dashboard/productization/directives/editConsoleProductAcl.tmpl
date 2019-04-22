@@ -25,7 +25,7 @@
 								<div ng-if="group === 'SOAJS Core Services'">
 									<fieldset class="width100">
 										<legend>{{group}}</legend>
-										<div ng-repeat="service in services| reposSearchFilter:searchKeyword" class="clearfix service-container" ng-if="service.name !== 'controller'">
+										<div ng-repeat="service in services| reposSearchFilter:searchKeyword" class="clearfix service-container" ng-if="service.name !== 'controller' && (oneEnv.code !== 'DASHBOARD' ? consoleAclConfig.OTHER.indexOf(service.name) !== -1 : true)">
 											<div class="clearfix serviceNameHead">
 												<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
 											</div>

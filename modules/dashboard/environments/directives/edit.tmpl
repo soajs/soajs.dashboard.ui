@@ -26,6 +26,18 @@
 						</tr>
 						<tr class="form-group">
 							<td class="">
+								<span class="customInput f-left">
+	                                    <label>Protocol</label>
+	                                    <input type="text" ng-required="false" tooltip="{{translation.enterProtocol[LANG]}}" placeholder="http" ng-model="formEnvironment.protocol" class="form-control"/>
+	                                </span>
+								<span class="customInput  f-right ">
+	                                    <label>Port</label>
+	                                    <input type="number" ng-required="false" tooltip="{{translation.enterPort[LANG]}}" placeholder="80" ng-model="formEnvironment.port" class="form-control"/>
+	                                </span>
+							</td>
+						</tr>
+						<tr class="form-group">
+							<td class="">
 	                            <span ng-show="formEnvironment.portalPrefix">
 		                            <span class="customInput2 f-left">
 	                                    <label>API Prefix</label>

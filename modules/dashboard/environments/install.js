@@ -254,6 +254,14 @@ var envTranslation = {
 		"ENG": "Enter API Prefix",
 		"FRA": "Enter API Prefix"
 	},
+	"enterPort": {
+		"ENG": "Enter Port",
+		"FRA": "Enter Port"
+	},
+	"enterProtocol": {
+		"ENG": "Enter Protocol",
+		"FRA": "Enter Protocol"
+	},
 	"inCaseAPIOrSitePrefixNotSpecified": {
 		"ENG": 'In case API Prefix and Site Prefix were not specified, they will be set by default to "api" and "site" respectively.',
 		"FRA": 'In case API Prefix and Site Prefix were not specified, they will be set by default to "api" and "site" respectively.'

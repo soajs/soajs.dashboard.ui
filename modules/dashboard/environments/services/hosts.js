@@ -344,8 +344,10 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 											if(!regServices[serviceName].awarenessStats[serviceCtrl].healthy){
 												oneHost.color= "red";
 												oneHost.healthy = false;
-												oneHost.downCount = regServices[serviceName].awarenessStats[oneHostIP].downCount;
-												oneHost.downSince = regServices[serviceName].awarenessStats[oneHostIP].downSince;
+												if (regServices[serviceName].awarenessStats[oneHostIP]){
+													oneHost.downCount = regServices[serviceName].awarenessStats[oneHostIP].downCount;
+													oneHost.downSince = regServices[serviceName].awarenessStats[oneHostIP].downSince;
+												}
 											}
 										}
 									}

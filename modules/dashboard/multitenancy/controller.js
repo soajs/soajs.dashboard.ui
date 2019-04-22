@@ -115,6 +115,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		$scope.availablePackages = [];
 		$scope.availableProducts = [];
 		$scope.availableLockedPackages = [];
+		$scope.productsScopes = [];
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/product/list"
@@ -133,6 +134,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						'v': p.code,
 						'l': p.code,
 					});
+					$scope.productsScopes.push(p);
 					var ll = p.packages.length;
 					for (i = 0; i < ll; i++) {
 						prods.push({
@@ -1447,37 +1449,23 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		mtsc.updateConfiguration($scope, tId, appId, appPackage, key, env, value);
 	};
 	
-	$scope.addNewExtKey = function (tId, appId, key, packageCode) {
-		var formConfig = tenantConfig.form.extKey;
-		
-		//check if old or new acl
-		//if new acl, list env in acl
-		//if old acl, list all available env
-		var hideDashboard = false;
-		$scope.availablePackages.forEach(function (onePackage) {
-			if (onePackage.pckCode === packageCode) {
-				if (onePackage.acl && typeof (onePackage.acl) === 'object') {
-					
-					if (!onePackage.locked) {
-						hideDashboard = true;
-					}
-					
+	$scope.addNewExtKey = function (tId, appId, key, productCode) {
+		let formConfig = tenantConfig.form.extKey;
+		$scope.productsScopes.forEach(function (oneProduct) {
+			if (oneProduct.code === productCode) {
+				if (oneProduct.scope && oneProduct.scope.acl && typeof (oneProduct.scope.acl) === 'object') {
 					//new acl
 					formConfig.entries.forEach(function (oneFormField) {
 						if (oneFormField.name === 'environment') {
-							var list = [];
-							var availableEnvs = Object.keys(onePackage.acl);
+							let list = [];
+							let availableEnvs = Object.keys(oneProduct.scope.acl);
 							// availableEnvs = $scope.availableEnv;
 							availableEnvs.forEach(function (envCode) {
-								if (envCode.toUpperCase() === 'DASHBOARD' && hideDashboard) {
-									
-								} else {
-									list.push({
-										"v": envCode,
-										"l": envCode,
-										"selected": (envCode === $scope.currentEnv)
-									});
-								}
+								list.push({
+									"v": envCode,
+									"l": envCode,
+									"selected": (envCode === $scope.currentEnv)
+								});
 							});
 							oneFormField.value = list;
 						}
@@ -1504,7 +1492,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'expDate': formData.expDate,
 							'device': deviceObj,
 							'geo': geoObj,
-							'dashboardAccess': formData.dashboardAccess ? true : false,
+							'dashboardAccess': !!formData.dashboardAccess,
 							'env': formData.environment.toUpperCase()
 						};
 						
@@ -1884,6 +1872,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 				}
 				$scope.availablePackages = prods;
 				$scope.availableLockedPackages = lockedProds;
+				$scope.consoleProductScope = p.scope;
 				cb();
 			}
 		});
@@ -2250,44 +2239,27 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		mtsc.updateConfiguration($scope, tId, appId, appPackage, key, env, value);
 	};
 	
-	$scope.addNewExtKey = function (tId, appId, key, packageCode) {
-		var formConfig = tenantConfig.form.extKey;
-		
-		//check if old or new acl
-		//if new acl, list env in acl
-		//if old acl, list all available env
-		var hideDashboard = false;
-		$scope.availablePackages.forEach(function (onePackage) {
-			if (onePackage.pckCode === packageCode) {
-				if (onePackage.acl && typeof (onePackage.acl) === 'object') {
-					
-					if (!onePackage.locked) {
-						hideDashboard = true;
-					}
-					
-					//new acl
-					formConfig.entries.forEach(function (oneFormField) {
-						if (oneFormField.name === 'environment') {
-							var list = [];
-							var availableEnvs = Object.keys(onePackage.acl);
-							// availableEnvs = $scope.availableEnv;
-							availableEnvs.forEach(function (envCode) {
-								if (envCode.toUpperCase() === 'DASHBOARD' && hideDashboard) {
-								
-								} else {
-									list.push({
-										"v": envCode,
-										"l": envCode,
-										"selected": (envCode === $scope.currentEnv)
-									});
-								}
-							});
-							oneFormField.value = list;
-						}
+	$scope.addNewExtKey = function (tId, appId, key) {
+		let formConfig = tenantConfig.form.extKey;
+		if ( $scope.consoleProductScope
+			&& $scope.consoleProductScope.acl
+			&& typeof ($scope.consoleProductScope.acl) === 'object'){
+			//new acl
+			formConfig.entries.forEach(function (oneFormField) {
+				if (oneFormField.name === 'environment') {
+					var list = [];
+					var availableEnvs = Object.keys($scope.consoleProductScope.acl);
+					availableEnvs.forEach(function (envCode) {
+						list.push({
+							"v": envCode,
+							"l": envCode,
+							"selected": (envCode === $scope.currentEnv)
+						});
 					});
+					oneFormField.value = list;
 				}
-			}
-		});
+			});
+		}
 		
 		var options = {
 			timeout: $timeout,

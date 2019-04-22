@@ -9,13 +9,13 @@
 	    <accordion>
 		    <accordion-group is-open="true">
 			    <accordion-heading>
-				    <span>{{consoleTenants1.name}}</span>
+				    <span>{{consoleTenant.name}}</span>
 			    </accordion-heading>
-			    <div class="description">{{consoleTenants1['description']}}</div>
+			    <div class="description">{{consoleTenant['description']}}</div>
 			    <div ng-if="access.tenant.application.list || access.tenant.oauth.users.list">
 				    <br/>
-				    <div class="keyAlerts" ng-show="mt[consoleTenants1['_id']].alerts.length >0" id="{{consoleTenants1['_id']}}">
-					    <alert ng-repeat="alert in mt[consoleTenants1['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert($index, consoleTenants1['_id'])">{{alert.msg}}</alert>
+				    <div class="keyAlerts" ng-show="mt[consoleTenant['_id']].alerts.length >0" id="{{consoleTenant['_id']}}">
+					    <alert ng-repeat="alert in mt[consoleTenant['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert($index, consoleTenant['_id'])">{{alert.msg}}</alert>
 					    <br/>
 				    </div>
 				    <tabset>

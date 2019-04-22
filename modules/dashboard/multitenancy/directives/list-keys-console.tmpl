@@ -3,7 +3,7 @@
 <br>
 <div ng-if="access.tenant.appKeys.list">
 	<div style="clear:both; height:30px; padding-bottom:5px;"><b>{{translation.tenantProductsKeys[LANG]}}:</b>
-		<a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm consoleKey" ng-click="updateConfiguration(consoleTenants1['_id'], application['appId'], application['package'],  application.keys[0].key, 'dashboard', application.keys[0].config['dashboard']);">{{translation.editServiceConfiguration[LANG]}}</a>
+		<a ng-if="access.tenant.appKeys.add" href="" class="btn btn-primary btn-sm btn-ssm consoleKey" ng-click="updateConfiguration(consoleTenant['_id'], application['appId'], application['package'],  application.keys[0].key, 'dashboard', application.keys[0].config['dashboard']);">{{translation.editServiceConfiguration[LANG]}}</a>
 	</div>
 	<div class="keysAccordion">
 		<accordion close-others="true" ng-show="application.keys.length > 0">
@@ -13,7 +13,7 @@
 				</accordion-heading>
 				<span>
 					<div ng-if="access.tenant.externalKeys.add">
-						<button ng-click="addNewExtKey(consoleTenants1['_id'], application['appId'], key.key, application['package'])" class="btn btn-primary btn-sm consoleKey">{{translation.addNewProductExternalKey[LANG]}}</button>
+						<button ng-click="addNewExtKey(consoleTenant['_id'], application['appId'], key.key, application['package'])" class="btn btn-primary btn-sm consoleKey">{{translation.addNewProductExternalKey[LANG]}}</button>
 					</div>
 				</span>
 				<br/>
@@ -38,12 +38,12 @@
 								<tr ng-repeat="extnlKey in key.extKeys" ng-class-even="'even'" ng-class-odd="'odd'" ng-class="{'first': $first, 'last': $last, selected:extnlKey.selected}">
 									
 									<td class="leftAction">
-										<a ng-if="access.tenant.externalKeys.update" ng-click="editExtKey(consoleTenants1['_id'], application['appId'], extnlKey, key.key)" href="">
+										<a ng-if="access.tenant.externalKeys.update" ng-click="editExtKey(consoleTenant['_id'], application['appId'], extnlKey, key.key)" href="">
 											<span class="icon icon-pencil2" tooltip="{{translation.editExternalKey[LANG]}}"></span>
 										</a>
 									</td>
 									<td class="leftAction">
-										<a ng-if="access.tenant.externalKeys.delete" ng-click="removeExtKey(consoleTenants1['_id'], application['appId'], extnlKey, key.key)" ng-confirm-click="{{translation.areYouSureWantRemoveExternalKey[LANG]}}" href="">
+										<a ng-if="access.tenant.externalKeys.delete" ng-click="removeExtKey(consoleTenant['_id'], application['appId'], extnlKey, key.key)" ng-confirm-click="{{translation.areYouSureWantRemoveExternalKey[LANG]}}" href="">
 											<span class="icon icon-cross" tooltip="{{translation.removeExternalKey[LANG]}}"></span>
 										</a>
 									</td>

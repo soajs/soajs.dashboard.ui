@@ -55,24 +55,24 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				}
 				if (service.src) {
 					if (service.src.repo === 'gcs' && service.src.owner === 'HerronTech') {
-						type = 'daas';
+						type = 'all';
 					} else if (service.src.repo === 'soajs.gcs') {
-						type = 'gcs';
+						type = 'all';
 					} else if (service.src.repo === 'soajs.epg') {
-						type = 'ep';
+						type = 'all';
 					} else if (service.src && service.src.owner === 'soajs') {
 						if (SOAJSRMS.indexOf(service.src.repo) !== -1) {
 							type = 'soajs';
 						} else {
-							type = 'services';
+							type = 'all';
 						}
 					} else {
-						type = 'services';
+						type = 'all';
 					}
 				} else if (service.group === "SOAJS Core Services") {
 					type = 'soajs';
 				} else {
-					type = 'services';
+					type = 'all';
 				}
 				if ($scope.favoriteTabs[type].length === 0) {
 					$scope.favoriteTabs[type].push({
@@ -118,24 +118,24 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				}
 				if (service.src) {
 					if (service.src.repo === 'gcs' && service.src.owner === 'HerronTech') {
-						type = 'daas';
+						type = 'all';
 					} else if (service.src.repo === 'soajs.gcs') {
-						type = 'gcs';
+						type = 'all';
 					} else if (service.src.repo === 'soajs.epg') {
-						type = 'ep';
+						type = 'all';
 					} else if (service.src && service.src.owner === 'soajs') {
 						if (SOAJSRMS.indexOf(service.src.repo) !== -1) {
 							type = 'soajs';
 						} else {
-							type = 'services';
+							type = 'all';
 						}
 					} else {
-						type = 'services';
+						type = 'all';
 					}
 				} else if (service.group === "SOAJS Core Services") {
 					type = 'soajs';
 				} else {
-					type = 'services';
+					type = 'all';
 				}
 				let found = false;
 				if ($scope.favoriteTabs[type]) {
@@ -220,44 +220,49 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 							"daas": [],
 							"ep": [],
 							"gcs": [],
-							"services": []
+							"services": [],
+							"all": []
 						};
 						$scope.favoriteTabs = {
 							"soajs": [],
-							"daas": [],
-							"ep": [],
-							"gcs": [],
-							"services": []
+							"all": []
 						};
 						$scope.paginations = {
 							"daas": {},
 							"ep": {},
 							"gcs": {},
 							"services": {},
-							"soajs": {}
+							"soajs": {},
+							"all": {}
 						};
 						response.records.forEach((oneRecord) => {
 							if (oneRecord.src) {
 								
 								if (oneRecord.src.repo === 'gcs' && oneRecord.src.owner === 'HerronTech') {
 									$scope.appendToGroup(oneRecord, 'daas');
+									$scope.appendToGroup(oneRecord, 'all');
 								} else if (oneRecord.src.repo === 'soajs.gcs') {
 									$scope.appendToGroup(oneRecord, 'gcs');
+									$scope.appendToGroup(oneRecord, 'all');
 								} else if (oneRecord.src.repo === 'soajs.epg') {
 									$scope.appendToGroup(oneRecord, 'ep');
+									$scope.appendToGroup(oneRecord, 'all');
 								} else if (oneRecord.src && oneRecord.src.owner === 'soajs') {
 									if (SOAJSRMS.indexOf(oneRecord.src.repo) !== -1) {
 										$scope.appendToGroup(oneRecord, 'soajs');
 									} else {
 										$scope.appendToGroup(oneRecord, 'services');
+										$scope.appendToGroup(oneRecord, 'all');
 									}
 								} else {
 									$scope.appendToGroup(oneRecord, 'services');
+									$scope.appendToGroup(oneRecord, 'all');
 								}
 							} else if (oneRecord.group === "SOAJS Core Services") {
 								$scope.appendToGroup(oneRecord, 'soajs');
 							} else {
 								$scope.appendToGroup(oneRecord, 'services');
+								$scope.appendToGroup(oneRecord, 'all');
 							}
 						});
 						$scope.envs = response.envs;
@@ -275,14 +280,17 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 		if (!oneRecord.group) {
 			group = "Gateway";
 		}
-		if (!$scope.paginations[type][group]) {
-			$scope.paginations[type][group] = {
-				currentPage: 1,
-				totalItems: 1
+		if ($scope.paginations[type]){
+			if (!$scope.paginations[type][group]) {
+				$scope.paginations[type][group] = {
+					currentPage: 1,
+					totalItems: 1
+				}
+			} else {
+				$scope.paginations[type][group].totalItems++;
 			}
-		} else {
-			$scope.paginations[type][group].totalItems++;
 		}
+		
 		if ($scope.tabs[type].length === 0) {
 			$scope.tabs[type].push({
 				group: group,
@@ -303,7 +311,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				});
 			}
 		}
-		if (oneRecord.favorite) {
+		if (oneRecord.favorite && $scope.favoriteTabs[type]) {
 			if ($scope.favoriteTabs[type].length === 0) {
 				$scope.favoriteTabs[type].push({
 					group: group,

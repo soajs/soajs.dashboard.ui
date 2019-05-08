@@ -1,0 +1,52 @@
+<div class="modal-header">
+	<h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body">
+	<div class="form">
+		<div ng-if="message.danger">
+			<alert type="danger">{{message.danger}}</alert>
+			<br>
+		</div>
+		<form name="inviteUser" id="gitConf" ng-submit="inviteUser.$valid && onSubmit()">
+			<div class="form-group">
+				<div class="c-both">
+					<label>Username: </label>
+					<input class="form-control" required=true type="text" ng-required="true" ng-disabled="true" ng-model="username"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<label>Email: </label>
+					<input class="form-control" required=true type="text" ng-required="true" ng-disabled="true" ng-model="email"/>
+				</div>
+				<br>
+				<fieldset>
+					<legend>Pin Configuration</legend>
+					<div class="c-both">
+						<label>Pin: </label>
+						<input class="form-control" required=false type="text" tooltip="Enter Pin" placeholder="Pin" ng-required="false" ng-value="pinCode" ng-model="formData.pinCode"/>
+					</div>
+					<br>
+					<div class="c-both">
+						<label>Check if this user is allowed to start Pin Code login: </label>
+						<label class="toggleSwitch"><input type="checkbox" ng-checked="allowedLogin" ng-model="formData.allowLogin"><span class="buttonSlider round"></span></label>
+					</div>
+				</fieldset>
+				<br>
+				<div class="c-both">
+					<label>Groups</label>
+					<ul>
+						<li ng-repeat="dv in groups" class="splitGroups">
+							<input type="radio" id="{{'group_'+$index}}" ng-model="formData.group" value="{{dv.v}}" ng-checked="dv.selected"/>
+							<span>{{dv.l || dv.v}}</span>
+						</li>
+					</ul>
+				</div>
+				<div class="c-both t-right">
+					<hr/>
+					<input type="submit" class="btn btn-primary" value="Submit"/>
+					<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

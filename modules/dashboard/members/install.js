@@ -5,6 +5,19 @@ var mtTranslation = {
 	"noMembersHaveBeenAddedYet": {
 		"ENG": "No Tenants have been added yet. Add a tenant to enable user management.",
 		"FRA": "No Tenants have been added yet. Add a tenant to enable user management."
+	},
+	
+	"noEnvironmentsHaveBeenAddedYet": {
+		"ENG": "No Environments have been added yet. Add a tenant to enable user management.",
+		"FRA": "No Environments have been added yet. Add a tenant to enable user management."
+	},
+	"pinConfiguration": {
+		"ENG": "Pin Configuration",
+		"FRA": "Pin Configuration"
+	},
+	"checkPinLogin": {
+		"ENG": "Check if this user is allowed to start pin code login",
+		"FRA": "check if this user is allowed to start pin code login"
 	}
 };
 

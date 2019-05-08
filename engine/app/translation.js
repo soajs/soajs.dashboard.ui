@@ -780,6 +780,10 @@ var translation = {
 		"ENG": "Delete",
 		"FRA": "Effacer"
 	},
+	"uninvite": {
+		"ENG": "Un-Invite",
+		"FRA": "Un-Invite"
+	},
 	"remove": {
 		"ENG": "Remove",
 		"FRA": "Remove"
@@ -929,6 +933,10 @@ var translation = {
 		"ENG": "Add New Member",
 		"FRA": "Ajouter New Member"
 	},
+	"inviteNewUser": {
+		"ENG": "Invite New User",
+		"FRA": "Invite New User"
+	},
 	"addNewGroup": {
 		"ENG": "Add New Group",
 		"FRA": "Ajouter New Group"
@@ -984,6 +992,10 @@ var translation = {
 	"areYouSureWantDeleteGroup": {
 		"ENG": "Are you sure you want to delete this group?",
 		"FRA": "Are you sure you want to delete this group?"
+	},
+	"areYouSureWantUnInvite": {
+		"ENG": "Are you sure you want to un-invite this user?",
+		"FRA": "Are you sure you want to un-invite this user?"
 	},
 	"addGroup": {
 		"ENG": "Add Group",
@@ -1049,6 +1061,14 @@ var translation = {
 	"memberAddedSuccessfully": {
 		"ENG": "Member Added Successfully",
 		"FRA": "Member Added Successfully"
+	},
+	"memberInvitedSuccessfully": {
+		"ENG": "Member Invited Successfully",
+		"FRA": "Member Invited Successfully"
+	},
+	"memberUnInvitedSuccessfully": {
+		"ENG": "Member Un-Invited Successfully",
+		"FRA": "Member Un-Invited Successfully"
 	},
 	"selectStatusUser": {
 		"ENG": "Select the status of the user",

@@ -27,6 +27,14 @@ var mtTranslation = {
 		"ENG": "Sub Tenant",
 		"FRA": "Sub Tenant"
 	},
+	"mainTenants": {
+		"ENG": "Main Tenants",
+		"FRA": "Main Tenants"
+	},
+	"subTenants": {
+		"ENG": "Sub Tenants",
+		"FRA": "Sub Tenants"
+	},
 	"manageSubTenants": {
 		"ENG": "Manage Sub Tenants",
 		"FRA": "Manage Sub Tenants"

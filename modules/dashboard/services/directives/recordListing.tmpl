@@ -41,6 +41,12 @@
 <div class="entryAction">
 </div>
 <div class="body grid" style="display:none;">
+	<br>
+	<div ng-if="service.description">
+		<em>description: {{service.description}}</em>
+		<br>
+		<br>
+	</div>
 	<tabset>
 		<tab ng-repeat="oneList in service.fixList" heading="Version {{oneList._ver}} {{(service.latest === oneList._ver)?'( Latest )':'' }}">
 			<br />

@@ -72,7 +72,9 @@
 								<span>&nbsp;</span>
 							</div>
 							<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
-								<div swagger-ui parser={{computeParser(swaggerUrl)}} url="swaggerUrl" loading="true" trusted-sources="true" api-explorer="true"></div>
+<!--
+	<div swagger-ui parser={{computeParser(swaggerUrl)}} url="swaggerUrl" loading="true" trusted-sources="true" api-explorer="true" explorerHeaders = ""></div>-->
+								<div swagger-ui parser={{computeParser(swaggerUrl)}} input-type={{computeParser(swaggerUrl)}}  input="schemaCodeF" trusted-sources="true" loading="true" api-explorer="true" permalinks="false"></div>
 							</div>
 						</div>
 					</div>

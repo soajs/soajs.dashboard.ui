@@ -4,34 +4,80 @@
 			<br>
 			<alert type="warning">{{translation.noMembersHaveBeenAddedYet[LANG]}}</alert>
 		</div>
-		<div ng-repeat="row in tenantsList" class="entryBox" ng-if="row.locked!==true">
-			<div class="header">
-				{{row['name']}}<span>[ {{row['code']}} ]</span>
-			</div>
-			<div class="body">
-				<tabset id="tenantsMembers">
-					<tab heading="Members">
-						<br/>
-
-						<div ng-controller="tenantMembersCtrl">
-                                <span ng-if="tenantMembers.access.adminUser.addUser" ng-init="tenantMembers.initialize(row)">
-                                    <a href="" ng-click="tenantMembers.addMember()" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
+		<div ng-if="tenantEnvironments.length === 0">
+			<br>
+			<alert type="warning">{{translation.noEnvironmentsHaveBeenAddedYet[LANG]}}</alert>
+		</div>
+		<br>
+		<div ng-show = "tenantEnvironments.length > 0 && tenantsList.length > 0">
+			<label>Select Environment: </label>
+			<select id="mainEnv" style="margin-left: 10px" ng-options="env.code as env.code for env in tenantEnvironments" tooltip="Select Environment" ng-model="env" ng-change="changeEnvPerTenant(env)">
+			</select>
+			<br>
+			<br>
+			<tabset class="tenantTab">
+				<tab heading="{{tenantTabs[0].label}}">
+					<div ng-repeat="row in mainTenants" class="entryBox membersEntry" ng-if="row.locked!==true">
+						<div class="header">
+							{{row['name']}}<span>[ {{row['code']}} ]</span>
+						</div>
+						<div class="body">
+							<tabset ng-if="env" id="mainTenantsMembers">
+								<tab heading="Members">
+									<br/>
+									
+									<div ng-controller="tenantMembersCtrl">
+                                <span ng-if="tenantMembers.access.adminUser.addUser" ng-init="tenantMembers.initialize(row, env)">
+                                    <a href="" ng-click="tenantMembers.addMember(env)" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
 	                                <br/><br/>
                                 </span>
-							<nglist></nglist>
-						</div>
-					</tab>
-					<tab heading="{{translation.groups[LANG]}}">
-						<br/>
-						<div ng-controller="tenantGroupsCtrl">
-                                <span ng-if="tenantGroups.access.adminGroup.add" ng-init="tenantGroups.initialize(row)">
-                                    <a href="" ng-click="tenantGroups.addGroup()" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
+										<nglist></nglist>
+									</div>
+								</tab>
+								<tab heading="{{translation.groups[LANG]}}">
+									<br/>
+									<div ng-controller="tenantGroupsCtrl">
+                                <span ng-if="tenantGroups.access.adminGroup.add" ng-init="tenantGroups.initialize(row, env)">
+                                    <a href="" ng-click="tenantGroups.addGroup(env)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
                                 </span>
-							<nglist></nglist>
+										<nglist></nglist>
+									</div>
+								</tab>
+							</tabset>
 						</div>
-					</tab>
-				</tabset>
-			</div>
+					</div>
+				</tab>
+				<tab heading="{{tenantTabs[1].label}}">
+					<div ng-repeat="row in subTenants" class="entryBox membersEntry" ng-if="row.locked!==true">
+						<div class="header">
+							{{row['name']}}<span>[ {{row['code']}} ]</span>
+						</div>
+						<div class="body">
+							<tabset ng-if="env" id="subTenantsMembers">
+								<tab heading="Members">
+									<br/>
+									<div ng-controller="tenantMembersCtrl">
+                                <span ng-if="tenantMembers.access.adminUser.inviteUser" ng-init="tenantMembers.initialize(row, env)">
+                                    <a href="" ng-click="tenantMembers.inviteUser()" class="btn btn-primary noFloat">{{translation.inviteNewUser[LANG]}}</a>
+	                                <br/><br/>
+                                </span>
+										<nglist></nglist>
+									</div>
+								</tab>
+								<tab heading="{{translation.groups[LANG]}}">
+									<br/>
+									<div ng-controller="tenantGroupsCtrl">
+                                <span ng-if="tenantGroups.access.adminGroup.add" ng-init="tenantGroups.initialize(row, env)">
+                                    <a href="" ng-click="tenantGroups.addGroup(env)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
+                                </span>
+										<nglist></nglist>
+									</div>
+								</tab>
+							</tabset>
+						</div>
+					</div>
+				</tab>
+			</tabset>
 		</div>
 	</div>
 </section>

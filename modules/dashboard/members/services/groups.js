@@ -26,7 +26,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		});
 	}
 	
-	function listGroups(currentScope, groupsConfig, callback) {
+	function listGroups(currentScope, groupsConfig, env, callback) {
 		var userCookie = currentScope.$parent.userCookie;
 		var tenantId = (callback) ? currentScope.tId : userCookie.tenant.id;
 		
@@ -36,10 +36,24 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				"routeName": "/urac/admin/group/list",
 				"params": {'tId': tenantId}
 			};
-			if (currentScope.key) {
-				opts.headers = {
-					"key": currentScope.key
+			if (env){
+				opts = {
+					"method": "get",
+					"routeName": "/proxy/redirect",
+					"params": {
+						'tId': tenantId,
+						'proxyRoute': '/urac/admin/group/list'
+					},
+					"headers": {
+						"__env": env
+					}
 				};
+			}
+			if (currentScope.key) {
+				if (!opts.headers){
+					opts.headers = {};
+				}
+				opts.headers.key = currentScope.key;
 			}
 			getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
 				if (error) {
@@ -112,7 +126,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		buildGrid(currentScope, options);
 	}
 	
-	function addGroup(currentScope, groupsConfig, useCookie) {
+	function addGroup(currentScope, groupsConfig, useCookie, env) {
 		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(groupsConfig.form);
 		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
@@ -294,10 +308,24 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"routeName": "/urac/admin/group/add",
 										"data": postData
 									};
+									if (env){
+										opts = {
+											"method": "post",
+											"routeName": "/proxy/redirect",
+											"params": {
+												'proxyRoute': '/urac/admin/group/add'
+											},
+											"data": postData,
+											"headers": {
+												"__env": env
+											}
+										};
+									}
 									if (currentScope.key) {
-										opts.headers = {
-											"key": currentScope.key
+										if (!opts.headers){
+											opts.headers = {};
 										}
+										opts.headers.key = currentScope.key;
 									}
 									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 										if (error) {
@@ -331,7 +359,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		
 	}
 	
-	function editGroup(currentScope, groupsConfig, data, useCookie) {
+	function editGroup(currentScope, groupsConfig, data, useCookie, env) {
 		var config = angular.copy(groupsConfig.form);
 		config.entries[0].type = 'readonly';
 		delete data.tenant;
@@ -428,10 +456,25 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"params": {"gId": data['_id']},
 										"data": postData
 									};
+									if (env){
+										opts = {
+											"method": "post",
+											"routeName": "/proxy/redirect",
+											"params": {
+												"gId": data['_id'],
+												'proxyRoute': '/urac/admin/group/edit'
+											},
+											"data": postData,
+											"headers": {
+												"__env": env
+											}
+										};
+									}
 									if (currentScope.key) {
-										opts.headers = {
-											"key": currentScope.key
+										if (!opts.headers){
+											opts.headers = {};
 										}
+										opts.headers.key = currentScope.key;
 									}
 									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 										if (error) {
@@ -537,10 +580,25 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"params": {"gId": data['_id']},
 										"data": postData
 									};
+									if (env){
+										opts = {
+											"method": "post",
+											"routeName": "/proxy/redirect",
+											"params": {
+												"gId": data['_id'],
+												'proxyRoute': '/urac/admin/group/edit'
+											},
+											"data": postData,
+											"headers": {
+												"__env": env
+											}
+										};
+									}
 									if (currentScope.key) {
-										opts.headers = {
-											"key": currentScope.key
+										if (!opts.headers){
+											opts.headers = {};
 										}
+										opts.headers.key = currentScope.key;
 									}
 									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 										if (error) {
@@ -574,7 +632,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 
 	}
 
-	function deleteGroups(currentScope) {
+	function deleteGroups(currentScope, env) {
 		var config = {
 			"method": "delete",
 			'routeName': "/urac/admin/group/delete",
@@ -587,13 +645,30 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				'success': translation.successMessageDeleteGroup[LANG]
 			}
 		};
-		
+		if (env){
+			config = {
+				"method": "delete",
+				"routeName": "/proxy/redirect",
+				"params": {
+					'gId': '%id%',
+					'proxyRoute': '/urac/admin/group/delete'
+				},
+				"headers": {
+					"__env": env,
+					"key": currentScope.key
+				},
+				'msg': {
+					'error': translation.errorMessageDeleteGroup[LANG],
+					'success': translation.successMessageDeleteGroup[LANG]
+				}
+			};
+		}
 		multiRecordUpdate(ngDataApi, currentScope, config, function () {
 			currentScope.listGroups();
 		});
 	}
 	
-	function delete1Group(currentScope, data, useCookie) {
+	function delete1Group(currentScope, data, useCookie, env) {
 		var userCookie = currentScope.$parent.userCookie;
 		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
 		var opts = {
@@ -604,10 +679,25 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				'tId': tenantId
 			}
 		};
+		if (env){
+			opts = {
+				"method": "delete",
+				"routeName": "/proxy/redirect",
+				"params": {
+					'gId': data._id,
+					'tId': tenantId,
+					'proxyRoute': '/urac/admin/group/delete'
+				},
+				"headers": {
+					"__env": env,
+				}
+			};
+		}
 		if (currentScope.key) {
-			opts.headers = {
-				"key": currentScope.key
+			if (!opts.headers){
+				opts.headers = {};
 			}
+			opts.headers.key = currentScope.key
 		}
 		getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 			if (error) {

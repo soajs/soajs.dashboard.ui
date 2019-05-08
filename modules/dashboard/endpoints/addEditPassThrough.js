@@ -119,6 +119,9 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								};
 								if (result.downloadLink) {
 									currentScope.swaggerUrl = result.downloadLink;
+									currentScope.schemaCodeF = result.content;
+									currentScope.schemaCode = result.content;
+									$scope.schemaCode = result.content;
 								}
 								return cb(null, data);
 							}
@@ -682,7 +685,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 			params = {
 				accountId: $localStorage.addPassThrough.step1.versions[v].soaVersion.git.gitId,
 				repo: $localStorage.addPassThrough.step1.versions[v].soaVersion.git.repo,
-				filepath: 'soa.json',
+				filepath: '/soa.json',
 				owner: $localStorage.addPassThrough.step1.versions[v].soaVersion.git.owner,
 				branch: $localStorage.addPassThrough.step1.versions[v].soaVersion.git.branch
 			}
@@ -695,7 +698,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				params = {
 					accountId: $localStorage.addPassThrough.step1.soa.git.gitId,
 					repo: $localStorage.addPassThrough.step1.soa.git.repo,
-					filepath: 'soa.json',
+					filepath: '/soa.json',
 					owner: $localStorage.addPassThrough.step1.soa.git.owner,
 					branch: $localStorage.addPassThrough.step1.soa.git.branch
 				}
@@ -1029,7 +1032,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 									params: {
 										accountId: $localStorage.addPassThrough.step1.versions[version].soaVersion.git.gitId,
 										repo: $localStorage.addPassThrough.step1.versions[version].soaVersion.git.repo,
-										filepath: 'soa.json',
+										filepath: '/soa.json',
 										owner: $localStorage.addPassThrough.step1.versions[version].soaVersion.git.owner,
 										branch: formData.branch
 									}
@@ -1330,6 +1333,9 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		if (data) {
 			return (data.indexOf(".json") === -1) ? 'yaml' : 'json';
 		}
+		else {
+			return 'yaml';
+		}
 	};
 	
 	$scope.getGitInfo = function (gitId) {
@@ -1380,6 +1386,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	// This function will take the yaml as a string and pass it to the simulator that will generate the APIs documentation
 	$scope.moveYamlRight = function () {
 		$scope.schemaCodeF = $scope.schemaCode;
+		$scope.editor.setValue($scope.schemaCodeF);
 		watchSwaggerSimulator(function () {
 			console.log("swagger ui info has been updated");
 		});

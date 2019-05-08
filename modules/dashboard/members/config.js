@@ -72,7 +72,10 @@ var membersConfig = {
 			'changeStatusAccess': ['urac', '/admin/changeUserStatus', 'get'],
 			'editUser': ['urac', '/admin/editUser', 'post'],
 			'editUserConfig': ['urac', '/admin/editUserConfig', 'post'],
-			'addUser': ['urac', '/admin/addUser', 'post']
+			'addUser': ['urac', '/admin/addUser', 'post'],
+			'inviteUser':  ['urac', '/admin/inviteUser', 'post'],
+			'unInviteUser':  ['urac', '/admin/unInviteUser', 'put'],
+			'editUserTenantConfig':  ['urac', '/admin/userTenantConfig', 'put'],
 		},
 		'adminGroup': {
 			'list': ['urac', '/admin/group/list', 'get'],

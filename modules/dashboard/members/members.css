@@ -1,0 +1,12 @@
+div#allowedEnvironments-wrapper li {
+    float: left;
+    width: 33%;
+}
+.membersEntry {
+    margin-top: 12px;
+}
+
+.splitGroups {
+    float: left;
+    width: 33%;
+}

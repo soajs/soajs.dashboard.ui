@@ -499,6 +499,17 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	};
 	
 	$scope.update_oAuth = function (data) {
+		let products = [];
+		if (data.applications && data.applications.length > 0){
+			data.applications.forEach((oneApp)=>{
+				if (oneApp.product){
+					products.push({l:oneApp.product, v: oneApp.product });
+				}
+			});
+		}
+		if (data.type  === 'client'){
+			products = $scope.availableProducts;
+		}
 		var formConfig = angular.copy(tenantConfig.form.updateOauth);
 		formConfig.timeout = $timeout;
 		
@@ -517,7 +528,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'name': 'pin',
 					'label': translation.pin[LANG],
 					'type': 'checkbox',
-					'value': $scope.availableProducts,
+					'value': products,
 					'required': false,
 					'labelMsg': 'Pin login is available when oAuth User Authentication Type is "client to server". Kindly select what product from the list below to turn on pin login for:',
 				});
@@ -552,7 +563,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					form.entries.splice(4, 1);
 				}
 				form.entries.splice(3, 1);
-				
 			}
 		};
 		
@@ -588,7 +598,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				'name': 'pin',
 				'label': translation.pin[LANG],
 				'type': 'checkbox',
-				'value': $scope.availableProducts,
+				'value': products,
 				'required': false,
 				'labelMsg': 'Pin login is available when oAuth User Authentication Type is "client to server". Kindly select what product from the list below to turn on pin login for:',
 			});
@@ -612,7 +622,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				"<p>Be advised that when turning ON and OFF or modifying the oAuth Security of a tenant, all the keys configuration for all the applications belonging to this tenant will be modified based on the option you select. <a href='https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/61979922/Multitenancy#Multitenancy-oauth' target='_blank'>Learn More</a></p>" +
 				"</div>"
 		});
-		
 		var options = {
 			timeout: $timeout,
 			form: formConfig,
@@ -836,12 +845,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	};
 	
 	$scope.addSubTenant = function (tenant) {
-		console.log(tenant);
-		
 		var formConfig = angular.copy(tenantConfig.form.tenantAdd);
 		formConfig.entries.unshift({
 			'name': 'mainTenant',
-			'label': 'Main Name',
+			'label': 'Main Tenant',
 			'type': 'text',
 			'value': tenant.code,
 			'required': false,
@@ -914,7 +921,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'console': true,
 							'subTenant': tenant._id
 						};
-						console.log(postData);
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
 							"routeName": "/dashboard/tenant/add",
@@ -1086,7 +1092,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						var postData = {
 							'userId': formData.userId
 						};
-						if (formData.password && formData.password != '') {
+						if (formData.password && formData.password !== '') {
 							if (formData.password !== formData.confirmPassword) {
 								$scope.form.displayAlert('danger', translation.passwordConfirmFieldsNotMatch[LANG]);
 								return;

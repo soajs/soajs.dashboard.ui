@@ -25,8 +25,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				$scope.tags = [];
 				$scope.programs = [];
 				$scope.attributes = {};
-				if (response.tags && response.tags.length > 0){
-					response.tags.forEach((one)=>{
+				
+				if (response.tags && response.tags.length > 0) {
+					response.tags.forEach((one) => {
 						let temp = {
 							l: one,
 							v: one
@@ -34,9 +35,8 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 						$scope.tags.push(temp)
 					});
 				}
-				
-				if (response.programs && response.programs.length > 0){
-					response.programs.forEach((one)=>{
+				if (response.programs && response.programs.length > 0) {
+					response.programs.forEach((one) => {
 						let temp = {
 							l: one,
 							v: one
@@ -44,11 +44,11 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 						$scope.programs.push(temp)
 					});
 				}
-				if (response.attributes && Object.keys(response.attributes).length > 0 ){
-					for (let att in response.attributes){
-						if (response.attributes[att] && response.attributes[att].length > 0){
+				if (response.attributes && Object.keys(response.attributes).length > 0) {
+					for (let att in response.attributes) {
+						if (response.attributes[att] && response.attributes[att].length > 0) {
 							$scope.attributes[att] = [];
-							response.attributes[att].forEach((one)=>{
+							response.attributes[att].forEach((one) => {
 								let temp = {
 									l: one,
 									v: one
@@ -58,6 +58,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 						}
 					}
 				}
+				
 				let data = {
 					bar: {
 						//1
@@ -100,18 +101,19 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 								noSGD = oneProgram.groups.length;
 								oneProgram.groups.forEach((oneGroup) => {
 									let noGD = 0;
-									
-									if (data.bar.serviceGroups.labels.indexOf(oneGroup.name) === -1){
+									let index = data.bar.serviceGroups.labels.indexOf(oneGroup.name)
+									if (index === -1) {
 										data.bar.serviceGroups.labels.push(oneGroup.name);
 									}
+							
 									if (oneGroup.services.length > 0) {
 										oneGroup.services.forEach((service) => {
-											if (services.indexOf(service.name) === -1){
+											if (services.indexOf(service.name) === -1) {
 												services.push(service.name);
 												$scope.services.push({
-													program : oneProgram.name,
-													serviceGroups : oneGroup.name,
-													serviceName : service.name,
+													program: oneProgram.name,
+													serviceGroups: oneGroup.name,
+													serviceName: service.name,
 													APIs: service.APIs,
 													versions: service.versions
 												});
@@ -135,7 +137,12 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 											}
 										});
 									}
-									data.bar.serviceGroups.data.push(noGD)
+									if (index === -1){
+										data.bar.serviceGroups.data.push(noGD)
+									}
+									else {
+										data.bar.serviceGroups.data[index] = data.bar.serviceGroups.data[index] + noGD
+									}
 								});
 							}
 							data.pie.programs.data.push(noPD);
@@ -154,8 +161,8 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	$scope.submit = function () {
 		
 		let opts = {};
-		if ($scope.form && Object.keys($scope.form).length > 0){
-			for (let key in $scope.form){
+		if ($scope.form && Object.keys($scope.form).length > 0) {
+			for (let key in $scope.form) {
 				if ($scope.form[key].length > 0) {
 					if (key === "tags" || key === "programs") {
 						opts[key] = $scope.form[key];
@@ -226,17 +233,18 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 								oneProgram.groups.forEach((oneGroup) => {
 									let noGD = 0;
 									
-									if (data.bar.serviceGroups.labels.indexOf(oneGroup.name) === -1){
+									let index = data.bar.serviceGroups.labels.indexOf(oneGroup.name)
+									if (index === -1) {
 										data.bar.serviceGroups.labels.push(oneGroup.name);
 									}
 									if (oneGroup.services.length > 0) {
 										oneGroup.services.forEach((service) => {
-											if (services.indexOf(service.name) === -1){
+											if (services.indexOf(service.name) === -1) {
 												services.push(service.name);
 												$scope.services.push({
-													program : oneProgram.name,
-													serviceGroups : oneGroup.name,
-													serviceName : service.name,
+													program: oneProgram.name,
+													serviceGroups: oneGroup.name,
+													serviceName: service.name,
 													APIs: service.APIs,
 													versions: service.versions
 												});
@@ -260,7 +268,12 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 											}
 										});
 									}
-									data.bar.serviceGroups.data.push(noGD)
+									if (index === -1){
+										data.bar.serviceGroups.data.push(noGD)
+									}
+									else {
+										data.bar.serviceGroups.data[index] = data.bar.serviceGroups.data[index] + noGD
+									}
 								});
 							}
 							data.pie.programs.data.push(noPD);
@@ -280,16 +293,15 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		
 		if ($scope.form[fieldName].indexOf(value) === -1) {
 			$scope.form[fieldName].push(value);
-		}
-		else {
+		} else {
 			let idx = $scope.form[fieldName].indexOf(value);
 			$scope.form[fieldName].splice(idx, 1);
 		}
 	};
-		// $scope.onClick = function (points, evt) {
+	// $scope.onClick = function (points, evt) {
 	// 	console.log(points, evt);
 	// };
-	
+
 
 // Start here
 	if ($scope.access.get) {

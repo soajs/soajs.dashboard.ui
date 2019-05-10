@@ -1,0 +1,33 @@
+.leftTab {
+    border-right: 1px solid #ccc;
+}
+
+.input90 {
+    width: 90%
+}
+
+.updateButton {
+    float: right;
+    width: 50%;
+}
+
+.blueColor {
+    color: #3279B6;
+}
+
+.scrollableDiv {
+    max-height: 160px;
+    overflow-y: scroll;
+}
+
+.listing {
+    text-align: center;
+    padding: 10px;
+}
+
+.labelLength {
+    width : 80%
+}
+.inputLength {
+    width : 20%
+}

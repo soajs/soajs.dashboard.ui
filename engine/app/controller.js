@@ -93,6 +93,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.navigation = [];
 		$scope.pillar = null;
 		$scope.enableInterface = false;
+		$scope.enableLeftInterface = true;
 		$scope.go = function (path) {
 			if(path === '/dashboard') {
 				// reset left menu items and seleted pillar when redirecting to home page
@@ -200,6 +201,15 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.leftMenu.environments = [];
 		
 		$scope.collapseMainMenu = false;
+		
+		$scope.hideMainMenu = function (forcedFlag) {
+			if (arguments.length > 0) {
+				$scope.enableLeftInterface = forcedFlag;
+			}
+			else {
+				$scope.enableLeftInterface = !$scope.enableLeftInterface;
+			}
+		};
 		
 		$scope.collapseExpandMainMenu = function (forcedFlag) {
 			if (arguments.length > 0) {
@@ -674,6 +684,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			var user = $localStorage.soajs_user;
 			if (user) {
 				$scope.enableInterface = true;
+				$scope.enableLeftInterface = true;
 				$scope.userFirstName = user.firstName;
 				$scope.userLastName = user.lastName;
 			}
@@ -796,6 +807,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			if ($cookies.get('access_token', {'domain': interfaceDomain}) && $cookies.get('soajs_username', {'domain': interfaceDomain})) {
 				if ($localStorage.soajs_user) {
 					$scope.enableInterface = true;
+					$scope.enableLeftInterface = true;
 					$scope.$emit('refreshWelcome', {});
 				}
 			}
@@ -820,6 +832,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 										$timeout(function () {
 											overlayLoading.hide();
 											$scope.enableInterface = true;
+											$scope.enableLeftInterface = true;
 											window.location.reload();
 										}, 700);
 									} else {
@@ -840,6 +853,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					$timeout(function () {
 						$scope.rebuildMenus(() => {
 							$scope.enableInterface = true;
+							$scope.enableLeftInterface = true;
 							$scope.$emit('refreshWelcome', {});
 							overlayLoading.hide();
 						});

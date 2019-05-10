@@ -1,0 +1,128 @@
+<section ng-controller="dashboardAppCtrl" class="dashboardAppCtrl">
+	<div clas="row">
+		<div class="col-md-2" class="leftTab">
+			<fieldset>
+				<div>
+					<label class="blueColor">Service Name:</label>
+					<input type="text" class="input90" ng-model="form.serviceName"/>
+					<br>
+					<label class="blueColor">Service Group:</label>
+					<input type="text" class="input90" ng-model="form.serviceGroup"/>
+				</div>
+				<hr>
+				<div>
+					<label class="blueColor">Tags:</label>
+					<div class="scrollableDiv">
+						<div ng-repeat="dv in tags">
+							<div class="labelLength f-left">
+								<span>{{dv.l}} </span>
+							</div>
+							<div class="inputLength f-right">
+								<input type="checkbox" ng-checked="dv.selected" ng-click="toggleSelection('tags', dv.v)">
+							</div>
+							<br>
+						</div>
+					</div>
+				</div>
+				<hr>
+				<div>
+					<label class="blueColor">Programs:</label>
+					<div class="scrollableDiv">
+						<div ng-repeat="dv in programs">
+							<div class="labelLength f-left">
+								<span>{{dv.l}} </span>
+							</div>
+							<div class="inputLength f-right">
+								<input type="checkbox" ng-checked="dv.selected" ng-click="toggleSelection('programs', dv.v)">
+							</div>
+							<br>
+						</div>
+					</div>
+				</div>
+				<hr>
+				<fieldset>
+					<legend>Attributes</legend>
+					<div ng-repeat="(key, value) in attributes">
+						<label class="blueColor">{{key}}:</label>
+						<div class="scrollableDiv">
+							<div ng-repeat="dv in value">
+								<div class="labelLength f-left">
+									<span>{{dv.l}} </span>
+								</div>
+								<div class="inputLength f-right">
+									<input type="checkbox" ng-checked="dv.selected" ng-click="toggleSelection(key, dv.v)">
+								</div>
+								<br>
+							</div>
+						</div>
+						<hr>
+					</div>
+				</fieldset>
+				<button class="btn btn-primary updateButton" ng-click="submit()">Update</button>
+			</fieldset>
+		</div>
+		<div class="col-md-10">
+			<div class="row">
+				<div class="col-md-6">
+					<canvas class="chart chart-doughnut" chart-data="data.pie.programs.data" chart-options="data.pie.programs.options" chart-colors="colors" chart-labels="data.pie.programs.labels"></canvas>
+				</div>
+				<div class="col-md-6">
+					<canvas class="chart chart-pie" chart-data="data.pie.methods.data" chart-colors="colors" chart-options="data.pie.methods.options" chart-labels="data.pie.methods.labels"></canvas>
+				
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<hr class="col-md-12">
+			</div>
+			<div class="row">
+				<div class="col-md-16">
+					<canvas class="chart chart-bar" chart-data="data.bar.serviceGroups.data" chart-colors="colors" chart-labels="data.bar.serviceGroups.labels"></canvas>
+				</div>
+			</div>
+			<div class="row">
+				<hr class="col-md-12">
+			</div>
+			<div class="row">
+				<table style="width: 100%">
+					<tr>
+						<th class="listing">
+							<legend>Service Name</legend>
+						</th>
+						<th class="listing">
+							<legend>Service Group</legend>
+						</th>
+						<th class="listing">
+							<legend>Program</legend>
+						</th>
+						<th class="listing">
+							<legend># of APIS</legend>
+						</th>
+						<th class="listing">
+							<legend># of Versions</legend>
+						</th>
+					</tr>
+					<tr ng-repeat="service in services">
+						<td class="listing">
+							{{service.serviceName}}
+						</td>
+						<td class="listing">
+							{{service.serviceGroups}}
+						</td>
+						<td class="listing">
+							{{service.program}}
+						</td>
+						<td class="listing">
+							{{service.APIs}}
+						</td>
+						<td class="listing">
+							{{service.versions}}
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	</div>
+
+</section>

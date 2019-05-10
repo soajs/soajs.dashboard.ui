@@ -81,6 +81,11 @@ var modules = {
 			secrets: 'modules/dashboard/secrets/install.js'
 		}
 	},
+	"dashboard": {
+		"dashboard": {
+			dashboard: 'modules/dashboard/analyticDashboard/install.js',
+		}
+	},
 	"common": {
 		"dashboard": {
 			myAccount: 'modules/dashboard/myAccount/install.js'

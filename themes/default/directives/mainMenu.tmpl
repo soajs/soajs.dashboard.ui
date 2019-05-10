@@ -1,4 +1,4 @@
-<div id="mainMenu" ng-show="enableInterface" ng-class="(collapseMainMenu)? 'mainMenu2' : 'mainMenu' ">
+<div id="mainMenu" ng-show="enableInterface && enableLeftInterface" ng-class="(collapseMainMenu)? 'mainMenu2' : 'mainMenu' ">
 	<div ng-show="leftMenu.environments && leftMenu.environments.length > 0 && !collapseMainMenu" class="environmentsMenu">
 		<div class="btn-group w100" dropdown>
 			<button id="split-button" type="button" class="btn btn-danger t-left" style="width:83%">{{currentSelectedEnvironment}}</button>

@@ -150,26 +150,26 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	};
 	
 	$scope.colors = ["rgb(159,204,0)", "rgb(250,109,33)", "rgb(154,154,154)", "rgb(222,251,241)"];
-	
+	$scope.form = {};
 	$scope.submit = function () {
 		
 		let opts = {};
 		if ($scope.form && Object.keys($scope.form).length > 0){
 			for (let key in $scope.form){
-				if (key === "tags" || key === "programs"){
-					opts[key] = $scope.form[key];
-				}
-				else if (key === "serviceGroup" || key === "serviceName"){
-					if (!opts.keywords){
-						opts.keywords = {}
+				if ($scope.form[key].length > 0) {
+					if (key === "tags" || key === "programs") {
+						opts[key] = $scope.form[key];
+					} else if (key === "serviceGroup" || key === "serviceName") {
+						if (!opts.keywords) {
+							opts.keywords = {}
+						}
+						opts.keywords[key] = $scope.form[key];
+					} else {
+						if (!opts.attributes) {
+							opts.attributes = {}
+						}
+						opts.attributes[key] = $scope.form[key];
 					}
-					opts.keywords[key] = $scope.form[key];
-				}
-				else {
-					if (!opts.attributes){
-						opts.attributes = {}
-					}
-					opts.attributes[key] = $scope.form[key];
 				}
 			}
 		}
@@ -183,7 +183,6 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				$scope.form = {};
 				let data = {
 					bar: {
 						//1

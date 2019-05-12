@@ -31,3 +31,16 @@
 .inputLength {
     width : 20%
 }
+
+.pieTitle {
+    text-align: center;
+    width: 100%;
+    text-decoration: underline;
+}
+
+.barTitle {
+    text-align: center;
+    width: 100%;
+    font-size: 17px;
+    text-decoration: underline;
+}

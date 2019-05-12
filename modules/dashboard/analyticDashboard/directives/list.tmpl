@@ -1,6 +1,6 @@
 <section ng-controller="dashboardAppCtrl" class="dashboardAppCtrl">
 	<tabset>
-		<tab heading = "API Catalog">
+		<tab heading="API Catalog">
 			<br>
 			<div clas="row">
 				<div class="col-md-2" class="leftTab">
@@ -67,6 +67,18 @@
 				<div class="col-md-10">
 					<div class="row">
 						<div class="col-md-6">
+							<Label class="pieTitle">
+								Programs Chart
+							</Label>
+						</div>
+						<div class="col-md-6">
+							<Label class="pieTitle">
+								API Methods Chart
+							</Label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
 							<canvas class="chart chart-doughnut" chart-data="data.pie.programs.data" chart-options="data.pie.programs.options" chart-colors="colors" chart-labels="data.pie.programs.labels"></canvas>
 						</div>
 						<div class="col-md-6">
@@ -80,7 +92,17 @@
 					</div>
 					<div class="row">
 						<div class="col-md-16">
-							<canvas class="chart chart-bar" chart-data="data.bar.serviceGroups.data" chart-colors="colors" chart-labels="data.bar.serviceGroups.labels"></canvas>
+							<Label class="barTitle">
+								Service Groups Chart
+							</Label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-16">
+<!--							<label class="barTitle">-->
+<!--								Services Group Chart-->
+<!--							</label>-->
+							<canvas class="chart chart-bar" chart-data="data.bar.serviceGroups.data" chart-colors="colors" chart-options="data.bar.methods.options" chart-labels="data.bar.serviceGroups.labels"></canvas>
 						</div>
 					</div>
 					<div class="row">
@@ -129,6 +151,6 @@
 			</div>
 		</tab>
 	</tabset>
-	
+
 
 </section>

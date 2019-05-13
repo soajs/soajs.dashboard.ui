@@ -250,6 +250,14 @@
 													{{translation.refreshTokenLifetime[LANG]}} </label>
 												<input type="number" ng-required="true" tooltip="" placeholder="1209600" ng-model="formEnvironment.services.config.oauth.refreshTokenLifetime" class="form-control"/><br/>
 												<em>{{translation.refreshTokenLifetimeNote[LANG]}}</em>
+												<br/>
+												<label><span class="icon icon-arrow-right2"></span>
+													{{translation.getUserFromToken[LANG]}} </label>
+												<input ng-required="true" type="radio" ng-model="formEnvironment.services.config.oauth.getUserFromToken" data-ng-value="true"/>
+												{{translation.true[LANG]}}
+												<input ng-required="true"  type="radio" ng-model="formEnvironment.services.config.oauth.getUserFromToken" data-ng-value="false"/>
+												{{translation.false[LANG]}}
+												<br/><em>{{translation.getUserFromToken[LANG]}}</em>
 											</div>
 										</tab>
 										<tab heading="Ports">

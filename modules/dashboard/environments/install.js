@@ -806,6 +806,11 @@ var envTranslation = {
 		"ENG": "Refresh Token Lifetime in seconds. Default is 14 days.",
 		"FRA": "Refresh Token Lifetime in seconds. Default is 14 days."
 	},
+	
+	"getUserFromToken": {
+		"ENG": "Get User Information from token",
+		"FRA": "Get User Information from token"
+	},
 
 	"enterCommaSeparatedValues": {
 		"ENG": "Enter comma separated values",

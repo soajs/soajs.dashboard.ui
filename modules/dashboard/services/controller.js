@@ -58,7 +58,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						type = 'all';
 					} else if (service.src.repo === 'soajs.gcs') {
 						type = 'all';
-					} else if (service.src.repo === 'soajs.epg') {
+					} else if (service.epId) {
 						type = 'all';
 					} else if (service.src && service.src.owner === 'soajs') {
 						if (SOAJSRMS.indexOf(service.src.repo) !== -1) {
@@ -121,7 +121,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						type = 'all';
 					} else if (service.src.repo === 'soajs.gcs') {
 						type = 'all';
-					} else if (service.src.repo === 'soajs.epg') {
+					} else if (service.epId) {
 						type = 'all';
 					} else if (service.src && service.src.owner === 'soajs') {
 						if (SOAJSRMS.indexOf(service.src.repo) !== -1) {
@@ -219,6 +219,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 							"soajs": [],
 							"daas": [],
 							"ep": [],
+							"passThrough": [],
 							"gcs": [],
 							"services": [],
 							"all": []
@@ -230,6 +231,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 						$scope.paginations = {
 							"daas": {},
 							"ep": {},
+							"passThrough": {},
 							"gcs": {},
 							"services": {},
 							"soajs": {},
@@ -244,8 +246,13 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 								} else if (oneRecord.src.repo === 'soajs.gcs') {
 									$scope.appendToGroup(oneRecord, 'gcs');
 									$scope.appendToGroup(oneRecord, 'all');
-								} else if (oneRecord.src.repo === 'soajs.epg') {
-									$scope.appendToGroup(oneRecord, 'ep');
+								} else if (oneRecord.epId) {
+									if (oneRecord.src.repo === 'soajs.epg') {
+										$scope.appendToGroup(oneRecord, 'ep');
+									}
+									else {
+										$scope.appendToGroup(oneRecord, 'passThrough');
+									}
 									$scope.appendToGroup(oneRecord, 'all');
 								} else if (oneRecord.src && oneRecord.src.owner === 'soajs') {
 									if (SOAJSRMS.indexOf(oneRecord.src.repo) !== -1) {
@@ -280,7 +287,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 		if (!oneRecord.group) {
 			group = "Gateway";
 		}
-		if ($scope.paginations[type]){
+		if ($scope.paginations[type]) {
 			if (!$scope.paginations[type][group]) {
 				$scope.paginations[type][group] = {
 					currentPage: 1,
@@ -518,7 +525,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				$scope.serviceProvider = response.records[0].src.provider;
 				if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
 					$scope.epId = response.records[0].epId;
-					if ($scope.serviceProvider !== 'endpoint'){
+					if ($scope.serviceProvider !== 'endpoint') {
 						$scope.environmentTesting = true;
 						$scope.passThrough = true;
 					}
@@ -534,7 +541,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 		});
 	};
 	
-	$scope.selectType = function(value){
+	$scope.selectType = function (value) {
 		$scope.environmentTesting = value;
 	};
 	/*
@@ -608,7 +615,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 		
 	};
 	
-	$scope.run = function(){
+	$scope.run = function () {
 		fillmyEditor($scope.editor);
 	};
 	
@@ -627,11 +634,10 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 		$scope.getYaml(function (done) {
 			if (done) {
 				_editor.setValue($scope.yamlContent);
-			}
-			else {
+			} else {
 				_editor.setValue("");
 			}
-
+			
 			_editor.scrollToLine(0, true, true);
 			_editor.scrollPageUp();
 			_editor.clearSelection();
@@ -651,7 +657,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 			}, 400);
 		} else {
 			//modify the host value with the new domain
-			if ($scope.environmentTesting && $scope.environments.value !== '---Please choose---' ) {
+			if ($scope.environmentTesting && $scope.environments.value !== '---Please choose---') {
 				x[3].host = $scope.envDomain;
 				x[3].info.host = $scope.envDomain;
 				x[3].info.scheme = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
@@ -697,8 +703,8 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 					//apply the changes
 					swaggerParser.execute.apply(null, x);
 				}
-			} else if (!$scope.environmentTesting){
-				if ($scope.url){
+			} else if (!$scope.environmentTesting) {
+				if ($scope.url) {
 					x[3].host = $scope.url.replace(/^(http|https):\/\//, "");
 					x[3].info.host = $scope.url.replace(/^(http|https):\/\//, "");
 					x[3].info.scheme = ($scope.url.indexOf("https://") !== -1) ? "https" : "http";
@@ -730,8 +736,8 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					return cb(false);
 				} else {
-					if ($scope.serviceProvider === 'endpoint' ){
-						if(response && response.src){
+					if ($scope.serviceProvider === 'endpoint') {
+						if (response && response.src) {
 							if (response.src.swagger && response.src.swagger.length > 0) {
 								for (let i = 0; i < response.src.swagger.length; i++) {
 									if (response.src.swagger[i].version === $scope.selectedVersion) {
@@ -739,12 +745,11 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 									}
 								}
 							}
-							if (response.src.url){
+							if (response.src.url) {
 								$scope.url = response.src.url;
 							}
 						}
-					}
-					else {
+					} else {
 						$scope.yamlContent = response.swaggerInput;
 					}
 					$scope.isLoading = false;

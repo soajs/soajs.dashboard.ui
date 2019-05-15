@@ -117,7 +117,27 @@
 							</div>
 						</fieldset>
 					</div>
-				
+				</tab>
+				<tab heading="Pass Through Endpoints" ng-show="tabs.passThrough.length > 0">
+					<br/>
+					<div id="s_passThrough_{{group._id}}" ng-repeat="groupService in tabs.passThrough">
+						<input type="text" class="form-control apiCatalog-search" ng-model="searchKeyword" placeholder="Search ..."/>
+						<fieldset class="custom-fieldset w100" ng-show="tabs.passThrough">
+							<legend>{{groupService.group}}</legend>
+							<div class="entryBoxes">
+								<div id="s_{{service._id}}" ng-repeat="service in groupService.services.slice(((paginations['passThrough'][groupService.group].currentPage-1)*itemsPerPage), ((paginations['passThrough'][groupService.group].currentPage)*itemsPerPage)) | reposSearchFilter:searchKeyword" class="entryBox" ng-init="service.hide = true;">
+									<div ng-include="'modules/dashboard/services/directives/recordListing.tmpl'"></div>
+								</div>
+								<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+									<tr>
+										<td align="right">
+											<pagination total-items="paginations['passThrough'][groupService.group].totalItems" ng-model="paginations['passThrough'][groupService.group].currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</fieldset>
+					</div>
 				</tab>
 				<tab heading="GCS" ng-show="tabs.gcs.length > 0">
 					<br/>

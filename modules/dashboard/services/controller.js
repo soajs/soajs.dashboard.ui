@@ -336,17 +336,11 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	};
 	
 	$scope.sortByDescending = function (versions) {
-		function compareNumbers(a, b) {
-			return b - a;
-		}
-		
 		var keys = Object.keys(versions);
 		var keysInt = [];
 		keys.forEach(function (key) {
-			keysInt.push(parseFloat(key));
+			keysInt.push(key);
 		});
-		// sort in descending order
-		keysInt = keysInt.sort(compareNumbers);
 		return keysInt
 	};
 	

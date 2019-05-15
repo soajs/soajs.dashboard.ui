@@ -7,7 +7,6 @@ secretsApp.service('endpointService', ['ngDataApi', '$timeout', '$window', funct
 		data.serviceName = soa.serviceName;
 		data.serviceGroup = soa.serviceGroup;
 		data.servicePort = soa.servicePort;
-		
 		if (soa.maintenance && soa.maintenance.port && soa.maintenance.readiness) {
 			data.port = soa.maintenance.port.value;
 			data.readiness = soa.maintenance.readiness;
@@ -18,6 +17,25 @@ secretsApp.service('endpointService', ['ngDataApi', '$timeout', '$window', funct
 		}
 		if (soa.requestTimeoutRenewal) {
 			data.requestTimeoutRenewal = soa.requestTimeoutRenewal;
+		}
+		if (soa.program) {
+			data.program = soa.program;
+		}
+		
+		if (soa.description) {
+			data.description = soa.description;
+		}
+		
+		if (soa.tab) {
+			data.tab = soa.tab;
+		}
+		
+		if (soa.tags) {
+			data.tags = soa.tags;
+		}
+		
+		if (soa.attributes) {
+			data.attributes = soa.attributes;
 		}
 		if (!main){
 			//if no serviceVersion was provided, default to 1

@@ -18,7 +18,11 @@ var mtTranslation = {
 	"checkPinLogin": {
 		"ENG": "Check if this user is allowed to start pin code login",
 		"FRA": "check if this user is allowed to start pin code login"
-	}
+	},
+	"getUsers": {
+		"ENG": "Get Users",
+		"FRA": "Get Users"
+	},
 };
 
 for (var attrname in mtTranslation) {

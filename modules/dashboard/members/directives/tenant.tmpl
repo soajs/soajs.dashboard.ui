@@ -9,17 +9,34 @@
 			<alert type="warning">{{translation.noEnvironmentsHaveBeenAddedYet[LANG]}}</alert>
 		</div>
 		<br>
-		<div ng-show = "tenantEnvironments.length > 0 && tenantsList.length > 0">
+		<div ng-show="tenantEnvironments.length > 0 && tenantsList.length > 0">
 			<label>Select Environment: </label>
-			<select id="mainEnv" style="margin-left: 10px" ng-options="env.code as env.code for env in tenantEnvironments" tooltip="Select Environment" ng-model="env" ng-change="changeEnvPerTenant(env)">
+			<select id="mainEnv" style="margin-left: 10px" ng-options="env.code as env.code for env in tenantEnvironments" tooltip="Select Environment" ng-model="env">
 			</select>
 			<br>
 			<br>
+			<label>Select Tenant: </label>
+			<select id="subEnv" style="margin-left: 10px" ng-options="tenant.code for tenant in mainTenants" tooltip="Select Environment" ng-model="tenant" ng-change="getTenantExtKeys(env, tenant)">
+			</select>
+			<br>
+			<hr>
 			<tabset class="tenantTab">
 				<tab heading="{{tenantTabs[0].label}}">
-					<div ng-repeat="row in mainTenants" class="entryBox membersEntry" ng-if="row.locked!==true">
+					<div ng-show="tenantExtKeys">
+						<br>
+						<div class="f-left selectKey">
+							<label>Select External Key: </label>
+							<select id="extKey" style="margin-left: 10px" ng-options="ext.l for ext in tenantExtKeys" tooltip="Select External Key" ng-model="ext">
+							</select>
+						</div>
+						<div class="f-left">
+							<span class="getUsersButton"><a href="" ng-click="changeEnvPerTenant(env, ext)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+						</div>
+						<br>
+					</div>
+					<div class="entryBox membersEntry" ng-if="selectedTenant && selectedTenant.locked!==true">
 						<div class="header">
-							{{row['name']}}<span>[ {{row['code']}} ]</span>
+							{{selectedTenant['name']}}<span>[ {{selectedTenant['code']}} ]</span>
 						</div>
 						<div class="body">
 							<tabset ng-if="env" id="mainTenantsMembers">
@@ -27,8 +44,8 @@
 									<br/>
 									
 									<div ng-controller="tenantMembersCtrl">
-                                <span ng-if="tenantMembers.access.adminUser.addUser" ng-init="tenantMembers.initialize(row, env)">
-                                    <a href="" ng-click="tenantMembers.addMember(env)" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
+                                <span ng-if="tenantMembers.access.adminUser.addUser" ng-init="tenantMembers.initialize(selectedTenant, env, ext)">
+                                    <a href="" ng-click="tenantMembers.addMember(env, ext)" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
 	                                <br/><br/>
                                 </span>
 										<nglist></nglist>
@@ -37,8 +54,8 @@
 								<tab heading="{{translation.groups[LANG]}}">
 									<br/>
 									<div ng-controller="tenantGroupsCtrl">
-                                <span ng-if="tenantGroups.access.adminGroup.add" ng-init="tenantGroups.initialize(row, env)">
-                                    <a href="" ng-click="tenantGroups.addGroup(env)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
+                                <span ng-if="tenantGroups.access.adminGroup.add" ng-init="tenantGroups.initialize(selectedTenant, env, ext)">
+                                    <a href="" ng-click="tenantGroups.addGroup(env, ext)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
                                 </span>
 										<nglist></nglist>
 									</div>
@@ -48,6 +65,24 @@
 					</div>
 				</tab>
 				<tab heading="{{tenantTabs[1].label}}">
+					<div ng-show="subTenants">
+						<br>
+						<div class="selectKey">
+							<label>Select Sub Tenant: </label>
+							<select id="subTenant" style="margin-left: 10px" ng-options="subTenant.l for subTenant in subTenantsForTenant" tooltip="Select Sub Tenant" ng-model="subTenant" ng-change="getSubTenantExtKeys(env, subTenant)">
+							</select>
+						</div>
+					</div>
+					<div ng-show="subtenantExtKeys">
+						<div class="f-left selectKey">
+							<label>Select External Key: </label>
+							<select id="extKeySub" style="margin-left: 10px" ng-options="ext.l for ext in subtenantExtKeys" tooltip="Select External Key" ng-model="ext">
+							</select>
+						</div>
+						<div class="f-left">
+							<span class="getUsersButton"><a href="" ng-click="changeEnvPerTenant(env, ext)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+						</div>
+					</div>
 					<div ng-repeat="row in subTenants" class="entryBox membersEntry" ng-if="row.locked!==true">
 						<div class="header">
 							{{row['name']}}<span>[ {{row['code']}} ]</span>

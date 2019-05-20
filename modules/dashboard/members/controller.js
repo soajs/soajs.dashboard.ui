@@ -50,13 +50,79 @@ membersApp.controller('tenantsCtrl', ['$scope', '$timeout', '$routeParams', 'ngD
 	$scope.users = {};
 	$scope.groups = {};
 	
-	$scope.changeEnvPerTenant = function(env){
+	$scope.changeEnvPerTenant = function(env, ext){
 		if ($scope.access.adminAll) {
-			$scope.getAllUsersGroups(env);
+			$scope.getAllUsersGroups(env, ext);
 		}
 	};
 	
-	$scope.getAllUsersGroups = function (env) {
+	$scope.getTenantExtKeys = function (env, tenant) {
+		$scope.tenantExtKeys = [];
+		if (env && tenant && tenant.applications && tenant.applications.length > 0){
+			tenant.applications.forEach((oneApp)=>{
+				if (oneApp && oneApp.keys && oneApp.keys.length > 0){
+					oneApp.keys.forEach((oneKey)=>{
+						if (oneKey && oneKey.extKeys && oneKey.extKeys.length > 0){
+							oneKey.extKeys.forEach((oneExt)=>{
+								if(oneExt && oneExt.extKey && (oneExt.env.toUpperCase() === env.toUpperCase() || oneExt.env === null || !oneExt.env)){
+									$scope.tenantExtKeys.push({
+										v: oneExt.extKey,
+										l: oneApp.product + " " + oneApp.package + " " + (oneExt.label?oneExt.label:oneExt.extKey.substring(0,10) + "..." + oneExt.extKey.substring(oneExt.extKey.length - 10, oneExt.extKey.length))
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+		
+		$scope.selectedTenant = $scope.mainTenants.find(function(element) {
+			return element.code === tenant.code;
+		});
+		$scope.getSubTenants(tenant);
+	};
+	
+	$scope.getSubTenantExtKeys = function (env, tenant) {
+		console.log(env)
+		console.log(tenant)
+		$scope.subtenantExtKeys = [];
+		if (tenant && tenant.v && tenant.v.applications && tenant.v.applications.length > 0){
+			tenant.v.applications.forEach((oneApp)=>{
+				if (oneApp && oneApp.keys && oneApp.keys.length > 0){
+					oneApp.keys.forEach((oneKey)=>{
+						if (oneKey && oneKey.extKeys && oneKey.extKeys.length > 0){
+							oneKey.extKeys.forEach((oneExt)=>{
+								if(oneExt && oneExt.extKey && (oneExt.env.toUpperCase() === env.toUpperCase() || oneExt.env === null || !oneExt.env)){
+									$scope.subtenantExtKeys.push({
+										v: oneExt.extKey,
+										l: oneApp.product + " " + oneApp.package + " " + (oneExt.label?oneExt.label:oneExt.extKey.substring(0,10) + "..." + oneExt.extKey.substring(oneExt.extKey.length - 10, oneExt.extKey.length))
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+			$scope.selectedTenant = $scope.subTenants.find(function(element) {
+				return element.code === tenant.v.code;
+			});
+		}
+	};
+	
+	$scope.getSubTenants = function (tenant) {
+		$scope.subTenantsForTenant = [];
+		$scope.subTenants.forEach((oneTenant)=>{
+			if (oneTenant.tenant && oneTenant.tenant.code && oneTenant.tenant.code === tenant.code){
+				$scope.subTenantsForTenant.push({
+					l: oneTenant.code,
+					v: tenant
+				});
+			}
+		});
+	};
+	
+	$scope.getAllUsersGroups = function (env, extKey) {
 		function arrGroupByTenant(arr) {
 			let result = {};
 			for (let i = 0; i < arr.length; i++) {
@@ -86,17 +152,15 @@ membersApp.controller('tenantsCtrl', ['$scope', '$timeout', '$routeParams', 'ngD
 			}
 			return result;
 		}
-		var opts = {
-			"method": "get",
-			"routeName": "/urac/admin/all"
-		};
-		if (env){
+		let opts = {};
+		if (env && extKey){
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'proxyRoute': '/urac/admin/all',
-					"__env": env.toLowerCase()
+					'proxyRoute': '/urac/admin/listUsers',
+					"__env": env.toLowerCase(),
+					"extKey": extKey.v
 				}
 			};
 		}
@@ -213,11 +277,15 @@ membersApp.controller('tenantMembersCtrl', ['$scope', 'membersHelper', '$timeout
 	$timeout(function () {
 		$scope.tenantMembers = angular.extend($scope);
 		let env = null;
-		$scope.tenantMembers.initialize = function (tenantRecord, environment) {
+		let ext = null;
+		$scope.tenantMembers.initialize = function (tenantRecord, environment, extKey) {
 			$scope.tenantMembers.tenant = tenantRecord;
 			$scope.tenantMembers.tId = tenantRecord['_id'];
 			if (environment){
 				env = environment;
+			}
+			if (extKey){
+				ext = extKey;
 			}
 			$timeout(function () {
 				if ($scope.tenantMembers.users && $scope.tenantMembers.users[$scope.tenantMembers.tId]) {
@@ -229,47 +297,47 @@ membersApp.controller('tenantMembersCtrl', ['$scope', 'membersHelper', '$timeout
 		
 		
 		$scope.tenantMembers.listMembers = function () {
-			membersHelper.listMembers($scope.tenantMembers, membersConfig, env, function (response) {
+			membersHelper.listMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
 				membersHelper.printMembers($scope.tenantMembers, membersConfig, response);
 			});
 		};
 		
 		$scope.tenantMembers.listSubMembers = function () {
-			membersHelper.listSubMembers($scope.tenantMembers, membersConfig, env, function (response) {
+			membersHelper.listSubMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
 				membersHelper.printMembers($scope.tenantMembers, membersConfig, response);
 			});
 		};
 		
 		$scope.tenantMembers.addMember = function () {
-			membersHelper.addMember($scope.tenantMembers, membersConfig, false, env);
+			membersHelper.addMember($scope.tenantMembers, membersConfig, false, env, ext);
 		};
 		
 		$scope.tenantMembers.inviteUser = function () {
-			membersHelper.inviteUser($scope.tenantMembers, membersConfig, false, env);
+			membersHelper.inviteUser($scope.tenantMembers, membersConfig, false, env, ext);
 		};
 		
 		$scope.tenantMembers.unInviteUser = function () {
-			membersHelper.unInviteUser($scope.tenantMembers, membersConfig, false, env);
+			membersHelper.unInviteUser($scope.tenantMembers, membersConfig, false, env, ext);
 		};
 		
 		$scope.tenantMembers.editAcl = function (data) {
-			membersHelper.editAcl($scope.tenantMembers, data, env);
+			membersHelper.editAcl($scope.tenantMembers, data, env, ext);
 		};
 		
 		$scope.tenantMembers.editMember = function (data) {
-			membersHelper.editMember($scope.tenantMembers, membersConfig, data, false, env);
+			membersHelper.editMember($scope.tenantMembers, membersConfig, data, false, env, ext);
 		};
 		
 		$scope.tenantMembers.editSubMember = function (data) {
-			membersHelper.editSubMember($scope.tenantMembers, membersConfig, data, false), env;
+			membersHelper.editSubMember($scope.tenantMembers, membersConfig, data, false, env, ext);
 		};
 		
 		$scope.tenantMembers.activateMembers = function () {
-			membersHelper.activateMembers($scope.tenantMembers, env);
+			membersHelper.activateMembers($scope.tenantMembers, env, ext);
 		};
 		
 		$scope.tenantMembers.deactivateMembers = function () {
-			membersHelper.deactivateMembers($scope.tenantMembers, env);
+			membersHelper.deactivateMembers($scope.tenantMembers, env, ext);
 		};
 		
 		$scope.tenantMembers.$parent.$on('reloadTenantMembers', function (event, args) {
@@ -284,11 +352,15 @@ membersApp.controller('tenantGroupsCtrl', ['$scope', 'groupsHelper', '$timeout',
 	$timeout(function () {
 		$scope.tenantGroups = angular.extend($scope);
 		let env= null;
-		$scope.tenantGroups.initialize = function (tenantRecord, environment) {
+		let ext= null;
+		$scope.tenantGroups.initialize = function (tenantRecord, environment, extKey) {
 			$scope.tenantGroups.tenant = tenantRecord;
 			$scope.tenantGroups.tId = tenantRecord['_id'];
 			if (environment){
 				env = environment;
+			}
+			if (extKey){
+				ext = extKey;
 			}
 			$timeout(function () {
 				if ($scope.tenantGroups.groups && $scope.tenantGroups.groups[$scope.tenantGroups.tId]) {
@@ -299,25 +371,25 @@ membersApp.controller('tenantGroupsCtrl', ['$scope', 'groupsHelper', '$timeout',
 		};
 		
 		$scope.tenantGroups.listGroups = function () {
-			groupsHelper.listGroups($scope.tenantGroups, groupsConfig, env, function (response) {
+			groupsHelper.listGroups($scope.tenantGroups, groupsConfig, env, ext, function (response) {
 				groupsHelper.printGroups($scope.tenantGroups, groupsConfig, response);
 			});
 		};
 		
 		$scope.tenantGroups.editGroup = function (data) {
-			groupsHelper.editGroup($scope.tenantGroups, groupsConfig, data, false, env);
+			groupsHelper.editGroup($scope.tenantGroups, groupsConfig, data, false, env, ext);
 		};
 		
 		$scope.tenantGroups.addGroup = function () {
-			groupsHelper.addGroup($scope.tenantGroups, groupsConfig, false, env);
+			groupsHelper.addGroup($scope.tenantGroups, groupsConfig, false, env, ext);
 		};
 		
 		$scope.tenantGroups.deleteGroups = function () {
-			groupsHelper.deleteGroups($scope.tenantGroups, env);
+			groupsHelper.deleteGroups($scope.tenantGroups, env, ext);
 		};
 		
 		$scope.tenantGroups.delete1Group = function (data) {
-			groupsHelper.delete1Group($scope.tenantGroups, data, false, env);
+			groupsHelper.delete1Group($scope.tenantGroups, data, false, env), ext;
 		};
 	}, 1000);
 	

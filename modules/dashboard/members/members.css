@@ -10,3 +10,14 @@ div#allowedEnvironments-wrapper li {
     float: left;
     width: 33%;
 }
+
+.getUsersButton {
+    margin-top: 0px;
+    margin-bottom: 20px;
+    display: block;
+    float: left;
+}
+
+.selectKey{
+    margin: 10px 30px 10px 15px;
+}

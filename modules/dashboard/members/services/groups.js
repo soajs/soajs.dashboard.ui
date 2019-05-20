@@ -26,7 +26,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		});
 	}
 	
-	function listGroups(currentScope, groupsConfig, env, callback) {
+	function listGroups(currentScope, groupsConfig, env, ext, callback) {
 		var userCookie = currentScope.$parent.userCookie;
 		var tenantId = (callback) ? currentScope.tId : userCookie.tenant.id;
 		
@@ -36,13 +36,14 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				"routeName": "/urac/admin/group/list",
 				"params": {'tId': tenantId}
 			};
-			if (env){
+			if (env && ext){
 				opts = {
 					"method": "get",
 					"routeName": "/proxy/redirect",
 					"params": {
 						'tId': tenantId,
-						'proxyRoute': '/urac/admin/group/list'
+						'proxyRoute': '/urac/admin/group/list',
+						"extKey": ext.v
 					},
 					"headers": {
 						"__env": env
@@ -126,7 +127,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		buildGrid(currentScope, options);
 	}
 	
-	function addGroup(currentScope, groupsConfig, useCookie, env) {
+	function addGroup(currentScope, groupsConfig, useCookie, env, ext) {
 		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(groupsConfig.form);
 		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
@@ -308,12 +309,13 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"routeName": "/urac/admin/group/add",
 										"data": postData
 									};
-									if (env){
+									if (env && ext){
 										opts = {
 											"method": "post",
 											"routeName": "/proxy/redirect",
 											"params": {
-												'proxyRoute': '/urac/admin/group/add'
+												'proxyRoute': '/urac/admin/group/add',
+												"extKey": ext.v
 											},
 											"data": postData,
 											"headers": {
@@ -359,7 +361,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		
 	}
 	
-	function editGroup(currentScope, groupsConfig, data, useCookie, env) {
+	function editGroup(currentScope, groupsConfig, data, useCookie, env, ext) {
 		var config = angular.copy(groupsConfig.form);
 		config.entries[0].type = 'readonly';
 		delete data.tenant;
@@ -456,13 +458,14 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"params": {"gId": data['_id']},
 										"data": postData
 									};
-									if (env){
+									if (env && ext){
 										opts = {
 											"method": "post",
 											"routeName": "/proxy/redirect",
 											"params": {
 												"gId": data['_id'],
-												'proxyRoute': '/urac/admin/group/edit'
+												'proxyRoute': '/urac/admin/group/edit',
+												"extKey": ext.v
 											},
 											"data": postData,
 											"headers": {
@@ -580,13 +583,14 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"params": {"gId": data['_id']},
 										"data": postData
 									};
-									if (env){
+									if (env && ext){
 										opts = {
 											"method": "post",
 											"routeName": "/proxy/redirect",
 											"params": {
 												"gId": data['_id'],
-												'proxyRoute': '/urac/admin/group/edit'
+												'proxyRoute': '/urac/admin/group/edit',
+												"extKey": ext.v
 											},
 											"data": postData,
 											"headers": {
@@ -632,7 +636,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 
 	}
 
-	function deleteGroups(currentScope, env) {
+	function deleteGroups(currentScope, env, ext) {
 		var config = {
 			"method": "delete",
 			'routeName': "/urac/admin/group/delete",
@@ -645,13 +649,14 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				'success': translation.successMessageDeleteGroup[LANG]
 			}
 		};
-		if (env){
+		if (env && ext){
 			config = {
 				"method": "delete",
 				"routeName": "/proxy/redirect",
 				"params": {
 					'gId': '%id%',
-					'proxyRoute': '/urac/admin/group/delete'
+					'proxyRoute': '/urac/admin/group/delete',
+					"extKey": ext.v
 				},
 				"headers": {
 					"__env": env,
@@ -668,7 +673,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		});
 	}
 	
-	function delete1Group(currentScope, data, useCookie, env) {
+	function delete1Group(currentScope, data, useCookie, env, ext) {
 		var userCookie = currentScope.$parent.userCookie;
 		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
 		var opts = {
@@ -679,14 +684,15 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				'tId': tenantId
 			}
 		};
-		if (env){
+		if (env && ext){
 			opts = {
 				"method": "delete",
 				"routeName": "/proxy/redirect",
 				"params": {
 					'gId': data._id,
 					'tId': tenantId,
-					'proxyRoute': '/urac/admin/group/delete'
+					'proxyRoute': '/urac/admin/group/delete',
+					"extKey": ext.v
 				},
 				"headers": {
 					"__env": env,

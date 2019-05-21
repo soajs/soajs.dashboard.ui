@@ -505,6 +505,15 @@ var tenantConfig = {
 			'actions': {},
 			'entries': [
 				{
+					'name': 'label',
+					'label': translation.externalKeyLabel[LANG],
+					'type': 'text',
+					'value': '',
+					'placeholder': 'extKey...',
+					'tooltip': 'Enter the name of the external key.',
+					'required': true
+				},
+				{
 					'name': 'environment',
 					'label': translation.environment[LANG],
 					'type': 'select',

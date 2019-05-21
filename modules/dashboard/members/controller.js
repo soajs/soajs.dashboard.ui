@@ -125,29 +125,31 @@ membersApp.controller('tenantsCtrl', ['$scope', '$timeout', '$routeParams', 'ngD
 	$scope.getAllUsersGroups = function (env, extKey) {
 		function arrGroupByTenant(arr) {
 			let result = {};
-			for (let i = 0; i < arr.length; i++) {
-				let group, subTenant;
-				if (arr[i].tenant.id) {
-					group = arr[i].tenant.id;
-				}
-				if (group) {
-					if (!result[group]) {
-						result[group] = {};
-						result[group].list = [];
+			if (arr){
+				for (let i = 0; i < arr.length; i++) {
+					let group, subTenant;
+					if (arr[i].tenant.id) {
+						group = arr[i].tenant.id;
 					}
-					result[group].list.push(arr[i]);
-				}
-				if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
-					arr[i].config.allowedTenants.forEach((one) => {
-						if (one.tenant && one.tenant.id){
-							subTenant = one.tenant.id;
-							if (!result[subTenant]) {
-								result[subTenant] = {};
-								result[subTenant].list = [];
-							}
-							result[subTenant].list.push(arr[i]);
+					if (group) {
+						if (!result[group]) {
+							result[group] = {};
+							result[group].list = [];
 						}
-					});
+						result[group].list.push(arr[i]);
+					}
+					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
+						arr[i].config.allowedTenants.forEach((one) => {
+							if (one.tenant && one.tenant.id){
+								subTenant = one.tenant.id;
+								if (!result[subTenant]) {
+									result[subTenant] = {};
+									result[subTenant].list = [];
+								}
+								result[subTenant].list.push(arr[i]);
+							}
+						});
+					}
 				}
 			}
 			return result;

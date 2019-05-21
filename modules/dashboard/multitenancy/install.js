@@ -257,6 +257,10 @@ var mtTranslation = {
 	"deprecated": {
 		"ENG": "Deprecated",
 		"FRA": "Deprecated"
+	},
+	"externalKeyLabel": {
+		"ENG": "External Key Label",
+		"FRA": "External Key Label"
 	}
 };
 

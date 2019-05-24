@@ -43,7 +43,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 					"params": {
 						'tId': tenantId,
 						'proxyRoute': '/urac/admin/group/list',
-						"extKey": ext.v
+						"extKey": ext
 					},
 					"headers": {
 						"__env": env
@@ -123,7 +123,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				'handler': 'delete1Group'
 			});
 		}
-		
 		buildGrid(currentScope, options);
 	}
 	
@@ -315,7 +314,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 											"routeName": "/proxy/redirect",
 											"params": {
 												'proxyRoute': '/urac/admin/group/add',
-												"extKey": ext.v
+												"extKey": ext
 											},
 											"data": postData,
 											"headers": {
@@ -465,7 +464,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 											"params": {
 												"gId": data['_id'],
 												'proxyRoute': '/urac/admin/group/edit',
-												"extKey": ext.v
+												"extKey": ext
 											},
 											"data": postData,
 											"headers": {
@@ -656,7 +655,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				"params": {
 					'gId': '%id%',
 					'proxyRoute': '/urac/admin/group/delete',
-					"extKey": ext.v
+					"extKey": ext
 				},
 				"headers": {
 					"__env": env,
@@ -692,7 +691,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 					'gId': data._id,
 					'tId': tenantId,
 					'proxyRoute': '/urac/admin/group/delete',
-					"extKey": ext.v
+					"extKey": ext
 				},
 				"headers": {
 					"__env": env,

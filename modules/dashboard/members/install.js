@@ -23,6 +23,10 @@ var mtTranslation = {
 		"ENG": "Get Users",
 		"FRA": "Get Users"
 	},
+	"getGroups": {
+		"ENG": "Get Groups",
+		"FRA": "Get Groups"
+	}
 };
 
 for (var attrname in mtTranslation) {

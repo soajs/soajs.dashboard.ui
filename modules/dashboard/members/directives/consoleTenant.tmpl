@@ -1,4 +1,4 @@
-<section ng-controller="mainMembersCtrl as mainCtrl">
+<section ng-controller="mainMembersConsoleCtrl as mainCtrl">
 	<div class="entryBoxes" ng-if="access.adminAll" ng-controller="tenantsConsoleCtrl">
 		<div class="entryBox">
 			<div class="header">
@@ -8,7 +8,7 @@
 				<tabset id="tenantsMembers">
 					<tab heading="Members">
 						<br/>
-						<div ng-controller="tenantMembersCtrl">
+						<div ng-controller="tenantConsoleMembersCtrl">
                                 <span ng-if="tenantMembers.access.adminUser.addUser" ng-init="tenantMembers.initialize(tenantsList)">
                                     <a href="" ng-click="tenantMembers.addMember()" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
 	                                <br/><br/>
@@ -19,7 +19,7 @@
 					<tab heading="{{translation.groups[LANG]}}">
 						<br/>
 
-						<div ng-controller="tenantGroupsCtrl">
+						<div ng-controller="tenantConsoleGroupsCtrl">
                                 <span ng-if="tenantGroups.access.adminGroup.add" ng-init="tenantGroups.initialize(tenantsList)">
                                     <a href="" ng-click="tenantGroups.addGroup()" class="btn btn-primary noFloat">
 	                                    {{translation.addNewGroup[LANG]}}

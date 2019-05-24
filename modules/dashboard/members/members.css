@@ -14,6 +14,15 @@ div#allowedEnvironments-wrapper li {
 .getUsersButton {
     margin-top: 0px;
     margin-bottom: 20px;
+    margin-right: 10px;
+    display: block;
+    float: left;
+}
+
+.getGroupsButton {
+    margin-top: 0px;
+    margin-bottom: 20px;
+    margin-right: 10px;
     display: block;
     float: left;
 }

@@ -369,7 +369,7 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
 	let users = [];
-	$scope.getSubTenantUsers = function (tenantRecord, mainTenantRecord, env, mainExt) {
+	$scope.getSubTenantUsers = function (tenantRecord, mainTenantRecord, env, mainExt, subExt) {
 		if ($scope.access.adminUser) {
 			$scope.showGet= true;
 			$scope.getAllSubUsers(tenantRecord, mainTenantRecord, env, mainExt, () => {
@@ -392,7 +392,7 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				};
 				
 				$scope.subTenantMembers.inviteUser = function () {
-					membersHelper.inviteUser($scope.subTenantMembers, membersConfig, false, env, mainExt);
+					membersHelper.inviteUser($scope.subTenantMembers, membersConfig, false, env, mainExt, subExt);
 				};
 				
 				$scope.subTenantMembers.unInviteUser = function () {
@@ -400,7 +400,7 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				};
 				
 				$scope.subTenantMembers.editSubMember = function (data) {
-					membersHelper.editSubMember($scope.subTenantMembers, membersConfig, data, false, env, mainExt);
+					membersHelper.editSubMember($scope.subTenantMembers, membersConfig, data, false, env, mainExt, subExt);
 				};
 			});
 		}

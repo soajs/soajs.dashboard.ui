@@ -323,16 +323,16 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 
 	}
 	
-	function inviteUser(currentScope, moduleConfig, useCookie, env, ext) {
+	function inviteUser(currentScope, moduleConfig, useCookie, env, ext, subExt) {
 		let tenantCode = currentScope.tenant.code;
 		let tenantId = currentScope.tenant._id;
-		
 		overlayLoading.show();
 		let opts ={
 			"method": "get",
 			"routeName": "/urac/admin/group/list",
 			"params": {'tId': tenantId}
 		};
+		//this should use the subtenanant ext key
 		if (env && ext){
 			opts = {
 				"method": "get",
@@ -340,7 +340,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"params": {
 					'tId': tenantId,
 					'proxyRoute': '/urac/admin/group/list',
-					"extKey": ext
+					"extKey": subExt
 				},
 				"headers": {
 					"__env": env
@@ -723,7 +723,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		});
 	}
 	
-	function editSubMember(currentScope, moduleConfig, data, useCookie, env, ext) {
+	function editSubMember(currentScope, moduleConfig, data, useCookie, env, ext, subExt) {
 		let tenantId = currentScope.tenant._id;
 		let tenantCode= currentScope.tenant.code;
 		overlayLoading.show();
@@ -739,7 +739,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"params": {
 					'tId': tenantId,
 					'proxyRoute': '/urac/admin/group/list',
-					"extKey": ext
+					"extKey": subExt
 				},
 				"headers": {
 					"__env": env
@@ -847,33 +847,35 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									}
 								};
 							}
-							if ($scope.formData.group){
-								opts.data.groups = [$scope.formData.group]
-							}
-							if ($scope.formData.pinCode){
-								opts.data.pin = {
-									code: $scope.formData.pinCode,
-									allowed : !!$scope.formData.allowLogin
+							if ($scope.formData){
+								if ($scope.formData.group){
+									opts.data.groups = [$scope.formData.group]
 								}
-							}
-							if (currentScope.key) {
-								if (!opts.headers){
-									opts.headers = {};
+								if ($scope.formData.pinCode){
+									opts.data.pin = {
+										code: $scope.formData.pinCode,
+										allowed : !!$scope.formData.allowLogin
+									}
 								}
-								opts.headers.key = currentScope.key;
-							}
-							overlayLoading.show();
-							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-								overlayLoading.hide();
-								if (error) {
-									$scope.displayAlert('danger', error.message);
-								} else if (response) {
-									currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+								if (currentScope.key) {
+									if (!opts.headers){
+										opts.headers = {};
+									}
+									opts.headers.key = currentScope.key;
+								}
+								overlayLoading.show();
+								getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
 									overlayLoading.hide();
-									currentScope.listSubMembers();
-									modal.close();
-								}
-							});
+									if (error) {
+										$scope.displayAlert('danger', error.message);
+									} else if (response) {
+										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+										overlayLoading.hide();
+										currentScope.listSubMembers();
+										modal.close();
+									}
+								});
+							}
 						};
 						
 						$scope.closeModal = function () {

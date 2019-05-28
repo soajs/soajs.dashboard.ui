@@ -80,7 +80,7 @@
 								<br/>
 								<div ng-controller="subTenantsMembersCtrl">
 									<div ng-show="access.adminUser.addUser">
-										<span class="getUsersButton"><a href="" ng-click="getSubTenantUsers(subTenant.v, tenant, env, ext.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+										<span class="getUsersButton"><a href="" ng-click="getSubTenantUsers(subTenant.v, tenant, env, ext.v, subExt.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
 										<a href="" ng-show = "showGet" ng-click="subTenantMembers.inviteUser(env, ext.v)" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
 										<br/><br/>
 										<nglist></nglist>

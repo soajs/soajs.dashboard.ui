@@ -26,6 +26,14 @@ var mtTranslation = {
 	"getGroups": {
 		"ENG": "Get Groups",
 		"FRA": "Get Groups"
+	},
+	"areYouSureWantDeletePin": {
+		"ENG": "Are you sure you want to remove the pin code configuration for the selected member?",
+		"FRA": "Are you sure you want to remove the pin code configuration for the selected member?",
+	},
+	"removePin":{
+		"ENG": "Remove Pin",
+		"FRA": "Remove Pin",
 	}
 };
 

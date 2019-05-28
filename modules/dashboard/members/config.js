@@ -76,6 +76,7 @@ var membersConfig = {
 			'inviteUser':  ['urac', '/admin/inviteUser', 'post'],
 			'unInviteUser':  ['urac', '/admin/unInviteUser', 'put'],
 			'editUserTenantConfig':  ['urac', '/admin/userTenantConfig', 'put'],
+			'deletePinConfig':  ['urac', '/admin/pinConfig', 'delte'],
 		},
 		'adminGroup': {
 			'list': ['urac', '/admin/group/list', 'get'],

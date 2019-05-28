@@ -136,6 +136,16 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'handler': 'editSubMember'
 			});
 		}
+		if (currentScope.access.adminUser.deletePinConfig && currentScope.tenant
+			&& currentScope.tenant.type === 'client') {
+			options.left.push({
+				'label': translation.removePin[LANG],
+				'icon': 'cross',
+				'handler': 'removePin',
+				'msg': translation.areYouSureWantDeletePin[LANG],
+			});
+		}
+	
 		if (currentScope.access.adminUser.changeStatusAccess && currentScope.tenant
 			&& currentScope.tenant.type === 'product') {
 			options.top = [
@@ -807,9 +817,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							if (index !== -1){
 								if (data.config.allowedTenants[index].tenant){
 									if (data.config.allowedTenants[index].tenant.pin) {
-										if (data.config.allowedTenants[index].tenant.pin.code) {
-											$scope.pinCode = data.config.allowedTenants[index].tenant.pin.code;
-										}
 										if (data.config.allowedTenants[index].tenant.pin.hasOwnProperty("allowed")) {
 											$scope.allowedLogin = data.config.allowedTenants[index].tenant.pin.allowed;
 										}
@@ -817,6 +824,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								}
 							}
 						}
+						$scope.formData = {};
 						$scope.onSubmit= function () {
 							let opts ={
 								"method": "put",
@@ -847,35 +855,31 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									}
 								};
 							}
-							if ($scope.formData){
-								if ($scope.formData.group){
-									opts.data.groups = [$scope.formData.group]
-								}
-								if ($scope.formData.pinCode){
-									opts.data.pin = {
-										code: $scope.formData.pinCode,
-										allowed : !!$scope.formData.allowLogin
-									}
-								}
-								if (currentScope.key) {
-									if (!opts.headers){
-										opts.headers = {};
-									}
-									opts.headers.key = currentScope.key;
-								}
-								overlayLoading.show();
-								getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-									overlayLoading.hide();
-									if (error) {
-										$scope.displayAlert('danger', error.message);
-									} else if (response) {
-										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
-										overlayLoading.hide();
-										currentScope.listSubMembers();
-										modal.close();
-									}
-								});
+							if ($scope.formData.group) {
+								opts.data.groups = [$scope.formData.group]
 							}
+							opts.data.pin = {
+								code: $scope.formData.pinCode,
+								allowed: !!$scope.formData.allowLogin
+							};
+							if (currentScope.key) {
+								if (!opts.headers) {
+									opts.headers = {};
+								}
+								opts.headers.key = currentScope.key;
+							}
+							overlayLoading.show();
+							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+								overlayLoading.hide();
+								if (error) {
+									$scope.displayAlert('danger', error.message);
+								} else if (response) {
+									currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+									overlayLoading.hide();
+									currentScope.listSubMembers();
+									modal.close();
+								}
+							});
 						};
 						
 						$scope.closeModal = function () {
@@ -883,6 +887,46 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						};
 					}
 				});
+			}
+		});
+	}
+	
+	function removePin(currentScope, moduleConfig, data, env, ext) {
+		overlayLoading.show();
+		let tenantId = currentScope.tenant._id;
+		var config = {
+			"headers": {
+			},
+			'method': 'delete',
+		};
+		if (env && ext){
+			config = {
+				"method": "delete",
+				"routeName": "/proxy/redirect",
+				"params": {
+					'username': data.username,
+					"tenantId": tenantId,
+					'proxyRoute': '/urac/admin/pinConfig',
+					"extKey": ext
+				},
+				"headers": {
+					"__env": env,
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers){
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, config, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.$parent.displayAlert('danger', error.message);
+			} else if (response) {
+				currentScope.$parent.displayAlert('success', translation.memberUnInvitedSuccessfully[LANG]);
+				currentScope.listSubMembers();
 			}
 		});
 	}
@@ -975,6 +1019,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		'editMember': editMember,
 		'editSubMember': editSubMember,
 		'activateMembers': activateMembers,
-		'deactivateMembers': deactivateMembers
+		'deactivateMembers': deactivateMembers,
+		'removePin': removePin
 	};
 }]);

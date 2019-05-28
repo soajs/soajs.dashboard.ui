@@ -526,10 +526,10 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
 					$scope.epId = response.records[0].epId;
 					if ($scope.serviceProvider !== 'endpoint') {
-						$scope.environmentTesting = true;
 						$scope.passThrough = true;
 					}
 				}
+				$scope.environmentTesting = true;
 				Object.keys(response.records[0].versions).forEach(function (oneVer) {
 					$scope.versions.push(oneVer);
 				});

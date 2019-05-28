@@ -133,6 +133,9 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 					formConfig.form.entries[i].value = row[inputName];
 				}
 			});
+			if (formConfig.form.entries[i].name === "code"){
+				formConfig.form.entries[i].required = true;
+			}
 		}
 		
 		formConfig.actions = [
@@ -270,6 +273,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 		recordData._TTL = recordData._TTL / 3600000;
 		
 		formConfig.entries[0].type = 'readonly';
+		for (var i = 0; i < formConfig.form.entries.length; i++) {
+			if (formConfig.form.entries[i].name === "code"){
+				formConfig.form.entries[i].required = true;
+			}
+		}
 		var options = {
 			timeout: $timeout,
 			form: formConfig,

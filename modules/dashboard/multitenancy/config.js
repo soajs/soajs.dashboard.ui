@@ -76,7 +76,7 @@ var tenantConfig = {
 					'placeholder': translation.formCodePlaceholder[LANG],
 					'value': '',
 					'tooltip': translation.formTntCodeToolTip[LANG],
-					'required': true
+					'required': false
 				},
 				{
 					'name': 'name',

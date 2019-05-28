@@ -4,7 +4,7 @@
 			<h3>Testing {{serviceName}}</h3>
 		</div>
 	</form>
-	<div ng-if = "!passThrough">
+	<div ng-if = "passThrough">
 		<label>Test type: </label>
 		<br>
 		&nbsp;<input id="env_0" type="radio" ng-value=true ng-model="environmentTesting" ng-click="selectType(true)"/>&nbsp;

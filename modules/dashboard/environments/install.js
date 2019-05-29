@@ -811,6 +811,11 @@ var envTranslation = {
 		"ENG": "Get User Information from token",
 		"FRA": "Get User Information from token"
 	},
+	
+	"UserFromTokenDescription": {
+		"ENG": "if oAuth type is oAuth2.0 and oAuth User Authentication Type is Client to server authentication, load user profile from token to accelerate response",
+		"FRA": "if oAuth type is oAuth2.0 and oAuth User Authentication Type is Client to server authentication, load user profile from token to accelerate response "
+	},
 
 	"enterCommaSeparatedValues": {
 		"ENG": "Enter comma separated values",

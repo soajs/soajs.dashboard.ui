@@ -47,6 +47,7 @@ fieldset.serviceAPIs table tr[class^="form-group tr-removeAPI"] {
 
 .w49{
   width:49%;
+    max-width: 1700px;
 }
 .w2{
     width:2%;

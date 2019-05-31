@@ -1320,7 +1320,6 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			
 			if (swagger.proxyRoute) {
 				query.proxyRoute = swagger.proxyRoute + path;
-				query.extKey = headers.key;
 			}
 			// build request
 			var basePath = swagger.basePath || '',

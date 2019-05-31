@@ -709,7 +709,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 					x[3].info.scheme = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
 					x[3].schemes[0] = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
 					x[3].proxyRoute = $scope.url;
-					x[3].access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+					x[3].tenant_access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 					x[3].basePath = '/proxy/redirect';
 					console.log("switching to new domain:", x[3].host);
 					swaggerParser.execute.apply(null, x);

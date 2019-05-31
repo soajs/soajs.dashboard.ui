@@ -613,8 +613,8 @@ soajsApp.service("aclDrawHelpers", function () {
 			service.collapse = false;
 			service.include = true;
 			for (var version in currentService.versions) {
-				if (currentService.versions.hasOwnProperty(version) ) {
-					if (!service[version]){
+				if (currentService.versions.hasOwnProperty(version)) {
+					if (!service[version]) {
 						service[version] = {};
 					}
 					service[version].include = true;
@@ -668,12 +668,12 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	function fillServiceApiAccess(service, currentService) {
-	if (currentService.versions) {
+		if (currentService.versions) {
 			for (var version in currentService.versions) {
 				if (currentService.versions.hasOwnProperty(version)) {
 					if (service[version].get || service[version].post || service[version].put || service[version].delete) {
 						for (var method in service[version]) {
-							if (service[version][method] && ['get', 'put', 'post', 'delete'].indexOf(method)!== -1 && Object.keys(service[version][method]).length > 0) {
+							if (service[version][method] && ['get', 'put', 'post', 'delete'].indexOf(method) !== -1 && Object.keys(service[version][method]).length > 0) {
 								fillApiAccess(service[version][method]);
 							}
 						}
@@ -719,10 +719,10 @@ soajsApp.service("aclDrawHelpers", function () {
 									}
 									if (service.get || service.put || service.post || service.delete) {
 										for (let method in service) {
-											if (service[method] && ['get', 'put', 'post', 'delete'].indexOf(method) !== -1){
+											if (service[method] && ['get', 'put', 'post', 'delete'].indexOf(method) !== -1) {
 												aclEnvObj[serviceName][version][method] = [];
 												for (let group in service[method]) {
-													if(service[method][group] && service[method][group].apis){
+													if (service[method][group] && service[method][group].apis) {
 														for (var apiName in service[method][group].apis) {
 															if (service[method][group].apis.hasOwnProperty(apiName)) {
 																let api = service[method][group].apis[apiName];
@@ -731,9 +731,7 @@ soajsApp.service("aclDrawHelpers", function () {
 																	let groupApi = {
 																		group: group,
 																		apis: {
-																			[apiName] : {
-																			
-																			}
+																			[apiName]: {}
 																		}
 																	};
 																	if (api.accessType === 'private') {
@@ -754,26 +752,25 @@ soajsApp.service("aclDrawHelpers", function () {
 																			return {'valid': false};
 																		}
 																	}
-																	if(aclEnvObj[serviceName][version][method].length ===0){
+																	if (aclEnvObj[serviceName][version][method].length === 0) {
 																		aclEnvObj[serviceName][version][method].push(groupApi);
-																	}
-																	else {
+																	} else {
 																		let found = false;
-																		for (let x=0; x < aclEnvObj[serviceName][version][method].length; x++){
-																			if (aclEnvObj[serviceName][version][method][x].group === groupApi.group){
+																		for (let x = 0; x < aclEnvObj[serviceName][version][method].length; x++) {
+																			if (aclEnvObj[serviceName][version][method][x].group === groupApi.group) {
 																				aclEnvObj[serviceName][version][method][x].apis[apiName] = groupApi.apis[apiName];
 																				found = true;
 																				break;
 																			}
 																		}
-																		if (!found){
+																		if (!found) {
 																			aclEnvObj[serviceName][version][method].push(groupApi);
 																		}
 																	}
 																}
 															}
 														}
-														if (aclEnvObj[serviceName][version][method].length === 0){
+														if (aclEnvObj[serviceName][version][method].length === 0) {
 															delete aclEnvObj[serviceName][version][method];
 														}
 													}
@@ -785,7 +782,7 @@ soajsApp.service("aclDrawHelpers", function () {
 							}
 						}
 					}
-					if (Object.keys(aclEnvObj[serviceName]).length === 0){
+					if (Object.keys(aclEnvObj[serviceName]).length === 0) {
 						delete aclEnvObj[serviceName];
 					}
 				}
@@ -808,7 +805,7 @@ soajsApp.service("aclDrawHelpers", function () {
 								if (aclEnvFill[serviceName][version].hasOwnProperty(group)) {
 									for (var method in aclEnvFill[serviceName][version][group]) {
 										if (aclEnvFill[serviceName][version][group].hasOwnProperty(method) && aclEnvFill[serviceName][version][group][method]) {
-											if (!temp[method]){
+											if (!temp[method]) {
 												temp[method] = [];
 											}
 											temp[method].push(group);
@@ -819,7 +816,7 @@ soajsApp.service("aclDrawHelpers", function () {
 							aclEnvObj[serviceName].push(temp);
 						}
 					}
-					if (aclEnvObj[serviceName].length === 0){
+					if (aclEnvObj[serviceName].length === 0) {
 						delete aclEnvObj[serviceName];
 					}
 				}
@@ -1321,6 +1318,10 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			headers.Accept = values.responseType;
 			headers['Content-Type'] = body ? values.contentType : 'text/plain';
 			
+			if (swagger.proxyRoute) {
+				query.proxyRoute = swagger.proxyRoute + path;
+				query.extKey = headers.key;
+			}
 			// build request
 			var basePath = swagger.basePath || '',
 				baseUrl = [
@@ -1331,7 +1332,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				].join(''),
 				options = {
 					method: operation.httpMethod,
-					url: baseUrl + path,
+					url: swagger.proxyRoute ? baseUrl : baseUrl + path,
 					headers: headers,
 					data: body,
 					params: query

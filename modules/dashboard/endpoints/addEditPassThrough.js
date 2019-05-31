@@ -143,7 +143,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					let disablePaginations = false;
 					$scope.listRepos = function (account, counter, action, name) {
 						let id = account._id;
-						if (name){
+						if (name) {
 							disablePaginations = true;
 						}
 						if (!account.nextPageNumber) {
@@ -160,35 +160,34 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								page: (action === 'loadMore') ? account.nextPageNumber : $scope.defaultPageNumber
 							}
 						};
-						if(name && name.length > 2 && ($scope.selectedAccount.provider === "bitbucket" || $scope.selectedAccount.provider === "bitbucket_enterprise")){
+						if (name && name.length > 2 && ($scope.selectedAccount.provider === "bitbucket" || $scope.selectedAccount.provider === "bitbucket_enterprise")) {
 							opts.params.name = name;
 						}
 						
-						if (disablePaginations){
+						if (disablePaginations) {
 							opts.params.page = $scope.defaultPageNumber;
 						}
-						if (!name || name.length > 2){
+						if (!name || name.length > 2) {
 							overlayLoading.show();
 							getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
 								overlayLoading.hide();
 								$scope.selectedAccount.loading = true;
 								if (error) {
-									if (!opts.params.name){
+									if (!opts.params.name) {
 										disablePaginations = false;
 									}
 									$scope.displayAlert('danger', error.message);
 								} else {
-									if (opts.params.name || disablePaginations){
+									if (opts.params.name || disablePaginations) {
 										$scope.repos = response;
-									}
-									else if (action === 'loadMore') {
+									} else if (action === 'loadMore') {
 										$scope.appendNewRepos(account, response);
 									} else if (action === 'getRepos') {
 										$scope.repos = response;
 										account.nextPageNumber = 2;
 										account.allowLoadMore = (response.length === $scope.defaultPerPage);
 									}
-									if (!opts.params.name){
+									if (!opts.params.name) {
 										disablePaginations = false;
 									}
 								}
@@ -457,7 +456,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					$scope.defaultPageNumber = 1;
 					let disablePaginations = false;
 					$scope.listRepos = function (account, counter, action, name) {
-						if (name){
+						if (name) {
 							disablePaginations = true;
 						}
 						let id = account._id;
@@ -475,11 +474,11 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								page: (action === 'loadMore') ? account.nextPageNumber : $scope.defaultPageNumber
 							}
 						};
-						if(name && name.length > 2 && ($scope.selectedAccount.provider === "bitbucket" || $scope.selectedAccount.provider === "bitbucket_enterprise")){
+						if (name && name.length > 2 && ($scope.selectedAccount.provider === "bitbucket" || $scope.selectedAccount.provider === "bitbucket_enterprise")) {
 							opts.params.name = name;
 						}
 						
-						if (disablePaginations){
+						if (disablePaginations) {
 							opts.params.page = $scope.defaultPageNumber;
 						}
 						if (!name || name.length > 2) {
@@ -488,15 +487,14 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								overlayLoading.hide();
 								$scope.selectedAccount.loading = true;
 								if (error) {
-									if (!opts.params.name){
+									if (!opts.params.name) {
 										disablePaginations = false;
 									}
 									$scope.displayAlert('danger', error.message);
 								} else {
-									if (opts.params.name || disablePaginations){
+									if (opts.params.name || disablePaginations) {
 										$scope.repos = response;
-									}
-									else if (action === 'loadMore') {
+									} else if (action === 'loadMore') {
 										$scope.appendNewRepos(account, response);
 									} else if (action === 'getRepos') {
 										
@@ -504,7 +502,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 										
 										account.nextPageNumber = 2;
 										account.allowLoadMore = (response.length === $scope.defaultPerPage);
-										if (!opts.params.name){
+										if (!opts.params.name) {
 											disablePaginations = false;
 										}
 									}
@@ -866,7 +864,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				$scope.form.formData = angular.copy($localStorage.addPassThrough.step1);
 				if ($localStorage.addPassThrough.step1.soa) {
 					$scope.selectedType = $localStorage.addPassThrough.step1.soa.type;
-					if ($localStorage.addPassThrough.step1.soa.type === "git"&& $localStorage.addPassThrough.step1.soa.git){
+					if ($localStorage.addPassThrough.step1.soa.type === "git" && $localStorage.addPassThrough.step1.soa.git) {
 						$scope.git = angular.copy($localStorage.addPassThrough.step1.soa.git);
 					}
 					
@@ -1289,7 +1287,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		};
 		buildForm($scope, $modal, options, function () {
 			if ($localStorage.addPassThrough && $localStorage.addPassThrough.step1) {
-				if($localStorage.addPassThrough.step1.soa && $localStorage.addPassThrough.step1.soa.type === 'git'){
+				if ($localStorage.addPassThrough.step1.soa && $localStorage.addPassThrough.step1.soa.type === 'git') {
 					$scope.swaggerTypes =
 						[
 							{'v': 'git', 'l': 'Git'}
@@ -1332,8 +1330,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	$scope.computeParser = function (data) {
 		if (data) {
 			return (data.indexOf(".json") === -1) ? 'yaml' : 'json';
-		}
-		else {
+		} else {
 			return 'yaml';
 		}
 	};

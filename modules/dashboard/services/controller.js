@@ -249,8 +249,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 								} else if (oneRecord.epId) {
 									if (oneRecord.src.repo === 'soajs.epg') {
 										$scope.appendToGroup(oneRecord, 'ep');
-									}
-									else {
+									} else {
 										$scope.appendToGroup(oneRecord, 'passThrough');
 									}
 									$scope.appendToGroup(oneRecord, 'all');
@@ -480,7 +479,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	
 }]);
 
-servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowser) {
+servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowse, $cookies) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.yamlContent = "";
 	$scope.access = {};
@@ -525,7 +524,7 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				$scope.serviceProvider = response.records[0].src.provider;
 				if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
 					$scope.epId = response.records[0].epId;
-					if ($scope.serviceProvider !== 'endpoint') {
+					if ($scope.serviceProvider === 'endpoint') {
 						$scope.passThrough = true;
 					}
 				}
@@ -705,12 +704,14 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 				}
 			} else if (!$scope.environmentTesting) {
 				if ($scope.url) {
-					x[3].host = $scope.url.replace(/^(http|https):\/\//, "");
-					x[3].info.host = $scope.url.replace(/^(http|https):\/\//, "");
-					x[3].info.scheme = ($scope.url.indexOf("https://") !== -1) ? "https" : "http";
-					x[3].schemes[0] = ($scope.url.indexOf("https://") !== -1) ? "https" : "http";
+					x[3].host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
+					x[3].info.host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
+					x[3].info.scheme = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
+					x[3].schemes[0] = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
+					x[3].proxyRoute = $scope.url;
+					x[3].access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+					x[3].basePath = '/proxy/redirect';
 					console.log("switching to new domain:", x[3].host);
-					x[3].basePath = '';
 					swaggerParser.execute.apply(null, x);
 				}
 			}

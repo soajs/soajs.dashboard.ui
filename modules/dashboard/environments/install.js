@@ -813,8 +813,8 @@ var envTranslation = {
 	},
 	
 	"UserFromTokenDescription": {
-		"ENG": "if oAuth type is oAuth2.0 and oAuth User Authentication Type is Client to server authentication, load user profile from token to accelerate response",
-		"FRA": "if oAuth type is oAuth2.0 and oAuth User Authentication Type is Client to server authentication, load user profile from token to accelerate response "
+		"ENG": "if oAuth type is oAuth2.0 & oAuth User Authentication Type is Client to server, load user profile from token to accelerate response",
+		"FRA": "if oAuth type is oAuth2.0 & oAuth User Authentication Type is Client to server, load user profile from token to accelerate response"
 	},
 
 	"enterCommaSeparatedValues": {

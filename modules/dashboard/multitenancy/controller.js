@@ -135,25 +135,27 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						'l': p.code,
 					});
 					$scope.productsScopes.push(p);
-					var ll = p.packages.length;
-					for (i = 0; i < ll; i++) {
-						prods.push({
-							'pckCode': p.packages[i].code,
-							'prodCode': p.code,
-							'locked': p.locked || false,
-							'v': p.packages[i].code,
-							'l': p.packages[i].code,
-							'acl': p.packages[i].acl
-						});
-						
-						if (p.locked) {
-							lockedProds.push({
+					if(p && p.packages){
+						var ll = p.packages.length;
+						for (i = 0; i < ll; i++) {
+							prods.push({
 								'pckCode': p.packages[i].code,
 								'prodCode': p.code,
+								'locked': p.locked || false,
 								'v': p.packages[i].code,
 								'l': p.packages[i].code,
 								'acl': p.packages[i].acl
 							});
+							
+							if (p.locked) {
+								lockedProds.push({
+									'pckCode': p.packages[i].code,
+									'prodCode': p.code,
+									'v': p.packages[i].code,
+									'l': p.packages[i].code,
+									'acl': p.packages[i].acl
+								});
+							}
 						}
 					}
 				}

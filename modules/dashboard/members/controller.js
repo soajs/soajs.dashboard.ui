@@ -459,6 +459,7 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
 			}
 			else {
+				users = [];
 				if (response && response.length > 0){
 					response.forEach ((oneUser)=>{
 						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length> 0){

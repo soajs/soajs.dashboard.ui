@@ -10,6 +10,10 @@
     width: 90%
 }
 
+.includeSoajs {
+    font-size: 12px;
+}
+
 .updateButton {
     float: right;
     width: 50%;
@@ -30,10 +34,10 @@
 }
 
 .labelLength {
-    width : 80%
+    width : 83%
 }
 .inputLength {
-    width : 20%
+    width : 17%
 }
 
 .pieTitle {

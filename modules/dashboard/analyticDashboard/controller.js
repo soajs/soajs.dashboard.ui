@@ -5,6 +5,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	$scope.$parent.isUserLoggedIn();
 	$scope.$parent.hideMainMenu(false);
 	$scope.access = {};
+	$scope.includeSOAJS = false;
 	constructModulePermissions($scope, $scope.access, dashboardAppConfig.permissions);
 	
 	$scope.getAnalytics = function () {
@@ -179,6 +180,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					}
 				}
 			}
+			if ($scope.form.includeSOAJS){
+				opts.includeSOAJS = true;
+			}
 		}
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -297,6 +301,10 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 			let idx = $scope.form[fieldName].indexOf(value);
 			$scope.form[fieldName].splice(idx, 1);
 		}
+	};
+	
+	$scope.toggleSOAJS = function () {
+		$scope.form.includeSOAJS = !$scope.form.includeSOAJS;
 	};
 	// $scope.onClick = function (points, evt) {
 	// 	console.log(points, evt);

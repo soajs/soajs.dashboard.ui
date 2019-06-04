@@ -5,6 +5,10 @@
 			<div clas="row">
 				<div class="col-md-2 leftTab">
 					<fieldset class="leftTabFieldSet">
+						<div style="margin-bottom: 5px">
+							<label class="blueColor includeSoajs labelLength f-left">Include SOAJS services:</label>
+							<input type="checkbox" class = "inputLength f-right" ng-checked="includeSOAJS" ng-click="toggleSOAJS()">
+						</div>
 						<div>
 							<label class="blueColor">Service Name:</label>
 							<input type="text" class="input90" ng-model="form.serviceName"/>

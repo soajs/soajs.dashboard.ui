@@ -2,6 +2,10 @@
     border-right: 1px solid #ccc;
 }
 
+.leftTabFieldSet {
+    background-color: #F8F8F8;
+}
+
 .input90 {
     width: 90%
 }

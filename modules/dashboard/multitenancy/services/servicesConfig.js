@@ -457,7 +457,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 			}
 		});
 		
-		getServicesFromDB(currentScope, prodPackage.acl, env, services, cb);
+		getServicesFromDB(currentScope, prodPackage ? prodPackage.acl : null, env, services, cb);
 	}
 	
 	function getServicesFromDB(currentScope, acl, env, serviceNames, cb) {
@@ -502,12 +502,14 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 							for (let i = response.records[x].apisList[method].length - 1; i >= 0; i--) {
 								let oneAPI = response.records[x].apisList[method][i];
 								let aclClone = {};
-								aclClone[env] = angular.copy(acl[env]);
-								checkApiHasAccess(aclClone, response.records[x].name, oneAPI.v, method, null, (access) => {
-									if (!access) {
-										response.records[x].apisList[method].splice(i, 1);
-									}
-								});
+								if (acl){
+									aclClone[env] = angular.copy(acl[env]);
+									checkApiHasAccess(aclClone, response.records[x].name, oneAPI.v, method, null, (access) => {
+										if (!access) {
+											response.records[x].apisList[method].splice(i, 1);
+										}
+									});
+								}
 							}
 							
 							if (response.records[x].apisList[method].length === 0) {

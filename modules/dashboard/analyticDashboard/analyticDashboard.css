@@ -28,16 +28,28 @@
     overflow-y: scroll;
 }
 
+.scrollableDivAttrib {
+    max-height: 100px;
+    overflow-y: scroll;
+    min-height: 100px;
+}
+
+.scrollableAttrib {
+    max-height: 250px;
+    overflow-y: scroll;
+}
+
 .listing {
     text-align: center;
     padding: 10px;
 }
 
 .labelLength {
-    width : 83%
+    width: 83%
 }
+
 .inputLength {
-    width : 17%
+    width: 17%
 }
 
 .pieTitle {
@@ -51,4 +63,151 @@
     width: 100%;
     font-size: 17px;
     text-decoration: underline;
+}
+
+.tabHeight {
+    height: 250px;
+}
+
+ul li.deleteSquare:before {
+    color: #ed0000;
+    content: "\25AA";
+    font-size: 2.5em;
+    padding-right: .25em;
+    position: relative;
+    top: .2em;
+}
+
+ul li.updateSquare:before {
+    color: #C48638;
+    content: "\25AA";
+    font-size: 2.5em;
+    padding-right: .25em;
+    position: relative;
+    top: .2em;
+}
+
+ul li.getSquare:before {
+    color: #0f6ab4;
+    content: "\25AA";
+    font-size: 2.5em;
+    padding-right: .25em;
+    position: relative;
+    top: .2em;
+}
+
+
+ul li.addSquare:before {
+    color: #00AB50;
+    content: "\25AA";
+    font-size: 2.5em;
+    padding-right: .25em;
+    position: relative;
+    top: .2em;
+}
+
+.deleteSquare {
+    list-style: none;
+    width: 24%;
+    line-height: 10px;
+    margin-bottom: 15px;
+}
+
+.getSquare {
+    list-style: none;
+    width: 24%;
+    line-height: 10px;
+    margin-bottom: 15px;
+}
+
+.addSquare {
+    margin-left: 1%;
+    margin-right: 1%;
+    list-style: none;
+    width: 24%;
+    line-height: 10px;
+    margin-bottom: 15px;
+}
+
+.updateSquare {
+    margin-left: 1%;
+    margin-right: 1%;
+    list-style: none;
+    width: 24%;
+    line-height: 10px;
+    margin-bottom: 15px;
+}
+
+.removeTab {
+    padding-left: 0px;
+}
+.apiRoute {
+    width: 25%;
+    padding-left: 5px;
+}
+
+.apiLabel {
+    padding-left: 15%;
+    width: 50%
+}
+
+.apiServiceName {
+    padding-left: 5%;
+    width: 25%
+}
+
+.updateRoute {
+    color: #CE9B5C;
+    border: thin solid #CE9B5C;
+    background-color: #F9F2E9;
+    box-sizing: border-box;
+    margin-bottom: 1px;
+    border-radius: 2px;
+    display: inline-block;
+    width: 100%;
+}
+
+.addRoute {
+    color: #00AA50;
+    border: thin solid #00AA50;
+    background-color: #E6F0F7;
+    box-sizing: border-box;
+    border-radius: 2px;
+    margin-bottom: 1px;
+    display: inline-block;
+    width: 100%;
+}
+
+.readRoute {
+    color: #106AB4;
+    border: thin solid #106AB4;
+    background-color: #E6F0F7;
+    box-sizing: border-box;
+    margin-bottom: 1px;
+    display: inline-block;
+    border-radius: 2px;
+    width: 100%;
+}
+
+.deleteRoute {
+    color: #A81E2E;
+    border: thin solid #A81E2E;
+    background-color: #F4E7E8;
+    box-sizing: border-box;
+    border-radius: 2px;
+    margin-bottom: 1px;
+    display: inline-block;
+    width: 100%;
+}
+
+.searchBar::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: grey;
+}
+
+.apiRoutesHr {
+    width: 100%;
+    margin-bottom: -5px;
+    margin-top: -5px;
 }

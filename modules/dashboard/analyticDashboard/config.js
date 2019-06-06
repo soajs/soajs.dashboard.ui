@@ -2,7 +2,8 @@
 
 var dashboardAppConfig = {
 	permissions: {
-		get: ['dashboard', '/services/dashboard/', 'get']
+		getAnalyticsForServices: ['dashboard', '/services/dashboard/services', 'get'],
+		getAnalyticsForApiRoutes: ['dashboard', '/services/dashboard/apiRoutes', 'get']
 	}
 
 };

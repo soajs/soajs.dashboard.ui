@@ -158,7 +158,7 @@
 							<input type="text" class="input90 searchBar" ng-model="programSearch"  placeholder="Search ..."/>
 						</div>
 						<br>
-						<div class="scrollableDiv">
+						<div class="scrollableProgramTags">
 							<div ng-repeat="dv in apiRoutes.programs | searchFilter:programSearch">
 								<div class="labelLength f-left">
 									<span>{{dv.l}} </span>
@@ -178,7 +178,7 @@
 							<input type="text" class="input90 searchBar" ng-model="tagsSearch" placeholder="Search ...">
 						</div>
 						<br>
-						<div class="scrollableDiv">
+						<div class="scrollableProgramTags">
 							<div ng-repeat="dv in apiRoutes.tags| searchFilter:tagsSearch">
 								<div class="labelLength f-left">
 									<span>{{dv.l}} </span>

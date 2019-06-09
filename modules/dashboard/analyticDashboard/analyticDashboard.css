@@ -28,6 +28,11 @@
     overflow-y: scroll;
 }
 
+.scrollableProgramTags {
+    max-height: 145px;
+    overflow-y: scroll;
+}
+
 .scrollableDivAttrib {
     max-height: 100px;
     overflow-y: scroll;

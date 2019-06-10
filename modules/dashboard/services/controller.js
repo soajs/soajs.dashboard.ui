@@ -479,6 +479,394 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	
 }]);
 
+servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowse, $cookies){
+	
+	$scope.$parent.isUserLoggedIn();
+	$scope.yamlContent = "";
+	$scope.overViewYamlContent = "";
+	$scope.access = {};
+	$scope.environmentTesting = null;
+	$scope.versions = ["---Please choose---"];
+	$scope.selectedVersion = "---Please choose---";
+	$scope.tempDisable = true;
+	$scope.collapsed = false;
+	$scope.protocolConflict = false;
+	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
+	//get the service
+	$scope.serviceName = $routeParams.serviceName;
+	
+	$scope.environments = {
+		value: "---Please choose---",
+		values: ["---Please choose---"]
+	};
+	
+	$scope.collapseExpand = function () {
+		$scope.collapsed = !$scope.collapsed;
+	};
+	
+	$scope.getServiceInfo = function (cb) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/services/list",
+			"data": {serviceNames: [$scope.serviceName]}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.service = response.records[0];
+				$scope.serviceProvider = response.records[0].src.provider;
+				$scope.id = response.records[0]._id;
+				$scope.owner = response.records[0].src.owner;
+				$scope.repo = response.records[0].src.repo;
+				$scope.servicePort = response.records[0].port;
+				if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
+					$scope.epId = response.records[0].epId;
+					if ($scope.serviceProvider === 'endpoint') {
+						$scope.passThrough = true;
+					}
+				}
+				$scope.programs = response.records[0].program;
+				if ($scope.programs && $scope.programs.length > 0){
+					$scope.programs = $scope.programs.join(",");
+				}
+				else {
+					$scope.programs = "";
+				}
+				$scope.overViewVersions = [];
+				$scope.environmentTesting = true;
+				Object.keys(response.records[0].versions).forEach(function (oneVer) {
+					$scope.versions.push(oneVer);
+					$scope.overViewVersions.push(oneVer);
+				});
+				$scope.serviceVersions = response.records[0].versions;
+				return cb();
+			}
+		});
+	};
+	
+	$scope.getEnv = function (cb) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/services/env/list",
+			"params": {
+				service: $scope.serviceName,
+				version: $scope.version
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				delete response.soajsauth;
+				$scope.serviceEnvironments = response;
+				Object.keys($scope.serviceEnvironments).forEach(function (oneEnv) {
+					$scope.environments.values.push(oneEnv);
+				});
+				return cb();
+			}
+		});
+	};
+	
+	$scope.selectOverViewVersion = function (version) {
+		$scope.overViewGetYaml(version);
+	};
+	
+	$scope.getYaml = function (cb) {
+		if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
+			let opts = {
+				"method": "get",
+				"routeName": "/dashboard/apiBuilder/get",
+				"params": {
+					mainType: $scope.serviceProvider === 'endpoint' ? "passThroughs" : "endpoints",
+					id: $scope.epId
+				}
+			};
+			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return cb(false);
+				} else {
+					if ($scope.serviceProvider === 'endpoint') {
+						if (response && response.src) {
+							if (response.src.swagger && response.src.swagger.length > 0) {
+								for (let i = 0; i < response.src.swagger.length; i++) {
+									if (response.src.swagger[i].version === $scope.selectedVersion) {
+										$scope.yamlContent = response.src.swagger[i].content.content;
+									}
+								}
+							}
+						}
+					} else {
+						$scope.yamlContent = response.swaggerInput;
+					}
+					$scope.isLoading = false;
+					return cb(true);
+				}
+			});
+		} else {
+			if ($scope.envSelected) {
+				getSendDataFromServer($scope, ngDataApi, {
+					"method": "get",
+					"routeName": "/dashboard/gitAccounts/getYaml",
+					"params": {
+						owner: $scope.owner,
+						repo: $scope.repo,
+						filepath: "/swagger.yml",
+						env: $scope.envSelected,
+						serviceName: $scope.serviceName,
+						version: $scope.selectedVersion.toString(),
+						type: 'service'
+					}
+				}, function (error, response) {
+					if (error) {
+						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+						return cb(false);
+					} else {
+						$scope.yamlContent = response.content;
+						
+						$scope.link = response.downloadLink;
+						//init form for swagger UI
+						$scope.isLoading = false;
+						// Todo change this to $scope.downloadLink instead of the given url
+						$scope.swaggerUrl = $scope.link;
+						return cb(true);
+					}
+				});
+			}
+		}
+	};
+	
+	$scope.overViewGetYaml = function (version, cb) {
+		if ($scope.serviceProvider === 'endpoint' || $scope.service.src.repo === 'soajs.epg') {
+			let opts = {
+				"method": "get",
+				"routeName": "/dashboard/apiBuilder/get",
+				"params": {
+					mainType: $scope.serviceProvider === 'endpoint' ? "passThroughs" : "endpoints",
+					id: $scope.epId
+				}
+			};
+			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return cb(false);
+				} else {
+					if ($scope.serviceProvider === 'endpoint') {
+						if (response && response.src) {
+							if (response.src.swagger && response.src.swagger.length > 0) {
+								for (let i = 0; i < response.src.swagger.length; i++) {
+									if (response.src.swagger[i].version === version) {
+										$scope.overViewYamlContent = response.src.swagger[i].content.content;
+									}
+								}
+							}
+						}
+					} else {
+						$scope.overViewYamlContent = response.swaggerInput;
+					}
+					$scope.overViewisLoading = false;
+					if (cb && typeof cb === "function"){
+						return cb(true);
+					}
+				}
+			});
+		} else {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/gitAccounts/getYaml",
+				"params": {
+					owner: $scope.service.src.owner,
+					repo: $scope.service.src.repo,
+					filepath: $scope.service.swaggerFilename ? $scope.service.swaggerFilename : "/swagger.yml",
+					env: "dashboard",
+					serviceName: $scope.serviceName,
+					version: version,
+					type: 'service'
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+					return cb(false);
+				} else {
+					$scope.overViewYamlContent = response.content;
+					$scope.overViewisLoading = false;
+					if (cb && typeof cb === "function"){
+						return cb(true);
+					}
+				}
+			});
+		}
+	};
+	
+	$scope.selectType = function (value) {
+		$scope.environmentTesting = value;
+	};
+	/*
+	 * This function will fill the select DDL with the environments where a service is deployed
+	 */
+	/*
+	 * This scope will save the environment selected
+	 */
+	
+	$scope.collapseExpand = function () {
+		$scope.collapsed = !$scope.collapsed;
+	};
+	
+	$scope.selectedEnv = function () {
+		if ($scope.environments.value === '---Please choose---') {
+			$scope.envDomain = null;
+			$scope.yamlContent = "";
+			$scope.envSelected = null;
+			$scope.envTenants = null;
+		} else if ($scope.version) {
+			$scope.envSelected = $scope.environments.value;
+			$scope.envDomain = $scope.serviceEnvironments[$scope.envSelected].domain;
+			$scope.envTenants = $scope.serviceEnvironments[$scope.envSelected].tenants;
+			$scope.serviceExposedPort = $scope.serviceEnvironments[$scope.envSelected].servicePortExposed || false;
+		}
+	};
+	
+	$scope.selectNewTenant = function () {
+		var selectedTenant = $scope.selectedEnvTenant || null;
+		if ($scope.selectedEnvTenant) {
+			if (typeof ($scope.selectedEnvTenant) === 'string') {
+				selectedTenant = JSON.parse($scope.selectedEnvTenant);
+			}
+		}
+		if (selectedTenant) {
+			watchSwaggerSimulator();
+		}
+	};
+	
+	$scope.selectVersion = function (selectedVersion) {
+		$scope.selectedVersion = selectedVersion;
+		if (selectedVersion !== '---Please choose---') {
+			$scope.version = $scope.serviceVersions[selectedVersion];
+		}
+		if ($scope.version && $scope.environments.value !== '---Please choose---') {
+			$scope.envSelected = $scope.environments.value;
+			$scope.envDomain = $scope.serviceEnvironments[$scope.envSelected].domain;
+			$scope.envTenants = $scope.serviceEnvironments[$scope.envSelected].tenants;
+			$scope.serviceExposedPort = $scope.serviceEnvironments[$scope.envSelected].servicePortExposed || false;
+		}
+		if ($scope.version && $scope.environmentTesting === false) {
+			$scope.simulateUrl = true;
+		}
+	};
+	
+	$scope.run = function () {
+		fillmyEditor($scope.editor);
+	};
+	
+	//event listener that hooks ace editor to the scope and hide the print margin in the editor
+	$scope.aceLoaded = function (_editor) {
+		$scope.editor = _editor;
+		_editor.setShowPrintMargin(false);
+		_editor.$blockScrolling = Infinity;
+	};
+	
+	/*
+	 * This function uses the editor instance to fill the new data values
+	 * Then it calls the simulator of swagger
+	 */
+	function fillmyEditor(_editor) {
+		$scope.getYaml(function (done) {
+			if (done) {
+				_editor.setValue($scope.yamlContent);
+			} else {
+				_editor.setValue("");
+			}
+			
+			_editor.scrollToLine(0, true, true);
+			_editor.scrollPageUp();
+			_editor.clearSelection();
+			watchSwaggerSimulator();
+		});
+	}
+	
+	/*
+	 * This function updates the host value of the swagger simulator
+	 */
+	function watchSwaggerSimulator() {
+		//grab the swagger info
+		var x = swaggerParser.fetch();
+		if (!x || x.length === 0 || typeof (x[3]) !== 'object' || Object.keys(x[3]).length === 0) {
+			$timeout(function () {
+				watchSwaggerSimulator();
+			}, 400);
+		} else {
+			//modify the host value with the new domain
+			if ($scope.environmentTesting && $scope.environments.value !== '---Please choose---') {
+				x[3].host = $scope.envDomain;
+				x[3].info.host = $scope.envDomain;
+				x[3].info.scheme = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
+				x[3].schemes[0] = ($scope.envDomain.indexOf(":443") !== -1) ? "https" : "http";
+				x[3].basePath = x[3].basePath.toLowerCase();
+				if (parseInt($scope.servicePort) === parseInt(x[3].host.split(':')[1])) {
+					x[3].basePath = '';
+				}
+				if ($scope.serviceExposedPort) {
+					x[3].basePath = '';
+				}
+				
+				if ($scope.selectedEnvTenant) {
+					var selectedTenant = $scope.selectedEnvTenant;
+					if (typeof ($scope.selectedEnvTenant) === 'string') {
+						selectedTenant = JSON.parse($scope.selectedEnvTenant);
+					}
+					x[3].tenantKey = selectedTenant.extKey;
+					x[3].info.tenantKey = selectedTenant.extKey;
+					if (Object.hasOwnProperty.call(selectedTenant, "access_token")) {
+						x[3].tenant_access_token = selectedTenant.access_token;
+						if (!x[3].tenant_access_token) {
+							delete x[3].tenant_access_token;
+						}
+					}
+				}
+				if (!x[3].host.split(':')[1] || isNaN(parseInt(x[3].host.split(':')[1]))) {
+					$window.alert('This service does not have any published ports. Either update the catalog recipe of this service and publish its port OR deploy the SOAJS Controller and an Nginx in the environment you have selected to communicate with your service.');
+				} else {
+					$scope.protocolConflict = false;
+					$scope.protocolConflictLink = "";
+					$scope.protocolConflictBrowser = "";
+					if (x[3].info.scheme !== window.location.protocol && window.location.protocol === 'https:') {
+						$scope.protocolConflict = true;
+						let myBrowser = detectBrowser();
+						
+						$scope.uiCurrentDomain = location.host;
+						$scope.protocolConflictBrowser = servicesConfig.protocolConflict[myBrowser].label;
+						$scope.protocolConflictLink = servicesConfig.protocolConflict[myBrowser].link;
+					}
+					
+					console.log("switching to new domain:", x[3].host);
+					//apply the changes
+					swaggerParser.execute.apply(null, x);
+				}
+			} else if (!$scope.environmentTesting) {
+				if ($scope.url) {
+					x[3].host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
+					x[3].info.host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
+					x[3].info.scheme = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
+					x[3].schemes[0] = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
+					x[3].proxyRoute = $scope.url;
+					x[3].tenant_access_token = $cookies.get('access_token', {'domain': interfaceDomain});
+					x[3].basePath = '/proxy/redirect';
+					console.log("switching to new domain:", x[3].host);
+					swaggerParser.execute.apply(null, x);
+				}
+			}
+		}
+	}
+	
+	if ($scope.access.getEnv) {
+		$scope.getServiceInfo(function () {
+			$scope.getEnv(function () {
+				$scope.tempDisable = false;
+			});
+		});
+	}
+	injectFiles.injectCss("modules/dashboard/services/services.css");
+	
+}]);
 servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowse, $cookies) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.yamlContent = "";
@@ -611,7 +999,6 @@ servicesApp.controller('swaggerTestCtrl', ['$scope', '$routeParams', 'ngDataApi'
 		if ($scope.version && $scope.environmentTesting === false) {
 			$scope.simulateUrl = true;
 		}
-		
 	};
 	
 	$scope.run = function () {

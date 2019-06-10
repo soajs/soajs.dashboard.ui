@@ -1,0 +1,202 @@
+<section ng-controller="serviceDetailView">
+	<div class="serviceHeader">
+		<table width="100%" class="servicesList">
+			<tr>
+				<td style="width: 15%">
+					<span><b style="margin:0;">{{service['name'] | capitalize}}</b></span>
+				</td>
+				
+				<td style="width: 25%">
+					<span>Group: {{service['group']}}</span>
+				</td>
+				
+				<td class="programs">
+					<span>Program: </span>
+					<span ng-show="service['program']">[<span>{{programs}}</span>]</span>
+				</td>
+				
+				<td style="width: 25%; float: right">
+					<span>Port: {{service['port']}}</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<em style="margin-left: 5px">{{service.description}}</em>
+	<br>
+	<br>
+	<tabset>
+		<tab heading="Overview">
+			<label class="f-left labelVersion">
+				Service Version
+			</label>
+			<select ng-model="overviewVersion" ng-options="version for version in overViewVersions" ng-change="selectOverViewVersion(overviewVersion)" class="form-control f-left c45 selectVersion">
+			</select>
+			<br>
+			<br>
+			<div class="w-100">
+				<div ng-show="overContent">loading ...</div>
+				<div swagger-ui parser="yaml" input-type="yaml" input="overViewYamlContent" loading="overContent" trusted-sources="true" loading="overViewisLoading" api-explorer="false"></div>
+			</div>
+		</tab>
+		<tab heading="Documentation">
+			<br>
+			<br>
+			<div style="margin: auto;width: 96%;">
+				<img src="modules/dashboard/services/directives/images/ckeditor.png" alt="ckeditor">
+			</div>
+			<br>
+			<br>
+			<div>
+				<alert type="info">CKEditor Editor Coming Soon..</alert>
+			</div>
+		</tab>
+		<tab heading="Test">
+			<div ng-if = "passThrough">
+				<label>Test type: </label>
+				<br>
+				&nbsp;<input id="env_0" type="radio" ng-value=true ng-model="environmentTesting" ng-click="selectType(true)"/>&nbsp;
+				<label for="env_0">Environment</label>
+				<span class="fieldMsg hint f-left">The service will be tested using the environment domain.</span>
+				<br>
+				&nbsp;<input id="env_1" type="radio" ng-value=false ng-model="environmentTesting" ng-click="selectType(false)"/>&nbsp;
+				<label for="env_1">Simulate Url</label>
+				<span class="fieldMsg hint f-left">The service will be tested using the simulate URl.</span>
+			</div>
+			
+			<div ng-show="environmentTesting !== null">
+				<div ng-show="versions && versions.length > 0">
+					<label style="margin-top: 7px;" class="f-left labelVersion">Service Version:&nbsp;&nbsp;</label>
+					<select ng-model="selectedVersion" ng-options="version for version in versions" ng-change="selectVersion(selectedVersion)" class="form-control f-left c45 selectVersion" ng-disabled="tempDisable">
+					</select>
+					<div class="fieldMsg hint">Select which Version of the service you want to test</div>
+				</div>
+				
+				<div ng-if="environmentTesting && selectedVersion !== '---Please choose---'">
+					<div class="c-both w100 table">
+						<h4 class="f-left">Swagger Service Tester</h4>
+						<a class="btn btn-primary f-right" ng-click="collapseExpand()">
+							<span class="icon icon-circle-left" ng-show="!collapsed"></span>
+							{{(collapsed) ? "Expand" : "Collapse"}} Editor
+							<span class="icon icon-circle-right" ng-show="collapsed"></span>
+						</a>
+						<a class="btn btn-success f-right margin-right-10" ng-click="run()" ng-show="environments.values.length> 1">
+							<span class="icon icon-play3"></span>
+							Run
+						</a>
+					</div>
+					<hr>
+					<div ng-show="environments.values.length > 1">
+						<label style="margin-top: 7px;" class="f-left">Select which environment you want to test the service in:&nbsp;&nbsp;</label>
+						<select ng-model="environments.value" ng-options="env for env in environments.values" ng-change="selectedEnv()" class="form-control f-left c45" ng-disabled="tempDisable"></select>
+						<div class="fieldMsg hint">Only the environments where the service is deployed are available.</div>
+					</div>
+					<div ng-show="environments.values.length === 1">
+						<alert type="warning">Please deploy this service in an environment then refresh this page to run the
+							simulator.
+						</alert>
+					</div>
+					<div ng-show="envTenants && envTenants.length > 0">
+						<label style="margin-top: 7px;" class="f-left">Select which tenant you want to test the service with:&nbsp;&nbsp;</label>
+						<select ng-model="selectedEnvTenant" ng-change="selectNewTenant()" class="form-control f-left c85" ng-disabled="tempDisable">
+							<option ng-repeat="tenant in serviceEnvironments[envSelected].tenants" value="{{tenant}}">Tenant:
+								{{tenant.code}} --> Package: {{tenant.package}}
+							</option>
+						</select>
+						<div class="fieldMsg hint">Only the tenants that have keys in this environment are available.</div>
+					</div>
+					<div ng-show="envSelected && (!envTenants || envTenants.length === 0)">
+						<alert type="warning">
+							No tenants found for environment {{envSelected}}. Please head to
+							<a target="_blank" href="#/multi-tenancy">mulit-tenancy</a> section, create a tenant and create an
+							external key for it under environment: {{envSelected}}
+						</alert>
+					</div>
+					
+					<div ng-show="protocolConflict">
+						<hr/>
+						<br/>
+						<alert type="warning">
+							<h4>Detected Protocol Conflict</h4>
+							<hr/>
+							<table width="100%" border="0">
+								<tr>
+									<td align="left" valign="top" width="85%" colspan="2">
+										The domain you have selected does not support HTTPS, yet this interface is running with
+										HTTPS support.<br/>
+										The simulator will not work unless you enable loading unsafe scripts.<br/><br/>
+										<b><u>Note:</u></b><br/>
+										We do not recommend using HTTP in production environment(s), we suggest you redeploy
+										your
+										nginx with HTTPS.
+									</td>
+								</tr>
+								<tr>
+									<td><br/></td>
+								</tr>
+								<tr>
+									<td align="left" valign="top" width="85%">
+										<b><u>Behavior:</u></b><br/>
+										<div ng-show="protocolConflictLink !== ''">
+											Click the button on the right to enable loading unsafe scripts, all calls to <b>YOUR
+											DOMAIN ONLY</b> will be made using HTTP.<br/>
+											All requests to the current domain <b>{{uiCurrentDomain}}</b> will remain using
+											HTTPS.<br/>
+											This behavior is limited to the current browser tab only.
+										</div>
+										<div ng-show="protocolConflictLink === ''">
+											The following browser does not support loading unsafe scripts, try using <b>Google
+											Chrome</b>.
+										</div>
+									</td>
+									<td align="right" valign="bottom" width="15%">
+										<a href="{{protocolConflictLink}}" target="_blank" class="btn btn-sm btn-warning" tooltip="Enable Loading Unsafe Scripts" ng-show="protocolConflictLink !== ''">Enable
+											in {{protocolConflictBrowser}}</a>
+									</td>
+								</tr>
+							</table>
+						</alert>
+					</div>
+					<div ng-show="envSelected">
+						<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">
+							<div id="editorTab" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>
+						</div>
+						<div class="f-left w2" ng-class="{'block': !collapsed, 'hidden': collapsed}">&nbsp;</div>
+						<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
+							<div ng-show="content">loading ...</div>
+							<div ng-if="yamlContent" swagger-ui parser="yaml" input-type="yaml" input="yamlContent" loading="content" trusted-sources="true" loading="isLoading" api-explorer="false"></div>
+						</div>
+					</div>
+				</div>
+				
+				<br/>
+				<hr/>
+				<br/>
+				<div ng-if="!environmentTesting && selectedVersion !== '---Please choose---'">
+					<div class="c-both w100 table">
+						<h4 class="f-left">Swagger Service Tester</h4>
+						<a class="btn btn-primary f-right" ng-click="collapseExpand()">
+							<span class="icon icon-circle-left" ng-show="!collapsed"></span>
+							{{(collapsed) ? "Expand" : "Collapse"}} Editor
+							<span class="icon icon-circle-right" ng-show="collapsed"></span>
+						</a>
+						<a class="btn btn-success f-right margin-right-10" ng-click="run()" ng-show="selectedVersion">
+							<span class="icon icon-play3"></span>
+							Run
+						</a>
+					</div>
+					<hr>
+					<div >
+						<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">
+							<div id="editorTab2" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>
+						</div>
+						<div class="f-left w2" ng-class="{'block': !collapsed, 'hidden': collapsed}">&nbsp;</div>
+						<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
+							<div ng-show="content">loading ...</div>
+							<div swagger-ui parser="yaml" input-type="yaml" input="yamlContent" loading="content" trusted-sources="true" loading="isLoading" api-explorer="true"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</tab>
+	</tabset>
+</section>

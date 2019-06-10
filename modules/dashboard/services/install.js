@@ -449,7 +449,7 @@ var servicesNav = [
 		},
 		'tracker': true,
 		'scripts': ['modules/dashboard/services/config.js', 'modules/dashboard/services/controller.js'],
-		'tplPath': 'modules/dashboard/services/directives/swaggerTest.tmpl'
+		'tplPath': 'modules/dashboard/services/directives/serviceDetailView.tmpl'
 	}
 ];
 navigation = navigation.concat(servicesNav);

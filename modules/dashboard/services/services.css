@@ -313,3 +313,32 @@ hr{
 .margin-right-10 {
     margin-right: 10px;
 }
+
+.serviceHeader {
+    background-color: lightgray;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.programs {
+    width: 25% !important;
+    max-width: 100px;
+    overflow-x: scroll;
+}
+
+.programs::-webkit-scrollbar{
+    display: none;
+}
+
+.labelVersion {
+    padding-top: 8px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.selectVersion {
+    margin-top: 10px;
+}

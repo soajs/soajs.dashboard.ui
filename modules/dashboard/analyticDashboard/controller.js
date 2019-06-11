@@ -347,6 +347,18 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				$scope.displayAlert('danger', error.message);
 			} else {
 				$scope.apiRoutes.form = {};
+				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && Object.keys($localStorage.ApiCatalog.query).length > 0){
+					Object.keys($localStorage.ApiCatalog.query).forEach((one)=>{
+						if (one === "programs" || one === "tags" ){
+							$scope.apiRoutes.form[one] = $localStorage.ApiCatalog.query[one];
+						}
+						else if (one === "attributes" && $localStorage.ApiCatalog.query["attributes"] && Object.keys($localStorage.ApiCatalog.query["attributes"]).length > 0){
+							Object.keys($localStorage.ApiCatalog.query["attributes"]).forEach((att)=>{
+								$scope.apiRoutes.form[att] = $localStorage.ApiCatalog.query[one][att];
+							});
+						}
+					});
+				}
 				$scope.apiRoutes.tags = [];
 				$scope.apiRoutes.programs = [];
 				$scope.apiRoutes.attributes = {};

@@ -1,7 +1,7 @@
 'use strict';
 var catalogApp = soajsApp.components;
 
-catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$cookies', '$location', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $cookies, $location) {
+catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.$parent.hideMainMenu(false);
 	$scope.access = {};
@@ -324,17 +324,25 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		}
 		return newArr;
 	}
+	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query){
+		$scope.activateApiCatalogTab = true;
+	}
 	$scope.getAnalyticsForApiRoutes = function () {
 		// let opts = {
 		// 	"start": 0,
 		// 	"limit": 200
 		// };
 		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
+		let options  = {
 			method: 'post',
 			routeName: '/dashboard/services/dashboard/apiRoutes'
-		}, function (error, response) {
+		};
+		if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query){
+			options.data = $localStorage.ApiCatalog.query;
+		}
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
+			
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
@@ -349,6 +357,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							l: one,
 							v: one
 						};
+						if (options.data && options.data.tags && options.data.tags.indexOf(one) !== -1){
+							temp.selected = true;
+						}
 						$scope.apiRoutes.tags.push(temp)
 					});
 				}
@@ -358,6 +369,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							l: one,
 							v: one
 						};
+						if (options.data && options.data.programs && options.data.programs.indexOf(one) !== -1){
+							temp.selected = true;
+						}
 						$scope.apiRoutes.programs.push(temp)
 					});
 				}
@@ -368,18 +382,24 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							let temp = {
 								[att]: []
 							};
+							let temp2;
+							if (options.data && options.data.attributes && options.data.attributes[att] ){
+								temp2 = options.data.attributes[att];
+							}
 							response.attributes[att].forEach((one) => {
-								temp[att].push({
+								let temp3 = {
 									l: one,
 									v: one
-								})
-								
+								};
+								if (temp2 && temp2.indexOf(one) !== -1){
+									temp3.selected = true;
+								}
+								temp[att].push(temp3);
 							});
-							attributes.push(temp)
+							attributes.push(temp);
 						}
 					}
 				}
-				
 				$scope.apiRoutes.attributes = chunk(attributes, 3);
 				$scope.apiRoutes.routes = response.data;
 				$scope.itemsPerPage = 20;
@@ -388,6 +408,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					currentPage: 1,
 					totalItems: $scope.apiRoutes.routes.length
 				};
+				delete $localStorage.ApiCatalog;
 			}
 		});
 	};
@@ -408,6 +429,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				}
 			}
 		}
+		$scope.query = opts;
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'post',
@@ -440,6 +462,13 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		} else {
 			let idx = $scope.apiRoutes.form[fieldName].indexOf(value);
 			$scope.apiRoutes.form[fieldName].splice(idx, 1);
+		}
+	};
+	
+	$scope.redirectToService = function (serviceName) {
+		$scope.$parent.go("#/services/swaggerui/" + serviceName, "_blank");
+		$localStorage.ApiCatalog = {
+			query: $scope.query ? $scope.query : {}
 		}
 	};
 

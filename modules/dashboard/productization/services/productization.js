@@ -208,28 +208,30 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 					});
 					for (let service in scopeAcl[env]){
 						if(scopeAcl[env].hasOwnProperty(service)){
-							let group = serviceList[service]["%serviceGroup%"];
-							if (currentScope.serviceGroup.indexOf(group) === -1){
-								currentScope.serviceGroup.push(group);
-							}
-							fixList[env][group][service] = {};
-							for (let version in scopeAcl[env][service]) {
-								fixList[env][group][service][version] = {};
-								if (scopeAcl[env][service].hasOwnProperty(version)) {
-									if (scopeAcl[env][service][version].apisPermission === "restricted") {
-										if (scopeAcl[env][service][version].get || scopeAcl[env][service][version].post || scopeAcl[env][service][version].delete || scopeAcl[env][service][version].put) {
-											fixList[env][group][service][version] = reformedScope[service][version];
-											
+							if (serviceList && serviceList[service] && serviceList[service]["%serviceGroup%"]){
+								let group = serviceList[service]["%serviceGroup%"];
+								if (currentScope.serviceGroup.indexOf(group) === -1){
+									currentScope.serviceGroup.push(group);
+								}
+								fixList[env][group][service] = {};
+								for (let version in scopeAcl[env][service]) {
+									fixList[env][group][service][version] = {};
+									if (scopeAcl[env][service].hasOwnProperty(version)) {
+										if (scopeAcl[env][service][version].apisPermission === "restricted") {
+											if (scopeAcl[env][service][version].get || scopeAcl[env][service][version].post || scopeAcl[env][service][version].delete || scopeAcl[env][service][version].put) {
+												fixList[env][group][service][version] = reformedScope[service][version];
+												
+											}
 										}
-									}
-									else {
-										for (let api in serviceList[service][version]){
-											if (api !== "%serviceGroup%" && serviceList[service][version] && serviceList[service][version][api]){
-												if (!fixList[env][group][service][version][serviceList[service][version][api].group]){
-													fixList[env][group][service][version][serviceList[service][version][api].group] = [];
-												}
-												if (fixList[env][group][service][version][serviceList[service][version][api].group].indexOf(serviceList[service][version][api].m) === -1){
-													fixList[env][group][service][version][serviceList[service][version][api].group].push(serviceList[service][version][api].m);
+										else {
+											for (let api in serviceList[service][version]){
+												if (api !== "%serviceGroup%" && serviceList[service][version] && serviceList[service][version][api]){
+													if (!fixList[env][group][service][version][serviceList[service][version][api].group]){
+														fixList[env][group][service][version][serviceList[service][version][api].group] = [];
+													}
+													if (fixList[env][group][service][version][serviceList[service][version][api].group].indexOf(serviceList[service][version][api].m) === -1){
+														fixList[env][group][service][version][serviceList[service][version][api].group].push(serviceList[service][version][api].m);
+													}
 												}
 											}
 										}

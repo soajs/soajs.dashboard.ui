@@ -31,7 +31,7 @@
 			<!--Add swagger icon if a service were created using swagger editor-->
 			<td class="t-right">
 				<a href="" ng-click="swaggerTest(service.name)" title="click to run swagger simulation" ng-if="service['swagger']">
-								<span><img style="height: 25px; width:25px;" src="modules/dashboard/services/directives/images/swagger-icon-simulate.png">
+								<span><img style="height: 25px; width:25px;" src="modules/dashboard/services/directives/images/service-detail.png">
 								</span>
 				</a>
 			</td>
@@ -84,72 +84,55 @@
 						<span ng-if="val.defaultApi"><label>{{translation.defaultRoute[LANG]}}:</label> {{val.defaultApi}}<br></span>
 						
 						<div ng-if="val.Read">
-							<accordion close-others="true">
-							<accordion-group id="blueAccordion">
-								<accordion-heading>Read</accordion-heading>
-								<fieldset>
-									<div  ng-repeat="myApi in val.Read.apis">
-										<div class ="readApi">
-											<span class="readMethodApi">{{myApi.m}}</span>
-											<span class="readRouteApi">{{myApi.v}}</span>
-											<span class="readDescriptionApi">{{myApi.l}}</span>
-										</div>
+							<fieldset>
+								<legend> Read</legend>
+								<div  ng-repeat="myApi in val.Read.apis">
+									<div class ="readApi">
+										<span class="readMethodApi">{{myApi.m}}</span>
+										<span class="readRouteApi">{{myApi.v}}</span>
+										<span class="readDescriptionApi">{{myApi.l}}</span>
 									</div>
-								</fieldset>
-							</accordion-group>
-							</accordion>
+								</div>
+							</fieldset>
 						</div>
 						
 						<div ng-if="val.Add">
-							<accordion close-others="true">
-								<accordion-group id="greenAccordion">
-									<accordion-heading>Add</accordion-heading>
-									<fieldset>
-										<div  ng-repeat="myApi in val.Add.apis">
-											<div class ="addApi">
-												<span class="addMethodApi">{{myApi.m}}</span>
-												<span class="addRouteApi">{{myApi.v}}</span>
-												<span class="addDescriptionApi">{{myApi.l}}</span>
-											</div>
-										</div>
-									</fieldset>
-								</accordion-group>
-							</accordion>
+							<fieldset>
+								<legend>Add</legend>
+								<div  ng-repeat="myApi in val.Add.apis">
+									<div class ="addApi">
+										<span class="addMethodApi">{{myApi.m}}</span>
+										<span class="addRouteApi">{{myApi.v}}</span>
+										<span class="addDescriptionApi">{{myApi.l}}</span>
+									</div>
+								</div>
+							</fieldset>
 						</div>
 						
 						<div  ng-if="val.Update">
-							<accordion close-others="true">
-								<accordion-group id="orangeAccordion">
-									<accordion-heading>Update</accordion-heading>
-									<fieldset>
-										<div  ng-repeat="myApi in val.Update.apis">
-											<div class ="updateApi">
-												<span class="updateMethodApi">{{myApi.m}}</span>
-												<span class="updateRouteApi">{{myApi.v}}</span>
-												<span class="updateDescriptionApi">{{myApi.l}}</span>
-											</div>
-										</div>
-									</fieldset>
-								</accordion-group>
-							</accordion>
-							
+							<fieldset>
+								<legend>Update</legend>
+								<div  ng-repeat="myApi in val.Update.apis">
+									<div class ="updateApi">
+										<span class="updateMethodApi">{{myApi.m}}</span>
+										<span class="updateRouteApi">{{myApi.v}}</span>
+										<span class="updateDescriptionApi">{{myApi.l}}</span>
+									</div>
+								</div>
+							</fieldset>
 						</div>
 						
 						<div ng-if="val.Delete">
-							<accordion close-others="true">
-								<accordion-group id="redAccordion">
-									<accordion-heading>Delete</accordion-heading>
-									<fieldset>
-										<div  ng-repeat="myApi in val.Delete.apis">
-											<div class ="deleteApi">
-												<span class="deleteMethodApi">{{myApi.m}}</span>
-												<span class="deleteRouteApi">{{myApi.v}}</span>
-												<span class="deleteDescriptionApi">{{myApi.l}}</span>
-											</div>
-										</div>
-									</fieldset>
-								</accordion-group>
-							</accordion>
+							<fieldset>
+								<legend>Delete</legend>
+								<div  ng-repeat="myApi in val.Delete.apis">
+									<div class ="deleteApi">
+										<span class="deleteMethodApi">{{myApi.m}}</span>
+										<span class="deleteRouteApi">{{myApi.v}}</span>
+										<span class="deleteDescriptionApi">{{myApi.l}}</span>
+									</div>
+								</div>
+							</fieldset>
 						</div>
 						
 					</fieldset>

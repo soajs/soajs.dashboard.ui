@@ -148,7 +148,7 @@
 				</div>
 			</div>
 		</tab>
-		<tab heading="API Catalog">
+		<tab heading="API Catalog" active="activateApiCatalogTab">
 			<br>
 			<div clas="row">
 				<div class="col-md-2">
@@ -257,7 +257,7 @@
 							<div ng-class="{updateRoute: api.method ==='put', addRoute:api.method ==='post', readRoute:  api.method ==='get', deleteRoute:  api.method ==='delete'}">
 								<span class="f-left apiRoute">{{api.route}}</span>
 								<span class="f-left apiLabel">{{api.label}}</span>
-								<span class="f-left apiServiceName">{{api.serviceName}}</span>
+								<span class="f-left apiServiceName">{{api.serviceName}}<img style="height: 18px; width:18px; margin-left: 5px;" src="modules/dashboard/analyticDashboard/directives/images/service-detail.png" ng-click="redirectToService(api.serviceName)"></span>
 							</div>
 							<br>
 						</div>

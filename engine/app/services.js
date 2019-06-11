@@ -1321,6 +1321,13 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			if (swagger.proxyRoute) {
 				query.proxyRoute = swagger.proxyRoute + path;
 			}
+			if (swagger.__env) {
+				query.__env = swagger.__env;
+				query.proxyRoute = path;
+				if (swagger.extKey){
+					query.extKey = swagger.extKey;
+				}
+			}
 			// build request
 			var basePath = swagger.basePath || '',
 				baseUrl = [
@@ -1331,7 +1338,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 				].join(''),
 				options = {
 					method: operation.httpMethod,
-					url: swagger.proxyRoute ? baseUrl : baseUrl + path,
+					url: swagger.proxyRoute ? baseUrl : swagger.__env ? baseUrl : baseUrl + path,
 					headers: headers,
 					data: body,
 					params: query

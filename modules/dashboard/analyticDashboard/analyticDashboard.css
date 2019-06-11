@@ -158,7 +158,12 @@ ul li.addSquare:before {
 
 .apiServiceName {
     padding-left: 5%;
-    width: 25%
+    width: 20%
+}
+
+.apiSwagger {
+    padding-left: 5%;
+    width: 5%
 }
 
 .updateRoute {

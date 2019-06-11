@@ -38,9 +38,8 @@
 						<fieldset ng-repeat="(grp, val) in version" ng-if="grp !== '%v%'">
 							<legend>{{grp}}</legend>
 							<div ng-if="val.apisRest">
-								<accordion close-others="false">
-									<accordion-group ng-repeat="(method, apisList) in val.apisRest" ng-class="{blueAccordion: method==='get', greenAccordion: method==='post', orangeAccordion: method==='put', redAccordion: method==='delete' }">
-										<accordion-heading>{{normalizeMethod(method)}}</accordion-heading>
+									<fieldset ng-repeat="(method, apisList) in val.apisRest">
+										<legend>{{normalizeMethod(method)}}</legend>
 										<div class="apiListing-container">
 											<div class="" ng-repeat="my1Api in apisList" ng-class-even="'even'" ng-class-odd="'odd'" ng-class="{'first': $first, 'last': $last, selected:api.selected}" style="">
 												<div class="f-left width100">
@@ -73,8 +72,7 @@
 												</div>
 											</div>
 										</div>
-									</accordion-group>
-								</accordion>
+									</fieldset>
 							</div>
 						</fieldset>
 					</accordion-group>

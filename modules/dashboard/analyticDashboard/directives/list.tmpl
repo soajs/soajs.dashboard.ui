@@ -50,8 +50,12 @@
 						<fieldset>
 							<legend>Attributes</legend>
 							<div ng-repeat="(key, value) in services.attributes">
-								<label class="blueColor">{{key}}:</label>
-								<div class="scrollableDiv">
+								<div>
+									<label class="blueColor f-left">{{key}}:</label>
+									<a href ng-click="showHide(key)" class="icon icon-circle-{{ services.showHide[key]? 'down' : 'up'}} f-right" style="padding-right: 5%;"> </a>
+								</div>
+								<br>
+								<div id ="attrib__{{key}}" class="attribDiv">
 									<div ng-repeat="dv in value">
 										<div class="labelLength f-left">
 											<span>{{dv.l}} </span>

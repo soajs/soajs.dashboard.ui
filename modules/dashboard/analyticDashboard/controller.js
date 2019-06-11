@@ -311,6 +311,17 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		$scope.services.form.includeSOAJS = !$scope.services.form.includeSOAJS;
 	};
 	
+	$scope.services.showHide = {};
+	$scope.showHide = function (attribute) {
+		let q = jQuery('#attrib__' + attribute);
+		if (!$scope.services.showHide[attribute]) {
+			$scope.services.showHide[attribute] = true;
+			q.slideUp();
+		} else {
+			$scope.services.showHide[attribute] = false;
+			q.slideDown();
+		}
+	};
 	/**
 	 * api routes
 	 */
@@ -452,6 +463,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
+				$scope.apiRoutes.showHide = {};
 				$scope.apiRoutes.routes = response.data;
 				$scope.itemsPerPage = 20;
 				$scope.maxSize = 5;

@@ -42,7 +42,7 @@
 				<label class="f-left labelVersion">
 					Service Version
 				</label>
-				<select ng-model="overviewVersion" ng-options="version for version in overViewVersions" ng-change="selectOverViewVersion(overviewVersion)" class="form-control f-left c45 selectVersion">
+				<select  ng-model="overviewSelectedVersion" ng-init="overviewSelectedVersion" ng-options="version for version in overViewVersions" ng-change="selectOverViewVersion(overviewSelectedVersion)" class="form-control f-left c45 selectVersion">
 				</select>
 				<br>
 				<br>

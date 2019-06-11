@@ -545,7 +545,16 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					$scope.overViewVersions.push(oneVer);
 				});
 				$scope.serviceVersions = response.records[0].versions;
-				return cb();
+				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && $scope.service.swagger){
+					if ($scope.versions && $scope.versions.length > 0){
+						$scope.overviewSelectedVersion = $scope.versions[$scope.versions.length - 1];
+						$scope.overViewGetYaml($scope.versions[$scope.versions.length - 1], cb);
+					}
+				}
+				else {
+					return cb();
+				}
+			
 			}
 		});
 	};
@@ -645,6 +654,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	};
 	
 	$scope.overViewGetYaml = function (version, cb) {
+		$scope.overViewisLoading = true;
 		if ($scope.serviceProvider === 'endpoint' || $scope.service.src.repo === 'soajs.epg') {
 			let opts = {
 				"method": "get",

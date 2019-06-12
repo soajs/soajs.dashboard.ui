@@ -479,7 +479,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	
 }]);
 
-servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', '$localStorage', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowse, $cookies, $localStorage){
+servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', '$localStorage', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowse, $cookies, $localStorage) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.yamlContent = "";
@@ -491,7 +491,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	$scope.tempDisable = true;
 	$scope.collapsed = false;
 	$scope.protocolConflict = false;
-	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query){
+	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) {
 		$scope.showBackButton = true;
 	}
 	$scope.returnToDashboard = function () {
@@ -520,10 +520,12 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.service = response.records[0];
-				$scope.serviceProvider = response.records[0].src.provider;
+				if (response.records[0].src) {
+					$scope.serviceProvider = response.records[0].src.provider;
+					$scope.owner = response.records[0].src.owner;
+					$scope.repo = response.records[0].src.repo;
+				}
 				$scope.id = response.records[0]._id;
-				$scope.owner = response.records[0].src.owner;
-				$scope.repo = response.records[0].src.repo;
 				$scope.servicePort = response.records[0].port;
 				if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
 					$scope.epId = response.records[0].epId;
@@ -532,10 +534,9 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					}
 				}
 				$scope.programs = response.records[0].program;
-				if ($scope.programs && $scope.programs.length > 0){
+				if ($scope.programs && $scope.programs.length > 0) {
 					$scope.programs = $scope.programs.join(",");
-				}
-				else {
+				} else {
 					$scope.programs = "";
 				}
 				$scope.overViewVersions = [];
@@ -545,16 +546,15 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					$scope.overViewVersions.push(oneVer);
 				});
 				$scope.serviceVersions = response.records[0].versions;
-				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && $scope.service.swagger){
-					if ($scope.versions && $scope.versions.length > 0){
+				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && $scope.service.swagger) {
+					if ($scope.versions && $scope.versions.length > 0) {
 						$scope.overviewSelectedVersion = $scope.versions[$scope.versions.length - 1];
 						$scope.overViewGetYaml($scope.versions[$scope.versions.length - 1], cb);
 					}
-				}
-				else {
+				} else {
 					return cb();
 				}
-			
+				
 			}
 		});
 	};
@@ -685,7 +685,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 						$scope.overViewYamlContent = response.swaggerInput;
 					}
 					$scope.overViewisLoading = false;
-					if (cb && typeof cb === "function"){
+					if (cb && typeof cb === "function") {
 						return cb(true);
 					}
 				}
@@ -706,13 +706,13 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 			}, function (error, response) {
 				if (error) {
 					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					if (cb && typeof cb === "function"){
+					if (cb && typeof cb === "function") {
 						return cb(false);
 					}
 				} else {
 					$scope.overViewYamlContent = response.content;
 					$scope.overViewisLoading = false;
-					if (cb && typeof cb === "function"){
+					if (cb && typeof cb === "function") {
 						return cb(true);
 					}
 				}
@@ -777,7 +777,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	};
 	
 	$scope.run = function () {
-		fillmyEditor($scope.editor, ()=>{
+		fillmyEditor($scope.editor, () => {
 			$timeout(function () {
 				watchSwaggerSimulator();
 			}, 400);

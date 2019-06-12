@@ -42,6 +42,11 @@
     min-height: 100px;
 }
 
+.scrollableDiv {
+    max-height: 160px;
+    overflow-y: scroll;
+}
+
 .scrollableAttrib {
     max-height: 250px;
     overflow-y: scroll;
@@ -220,4 +225,9 @@ ul li.addSquare:before {
     width: 100%;
     margin-bottom: -5px;
     margin-top: -5px;
+}
+
+.attributeDivLabel {
+    display: inline-block;
+    width: 100%;
 }

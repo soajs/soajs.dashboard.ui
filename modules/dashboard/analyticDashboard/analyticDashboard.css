@@ -24,11 +24,11 @@
 }
 
 .attribDiv {
-   display: contents;
+   display: contents !important;
 }
 
 .attribDivHide {
-    display: none !important;
+    display: none;
 }
 
 .scrollableProgramTags {

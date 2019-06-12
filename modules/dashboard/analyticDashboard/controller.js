@@ -316,10 +316,10 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		let q = jQuery('#attrib__' + attribute);
 		if (!$scope.services.showHide[attribute]) {
 			$scope.services.showHide[attribute] = true;
-			q.slideUp();
+			q.addClass("attribDiv");
 		} else {
 			$scope.services.showHide[attribute] = false;
-			q.slideDown();
+			q.removeClass("attribDiv");
 		}
 	};
 	/**

@@ -131,7 +131,10 @@
 							</tr>
 							<tr ng-repeat="service in services.services">
 								<td class="listing">
-									{{service.serviceName}}
+									<a href ng-click="redirectToService(service.serviceName)">
+										{{service.serviceName}}
+									</a>
+									
 								</td>
 								<td class="listing">
 									{{service.serviceGroups}}

@@ -47,8 +47,8 @@
 				<br>
 				<br>
 				<div class="w-100">
-					<div ng-show="overviewContent">loading ...</div>
-					<div swagger-ui parser="yaml" input-type="yaml" input="overViewYamlContent" loading="overviewContent" trusted-sources="true" loading="overViewisLoading" api-explorer="false"></div>
+					<div ng-show="overViewisLoading">loading ...</div>
+					<div swagger-ui input="overViewYamlContent" input-type="json" trusted-sources="true" loading="overViewisLoading" api-explorer="false"></div>
 				</div>
 			</div>
 		
@@ -193,12 +193,12 @@
 						</div>
 						<div ng-show="envSelected">
 							<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">
-								<div id="editorTab" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>
+								<div id="editorTab" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'json', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>
 							</div>
 							<div class="f-left w2" ng-class="{'block': !collapsed, 'hidden': collapsed}">&nbsp;</div>
 							<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
 								<div ng-show="content">loading ...</div>
-								<div ng-if="yamlContent" swagger-ui parser="yaml" input-type="yaml" input="yamlContent" loading="content" trusted-sources="true" loading="isLoading" api-explorer="true"></div>
+								<div ng-if="yamlContent" swagger-ui parser="json" input-type="json" input="yamlContent" loading="content" trusted-sources="true" loading="isLoading" api-explorer="true"></div>
 							</div>
 						</div>
 					</div>
@@ -222,12 +222,12 @@
 						<hr>
 						<div>
 							<div class="f-left w49" ng-class="{'block': !collapsed, 'hidden': collapsed}">
-								<div id="editorTab2" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'yaml', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>
+								<div id="editorTab2" readonly="true" ui-ace="{useWrapMode : true, showGutter: true, mode: 'json', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"></div>
 							</div>
 							<div class="f-left w2" ng-class="{'block': !collapsed, 'hidden': collapsed}">&nbsp;</div>
 							<div class="f-left" ng-class="{'w100': collapsed, 'w49': !collapsed}">
 								<div ng-show="content">loading ...</div>
-								<div swagger-ui parser="yaml" input-type="yaml" input="yamlContent" trusted-sources="true" loading="false" api-explorer="true"></div>
+								<div swagger-ui parser="json" input-type="json" input="yamlContent" trusted-sources="true" loading="false" api-explorer="true"></div>
 							</div>
 						</div>
 					</div>

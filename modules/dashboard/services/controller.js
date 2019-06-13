@@ -616,6 +616,17 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					} else {
 						$scope.yamlContent = response.swaggerInput;
 					}
+					$scope.yamlContentRaw = angular.copy($scope.yamlContent);
+					try {
+						$scope.yamlContent = JSON.parse($scope.yamlContent);
+					}
+					catch (e) {
+						try {
+							$scope.yamlContent= YAML.parse($scope.yamlContent);
+						}
+						catch (e) {
+						}
+					}
 					$scope.isLoading = false;
 					return cb(true);
 				}
@@ -628,7 +639,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					"params": {
 						owner: $scope.owner,
 						repo: $scope.repo,
-						filepath: "/swagger.yml",
+						filepath: $scope.service.swaggerFilename ? $scope.service.swaggerFilename : "/swagger.yml",
 						env: $scope.envSelected,
 						serviceName: $scope.serviceName,
 						version: $scope.selectedVersion.toString(),
@@ -640,7 +651,17 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 						return cb(false);
 					} else {
 						$scope.yamlContent = response.content;
-						
+						$scope.yamlContentRaw = angular.copy($scope.yamlContent);
+						try {
+							$scope.yamlContent = JSON.parse($scope.yamlContent);
+						}
+						catch (e) {
+							try {
+								$scope.yamlContent= YAML.parse($scope.yamlContent);
+							}
+							catch (e) {
+							}
+						}
 						$scope.link = response.downloadLink;
 						//init form for swagger UI
 						$scope.isLoading = false;
@@ -684,6 +705,16 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					} else {
 						$scope.overViewYamlContent = response.swaggerInput;
 					}
+					try {
+						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
+					}
+					catch (e) {
+						try {
+							$scope.overViewYamlContent= YAML.parse($scope.overViewYamlContent);
+						}
+						catch (e) {
+						}
+					}
 					$scope.overViewisLoading = false;
 					if (cb && typeof cb === "function") {
 						return cb(true);
@@ -711,6 +742,16 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					}
 				} else {
 					$scope.overViewYamlContent = response.content;
+					try {
+						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
+					}
+					catch (e) {
+						try {
+							$scope.overViewYamlContent= YAML.parse($scope.overViewYamlContent);
+						}
+						catch (e) {
+						}
+					}
 					$scope.overViewisLoading = false;
 					if (cb && typeof cb === "function") {
 						return cb(true);
@@ -798,7 +839,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	function fillmyEditor(_editor, cb) {
 		$scope.getYaml(function (done) {
 			if (done) {
-				_editor.setValue($scope.yamlContent);
+				_editor.setValue($scope.yamlContentRaw);
 			} else {
 				_editor.setValue("");
 			}

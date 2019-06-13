@@ -37,6 +37,16 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 	// This function will take the yaml as a string and pass it to the simulator that will generate the APIs documentation
 	$scope.moveYamlRight = function () {
 		$scope.schemaCodeF = $scope.schemaCode;
+		try {
+			$scope.schemaCodeF= YAML.parse($scope.schemaCode);
+		}
+		catch (e) {
+			try {
+				$scope.schemaCodeF= JSON.parse($scope.schemaCode);
+			}
+			catch (e) {
+			}
+		}
 		watchSwaggerSimulator(function () {
 			console.log("swagger ui info has been updated");
 		});
@@ -89,6 +99,7 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 	function watchSwaggerSimulator(cb) {
 		//grab the swagger info
 		var x = swaggerParser.fetch();
+		console.log(x)
 		if (!x || x.length === 0 || typeof(x[3]) !== 'object' || Object.keys(x[3]).length === 0) {
 			$timeout(function () {
 				watchSwaggerSimulator(cb);

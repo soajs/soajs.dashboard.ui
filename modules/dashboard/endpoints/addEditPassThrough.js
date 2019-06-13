@@ -1383,7 +1383,17 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	// This function will take the yaml as a string and pass it to the simulator that will generate the APIs documentation
 	$scope.moveYamlRight = function () {
 		$scope.schemaCodeF = $scope.schemaCode;
-		$scope.editor.setValue($scope.schemaCodeF);
+		try {
+			$scope.schemaCodeF= YAML.parse($scope.schemaCode);
+		}
+		catch (e) {
+			try {
+				$scope.schemaCodeF= JSON.parse($scope.schemaCode);
+			}
+			catch (e) {
+			}
+		}
+		$scope.editor.setValue( $scope.schemaCode);
 		watchSwaggerSimulator(function () {
 			console.log("swagger ui info has been updated");
 		});

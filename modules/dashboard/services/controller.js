@@ -619,12 +619,10 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					$scope.yamlContentRaw = angular.copy($scope.yamlContent);
 					try {
 						$scope.yamlContent = JSON.parse($scope.yamlContent);
-					}
-					catch (e) {
+					} catch (e) {
 						try {
-							$scope.yamlContent= YAML.parse($scope.yamlContent);
-						}
-						catch (e) {
+							$scope.yamlContent = YAML.parse($scope.yamlContent);
+						} catch (e) {
 						}
 					}
 					$scope.isLoading = false;
@@ -654,12 +652,10 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 						$scope.yamlContentRaw = angular.copy($scope.yamlContent);
 						try {
 							$scope.yamlContent = JSON.parse($scope.yamlContent);
-						}
-						catch (e) {
+						} catch (e) {
 							try {
-								$scope.yamlContent= YAML.parse($scope.yamlContent);
-							}
-							catch (e) {
+								$scope.yamlContent = YAML.parse($scope.yamlContent);
+							} catch (e) {
 							}
 						}
 						$scope.link = response.downloadLink;
@@ -707,12 +703,10 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					}
 					try {
 						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
-					}
-					catch (e) {
+					} catch (e) {
 						try {
-							$scope.overViewYamlContent= YAML.parse($scope.overViewYamlContent);
-						}
-						catch (e) {
+							$scope.overViewYamlContent = YAML.parse($scope.overViewYamlContent);
+						} catch (e) {
 						}
 					}
 					$scope.overViewisLoading = false;
@@ -744,12 +738,10 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					$scope.overViewYamlContent = response.content;
 					try {
 						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
-					}
-					catch (e) {
+					} catch (e) {
 						try {
-							$scope.overViewYamlContent= YAML.parse($scope.overViewYamlContent);
-						}
-						catch (e) {
+							$scope.overViewYamlContent = YAML.parse($scope.overViewYamlContent);
+						} catch (e) {
 						}
 					}
 					$scope.overViewisLoading = false;

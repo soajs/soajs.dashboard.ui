@@ -113,7 +113,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 									if (index === -1) {
 										data.bar.serviceGroups.labels.push(oneGroup.name);
 									}
-							
+									
 									if (oneGroup.services.length > 0) {
 										oneGroup.services.forEach((service) => {
 											if (services.indexOf(service.name) === -1) {
@@ -145,10 +145,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 											}
 										});
 									}
-									if (index === -1){
+									if (index === -1) {
 										data.bar.serviceGroups.data.push(noGD)
-									}
-									else {
+									} else {
 										data.bar.serviceGroups.data[index] = data.bar.serviceGroups.data[index] + noGD
 									}
 								});
@@ -184,7 +183,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					}
 				}
 			}
-			if ($scope.services.form.includeSOAJS){
+			if ($scope.services.form.includeSOAJS) {
 				opts.includeSOAJS = true;
 			}
 		}
@@ -276,10 +275,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 											}
 										});
 									}
-									if (index === -1){
+									if (index === -1) {
 										data.bar.serviceGroups.data.push(noGD)
-									}
-									else {
+									} else {
 										data.bar.serviceGroups.data[index] = data.bar.serviceGroups.data[index] + noGD
 									}
 								});
@@ -294,21 +292,21 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		});
 	};
 	
-	$scope.resetServices = function() {
+	$scope.resetServices = function () {
 		$scope.services.form = {};
-		if ($scope.services.programs){
-			$scope.services.programs.forEach((oneProgram)=>{
+		if ($scope.services.programs) {
+			$scope.services.programs.forEach((oneProgram) => {
 				oneProgram.selected = false;
 			});
 		}
-		if ($scope.services.tags){
-			$scope.services.tags.forEach((oneTag)=>{
+		if ($scope.services.tags) {
+			$scope.services.tags.forEach((oneTag) => {
 				oneTag.selected = false;
 			});
 		}
-		if ($scope.services.attributes && Object.keys($scope.services.attributes).length > 0 ){
-			Object.keys($scope.services.attributes).forEach((att)=>{
-				$scope.services.attributes[att].forEach((oneAttrib)=>{
+		if ($scope.services.attributes && Object.keys($scope.services.attributes).length > 0) {
+			Object.keys($scope.services.attributes).forEach((att) => {
+				$scope.services.attributes[att].forEach((oneAttrib) => {
 					oneAttrib.selected = false;
 				});
 			});
@@ -350,14 +348,16 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	
 	$scope.apiRoutes = {};
 	$scope.apiRoutes.form = {};
+	
 	function chunk(arr, size) {
 		let newArr = [];
-		for (let i=0; i<arr.length; i+=size) {
-			newArr.push(arr.slice(i, i+size));
+		for (let i = 0; i < arr.length; i += size) {
+			newArr.push(arr.slice(i, i + size));
 		}
 		return newArr;
 	}
-	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query){
+	
+	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) {
 		$scope.activateApiCatalogTab = true;
 	}
 	
@@ -370,11 +370,11 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		// 	"limit": 200
 		// };
 		overlayLoading.show();
-		let options  = {
+		let options = {
 			method: 'post',
 			routeName: '/dashboard/services/dashboard/apiRoutes'
 		};
-		if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query){
+		if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) {
 			options.data = $localStorage.ApiCatalog.query;
 		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
@@ -384,20 +384,17 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				$scope.displayAlert('danger', error.message);
 			} else {
 				$scope.apiRoutes.form = {};
-				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && Object.keys($localStorage.ApiCatalog.query).length > 0){
-					Object.keys($localStorage.ApiCatalog.query).forEach((one)=>{
-						if (one === "programs" || one === "tags" ){
+				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && Object.keys($localStorage.ApiCatalog.query).length > 0) {
+					Object.keys($localStorage.ApiCatalog.query).forEach((one) => {
+						if (one === "programs" || one === "tags") {
 							$scope.apiRoutes.form[one] = $localStorage.ApiCatalog.query[one];
-						}
-						else if (one === "attributes" && $localStorage.ApiCatalog.query["attributes"] && Object.keys($localStorage.ApiCatalog.query["attributes"]).length > 0){
-							Object.keys($localStorage.ApiCatalog.query["attributes"]).forEach((att)=>{
+						} else if (one === "attributes" && $localStorage.ApiCatalog.query["attributes"] && Object.keys($localStorage.ApiCatalog.query["attributes"]).length > 0) {
+							Object.keys($localStorage.ApiCatalog.query["attributes"]).forEach((att) => {
 								$scope.apiRoutes.form[att] = $localStorage.ApiCatalog.query[one][att];
 							});
-						}
-						else if (one === "keywords"){
+						} else if (one === "keywords") {
 							$scope.apiRoutes.form = $localStorage.ApiCatalog.query["keywords"];
-						}
-						else if (one === "includeSOAJS"){
+						} else if (one === "includeSOAJS") {
 							$scope.apiRoutes.includeSOAJS = $localStorage.ApiCatalog.query["includeSOAJS"];
 						}
 					});
@@ -412,7 +409,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							l: one,
 							v: one
 						};
-						if (options.data && options.data.tags && options.data.tags.indexOf(one) !== -1){
+						if (options.data && options.data.tags && options.data.tags.indexOf(one) !== -1) {
 							temp.selected = true;
 						}
 						$scope.apiRoutes.tags.push(temp)
@@ -424,7 +421,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							l: one,
 							v: one
 						};
-						if (options.data && options.data.programs && options.data.programs.indexOf(one) !== -1){
+						if (options.data && options.data.programs && options.data.programs.indexOf(one) !== -1) {
 							temp.selected = true;
 						}
 						$scope.apiRoutes.programs.push(temp)
@@ -438,7 +435,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 								[att]: []
 							};
 							let temp2;
-							if (options.data && options.data.attributes && options.data.attributes[att] ){
+							if (options.data && options.data.attributes && options.data.attributes[att]) {
 								temp2 = options.data.attributes[att];
 							}
 							response.attributes[att].forEach((one) => {
@@ -446,7 +443,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 									l: one,
 									v: one
 								};
-								if (temp2 && temp2.indexOf(one) !== -1){
+								if (temp2 && temp2.indexOf(one) !== -1) {
 									temp3.selected = true;
 								}
 								temp[att].push(temp3);
@@ -463,7 +460,19 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					currentPage: 1,
 					totalItems: $scope.apiRoutes.routes.length
 				};
+				
+				$scope.filterItems = function (apiSearch) {
+					var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route')
+					setDisplayItems(data);
+					$scope.apiRoutes.paginations.currentPage = 1;
+				};
+				setDisplayItems($scope.apiRoutes.routes);
 				delete $localStorage.ApiCatalog;
+			}
+			
+			function setDisplayItems(data) {
+				$scope.displayItems = data;
+				$scope.apiRoutes.paginations.totalItems = data.length;
 			}
 		});
 	};
@@ -480,7 +489,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							opts.keywords = {}
 						}
 						opts.keywords[key] = $scope.apiRoutes.form[key];
-					}else {
+					} else {
 						if (!opts.attributes) {
 							opts.attributes = {}
 						}
@@ -488,7 +497,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					}
 				}
 			}
-			if ($scope.apiRoutes.form.includeSOAJS){
+			if ($scope.apiRoutes.form.includeSOAJS) {
 				opts.includeSOAJS = true;
 			}
 		}
@@ -515,22 +524,22 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		});
 	};
 	
-	$scope.resetApiRoutes = function() {
+	$scope.resetApiRoutes = function () {
 		$scope.apiRoutes.form = {};
-		if ($scope.apiRoutes.programs){
-			$scope.apiRoutes.programs.forEach((oneProgram)=>{
+		if ($scope.apiRoutes.programs) {
+			$scope.apiRoutes.programs.forEach((oneProgram) => {
 				oneProgram.selected = false;
 			});
 		}
-		if ($scope.apiRoutes.tags){
-			$scope.apiRoutes.tags.forEach((oneTag)=>{
+		if ($scope.apiRoutes.tags) {
+			$scope.apiRoutes.tags.forEach((oneTag) => {
 				oneTag.selected = false;
 			});
 		}
-		if ($scope.apiRoutes.attributes && Object.keys($scope.apiRoutes.attributes).length > 0 ){
-			$scope.apiRoutes.attributes.forEach((att)=>{
-				att.forEach((oneAttrib)=>{
-					oneAttrib[Object.keys(oneAttrib)[0]].forEach((one)=>{
+		if ($scope.apiRoutes.attributes && Object.keys($scope.apiRoutes.attributes).length > 0) {
+			$scope.apiRoutes.attributes.forEach((att) => {
+				att.forEach((oneAttrib) => {
+					oneAttrib[Object.keys(oneAttrib)[0]].forEach((one) => {
 						one.selected = false;
 					});
 				});
@@ -568,16 +577,16 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	injectFiles.injectCss("modules/dashboard/analyticDashboard/analyticDashboard.css");
 }]);
 
-catalogApp.filter('searchFilter', function() {
-	return function(input, searchKeyword) {
-		if(!searchKeyword) return input;
-		if(!input || !Array.isArray(input) || input.length === 0) return input;
+catalogApp.filter('searchFilter', function () {
+	return function (input, searchKeyword) {
+		if (!searchKeyword) return input;
+		if (!input || !Array.isArray(input) || input.length === 0) return input;
 		
 		var output = [];
-		input.forEach(function(oneInput) {
-			if(oneInput) {
+		input.forEach(function (oneInput) {
+			if (oneInput) {
 				//using full_name since it's composed of owner + name
-				if(oneInput.l && oneInput.l.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
+				if (oneInput.l && oneInput.l.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
 					output.push(oneInput);
 				}
 			}
@@ -587,16 +596,16 @@ catalogApp.filter('searchFilter', function() {
 	}
 });
 
-catalogApp.filter('routeSearchFilter', function() {
-	return function(input, searchKeyword) {
-		if(!searchKeyword) return input;
-		if(!input || !Array.isArray(input) || input.length === 0) return input;
+catalogApp.filter('routeSearchFilter', function () {
+	return function (input, searchKeyword) {
+		if (!searchKeyword) return input;
+		if (!input || !Array.isArray(input) || input.length === 0) return input;
 		
 		var output = [];
-		input.forEach(function(oneInput) {
-			if(oneInput) {
+		input.forEach(function (oneInput) {
+			if (oneInput) {
 				//using full_name since it's composed of owner + name
-				if(oneInput.route && oneInput.route.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
+				if (oneInput.route && oneInput.route.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
 					output.push(oneInput);
 				}
 			}

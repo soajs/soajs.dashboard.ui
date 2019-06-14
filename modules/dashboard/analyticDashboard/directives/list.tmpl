@@ -274,7 +274,7 @@
 								<h4>List of APIs: {{apiRoutes.routes.length}}</h4>
 							</div>
 							<div class="f-right">
-								<input type="text" class="input90 searchBar" ng-model="apiSearch" placeholder="Search ..."/>
+								<input type="text" class="input90 searchBar" ng-model="apiSearch" ng-change='filterItems(apiSearch)' placeholder="Search ..."/>
 							</div>
 						</div>
 						<div class="f-left" style="width: 100%">
@@ -289,7 +289,8 @@
 						<div class="f-left apiRoutesHr">
 							<hr>
 						</div>
-						<div ng-repeat="api in apiRoutes.routes.slice(((apiRoutes.paginations.currentPage-1)*itemsPerPage), ((apiRoutes.paginations.currentPage)*itemsPerPage))  | routeSearchFilter:apiSearch ">
+<!--						<div ng-repeat="api in apiRoutes.routes.slice(((apiRoutes.paginations.currentPage-1)*itemsPerPage), ((apiRoutes.paginations.currentPage)*itemsPerPage))  | routeSearchFilter:apiSearch ">-->
+						<div ng-repeat="api in displayItems |limitTo: itemsPerPage:apiRoutes.paginations.currentPage-1  as filteredItems">
 							<div ng-class="{updateRoute: api.method ==='put', addRoute:api.method ==='post', readRoute:  api.method ==='get', deleteRoute:  api.method ==='delete'}">
 								<span class="f-left apiRoute">{{api.route}}</span>
 								<span class="f-left apiLabel">{{api.label}}</span>

@@ -16,7 +16,9 @@
 
 .updateButton {
     float: right;
-    width: 50%;
+    width: 40%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 .blueColor {

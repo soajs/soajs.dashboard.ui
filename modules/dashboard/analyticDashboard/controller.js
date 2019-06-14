@@ -1,7 +1,7 @@
 'use strict';
 var catalogApp = soajsApp.components;
 
-catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage) {
+catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', '$filter', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage, $filter) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.$parent.hideMainMenu(false);
 	$scope.access = {};
@@ -294,6 +294,28 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		});
 	};
 	
+	$scope.resetServices = function() {
+		$scope.services.form = {};
+		if ($scope.services.programs){
+			$scope.services.programs.forEach((oneProgram)=>{
+				oneProgram.selected = false;
+			});
+		}
+		if ($scope.services.tags){
+			$scope.services.tags.forEach((oneTag)=>{
+				oneTag.selected = false;
+			});
+		}
+		if ($scope.services.attributes && Object.keys($scope.services.attributes).length > 0 ){
+			Object.keys($scope.services.attributes).forEach((att)=>{
+				$scope.services.attributes[att].forEach((oneAttrib)=>{
+					oneAttrib.selected = false;
+				});
+			});
+		}
+		$scope.includeSOAJS = false;
+	};
+	
 	$scope.toggleServicesSelection = function (fieldName, value) {
 		if (!$scope.services.form[fieldName]) {
 			$scope.services.form[fieldName] = [];
@@ -473,6 +495,29 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				};
 			}
 		});
+	};
+	
+	$scope.resetApiRoutes = function() {
+		$scope.apiRoutes.form = {};
+		if ($scope.apiRoutes.programs){
+			$scope.apiRoutes.programs.forEach((oneProgram)=>{
+				oneProgram.selected = false;
+			});
+		}
+		if ($scope.apiRoutes.tags){
+			$scope.apiRoutes.tags.forEach((oneTag)=>{
+				oneTag.selected = false;
+			});
+		}
+		if ($scope.apiRoutes.attributes && Object.keys($scope.apiRoutes.attributes).length > 0 ){
+			$scope.apiRoutes.attributes.forEach((att)=>{
+				att.forEach((oneAttrib)=>{
+					oneAttrib[Object.keys(oneAttrib)[0]].forEach((one)=>{
+						one.selected = false;
+					});
+				});
+			});
+		}
 	};
 	
 	$scope.toggleApiRoutesSelection = function (fieldName, value) {

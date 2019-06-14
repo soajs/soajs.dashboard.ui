@@ -25,7 +25,7 @@
 										<span>{{dv.l}} </span>
 									</div>
 									<div class="inputLength f-right">
-										<input type="checkbox" ng-checked="dv.selected" ng-click="toggleServicesSelection('programs', dv.v)">
+										<input type="checkbox" ng-model="dv.selected" ng-click="toggleServicesSelection('programs', dv.v)">
 									</div>
 									<br>
 								</div>
@@ -40,7 +40,7 @@
 										<span>{{dv.l}} </span>
 									</div>
 									<div class="inputLength f-right">
-										<input type="checkbox" ng-checked="dv.selected" ng-click="toggleServicesSelection('tags', dv.v)">
+										<input type="checkbox" ng-model="dv.selected" ng-click="toggleServicesSelection('tags', dv.v)">
 									</div>
 									<br>
 								</div>
@@ -60,7 +60,7 @@
 											<span>{{dv.l}} </span>
 										</div>
 										<div class="inputLength f-right">
-											<input type="checkbox" ng-checked="dv.selected" ng-click="toggleServicesSelection(key, dv.v)">
+											<input type="checkbox" ng-model="dv.selected" ng-click="toggleServicesSelection(key, dv.v)">
 										</div>
 										<br>
 									</div>
@@ -69,6 +69,7 @@
 							</div>
 						</fieldset>
 						<button class="btn btn-primary updateButton" ng-click="submitServices()"><span class="icon icon-undo"></span>apply</button>
+						<button class="btn btn-info updateButton" ng-click="resetServices()"><span class="icon icon-loop2"></span>reset</button>
 					</fieldset>
 				</div>
 				<div class="col-md-10">
@@ -170,7 +171,7 @@
 									<span>{{dv.l}} </span>
 								</div>
 								<div class="inputLength f-right">
-									<input type="checkbox" ng-checked="dv.selected" ng-click="toggleApiRoutesSelection('programs', dv.v)">
+									<input type="checkbox" ng-model="dv.selected" ng-click="toggleApiRoutesSelection('programs', dv.v)">
 								</div>
 								<br>
 							</div>
@@ -190,7 +191,7 @@
 									<span>{{dv.l}} </span>
 								</div>
 								<div class="inputLength f-right">
-									<input type="checkbox" ng-checked="dv.selected" ng-click="toggleApiRoutesSelection('tags', dv.v)">
+									<input type="checkbox" ng-model="dv.selected" ng-click="toggleApiRoutesSelection('tags', dv.v)">
 								</div>
 								<br>
 							</div>
@@ -216,7 +217,7 @@
 												<span>{{dv.l}} </span>
 											</div>
 											<div class="inputLength f-right">
-												<input type="checkbox" ng-checked="dv.selected" ng-click="toggleApiRoutesSelection(key, dv.v)">
+												<input type="checkbox" ng-model="dv.selected" ng-click="toggleApiRoutesSelection(key, dv.v)">
 											</div>
 											<br>
 										</div>
@@ -233,6 +234,11 @@
 				<div class="f-right" style = "margin-bottom: 10px; margin-right: 15px">
 					<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="submitApiRoutes()">
 						<span class="icon icon-undo"></span>apply
+					</a>
+				</div>
+				<div class="f-right" style = "margin-bottom: 10px; margin-right: 15px">
+					<a href="" class="btn btn-info" tooltip="Apply Filter" ng-click="resetApiRoutes()">
+						<span class="icon icon-loop2"></span>reset
 					</a>
 				</div>
 			</div>

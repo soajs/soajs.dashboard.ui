@@ -7,7 +7,7 @@
 					<fieldset class="leftTabFieldSet">
 						<div style="margin-bottom: 5px">
 							<label class="blueColor includeSoajs labelLength f-left">Include SOAJS services:</label>
-							<input type="checkbox" class="inputLength f-right" ng-checked="services.includeSOAJS" ng-click="toggleSOAJS()">
+							<input type="checkbox" class="inputLength f-right" ng-model="services.includeSOAJS" ng-click="toggleServicesSOAJS()">
 						</div>
 						<div>
 							<label class="blueColor">Service Name:</label>
@@ -54,7 +54,7 @@
 									<label class="blueColor f-left">{{key}}:</label>
 									<a href ng-click="showHide(key)" class="icon icon-circle-{{ services.showHide[key]? 'down' : 'up'}} f-right" style="padding-right: 5%; margin-bottom: 5px"> </a>
 								</div>
-								<div id ="attrib__{{key}}" class="attribDivHide">
+								<div id="attrib__{{key}}" class="attribDivHide">
 									<div ng-repeat="dv in value">
 										<div class="labelLength f-left">
 											<span>{{dv.l}} </span>
@@ -68,8 +68,12 @@
 								<hr>
 							</div>
 						</fieldset>
-						<button class="btn btn-primary updateButton" ng-click="submitServices()"><span class="icon icon-undo"></span>apply</button>
-						<button class="btn btn-info updateButton" ng-click="resetServices()"><span class="icon icon-loop2"></span>reset</button>
+						<button class="btn btn-primary updateButton" ng-click="submitServices()">
+							<span class="icon icon-undo"></span>apply
+						</button>
+						<button class="btn btn-info updateButton" ng-click="resetServices()">
+							<span class="icon icon-loop2"></span>reset
+						</button>
 					</fieldset>
 				</div>
 				<div class="col-md-10">
@@ -135,7 +139,7 @@
 									<a href ng-click="redirectToService(service.serviceName)">
 										{{service.serviceName}}
 									</a>
-									
+								
 								</td>
 								<td class="listing">
 									{{service.serviceGroups}}
@@ -155,14 +159,34 @@
 				</div>
 			</div>
 		</tab>
+		
 		<tab heading="API Catalog" active="activateApiCatalogTab">
 			<br>
 			<div clas="row">
 				<div class="col-md-2">
 					<fieldset class="leftTabFieldSet tabHeight">
+						<div style="margin-bottom: 5px">
+							<label class="blueColor includeSoajs labelLength f-left">Include SOAJS services:</label>
+							<input type="checkbox" class="inputLength f-right" ng-model="apiRoutes.includeSOAJS" ng-click="toggleApiRoutesSOAJS()">
+						</div>
+						<br>
+						<br>
+						<div>
+							<label class="blueColor">Service Name:</label>
+							<input type="text" class="input90" ng-model="apiRoutes.form.serviceName"/>
+						</div>
+						<hr>
+						<div>
+							<label class="blueColor">Service Group:</label>
+							<input type="text" class="input90" ng-model="apiRoutes.form.serviceGroup"/>
+						</div>
+					</fieldset>
+				</div>
+				<div class="col-md-2">
+					<fieldset class="leftTabFieldSet tabHeight">
 						<h4>Programs: {{apiRoutes.programs.length}}</h4>
 						<div>
-							<input type="text" class="input90 searchBar" ng-model="programSearch"  placeholder="Search ..."/>
+							<input type="text" class="input90 searchBar" ng-model="programSearch" placeholder="Search ..."/>
 						</div>
 						<br>
 						<div class="scrollableProgramTags">
@@ -199,7 +223,7 @@
 					</fieldset>
 				</div>
 				
-				<div class="col-md-8">
+				<div class="col-md-6">
 					<fieldset class="leftTabFieldSet scrollableAttrib">
 						<h4>Attributes: </h4>
 						<br>
@@ -231,12 +255,12 @@
 				</div>
 			</div>
 			<div clas="row">
-				<div class="f-right" style = "margin-bottom: 10px; margin-right: 15px">
+				<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
 					<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="submitApiRoutes()">
 						<span class="icon icon-undo"></span>apply
 					</a>
 				</div>
-				<div class="f-right" style = "margin-bottom: 10px; margin-right: 15px">
+				<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
 					<a href="" class="btn btn-info" tooltip="Apply Filter" ng-click="resetApiRoutes()">
 						<span class="icon icon-loop2"></span>reset
 					</a>
@@ -245,16 +269,16 @@
 			<div clas="row">
 				<div class="col-md-12">
 					<fieldset>
-						<div class="f-left"  style="width: 100%">
+						<div class="f-left" style="width: 100%">
 							<div class="f-left">
-								<h4 >List of APIs: {{apiRoutes.routes.length}}</h4>
+								<h4>List of APIs: {{apiRoutes.routes.length}}</h4>
 							</div>
 							<div class="f-right">
 								<input type="text" class="input90 searchBar" ng-model="apiSearch" placeholder="Search ..."/>
 							</div>
 						</div>
 						<div class="f-left" style="width: 100%">
-							<ul class = "removeTab">
+							<ul class="removeTab">
 								<li class="deleteSquare f-left">Delete: remove information from applications</li>
 								<li class="addSquare f-left">Add: add information to applications</li>
 								

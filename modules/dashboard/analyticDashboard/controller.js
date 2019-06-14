@@ -313,7 +313,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				});
 			});
 		}
-		$scope.includeSOAJS = false;
+		$scope.services.includeSOAJS = false;
 	};
 	
 	$scope.toggleServicesSelection = function (fieldName, value) {
@@ -329,7 +329,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		}
 	};
 	
-	$scope.toggleSOAJS = function () {
+	$scope.toggleServicesSOAJS = function () {
 		$scope.services.form.includeSOAJS = !$scope.services.form.includeSOAJS;
 	};
 	
@@ -360,6 +360,10 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query){
 		$scope.activateApiCatalogTab = true;
 	}
+	
+	$scope.toggleApiRoutesSOAJS = function () {
+		$scope.apiRoutes.form.includeSOAJS = !$scope.apiRoutes.form.includeSOAJS;
+	};
 	$scope.getAnalyticsForApiRoutes = function () {
 		// let opts = {
 		// 	"start": 0,
@@ -389,6 +393,12 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							Object.keys($localStorage.ApiCatalog.query["attributes"]).forEach((att)=>{
 								$scope.apiRoutes.form[att] = $localStorage.ApiCatalog.query[one][att];
 							});
+						}
+						else if (one === "keywords"){
+							$scope.apiRoutes.form = $localStorage.ApiCatalog.query["keywords"];
+						}
+						else if (one === "includeSOAJS"){
+							$scope.apiRoutes.includeSOAJS = $localStorage.ApiCatalog.query["includeSOAJS"];
 						}
 					});
 				}
@@ -465,13 +475,21 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				if ($scope.apiRoutes.form[key].length > 0) {
 					if (key === "tags" || key === "programs") {
 						opts[key] = $scope.apiRoutes.form[key];
-					} else {
+					} else if (key === "serviceGroup" || key === "serviceName") {
+						if (!opts.keywords) {
+							opts.keywords = {}
+						}
+						opts.keywords[key] = $scope.apiRoutes.form[key];
+					}else {
 						if (!opts.attributes) {
 							opts.attributes = {}
 						}
 						opts.attributes[key] = $scope.apiRoutes.form[key];
 					}
 				}
+			}
+			if ($scope.apiRoutes.form.includeSOAJS){
+				opts.includeSOAJS = true;
 			}
 		}
 		$scope.query = opts;
@@ -518,6 +536,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				});
 			});
 		}
+		$scope.apiRoutes.includeSOAJS = false;
 	};
 	
 	$scope.toggleApiRoutesSelection = function (fieldName, value) {

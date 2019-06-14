@@ -18,21 +18,6 @@
 						</div>
 						<hr>
 						<div>
-							<label class="blueColor">Tags:</label>
-							<div class="scrollableDiv">
-								<div ng-repeat="dv in services.tags">
-									<div class="labelLength f-left">
-										<span>{{dv.l}} </span>
-									</div>
-									<div class="inputLength f-right">
-										<input type="checkbox" ng-checked="dv.selected" ng-click="toggleServicesSelection('tags', dv.v)">
-									</div>
-									<br>
-								</div>
-							</div>
-						</div>
-						<hr>
-						<div>
 							<label class="blueColor">Programs:</label>
 							<div class="scrollableDiv">
 								<div ng-repeat="dv in services.programs">
@@ -41,6 +26,21 @@
 									</div>
 									<div class="inputLength f-right">
 										<input type="checkbox" ng-checked="dv.selected" ng-click="toggleServicesSelection('programs', dv.v)">
+									</div>
+									<br>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div>
+							<label class="blueColor">Tags:</label>
+							<div class="scrollableDiv">
+								<div ng-repeat="dv in services.tags">
+									<div class="labelLength f-left">
+										<span>{{dv.l}} </span>
+									</div>
+									<div class="inputLength f-right">
+										<input type="checkbox" ng-checked="dv.selected" ng-click="toggleServicesSelection('tags', dv.v)">
 									</div>
 									<br>
 								</div>
@@ -68,7 +68,7 @@
 								<hr>
 							</div>
 						</fieldset>
-						<button class="btn btn-primary updateButton" ng-click="submitServices()">Update</button>
+						<button class="btn btn-primary updateButton" ng-click="submitServices()"><span class="icon icon-undo"></span>apply</button>
 					</fieldset>
 				</div>
 				<div class="col-md-10">

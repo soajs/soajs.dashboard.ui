@@ -1,6 +1,6 @@
 "use strict";
 var servicesApp = soajsApp.components;
-servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams) {
+servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', 'detectBrowser', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParam, detectBrowsers) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -640,7 +640,6 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 						owner: $scope.owner,
 						repo: $scope.repo,
 						filepath: $scope.service.swaggerFilename ? $scope.service.swaggerFilename : "/swagger.yml",
-						env: $scope.envSelected,
 						serviceName: $scope.serviceName,
 						version: $scope.selectedVersion.toString(),
 						type: 'service'
@@ -865,6 +864,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 			}, 100);
 		} else {
 			//modify the host value with the new domain
+			console.log($scope)
 			if ($scope.environmentTesting && $scope.environments.value !== '---Please choose---') {
 				x[3].host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
 				x[3].info.host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");

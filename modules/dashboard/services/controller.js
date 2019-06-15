@@ -1,6 +1,6 @@
 "use strict";
 var servicesApp = soajsApp.components;
-servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', 'detectBrowser', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParam, detectBrowsers) {
+servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', 'detectBrowser', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParam, detectBrowser) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -479,7 +479,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	
 }]);
 
-servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', '$localStorage', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowse, $cookies, $localStorage) {
+servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'swaggerParser', '$timeout', '$window', 'swaggerClient', 'detectBrowser', '$cookies', '$localStorage', function ($scope, $routeParams, ngDataApi, injectFiles, swaggerParser, $timeout, $window, swaggerClient, detectBrowser, $cookies, $localStorage) {
 	
 	$scope.$parent.isUserLoggedIn();
 	$scope.yamlContent = "";
@@ -728,7 +728,6 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					owner: $scope.service.src.owner,
 					repo: $scope.service.src.repo,
 					filepath: $scope.service.swaggerFilename ? $scope.service.swaggerFilename : "/swagger.yml",
-					env: "dashboard",
 					serviceName: $scope.serviceName,
 					version: version,
 					type: 'service'
@@ -864,7 +863,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 			}, 100);
 		} else {
 			//modify the host value with the new domain
-			console.log($scope)
+			console.log($scope);
 			if ($scope.environmentTesting && $scope.environments.value !== '---Please choose---') {
 				x[3].host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
 				x[3].info.host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");

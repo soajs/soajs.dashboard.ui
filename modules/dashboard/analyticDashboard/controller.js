@@ -462,7 +462,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				};
 				
 				$scope.filterItems = function (apiSearch) {
-					var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route')
+					var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route');
 					setDisplayItems(data);
 					$scope.apiRoutes.paginations.currentPage = 1;
 				};

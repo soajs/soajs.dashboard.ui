@@ -704,9 +704,11 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					try {
 						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
 					} catch (e) {
+						console.log(e)
 						try {
 							$scope.overViewYamlContent = YAML.parse($scope.overViewYamlContent);
 						} catch (e) {
+							console.log(e)
 						}
 					}
 					$scope.overViewisLoading = false;
@@ -739,9 +741,11 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					try {
 						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
 					} catch (e) {
+						console.log(e)
 						try {
 							$scope.overViewYamlContent = YAML.parse($scope.overViewYamlContent);
 						} catch (e) {
+							console.log(e)
 						}
 					}
 					$scope.overViewisLoading = false;

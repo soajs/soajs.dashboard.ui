@@ -238,3 +238,7 @@ ul li.addSquare:before {
     display: inline-block;
     width: 100%;
 }
+
+.removeMarginCheckBox {
+    margin: 0px !important;
+}

@@ -491,7 +491,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	$scope.tempDisable = true;
 	$scope.collapsed = false;
 	$scope.protocolConflict = false;
-	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) {
+	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query || $localStorage.ApiCatalog.query) {
 		$scope.showBackButton = true;
 	}
 	$scope.returnToDashboard = function () {

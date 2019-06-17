@@ -494,6 +494,9 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) {
 		$scope.showBackButton = true;
 	}
+	if ($localStorage.serviceCatalog && $localStorage.serviceCatalog.query) {
+		$scope.showBackButton = true;
+	}
 	$scope.returnToDashboard = function () {
 		$scope.$parent.go("#/analytics", "_blank");
 	};

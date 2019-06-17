@@ -20,16 +20,36 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		// 	"limit": 200
 		// };
 		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
+		let options = {
 			method: 'post',
 			routeName: '/dashboard/services/dashboard/services'
-		}, function (error, response) {
+		};
+		if ($localStorage.serviceCatalog && $localStorage.serviceCatalog.query) {
+			options.data = $localStorage.serviceCatalog.query;
+		}
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.message);
+				delete $localStorage.serviceCatalog;
 			} else {
 				
 				$scope.services.form = {};
+				if ($localStorage.serviceCatalog && $localStorage.serviceCatalog.query && Object.keys($localStorage.serviceCatalog.query).length > 0) {
+					Object.keys($localStorage.serviceCatalog.query).forEach((one) => {
+						if (one === "programs" || one === "tags") {
+							$scope.services.form[one] = $localStorage.serviceCatalog.query[one];
+						} else if (one === "attributes" && $localStorage.serviceCatalog.query["attributes"] && Object.keys($localStorage.serviceCatalog.query["attributes"]).length > 0) {
+							Object.keys($localStorage.serviceCatalog.query["attributes"]).forEach((att) => {
+								$scope.services.form[att] = $localStorage.serviceCatalog.query[one][att];
+							});
+						} else if (one === "keywords") {
+							$scope.services.form = $localStorage.serviceCatalog.query["keywords"];
+						} else if (one === "includeSOAJS") {
+							$scope.services.includeSOAJS = $localStorage.serviceCatalog.query["includeSOAJS"];
+						}
+					});
+				}
 				$scope.services.tags = [];
 				$scope.services.programs = [];
 				$scope.services.attributes = {};
@@ -40,6 +60,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							l: one,
 							v: one
 						};
+						if (options.data && options.data.tags && options.data.tags.indexOf(one) !== -1) {
+							temp.selected = true;
+						}
 						$scope.services.tags.push(temp)
 					});
 				}
@@ -49,6 +72,9 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 							l: one,
 							v: one
 						};
+						if (options.data && options.data.programs && options.data.programs.indexOf(one) !== -1) {
+							temp.selected = true;
+						}
 						$scope.services.programs.push(temp)
 					});
 				}
@@ -61,12 +87,17 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 									l: one,
 									v: one
 								};
+								
+								if (options.data && options.data.attributes && options.data.attributes && options.data.attributes[att] && options.data.attributes[att].length > 0) {
+									if (options.data.attributes[att].indexOf(one) !== -1){
+										temp.selected = true;
+									}
+								}
 								$scope.services.attributes[att].push(temp)
 							});
 						}
 					}
 				}
-				
 				let data = {
 					bar: {
 						//1
@@ -159,6 +190,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 				}
 				services = [];
 				$scope.services.data = data;
+				delete $localStorage.serviceCatalog;
 			}
 		});
 	};
@@ -188,6 +220,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 			}
 		}
 		overlayLoading.show();
+		$scope.query = opts;
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'post',
 			routeName: '/dashboard/services/dashboard/services',
@@ -357,7 +390,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 		return newArr;
 	}
 	
-	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.apiCatalog) {
+	if ($localStorage.ApiCatalog) {
 		$scope.activateApiCatalogTab = true;
 	}
 	
@@ -378,101 +411,95 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 			options.data = $localStorage.ApiCatalog.query;
 		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
-				overlayLoading.hide();
 				$scope.displayAlert('danger', error.message);
+				delete $localStorage.ApiCatalog;
 			} else {
-				getSendDataFromServer($scope, ngDataApi, options, function (error, queryResponse) {
-					overlayLoading.hide();
-					if (error) {
-						$scope.displayAlert('danger', error.message);
-					} else {
-						$scope.apiRoutes.form = {};
-						if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && Object.keys($localStorage.ApiCatalog.query).length > 0) {
-							Object.keys($localStorage.ApiCatalog.query).forEach((one) => {
-								if (one === "programs" || one === "tags") {
-									$scope.apiRoutes.form[one] = $localStorage.ApiCatalog.query[one];
-								} else if (one === "attributes" && $localStorage.ApiCatalog.query["attributes"] && Object.keys($localStorage.ApiCatalog.query["attributes"]).length > 0) {
-									Object.keys($localStorage.ApiCatalog.query["attributes"]).forEach((att) => {
-										$scope.apiRoutes.form[att] = $localStorage.ApiCatalog.query[one][att];
-									});
-								} else if (one === "keywords") {
-									$scope.apiRoutes.form = $localStorage.ApiCatalog.query["keywords"];
-								} else if (one === "includeSOAJS") {
-									$scope.apiRoutes.includeSOAJS = $localStorage.ApiCatalog.query["includeSOAJS"];
-								}
+				$scope.apiRoutes.form = {};
+				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && Object.keys($localStorage.ApiCatalog.query).length > 0) {
+					Object.keys($localStorage.ApiCatalog.query).forEach((one) => {
+						if (one === "programs" || one === "tags") {
+							$scope.apiRoutes.form[one] = $localStorage.ApiCatalog.query[one];
+						} else if (one === "attributes" && $localStorage.ApiCatalog.query["attributes"] && Object.keys($localStorage.ApiCatalog.query["attributes"]).length > 0) {
+							Object.keys($localStorage.ApiCatalog.query["attributes"]).forEach((att) => {
+								$scope.apiRoutes.form[att] = $localStorage.ApiCatalog.query[one][att];
 							});
+						} else if (one === "keywords") {
+							$scope.apiRoutes.form = $localStorage.ApiCatalog.query["keywords"];
+						} else if (one === "includeSOAJS") {
+							$scope.apiRoutes.includeSOAJS = $localStorage.ApiCatalog.query["includeSOAJS"];
 						}
-						$scope.apiRoutes.tags = [];
-						$scope.apiRoutes.programs = [];
-						$scope.apiRoutes.attributes = {};
-						
-						if (response.tags && response.tags.length > 0) {
-							response.tags.forEach((one) => {
-								let temp = {
-									l: one,
-									v: one
-								};
-								if (options.data && options.data.tags && options.data.tags.indexOf(one) !== -1) {
-									temp.selected = true;
-								}
-								$scope.apiRoutes.tags.push(temp)
-							});
+					});
+				}
+				$scope.apiRoutes.tags = [];
+				$scope.apiRoutes.programs = [];
+				$scope.apiRoutes.attributes = {};
+				
+				if (response.tags && response.tags.length > 0) {
+					response.tags.forEach((one) => {
+						let temp = {
+							l: one,
+							v: one
+						};
+						if (options.data && options.data.tags && options.data.tags.indexOf(one) !== -1) {
+							temp.selected = true;
 						}
-						if (response.programs && response.programs.length > 0) {
-							response.programs.forEach((one) => {
-								let temp = {
-									l: one,
-									v: one
-								};
-								if (options.data && options.data.programs && options.data.programs.indexOf(one) !== -1) {
-									temp.selected = true;
-								}
-								$scope.apiRoutes.programs.push(temp)
-							});
+						$scope.apiRoutes.tags.push(temp)
+					});
+				}
+				if (response.programs && response.programs.length > 0) {
+					response.programs.forEach((one) => {
+						let temp = {
+							l: one,
+							v: one
+						};
+						if (options.data && options.data.programs && options.data.programs.indexOf(one) !== -1) {
+							temp.selected = true;
 						}
-						let attributes = [];
-						if (response.attributes && Object.keys(response.attributes).length > 0) {
-							for (let att in response.attributes) {
-								if (response.attributes[att] && response.attributes[att].length > 0) {
-									let temp = {
-										[att]: []
-									};
-									let temp2;
-									if (options.data && options.data.attributes && options.data.attributes[att]) {
-										temp2 = options.data.attributes[att];
-									}
-									response.attributes[att].forEach((one) => {
-										let temp3 = {
-											l: one,
-											v: one
-										};
-										if (temp2 && temp2.indexOf(one) !== -1) {
-											temp3.selected = true;
-										}
-										temp[att].push(temp3);
-									});
-									attributes.push(temp);
-								}
+						$scope.apiRoutes.programs.push(temp)
+					});
+				}
+				let attributes = [];
+				if (response.attributes && Object.keys(response.attributes).length > 0) {
+					for (let att in response.attributes) {
+						if (response.attributes[att] && response.attributes[att].length > 0) {
+							let temp = {
+								[att]: []
+							};
+							let temp2;
+							if (options.data && options.data.attributes && options.data.attributes[att]) {
+								temp2 = options.data.attributes[att];
 							}
+							response.attributes[att].forEach((one) => {
+								let temp3 = {
+									l: one,
+									v: one
+								};
+								if (temp2 && temp2.indexOf(one) !== -1) {
+									temp3.selected = true;
+								}
+								temp[att].push(temp3);
+							});
+							attributes.push(temp);
 						}
-						$scope.apiRoutes.attributes = chunk(attributes, 3);
-						$scope.apiRoutes.routes = queryResponse.data;
-						$scope.itemsPerPage = 20;
-						$scope.maxSize = 5;
-						$scope.apiRoutes.paginations = {
-							currentPage: 1,
-							totalItems: $scope.apiRoutes.routes.length
-						};
-						$scope.filterItems = function (apiSearch) {
-							var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route');
-							setDisplayItems(data);
-							$scope.apiRoutes.paginations.currentPage = 1;
-						};
-						setDisplayItems($scope.apiRoutes.routes);
-						delete $localStorage.ApiCatalog;
 					}
-				});
+				}
+				$scope.apiRoutes.attributes = chunk(attributes, 3);
+				$scope.apiRoutes.routes = response.data;
+				$scope.itemsPerPage = 20;
+				$scope.maxSize = 5;
+				$scope.apiRoutes.paginations = {
+					currentPage: 1,
+					totalItems: $scope.apiRoutes.routes.length
+				};
+				$scope.filterItems = function (apiSearch) {
+					var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route');
+					setDisplayItems(data);
+					$scope.apiRoutes.paginations.currentPage = 1;
+				};
+				setDisplayItems($scope.apiRoutes.routes);
+				delete $localStorage.ApiCatalog;
 			}
 		});
 	};
@@ -574,11 +601,16 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	};
 	
 	$scope.redirectToService = function (serviceName, apiCatalog) {
-		$scope.$parent.go("#/services/swaggerui/" + serviceName, "_blank");
-		$localStorage.ApiCatalog = {
-			query: $scope.query ? $scope.query : {},
-			apiCatalog: !!apiCatalog
+		if (apiCatalog) {
+			$localStorage.ApiCatalog = {
+				query: $scope.query ? $scope.query : {},
+			}
+		} else {
+			$localStorage.serviceCatalog = {
+				query: $scope.query ? $scope.query : {},
+			}
 		}
+		$scope.$parent.go("#/services/swaggerui/" + serviceName, "_blank");
 	};
 
 // Start here

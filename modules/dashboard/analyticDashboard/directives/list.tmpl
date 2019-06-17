@@ -289,7 +289,6 @@
 						<div class="f-left apiRoutesHr">
 							<hr>
 						</div>
-<!--						<div ng-repeat="api in apiRoutes.routes.slice(((apiRoutes.paginations.currentPage-1)*itemsPerPage), ((apiRoutes.paginations.currentPage)*itemsPerPage))  | routeSearchFilter:apiSearch ">-->
 						<div ng-repeat="api in displayItems |limitTo: itemsPerPage:apiRoutes.paginations.currentPage-1  as filteredItems">
 							<div ng-class="{updateRoute: api.method ==='put', addRoute:api.method ==='post', readRoute:  api.method ==='get', deleteRoute:  api.method ==='delete'}">
 								<span class="f-left apiRoute">{{api.route}}</span>

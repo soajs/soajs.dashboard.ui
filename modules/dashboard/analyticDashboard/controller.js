@@ -460,22 +460,20 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					currentPage: 1,
 					totalItems: $scope.apiRoutes.routes.length
 				};
-				
 				$scope.filterItems = function (apiSearch) {
 					var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route');
 					setDisplayItems(data);
 					$scope.apiRoutes.paginations.currentPage = 1;
 				};
 				setDisplayItems($scope.apiRoutes.routes);
-				delete $localStorage.ApiCatalog;
-			}
-			
-			function setDisplayItems(data) {
-				$scope.displayItems = data;
-				$scope.apiRoutes.paginations.totalItems = data.length;
 			}
 		});
 	};
+	
+	function setDisplayItems(data) {
+		$scope.displayItems = data;
+		$scope.apiRoutes.paginations.totalItems = data.length;
+	}
 	
 	$scope.submitApiRoutes = function () {
 		let opts = {};
@@ -520,6 +518,12 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 					currentPage: 1,
 					totalItems: $scope.apiRoutes.routes.length
 				};
+				$scope.filterItems = function (apiSearch) {
+					var data = $filter('filter')($scope.apiRoutes.routes, apiSearch, false, 'route');
+					setDisplayItems(data);
+					$scope.apiRoutes.paginations.currentPage = 1;
+				};
+				setDisplayItems($scope.apiRoutes.routes);
 			}
 		});
 	};

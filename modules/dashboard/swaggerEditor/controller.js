@@ -41,10 +41,12 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 			$scope.schemaCodeF= YAML.parse($scope.schemaCode);
 		}
 		catch (e) {
+			console.log(e)
 			try {
 				$scope.schemaCodeF= JSON.parse($scope.schemaCode);
 			}
 			catch (e) {
+				console.log(e)
 			}
 		}
 		watchSwaggerSimulator(function () {
@@ -113,7 +115,7 @@ swaggerEditorApp.controller('swaggerEditorCtrl', ['$scope', '$timeout', 'injectF
 			x[3].basePath = "/dashboard/swagger/simulate";
 			x[3].info.basePath = "/dashboard/swagger/simulate";
 			console.log("switching to host and basepath to swagger simulate api in dashboard:", x[3].host + x[3].basePath);
-			$scope.swaggerCode = x[4];
+			$scope.swaggerCode = x[3];
 			//apply the changes
 			swaggerParser.execute.apply(null, x);
 			return cb(null, true);

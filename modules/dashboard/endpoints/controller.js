@@ -1515,7 +1515,7 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 			x[3].basePath = "/dashboard/swagger/simulate";
 			x[3].info.basePath = "/dashboard/swagger/simulate";
 			console.log("switching to host and basepath to swagger simulate api in dashboard:", x[3].host + x[3].basePath);
-			$scope.swaggerCode = x[4];
+			$scope.swaggerCode = x[3];
 			//apply the changes
 			swaggerParser.execute.apply(null, x);
 			return cb(null, true);
@@ -1528,6 +1528,18 @@ servicesApp.controller('endpointController', ['$scope', '$timeout', '$modal', '$
 		}
 		
 		$scope.tempo.swagger[endpoint._id].schemaCodeF = endpoint.swaggerInput;
+		try {
+			$scope.tempo.swagger[endpoint._id].schemaCodeF = YAML.parse($scope.tempo.swagger[endpoint._id].schemaCodeF );
+		}
+		catch (e) {
+			console.log(e)
+			try {
+				$scope.tempo.swagger[endpoint._id].schemaCodeF = JSON.parse($scope.tempo.swagger[endpoint._id].schemaCodeF );
+			}
+			catch (e) {
+				console.log(e)
+			}
+		}
 		watchSwaggerSimulator(function () {
 			console.log("swagger ui info has been updated");
 		});

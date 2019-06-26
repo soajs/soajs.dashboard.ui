@@ -88,7 +88,8 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 						let version = soa.serviceVersion || 1;
 						data.versions[version].soaVersion = {
 							git: git,
-							type: "git"
+							type: "git",
+							content: JSON.stringify(soa)
 						};
 						getSendDataFromServer($scope, ngDataApi, {
 							method: 'get',
@@ -369,7 +370,8 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 							if (data.versions[oneSoa.version]) {
 								data.versions[oneSoa.version].soaVersion = {
 									git: oneSoa.content.git,
-									type: oneSoa.content.type
+									type: oneSoa.content.type,
+									content: oneSoa.content.content
 								};
 							}
 						});
@@ -1253,13 +1255,13 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					'btn': 'primary',
 					'action': function (formData) {
 						let swagger = angular.copy($scope.schemaCodeF) && angular.copy($scope.schemaCodeF) !== '' ? angular.copy($scope.schemaCodeF) : null;
-						
+						console.log(swagger)
 						if (swagger && $localStorage.addPassThrough
 							&& $localStorage.addPassThrough.step1
 							&& $localStorage.addPassThrough.step1.versions
 							&& $localStorage.addPassThrough.step1.versions[v]) {
 							$localStorage.addPassThrough.step1.versions[v].swagger = {
-								"swaggerInput": swagger,
+								"swaggerInput": JSON.stringify(swagger),
 								"swaggerInputType": formData.swaggerInputType
 							};
 							if (formData.swaggerInputType === "git" && $scope.git) {
@@ -1317,7 +1319,11 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 								});
 								$scope.syncGitSwagger();
 							}
-							$scope.editor.setValue($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInput);
+							try {
+								$scope.editor.setValue($localStorage.addPassThrough.step1.versions[v].swagger.swaggerInput);
+							} catch (e) {
+								console.log(e);
+							}
 						}, 400);
 					}
 				}
@@ -1384,18 +1390,28 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	$scope.moveYamlRight = function () {
 		$scope.schemaCodeF = $scope.schemaCode;
 		try {
-			$scope.schemaCodeF= YAML.parse($scope.schemaCode);
-		}
-		catch (e) {
+			$scope.schemaCodeF = YAML.parse($scope.schemaCode);
+		} catch (e) {
 			try {
-				$scope.schemaCodeF= JSON.parse($scope.schemaCode);
-			}
-			catch (e) {
+				$scope.schemaCodeF = JSON.parse($scope.schemaCode);
+			} catch (e) {
 			}
 		}
-		$scope.editor.setValue( $scope.schemaCode);
 		watchSwaggerSimulator(function () {
-			console.log("swagger ui info has been updated");
+			$timeout(function () {
+				try {
+					$scope.schemaCodeF = YAML.parse($scope.schemaCode);
+				} catch (e) {
+					try {
+						$scope.schemaCodeF = JSON.parse($scope.schemaCode);
+					} catch (e) {
+					}
+				}
+				$scope.editor.setValue($scope.schemaCode);
+				watchSwaggerSimulator(function () {
+					console.log("swagger ui info has been updated");
+				});
+			}, 100);
 		});
 	};
 	

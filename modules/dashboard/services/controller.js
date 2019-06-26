@@ -544,17 +544,22 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 				}
 				$scope.overViewVersions = [];
 				$scope.environmentTesting = true;
-				Object.keys(response.records[0].versions).forEach(function (oneVer) {
-					$scope.versions.push(oneVer);
-					$scope.overViewVersions.push(oneVer);
-				});
-				$scope.serviceVersions = response.records[0].versions;
-				if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && $scope.service.swagger) {
-					if ($scope.versions && $scope.versions.length > 0) {
-						$scope.overviewSelectedVersion = $scope.versions[$scope.versions.length - 1];
-						$scope.overViewGetYaml($scope.versions[$scope.versions.length - 1], cb);
+				if (response.records[0].versions){
+					Object.keys(response.records[0].versions).forEach(function (oneVer) {
+						$scope.versions.push(oneVer);
+						$scope.overViewVersions.push(oneVer);
+					});
+					$scope.serviceVersions = response.records[0].versions;
+					if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && $scope.service.swagger) {
+						if ($scope.versions && $scope.versions.length > 0) {
+							$scope.overviewSelectedVersion = $scope.versions[$scope.versions.length - 1];
+							$scope.overViewYamlContent = $scope.service.versions[$scope.versions[$scope.versions.length - 1]].swagger;
+						}
+					} else {
+						return cb();
 					}
-				} else {
+				}
+				else {
 					return cb();
 				}
 				
@@ -585,181 +590,13 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	};
 	
 	$scope.selectOverViewVersion = function (version) {
-		$scope.overViewGetYaml(version);
-	};
-	
-	$scope.getYaml = function (cb) {
-		if ($scope.serviceProvider === 'endpoint' || $scope.repo === 'soajs.epg') {
-			let opts = {
-				"method": "get",
-				"routeName": "/dashboard/apiBuilder/get",
-				"params": {
-					mainType: $scope.serviceProvider === 'endpoint' ? "passThroughs" : "endpoints",
-					id: $scope.epId
-				}
-			};
-			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					return cb(false);
-				} else {
-					if ($scope.serviceProvider === 'endpoint') {
-						if (response && response.src) {
-							if (response.src.swagger && response.src.swagger.length > 0) {
-								for (let i = 0; i < response.src.swagger.length; i++) {
-									if (response.src.swagger[i].version === $scope.selectedVersion) {
-										$scope.yamlContent = response.src.swagger[i].content.content;
-									}
-								}
-							}
-							if (response.src.url) {
-								$scope.url = response.src.url;
-							}
-						}
-					} else {
-						$scope.yamlContent = response.swaggerInput;
-					}
-					$scope.yamlContentRaw = angular.copy($scope.yamlContent);
-					try {
-						$scope.yamlContent = JSON.parse($scope.yamlContent);
-					} catch (e) {
-						console.log(e);
-						try {
-							$scope.yamlContent = YAML.parse($scope.yamlContent);
-						} catch (e) {
-							console.log(e);
-						}
-					}
-					$scope.isLoading = false;
-					return cb(true);
-				}
-			});
-		} else {
-			if ($scope.envSelected) {
-				getSendDataFromServer($scope, ngDataApi, {
-					"method": "get",
-					"routeName": "/dashboard/gitAccounts/getYaml",
-					"params": {
-						owner: $scope.owner,
-						repo: $scope.repo,
-						filepath: $scope.service.swaggerFilename ? $scope.service.swaggerFilename : "/swagger.yml",
-						serviceName: $scope.serviceName,
-						version: $scope.selectedVersion.toString(),
-						type: 'service'
-					}
-				}, function (error, response) {
-					if (error) {
-						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						return cb(false);
-					} else {
-						$scope.yamlContent = response.content;
-						$scope.yamlContentRaw = angular.copy($scope.yamlContent);
-						try {
-							$scope.yamlContent = JSON.parse($scope.yamlContent);
-						} catch (e) {
-							console.log(e);
-							try {
-								$scope.yamlContent = YAML.parse($scope.yamlContent);
-							} catch (e) {
-								console.log(e);
-							}
-						}
-						$scope.link = response.downloadLink;
-						//init form for swagger UI
-						$scope.isLoading = false;
-						// Todo change this to $scope.downloadLink instead of the given url
-						$scope.swaggerUrl = $scope.link;
-						return cb(true);
-					}
-				});
-			}
+		try {
+			$scope.overViewYamlContent = JSON.parse($scope.service.versions[version].swagger);
 		}
-	};
-	
-	$scope.overViewGetYaml = function (version, cb) {
-		$scope.overViewisLoading = true;
-		if ($scope.serviceProvider === 'endpoint' || $scope.service.src.repo === 'soajs.epg') {
-			let opts = {
-				"method": "get",
-				"routeName": "/dashboard/apiBuilder/get",
-				"params": {
-					mainType: $scope.serviceProvider === 'endpoint' ? "passThroughs" : "endpoints",
-					id: $scope.epId
-				}
-			};
-			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					if (cb && typeof cb === "function") {
-						return cb(false);
-					}
-				} else {
-					if ($scope.serviceProvider === 'endpoint') {
-						if (response && response.src) {
-							if (response.src.swagger && response.src.swagger.length > 0) {
-								for (let i = 0; i < response.src.swagger.length; i++) {
-									if (response.src.swagger[i].version === version) {
-										$scope.overViewYamlContent = response.src.swagger[i].content.content;
-									}
-								}
-							}
-						}
-					} else {
-						$scope.overViewYamlContent = response.swaggerInput;
-					}
-					try {
-						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
-					} catch (e) {
-						console.log(e);
-						try {
-							$scope.overViewYamlContent = YAML.parse($scope.overViewYamlContent);
-						} catch (e) {
-							console.log(e);
-						}
-					}
-					$scope.overViewisLoading = false;
-					if (cb && typeof cb === "function") {
-						return cb(true);
-					}
-				}
-			});
-		} else {
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "get",
-				"routeName": "/dashboard/gitAccounts/getYaml",
-				"params": {
-					owner: $scope.service.src.owner,
-					repo: $scope.service.src.repo,
-					filepath: $scope.service.swaggerFilename ? $scope.service.swaggerFilename : "/swagger.yml",
-					serviceName: $scope.serviceName,
-					version: version,
-					type: 'service'
-				}
-			}, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					if (cb && typeof cb === "function") {
-						return cb(false);
-					}
-				} else {
-					$scope.overViewYamlContent = response.content;
-					try {
-						$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
-					} catch (e) {
-						console.log(e);
-						try {
-							$scope.overViewYamlContent = YAML.parse($scope.overViewYamlContent);
-						} catch (e) {
-							console.log(e);
-						}
-					}
-					$scope.overViewisLoading = false;
-					if (cb && typeof cb === "function") {
-						return cb(true);
-					}
-				}
-			});
+		catch (e){
+			console.log(e);
 		}
+		
 	};
 	
 	$scope.selectType = function (value) {
@@ -819,11 +656,23 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	};
 	
 	$scope.run = function () {
-		fillmyEditor($scope.editor, () => {
+		try {
+			$scope.yamlContent = JSON.parse($scope.service.versions[$scope.selectedVersion].swagger);
+			if ($scope.service.src.simulateUrl) {
+				$scope.url = $scope.service.src.simulateUrl;
+			}
+			$scope.editor.setValue(angular.copy(JSON.stringify($scope.yamlContent, null, 2)));
+			$scope.editor.scrollToLine(0, true, true);
+			$scope.editor.scrollPageUp();
+			$scope.editor.clearSelection();
+			watchSwaggerSimulator();
 			$timeout(function () {
 				watchSwaggerSimulator();
-			}, 400);
-		});
+			}, 1);
+		}
+		catch (e) {
+			console.log(e);
+		}
 	};
 	
 	//event listener that hooks ace editor to the scope and hide the print margin in the editor
@@ -834,39 +683,17 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	};
 	
 	/*
-	 * This function uses the editor instance to fill the new data values
-	 * Then it calls the simulator of swagger
-	 */
-	function fillmyEditor(_editor, cb) {
-		$scope.getYaml(function (done) {
-			if (done) {
-				_editor.setValue($scope.yamlContentRaw);
-			} else {
-				_editor.setValue("");
-			}
-			
-			_editor.scrollToLine(0, true, true);
-			_editor.scrollPageUp();
-			_editor.clearSelection();
-			watchSwaggerSimulator();
-			return cb();
-		});
-	}
-	
-	/*
 	 * This function updates the host value of the swagger simulator
 	 */
 	function watchSwaggerSimulator() {
 		//grab the swagger info
 		var x = swaggerParser.fetch();
-		console.log(angular.copy(x))
 		if (!x || x.length === 0 || typeof (x[3]) !== 'object' || Object.keys(x[3]).length === 0) {
 			$timeout(function () {
 				watchSwaggerSimulator();
 			}, 100);
 		} else {
 			//modify the host value with the new domain
-			console.log($scope);
 			if ($scope.environmentTesting && $scope.environments.value !== '---Please choose---') {
 				x[3].host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
 				x[3].info.host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
@@ -910,6 +737,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					x[3].proxyRoute = $scope.url;
 					x[3].tenant_access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 					x[3].basePath = '/proxy/redirect';
+					console.log(x)
 					console.log("switching to new domain:", x[3].host);
 					swaggerParser.execute.apply(null, x);
 				}

@@ -32,7 +32,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							name: formData.name,
 							type: formData.type,
 							category: formData.category,
-							locked: formData.locked || false,
+							//locked: formData.locked || false,
 							plugged: formData.plugged || false,
 							shared: formData.shared || false,
 							config: formData.config

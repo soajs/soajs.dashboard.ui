@@ -29,13 +29,13 @@
 				<label class="fieldMsg">Turn this on if you want this resource to be available in the registry for your services & daemons</label>
 				<br /><br />
 			</div>
-			<div ng-show = 'driverConfigurationSchema !== ""'>
-				<label>Lock Resource</label>
-				<label ng-show="allowEdit && !sensitive" class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.locked"><span class="buttonSlider round"></span></label>
-				<label ng-show="!allowEdit || sensitive" class="toggleSwitch f-right"><input disabled type="checkbox" ng-model="formData.locked"><span class="buttonSlider round"></span></label>
-				<label class="fieldMsg">Turn this on if you want to protect this resource and make it readonly for others</label>
-				<br /><br />
-			</div>
+<!--			<div ng-show = 'driverConfigurationSchema !== ""'>-->
+<!--				<label>Lock Resource</label>-->
+<!--				<label ng-show="allowEdit && !sensitive" class="toggleSwitch f-right"><input type="checkbox" ng-model="formData.locked"><span class="buttonSlider round"></span></label>-->
+<!--				<label ng-show="!allowEdit || sensitive" class="toggleSwitch f-right"><input disabled type="checkbox" ng-model="formData.locked"><span class="buttonSlider round"></span></label>-->
+<!--				<label class="fieldMsg">Turn this on if you want to protect this resource and make it readonly for others</label>-->
+<!--				<br /><br />-->
+<!--			</div>-->
 			<div ng-show="(allowEdit && !sensitive) && driverConfigurationSchema !== ''">
 				<label>Share Resource With Other Environments</label>
 				<label class="toggleSwitch f-right"><input type="checkbox" ng-click="getEnvs()" ng-model="formData.shared"><span class="buttonSlider round"></span></label>

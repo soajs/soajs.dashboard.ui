@@ -248,7 +248,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						v: "N/A"
 					})
 				}
-				groupEntry.disabled = true;
 				config.entries.push(groupEntry);
 				var options = {
 					timeout: $timeout,

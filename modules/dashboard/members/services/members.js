@@ -801,7 +801,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					keyboard: true,
 					controller: function ($scope) {
 						fixBackDrop();
-						$scope.title = 'Invite User';
+						$scope.title = 'Edit User';
 						$scope.message = {};
 						$scope.displayAlert = function (type, message) {
 							$scope.message[type] = message;

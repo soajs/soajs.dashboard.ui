@@ -220,7 +220,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							{
 								'name': 'pin',
 								'label': 'PIN',
-								'type': 'text',
+								'type': 'buttonSlider',
 								'value': '',
 								'tooltip': 'Enter Pin Code',
 								'required': false
@@ -610,9 +610,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						{
 							'name': 'pinCode',
 							'label': 'PIN',
-							'type': 'text',
+							'type': 'buttonSlider',
 							'value': data.tenant.pin ? data.tenant.pin.code: null,
-							'tooltip': 'Enter Pin Code',
+							'tooltip': 'Check to add Pin Code',
 							'required': false
 						},
 						{
@@ -670,12 +670,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								if (formData.groups){
 									postData.groups = [formData.groups];
 								}
-								if (formData.pinCode){
-									postData.pin = {
-										code: formData.pinCode,
-										allowed: !!formData.allowedLogin
-									}
-								}
+								postData.pin = {
+									code: !!formData.pinCode,
+									allowed: !!formData.allowedLogin
+								};
 								var opts = {
 									"method": "post",
 									"routeName": "/urac/admin/editUser",
@@ -801,7 +799,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					keyboard: true,
 					controller: function ($scope) {
 						fixBackDrop();
-						$scope.title = 'Invite User';
+						$scope.title = 'Edit User';
 						$scope.message = {};
 						$scope.displayAlert = function (type, message) {
 							$scope.message[type] = message;

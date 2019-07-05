@@ -7,23 +7,23 @@
 			<alert type="danger">{{message.danger}}</alert>
 			<br>
 		</div>
-		<form name="inviteUser" id="gitConf" ng-submit="inviteUser.$valid && onSubmit()">
+		<form name="editInviteSub" id="gitConf" ng-submit="editInviteSub.$valid && onSubmit()">
 			<div class="form-group">
 				<div class="c-both">
 					<label>Username: </label>
-					<input class="form-control" required=true type="text" ng-required="true" ng-disabled="true" ng-model="username"/>
+					<input class="form-control" type="text"  ng-disabled="true" ng-model="username"/>
 				</div>
 				<br>
 				<div class="c-both">
 					<label>Email: </label>
-					<input class="form-control" required=true type="text" ng-required="true" ng-disabled="true" ng-model="email"/>
+					<input class="form-control"  type="text" ng-disabled="true" ng-model="email"/>
 				</div>
 				<br>
 				<fieldset>
 					<legend>Pin Configuration</legend>
 					<div class="c-both">
 						<label>Change Pin: </label>
-						<label class="toggleSwitch"><input type="checkbox" ng-checked=false required=false ng-model="formData.pinCode"><span class="buttonSlider round"></span></label>
+						<label class="toggleSwitch"><input type="checkbox" ng-checked=false ng-model="formData.pinCode"><span class="buttonSlider round"></span></label>
 					</div>
 					<br>
 					<div class="c-both">

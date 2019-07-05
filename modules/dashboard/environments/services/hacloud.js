@@ -770,9 +770,21 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			}
 			else {
 				var failCount = 0;
+				var formConfig = angular.copy(environmentsConfig.form.multiServiceInfo);
 				heartbeatResponse.forEach(function (oneHeartBeat) {
 					service.tasks.forEach(function (oneServiceTask) {
 						if (oneServiceTask.id === oneHeartBeat.id) {
+							formConfig.entries[0].tabs.push({
+								'label': oneServiceTask.id,
+								'entries': [
+									{
+										'name': service.name,
+										'type': 'jsoneditor',
+										'height': '500px',
+										"value": oneHeartBeat.response
+									}
+								]
+							});
 							if (!oneHeartBeat.response.result) {
 								oneServiceTask.status.state = 'Unreachable';
 
@@ -807,6 +819,27 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 				else {
 					service.color = 'green';
 				}
+				
+				var options = {
+					timeout: $timeout,
+					form: formConfig,
+					name: 'heartbeat',
+					label: "Heart Beat of " + service.name,
+					actions: [
+						{
+							'type': 'reset',
+							'label': translation.ok[LANG],
+							'btn': 'primary',
+							'action': function (formData) {
+								currentScope.modalInstance.dismiss('cancel');
+								currentScope.registryInfo = [];
+								currentScope.form.formData = {};
+							}
+						}
+					]
+				};
+				
+				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
 	}

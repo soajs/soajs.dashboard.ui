@@ -161,7 +161,6 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 		});
 	};
 	
-	
 	$scope.listServices = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
@@ -550,10 +549,17 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 						$scope.overViewVersions.push(oneVer);
 					});
 					$scope.serviceVersions = response.records[0].versions;
-					if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query && $scope.service.swagger) {
+					if ((($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) || ( $localStorage.serviceCatalog && $localStorage.serviceCatalog.query ))
+						&& $scope.service.swagger) {
 						if ($scope.versions && $scope.versions.length > 0) {
 							$scope.overviewSelectedVersion = $scope.versions[$scope.versions.length - 1];
 							$scope.overViewYamlContent = $scope.service.versions[$scope.versions[$scope.versions.length - 1]].swagger;
+							try {
+								$scope.overViewYamlContent = JSON.parse($scope.overViewYamlContent);
+							}
+							catch (e){
+								console.log(e);
+							}
 						}
 					} else {
 						return cb();

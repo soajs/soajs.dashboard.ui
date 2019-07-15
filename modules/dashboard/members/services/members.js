@@ -333,7 +333,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function inviteUser(currentScope, moduleConfig, useCookie, env, ext, subExt) {
-		let tenantCode = currentScope.tenant.code;
 		let tenantId = currentScope.tenant._id;
 		overlayLoading.show();
 		let opts ={
@@ -444,8 +443,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"username": $scope.formData.username
 								},
 								"data": {
-									"tenantId": tenantId,
-									"tenantCode": tenantCode,
+								
 								}
 							};
 							if (env && ext){
@@ -455,14 +453,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"params": {
 										"username": $scope.formData.username,
 										'proxyRoute': '/urac/admin/inviteUser',
-										"extKey": ext
+										"extKey": subExt
 									},
 									"headers": {
 										"__env": env
 									},
 									"data": {
-										"tenantId": tenantId,
-										"tenantCode": tenantCode,
+									
 									}
 								};
 							}
@@ -505,7 +502,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function unInviteUser(currentScope, moduleConfig, useCookie, env, ext) {
-		let tenantId = currentScope.tenant._id;
 		let usernames = [];
 		for (var i = currentScope.grid.rows.length - 1; i >= 0; i--) {
 			if (currentScope.grid.rows[i].selected) {
@@ -516,9 +512,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		let opts ={
 			"method": "put",
 			"routeName": "/urac/admin/unInviteUsers",
-			"params": {
-				"tenantId": [tenantId],
-			},
 			"data": {
 				"username": usernames
 			}
@@ -528,7 +521,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"method": "put",
 				"routeName": "/proxy/redirect",
 				"params": {
-					"tenantId": [tenantId],
 					'proxyRoute': '/urac/admin/unInviteUsers',
 					"extKey": ext
 				},
@@ -572,7 +564,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'tId': tenantId,
 					'proxyRoute': '/urac/admin/group/list',
 					"extKey": ext
 				},
@@ -730,21 +721,19 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		});
 	}
 	
-	function editSubMember(currentScope, moduleConfig, data, useCookie, env, ext, subExt) {
+	function editSubMember(currentScope, moduleConfig, data, useCookie, env, subExt) {
 		let tenantId = currentScope.tenant._id;
-		let tenantCode= currentScope.tenant.code;
 		overlayLoading.show();
 		let opts ={
 			"method": "get",
 			"routeName": "/urac/admin/group/list",
 			"params": {'tId': tenantId}
 		};
-		if (env && ext){
+		if (env && subExt){
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'tId': tenantId,
 					'proxyRoute': '/urac/admin/group/list',
 					"extKey": subExt
 				},
@@ -830,25 +819,22 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"username": $scope.username
 								},
 								"data": {
-									"tenantId": tenantId,
-									"tenantCode": tenantCode,
 								}
 							};
-							if (env && ext){
+							if (env && subExt){
 								opts = {
 									"method": "put",
 									"routeName": "/proxy/redirect",
 									"params": {
 										"username": $scope.username,
 										'proxyRoute': '/urac/admin/userTenantConfig',
-										"extKey": ext
+										"extKey": subExt
 									},
 									"headers": {
 										"__env": env
 									},
 									"data": {
-										"tenantId": tenantId,
-										"tenantCode": tenantCode,
+									
 									}
 								};
 							}
@@ -890,7 +876,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	
 	function removePin(currentScope, moduleConfig, data, env, ext) {
 		overlayLoading.show();
-		let tenantId = currentScope.tenant._id;
 		var config = {
 			"headers": {
 			},
@@ -902,7 +887,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"routeName": "/proxy/redirect",
 				"params": {
 					'username': data.username,
-					"tenantId": tenantId,
 					'proxyRoute': '/urac/admin/pinConfig',
 					"extKey": ext
 				},

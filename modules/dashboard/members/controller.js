@@ -396,14 +396,14 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				};
 				
 				$scope.subTenantMembers.unInviteUser = function () {
-					membersHelper.unInviteUser($scope.subTenantMembers, membersConfig, false, env, mainExt);
+					membersHelper.unInviteUser($scope.subTenantMembers, membersConfig, false, env, subExt);
 				};
 				
 				$scope.subTenantMembers.editSubMember = function (data) {
-					membersHelper.editSubMember($scope.subTenantMembers, membersConfig, data, false, env, mainExt, subExt);
+					membersHelper.editSubMember($scope.subTenantMembers, membersConfig, data, false, env, subExt);
 				};
 				$scope.subTenantMembers.removePin = function (data) {
-					membersHelper.removePin($scope.subTenantMembers, membersConfig, data, env, mainExt);
+					membersHelper.removePin($scope.subTenantMembers, membersConfig, data, env, subExt);
 				};
 			});
 		}

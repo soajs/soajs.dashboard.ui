@@ -181,7 +181,9 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									let allowedEnvironments = {};
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
-											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
+												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											}
 										}
 										if(key && key.indexOf("allowedEnvironments")!== -1){
 											formData[key].forEach((oneKey)=>{
@@ -273,7 +275,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 							temp.label = "Product: " + OneProduct.name;
 							temp.name = "package" + count;
 							count++;
-							temp.value = selectablePackages
+							temp.value = selectablePackages;
 							config.entries.push(temp);
 						}
 					});
@@ -291,7 +293,9 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									let allowedPackages = {};
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
-											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
+												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											}
 										}
 									});
 									var postData = {
@@ -435,7 +439,9 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									let allowedEnvironments = {};
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
-											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
+												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											}
 										}
 										if(key && key.indexOf("allowedEnvironments")!== -1){
 											formData[key].forEach((oneKey)=>{
@@ -568,7 +574,9 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									let allowedPackages = {};
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
-											allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
+												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											}
 										}
 									});
 									var postData = {

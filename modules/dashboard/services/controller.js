@@ -560,6 +560,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 							catch (e){
 								console.log(e);
 							}
+							return cb();
 						}
 					} else {
 						return cb();

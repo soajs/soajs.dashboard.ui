@@ -289,7 +289,7 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 				};
 				
 				$scope.groupsMembers.editGroup = function (data) {
-					groupsHelper.groupsMembers.editGroup($scope.groupsMembers, groupsConfig, data, false, env, ext);
+					groupsHelper.editGroup($scope.groupsMembers, groupsConfig, data, false, env, ext);
 				};
 				
 				$scope.groupsMembers.addGroup = function () {

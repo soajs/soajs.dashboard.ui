@@ -1334,6 +1334,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.computeParser = function (data) {
+		console.log(data)
 		if (data) {
 			return (data.indexOf(".json") === -1) ? 'yaml' : 'json';
 		} else {
@@ -1436,6 +1437,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 			console.log("switching to host and basepath to swagger simulate api in dashboard:", x[3].host + x[3].basePath);
 			$scope.swaggerCode = x[4];
 			//apply the changes
+			console.log(x)
 			swaggerParser.execute.apply(null, x);
 			return cb(null, true);
 		}

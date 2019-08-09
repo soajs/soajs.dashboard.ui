@@ -206,8 +206,23 @@ var catalogAppConfig = {
 								'type': 'jsoneditor',
 								'value': '',
 								'required': false,
-								'tooltip': 'Configure Readiness Proble, Kubernetes Only.',
-								'fieldMsg': 'Configure Readiness Proble, Kubernetes Only.',
+								'tooltip': 'Configure Readiness Probe, Kubernetes Only.',
+								'fieldMsg': 'Configure Readiness Probe, Kubernetes Only.',
+								'height': 200
+							}
+						]
+					},
+					{
+						'label': 'Liveness Probe',
+						'entries': [
+							{
+								'name': 'livenessProbe',
+								'label': 'Liveness Probe',
+								'type': 'jsoneditor',
+								'value': '',
+								'required': false,
+								'tooltip': 'Configure Liveness Probe, Kubernetes Only.',
+								'fieldMsg': 'Configure Liveness Probe, Kubernetes Only.',
 								'height': 200
 							}
 						]
@@ -664,6 +679,17 @@ var catalogAppConfig = {
 					},
 					"specifyGitConfiguration": false,
 					"readinessProbe": {
+						"httpGet": {
+							"path": "",
+							"port": ""
+						},
+						"initialDelaySeconds": 0,
+						"timeoutSeconds": 0,
+						"periodSeconds": 0,
+						"successThreshold": 0,
+						"failureThreshold": 0
+					},
+					"livenessProbe": {
 						"httpGet": {
 							"path": "",
 							"port": ""

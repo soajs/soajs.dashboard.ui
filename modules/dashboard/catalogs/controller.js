@@ -174,7 +174,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 				$scope.listArchives();
-
 			}
 		});
 	};
@@ -1265,8 +1264,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 
 				$scope.addNewVolume = function (value, mountValue) {
 					var tmp = angular.copy(catalogAppConfig.form.volumeInput);
-                    if ($scope.form.entries[5].tabs[5].entries.length >= 2) {
-                        $scope.form.entries[5].tabs[5].entries[0].value = '';
+                    if ($scope.form.entries[5].tabs[6].entries.length >= 2) {
+                        $scope.form.entries[5].tabs[6].entries[0].value = '';
                     }
 					tmp.name += volumeCounter;
 					tmp.entries[0].name += volumeCounter;
@@ -1288,8 +1287,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						tmp.entries[2].onAction = function (id, value, form) {
 							var count = parseInt(id.replace('rVolume', ''));
 
-							for (let i = form.entries[5].tabs[5].entries.length - 1; i >= 0; i--) {
-								if (form.entries[5].tabs[5].entries[i].name === 'volumeGroup' + count) {
+							for (let i = form.entries[5].tabs[6].entries.length - 1; i >= 0; i--) {
+								if (form.entries[5].tabs[6].entries[i].name === 'volumeGroup' + count) {
 									//remove from formData
 									for (var fieldname in form.formData) {
 										if (['docker' + count, 'kubernetes' + count].indexOf(fieldname) !== -1) {
@@ -1305,7 +1304,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 
 					if ($scope.form && $scope.form.entries) {
-						$scope.form.entries[5].tabs[5].entries.splice($scope.form.entries[5].tabs[5].entries.length - 1, 0, tmp);
+						$scope.form.entries[5].tabs[6].entries.splice($scope.form.entries[5].tabs[6].entries.length - 1, 0, tmp);
 						if (value) {
 							setEditorContent('docker' + volumeCounter, value, tmp.entries[0].height, $scope);
 							if (mountValue) {
@@ -1321,7 +1320,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						}
 					}
 					else {
-						formConfig[5].tabs[5].entries.splice($scope.form.entries[5].tabs[5].entries.length - 1, 0, tmp);
+						formConfig[5].tabs[6].entries.splice($scope.form.entries[5].tabs[6].entries.length - 1, 0, tmp);
 						if (value) {
 							setEditorContent('docker' + volumeCounter, value, tmp.entries[0].height, $scope);
 							if (mountValue) {
@@ -1351,8 +1350,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						tmp.entries[1].onAction = function (id, value, form) {
 							var count = parseInt(id.replace('rPort', ''));
 
-							for (let i = form.entries[5].tabs[6].entries.length - 1; i >= 0; i--) {
-								if (form.entries[5].tabs[6].entries[i].name === 'portGroup' + count) {
+							for (let i = form.entries[5].tabs[7].entries.length - 1; i >= 0; i--) {
+								if (form.entries[5].tabs[7].entries[i].name === 'portGroup' + count) {
 									//remove from formData
 									for (var fieldname in form.formData) {
 										if (['port' + count].indexOf(fieldname) !== -1) {
@@ -1368,7 +1367,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 
 					if ($scope.form && $scope.form.entries) {
-						$scope.form.entries[5].tabs[6].entries.splice($scope.form.entries[5].tabs[6].entries.length - 1, 0, tmp);
+						$scope.form.entries[5].tabs[7].entries.splice($scope.form.entries[5].tabs[7].entries.length - 1, 0, tmp);
 						//$scope.form.entries[11].entries.push(tmp);
 						if (value) {
 							setEditorContent('port' + portCounter, value, tmp.entries[0].height, $scope)
@@ -1378,7 +1377,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						}
 					}
 					else {
-						formConfig[5].tabs[6].entries.splice($scope.form.entries[5].tabs[6].entries.length - 1, 0, tmp);
+						formConfig[5].tabs[6].entries.splice($scope.form.entries[5].tabs[7].entries.length - 1, 0, tmp);
 						if (value) {
 							setEditorContent('port' + portCounter, value, tmp.entries[0].height, $scope)
 						}
@@ -1402,8 +1401,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						tmp.entries[2].onAction = function (id, value, form) {
 							var count = parseInt(id.replace('rLabel', ''));
 
-							for (let i = form.entries[5].tabs[7].entries.length - 1; i >= 0; i--) {
-								if (form.entries[5].tabs[7].entries[i].name === 'labelGroup' + count) {
+							for (let i = form.entries[5].tabs[8].entries.length - 1; i >= 0; i--) {
+								if (form.entries[5].tabs[8].entries[i].name === 'labelGroup' + count) {
 									//remove from formData
 									for (var fieldname in form.formData) {
 										if (['labelName' + count, 'labelValue' + count].indexOf(fieldname) !== -1) {
@@ -1419,26 +1418,26 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 
 					if ($scope.form && $scope.form.entries) {
-						$scope.form.entries[5].tabs[7].entries.splice($scope.form.entries[5].tabs[7].entries.length - 1, 0, tmp);
+						$scope.form.entries[5].tabs[8].entries.splice($scope.form.entries[5].tabs[8].entries.length - 1, 0, tmp);
 					}
 					else {
-						formConfig[5].tabs[7].entries.splice($scope.form.entries[5].tabs[7].entries.length - 1, 0, tmp);
+						formConfig[5].tabs[8].entries.splice($scope.form.entries[5].tabs[8].entries.length - 1, 0, tmp);
 					}
 					labelCounter++;
 				};
 				if (submitAction) {
-					if (formConfig[5].tabs[5].entries[0]) {
-						formConfig[5].tabs[5].entries[0].onAction = function (id, value, form) {
-							$scope.addNewVolume();
-						};
-					}
 					if (formConfig[5].tabs[6].entries[0]) {
 						formConfig[5].tabs[6].entries[0].onAction = function (id, value, form) {
-							$scope.addNewPort();
+							$scope.addNewVolume();
 						};
 					}
 					if (formConfig[5].tabs[7].entries[0]) {
 						formConfig[5].tabs[7].entries[0].onAction = function (id, value, form) {
+							$scope.addNewPort();
+						};
+					}
+					if (formConfig[5].tabs[8].entries[0]) {
+						formConfig[5].tabs[8].entries[0].onAction = function (id, value, form) {
 							$scope.addNewLabel();
 						};
 					}
@@ -1448,9 +1447,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						};
 					}
 				} else {
-					if (formConfig[5].tabs[5].entries[0]) formConfig[5].tabs[5].entries.pop();
 					if (formConfig[5].tabs[6].entries[0]) formConfig[5].tabs[6].entries.pop();
 					if (formConfig[5].tabs[7].entries[0]) formConfig[5].tabs[7].entries.pop();
+					if (formConfig[5].tabs[8].entries[0]) formConfig[5].tabs[8].entries.pop();
 					if (formConfig[7].tabs[1].entries) formConfig[7].tabs[1].entries.pop();
 				}
 
@@ -1673,7 +1672,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			if (postForm) {
 				output["readinessProbe"] = data.recipe.deployOptions.readinessProbe;
 				setEditorContent("readinessProbe", output['readinessProbe'], mainFormConfig[5].tabs[2].entries[0].height, modalScope);
-
+				
+				output["livenessProbe"] = data.recipe.deployOptions.livenessProbe;
+				setEditorContent("livenessProbe", output['livenessProbe'], mainFormConfig[5].tabs[3].entries[0].height, modalScope);
+				
 				//volumes
 				if (data.recipe.deployOptions.voluming && (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.length > 0)) {
 					data.recipe.deployOptions.voluming.forEach(function (oneVolume) {
@@ -1699,7 +1701,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 				else if (!data.recipe.deployOptions.voluming || (data.recipe.deployOptions.voluming || data.recipe.deployOptions.voluming.length === 0 )) {
-					modalScope.form.entries[5].tabs[5].entries.splice(modalScope.form.entries[5].tabs[5].entries.length - 1, 0, {
+					modalScope.form.entries[5].tabs[5].entries.splice(modalScope.form.entries[5].tabs[6].entries.length - 1, 0, {
 						'type': 'html',
 						'value': "<br /><div class='alert alert-warning'>No Volumes Configured for this Recipe.</div><br />"
 					});
@@ -1713,7 +1715,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 				else if (!data.recipe.deployOptions.ports || data.recipe.deployOptions.ports.length === 0) {
-					modalScope.form.entries[5].tabs[6].entries.splice(modalScope.form.entries[5].tabs[6].entries.length - 1, 0, {
+					modalScope.form.entries[5].tabs[7].entries.splice(modalScope.form.entries[5].tabs[7].entries.length - 1, 0, {
                         'type': 'html',
                         'value': "<br /><div class='alert alert-warning'>No Ports Configured for this Recipe.</div><br />"
                     });
@@ -1747,7 +1749,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 				}
 				else if (!data.recipe.buildOptions.env || Object.keys(data.recipe.buildOptions.env).length === 0) {
-					modalScope.form.entries[7].tabs[1].entries.splice(modalScope.form.entries[7].tabs[1].entries.length - 1, 0, {
+					modalScope.form.entries[8].tabs[1].entries.splice(modalScope.form.entries[8].tabs[1].entries.length - 1, 0, {
 						'type': 'html',
 						'value': "<br /><div class='alert alert-warning'>No Environment Variables Configured for this Recipe.</div><br />"
 					});
@@ -1762,7 +1764,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					}
 				}
 				else {
-					modalScope.form.entries[5].tabs[7].entries.splice(modalScope.form.entries[5].tabs[7].entries.length - 1, 0, {
+					modalScope.form.entries[5].tabs[8].entries.splice(modalScope.form.entries[5].tabs[8].entries.length - 1, 0, {
 						'type': 'html',
 						'value': "<br /><div class='alert alert-warning'>No Labels found for this Recipe.</div><br />"
 					});
@@ -1859,6 +1861,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					'sourceCode': {},
 					"certificates" : "none",
 					"readinessProbe": formData.readinessProbe,
+					"livenessProbe": formData.livenessProbe,
 					"ports": [],
 					"voluming": [],
 					"restartPolicy": {

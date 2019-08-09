@@ -23,25 +23,25 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 						if (!currentScope.servicesMetrics) {
 							currentScope.servicesMetrics = {};
 						}
-						
+
 						if (!currentScope.servicesMetrics[oneContainer]) {
 							currentScope.servicesMetrics[oneContainer] = {};
 						}
-						
+
 						if (!currentScope.chartOptions) {
 							currentScope.chartOptions = {};
 						}
-						
+
 						if (!currentScope.chartOptions[oneContainer]) {
 							currentScope.chartOptions[oneContainer] = {};
 						}
-						
+
 						currentScope.servicesMetrics[oneContainer].online_cpus = 1;
 						if(metrics[oneContainer]) {
 							if (metrics[oneContainer].hasOwnProperty('online_cpus')) {
 								currentScope.servicesMetrics[oneContainer].online_cpus = metrics[oneContainer].online_cpus;
 							}
-							
+
 							if (metrics[oneContainer].hasOwnProperty('timestamp')) {
 								var ts = new Date(metrics[oneContainer].timestamp).toLocaleString('en-US', {
 									hour: 'numeric',
@@ -57,7 +57,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].timestamp.shift();
 								}
 							}
-							
+
 							if (metrics[oneContainer].hasOwnProperty('memory')) {
 								if (!currentScope.servicesMetrics[oneContainer].memory) {
 									currentScope.servicesMetrics[oneContainer].memory = [];
@@ -94,7 +94,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Memory (Bytes)',
 															display: true,
-															
+
 														},
 														ticks: {
 															callback: function (bytes) {
@@ -109,7 +109,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Time',
 															display: true,
-															
+
 														}
 													}
 												]
@@ -123,7 +123,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].memory.shift();
 								}
 							}
-							
+
 							if (metrics[oneContainer].hasOwnProperty('cpu')) {
 								if (!currentScope.servicesMetrics[oneContainer].cpu) {
 									currentScope.servicesMetrics[oneContainer].cpu = [];
@@ -153,7 +153,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'CPU (milliCores)',
 															display: true,
-															
+
 														},
 														ticks: {
 															beginAtZero: true
@@ -165,7 +165,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Time',
 															display: true,
-															
+
 														}
 													}
 												]
@@ -179,7 +179,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].cpu.shift();
 								}
 							}
-							
+
 							if (metrics[oneContainer].hasOwnProperty('cpuPercent')) {
 								if (!currentScope.servicesMetrics[oneContainer].cpuPercent) {
 									currentScope.servicesMetrics[oneContainer].cpuPercent = [];
@@ -216,7 +216,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'CPU (%)',
 															display: true,
-															
+
 														},
 														ticks: {
 															callback: function (percent) {
@@ -231,7 +231,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Time',
 															display: true,
-															
+
 														}
 													}
 												]
@@ -245,7 +245,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].cpuPercent.shift();
 								}
 							}
-							
+
 							if (metrics[oneContainer].hasOwnProperty('memPercent')) {
 								if (!currentScope.servicesMetrics[oneContainer].memPercent) {
 									currentScope.servicesMetrics[oneContainer].memPercent = [];
@@ -282,7 +282,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Memory (%)',
 															display: true,
-															
+
 														},
 														ticks: {
 															callback: function (percent) {
@@ -300,7 +300,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Time',
 															display: true,
-															
+
 														}
 													}
 												]
@@ -314,11 +314,11 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].memPercent.shift();
 								}
 							}
-							
+
 							if (metrics[oneContainer].hasOwnProperty('memoryLimit')) {
 								currentScope.servicesMetrics[oneContainer].memoryLimit = convertBytes(metrics[oneContainer].memoryLimit);
 							}
-							
+
 							if (currentScope.envPlatform === 'docker') {
 								if (!currentScope.servicesMetrics[oneContainer].blkIO) {
 									currentScope.servicesMetrics[oneContainer].blkIO = [[], []];
@@ -377,7 +377,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Bytes',
 															display: true,
-															
+
 														},
 														ticks: {
 															callback: function (bytes) {
@@ -392,7 +392,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Time',
 															display: true,
-															
+
 														}
 													}
 												]
@@ -406,7 +406,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].blkIO[0].shift();
 									currentScope.servicesMetrics[oneContainer].blkIO[1].shift();
 								}
-								
+
 								if (!currentScope.servicesMetrics[oneContainer].netIO) {
 									currentScope.servicesMetrics[oneContainer].netIO = [[], []];
 									currentScope.chartOptions[oneContainer].netIO = {
@@ -464,7 +464,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Bytes',
 															display: true,
-															
+
 														},
 														ticks: {
 															callback: function (bytes) {
@@ -479,7 +479,7 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 														scaleLabel: {
 															labelString: 'Time',
 															display: true,
-															
+
 														}
 													}
 												]
@@ -493,181 +493,182 @@ metricsServices.service('metricsSrv', ['ngDataApi', function (ngDataApi) {
 									currentScope.servicesMetrics[oneContainer].netIO[0].shift();
 									currentScope.servicesMetrics[oneContainer].netIO[1].shift();
 								}
-								
+
 							}
 						}
 					});
-					if (currentScope.envPlatform === 'kubernetes' && currentScope.access.hacloud.nodes.metrics) {
-						getSendDataFromServer(currentScope, ngDataApi, {
-							"method": "get",
-							"routeName": "/dashboard/cloud/metrics/nodes",
-							"params": {
-								"env": env
+					
+				}
+				if (currentScope.envPlatform === 'kubernetes' && currentScope.access.hacloud.nodes.metrics) {
+					getSendDataFromServer(currentScope, ngDataApi, {
+						"method": "get",
+						"routeName": "/dashboard/cloud/metrics/nodes",
+						"params": {
+							"env": env
+						}
+					}, function (error, metrics) {
+						if (error || !metrics) {
+							console.log(translation.unableRetrieveNodesMetrics[LANG]);
+						}
+						var nodes = Object.keys(metrics);
+						nodes.forEach(function (oneNode) {
+							if (!currentScope.nodesMetrics) {
+								currentScope.nodesMetrics = {};
 							}
-						}, function (error, metrics) {
-							if (error || !metrics) {
-								console.log(translation.unableRetrieveNodesMetrics[LANG]);
+							
+							if (!currentScope.nodesMetrics[oneNode]) {
+								currentScope.nodesMetrics[oneNode] = {};
 							}
-							var nodes = Object.keys(metrics);
-							nodes.forEach(function (oneNode) {
-								if (!currentScope.nodesMetrics) {
-									currentScope.nodesMetrics = {};
-								}
-								
-								if (!currentScope.nodesMetrics[oneNode]) {
-									currentScope.nodesMetrics[oneNode] = {};
-								}
-								
-								if (!currentScope.chartOptions) {
-									currentScope.chartOptions = {};
-								}
-								
-								if (!currentScope.chartOptions[oneNode]) {
-									currentScope.chartOptions[oneNode] = {};
-								}
-								if(metrics[oneNode]) {
-									if (metrics[oneNode].hasOwnProperty('timestamp')) {
-										var ts = new Date(metrics[oneNode].timestamp).toLocaleString('en-US', {
-											hour: 'numeric',
-											minute: 'numeric',
-											second: 'numeric',
-											hour12: false
-										});
-										if (!currentScope.nodesMetrics[oneNode].timestamp) {
-											currentScope.nodesMetrics[oneNode].timestamp = []
-										}
-										currentScope.nodesMetrics[oneNode].timestamp.push(ts);
-										if (currentScope.nodesMetrics[oneNode].timestamp.length > maxData) {
-											currentScope.nodesMetrics[oneNode].timestamp.shift();
-										}
+							
+							if (!currentScope.chartOptions) {
+								currentScope.chartOptions = {};
+							}
+							
+							if (!currentScope.chartOptions[oneNode]) {
+								currentScope.chartOptions[oneNode] = {};
+							}
+							if(metrics[oneNode]) {
+								if (metrics[oneNode].hasOwnProperty('timestamp')) {
+									var ts = new Date(metrics[oneNode].timestamp).toLocaleString('en-US', {
+										hour: 'numeric',
+										minute: 'numeric',
+										second: 'numeric',
+										hour12: false
+									});
+									if (!currentScope.nodesMetrics[oneNode].timestamp) {
+										currentScope.nodesMetrics[oneNode].timestamp = []
 									}
-									
-									if (metrics[oneNode].hasOwnProperty('memory')) {
-										if (!currentScope.nodesMetrics[oneNode].memory) {
-											currentScope.nodesMetrics[oneNode].memory = [];
-											currentScope.chartOptions[oneNode].memory = {
-												override: {
-													borderColor: "rgba(51, 110, 230, 1)",
-													backgroundColor: "rgba(51, 110, 230, 0.3)",
-													borderWidth: 3,
-													pointRadius: 0,
-													pointHitRadius: 5
+									currentScope.nodesMetrics[oneNode].timestamp.push(ts);
+									if (currentScope.nodesMetrics[oneNode].timestamp.length > maxData) {
+										currentScope.nodesMetrics[oneNode].timestamp.shift();
+									}
+								}
+								
+								if (metrics[oneNode].hasOwnProperty('memory')) {
+									if (!currentScope.nodesMetrics[oneNode].memory) {
+										currentScope.nodesMetrics[oneNode].memory = [];
+										currentScope.chartOptions[oneNode].memory = {
+											override: {
+												borderColor: "rgba(51, 110, 230, 1)",
+												backgroundColor: "rgba(51, 110, 230, 0.3)",
+												borderWidth: 3,
+												pointRadius: 0,
+												pointHitRadius: 5
+											},
+											options: {
+												title: {
+													display: true,
+													text: (metrics[oneNode].memoryLimit) ? "Memory usage out of " + convertBytes(metrics[oneNode].memoryLimit) : 'Memory usage'
 												},
-												options: {
-													title: {
-														display: true,
-														text: (metrics[oneNode].memoryLimit) ? "Memory usage out of " + convertBytes(metrics[oneNode].memoryLimit) : 'Memory usage'
-													},
-													animation: {
-														duration: 0,
-													},
-													tooltips: {
-														callbacks: {
-															label: function (tooltipItem) {
-																return convertBytes(tooltipItem.yLabel);
+												animation: {
+													duration: 0,
+												},
+												tooltips: {
+													callbacks: {
+														label: function (tooltipItem) {
+															return convertBytes(tooltipItem.yLabel);
+														}
+													}
+												},
+												scales: {
+													yAxes: [
+														{
+															id: 'memory',
+															type: 'linear',
+															display: true,
+															position: 'left',
+															scaleLabel: {
+																labelString: 'Memory (Bytes)',
+																display: true,
+																
+															},
+															ticks: {
+																callback: function (bytes) {
+																	return convertBytes(bytes);
+																},
+																beginAtZero: true
 															}
 														}
-													},
-													scales: {
-														yAxes: [
-															{
-																id: 'memory',
-																type: 'linear',
+													],
+													xAxes: [
+														{
+															scaleLabel: {
+																labelString: 'Time',
 																display: true,
-																position: 'left',
-																scaleLabel: {
-																	labelString: 'Memory (Bytes)',
-																	display: true,
-																	
-																},
-																ticks: {
-																	callback: function (bytes) {
-																		return convertBytes(bytes);
-																	},
-																	beginAtZero: true
-																}
+																
 															}
-														],
-														xAxes: [
-															{
-																scaleLabel: {
-																	labelString: 'Time',
-																	display: true,
-																	
-																}
-															}
-														]
-													}
+														}
+													]
 												}
 											}
-										}
-										currentScope.nodesMetrics[oneNode].memory.push(metrics[oneNode].memory);
-										currentScope.nodesMetrics[oneNode].currentMemory = convertBytes(metrics[oneNode].memory);
-										if (currentScope.nodesMetrics[oneNode].memory.length > maxData) {
-											currentScope.nodesMetrics[oneNode].memory.shift();
 										}
 									}
-									
-									if (metrics[oneNode].hasOwnProperty('cpu')) {
-										if (!currentScope.nodesMetrics[oneNode].cpu) {
-											currentScope.nodesMetrics[oneNode].cpu = [];
-											currentScope.chartOptions[oneNode].cpu = {
-												override: {
-													borderColor: "rgba(0, 199, 82, 1)",
-													backgroundColor: "rgba(0, 199, 82, 0.3)",
-													borderWidth: 3,
-													pointRadius: 0,
-													pointHitRadius: 5
-												},
-												options: {
-													title: {
-														display: true,
-														text: "CPU usage"
-													},
-													animation: {
-														duration: 0,
-													},
-													scales: {
-														yAxes: [
-															{
-																id: 'cpu',
-																type: 'linear',
-																display: true,
-																position: 'left',
-																scaleLabel: {
-																	labelString: 'CPU (milliCores)',
-																	display: true,
-																	
-																},
-																ticks: {
-																	beginAtZero: true
-																}
-															}
-														],
-														xAxes: [
-															{
-																scaleLabel: {
-																	labelString: 'Time',
-																	display: true,
-																	
-																}
-															}
-														]
-													}
-												}
-											}
-										}
-										currentScope.nodesMetrics[oneNode].cpu.push(metrics[oneNode].cpu);
-										currentScope.nodesMetrics[oneNode].currentCpu = metrics[oneNode].cpu;
-										if (currentScope.nodesMetrics[oneNode].cpu.length > maxData) {
-											currentScope.nodesMetrics[oneNode].cpu.shift();
-										}
+									currentScope.nodesMetrics[oneNode].memory.push(metrics[oneNode].memory);
+									currentScope.nodesMetrics[oneNode].currentMemory = convertBytes(metrics[oneNode].memory);
+									if (currentScope.nodesMetrics[oneNode].memory.length > maxData) {
+										currentScope.nodesMetrics[oneNode].memory.shift();
 									}
 								}
-							});
-							
+								
+								if (metrics[oneNode].hasOwnProperty('cpu')) {
+									if (!currentScope.nodesMetrics[oneNode].cpu) {
+										currentScope.nodesMetrics[oneNode].cpu = [];
+										currentScope.chartOptions[oneNode].cpu = {
+											override: {
+												borderColor: "rgba(0, 199, 82, 1)",
+												backgroundColor: "rgba(0, 199, 82, 0.3)",
+												borderWidth: 3,
+												pointRadius: 0,
+												pointHitRadius: 5
+											},
+											options: {
+												title: {
+													display: true,
+													text: "CPU usage"
+												},
+												animation: {
+													duration: 0,
+												},
+												scales: {
+													yAxes: [
+														{
+															id: 'cpu',
+															type: 'linear',
+															display: true,
+															position: 'left',
+															scaleLabel: {
+																labelString: 'CPU (nanoCores)',
+																display: true,
+																
+															},
+															ticks: {
+																beginAtZero: true
+															}
+														}
+													],
+													xAxes: [
+														{
+															scaleLabel: {
+																labelString: 'Time',
+																display: true,
+																
+															}
+														}
+													]
+												}
+											}
+										}
+									}
+									currentScope.nodesMetrics[oneNode].cpu.push(metrics[oneNode].cpu);
+									currentScope.nodesMetrics[oneNode].currentCpu = metrics[oneNode].cpu;
+									if (currentScope.nodesMetrics[oneNode].cpu.length > maxData) {
+										currentScope.nodesMetrics[oneNode].cpu.shift();
+									}
+								}
+							}
 						});
-					}
+						
+					});
 				}
 				if (cb) {
 					return cb();

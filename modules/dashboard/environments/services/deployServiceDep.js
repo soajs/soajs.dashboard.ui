@@ -347,17 +347,17 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 			$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.owner = (oneRepo.owner && oneRepo.owner.login) ? oneRepo.owner.login : oneRepo.owner;
 			$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.gitSource.repo = oneRepo.name;
 			if (isKubernetes) {
-				$scope.deploymentModes = ['deployment', 'daemonset'];
+				$scope.deploymentModes = ['deployment', 'daemonset', 'cronJob'];
 				if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig ||
 					!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication ||
-					!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.mode) {
+					!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode) {
 					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode = 'deployment';
 				}
 			} else {
 				$scope.deploymentModes = ['replicated', 'global'];
 				if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig ||
 					!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication ||
-					!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.mode) {
+					!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode) {
 					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.replication.mode = 'replicated';
 				}
 			}

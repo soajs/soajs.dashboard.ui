@@ -179,7 +179,7 @@ function returnLatestVersion(service) {
 	var keys = Object.keys(service);
 	var keysInt = [];
 	keys.forEach(function (key) {
-		keysInt.push(parseInt(key));
+		keysInt.push(key);
 	});
 	// sort in descending order
 	keysInt = keysInt.sort(compareNumbers);

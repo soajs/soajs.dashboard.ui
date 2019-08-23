@@ -18,7 +18,7 @@
                         <a href="" ng-click="showHide(daemon)" ng-if="!daemon.hide" class="icon icon-{{daemon.icon || 'minus'}} margin-left-10"></a>
                         {{daemon['name']|uppercase}}<span>[ {{daemon['port']}} ]</span>
                     </div>
-                    <div class="body grid" ng-show="!daemon.hide">
+                    <div class="body grid" ng-show="!daemon.hide && daemon.jobs === {}">
                         <fieldset>
                             <legend>{{translation.jobs[LANG]}}</legend>
                             <div class="entryBoxes entryBoxesGrid">
@@ -42,67 +42,75 @@
                         <a href="" ng-click="showHide(grpConf)"  ng-if="grpConf.hide" class="icon icon-{{grpConf.icon || 'plus'}} margin-left-10"></a>
                         <a href="" ng-click="showHide(grpConf)"  ng-if="!grpConf.hide" class="icon icon-{{grpConf.icon || 'minus'}} margin-left-10"></a>
                         {{grpConf.daemonConfigGroup|uppercase}}&nbsp;&nbsp;[ {{grpConf.status|statusDisplay}} ]
-                        <span><b>{{translation.soloRun[LANG]}}:</b> {{grpConf.solo}}</span>
+	                    <div ng-if="grpConf.type !=='cronJob'">
+		                    <span><b>{{translation.soloRun[LANG]}}:</b> {{grpConf.solo}}</span>
+	                    </div>
 	                    <div ng-if="grpConf.interval">
 		                    <span><b>{{translation.interval[LANG]}}:</b> {{grpConf.interval|timeInMillisConverter}}</span>
 	                    </div>
 	                    <div ng-if="grpConf.type ==='once'">
 		                    <span><b>{{translation.once[LANG]}}:</b> {{grpConf.cronConfig.cronTimeDate|date}}</span>
 	                    </div>
-	                    <div ng-if="grpConf.type ==='cron'">
+	                    <div ng-if="grpConf.type ==='cron' || grpConf.type ==='cronJob'">
 		                    <span><b>{{translation.cron[LANG]}}:</b> {{grpConf.cronConfig.cronTime|date}}</span>
 	                    </div>
-                        
+	
+	                    <div ng-if="grpConf.type ==='cronJob'">
+		                    <span><b>{{translation.concurrencyPolicy[LANG]}}:</b> {{grpConf.cronConfig.concurrencyPolicy}}</span>
+	                    </div>
+	                    
                         <span><b>{{translation.daemon[LANG]}}:</b> {{grpConf.daemon}}</span>
                     </div>
                     <div class="body" ng-show="!grpConf.hide">
-                        <b>{{translation.jobs[LANG]}}:</b>
-                        <accordion close-others="true" class="keysAccordion">
-                            <accordion-group ng-repeat="(key, object) in grpConf.jobs">
-                                <accordion-heading tooltip="{{translation.displayJobInformation[LANG]}}"><b>{{key}} [ {{object.type}} ]</b></accordion-heading>
-                                <div ng-if="object.type==='global'">
-                                    <span><b>{{translation.serviceConfigurationPerEnvironment[LANG]}}:</b></span><br><br>
-                                    <div class="entryBoxes entryBoxesGrid">
-                                        <div class="entryBox greyBox" ng-repeat="env in environmentsList" ng-class="{blueBox: object.serviceConfig[env]}" ng-style="{'width': '250px'}">
-                                            <b>{{env}} {{translation.environment[LANG]}}</b>
-                                            <div class="f-right">
-                                                <a href="" ng-click="updateConfiguration(env, key, object, grpConf._id);">
-                                                    <span class="icon icon-pencil" tooltip="{{translation.editServiceConfiguration[LANG]}}"></span>
-                                                </a>
-                                                <a href="" ng-if="object.serviceConfig[env]" ng-click="clearConfiguration(env, key, object, grpConf._id);" ng-confirm-click="{{translation.areYouSureWantClearServiceConfigurationEnvironment[LANG]}}">
-                                                    <span class="icon icon-bin" tooltip="{{translation.emptyServiceConfiguration[LANG]}}"></span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div ng-if="object.type==='tenant'">
-                                    <a href="" ng-style="{'margin-top': '10px'}" ng-click="selectTenantExternalKeys(grpConf, key)" class="btn btn-primary">{{translation.selectTenantExternalKeys[LANG]}}</a>
-                                    <span><b>{{translation.tenantsExternalKeys[LANG]}}:</b></span><br><br>
-                                    <div class="grid externalKeysGrid">
-                                        <div ng-if="object.tenantsInfo.length === 0">
-                                            <br><br><alert type="warning">{{translation.noTenantExternalKeysFoundJob[LANG]}}</alert>
-                                        </div>
-                                        <table cellspacing="0" cellpadding="0" border="0" width="100%" class="" ng-if="object.tenantsInfo.length > 0">
-                                            <tbody>
-                                            <tr>
-                                                <th>{{translation.name[LANG]}}</th>
-                                                <th>{{translation.package[LANG]}}</th>
-                                                <th>{{translation.applicationDescription[LANG]}}</th>
-                                                <th>{{translation.externalKeyEnv[LANG]}}</th>
-                                            </tr>
-                                            <tr ng-repeat="tenant in object.tenantsInfo" ng-class-even="'even'" ng-class-odd="'odd'">
-                                                <td>{{tenant.name}}</td>
-                                                <td>{{tenant.package}}</td>
-                                                <td>{{tenant.appDescription}}</td>
-                                                <td>{{tenant.extKeyEnv}}</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </accordion-group>
-                        </accordion>
+	                    <div ng-if="grpConf.type !=='cronJob'">
+		                    <b>{{translation.jobs[LANG]}}:</b>
+		                    <accordion close-others="true" class="keysAccordion">
+			                    <accordion-group ng-repeat="(key, object) in grpConf.jobs">
+				                    <accordion-heading tooltip="{{translation.displayJobInformation[LANG]}}"><b>{{key}} [ {{object.type}} ]</b></accordion-heading>
+				                    <div ng-if="object.type==='global'">
+					                    <span><b>{{translation.serviceConfigurationPerEnvironment[LANG]}}:</b></span><br><br>
+					                    <div class="entryBoxes entryBoxesGrid">
+						                    <div class="entryBox greyBox" ng-repeat="env in environmentsList" ng-class="{blueBox: object.serviceConfig[env]}" ng-style="{'width': '250px'}">
+							                    <b>{{env}} {{translation.environment[LANG]}}</b>
+							                    <div class="f-right">
+								                    <a href="" ng-click="updateConfiguration(env, key, object, grpConf._id);">
+									                    <span class="icon icon-pencil" tooltip="{{translation.editServiceConfiguration[LANG]}}"></span>
+								                    </a>
+								                    <a href="" ng-if="object.serviceConfig[env]" ng-click="clearConfiguration(env, key, object, grpConf._id);" ng-confirm-click="{{translation.areYouSureWantClearServiceConfigurationEnvironment[LANG]}}">
+									                    <span class="icon icon-bin" tooltip="{{translation.emptyServiceConfiguration[LANG]}}"></span>
+								                    </a>
+							                    </div>
+						                    </div>
+					                    </div>
+				                    </div>
+				                    <div ng-if="object.type==='tenant'">
+					                    <a href="" ng-style="{'margin-top': '10px'}" ng-click="selectTenantExternalKeys(grpConf, key)" class="btn btn-primary">{{translation.selectTenantExternalKeys[LANG]}}</a>
+					                    <span><b>{{translation.tenantsExternalKeys[LANG]}}:</b></span><br><br>
+					                    <div class="grid externalKeysGrid">
+						                    <div ng-if="object.tenantsInfo.length === 0">
+							                    <br><br><alert type="warning">{{translation.noTenantExternalKeysFoundJob[LANG]}}</alert>
+						                    </div>
+						                    <table cellspacing="0" cellpadding="0" border="0" width="100%" class="" ng-if="object.tenantsInfo.length > 0">
+							                    <tbody>
+							                    <tr>
+								                    <th>{{translation.name[LANG]}}</th>
+								                    <th>{{translation.package[LANG]}}</th>
+								                    <th>{{translation.applicationDescription[LANG]}}</th>
+								                    <th>{{translation.externalKeyEnv[LANG]}}</th>
+							                    </tr>
+							                    <tr ng-repeat="tenant in object.tenantsInfo" ng-class-even="'even'" ng-class-odd="'odd'">
+								                    <td>{{tenant.name}}</td>
+								                    <td>{{tenant.package}}</td>
+								                    <td>{{tenant.appDescription}}</td>
+								                    <td>{{tenant.extKeyEnv}}</td>
+							                    </tr>
+							                    </tbody>
+						                    </table>
+					                    </div>
+				                    </div>
+			                    </accordion-group>
+		                    </accordion>
+	                    </div>
                     </div>
                     <div class="entryAction">
                         <a ng-if="access.daemonGroupConfig.update" href="" ng-click="updateDaemonGroupConfig(grpConf);">

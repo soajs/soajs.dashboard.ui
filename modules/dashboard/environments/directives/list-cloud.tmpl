@@ -291,8 +291,22 @@
 															</td>
 															<td ng-show="oneSubType === 'soajs' && !instance.status.lastTs">N/A</td>
 															<td>
-																<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>{{instance.status.state}}</b></span>
-																<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
+																<div ng-if="envPlatform !== 'kubernetes'">
+																	<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>{{instance.status.state}}</b></span>
+																	<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
+																</div>
+																<div ng-if="envPlatform === 'kubernetes'">
+																	<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>Pod: {{instance.status.state}}</b></span>
+																	<div ng-show="instance.status.state !== 'Unreachable'">
+																		<span> <b>Pod: </b></span>
+																		<span ng-class="{'green': instance.status.state === 'running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
+																	</div>
+																	<div ng-show="instance.status.state !== 'Unreachable' && instance.status.ready=== 'True'" >
+																		<span> <b>Ready: </b></span>
+																		<span ng-class="{'green': instance.status.ready === 'True', 'red': instance.status.ready === 'False'}"><b>{{instance.status.ready.toLowerCase()}}</b></span>
+																	</div>
+																	
+																</div>
 															</td>
 															<td ng-if= "isMetricsServerDeployed">
 																<div style="width:93px; float : left; text-align: left; padding-left: 2px;">

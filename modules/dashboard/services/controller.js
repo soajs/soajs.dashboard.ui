@@ -1082,6 +1082,7 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 				//Default values
 				$scope.postData.status = "1";
 				$scope.postData.solo = "true";
+				$scope.postData.concurrencyPolicy = "Allow";
 				
 				$scope.checkIfOnlyJob = function (jobName) {
 					if ($scope.daemonJobsList && Object.keys($scope.daemonJobsList).length === 1) {
@@ -1142,8 +1143,7 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 					
 					if ($scope.postData.solo === "true") $scope.postData.solo = true;
 					else $scope.postData.solo = false;
-					
-					if (Object.keys($scope.postData.jobs).length === 0) {
+					if (Object.keys($scope.postData.jobs).length === 0 && $scope.postData.type !== 'cronJob') {
 						$scope.message.danger = getCodeMessage(172, 'dashboard', "Please select a job to proceed");
 						return false;
 					}
@@ -1200,6 +1200,9 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 						$scope.postData.cronTime = grpConf.cronConfig.cronTime;
 					}
 					$scope.postData.timeZone = grpConf.cronConfig.timeZone;
+					if (grpConf.cronConfig.concurrencyPolicy){
+						$scope.postData.concurrencyPolicy = grpConf.cronConfig.concurrencyPolicy;
+					}
 				}
 				$scope.postData.status = grpConf.status.toString();
 				$scope.postData.processing = grpConf.processing;
@@ -1316,7 +1319,7 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 					if ($scope.postData.solo === "true") $scope.postData.solo = true;
 					else $scope.postData.solo = false;
 					
-					if (Object.keys($scope.postData.jobs).length === 0) {
+					if (Object.keys($scope.postData.jobs).length === 0 && $scope.postData.type !== 'cronJob') {
 						$scope.message.danger = getCodeMessage(172, 'dashboard', "Please select a job to proceed");
 						return false;
 					}

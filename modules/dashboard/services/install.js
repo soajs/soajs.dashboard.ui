@@ -232,6 +232,14 @@ var srTranslation = {
 		"ENG": "Cron",
 		"FRA": "Cron"
 	},
+	"concurrencyPolicy": {
+		"ENG": "Concurrency Policy",
+		"FRA": "Concurrency Policy"
+	},
+	"concurrencyPolicyMsg": {
+		"ENG": "Set Concurrency Policy. Reference:",
+		"FRA": "Set Concurrency Policy. Reference:"
+	},
 	"cronMsg": {
 		"ENG": "If you want the daemon to periodically run on a specific date/time then provide a time configuration. Reference:",
 		"FRA": "If you want the daemon to periodically run on a specific date/time then provide a time configuration. Reference:"

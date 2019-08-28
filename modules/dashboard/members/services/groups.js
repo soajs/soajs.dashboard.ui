@@ -266,7 +266,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 						backdrop: true,
 						keyboard: true,
 						controller: function ($scope) {
-							
+							fixBackDrop();
 							$scope.title = translation.addNewGroup[LANG];
 							$scope.message = {};
 							$scope.displayAlert = function (type, message) {
@@ -548,6 +548,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 						backdrop: true,
 						keyboard: true,
 						controller: function ($scope) {
+							fixBackDrop();
 							$scope.formData = {
 								code : data.code,
 								name : data.name,

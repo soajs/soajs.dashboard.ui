@@ -34,9 +34,14 @@ div#allowedEnvironments-wrapper li {
 .packageListingSize {
     width: 48% !important;
     float: left;
-    margin-left: 2%;
+    margin-right: 2%;
 }
 
 .onClickPack {
     background-color: #dff0d8 !important;
+}
+
+.modal-header-group {
+    background-color: #9EBC5D !important;
+    color: #fff;
 }

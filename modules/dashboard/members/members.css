@@ -36,3 +36,7 @@ div#allowedEnvironments-wrapper li {
     float: left;
     margin-left: 2%;
 }
+
+.onClickPack {
+    background-color: #dff0d8 !important;
+}

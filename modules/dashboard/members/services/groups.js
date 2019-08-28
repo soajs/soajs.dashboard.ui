@@ -263,6 +263,8 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 					let modal = $modal.open({
 						templateUrl: "modules/dashboard/members/directives/addGroup.tmpl",
 						size: 'lg',
+						backdrop: true,
+						keyboard: true,
 						controller: function ($scope) {
 							
 							$scope.title = translation.addNewGroup[LANG];
@@ -274,6 +276,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								}, 5000);
 							};
 							$scope.products = [];
+							let allowedPackages = {};
 							currentScope.products.forEach((OneProduct)=>{
 								let packageForm = {
 									packages: []
@@ -283,31 +286,44 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										OneProduct.packages.forEach((onePack)=>{
 											let temp = {};
 											temp.label = onePack.name;
-											temp.value = onePack.code + "$%$" + OneProduct.code;
+											temp.value = onePack.code;
 											packageForm.packages.push(temp);
 										});
 									}
 									packageForm.label = "Product: " + OneProduct.name;
-									packageForm.value = OneProduct.name;
+									packageForm.value = OneProduct.code;
 									count++;
 								}
 								$scope.products.push(packageForm)
 							});
-							$scope.onSubmit = function () {
-								Object.keys($scope.formData).forEach((key)=>{
-									if(key && key.indexOf("package")!== -1){
-										if ($scope.formData[key] && $scope.formData[key].split("$%$")[1] && $scope.formData[key].split("$%$")[0]){
-											allowedPackages[$scope.formData[key].split("$%$")[1]] = [$scope.formData[key].split("$%$")[0]];
-										}
+							
+							$scope.toggleSelection = function (pack, prod){
+								if(!allowedPackages[prod]){
+									allowedPackages[prod] = [];
+								}
+								let index = allowedPackages[prod].indexOf(pack.value);
+								if (index > -1) {
+									jQuery('#product_package_' + pack.value).removeClass('onClickPack');
+									allowedPackages[prod].splice(index, 1);
+									if (allowedPackages[prod].length  === 0){
+										delete allowedPackages[prod];
 									}
-								});
+								}
+								else {
+									jQuery('#product_package_' + pack.value).addClass('onClickPack');
+									allowedPackages[prod].push(pack.value)
+								}
+							};
+							$scope.onSubmit = function () {
 								postData = {
 									'name': $scope.formData.name,
 									'code': $scope.formData.code,
 									'description': $scope.formData.description,
 									'tId': tenantId,
 									'tCode': tenantCode,
-									'config' : {allowedPackages}
+									'config' : {
+										allowedPackages
+									}
 								};
 								let opts = {
 									"method": "post",
@@ -341,7 +357,9 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									else {
 										currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
 										currentScope.listGroups();
+										modal.close();
 									}
+									
 								});
 							};
 							$scope.closeModal = function () {
@@ -515,117 +533,125 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				overlayLoading.hide();
 				if (error) {
 					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				}
-				else {
+				} else {
 					if (data.config && data.config.allowedPackages && Object.keys(data.config.allowedPackages).length>0 ){
-						prod = Object.keys(data.config.allowedPackages);
+						prod = Object.keys(data.config.allowedPackages) ;
 					}
-					let packageForm = angular.copy(config.entries[3]);
-					config.entries.splice(3, 1);
-					
 					let count = 0;
-					currentScope.products.forEach((OneProduct)=>{
-						let selectablePackages = [];
-						let temp = angular.copy(packageForm);
-						if (prodCod.indexOf(OneProduct.code) !== -1){
-							if (OneProduct.packages){
-								OneProduct.packages.forEach((onePack)=>{
-									let temp = {};
-									temp.l = onePack.name;
-									temp.v = onePack.code + "$%$" + OneProduct.code;
-									if (data.config.allowedPackages[OneProduct.code]){
-										if(data.config.allowedPackages[OneProduct.code].indexOf(onePack.code) !== -1){
-											temp.selected = true;
-										}
+					let selectablePackages = [];
+					let postData = {};
+					let allowedPackages = {};
+					
+					let modal = $modal.open({
+						templateUrl: "modules/dashboard/members/directives/editGroup.tmpl",
+						size: 'lg',
+						backdrop: true,
+						keyboard: true,
+						controller: function ($scope) {
+							$scope.formData = {
+								code : data.code,
+								name : data.name,
+								description : data.description
+							};
+							$scope.title = "Edit Group";
+							$scope.message = {};
+							$scope.displayAlert = function (type, message) {
+								$scope.message[type] = message;
+								$timeout(() => {
+									$scope.message = {};
+								}, 5000);
+							};
+							$scope.products = [];
+							let allowedPackages = data.config.allowedPackages;
+							currentScope.products.forEach((OneProduct)=>{
+								let packageForm = {
+									packages: []
+								};
+								if (prodCod.indexOf(OneProduct.code) !== -1){
+									if (OneProduct.packages){
+										OneProduct.packages.forEach((onePack)=>{
+											let temp = {};
+											temp.label = onePack.name;
+											temp.value = onePack.code;
+											if (allowedPackages && allowedPackages[OneProduct.code] && allowedPackages[OneProduct.code].indexOf(onePack.code) > -1) {
+												temp.selected = true;
+											}
+											packageForm.packages.push(temp);
+										});
 									}
-									selectablePackages.push(temp)
+									packageForm.label = "Product: " + OneProduct.name;
+									packageForm.value = OneProduct.code;
+									count++;
+								}
+								$scope.products.push(packageForm)
+							});
+							
+							$scope.toggleSelection = function (pack, prod){
+								if(!allowedPackages[prod]){
+									allowedPackages[prod] = [];
+								}
+								let index = allowedPackages[prod].indexOf(pack.value);
+								if (index > -1) {
+									jQuery('#product_package_' + pack.value).removeClass('onClickPack');
+									allowedPackages[prod].splice(index, 1);
+									if (allowedPackages[prod].length  === 0){
+										delete allowedPackages[prod];
+									}
+								}
+								else {
+									jQuery('#product_package_' + pack.value).addClass('onClickPack');
+									allowedPackages[prod].push(pack.value)
+								}
+							};
+							$scope.onSubmit = function () {
+								postData = {
+									'name': $scope.formData.name,
+									'code': $scope.formData.code,
+									'description': $scope.formData.description,
+									'config' : {allowedPackages}
+								};
+								let opts = {
+									"method": "post",
+									"routeName": "/urac/admin/group/add",
+									"data": postData
+								};
+								if (env && ext){
+									opts = {
+										"method": "post",
+										"routeName": "/proxy/redirect",
+										"params": {
+											'proxyRoute': '/urac/admin/group/add',
+											"extKey": ext
+										},
+										"data": postData,
+										"headers": {
+											"__env": env
+										}
+									};
+								}
+								if (currentScope.key) {
+									if (!opts.headers){
+										opts.headers = {};
+									}
+									opts.headers.key = currentScope.key;
+								}
+								getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+									if (error) {
+										currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
+									}
+									else {
+										currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
+										currentScope.listGroups();
+										modal.close();
+									}
+									
 								});
-							}
-						
-							temp.label = "Product: " + OneProduct.name;
-							temp.name = "package" + count;
-							count++;
-							temp.value = selectablePackages;
-							config.entries.push(temp);
+							};
+							$scope.closeModal = function () {
+								modal.close();
+							};
 						}
 					});
-					var options = {
-						timeout: $timeout,
-						form: config,
-						'name': 'editGroup',
-						'label': translation.editGroup[LANG],
-						'data': data,
-						'actions': [
-							{
-								'type': 'submit',
-								'label': translation.editGroup[LANG],
-								'btn': 'primary',
-								'action': function (formData) {
-									let allowedPackages = {};
-									Object.keys(formData).forEach((key)=>{
-										if(key && key.indexOf("package")!== -1){
-											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
-												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
-											}
-										}
-									});
-									var postData = {
-										'name': formData.name,
-										'description': formData.description,
-										'config': {allowedPackages}
-									};
-									var opts = {
-										"method": "post",
-										"routeName": "/urac/admin/group/edit",
-										"params": {"gId": data['_id']},
-										"data": postData
-									};
-									if (env && ext){
-										opts = {
-											"method": "post",
-											"routeName": "/proxy/redirect",
-											"params": {
-												"gId": data['_id'],
-												'proxyRoute': '/urac/admin/group/edit',
-												"extKey": ext.v
-											},
-											"data": postData,
-											"headers": {
-												"__env": env
-											}
-										};
-									}
-									if (currentScope.key) {
-										if (!opts.headers){
-											opts.headers = {};
-										}
-										opts.headers.key = currentScope.key;
-									}
-									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
-										if (error) {
-											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
-										}
-										else {
-											currentScope.$parent.displayAlert('success', translation.groupUpdatedSuccessfully[LANG]);
-											currentScope.modalInstance.close();
-											currentScope.form.formData = {};
-											currentScope.listGroups();
-										}
-									});
-								}
-							},
-							{
-								'type': 'reset',
-								'label': translation.cancel[LANG],
-								'btn': 'danger',
-								'action': function () {
-									currentScope.modalInstance.dismiss('cancel');
-									currentScope.form.formData = {};
-								}
-							}
-						]
-					};
-					buildFormWithModal(currentScope, $modal, options);
 				}
 			});
 		}

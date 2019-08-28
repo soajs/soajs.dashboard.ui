@@ -611,9 +611,10 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									'description': $scope.formData.description,
 									'config' : {allowedPackages}
 								};
-								let opts = {
+								var opts = {
 									"method": "post",
-									"routeName": "/urac/admin/group/add",
+									"routeName": "/urac/admin/group/edit",
+									"params": {"gId": data['_id']},
 									"data": postData
 								};
 								if (env && ext){
@@ -621,7 +622,8 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"method": "post",
 										"routeName": "/proxy/redirect",
 										"params": {
-											'proxyRoute': '/urac/admin/group/add',
+											"gId": data['_id'],
+											'proxyRoute': '/urac/admin/group/edit',
 											"extKey": ext
 										},
 										"data": postData,

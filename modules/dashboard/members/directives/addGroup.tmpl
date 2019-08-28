@@ -1,0 +1,44 @@
+<div class="entryBoxes" ng-if="access.adminAll">
+	<div class="entryBox">
+		<div class="modal-header">
+      <h3 class="modal-title">{{title}}</h3>
+		</div>
+		<div class="modal-body">
+      <div ng-if="message.danger">
+  			<alert type="danger">{{message.danger}}</alert>
+  			<br>
+  		</div>
+      <form name="addGroup" id="" ng-submit="onSubmit()">
+    		<div class="form-group">
+          <label>Code: </label>
+  				<div>
+            <input type="text" name="code" ng-model="formData.code" required/>
+          </div>
+          <label>Name: </label>
+          <div>
+            <input type="text" name="name" ng-model="formData.name" required/>
+          </div>
+          <label>Description: </label>
+          <div>
+            <textarea name="description" rows="2" ng-model="formData.description" required/>
+          </div>
+          <label>Product: {{}}</label>
+          <div>
+  					<ul class="blueListing endpointListing">
+  						<li class="blueLi row-list gitEndpointSize" id="" ng-repeat="package in selectablePackages" >
+  							<a href="" class="" ng-click="">{{}}</a>
+  						</li>
+  					</ul>
+  				</div>
+          <div>
+            <input type="checkbox" name="allowedEnvironments" value={{envs}} />
+          </div>
+          <div class="c-both t-right">
+  					<hr/>
+  					<input ng-show="" type="submit" class="btn btn-primary" value="Submit"/>
+  					<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
+  				</div>
+			  </div>
+      </form>
+	</div>
+</div>

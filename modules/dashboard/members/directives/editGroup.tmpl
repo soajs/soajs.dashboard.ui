@@ -1,0 +1,61 @@
+<div class="modal-header-group modal-header">
+	<h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body">
+	<div class="form">
+		<div ng-if="message.danger">
+			<alert type="danger">{{message.danger}}</alert>
+			<br>
+		</div>
+		<form name="editGroup" id="gitConf" ng-submit="editGroup.$valid && onSubmit()">
+			<div class="form-group">
+				<div class="c-both">
+					<label>Code </label>
+					<input class="form-control" type="text"  ng-disabled="true" ng-required="true" ng-model="formData.code"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<label>Name </label>
+					<input class="form-control"  type="text"  ng-required="true" ng-model="formData.name"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<label>Description </label>
+					<input class="form-control"  type="text" ng-model="formData.description"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<div ng-repeat="product in products" ng-if="product.packages.length > 0">
+                        <fieldset>
+                            <legend><label>{{product.label}}</label></legend>
+                            <ul class="blueListing">
+                                <li class="blueLi row-list packageListingSize" id="product_package_{{package.value}}"  ng-class="{onClickPack: package.selected}" ng-repeat="package in product.packages">
+                                    <a href=""  ng-click="toggleSelection(package, product.value)">{{package.label}}</a>
+                                </li>
+                            </ul>
+                        </fieldset>
+					</div>
+					
+				</div>
+				<div class="c-both t-right">
+					<hr/>
+					<input type="submit" class="btn btn-primary" value="Edit Group"/>
+					<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!--
+
+<div>
+	<label>Product</label>
+	<div>
+		<ul class="blueListing endpointListing">
+			<li class="blueLi row-list gitEndpointSize" id="" ng-repeat="package in selectablePackages">
+				<a href="" class="" ng-click="">{{}}</a>
+			</li>
+		</ul>
+	</div>
+</div>-->

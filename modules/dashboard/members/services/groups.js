@@ -127,17 +127,18 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 
 	function addGroup(currentScope, groupsConfig, useCookie, env, ext) {
-		let userCookie = currentScope.$parent.userCookie;
-		let tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
-		let tenantCode = (useCookie) ? userCookie.tenant.code : currentScope.tenant.code;
+		var userCookie = currentScope.$parent.userCookie;
+		var config = angular.copy(groupsConfig.form);
+		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
+		var tenantCode = (useCookie) ? userCookie.tenant.code : currentScope.tenant.code;
 		overlayLoading.show();
-
 		if (currentScope.tenant.code === groupsConfig.consoleTenant){
 			listConsoleProducts (currentScope, (error)=>{
 				overlayLoading.hide();
 				if (error) {
 					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				} else {
+				}
+				else {
 					let selectablePackages = [];
 					currentScope.products.forEach((OneProduct)=>{
 						if (OneProduct.packages){
@@ -145,90 +146,104 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								let temp = {};
 								temp.l = onePack.code;
 								temp.v = onePack.code + "$%$" + OneProduct.code;
-								selectablePackages.push(temp);
+								selectablePackages.push(temp)
 							});
 						}
 					});
+					config.entries[3].value = selectablePackages;
 					let envs = [];
 					if ($localStorage.environments){
 						$localStorage.environments.forEach((env)=>{
 							envs.push({l: env.code, v:env.code});
 						});
 					}
-					let postData = {};
-					let allowedPackages = {};
-					let allowedEnvironments = {};
-					let modal = $modal.open({
-						templateUrl: "modules/dashboard/members/directives/addGroup.tmpl",
-						size: 'lg',
-						controller: function ($scope) {
-							$scope.title = "Add New Group";
-							$scope.message = {};
-							$scope.displayAlert = function (type, message) {
-								$scope.message[type] = message;
-								$timeout(() => {
-									$scope.message = {};
-								}, 5000);
-							};
-							$scope.formData = {
-								packages: selectablePackages,
-								envs: envs
-							};
-							$scope.onSubmit = function () {
-								Object.keys($scope.formData).forEach((key)=>{
-									if(key && key.indexOf("package")!== -1){
-										if ($scope.formData[key] && $scope.formData[key].split("$%$")[1] && $scope.formData[key].split("$%$")[0]){
-											allowedPackages[$scope.formData[key].split("$%$")[1]] = [$scope.formData[key].split("$%$")[0]];
+					config.entries.push({
+						'name': 'allowedEnvironments',
+						'label': translation.environments[LANG],
+						'type': 'checkbox',
+						'value': envs,
+						'required': false,
+						'tooltip': 'Specify which environment this group have access to use',
+						'labelMsg': 'Specify which environment this group have access to use'
+					});
+					var options = {
+						timeout: $timeout,
+						form: config,
+						name: 'addGroup',
+						label: translation.addNewGroup[LANG],
+						actions: [
+							{
+								'type': 'submit',
+								'label': translation.addGroup[LANG],
+								'btn': 'primary',
+								'action': function (formData) {
+									let allowedPackages = {};
+									let allowedEnvironments = {};
+									Object.keys(formData).forEach((key)=>{
+										if(key && key.indexOf("package")!== -1){
+											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
+												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+											}
+										}
+										if(key && key.indexOf("allowedEnvironments")!== -1){
+											formData[key].forEach((oneKey)=>{
+												allowedEnvironments[oneKey] = {};
+											});
+										}
+									});
+									var postData = {
+										'name': formData.name,
+										'code': formData.code,
+										'description': formData.description,
+										'tId': tenantId,
+										'tCode': tenantCode,
+										'config' : {
+											allowedPackages : allowedPackages,
+											allowedEnvironments: allowedEnvironments
+										}
+									};
+									
+									var opts = {
+										"method": "post",
+										"routeName": "/urac/admin/group/add",
+										"data": postData
+									};
+									if (currentScope.key) {
+										opts.headers = {
+											"key": currentScope.key
 										}
 									}
-									if(key && key.indexOf("allowedEnvironments")!== -1){
-										$scope.formData[key].forEach((oneKey)=>{
-											allowedEnvironments[oneKey] = {};
-										});
-									}
-								});
-								postData = {
-									'name': $scope.formData.name,
-									'code': $scope.formData.code,
-									'description': $scope.formData.description,
-									'tId': tenantId,
-									'tCode': tenantCode,
-									'config' : {
-										allowedPackages : allowedPackages,
-										allowedEnvironments: allowedEnvironments
-									}
-								};
-								let opts = {
-									"method": "post",
-									"routeName": "/urac/admin/group/add",
-									"data": postData
-								};
-								if ($scope.key) {
-									opts.headers = {
-										"key": $scope.key
-									}
+									getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+										if (error) {
+											currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
+										}
+										else {
+											listEnvironments(currentScope, ()=>{
+												currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
+												currentScope.modalInstance.close();
+												currentScope.form.formData = {};
+												currentScope.listGroups();
+											});
+										}
+									});
 								}
-								getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
-									if (error) {
-										currentScope.form.displayAlert('danger', error.code, true, 'urac', error.message);
-									}
-									else {
-										listEnvironments(currentScope, ()=>{
-											currentScope.$parent.displayAlert('success', translation.groupAddedSuccessfully[LANG]);
-											// currentScope.modalInstance.close();
-											currentScope.listGroups();
-										});
-									}
-								});
-							};
-							$scope.closeModal = function () {
-								modal.close();
-							};
-						}
-					});
+							},
+							{
+								'type': 'reset',
+								'label': 'Cancel',
+								'btn': 'danger',
+								'action': function () {
+									currentScope.modalInstance.dismiss('cancel');
+									currentScope.form.formData = {};
+								}
+							}
+						]
+					};
+					buildFormWithModal(currentScope, $modal, options);
 				}
 			});
-		} else {
+		}
+		else {
 			let prodCod = [];
 			if (currentScope.tenant && currentScope.tenant.applications) {
 				currentScope.tenant.applications.forEach((prod)=>{
@@ -240,30 +255,16 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 				if (error) {
 					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				} else {
-					currentScope.products.forEach((OneProduct)=>{
-						let selectablePackages = [];
-						let packageForm = {};
-						if (prodCod.indexOf(OneProduct.code) !== -1){
-							if (OneProduct.packages){
-								OneProduct.packages.forEach((onePack)=>{
-									let temp = {};
-									temp.l = onePack.name;
-									temp.v = onePack.code + "$%$" + OneProduct.code;
-									selectablePackages.push(temp)
-								});
-							}
-							packageForm.label = "Product: " + OneProduct.name;
-							packageForm.name = "package" + count;
-							packageForm.value = selectablePackages;
-							//add Package Form
-						}
-					});
+					let count = 0;
+					let selectablePackages = [];
 					let postData = {};
 					let allowedPackages = {};
+					
 					let modal = $modal.open({
 						templateUrl: "modules/dashboard/members/directives/addGroup.tmpl",
 						size: 'lg',
 						controller: function ($scope) {
+							
 							$scope.title = translation.addNewGroup[LANG];
 							$scope.message = {};
 							$scope.displayAlert = function (type, message) {
@@ -272,7 +273,26 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									$scope.message = {};
 								}, 5000);
 							};
-							$scope.packages = selectablePackages;
+							$scope.products = [];
+							currentScope.products.forEach((OneProduct)=>{
+								let packageForm = {
+									packages: []
+								};
+								if (prodCod.indexOf(OneProduct.code) !== -1){
+									if (OneProduct.packages){
+										OneProduct.packages.forEach((onePack)=>{
+											let temp = {};
+											temp.label = onePack.name;
+											temp.value = onePack.code + "$%$" + OneProduct.code;
+											packageForm.packages.push(temp);
+										});
+									}
+									packageForm.label = "Product: " + OneProduct.name;
+									packageForm.value = OneProduct.name;
+									count++;
+								}
+								$scope.products.push(packageForm)
+							});
 							$scope.onSubmit = function () {
 								Object.keys($scope.formData).forEach((key)=>{
 									if(key && key.indexOf("package")!== -1){

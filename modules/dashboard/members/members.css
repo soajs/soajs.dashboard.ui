@@ -30,3 +30,9 @@ div#allowedEnvironments-wrapper li {
 .selectKey{
     margin: 10px 30px 10px 15px;
 }
+
+.packageListingSize {
+    width: 48% !important;
+    float: left;
+    margin-left: 2%;
+}

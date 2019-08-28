@@ -1,44 +1,59 @@
-<div class="entryBoxes" ng-if="access.adminAll">
-	<div class="entryBox">
-		<div class="modal-header">
-      <h3 class="modal-title">{{title}}</h3>
+<div class="modal-header">
+	<h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body">
+	<div class="form">
+		<div ng-if="message.danger">
+			<alert type="danger">{{message.danger}}</alert>
+			<br>
 		</div>
-		<div class="modal-body">
-      <div ng-if="message.danger">
-  			<alert type="danger">{{message.danger}}</alert>
-  			<br>
-  		</div>
-      <form name="addGroup" id="" ng-submit="onSubmit()">
-    		<div class="form-group">
-          <label>Code: </label>
-  				<div>
-            <input type="text" name="code" ng-model="formData.code" required/>
-          </div>
-          <label>Name: </label>
-          <div>
-            <input type="text" name="name" ng-model="formData.name" required/>
-          </div>
-          <label>Description: </label>
-          <div>
-            <textarea name="description" rows="2" ng-model="formData.description" required/>
-          </div>
-          <label>Product: {{}}</label>
-          <div>
-  					<ul class="blueListing endpointListing">
-  						<li class="blueLi row-list gitEndpointSize" id="" ng-repeat="package in selectablePackages" >
-  							<a href="" class="" ng-click="">{{}}</a>
-  						</li>
-  					</ul>
-  				</div>
-          <div>
-            <input type="checkbox" name="allowedEnvironments" value={{envs}} />
-          </div>
-          <div class="c-both t-right">
-  					<hr/>
-  					<input ng-show="" type="submit" class="btn btn-primary" value="Submit"/>
-  					<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
-  				</div>
-			  </div>
-      </form>
+		<form name="addGroup" id="gitConf" ng-submit="addGroup.$valid && onSubmit()">
+			<div class="form-group">
+				<div class="c-both">
+					<label>Code: </label>
+					<input class="form-control" type="text"  ng-required="true" ng-model="formData.code"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<label>Name: </label>
+					<input class="form-control"  type="text"  ng-required="true" ng-model="formData.name"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<label>Description: </label>
+					<input class="form-control"  type="text" ng-model="formData.description"/>
+				</div>
+				<br>
+				<div class="c-both">
+					<div ng-repeat="product in products" ng-if="product.packages.length > 0">
+						<label>{{product.label}}</label>
+						<ul class="blueListing">
+							<li class="blueLi row-list packageListingSize" id="" ng-repeat="package in product.packages">
+								<a href="" class="" ng-click="">{{package.label}}</a>
+							</li>
+						</ul>
+					</div>
+					
+				</div>
+				<div class="c-both t-right">
+					<hr/>
+					<input type="submit" class="btn btn-primary" value="Submit"/>
+					<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
+				</div>
+			</div>
+		</form>
 	</div>
 </div>
+
+<!--
+
+<div>
+	<label>Product</label>
+	<div>
+		<ul class="blueListing endpointListing">
+			<li class="blueLi row-list gitEndpointSize" id="" ng-repeat="package in selectablePackages">
+				<a href="" class="" ng-click="">{{}}</a>
+			</li>
+		</ul>
+	</div>
+</div>-->

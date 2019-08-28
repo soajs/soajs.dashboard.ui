@@ -1,4 +1,4 @@
-<div class="modal-header-group">
+<div class="modal-header-group modal-header">
 	<h3 class="modal-title">{{title}}</h3>
 </div>
 <div class="modal-body">
@@ -26,12 +26,14 @@
 				<br>
 				<div class="c-both">
 					<div ng-repeat="product in products" ng-if="product.packages.length > 0">
-						<label>{{product.label}}</label>
-						<ul class="blueListing">
-							<li class="blueLi row-list packageListingSize" id="product_package_{{package.value}}" ng-repeat="package in product.packages">
-								<a href="" class="" ng-click="toggleSelection(package, product.value)">{{package.label}}</a>
-							</li>
-						</ul>
+					    <fieldset>
+                            <legend><label>{{product.label}}</label></legend>
+                            <ul class="blueListing">
+                                <li class="blueLi row-list packageListingSize" id="product_package_{{package.value}}" ng-repeat="package in product.packages">
+                                    <a href="" class="" ng-click="toggleSelection(package, product.value)">{{package.label}}</a>
+                                </li>
+                            </ul>
+                        </fieldset>
 					</div>
 					
 				</div>

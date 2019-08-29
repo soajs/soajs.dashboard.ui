@@ -4,6 +4,10 @@ var gaTranslation = {
         ENG: "Repositories",
         FRA: "Repositories"
     },
+    repositoriesCatalog: {
+        ENG: "Repositories Catalog",
+        FRA: "Repositories Catalog"
+    },
     addAccount: {
         ENG: "Add Account",
         FRA: "Add Account"
@@ -203,7 +207,7 @@ for (var attrname in gaTranslation) {
 var gitAccountsNav = [
     {
         'id': 'git-accounts',
-        'label': translation.repositories[LANG],
+        'label': translation.repositoriesCatalog[LANG],
         'checkPermission': {
             'service': 'dashboard',
             'route': '/gitAccounts/accounts/list',
@@ -213,13 +217,13 @@ var gitAccountsNav = [
         'tplPath': 'modules/dashboard/gitAccounts/directives/list.tmpl',
         'icon': 'git',
         'pillar': {
-            'name': 'development',
-            'label': translation.develop[LANG],
-            'position': 1
+            'name': 'catalogs',
+            'label': translation.catalogs[LANG],
+            'position': 6
         },
         'mainMenu': true,
         'tracker': true,
-        'order': 1,
+        'order': 6,
         'scripts': ['modules/dashboard/gitAccounts/config.js', 'modules/dashboard/gitAccounts/controller.js', 'modules/dashboard/gitAccounts/services.js'],
         'ancestor': [translation.home[LANG]]
     }

@@ -122,9 +122,13 @@ var translation = {
 		"ENG": "Develop",
 		"FRA": "Develop"
 	},
+	"catalogs": {
+		"ENG": "Catalogs",
+		"FRA": "Catalogs"
+	},
 	"dashboard": {
 		"ENG": "Dashboard",
-		"FRA": "dashboard"
+		"FRA": "Dashboard"
 	},
 	"code": {
 		"ENG": "Code",
@@ -262,7 +266,7 @@ var translation = {
 		"ENG": "Application Added Successfully",
 		"FRA": "Application Added Successfully"
 	},
-	
+
 	"applicationKeyAddedSuccessfully": {
 		"ENG": "Application Key Added Successfully",
 		"FRA": "Application Key Added Successfully"

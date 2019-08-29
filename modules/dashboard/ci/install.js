@@ -3,7 +3,7 @@
 var ciNav = [
     {
         'id': 'continuous-integration',
-        'label': "Continuous Integration",
+        'label': "Deployer Config Catalog",
         'checkPermission': {
             'service': 'dashboard',
             'route': '/ci',
@@ -13,13 +13,13 @@ var ciNav = [
         'tplPath': 'modules/dashboard/ci/directives/list.tmpl',
         'icon': 'upload',
         'pillar': {
-            'name': 'development',
-            'label': translation.develop[LANG],
-            'position': 1
+            'name': 'catalogs',
+            'label': translation.catalogs[LANG],
+            'position': 3
         },
         'mainMenu': true,
         'tracker': true,
-        'order': 2,
+        'order': 3,
         'scripts': ['modules/dashboard/ci/config.js', 'modules/dashboard/ci/controller.js'],
         'ancestor': [translation.home[LANG]]
     }

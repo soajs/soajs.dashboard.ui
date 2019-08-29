@@ -16,7 +16,7 @@ var srTranslation = {
 		"ENG": "Service Port",
 		"FRA": "Service Port"
 	},
-	
+
 	"serviceVersion": {
 		"ENG": "Service Version",
 		"FRA": "Service Version"
@@ -520,7 +520,7 @@ var endpointsNav = [
 		'icon': 'cloud',
 		'pillar': {
 			'name': 'development',
-			'label': translation.develop[LANG],
+      'label': translation.develop[LANG],
 			'position': 1
 		},
 		'tracker': true,

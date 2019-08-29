@@ -3,7 +3,7 @@
 var catalogNav = [
     {
         'id': 'catalog-recipes',
-        'label': "Catalog Recipes",
+        'label': "Recipes Catalog",
         'checkPermission': {
             'service': 'dashboard',
             'route': '/catalog/recipes/list',
@@ -13,9 +13,9 @@ var catalogNav = [
         'tplPath': 'modules/dashboard/catalogs/directives/list.tmpl',
         'icon': 'file-text2',
         'pillar': {
-            'name': 'development',
-            'label': translation.develop[LANG],
-            'position': 1
+            'name': 'catalogs',
+            'label': translation.catalogs[LANG],
+            'position': 5
         },
         'mainMenu': true,
         'tracker': true,

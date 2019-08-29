@@ -414,13 +414,13 @@ var servicesNav = [
 		'tplPath': 'modules/dashboard/services/directives/list.tmpl',
 		'icon': 'cloud',
 		'pillar': {
-			'name': 'development',
-			'label': translation.develop[LANG],
+			'name': 'catalogs',
+			'label': 'Catalogs',
 			'position': 1
 		},
 		'mainMenu': true,
 		'tracker': true,
-		'order': 3,
+		'order': 1,
 		'scripts': ['modules/dashboard/services/config.js', 'modules/dashboard/services/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -436,13 +436,13 @@ var servicesNav = [
 		'tplPath': 'modules/dashboard/services/directives/list-daemons.tmpl',
 		'icon': 'evil2',
 		'pillar': {
-			'name': 'development',
-			'label': translation.develop[LANG],
-			'position': 1
+			'name': 'catalogs',
+			'label': 'Catalogs',
+			'position': 2
 		},
 		'mainMenu': true,
 		'tracker': true,
-		'order': 4,
+		'order': 2,
 		'scripts': ['modules/dashboard/services/config.js', 'modules/dashboard/services/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -451,8 +451,8 @@ var servicesNav = [
 		'label': "Swagger Ui",
 		'url': '#/services/swaggerui/:serviceName',
 		'pillar': {
-			'name': 'development',
-			'label': translation.develop[LANG],
+			'name': 'catalogs',
+			'label': 'Catalogs',
 			'position': 1
 		},
 		'tracker': true,

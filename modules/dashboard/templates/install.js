@@ -3,7 +3,7 @@
 var templatesNav = [
     {
         'id': 'templates',
-        'label': "Environment Templates",
+        'label': "Environment Catalog",
         'checkPermission': {
             'service': 'dashboard',
             'route': '/templates',
@@ -13,13 +13,13 @@ var templatesNav = [
         'tplPath': 'modules/dashboard/templates/directives/list.tmpl',
         'icon': 'folder',
         'pillar': {
-            'name': 'development',
-            'label': translation.develop[LANG],
-            'position': 1
+            'name': 'catalogs',
+            'label': translation.catalogs[LANG],
+            'position': 4
         },
         'mainMenu': true,
         'tracker': true,
-        'order': 6,
+        'order': 4,
         'scripts': ['modules/dashboard/templates/config.js', 'modules/dashboard/templates/controller.js', 'modules/dashboard/templates/service.js'],
         'ancestor': [translation.home[LANG]]
     }

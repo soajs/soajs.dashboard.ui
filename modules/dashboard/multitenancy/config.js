@@ -98,6 +98,22 @@ var tenantConfig = {
 					'required': false
 				},
 				{
+					'name': 'profile',
+					'type': 'jsoneditor',
+					'label': 'Profile',
+					'options': {
+						'mode': 'code',
+						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
+							'v': 'tree',
+							'l': 'Tree View'
+						}, { 'v': 'form', 'l': 'Form View' }]
+					},
+					'height': '100px',
+					"value": null,
+					'required': false,
+					'fieldMsg': ""
+				},
+				{
 					'name': 'tag',
 					'label': translation.tag[LANG],
 					'type': 'text',
@@ -231,6 +247,22 @@ var tenantConfig = {
 					'tooltip': translation.formProductPlaceHolder[LANG],
 					'required': false,
 					'fieldMsg': translation.formDashboardPackageToolTip[LANG]
+				},
+				{
+					'name': 'profile',
+					'type': 'jsoneditor',
+					'label': 'Profile',
+					'options': {
+						'mode': 'code',
+						'availableModes': [{ 'v': 'code', 'l': 'Code View' }, {
+							'v': 'tree',
+							'l': 'Tree View'
+						}, { 'v': 'form', 'l': 'Form View' }]
+					},
+					'height': '100px',
+					"value": {},
+					'required': false,
+					'fieldMsg': ""
 				},
 				{
 					'name': 'tag',

@@ -30,3 +30,18 @@ div#allowedEnvironments-wrapper li {
 .selectKey{
     margin: 10px 30px 10px 15px;
 }
+
+.packageListingSize {
+    width: 48% !important;
+    float: left;
+    margin-right: 2%;
+}
+
+.onClickPack {
+    background-color: #dff0d8 !important;
+}
+
+.modal-header-group {
+    background-color: #9EBC5D !important;
+    color: #fff;
+}

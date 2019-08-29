@@ -406,7 +406,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'type': data.type,
 							'name': formData.name,
 							'description': formData.description,
-							'tag': formData.tag
+							'tag': formData.tag,
+							'profile': formData.profile
 						};
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
@@ -736,7 +737,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					};
 					//insert at a the package after the product
 					form.entries.splice(3, 0, pack);
-					if (form.entries[4].name !== "tag") {
+					if (form.entries[4].name !== "profile") {
 						form.entries.splice(4, 1);
 					}
 					
@@ -763,7 +764,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'name': formData.name,
 							'description': formData.description,
 							'tag': formData.tag,
-							'console': true
+							'console': true,
+							'profile': formData.profile
 						};
 						
 						getSendDataFromServer($scope, ngDataApi, {
@@ -893,7 +895,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					};
 					//insert at a the package after the product
 					form.entries.splice(4, 0, pack);
-					if (form.entries[5].name !== "tag") {
+					if (form.entries[5].name !== "profile") {
 						form.entries.splice(5, 1);
 					}
 					
@@ -921,7 +923,8 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'description': formData.description,
 							'tag': formData.tag,
 							'console': true,
-							'subTenant': tenant._id
+							'subTenant': tenant._id,
+							'profile': formData.profile
 						};
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",

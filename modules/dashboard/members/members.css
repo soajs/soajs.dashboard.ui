@@ -37,6 +37,10 @@ div#allowedEnvironments-wrapper li {
     margin-right: 2%;
 }
 
+.packageListingSize:hover {
+    cursor: pointer;
+}
+
 .onClickPack {
     background-color: #dff0d8 !important;
 }

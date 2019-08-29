@@ -415,7 +415,7 @@ var servicesNav = [
 		'icon': 'cloud',
 		'pillar': {
 			'name': 'catalogs',
-			'label': 'Catalogs',
+			'label': translation.catalogs[LANG],
 			'position': 1
 		},
 		'mainMenu': true,
@@ -437,7 +437,7 @@ var servicesNav = [
 		'icon': 'evil2',
 		'pillar': {
 			'name': 'catalogs',
-			'label': 'Catalogs',
+			'label': translation.catalogs[LANG],
 			'position': 2
 		},
 		'mainMenu': true,
@@ -452,7 +452,7 @@ var servicesNav = [
 		'url': '#/services/swaggerui/:serviceName',
 		'pillar': {
 			'name': 'catalogs',
-			'label': 'Catalogs',
+			'label': translation.catalogs[LANG],
 			'position': 1
 		},
 		'tracker': true,

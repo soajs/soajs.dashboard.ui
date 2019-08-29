@@ -15,11 +15,11 @@ var importNav = [
         'pillar': {
             'name': 'development',
             'label': translation.develop[LANG],
-            'position': 1
+            'position': 2
         },
         'mainMenu': true,
         'tracker': true,
-        'order': 7,
+        'order': 2,
         'scripts': ['modules/dashboard/importExport/config.js', 'modules/dashboard/importExport/controller.js', 'modules/dashboard/importExport/service.js'],
         'ancestor': [translation.home[LANG]]
     }

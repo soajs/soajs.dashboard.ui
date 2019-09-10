@@ -60,3 +60,18 @@
 .margin-left-10 {
     margin-left: 10px !important;
 }
+
+.daemonGroupConfigTab {
+    float: right !important;
+}
+
+.daemonFavorite {
+    margin-right: 10px;
+    float: right !important;
+}
+
+.daemon-search {
+    width: 16%;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}

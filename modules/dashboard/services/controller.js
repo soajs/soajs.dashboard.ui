@@ -37,8 +37,8 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/services/favorite",
+			"method": "post",
+			"routeName": "/dashboard/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'apiCatalog'
@@ -101,7 +101,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/services/favorite",
+			"routeName": "/dashboard/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'apiCatalog'
@@ -161,7 +161,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 		});
 	};
 	
-	$scope.listServices = function () {
+	$scope.listServices = function ()   {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
 			"routeName": "/dashboard/services/list",
@@ -175,7 +175,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 				var user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/services/favorite/list",
+					"routeName": "/dashboard/favorite",
 					"params": {
 						"username": user,
 						"type": 'apiCatalog'
@@ -763,9 +763,9 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 	
 }]);
 
-servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$modal', 'injectFiles', function ($scope, ngDataApi, $timeout, $modal, injectFiles) {
+servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$modal', 'injectFiles', '$cookies', '$filter', function ($scope, ngDataApi, $timeout, $modal, injectFiles, $cookies, $filter) {
 	$scope.$parent.isUserLoggedIn();
-	
+	$scope.searchKeyword= null;
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, servicesConfig.permissions);
 	
@@ -1019,29 +1019,161 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 	
 	$scope.listDaemons = function (cb) {
 		overlayLoading.show();
+		var user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "send",
 			"routeName": "/dashboard/daemons/list"
 		}, function (error, response) {
-			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			}
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/favorite",
+				"params": {
+					"username": user,
+					"type": 'daemon'
+				}
+			}, function (error, favoriteResponse) {
+				overlayLoading.hide();
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				} else {
+					
+					$scope.itemsPerPage = 20;
+					$scope.maxSize = 5;
+					$scope.daemons = response;
+					$scope.daemonFavorite = favoriteResponse;
+					function setDisplayItems(data) {
+						$scope.displayItems = data;
+					}
+					function fixList(response, favoriteResponse){
+						$scope.daemonList = {
+							"Daemons": {
+								"All": {}
+							}
+						};
+						$scope.paginations = {};
+						response.forEach(function (entry) {
+							//add latest version
+							
+							if (entry.versions) {
+								let v = returnLatestVersion(entry.versions);
+								if (v) {
+									entry.latest = v;
+									entry.jobs = entry.versions[v].jobs;
+								}
+							}
+							
+							//get full tree
+							let tab = "Daemons";
+							let subTab = null;
+							if (entry.tab) {
+								if (entry.tab.main && entry.tab.main !== "Daemons") {
+									if (entry.tab.main !== "Daemons") {
+										tab = entry.tab.main;
+									}
+								}
+								
+								if (entry.tab.sub) {
+									subTab = entry.tab.sub;
+								}
+							}
+							
+							if (!$scope.daemonList[tab]) {
+								$scope.daemonList[tab] = {
+									"All": {},
+								};
+							}
+							if (!$scope.paginations[tab]) {
+								$scope.paginations[tab] = {
+									currentPage: 1,
+									totalItems: 1
+								};
+							}
+							else {
+								$scope.paginations[tab].totalItems++;
+							}
+							if (!$scope.daemonList[tab]["All"][entry.group]) {
+								$scope.daemonList[tab]["All"][entry.group] = []
+							}
+							$scope.daemonList[tab]["All"][entry.group].push(entry);
+							if (subTab) {
+								if (!$scope.daemonList[tab][subTab]) {
+									$scope.daemonList[tab][subTab] = {};
+								}
+								if (!$scope.daemonList[tab][subTab][entry.group]) {
+									$scope.daemonList[tab][subTab][entry.group] = []
+								}
+								$scope.daemonList[tab][subTab][entry.group].push(entry);
+							}
+							if (favoriteResponse
+								&& favoriteResponse.favorites
+								&& favoriteResponse.favorites.indexOf(entry.name) !== -1) {
+								entry.favorite = true;
+							}
+							if (!$scope.daemonList[tab]["Favorites"]){
+								$scope.daemonList[tab]["Favorites"] = {};
+							}
+							if (favoriteResponse
+								&& favoriteResponse.favorites
+								&& favoriteResponse.favorites.indexOf(entry.name) !== -1) {
+								entry.favorite = true;
+								if (!$scope.daemonList[tab]["Favorites"][entry.group]){
+									$scope.daemonList[tab]["Favorites"][entry.group] = [];
+								}
+								$scope.daemonList[tab]["Favorites"][entry.group].push(entry);
+							}
+						});
+						console.log($scope)
+					}
+					$scope.filterItems = function (apiSearch) {
+						let data = angular.copy($filter('filter')($scope.daemons, apiSearch, false, 'name'));
+						fixList(data, $scope.daemonFavorite);
+						setDisplayItems($scope.daemonList);
+					};
+					fixList(response, favoriteResponse);
+					setDisplayItems($scope.daemonList);
+					if (cb) {
+						cb();
+					}
+				}
+			});
+		});
+	};
+	
+	$scope.setFavorite = function (daemon) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/favorite",
+			"params": {
+				"service": daemon.name,
+				"type": 'daemon'
+			}
+		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				response.forEach(function (entry) {
-					if (entry.versions) {
-						var v = returnLatestVersion(entry.versions);
-						if (v) {
-							entry.latest = v;
-							entry.jobs = entry.versions[v].jobs;
-						}
-					}
-				});
-				$scope.grid = {
-					rows: response
-				};
-				if (cb) {
-					cb();
-				}
+				daemon.favorite = true;
+				$scope.listDaemons();
+			}
+		});
+	};
+	
+	$scope.removeFavorite = function (daemon) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "delete",
+			"routeName": "/dashboard/favorite",
+			"params": {
+				"service": daemon.name,
+				"type": 'daemon'
+			}
+		}, function (error) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				daemon.favorite = false;
+				$scope.listDaemons();
 			}
 		});
 	};

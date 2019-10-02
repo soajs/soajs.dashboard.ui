@@ -550,7 +550,8 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		});
 	}
 	
-	function editMember(currentScope, moduleConfig, data, useCookie, env, ext) {
+	function editMember(currentScope, moduleConfig, mainData, useCookie, env, ext) {
+		let data = angular.copy(mainData);
 		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(moduleConfig.form);
 		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;

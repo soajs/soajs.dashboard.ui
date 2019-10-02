@@ -372,7 +372,8 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		}
 	}
 
-	function editGroup(currentScope, groupsConfig, data, useCookie, env, ext) {
+	function editGroup(currentScope, groupsConfig, mainData, useCookie, env, ext) {
+		let data = angular.copy(mainData);
 		var config = angular.copy(groupsConfig.form);
 		config.entries[0].type = 'readonly';
 		delete data.tenant;

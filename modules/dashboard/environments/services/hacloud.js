@@ -787,14 +787,16 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 							});
 							if (!oneHeartBeat.response.result) {
 								oneServiceTask.status.state = 'Unreachable';
-
-								var tooltip = "<b>Code:</b> " + oneHeartBeat.response.error.code + "<br>";
-								tooltip += "<b>Errno:</b> " + oneHeartBeat.response.error.errno + "<br>";
-								tooltip += "<b>Syscall:</b> " + oneHeartBeat.response.error.syscall + "<br>";
-								tooltip += "<b>Address:</b> " + oneHeartBeat.response.error.address + "<br>";
-								tooltip += "<b>Port:</b> " + oneHeartBeat.response.error.port + "<br>";
-
-								oneServiceTask.status.error = tooltip;
+								if(oneHeartBeat.response.error){
+									var tooltip = "<b>Code:</b> " + oneHeartBeat.response.error.code + "<br>";
+									tooltip += "<b>Errno:</b> " + oneHeartBeat.response.error.errno + "<br>";
+									tooltip += "<b>Syscall:</b> " + oneHeartBeat.response.error.syscall + "<br>";
+									tooltip += "<b>Address:</b> " + oneHeartBeat.response.error.address + "<br>";
+									tooltip += "<b>Port:</b> " + oneHeartBeat.response.error.port + "<br>";
+									
+									oneServiceTask.status.error = tooltip;
+								}
+								
 								failCount++;
 
 								if (service.labels['soajs.service.name'] === 'controller') {

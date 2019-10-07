@@ -5,8 +5,8 @@ var gaTranslation = {
         FRA: "Repositories"
     },
     repositoriesCatalog: {
-        ENG: "Repositories Catalog",
-        FRA: "Repositories Catalog"
+        ENG: "Repositories",
+        FRA: "Repositories"
     },
     addAccount: {
         ENG: "Add Account",
@@ -217,8 +217,8 @@ var gitAccountsNav = [
         'tplPath': 'modules/dashboard/gitAccounts/directives/list.tmpl',
         'icon': 'git',
         'pillar': {
-            'name': 'catalogs',
-            'label': translation.catalogs[LANG],
+            'name': 'development',
+            'label': translation.develop[LANG],
             'position': 6
         },
         'mainMenu': true,

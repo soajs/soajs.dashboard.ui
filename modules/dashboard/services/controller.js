@@ -1131,7 +1131,6 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 								$scope.daemonList[tab]["Favorites"][entry.group].push(entry);
 							}
 						});
-						console.log($scope)
 					}
 					$scope.filterItems = function (apiSearch) {
 						let data = angular.copy($filter('filter')($scope.daemons, apiSearch, false, 'name'));
@@ -1227,8 +1226,16 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 						$scope.selectedJobs[jobName]['order'] = 1;
 					}
 				};
-				
+				$scope.showOptions= false;
 				$scope.selectDaemon = function (daemon) {
+					$scope.showOptions= true;
+					if (daemon.subType === "cronJob"){
+						$scope.kubernetesCronjob = true;
+						$scope.postData.type = "cronJob";
+					}
+					else {
+						$scope.kubernetesCronjob = false;
+					}
 					$scope.postData.daemon = daemon.name;
 					$scope.daemonJobsList = daemon.jobs;
 					$scope.selectedJobs = {};
@@ -1330,7 +1337,8 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 				$scope.postData.groupName = grpConf.daemonConfigGroup;
 				$scope.postData.interval = grpConf.interval;
 				$scope.postData.type = grpConf.type;
-				
+				$scope.showOptions= true;
+				$scope.kubernetesCronjob = $scope.postData.type === "cronJob";
 				if (grpConf.cronConfig) {
 					if (grpConf.cronConfig.cronTimeDate) {
 						$scope.postData.cronTimeDate = grpConf.cronConfig.cronTimeDate;
@@ -1356,9 +1364,9 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 				};
 				
 				$scope.fetchSelectedDaemon = function () {
-					for (var i = 0; i < outerScope.grid.rows.length; i++) {
-						if (outerScope.grid.rows[i].name === grpConf.daemon) {
-							$scope.daemon = outerScope.grid.rows[i];
+					for (var i = 0; i < outerScope.daemons.length; i++) {
+						if (outerScope.daemons[i].name === grpConf.daemon) {
+							$scope.daemon = outerScope.daemons[i];
 							$scope.postData.daemon = $scope.daemon.name;
 							$scope.daemonJobsList = $scope.daemon.jobs;
 							break;

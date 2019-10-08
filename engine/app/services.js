@@ -673,7 +673,7 @@ soajsApp.service("aclDrawHelpers", function () {
 				if (currentService.versions.hasOwnProperty(version)) {
 					if (service[version].get || service[version].post || service[version].put || service[version].delete) {
 						for (var method in service[version]) {
-							if (service[version][method] && ['get', 'put', 'post', 'delete'].indexOf(method) !== -1 && Object.keys(service[version][method]).length > 0) {
+							if (service[version][method] && ['access', 'apiPermission'].indexOf(method) === -1 && Object.keys(service[version][method]).length > 0) {
 								fillApiAccess(service[version][method]);
 							}
 						}
@@ -717,62 +717,60 @@ soajsApp.service("aclDrawHelpers", function () {
 									if (service.apisRestrictPermission === true) {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
-									if (service.get || service.put || service.post || service.delete) {
-										for (let method in service) {
-											if (service[method] && ['get', 'put', 'post', 'delete'].indexOf(method) !== -1) {
-												aclEnvObj[serviceName][version][method] = [];
-												for (let group in service[method]) {
-													if (service[method][group] && service[method][group].apis) {
-														for (var apiName in service[method][group].apis) {
-															if (service[method][group].apis.hasOwnProperty(apiName)) {
-																let api = service[method][group].apis[apiName];
-																if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
-																	/// need to also check for the default api if restricted
-																	let groupApi = {
-																		group: group,
-																		apis: {
-																			[apiName]: {}
-																		}
-																	};
-																	if (api.accessType === 'private') {
-																		groupApi.apis[apiName].access = true;
-																	} else if (api.accessType === 'public') {
-																		groupApi.apis[apiName].access = false;
-																	} else if (api.accessType === 'groups') {
-																		groupApi.apis[apiName].access = [];
-																		grpCodes = aclEnvFill[version][serviceName][method][group].apis[apiName].grpCodes;
-																		if (grpCodes) {
-																			for (code in grpCodes) {
-																				if (grpCodes.hasOwnProperty(code)) {
-																					groupApi.apis[apiName].access.push(code);
-																				}
+									for (let method in service) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission"].indexOf(method) === -1) {
+											aclEnvObj[serviceName][version][method] = [];
+											for (let group in service[method]) {
+												if (service[method][group] && service[method][group].apis) {
+													for (var apiName in service[method][group].apis) {
+														if (service[method][group].apis.hasOwnProperty(apiName)) {
+															let api = service[method][group].apis[apiName];
+															if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
+																/// need to also check for the default api if restricted
+																let groupApi = {
+																	group: group,
+																	apis: {
+																		[apiName]: {}
+																	}
+																};
+																if (api.accessType === 'private') {
+																	groupApi.apis[apiName].access = true;
+																} else if (api.accessType === 'public') {
+																	groupApi.apis[apiName].access = false;
+																} else if (api.accessType === 'groups') {
+																	groupApi.apis[apiName].access = [];
+																	grpCodes = aclEnvFill[version][serviceName][method][group].apis[apiName].grpCodes;
+																	if (grpCodes) {
+																		for (code in grpCodes) {
+																			if (grpCodes.hasOwnProperty(code)) {
+																				groupApi.apis[apiName].access.push(code);
 																			}
-																		}
-																		if (groupApi.apis[apiName].access.length === 0) {
-																			return {'valid': false};
 																		}
 																	}
-																	if (aclEnvObj[serviceName][version][method].length === 0) {
+																	if (groupApi.apis[apiName].access.length === 0) {
+																		return {'valid': false};
+																	}
+																}
+																if (aclEnvObj[serviceName][version][method].length === 0) {
+																	aclEnvObj[serviceName][version][method].push(groupApi);
+																} else {
+																	let found = false;
+																	for (let x = 0; x < aclEnvObj[serviceName][version][method].length; x++) {
+																		if (aclEnvObj[serviceName][version][method][x].group === groupApi.group) {
+																			aclEnvObj[serviceName][version][method][x].apis[apiName] = groupApi.apis[apiName];
+																			found = true;
+																			break;
+																		}
+																	}
+																	if (!found) {
 																		aclEnvObj[serviceName][version][method].push(groupApi);
-																	} else {
-																		let found = false;
-																		for (let x = 0; x < aclEnvObj[serviceName][version][method].length; x++) {
-																			if (aclEnvObj[serviceName][version][method][x].group === groupApi.group) {
-																				aclEnvObj[serviceName][version][method][x].apis[apiName] = groupApi.apis[apiName];
-																				found = true;
-																				break;
-																			}
-																		}
-																		if (!found) {
-																			aclEnvObj[serviceName][version][method].push(groupApi);
-																		}
 																	}
 																}
 															}
 														}
-														if (aclEnvObj[serviceName][version][method].length === 0) {
-															delete aclEnvObj[serviceName][version][method];
-														}
+													}
+													if (aclEnvObj[serviceName][version][method].length === 0) {
+														delete aclEnvObj[serviceName][version][method];
 													}
 												}
 											}
@@ -1324,7 +1322,7 @@ soajsApp.service('swaggerClient', ["$q", "$http", "swaggerModules", "$cookies", 
 			if (swagger.__env) {
 				query.__env = swagger.__env;
 				query.proxyRoute = path;
-				if (swagger.extKey){
+				if (swagger.extKey) {
 					query.extKey = swagger.extKey;
 				}
 			}

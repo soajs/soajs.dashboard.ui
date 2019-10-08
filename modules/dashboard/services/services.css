@@ -302,6 +302,96 @@ hr{
     margin-bottom: 5px;
 }
 
+.patchMethodApi {
+    color: #50e3c2;
+    padding: 7px 0 4px;
+    text-align: center;
+    width: 50px;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.patchRouteApi {
+    color: #000;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.patchDescriptionApi {
+    color: #50e3c2;
+    margin: 2px 10px 5px 0;
+    float: right;
+}
+
+.patchApi{
+    background-color: rgba(80, 227, 194, .1);
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
+.headMethodApi {
+    color: #9012fe;
+    padding: 7px 0 4px;
+    text-align: center;
+    width: 50px;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.headRouteApi {
+    color: #000;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.headDescriptionApi {
+    color: #9012fe;
+    margin: 2px 10px 5px 0;
+    float: right;
+}
+
+.headApi{
+    background-color: rgba(144, 18, 254, .1);
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
+.otherMethodApi {
+    color: #808080;
+    padding: 7px 0 4px;
+    text-align: center;
+    width: 50px;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.otherRouteApi {
+    color: #000;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.otherDescriptionApi {
+    color: #808080;
+    margin: 2px 10px 5px 0;
+    float: right;
+}
+
+.otherApi{
+    background-color: #F0F0F0;
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
 .apiCatalog-search {
     width: 16%;
     margin-right: 10px;

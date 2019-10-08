@@ -281,16 +281,20 @@
 							<ul class="removeTab">
 								<li class="deleteSquare f-left">Delete: remove information from applications</li>
 								<li class="addSquare f-left">Add: add information to applications</li>
-								
 								<li class="updateSquare f-left">Update: update information from applications</li>
 								<li class="getSquare f-left">Read: get information from applications</li>
+							</ul>
+							<ul class="removeTab">
+								<li class="patchSquare f-left">Patch: patch information from applications</li>
+								<li class="headSquare f-left">Head: get information about applications</li>
+								<li class="otherSquare f-left">Other: other requests to applications</li>
 							</ul>
 						</div>
 						<div class="f-left apiRoutesHr">
 							<hr>
 						</div>
 						<div ng-repeat="api in displayItems |limitTo: itemsPerPage:apiRoutes.paginations.currentPage-1  as filteredItems">
-							<div ng-class="{updateRoute: api.method ==='put', addRoute:api.method ==='post', readRoute:  api.method ==='get', deleteRoute:  api.method ==='delete'}">
+							<div ng-class="{updateRoute: api.method ==='put', addRoute:api.method ==='post', readRoute:  api.method ==='get', deleteRoute:  api.method ==='delete', patchRoute: api.method==='patch', headRoute: api.method==='head', otherRoute: api.method !=='head' && api.method !=='patch' && api.method !=='head' && api.method !=='get' && api.method !=='post' && api.method !=='put' && api.method !=='delete'}">
 								<span class="f-left apiRoute">{{api.route}}</span>
 								<span class="f-left apiLabel">{{api.label}}</span>
 								<span class="f-left apiServiceName">{{api.serviceName}}</span>

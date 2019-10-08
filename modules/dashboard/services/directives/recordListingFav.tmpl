@@ -129,6 +129,44 @@
 							</fieldset>
 						</div>
 						
+						<div ng-if="val.Patch">
+							<fieldset>
+								<legend>Patch</legend>
+								<div  ng-repeat="myApi in val.Patch.apis">
+									<div class ="patchApi">
+										<span class="patchMethodApi">{{myApi.m}}</span>
+										<span class="patchRouteApi">{{myApi.v}}</span>
+										<span class="patchDescriptionApi">{{myApi.l}}</span>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+						
+						<div ng-if="val.Head">
+							<fieldset>
+								<legend>Head</legend>
+								<div  ng-repeat="myApi in val.Head.apis">
+									<div class ="headApi">
+										<span class="headMethodApi">{{myApi.m}}</span>
+										<span class="headRouteApi">{{myApi.v}}</span>
+										<span class="headDescriptionApi">{{myApi.l}}</span>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+						
+						<div ng-if="val.Other">
+							<fieldset>
+								<legend>Other</legend>
+								<div  ng-repeat="myApi in val.Other.apis">
+									<div class ="otherApi">
+										<span class="otherMethodApi">{{myApi.m}}</span>
+										<span class="otherRouteApi">{{myApi.v}}</span>
+										<span class="otherDescriptionApi">{{myApi.l}}</span>
+									</div>
+								</div>
+							</fieldset>
+						</div>
 					</fieldset>
 				</accordion-group>
 			</accordion>

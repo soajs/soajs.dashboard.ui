@@ -372,8 +372,14 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 					case 'delete':
 						m = 'Delete';
 						break;
+					case 'patch':
+						m = 'Patch';
+						break;
+					case 'head':
+						m = 'Head';
+						break;
 					default:
-						m = 'Read';
+						m = 'Other';
 				}
 			}
 			if (!result.groups[g]) {

@@ -12,7 +12,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	$scope.services = {};
 	$scope.services.includeSOAJS = false;
 	$scope.services.form = {};
-	$scope.colors = ["rgb(159,204,0)", "rgb(250,109,33)", "rgb(154,154,154)", "rgb(222,251,241)"];
+	$scope.colors = ["#0f6ab4", "#00AB50", "#C48638", "#A81E2E", "#50e3c2", "#9012fe", "#808080"];
 	
 	$scope.getAnalyticsForServices = function () {
 		// let opts = {
@@ -121,8 +121,8 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 						},
 						//3
 						methods: {
-							labels: ["read", "write", "update", "delete"],
-							data: [0, 0, 0, 0],
+							labels: ["read", "write", "update", "delete", "patch", "head", "other"],
+							data: [0, 0, 0, 0, 0, 0, 0],
 							options: {
 								legend: {display: true}
 							}
@@ -161,16 +161,25 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 												//["read", "write", "update", "delete"],
 												if (service.methods) {
 													if (service.methods.get) {
-														data.pie.methods.data[0] = data.pie.methods.data[0] + service.methods.get
+														data.pie.methods.data[0] = data.pie.methods.data[0] + service.methods.get;
 													}
 													if (service.methods.post) {
-														data.pie.methods.data[1] = data.pie.methods.data[1] + service.methods.post
+														data.pie.methods.data[1] = data.pie.methods.data[1] + service.methods.post;
 													}
 													if (service.methods.put) {
-														data.pie.methods.data[2] = data.pie.methods.data[2] + service.methods.put
+														data.pie.methods.data[2] = data.pie.methods.data[2] + service.methods.put;
 													}
 													if (service.methods.delete) {
-														data.pie.methods.data[3] = data.pie.methods.data[3] + service.methods.delete
+														data.pie.methods.data[3] = data.pie.methods.data[3] + service.methods.delete;
+													}
+													if (service.methods.patch) {
+														data.pie.methods.data[4] = data.pie.methods.data[4] + service.methods.patch;
+													}
+													if (service.methods.head) {
+														data.pie.methods.data[5] = data.pie.methods.data[5] + service.methods.head;
+													}
+													if (service.methods.other) {
+														data.pie.methods.data[6] = data.pie.methods.data[6] + service.methods.other;
 													}
 												}
 											}
@@ -253,8 +262,8 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 						},
 						//3
 						methods: {
-							labels: ["read", "write", "update", "delete"],
-							data: [0, 0, 0, 0],
+							labels: ["read", "write", "update", "delete", "patch", "head", "other"],
+							data: [0, 0, 0, 0, 0, 0, 0],
 							options: {
 								legend: {display: true}
 							}
@@ -293,16 +302,25 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 												//["read", "write", "update", "delete"],
 												if (service.methods) {
 													if (service.methods.get) {
-														data.pie.methods.data[0] = data.pie.methods.data[0] + service.methods.get
+														data.pie.methods.data[0] = data.pie.methods.data[0] + service.methods.get;
 													}
 													if (service.methods.post) {
-														data.pie.methods.data[1] = data.pie.methods.data[1] + service.methods.post
+														data.pie.methods.data[1] = data.pie.methods.data[1] + service.methods.post;
 													}
 													if (service.methods.put) {
-														data.pie.methods.data[2] = data.pie.methods.data[2] + service.methods.put
+														data.pie.methods.data[2] = data.pie.methods.data[2] + service.methods.put;
 													}
 													if (service.methods.delete) {
-														data.pie.methods.data[3] = data.pie.methods.data[3] + service.methods.delete
+														data.pie.methods.data[3] = data.pie.methods.data[3] + service.methods.delete;
+													}
+													if (service.methods.patch) {
+														data.pie.methods.data[4] = data.pie.methods.data[4] + service.methods.patch;
+													}
+													if (service.methods.head) {
+														data.pie.methods.data[5] = data.pie.methods.data[5] + service.methods.head;
+													}
+													if (service.methods.other) {
+														data.pie.methods.data[6] = data.pie.methods.data[6] + service.methods.other;
 													}
 												}
 											}

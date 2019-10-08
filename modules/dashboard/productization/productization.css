@@ -265,6 +265,99 @@ redAccordion .panel-heading a:focus {
     margin-bottom: 5px;
 }
 
+.patchMethodApis {
+    color: #50e3c2;
+    padding: 7px 0 4px;
+    text-align: center;
+    width: 50px;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.patchRouteApis {
+    color: #000;
+    padding-left: 10px;
+    display: inline-block;
+
+}
+
+.patchDescriptionApis {
+    color: #50e3c2;
+    margin: 2px 10px 5px 0;
+    padding-left: 15px;
+}
+
+.patchApis {
+    background-color: rgba(80, 227, 194, .1);
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
+.headMethodApis {
+    color: #9012fe;
+    padding: 7px 0 4px;
+    text-align: center;
+    width: 50px;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.headRouteApis {
+    color: #000;
+    padding-left: 10px;
+    display: inline-block;
+
+}
+
+.headDescriptionApis {
+    color: #9012fe;
+    margin: 2px 10px 5px 0;
+    padding-left: 15px;
+}
+
+.headApis {
+    background-color: rgba(144, 18, 254, .1);
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
+.otherMethodApis {
+    color: #808080;
+    padding: 7px 0 4px;
+    text-align: center;
+    width: 50px;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.otherRouteApis {
+    color: #000;
+    padding-left: 10px;
+    display: inline-block;
+
+}
+
+.otherDescriptionApis {
+    color: #808080;
+    margin: 2px 10px 5px 0;
+    padding-left: 15px;
+}
+
+.otherApis {
+    background-color: #F0F0F0;
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
 .width100 {
     width: 100% !important;
 }

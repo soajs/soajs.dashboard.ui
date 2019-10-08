@@ -736,8 +736,14 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			case 'delete':
 				newMethod = 'Delete';
 				break;
+			case 'patch':
+				newMethod = 'Patch';
+				break;
+			case 'head':
+				newMethod = 'Head';
+				break;
 			default:
-				newMethod = 'Read';
+				newMethod = 'Other';
 		}
 		return newMethod
 	};
@@ -981,8 +987,14 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			case 'delete':
 				newMethod = 'Delete';
 				break;
+			case 'patch':
+				newMethod = 'Patch';
+				break;
+			case 'head':
+				newMethod = 'Head';
+				break;
 			default:
-				newMethod = 'Read';
+				newMethod = 'Other';
 		}
 		return newMethod
 	};
@@ -1218,8 +1230,14 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', 'ngDat
 			case 'delete':
 				newMethod = 'Delete';
 				break;
+			case 'patch':
+				newMethod = 'Patch';
+				break;
+			case 'head':
+				newMethod = 'Head';
+				break;
 			default:
-				newMethod = 'Read';
+				newMethod = 'Other';
 		}
 		return newMethod
 	};
@@ -1455,8 +1473,14 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			case 'delete':
 				newMethod = 'Delete';
 				break;
+			case 'patch':
+				newMethod = 'Patch';
+				break;
+			case 'head':
+				newMethod = 'Head';
+				break;
 			default:
-				newMethod = 'Read';
+				newMethod = 'Other';
 		}
 		return newMethod
 	};

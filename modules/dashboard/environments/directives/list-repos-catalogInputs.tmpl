@@ -1,9 +1,3 @@
-<div ng-if="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.type === 'daemon'">
-	<label>Daemon Group Configuration</label>
-	<select class="form-control" ng-required="true" ng-disabled="deployed" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.daemonConfigGroup" ng-options="grpConf.daemonConfigGroup as grpConf.daemonConfigGroup for grpConf in daemonGrpConfList"> </select>
-	<label class="fieldMsg">Choose a daemon group configuration for this daemon</label>
-	<br>
-</div>
 <div ng-show="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.daemonGroup">
 	<label>Daemon Group:</label>&nbsp;{{cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.daemonGroup}}
 </div>

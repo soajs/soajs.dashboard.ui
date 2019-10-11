@@ -1056,7 +1056,8 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 					function fixList(response, favoriteResponse){
 						$scope.daemonList = {
 							"Daemons": {
-								"All": {}
+								"All": {},
+								"__active": true,
 							}
 						};
 						$scope.paginations = {};
@@ -1089,6 +1090,7 @@ servicesApp.controller('daemonsCtrl', ['$scope', 'ngDataApi', '$timeout', '$moda
 							if (!$scope.daemonList[tab]) {
 								$scope.daemonList[tab] = {
 									"All": {},
+									"__active": false,
 								};
 							}
 							if (!$scope.paginations[tab]) {

@@ -13,11 +13,11 @@
 	</div>
 
 	<tabset>
-		<tab heading="{{tab}}" ng-repeat="(tab, subtypes) in displayItems" active="true">
+		<tab heading="{{tab}}" ng-repeat="(tab, subtypes) in displayItems" active="subtypes.__active">
 			<br>
 			<div>
 				<tabset>
-					<tab heading={{subTab}} ng-repeat="(subTab, groups) in subtypes">
+					<tab heading={{subTab}} ng-repeat="(subTab, groups) in subtypes" ng-show="subTab!=='__active'">
 						<div ng-if="subTab !== 'Favorites'" ng-repeat="(group, daemons) in groups">
 							<fieldset class="custom-fieldset" >
 								<legend>{{group}}</legend>

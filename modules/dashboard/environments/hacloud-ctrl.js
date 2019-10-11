@@ -232,6 +232,10 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.loadServiceProvision = function (service) {
 		hacloudSrv.loadServiceProvision($scope, service);
 	};
+	
+	$scope.executeOperation = function (service, operation) {
+		hacloudSrv.executeOperation($scope, service, operation);
+	};
 
 	$scope.executeHeartbeatTest = function (service) {
 		hacloudSrv.executeHeartbeatTest($scope, service);

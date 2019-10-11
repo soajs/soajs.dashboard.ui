@@ -31,6 +31,7 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 		currentScope.showCtrlHosts = true;
 		currentScope.hostList = [];
 		currentScope.hosts = [];
+		console.log(currentScope)
 		if (currentScope.access.listHosts) {
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",

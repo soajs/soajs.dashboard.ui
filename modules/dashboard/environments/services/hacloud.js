@@ -601,6 +601,75 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			}
 		});
 	}
+	
+	function executeOperation(currentScope, service, operation) {
+		//reload provision for all service instances in parallel
+		getSendDataFromServer(currentScope, ngDataApi, {
+			"method": "post",
+			"routeName": "/dashboard/cloud/services/maintenance",
+			"params": {
+				"namespace": service.namespace || ''
+			},
+			"data": {
+				"serviceId": service.id,
+				"serviceName": service.labels['soajs.service.name'],
+				"operation": operation.path,
+				"env": currentScope.envCode,
+				"type": service.labels['soajs.service.type']
+			}
+		}, function (error, response) {
+			if (error) {
+				if(error.code == 689) {
+					displayMaintenanceOpError(error);
+				}
+				else {
+					currentScope.displayAlert('danger', error.message);
+				}
+			}
+			else {
+				
+				var formConfig = angular.copy(environmentsConfig.form.multiServiceInfo);
+				response.forEach(function (oneRegistry) {
+					service.tasks.forEach(function (oneTask) {
+						if (oneTask.id === oneRegistry.id && oneTask.status.state === 'running') {
+							formConfig.entries[0].tabs.push({
+								'label': oneRegistry.id,
+								'entries': [
+									{
+										'name': service.name,
+										'type': 'jsoneditor',
+										'height': '500px',
+										"value": oneRegistry.response
+									}
+								]
+							});
+						}
+					});
+				});
+				
+				var options = {
+					timeout: $timeout,
+					form: formConfig,
+					name: operation.label,
+					label: operation.label + " " + service.name,
+					actions: [
+						{
+							'type': 'reset',
+							'label': translation.ok[LANG],
+							'btn': 'primary',
+							'action': function (formData) {
+								currentScope.modalInstance.dismiss('cancel');
+								currentScope.provisionInfo = [];
+								currentScope.form.formData = {};
+							}
+						}
+					]
+				};
+				
+				buildFormWithModal(currentScope, $modal, options);
+			}
+		});
+	}
 
 	function loadDaemonStats(currentScope, service) {
 		getSendDataFromServer(currentScope, ngDataApi, {
@@ -1263,6 +1332,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 		'hostLogs': hostLogs,
 		'reloadServiceRegistry': reloadServiceRegistry,
 		'loadServiceProvision': loadServiceProvision,
+		'executeOperation': executeOperation,
 		'inspectService': inspectService,
 		'loadDaemonStats': loadDaemonStats,
 		"loadDaemonGroupConfig": loadDaemonGroupConfig,

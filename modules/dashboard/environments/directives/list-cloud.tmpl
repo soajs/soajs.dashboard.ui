@@ -35,8 +35,10 @@
 		</table>
 	</div>
 	<div class="modal-body">
-		<alert type="warning" style="text-align:center;" ng-if="message.warning"><span ng-bind-html="message.warning|toTrustedHtml"></span></alert>
-		<pre id="code" ng-if="!message || !message.warning" class="preBox" scroll-glue><code style="white-space: pre !important;" class="sh" ng-bind-html="data"></code></pre>
+		<alert type="warning" style="text-align:center;" ng-if="message.warning"><span
+				ng-bind-html="message.warning|toTrustedHtml"></span></alert>
+		<pre id="code" ng-if="!message || !message.warning" class="preBox" scroll-glue><code
+				style="white-space: pre !important;" class="sh" ng-bind-html="data"></code></pre>
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
@@ -74,37 +76,42 @@
 		</div>
 		<div class="form" ng-show="currentScope.serviceType === 'deployment'">
 			<form name="autoScale" id="autoScale" ng-submit="autoScale.$valid && onSubmit()">
-			<fieldset>
-				<legend>Metrics</legend>
-				<div>
-					<label>CPU</label>
-					<input type="number" class="form-control" ng-model="currentScope.autoScaleObject.metrics.cpu.percent" ng-required="true"/>
-					<label class="fieldMsg">Enter CPU percentage</label>
-					<br>
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend>Replicas</legend>
-				<div>
-					<label>min</label>
-					<input type="number" class="form-control" ng-model="currentScope.autoScaleObject.replicas.min" min="1" ng-required="true"/>
-					<label class="fieldMsg">Enter minimum Replica Count that is greater or equal to 1</label>
-					<br>
-				</div>
-				<div>
-					<label>max</label>
-					<input type="number" class="form-control" ng-model="currentScope.autoScaleObject.replicas.max" min="1" ng-required="true"/>
-					<label class="fieldMsg">Enter maximum Replica Count that is greater or equal to 1</label>
-					<br>
-				</div>
-			</fieldset>
+				<fieldset>
+					<legend>Metrics</legend>
+					<div>
+						<label>CPU</label>
+						<input type="number" class="form-control"
+						       ng-model="currentScope.autoScaleObject.metrics.cpu.percent" ng-required="true"/>
+						<label class="fieldMsg">Enter CPU percentage</label>
+						<br>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>Replicas</legend>
+					<div>
+						<label>min</label>
+						<input type="number" class="form-control" ng-model="currentScope.autoScaleObject.replicas.min"
+						       min="1" ng-required="true"/>
+						<label class="fieldMsg">Enter minimum Replica Count that is greater or equal to 1</label>
+						<br>
+					</div>
+					<div>
+						<label>max</label>
+						<input type="number" class="form-control" ng-model="currentScope.autoScaleObject.replicas.max"
+						       min="1" ng-required="true"/>
+						<label class="fieldMsg">Enter maximum Replica Count that is greater or equal to 1</label>
+						<br>
+					</div>
+				</fieldset>
 			</form>
 		</div>
 	</div>
 	<div class="modal-footer">
 		<span ng-show="currentScope.serviceType === 'deployment'">
-			<button class="btn btn-success" ng-disabled='autoScale.$invalid' ng-click="onSubmit('update')">Auto Scale</button>
-			<button class="btn btn-danger" ng-disabled='autoScale.$invalid' ng-click="onSubmit('turnOff')">Turn Off</button>
+			<button class="btn btn-success" ng-disabled='autoScale.$invalid'
+			        ng-click="onSubmit('update')">Auto Scale</button>
+			<button class="btn btn-danger" ng-disabled='autoScale.$invalid'
+			        ng-click="onSubmit('turnOff')">Turn Off</button>
 			&nbsp;
 		</span>
 		<button class="btn btn-primary" ng-click="closeModal()">Cancel</button>
@@ -120,8 +127,10 @@
 			<alert type="danger">
 				<h3 style="margin-top:5px;">Warning</h3>
 				<hr>
-				Some catalog recipes have not been upgraded yet, they still use a schema compatible with previous SOAJS version(s).<br />
-				This prevents you from configuring or deploying any repository and/or resource. Please upgrade these recipes to the latest version <a href="" ng-click="upgradeRecipes()">[ Upgrade ]</a>
+				Some catalog recipes have not been upgraded yet, they still use a schema compatible with previous SOAJS
+				version(s).<br/>
+				This prevents you from configuring or deploying any repository and/or resource. Please upgrade these
+				recipes to the latest version <a href="" ng-click="upgradeRecipes()">[ Upgrade ]</a>
 			</alert>
 		</div>
 	</div>
@@ -130,7 +139,8 @@
 <section ng-controller="hacloudCtrl">
 	<div class="f-right">
 		<span class="dropdown refreshDropDown">
-			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
+			        aria-expanded="true">
 				<span class="icon icon-loop2"></span>&nbsp;{{selectedInterval.l}}
 				<span class="caret"></span>
 			</button>
@@ -147,15 +157,18 @@
 				<alert type="warning">
 					<h3 style="margin-top: 0">Warning</h3>
 					<hr>
-					Detected an old style service deployment in High Availability section. Please visit <a href="#/catalog-recipes">Catalog Recipes</a> section and follow the upgrade wizard.<br />
-					If you already updated your <b>catalog recipes</b> and still see this warning then execute operation <b>Redeploy Service</b> on every deployed service.
+					Detected an old style service deployment in High Availability section. Please visit <a
+						href="#/catalog-recipes">Catalog Recipes</a> section and follow the upgrade wizard.<br/>
+					If you already updated your <b>catalog recipes</b> and still see this warning then execute operation
+					<b>Redeploy Service</b> on every deployed service.
 				</alert>
 			</div>
 			<div ng-if="myNginx && (!myEnvironment.protocol || !myEnvironment.port)">
 				<alert type="warning">
 					<h3 style="margin-top: 0">Warning</h3>
 					<hr>
-					Detected an old style deployment for this environment. Make sure you pull the latest images of SOAJS and redeploy the Nginx of this environment.
+					Detected an old style deployment for this environment. Make sure you pull the latest images of SOAJS
+					and redeploy the Nginx of this environment.
 				</alert>
 				<br><br>
 			</div>
@@ -170,11 +183,13 @@
 								No deployed services or components found in this environment, you can
 							</td>
 							<td width="22%" align="center">
-								<a href="#/deploy-repositories" ng-if="access.hacloud.services.add" class="btn btn-warning">Deploy from Repositories</a>
+								<a href="#/deploy-repositories" ng-if="access.hacloud.services.add"
+								   class="btn btn-warning">Deploy from Repositories</a>
 							</td>
 							<td align="center" width="6%">OR</td>
 							<td width="22%" align="center">
-								<a href="#/resources" ng-if="access.hacloud.services.add" class="btn btn-warning">Deploy from Resources</a>
+								<a href="#/resources" ng-if="access.hacloud.services.add" class="btn btn-warning">Deploy
+									from Resources</a>
 							</td>
 						</tr>
 					</table>
@@ -192,135 +207,230 @@
 			</div>
 			<div class="c-both w100 table" ng-if="envPlatform !=='kubernetes'">
 			</div>
-			<span ng-if="envPlatform === 'kubernetes' && namespaces.length > 0" class="f-right w20" style="height: 35px;">
+			<span ng-if="envPlatform === 'kubernetes' && namespaces.length > 0" class="f-right w20"
+			      style="height: 35px;">
 				<span class="w100">
-					<select class="form-control" ng-options="namespace.id as namespace.name for namespace in namespaces" ng-model="namespaceConfig.namespace"></select>&nbsp;&nbsp;
+					<select class="form-control" ng-options="namespace.id as namespace.name for namespace in namespaces"
+					        ng-model="namespaceConfig.namespace"></select>&nbsp;&nbsp;
 				</span>
 			</span>
 			<tabset ng-if="hosts">
 				<tab ng-repeat="(type, subtypes) in hosts" heading="{{recipeTypes[type].l}}">
-					<br />
+					<br/>
 					<accordion close-others="false">
 						<accordion-group is-open="$first" ng-repeat="(oneSubType, groups) in subtypes">
 							<accordion-heading>{{recipeTypes[type].categories[oneSubType].l}}</accordion-heading>
-							<fieldset class="groupFieldset" ng-repeat="(groupName, oneGroup) in groups" ng-show="(oneGroup.list | filter:namespaceConfig.namespace:true).length > 0">
+							<fieldset class="groupFieldset" ng-repeat="(groupName, oneGroup) in groups"
+							          ng-show="(oneGroup.list | filter:namespaceConfig.namespace:true).length > 0">
 								<legend>
-									<a href="" class="icon" ng-class="{'icon-minus': oneGroup.expanded, 'icon-plus': !oneGroup.expanded}" ng-click="showHideGroupContent2(oneGroup)"></a>
-									{{groupName}} ( {{ (oneGroup.list | filter:namespaceConfig.namespace:true).length }} )
+									<a href="" class="icon"
+									   ng-class="{'icon-minus': oneGroup.expanded, 'icon-plus': !oneGroup.expanded}"
+									   ng-click="showHideGroupContent2(oneGroup)"></a>
+									{{groupName}} ( {{ (oneGroup.list | filter:namespaceConfig.namespace:true).length }}
+									)
 								</legend>
 								<div class="entryBoxes" ng-show="oneGroup.list && oneGroup.expanded">
-									<div class="entryBox mb20" ng-repeat="service in oneGroup.list | filter:namespaceConfig.namespace:true" ng-class="{'redEntryBox': !service.deployment && service.labels['soajs.content'], 'yellowEntryBox': !service.deployment && !service.labels['soajs.content'] }">
+									<div class="entryBox mb20"
+									     ng-repeat="service in oneGroup.list | filter:namespaceConfig.namespace:true"
+									     ng-class="{'redEntryBox': !service.deployment && service.labels['soajs.content'], 'yellowEntryBox': !service.deployment && !service.labels['soajs.content'] }">
 										<div class="header table">
 											<span class="serviceLabelBox">
 												<span ng-show="service.labels['soajs.service.name'] !== 'controller'">{{service.labels['soajs.service.name']}}</span>
 												<span ng-show="service.labels['soajs.service.name'] === 'controller'">SOAJS API Gateway</span>
 												/
-												<span style="margin-left: 0;" ng-if="service.labels['soajs.service.type'] === 'daemon' && service.daemonGroup">Group: {{service.daemonGroup}} /</span>
-												Version: {{service.labels['soajs.service.version']}} <span style="margin-left: 0;" ng-if="service.ip && service.ip !== ''"> / IP Address: {{service.ip}}</span>&nbsp;
+												<span style="margin-left: 0;"
+												      ng-if="service.labels['soajs.service.type'] === 'daemon' && service.daemonGroup">Group: {{service.daemonGroup}} /</span>
+												Version: {{service.labels['soajs.service.version']}} <span
+													style="margin-left: 0;" ng-if="service.ip && service.ip !== ''"> / IP Address: {{service.ip}}</span>&nbsp;
 											</span>
-
+											
 											<span ng-show="service.imageUpdate || service.catalogUpdate">
-												<a class="red" href="#/updates-upgrades"><span class="icon icon-notification"></span>&nbsp;New Updates Available</a>
+												<a class="red" href="#/updates-upgrades"><span
+														class="icon icon-notification"></span>&nbsp;New Updates Available</a>
 											</span>
-
+											
 											<span ng-show="service.codeUpdate">
-												<a class="red" href="#/updates-upgrades"><span class="icon icon-notification"></span>&nbsp;New Updates Available, Check the Ledger</a>
+												<a class="red" href="#/updates-upgrades"><span
+														class="icon icon-notification"></span>&nbsp;New Updates Available, Check the Ledger</a>
 											</span>
-
-											<span ng-show="service.failures > 0" class="btn btn-sm btn-danger f-right" ng-click="showHideFailures(service);">Failures: {{service.failures}}</span>
+											
+											<span ng-show="service.failures > 0" class="btn btn-sm btn-danger f-right"
+											      ng-click="showHideFailures(service);">Failures: {{service.failures}}</span>
 											<div class="dropdown serviceOpsDropdown">
-												<button class="btn btn-default dropdown-toggle" type="button" id="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+												<button class="btn btn-default dropdown-toggle" type="button" id=""
+												        data-toggle="dropdown" aria-haspopup="true"
+												        aria-expanded="true">
 													Service Operations
 													<span class="caret"></span>
 												</button>
-												<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
-													<li><a href="" ng-click="inspectService(service)"><span class="icon icon-info"></span>&nbsp;Inspect</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.operation" ng-show="oneSubType === 'soajs'" ng-click="executeHeartbeatTest(service)"><span class="icon icon-heart"></span> Heart Beat</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.operation" ng-show="type === 'daemon'" ng-click="loadDaemonStats(service)"><span class="icon icon-stats-dots"></span>&nbsp;{{translation.loadDaemonStatisticsOperation[LANG]}}</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.operation" ng-show="type === 'daemon'" ng-click="loadDaemonGroupConfig(service)"><span class="icon icon-equalizer"></span>&nbsp;{{translation.loadDaemonGroupConfig[LANG]}}</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.operation" ng-show="service.labels['soajs.service.name'] === 'controller'" ng-click="executeAwarenessTest(service)"><span class="icon icon-connection"></span>&nbsp;Awareness Stat</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.operation" ng-show="['controller','oauth'].indexOf(service.labels['soajs.service.name']) !== -1" ng-click="loadServiceProvision(service)"><span class="icon icon-download3"></span>&nbsp;Load Provision</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.operation" ng-show="oneSubType === 'soajs'" ng-click="reloadServiceRegistry(service)"><span class="icon icon-undo"></span>&nbsp;Reload Registry</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.scale && service.labels['soajs.service.mode'] !== 'global' && service.labels['soajs.service.mode'] !== 'daemonset'" ng-click="scaleService(service, groupName)"><span class="icon icon-enlarge"></span>&nbsp;Scale Service</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.autoScale && isAutoScalable" ng-click="autoScale(service)"><span class="icon icon-enlarge"></span>&nbsp;Auto Scale Service</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.redeploy" ng-click="redeployService(service)" ng-confirm-click="Are you sure you want to restart this service?"><span class="icon icon-undo"></span>&nbsp;Restart Service</a></li>
-													<li><a href="" ng-if="service.deployment && access.hacloud.services.redeploy" ng-show="service.labels['soajs.catalog.id']" ng-click="rebuildService(service, '')" ng-confirm-click="Are you sure you want to redeploy this service?"><span class="icon icon-loop2"></span>&nbsp;Redeploy Service</a></li>
-													<li><a href="" ng-if="access.hacloud.services.delete && (kubernetesSystemDeployments.indexOf(service.name) === -1) && ((envCode.toLowerCase() === 'dashboard' && ((service.namespace && service.namespace !== 'soajs') || service.labels['soajs.service.group'] !== 'soajs-core-services')) || (envCode.toLowerCase() !== 'dashboard'))" ng-click="deleteService(service, groupName)" ng-confirm-click="Are you sure you want to delete this service?"><span class="icon icon-cross"></span>&nbsp;Delete Service</a></li>
+												<ul class="dropdown-menu" aria-labelledby="serviceOpsDropdown"
+												    ng-repeat="operation in service.maintenance.commands">
+													<li><a href=""
+													       ng-if="service.deployment && operation && operation.path!=='/reloadRegistry' && operation.path!=='/awarenessStat' && operation.path!=='/loadProvision' && operation.path!=='/infoHost' && operation.path!=='/daemonStats' && operation.path!=='/reloadDaemonConf'"
+													       ng-click="executeOperation(service, operation)"><span
+															class="icon icon-{{operation.icon}}"></span>&nbsp;{{operation.label}}</a>
+													</li>
+													<li><a href="" ng-click="inspectService(service)"><span
+															class="icon icon-info"></span>&nbsp;Inspect</a></li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="oneSubType === 'soajs'"
+													       ng-click="executeHeartbeatTest(service)"><span
+															class="icon icon-heart"></span> Heart Beat</a></li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="type === 'daemon'"
+													       ng-click="loadDaemonStats(service)"><span
+															class="icon icon-stats-dots"></span>&nbsp;{{translation.loadDaemonStatisticsOperation[LANG]}}</a>
+													</li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="type === 'daemon'"
+													       ng-click="loadDaemonGroupConfig(service)"><span
+															class="icon icon-equalizer"></span>&nbsp;{{translation.loadDaemonGroupConfig[LANG]}}</a>
+													</li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="service.labels['soajs.service.name'] === 'controller'"
+													       ng-click="executeAwarenessTest(service)"><span
+															class="icon icon-connection"></span>&nbsp;Awareness Stat</a>
+													</li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="['controller','oauth'].indexOf(service.labels['soajs.service.name']) !== -1"
+													       ng-click="loadServiceProvision(service)"><span
+															class="icon icon-download3"></span>&nbsp;Load Provision</a>
+													</li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="oneSubType === 'soajs'"
+													       ng-click="reloadServiceRegistry(service)"><span
+															class="icon icon-undo"></span>&nbsp;Reload Registry</a></li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.scale && service.labels['soajs.service.mode'] !== 'global' && service.labels['soajs.service.mode'] !== 'daemonset'"
+													       ng-click="scaleService(service, groupName)"><span
+															class="icon icon-enlarge"></span>&nbsp;Scale Service</a>
+													</li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.autoScale && isAutoScalable"
+													       ng-click="autoScale(service)"><span
+															class="icon icon-enlarge"></span>&nbsp;Auto Scale
+														Service</a></li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.redeploy"
+													       ng-click="redeployService(service)"
+													       ng-confirm-click="Are you sure you want to restart this service?"><span
+															class="icon icon-undo"></span>&nbsp;Restart Service</a></li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.redeploy"
+													       ng-show="service.labels['soajs.catalog.id']"
+													       ng-click="rebuildService(service, '')"
+													       ng-confirm-click="Are you sure you want to redeploy this service?"><span
+															class="icon icon-loop2"></span>&nbsp;Redeploy Service</a>
+													</li>
+													<li><a href=""
+													       ng-if="access.hacloud.services.delete && (kubernetesSystemDeployments.indexOf(service.name) === -1) && ((envCode.toLowerCase() === 'dashboard' && ((service.namespace && service.namespace !== 'soajs') || service.labels['soajs.service.group'] !== 'soajs-core-services')) || (envCode.toLowerCase() !== 'dashboard'))"
+													       ng-click="deleteService(service, groupName)"
+													       ng-confirm-click="Are you sure you want to delete this service?"><span
+															class="icon icon-cross"></span>&nbsp;Delete Service</a></li>
 												</ul>
 											</div>
-
-											<span class="serviceLabelBox autoscaleBox f-right" ng-if="envPlatform === 'kubernetes' && service.autoscaler && service.autoscaler.replicas.min && service.autoscaler.replicas.max">
+											
+											<span class="serviceLabelBox autoscaleBox f-right"
+											      ng-if="envPlatform === 'kubernetes' && service.autoscaler && service.autoscaler.replicas.min && service.autoscaler.replicas.max">
 												<span class="icon icon-checkmark"></span>&nbsp;Autoscaled&nbsp;({{service.tasks.length}}/{{service.autoscaler.replicas.max}})
 											</span>
 										</div>
 										<div class="body">
 											<div ng-if="!service.deployment">
-												<alert ng-if="service.labels['soajs.content']" type="danger"><span>No Deployments found for this Service!</span></alert>
-												<alert ng-if="!service.labels['soajs.content']" type="warning"><span>No Deployments found for this Service!</span></alert>
+												<alert ng-if="service.labels['soajs.content']" type="danger"><span>No Deployments found for this Service!</span>
+												</alert>
+												<alert ng-if="!service.labels['soajs.content']" type="warning"><span>No Deployments found for this Service!</span>
+												</alert>
 											</div>
 											<div ng-if="service.deployment && service.tasks.length === 0">
-												<alert type="warning"><span>No Deployments found for this Service!</span></alert>
+												<alert type="warning">
+													<span>No Deployments found for this Service!</span></alert>
 											</div>
 											<div class="grid" ng-if="service.deployment && service.tasks.length > 0">
-												<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
+												<table cellspacing="0" cellpadding="0" border="1" width="100%"
+												       class="customTable">
 													<thead>
-														<tr class="header">
-															<td class="logsHeader">Logs</td>
-															<td class="nameHeader">Container Name</td>
-															<td class="maintenanceHeader">Started On</td>
-															<td ng-show="oneSubType === 'soajs'" class="maintenanceHeader">Last Check On</td>
-															<td class="statusHeader">
-																Status
-															</td>
-															<td ng-class="{metricsHeader : envPlatform !== 'kubernetes' , metricsHeader2 : envPlatform === 'kubernetes'}" ng-if="isMetricsServerDeployed">
-																Metrics
-															</td>
-														</tr>
+													<tr class="header">
+														<td class="logsHeader">Logs</td>
+														<td class="nameHeader">Container Name</td>
+														<td class="maintenanceHeader">Started On</td>
+														<td ng-show="oneSubType === 'soajs'" class="maintenanceHeader">
+															Last Check On
+														</td>
+														<td class="statusHeader">
+															Status
+														</td>
+														<td ng-class="{metricsHeader : envPlatform !== 'kubernetes' , metricsHeader2 : envPlatform === 'kubernetes'}"
+														    ng-if="isMetricsServerDeployed">
+															Metrics
+														</td>
+													</tr>
 													</thead>
-													<tbody ng-repeat="instance in service.tasks" ng-hide="instance.hideIt && !service.hideIt" ng-init="instanceName = (envPlatform === 'kubernetes') ? instance.name : (service.labels['soajs.service.mode'] === 'global') ? instance.name + '.' + instance.ref.node.id + '.' + instance.id  : instance.name + '.' + instance.id">
-														<tr class="cloud-tr-bgColor">
-															<td>
-																<a href="" ng-if="access.hacloud.services.logs">
-																	<span ng-click="hostLogs(service, instance)" class="icon icon-terminal" title="{{translation.getContainerLogs[LANG]}}"></span>
-																</a>
-															</td>
-															<td>{{instance.name}}</td>
-															<td>{{instance.status.ts | prettyLocalDate}}</td>
-															<td ng-show="oneSubType === 'soajs' && instance.status.lastTs">
-																{{instance.status.lastTs| prettyLocalDate}}
-															</td>
-															<td ng-show="oneSubType === 'soajs' && !instance.status.lastTs">N/A</td>
-															<td>
-																<div ng-if="envPlatform !== 'kubernetes'">
-																	<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>{{instance.status.state}}</b></span>
-																	<span ng-show="instance.status.state !== 'Unreachable'" ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
+													<tbody ng-repeat="instance in service.tasks"
+													       ng-hide="instance.hideIt && !service.hideIt"
+													       ng-init="instanceName = (envPlatform === 'kubernetes') ? instance.name : (service.labels['soajs.service.mode'] === 'global') ? instance.name + '.' + instance.ref.node.id + '.' + instance.id  : instance.name + '.' + instance.id">
+													<tr class="cloud-tr-bgColor">
+														<td>
+															<a href="" ng-if="access.hacloud.services.logs">
+																<span ng-click="hostLogs(service, instance)"
+																      class="icon icon-terminal"
+																      title="{{translation.getContainerLogs[LANG]}}"></span>
+															</a>
+														</td>
+														<td>{{instance.name}}</td>
+														<td>{{instance.status.ts | prettyLocalDate}}</td>
+														<td ng-show="oneSubType === 'soajs' && instance.status.lastTs">
+															{{instance.status.lastTs| prettyLocalDate}}
+														</td>
+														<td ng-show="oneSubType === 'soajs' && !instance.status.lastTs">
+															N/A
+														</td>
+														<td>
+															<div ng-if="envPlatform !== 'kubernetes'">
+																<span ng-show="instance.status.state === 'Unreachable'"
+																      tooltip-class="ctrl-tooltip"
+																      tooltip-placement="left"
+																      tooltip-html="instance.status.error"
+																      class="red"><b>{{instance.status.state}}</b></span>
+																<span ng-show="instance.status.state !== 'Unreachable'"
+																      ng-class="{'green': instance.status.state ==='running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
+															</div>
+															<div ng-if="envPlatform === 'kubernetes'">
+																<span ng-show="instance.status.state === 'Unreachable'"
+																      tooltip-class="ctrl-tooltip"
+																      tooltip-placement="left"
+																      tooltip-html="instance.status.error"
+																      class="red"><b>Pod: {{instance.status.state}}</b></span>
+																<div ng-show="instance.status.state !== 'Unreachable'">
+																	<span> <b>Pod: </b></span>
+																	<span ng-class="{'green': instance.status.state === 'running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
 																</div>
-																<div ng-if="envPlatform === 'kubernetes'">
-																	<span ng-show="instance.status.state === 'Unreachable'" tooltip-class="ctrl-tooltip" tooltip-placement="left" tooltip-html="instance.status.error" class="red"><b>Pod: {{instance.status.state}}</b></span>
-																	<div ng-show="instance.status.state !== 'Unreachable'">
-																		<span> <b>Pod: </b></span>
-																		<span ng-class="{'green': instance.status.state === 'running', 'red': instance.status.state !=='running'}"><b>{{instance.status.state}}</b></span>
-																	</div>
-																	<div ng-show="instance.status.state !== 'Unreachable' && instance.status.ready=== 'True'" >
-																		<span> <b>Ready: </b></span>
-																		<span ng-class="{'green': instance.status.ready === 'True', 'red': instance.status.ready === 'False'}"><b>{{instance.status.ready.toLowerCase()}}</b></span>
-																	</div>
-																	
+																<div ng-show="instance.status.state !== 'Unreachable' && instance.status.ready=== 'True'">
+																	<span> <b>Ready: </b></span>
+																	<span ng-class="{'green': instance.status.ready === 'True', 'red': instance.status.ready === 'False'}"><b>{{instance.status.ready.toLowerCase()}}</b></span>
 																</div>
-															</td>
-															<td ng-if= "isMetricsServerDeployed">
-																<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
+															
+															</div>
+														</td>
+														<td ng-if="isMetricsServerDeployed">
+															<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
 																	<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
 																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpu}}m
 																	</span>
-																		<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent')">
+																<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent')">
 																		<b>CPU:</b>&nbsp;{{servicesMetrics[instanceName].currentCpuPercent}}%
 																	</span>
-																		<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent') && !servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
+																<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentCpuPercent') && !servicesMetrics[instanceName].hasOwnProperty('currentCpu')">
 																		<b>CPU:</b> N/A
 																	</span>
-																</div>
-																<div style=" float : left; text-align: left">
+															</div>
+															<div style=" float : left; text-align: left">
 																	<span ng-if="servicesMetrics[instanceName].hasOwnProperty('currentMemory')">
 																		<b>Memory:</b>&nbsp;{{servicesMetrics[instanceName].currentMemory}}
 																		<span ng-if="servicesMetrics[instanceName].hasOwnProperty('memoryLimit')">
@@ -330,51 +440,87 @@
 																			&nbsp;({{servicesMetrics[instanceName].currentMemPercent}}%)
 																		</span>
 																	</span>
-																	<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentMemory')">
+																<span ng-if="!servicesMetrics[instanceName].hasOwnProperty('currentMemory')">
 																		<b>Memory:</b> N/A
 																	</span>
+															</div>
+															<a href=""
+															   ng-if="servicesMetrics[instanceName].memory || servicesMetrics[instanceName].cpu ||  servicesMetrics[instanceName].cpuPercent || servicesMetrics[instanceName].blkIO || servicesMetrics[instanceName].netIO"
+															   class="tooltipToggle f-right"
+															   ng-click="showHideMetrics(instanceName)">
+																<span class="icon"
+																      ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }"></span>
+															</a>
+														</td>
+													</tr>
+													<tr ng-if="ShowMetrics[instanceName] && isMetricsServerDeployed">
+														<td colspan="6">
+															<div class="row">
+																<div class="col-md-6"
+																     ng-if="servicesMetrics[instanceName].cpuPercent">
+																	<canvas id="cpuPercent{{instanceName}}"
+																	        class="chart chart-line"
+																	        chart-data="servicesMetrics[instanceName].cpuPercent"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"
+																	        chart-options="chartOptions[instanceName].cpuPercent.options"
+																	        chart-dataset-override="chartOptions[instanceName].cpuPercent.override">
+																	</canvas>
 																</div>
-																<a href="" ng-if= "servicesMetrics[instanceName].memory || servicesMetrics[instanceName].cpu ||  servicesMetrics[instanceName].cpuPercent || servicesMetrics[instanceName].blkIO || servicesMetrics[instanceName].netIO" class="tooltipToggle f-right" ng-click="showHideMetrics(instanceName)">
-																	<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[instanceName], 'icon-circle-up': ShowMetrics[instanceName] }"></span>
-																</a>
-															</td>
-														</tr>
-														<tr ng-if="ShowMetrics[instanceName] && isMetricsServerDeployed">
-															<td colspan="6">
-																<div class="row">
-																	<div class="col-md-6" ng-if="servicesMetrics[instanceName].cpuPercent">
-																		<canvas id="cpuPercent{{instanceName}}" class="chart chart-line" chart-data="servicesMetrics[instanceName].cpuPercent"
-																		        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].cpuPercent.options" chart-dataset-override="chartOptions[instanceName].cpuPercent.override">
-																		</canvas>
-																	</div>
-																	<div class="col-md-6" ng-if="!servicesMetrics[instanceName].cpuPercent && servicesMetrics[instanceName].cpu">
-																		<canvas id="cpu{{instanceName}}" class="chart chart-line" chart-data="servicesMetrics[instanceName].cpu"
-																		        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].cpu.options" chart-dataset-override="chartOptions[instanceName].cpu.override">
-																		</canvas>
-																	</div>
-																	<div class="col-md-6" ng-if="servicesMetrics[instanceName].memory">
-																		<canvas id="memory{{instanceName}}" class="chart chart-line" chart-data="servicesMetrics[instanceName].memory"
-																		        chart-labels="servicesMetrics[instanceName].timestamp" chart-options="chartOptions[instanceName].memory.options" chart-dataset-override="chartOptions[instanceName].memory.override">
-																		</canvas>
-																	</div>
-																	<div class="col-md-6" ng-if="!servicesMetrics[instanceName].memory && servicesMetrics[instanceName].memPercent">
-																		<canvas id="memPercent{{instanceName}}" class="chart chart-line" chart-data="servicesMetrics[instanceName].memPercent"
-																		        chart-labels="servicesMetrics[instanceName].timestamp"  chart-options="chartOptions[instanceName].memPercent.options" chart-dataset-override="chartOptions[instanceName].memPercent.override">
-																		</canvas>
-																	</div>
-																	<div class="col-md-6" ng-if="servicesMetrics[instanceName].blkIO">
-																		<canvas id="blkIO{{instanceName}}" class="chart chart-line" chart-data="servicesMetrics[instanceName].blkIO"
-																		        chart-labels="servicesMetrics[instanceName].timestamp"  chart-series="chartOptions[instanceName].blkIO.series" chart-options="chartOptions[instanceName].blkIO.options" chart-dataset-override="chartOptions[instanceName].blkIO.override">
-																		</canvas>
-																	</div>
-																	<div class="col-md-6" ng-if="servicesMetrics[instanceName].netIO">
-																		<canvas id="netIO{{instanceName}}" class="chart chart-line" chart-data="servicesMetrics[instanceName].netIO"
-																		        chart-labels="servicesMetrics[instanceName].timestamp"  chart-series="chartOptions[instanceName].netIO.series" chart-options="chartOptions[instanceName].netIO.options" chart-dataset-override="chartOptions[instanceName].netIO.override">
-																		</canvas>
-																	</div>
+																<div class="col-md-6"
+																     ng-if="!servicesMetrics[instanceName].cpuPercent && servicesMetrics[instanceName].cpu">
+																	<canvas id="cpu{{instanceName}}"
+																	        class="chart chart-line"
+																	        chart-data="servicesMetrics[instanceName].cpu"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"
+																	        chart-options="chartOptions[instanceName].cpu.options"
+																	        chart-dataset-override="chartOptions[instanceName].cpu.override">
+																	</canvas>
 																</div>
-															</td>
-														</tr>
+																<div class="col-md-6"
+																     ng-if="servicesMetrics[instanceName].memory">
+																	<canvas id="memory{{instanceName}}"
+																	        class="chart chart-line"
+																	        chart-data="servicesMetrics[instanceName].memory"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"
+																	        chart-options="chartOptions[instanceName].memory.options"
+																	        chart-dataset-override="chartOptions[instanceName].memory.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6"
+																     ng-if="!servicesMetrics[instanceName].memory && servicesMetrics[instanceName].memPercent">
+																	<canvas id="memPercent{{instanceName}}"
+																	        class="chart chart-line"
+																	        chart-data="servicesMetrics[instanceName].memPercent"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"
+																	        chart-options="chartOptions[instanceName].memPercent.options"
+																	        chart-dataset-override="chartOptions[instanceName].memPercent.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6"
+																     ng-if="servicesMetrics[instanceName].blkIO">
+																	<canvas id="blkIO{{instanceName}}"
+																	        class="chart chart-line"
+																	        chart-data="servicesMetrics[instanceName].blkIO"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"
+																	        chart-series="chartOptions[instanceName].blkIO.series"
+																	        chart-options="chartOptions[instanceName].blkIO.options"
+																	        chart-dataset-override="chartOptions[instanceName].blkIO.override">
+																	</canvas>
+																</div>
+																<div class="col-md-6"
+																     ng-if="servicesMetrics[instanceName].netIO">
+																	<canvas id="netIO{{instanceName}}"
+																	        class="chart chart-line"
+																	        chart-data="servicesMetrics[instanceName].netIO"
+																	        chart-labels="servicesMetrics[instanceName].timestamp"
+																	        chart-series="chartOptions[instanceName].netIO.series"
+																	        chart-options="chartOptions[instanceName].netIO.options"
+																	        chart-dataset-override="chartOptions[instanceName].netIO.override">
+																	</canvas>
+																</div>
+															</div>
+														</td>
+													</tr>
 													</tbody>
 												</table>
 											</div>
@@ -401,11 +547,15 @@
 						<accordion-heading>
 							<img border="0" ng-src="{{providerInfo.image}}" height="16" alt=""/>&nbsp;{{providerInfo.label}}
 						</accordion-heading>
-
-						<button class="btn btn-primary" ng-if="access.hacloud.nodes.add && envPlatform !== 'kubernetes' && providerInfo.name ==='local'" ng-click="addNode()">
+						
+						<button class="btn btn-primary"
+						        ng-if="access.hacloud.nodes.add && envPlatform !== 'kubernetes' && providerInfo.name ==='local'"
+						        ng-click="addNode()">
 							Add New Node
 						</button>
-						<button class="btn btn-primary" ng-if="access.hacloud.nodes.add && providerInfo.name !== 'local'" ng-click="scaleNodes(providerInfo)">
+						<button class="btn btn-primary"
+						        ng-if="access.hacloud.nodes.add && providerInfo.name !== 'local'"
+						        ng-click="scaleNodes(providerInfo)">
 							Scale Nodes
 						</button>
 						<br/><br/>
@@ -413,21 +563,27 @@
 							<div class="header">
 								{{node.hostname}}
 								<span class="rightActions" ng-if="!localDeployment">
-		                            <a href="" ng-if="access.hacloud.nodes.remove" ng-confirm-click="Are you sure you want to remove this node?" ng-click="removeNode(node)">
+		                            <a href="" ng-if="access.hacloud.nodes.remove"
+		                               ng-confirm-click="Are you sure you want to remove this node?"
+		                               ng-click="removeNode(node)">
 		                                <span class="icon icon-cross" tooltip="Remove Node"></span>
 		                            </a>
 									<div ng-if="envPlatform === 'docker'">
-										<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'worker')">
+										<a ng-if="node.role === 'manager' && access.hacloud.nodes.update" href=""
+										   ng-click="updateNode(node, 'role', 'worker')">
 			                                <span class="icon icon-arrow-down2" tooltip="Demote To Worker"></span>
 			                            </a>
-			                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'role', 'manager')">
+			                            <a ng-if="node.role === 'worker' && access.hacloud.nodes.update" href=""
+			                               ng-click="updateNode(node, 'role', 'manager')">
 			                                <span class="icon icon-arrow-up2" tooltip="Promote To Manager"></span>
 			                            </a>
 									</div>
-		                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'active')">
+		                            <a ng-if="node.availability === 'drain' && access.hacloud.nodes.update" href=""
+		                               ng-click="updateNode(node, 'availability', 'active')">
 		                                <span class="icon icon-switch" tooltip="Activate"></span>
 		                            </a>
-		                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href="" ng-click="updateNode(node, 'availability', 'drain')">
+		                            <a ng-if="node.availability === 'active' && access.hacloud.nodes.update" href=""
+		                               ng-click="updateNode(node, 'availability', 'drain')">
 		                                <span class="icon icon-power-cord" tooltip="Drain"></span>
 		                            </a>
 		                        </span>
@@ -436,62 +592,74 @@
 								<div class="grid">
 									<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
 										<thead>
-											<tr class="header">
-												<td>IP Address</td>
-												<td>Role</td>
-												<td>Availability</td>
-												<td>Memory Resources</td>
-												<td>CPU Count</td>
-												<td class="metricsHeader2" ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
-													Metrics
-												</td>
-											</tr>
+										<tr class="header">
+											<td>IP Address</td>
+											<td>Role</td>
+											<td>Availability</td>
+											<td>Memory Resources</td>
+											<td>CPU Count</td>
+											<td class="metricsHeader2"
+											    ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
+												Metrics
+											</td>
+										</tr>
 										</thead>
 										<tbody>
-											<tr class="cloud-tr-bgColor">
-												<td>{{node.ip}}</td>
-												<td>{{node.spec.role}}</td>
-												<td>{{node.spec.availability}}</td>
-												<td>{{node.resources.memory | bytesToGbytes}} Gi</td>
-												<td>{{node.resources.cpus}}</td>
-												<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
-													<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
+										<tr class="cloud-tr-bgColor">
+											<td>{{node.ip}}</td>
+											<td>{{node.spec.role}}</td>
+											<td>{{node.spec.availability}}</td>
+											<td>{{node.resources.memory | bytesToGbytes}} Gi</td>
+											<td>{{node.resources.cpus}}</td>
+											<td ng-if="envPlatform === 'kubernetes' && isMetricsServerDeployed">
+												<div style="width:93px; float : left; text-align: left; padding-left: 2px;">
 													<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
 														 <b>CPU:</b>&nbsp;{{nodesMetrics[node.hostname].currentCpu}}m
 													</span>
-														<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
+													<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentCpu')">
 														<b>CPU:</b> N/A
 													</span>
-													</div>
-													<div style=" float : left; text-align: left">
+												</div>
+												<div style=" float : left; text-align: left">
 													<span ng-if="nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
 														<b>Memory:</b>&nbsp;{{nodesMetrics[node.hostname].currentMemory}}
 													</span>
-														<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
+													<span ng-if="!nodesMetrics[node.hostname].hasOwnProperty('currentMemory')">
 														<b>Memory:</b> N/A
 													</span>
+												</div>
+												<a href=""
+												   ng-if="nodesMetrics[node.hostname].memory || nodesMetrics[node.hostname].cpu"
+												   class="tooltipToggle f-right"
+												   ng-click="showHideMetrics(node.hostname)">
+													<span class="icon"
+													      ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }"></span>
+												</a>
+											</td>
+										</tr>
+										<tr ng-if="ShowMetrics[node.hostname] && isMetricsServerDeployed">
+											<td colspan="6">
+												<div class="row">
+													<div class="col-md-6" ng-if="nodesMetrics[node.hostname].cpu">
+														<canvas id="nodeCpu{{node.hostname}}" class="chart chart-line"
+														        chart-data="nodesMetrics[node.hostname].cpu"
+														        chart-labels="nodesMetrics[node.hostname].timestamp"
+														        chart-options="chartOptions[node.hostname].cpu.options"
+														        chart-dataset-override="chartOptions[node.hostname].cpu.override">
+														</canvas>
 													</div>
-													<a href="" ng-if="nodesMetrics[node.hostname].memory || nodesMetrics[node.hostname].cpu" class="tooltipToggle f-right" ng-click="showHideMetrics(node.hostname)">
-														<span class="icon" ng-class="{'icon-circle-down': !ShowMetrics[node.hostname], 'icon-circle-up': ShowMetrics[node.hostname] }"></span>
-													</a>
-												</td>
-											</tr>
-											<tr ng-if="ShowMetrics[node.hostname] && isMetricsServerDeployed">
-												<td colspan="6">
-													<div class="row">
-														<div class="col-md-6" ng-if="nodesMetrics[node.hostname].cpu">
-															<canvas id="nodeCpu{{node.hostname}}" class="chart chart-line" chart-data="nodesMetrics[node.hostname].cpu"
-															        chart-labels="nodesMetrics[node.hostname].timestamp"  chart-options="chartOptions[node.hostname].cpu.options" chart-dataset-override="chartOptions[node.hostname].cpu.override">
-															</canvas>
-														</div>
-														<div class="col-md-6" ng-if="nodesMetrics[node.hostname].memory">
-															<canvas id="nodeMemory{{node.hostname}}" class="chart chart-line" chart-data="nodesMetrics[node.hostname].memory"
-															        chart-labels="nodesMetrics[node.hostname].timestamp" chart-options="chartOptions[node.hostname].memory.options" chart-dataset-override="chartOptions[node.hostname].memory.override">
-															</canvas>
-														</div>
+													<div class="col-md-6" ng-if="nodesMetrics[node.hostname].memory">
+														<canvas id="nodeMemory{{node.hostname}}"
+														        class="chart chart-line"
+														        chart-data="nodesMetrics[node.hostname].memory"
+														        chart-labels="nodesMetrics[node.hostname].timestamp"
+														        chart-options="chartOptions[node.hostname].memory.options"
+														        chart-dataset-override="chartOptions[node.hostname].memory.override">
+														</canvas>
 													</div>
-												</td>
-											</tr>
+												</div>
+											</td>
+										</tr>
 										</tbody>
 									</table>
 								</div>
@@ -502,7 +670,7 @@
 			</div>
 		</tab>
 		<tab heading="Virtual Machines" ng-if="showVMs" ng-click="vms.listVMLayers()">
-			<br />
+			<br/>
 			<div ng-include="'modules/dashboard/environments/infra/directives/vms.tmpl'"></div>
 		</tab>
 	</tabset>

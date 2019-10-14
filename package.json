@@ -1,7 +1,7 @@
 {
   "name": "soajs.dashboard.ui",
   "description": "soajs dashboard ui",
-  "version": "2.7.14",
+  "version": "2.7.15",
   "author": {
     "name": "soajs team",
     "email": "team@soajs.org"
@@ -20,6 +20,6 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "express": "4.16.0"
+    "express": "4.17.1"
   }
 }

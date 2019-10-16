@@ -144,7 +144,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 								newForm[service][version].apisPermission = acl[service][version].apisPermission;
 							}
 							for (var method in acl[service][version]) {
-								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apiPermission'].indexOf(method) !== -1 && acl[service][version][method].length > 0) {
+								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission'].indexOf(method) === -1 && acl[service][version][method].length > 0) {
 									acl[service][version][method].forEach((oneMethod) => {
 										if (oneMethod.group && oneMethod.apis) {
 											if (!newForm[service][version][oneMethod.group]) {

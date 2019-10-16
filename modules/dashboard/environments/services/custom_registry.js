@@ -133,14 +133,14 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 		});
 	}
 	
-	function internalCustomRegistryFormManagement($scope, envCode, $modalInstance, customRegistry, action, saveMethod, cancelMethod, access, getLast, listCustomRegistry){
+	function internalCustomRegistryFormManagement($scope, envCode, $modalInstance, originalCustomRegistry, action, saveMethod, cancelMethod, access, getLast, listCustomRegistry){
 		$scope.formData = {};
 		$scope.envs = {};
 		$scope.message = {};
 		$scope.recipes = [];
 		$scope.access = access;
+		let customRegistry = angular.copy(originalCustomRegistry);
 		$scope.textMode = (customRegistry && customRegistry.value && typeof(customRegistry.value) !== 'object');
-		
 		if(customRegistry && customRegistry.value && typeof(customRegistry.value) === 'object'){
 			customRegistry.value = JSON.stringify(customRegistry.value, null, 2);
 		}

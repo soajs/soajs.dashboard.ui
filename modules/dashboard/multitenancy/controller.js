@@ -2288,6 +2288,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 						var deviceObj = (formData.device) ? formData.device : {};
 						var geoObj = (formData.geo) ? formData.geo : {};
 						var postData = {
+							'label': formData.label,
 							'expDate': formData.expDate,
 							'device': deviceObj,
 							'geo': geoObj,
@@ -2334,21 +2335,18 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		if (data.device) {
 			dataForm.device = angular.copy(data.device);
 		}
-		
-		let dashboardAccessIndex;
+		if (data.label) {
+			dataForm.label = angular.copy(data.label);
+		}
 		
 		var formConfig = angular.copy(tenantConfig.form.extKey);
 		for (var i = 0; i < formConfig.entries.length; i++) {
 			if (formConfig.entries[i].name === 'environment') {
 				formConfig.entries.splice(i, 1);
-			} else if (formConfig.entries[i].name === 'dashboardAccess') {
-				dashboardAccessIndex = i;
 			}
 		}
 		
-		formConfig.entries.splice(dashboardAccessIndex, 1);
-		
-		formConfig.entries.unshift({
+		formConfig.entries.splice(1, 0, {
 			'name': 'extKey',
 			'label': translation.externalKeyValue[LANG],
 			'type': 'textarea',
@@ -2374,7 +2372,8 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 						var postData = {
 							'device': deviceObj,
 							'geo': geoObj,
-							'extKey': data.extKey
+							'extKey': data.extKey,
+							'label': formData.label
 						};
 						if (formData.expDate) {
 							postData.expDate = new Date(formData.expDate).toISOString();

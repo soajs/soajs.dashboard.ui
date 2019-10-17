@@ -226,44 +226,49 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 							var defaultValueS = catalogRecipe.recipe.buildOptions.env[envVariableS].default || '';
 							//todo: get value from service.env
 							service.env.forEach(function (oneEnv) {
-								if (oneEnv.indexOf(envVariable) !== -1) {
+								if (oneEnv.indexOf(envVariableS) !== -1) {
 									defaultValueS = oneEnv.split("=")[1];
 								}
 							});
 							//push a new input for this variable
-							let data = JSON.parse(defaultValueS);
-							let label = catalogRecipe.recipe.buildOptions.env[envVariableS].label || envVariableS;
-							var secretEnv = [
-								{
-									'type': 'html',
-									'name': 'hr' + envVariableS,
-									'value': '<hr>'
-								},
-								{
-									'type': 'html',
-									'name': 'name' + envVariableS,
-									'value': `<h4>${label}</h4>`
-								},
-								{
-									'name': '_cis_' + envVariableS,
-									'label': 'Secret',
-									'type': 'text',
-									'value': data.secretKeyRef.name,
-									'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
-									'required': false
-								},
-								{
-									'name': '_cik_' + envVariableS,
-									'label': 'Key',
-									'type': 'text',
-									'value': data.secretKeyRef.key,
-									'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
-									'required': false
-								}];
-							if (formConfig.entries[0].entries.length === 0){
-								secretEnv.shift();
+							try {
+								let data = JSON.parse(defaultValueS);
+								let label = catalogRecipe.recipe.buildOptions.env[envVariableS].label || envVariableS;
+								var secretEnv = [
+									{
+										'type': 'html',
+										'name': 'hr' + envVariableS,
+										'value': '<hr>'
+									},
+									{
+										'type': 'html',
+										'name': 'name' + envVariableS,
+										'value': `<h4>${label}</h4>`
+									},
+									{
+										'name': '_cis_' + envVariableS,
+										'label': 'Secret',
+										'type': 'text',
+										'value': data.secretKeyRef.name,
+										'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
+										'required': false
+									},
+									{
+										'name': '_cik_' + envVariableS,
+										'label': 'Key',
+										'type': 'text',
+										'value': data.secretKeyRef.key,
+										'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
+										'required': false
+									}];
+								if (formConfig.entries[0].entries.length === 0){
+									secretEnv.shift();
+								}
+								formConfig.entries[0].entries = formConfig.entries[0].entries.concat(secretEnv);
 							}
-							formConfig.entries[0].entries = formConfig.entries[0].entries.concat(secretEnv);
+							catch (e) {
+								console.log(e);
+							}
 						}
 					}
 

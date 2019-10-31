@@ -863,7 +863,19 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 										context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
 									}
 								}
+								if (recipes[i].recipe.buildOptions.env[env].type === 'secret') {
+									context.mainData.recipeUserInput.envs[env] = recipes[i].recipe.buildOptions.env[env];
+									if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.env && context.formData.deployOptions.custom.env[env]) {
+										context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
+									}
+								}
 							}
+							context.environmentSecrets = [];
+							context.secrets.forEach((oneSecret) => {
+								if (oneSecret.namespace === context.myEnv.toLowerCase()) {
+									context.environmentSecrets.push(oneSecret);
+								}
+							});
 						}
 
 						if (recipes[i].recipe.deployOptions && recipes[i].recipe.deployOptions.image ) {

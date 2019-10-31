@@ -291,15 +291,17 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			var keys = tenant.applications[i].keys;
 			for (var j = 0; !found && keys && j < keys.length; j++) {
 				atLeastOneKey = true;
-				var envs = Object.keys(keys[j].config);
-				for (var k = 0; !found && envs && k < envs.length; k++) {
-					var oauth = keys[j].config[envs[k]].oauth;
-					if (oauth && oauth.loginMode === 'urac') {
-						loginMode = 'urac';
-					} else {
-						loginMode = 'miniurac';
+				if (keys[j] && keys[j].config){
+					var envs = Object.keys(keys[j].config);
+					for (var k = 0; !found && envs && k < envs.length; k++) {
+						var oauth = keys[j].config[envs[k]].oauth;
+						if (oauth && oauth.loginMode === 'urac') {
+							loginMode = 'urac';
+						} else {
+							loginMode = 'miniurac';
+						}
+						found = true;
 					}
-					found = true;
 				}
 			}
 		}

@@ -58,6 +58,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 						}
 					}, function (error, response) {
 						overlayLoading.hide();
+						if (error) {
+							currentScope.displayAlert('danger', error.message);
+						}
 						currentScope.accounts[0].repos.forEach((oneRepo) => {
 							if (oneRepo.type === 'service') {
 								let versions = [];

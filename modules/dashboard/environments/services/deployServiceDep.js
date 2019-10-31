@@ -513,7 +513,6 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 										key: catalogRecipe.recipe.buildOptions.env[envVariable].key || ""
 									};
 								}
-								
 							}
 						}
 						if (Object.keys($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env).length === 0) {

@@ -110,12 +110,31 @@
 			</div>
 		</div>
 		<div ng-repeat="(env, envData) in mainData.recipeUserInput.envs" ng-init="formData.deployOptions.custom.env[env] = envData.default">
-			<label>{{envData.label || envData.name}}</label>
-			<input type="text" class="form-control" ng-model="formData.deployOptions.custom.env[env]" ng-required="envData.required"/>
-			<div class="fieldMsg">{{envData.fieldMsg}}</div>
-			<br/>
+			<div ng-if="envData.type ==='userInput'">
+				<label>{{envData.label || envData.name}}</label>
+				<input type="text" class="form-control" ng-model="formData.deployOptions.custom.env[env]" ng-required="envData.required"/>
+				<div class="fieldMsg">{{envData.fieldMsg}}</div>
+				<br/>
+			</div>
+			
+			<div ng-if="envData.type ==='secret'">
+				<div ng-if="envData.type ==='secret'">
+					<fieldset>
+						<legend>{{env}}</legend>
+						<label>Secret</label>
+						<select class="form-control" ng-model="formData.deployOptions.custom.env[env].secret" ng-options="secret.name as secret.name for secret in environmentSecrets" ng-required="true">
+						</select>
+						<div class="fieldMsg hint">Enter the value of the secret</div>
+						<label>Secret Key</label>
+						<input type="text" class="form-control" ng-model="formData.deployOptions.custom.env[env].key" ng-value="userInput.key" ng-required="false"/>
+						<div class="fieldMsg hint">Enter the value of the secret key</div>
+						<br />
+					</fieldset>
+				</div>
+			</div>
 		</div>
 
+		
 		<div ng-if="mainData.catalogConflictingPorts !== ''">
 			<alert type='danger'>Unable to proceed, Detected port conflict in Catalog recipe: {{mainData.catalogConflictingPorts}}</alert>
 		</div>
@@ -286,7 +305,6 @@
 			<br>
 			<br>
 		</div>
-
 		<div ng-repeat="(env, envData) in mainData.recipeUserInput.envs" ng-init="formData.deployOptions.custom.env[env] = envData.default">
 			<label>{{envData.label || envData.name}}</label>
 			<input type="text" class="form-control" ng-model="formData.deployOptions.custom.env[env]" ng-required="envData.required"/>

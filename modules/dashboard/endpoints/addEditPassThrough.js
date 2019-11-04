@@ -1361,6 +1361,10 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 			api = 'add';
 			method = 'post';
 		}
+		let opts = angular.copy($scope.mainEndpoint);
+		if (opts.program){
+			opts.program = opts.program.split(",");
+		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": method,
 			"routeName": "/dashboard/apiBuilder/" + api,
@@ -1368,7 +1372,7 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				"mainType": "passThroughs",
 				"id": _id
 			},
-			"data": $scope.mainEndpoint
+			"data": opts
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.message, true, 'dashboard');

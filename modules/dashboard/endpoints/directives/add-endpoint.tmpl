@@ -36,6 +36,26 @@
 				</select>
 				<span class="manualToolTip">Your endpoint can be either a SOAP service or a Rest service</span>
 			</div>
+			<fieldset>
+				<legend>MetaData</legend>
+				<label>Programs</label>
+				<input type="text" class="form-control" ng-model="form.formData.program" ng-required="false" placeholder="program"/>
+				<span class="manualToolTip">The program of your endpoint. Use , to add multiple programs. example: program1,program2</span>
+				<br>
+				<fieldset>
+					<legend>Tab</legend>
+					<div>
+						<label>Main</label>
+						<input type="text" class="form-control" ng-model="form.formData.tab.main" ng-required="false" placeholder="main tab"/>
+						<span class="manualToolTip">The main tab of your endpoint</span>
+					</div>
+					<div>
+						<label>Sub</label>
+						<input type="text" class="form-control" ng-model="form.formData.tab.sub" ng-required="false" placeholder="sub tab"/>
+						<span class="manualToolTip">The sub tab of your endpoint</span>
+					</div>
+				</fieldset>
+			</fieldset>
 			<br>
 			<div ng-if="access.getEndpointResources">
 				<label>Authentication Method (Resources) :</label>

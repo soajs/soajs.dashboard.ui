@@ -55,7 +55,7 @@
 														
 														<div class="apiAccess inputApi" ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include" ng-hide="(aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission && (aclFill[oneEnv.code][service.name][version['%v%']][method][grp].apis[my1Api.v].include!==true))">
 													
-															<span style="xpadding-left: 0px;">
+															<span style="padding-left: 0px;">
 														<input ng-model="aclFill[oneEnv.code][service.name][version['%v%']][method][grp].apis[my1Api.v].accessType" value="clear" type="radio"/>
 														<em style="">{{translation.InheritFromService[LANG]}}</em>
 													</span>

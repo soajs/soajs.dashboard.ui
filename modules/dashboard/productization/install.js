@@ -133,6 +133,14 @@ var ProdTranslation = {
 		"ENG": "Check if you want to restrict the access to certain selected api only",
 		"FRA": "Check if you want to restrict the access to certain selected api only"
 	},
+	"accessType": {
+		"ENG": "Access Type",
+		"FRA": "Access Type"
+	},
+	"restrictedAccess": {
+		"ENG": "Restricted Access",
+		"FRA": "Restricted Access"
+	},
 	//list
 	"areYouSureWantRemoveSelectedPackage": {
 		"ENG": "Are you sure you want to remove the selected package",

@@ -18,7 +18,7 @@
 					<fieldset >
 						<div ng-repeat="(grp, val) in version" class="width1 fieldsetBack" ng-if="grp !== 'apisPermission'">
 							<div ng-class="{unGreyedOut: aclFill[oneEnv.code][s][v].include===true}" class="f-left width2">
-								<label > {{grp}}</label>
+								<label > <a ng-click="viewGroupDetails(oneEnv.code, s, grp, v)" href="" class="icon icon-unlocked"></a>{{grp}}</label>
 							</div>
 							<div class="f-left spanWidth" ng-repeat="method in val" >
 								<span class="spanPadding">

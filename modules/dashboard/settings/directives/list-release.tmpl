@@ -1,0 +1,49 @@
+<section ng-controller="releaseAppCtrl" class="releaseAppCtrl">
+	<div ng-if="access.list">
+		<div class="entryBoxes">
+			<br/>
+			<fieldset>
+				<legend>Current Version</legend>
+				<label>Name: </label> <span> {{currentRelease.label}}</span>
+				<br>
+				<label>Description: </label> <span> {{currentRelease.description}}</span>
+				<br>
+				<label>Latest Version: &nbsp</label><span ng-if="update" class="icon icon-checkmark green"></span> <span ng-if="!update" class="icon icon-cross"></span>
+				<br>
+				<fieldset>
+					<legend>Repositories</legend>
+					<div ng-repeat="repository in currentRelease.repositories">
+						<label>Repository: </label> <span> {{repository.repo}}</span>
+						<br>
+						<label>Version: </label> <span> {{repository.ver}}</span>
+						<hr>
+					</div>
+				</fieldset>
+			</fieldset>
+			<hr>
+			<fieldset>
+				<legend>Available Versions</legend>
+				<accordion close-others="true">
+					<accordion-group class="greenAccordion" ng-repeat="version in releases">
+						<accordion-heading>
+							{{version.label}}
+						</accordion-heading>
+						<label>Description: </label> <span> {{version.description}}</span>
+						<br>
+						<label>Allowed: </label> <span> {{version.allowed}}</span>
+						<br>
+						<fieldset>
+							<legend>Repositories</legend>
+							<div ng-repeat="repository in version.repositories">
+								<label>Repository: </label> <span> {{repository.repo}}</span>
+								<br>
+								<label>Version: </label> <span> {{repository.ver}}</span>
+								<hr>
+							</div>
+						</fieldset>
+					</accordion-group>
+				</accordion>
+			</fieldset>
+		</div>
+	</div>
+</section>

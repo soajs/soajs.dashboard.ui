@@ -14,7 +14,10 @@
 					</alert>
 				</div>
 				<div ng-if="oldACL===true">
-					<alert type="warning">Your product ACL is still at the package Level and was done with the previous version of SOAJS. The new version of SOAJS allows you to create ACL at the product level and then package it. Either contact Soajs for support or click here to delete the old ACL and create a new one..
+					<alert type="warning">Your product ACL is still at the package Level and was done with the previous
+						version of SOAJS. The new version of SOAJS allows you to create ACL at the product level and
+						then package it. Either contact Soajs for support or click here to delete the old ACL and create
+						a new one..
 					</alert>
 				</div>
 				<div></div>
@@ -22,18 +25,20 @@
 					<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
 						<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
 							<div id="s_{{oneEnv.code}}_{{group._id}}" ng-repeat="group in serviceGroup">
-								<fieldset >
+								<fieldset>
 									<legend>{{group}}</legend>
-									<div ng-repeat="(env, environment) in fixList"  >
-										<div  ng-repeat="(g, groups) in environment" ng-if="oneEnv.code.toLowerCase() === env"  >
-											<div  ng-repeat="(s, service) in groups" ng-if="g===group" class="clearfix service-container" >
+									<div ng-repeat="(env, environment) in fixList">
+										<div ng-repeat="(g, groups) in environment"
+										     ng-if="oneEnv.code.toLowerCase() === env">
+											<div ng-repeat="(s, service) in groups" ng-if="g===group"
+											     class="clearfix service-container">
 												<div class="clearfix serviceNameHead">
 													<div ng-include="'modules/dashboard/productization/directives/service-name-package.tmpl'"></div>
 												</div>
 												<div ng-include="'modules/dashboard/productization/directives/api-permission-package.tmpl'"></div>
 											</div>
 										</div>
-										
+									
 									</div>
 								</fieldset>
 							</div>
@@ -50,4 +55,82 @@
 		</form>
 	</div>
 </section>
-<!--&& service.name !== 'controller' && service.group ===group-->
+<script type="text/ng-template" id="aclDescription.tmpl">
+	<div class="modal-header" style="background-color: #9EBC5E">
+		<table width="100%">
+			<tr>
+				<td width="80%">
+					<h3 class="modal-title">Access Information</h3>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="modal-body form">
+		<div class="f-left" style="width: 50%">
+			<div style="padding: 10px;">
+				<span><b>{{translation.accessType[LANG]}}: </b></span>
+				<span style="padding-left: 15px;">
+				        <input ng-checked=!data.access type="radio" disabled/>
+						    <label>{{translation.public[LANG]}}</label>
+				        </span>
+				<span style="padding-left: 40px;">
+					        <input ng-checked=data.access type="radio" disabled/>
+						    <label>{{translation.private[LANG]}}</label>
+						</span>
+			</div>
+			<div style="padding-top: 5px; padding-left: 10px; padding-right: 10px;">
+				<span><b>{{translation.restrictedAccess[LANG]}}: </b></span>
+				<span style="padding-left: 15px;">
+				        <input ng-checked=data.apisPermission type="checkbox" disabled/>
+				        </span>
+			</div>
+		</div>
+		<div class="f-left" style="border-left-style: ridge">
+			<ul>
+				<li>Read = GET, HEAD</li>
+				<li>Update = PUT, PATCH</li>
+				<li>Add = POST</li>
+				<li>Delete = DELETE</li>
+				<li>Other = OTHER</li>
+			</ul>
+		</div>
+		<br>
+		<div style="display: inline-block; width: 100%">
+			<fieldset>
+				<legend>{{data.grp}}</legend>
+				<fieldset ng-repeat="(method, apisList) in data.methods">
+					<legend>{{normalizeMethod(method)}}</legend>
+					<div class="apiListing-container">
+						<div class="" ng-repeat="my1Api in apisList" ng-class-even="'even'" ng-class-odd="'odd'"
+						     ng-class="{'first': $first, 'last': $last, selected:api.selected}" style="">
+							<div class="f-left width100">
+								<div ng-class="{readApis: method==='get', addApis: method==='post', updateApis: method==='put', deleteApis: method==='delete', patchApis: method==='patch', headApis: method==='head', otherApis: method !=='head' && method !=='patch' && method !=='head' && method !=='get' && method !=='post' && method !=='put' && method !=='delete' }">
+									<span ng-class="{readMethodApis: method==='get', addMethodApis: method==='post', updateMethodApis: method==='put', deleteMethodApis: method==='delete',  patchMethodApis: method==='patch',  headMethodApis: method==='head',  otherMethodApis: method !=='head' && method !=='patch' && method !=='head' && method !=='get' && method !=='post' && method !=='put' && method !=='delete' }">{{method}}</span>
+									<span ng-class="{readRouteApis: method==='get', addRouteApis: method==='post', updatedRouteApis: method==='put', deleteRouteApis: method==='delete', patchRouteApis: method==='patch', headRouteApis: method==='head', otherRouteApis: method !=='head' && method !=='patch' && method !=='head' && method !=='get' && method !=='post' && method !=='put' && method !=='delete' }">{{my1Api.v}}</span>
+									<br>
+									<span ng-class="{readDescriptionApis: method==='get', addDescriptionApis: method==='post', updateDescriptionApis: method==='put', deleteDescriptionApis: method==='delete', patchDescriptionApis: method==='patch', headDescriptionApis: method==='head', otherDescriptionApis: method !=='head' && method !=='patch' && method !=='head' && method !=='get' && method !=='post' && method !=='put' && method !=='delete' }">{{my1Api.l}}</span>
+									
+									
+									<div class="apiAccess inputApi">
+										<span style="padding-left: 0px;">
+											<input disabled type="radio"/> <em style="">{{translation.InheritFromService[LANG]}}</em>
+										</span>
+										<span>
+											<input disabled value="public"
+											       ng-checked="my1Api.appeneded && !my1Api.access" type="radio"/> {{translation.public[LANG]}}</span>
+										<span>
+											<input disabled ng-checked="my1Api.appeneded && my1Api.access"
+											       value="private" type="radio"/> {{translation.private[LANG]}}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</fieldset>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
+	</div>
+</script>

@@ -130,6 +130,10 @@ var translation = {
 		"ENG": "Dashboard",
 		"FRA": "Dashboard"
 	},
+	"settings": {
+		"ENG": "Settings",
+		"FRA": "Settings"
+	},
 	"code": {
 		"ENG": "Code",
 		"FRA": "Code"

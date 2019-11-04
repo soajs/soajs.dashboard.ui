@@ -86,6 +86,11 @@ var modules = {
 			dashboard: 'modules/dashboard/analyticDashboard/install.js',
 		}
 	},
+	"settings": {
+		"dashboard": {
+			dashboard: 'modules/dashboard/settings/install.js',
+		}
+	},
 	"common": {
 		"dashboard": {
 			myAccount: 'modules/dashboard/myAccount/install.js'

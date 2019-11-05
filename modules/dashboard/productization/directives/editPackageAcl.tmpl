@@ -66,33 +66,22 @@
 		</table>
 	</div>
 	<div class="modal-body form">
-		<div class="f-left" style="width: 50%">
-			<div style="padding: 10px;">
-				<span><b>{{translation.accessType[LANG]}}: </b></span>
-				<span style="padding-left: 15px;">
+		<div style="padding: 10px;">
+			<span><b>{{translation.accessType[LANG]}}: </b></span>
+			<span style="padding-left: 15px;">
 				        <input ng-checked=!data.access type="radio" disabled/>
 						    <label>{{translation.public[LANG]}}</label>
 				        </span>
-				<span style="padding-left: 40px;">
+			<span style="padding-left: 40px;">
 					        <input ng-checked=data.access type="radio" disabled/>
 						    <label>{{translation.private[LANG]}}</label>
 						</span>
-			</div>
-			<div style="padding-top: 5px; padding-left: 10px; padding-right: 10px;">
-				<span><b>{{translation.restrictedAccess[LANG]}}: </b></span>
-				<span style="padding-left: 15px;">
+		</div>
+		<div style="padding-top: 5px; padding-left: 10px; padding-right: 10px;">
+			<span><b>{{translation.restrictedAccess[LANG]}}: </b></span>
+			<span style="padding-left: 15px;">
 				        <input ng-checked=data.apisPermission type="checkbox" disabled/>
 				        </span>
-			</div>
-		</div>
-		<div class="f-left" style="border-left-style: ridge">
-			<ul>
-				<li>Read = GET, HEAD</li>
-				<li>Update = PUT, PATCH</li>
-				<li>Add = POST</li>
-				<li>Delete = DELETE</li>
-				<li>Other = OTHER</li>
-			</ul>
 		</div>
 		<br>
 		<div style="display: inline-block; width: 100%">

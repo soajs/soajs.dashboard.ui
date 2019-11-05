@@ -3,47 +3,34 @@
 		<div class="entryBoxes">
 			<br/>
 			<fieldset>
-				<legend>Current Version</legend>
-				<label>Name: </label> <span> {{currentRelease.label}}</span>
+				<legend>Current Release: {{currentRelease.label}}</legend>
+				<span style="font-style: italic;">{{currentRelease.description}}</span>
 				<br>
-				<label>Description: </label> <span> {{currentRelease.description}}</span>
 				<br>
-				<label>Latest Version: &nbsp</label><span ng-if="update" class="icon icon-checkmark green"></span> <span ng-if="!update" class="icon icon-cross"></span>
-				<br>
-				<fieldset>
-					<legend>Repositories</legend>
-					<div ng-repeat="repository in currentRelease.repositories">
-						<label>Repository: </label> <span> {{repository.repo}}</span>
-						<br>
-						<label>Version: </label> <span> {{repository.ver}}</span>
-						<hr>
-					</div>
-				</fieldset>
-			</fieldset>
-			<hr>
-			<fieldset>
-				<legend>Available Versions</legend>
-				<accordion close-others="true">
-					<accordion-group class="greenAccordion" ng-repeat="version in releases">
-						<accordion-heading>
-							{{version.label}}
-						</accordion-heading>
-						<label>Description: </label> <span> {{version.description}}</span>
-						<br>
-						<label>Allowed: </label> <span> {{version.allowed}}</span>
-						<br>
-						<fieldset>
-							<legend>Repositories</legend>
-							<div ng-repeat="repository in version.repositories">
-								<label>Repository: </label> <span> {{repository.repo}}</span>
-								<br>
-								<label>Version: </label> <span> {{repository.ver}}</span>
-								<hr>
-							</div>
-						</fieldset>
+				<accordion close="true">
+					<accordion-group class="greenAccordion">
+						<accordion-heading>Repositories</accordion-heading>
+						<table id="settingsRepo">
+							<tr>
+								<th>Name</th>
+								<th>Repository</th>
+								<th>Version</th>
+							</tr>
+							<tr ng-repeat="repository in currentRelease.repositories">
+								<td>{{repository.label}}</td>
+								<td>{{repository.repo}}</td>
+								<td>{{repository.ver}}</td>
+							</tr>
+						</table>
 					</accordion-group>
 				</accordion>
 			</fieldset>
+			<hr>
+			<div class="alert alert-info">
+				<h4><span class="icon icon-info"></span> Update:</h4>
+				<p style="font-size: 16px" ng-show="ready && update">Currently you are using {{currentRelease.label}} release and this is the latest release.</p>
+				<p style="font-size: 16px" ng-show="ready && !update">Currently you are using {{currentRelease.label}} release and this is not the latest release. Stingray is the latest release, please contact soajs team for more information.</p>
+			</div>
 		</div>
 	</div>
 </section>

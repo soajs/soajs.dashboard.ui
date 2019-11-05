@@ -737,10 +737,10 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 				newMethod = 'Delete';
 				break;
 			case 'patch':
-				newMethod = 'Update';
+				newMethod = 'Patch';
 				break;
 			case 'head':
-				newMethod = 'Read';
+				newMethod = 'Head';
 				break;
 			default:
 				newMethod = 'Other';
@@ -987,10 +987,11 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				newMethod = 'Delete';
 				break;
 			case 'patch':
-				newMethod = 'Update';
+				newMethod = 'Patch';
 				break;
 			case 'head':
-				newMethod = 'Read';
+				newMethod = 'Head';
+				break;
 				break;
 			default:
 				newMethod = 'Other';
@@ -1253,9 +1254,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 					for (let j = 0; j < $scope.allServiceApis[i].versions[version].apis.length; j++) {
 						if ($scope.allServiceApis[i].versions[version].apis[j].group === grp) {
 							let m = $scope.allServiceApis[i].versions[version].apis[j].m;
-							if (!data.methods[m]) {
-								data.methods[m] = [];
-							}
 							let api = angular.copy($scope.allServiceApis[i].versions[version].apis[j]);
 							if ($scope.scopeFill && $scope.scopeFill[env.toLowerCase()]
 								&& $scope.scopeFill[env.toLowerCase()][service]
@@ -1272,7 +1270,12 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 									}
 								}
 							}
-							data.methods[m].push(api);
+							if (api.appeneded || data.apisPermission !== "restricted"){
+								if (!data.methods[m]) {
+									data.methods[m] = [];
+								}
+								data.methods[m].push(api);
+							}
 						}
 					}
 				}
@@ -1305,10 +1308,10 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 							newMethod = 'Delete';
 							break;
 						case 'patch':
-							newMethod = 'Update';
+							newMethod = 'Patch';
 							break;
 						case 'head':
-							newMethod = 'Read';
+							newMethod = 'Head';
 							break;
 						default:
 							newMethod = 'Other';
@@ -1527,7 +1530,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	});
 }]);
 
-productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams', 'ngDataApi', 'aclHelpers', 'injectFiles', function ($scope, $routeParams, ngDataApi, aclHelpers, injectFiles) {
+productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams', 'ngDataApi', 'aclHelpers', 'injectFiles', '$modal', function ($scope, $routeParams, ngDataApi, aclHelpers, injectFiles, $modal) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.environments_codes = [];
 	$scope.allServiceApis = [];
@@ -1555,10 +1558,10 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				newMethod = 'Delete';
 				break;
 			case 'patch':
-				newMethod = 'Update';
+				newMethod = 'Patch';
 				break;
 			case 'head':
-				newMethod = 'Read';
+				newMethod = 'Head';
 				break;
 			default:
 				newMethod = 'Other';
@@ -1751,7 +1754,89 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	$scope.applyRestriction = function (envCode, service) {
 		aclHelpers.applyPermissionRestriction($scope, envCode, service);
 	};
-	
+	$scope.viewGroupDetails = function (env, service, grp, version) {
+		let data = {
+			grp: grp
+		};
+		for (let i = 0; i < $scope.allServiceApis.length; i++) {
+			if ($scope.allServiceApis[i].name === service) {
+				data.name = service;
+				data.methods = {};
+				if ($scope.allServiceApis[i].versions && $scope.allServiceApis[i].versions[version] && $scope.allServiceApis[i].versions[version].apis) {
+					for (let j = 0; j < $scope.allServiceApis[i].versions[version].apis.length; j++) {
+						if ($scope.allServiceApis[i].versions[version].apis[j].group === grp) {
+							let m = $scope.allServiceApis[i].versions[version].apis[j].m;
+							let api = angular.copy($scope.allServiceApis[i].versions[version].apis[j]);
+							if ($scope.scopeFill && $scope.scopeFill[env.toLowerCase()]
+								&& $scope.scopeFill[env.toLowerCase()][service]
+								&& $scope.scopeFill[env.toLowerCase()][service][version]) {
+								data.access = $scope.scopeFill[env.toLowerCase()][service][version].access;
+								data.apisPermission = $scope.scopeFill[env.toLowerCase()][service][version].apisPermission;
+								if ($scope.scopeFill[env.toLowerCase()][service][version][$scope.allServiceApis[i].versions[version].apis[j].m]) {
+									let acl = $scope.scopeFill[env.toLowerCase()][service][version][$scope.allServiceApis[i].versions[version].apis[j].m];
+									for (let a = 0; a < acl.length; a++) {
+										if (acl[a].apis && acl[a].apis[api.v]) {
+											api.appeneded = true;
+											api.access = acl[a].apis[api.v].access;
+										}
+									}
+								}
+							}
+							if (api.appeneded || data.apisPermission !== "restricted"){
+								if (!data.methods[m]) {
+									data.methods[m] = [];
+								}
+								data.methods[m].push(api);
+							}
+						}
+					}
+				}
+				break;
+			}
+		}
+		$modal.open({
+			templateUrl: 'aclConsoleDescription.tmpl',
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				$scope.data = data;
+				$scope.normalizeMethod = function (method) {
+					let newMethod;
+					if (!method){
+						return null;
+					}
+					switch(method.toLowerCase()) {
+						case 'get':
+							newMethod = 'Read';
+							break;
+						case 'post':
+							newMethod = 'Add';
+							break;
+						case 'put':
+							newMethod = 'Update';
+							break;
+						case 'delete':
+							newMethod = 'Delete';
+							break;
+						case 'patch':
+							newMethod = 'Patch';
+							break;
+						case 'head':
+							newMethod = 'Head';
+							break;
+						default:
+							newMethod = 'Other';
+					}
+					return newMethod;
+				};
+				fixBackDrop();
+				$scope.ok = function () {
+					$modalInstance.dismiss('ok');
+				};
+			}
+		});
+	};
 	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation

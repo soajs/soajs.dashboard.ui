@@ -2334,6 +2334,7 @@ catalogApp.controller('releaseAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						$scope.displayAlert('danger', error.message);
 					} else {
 						$scope.update = update;
+						$scope.ready = true;
 						for (let i = response.releases.length - 1; i >= 0; i--) {
 							if (response.releases[i].name === response.latest) {
 								$scope.currentRelease = angular.copy(response.releases[i]);

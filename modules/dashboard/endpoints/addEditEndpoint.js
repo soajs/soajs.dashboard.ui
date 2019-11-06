@@ -21,7 +21,17 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 				if(!$scope.form){
 					$scope.form = {};
 				}
+				if (response.tags){
+					response.tags = response.tags.toString();
+				}
+				if (response.program){
+					response.program = response.program.toString();
+				}
+				if (response.attributes){
+					response.attributes =JSON.stringify(response.attributes, null, 2);
+				}
 				$scope.form.formData = response;
+				
 				$scope.form.formData.epType = response.models ? response.models.name : '';
 				$scope.getAvailableResourcesAndMatchIfOnEdit(true);
 			}
@@ -402,6 +412,17 @@ servicesApp.controller('addEditEndpoint', ['$scope', '$timeout', '$modal', '$com
 		let opts = angular.copy($scope.mainEndpoint);
 		if (opts.program){
 			opts.program = opts.program.split(",");
+		}
+		if (opts.tags){
+			opts.tags = opts.tags.split(",");
+		}
+		if (opts.attributes){
+			try {
+				opts.attributes = JSON.parse(opts.attributes);
+			}
+			catch (e) {
+				console.log(e);
+			}
 		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": method,

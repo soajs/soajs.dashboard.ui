@@ -448,12 +448,15 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 		currentScope.availablePackages.forEach((oneProdPackage) => {
 			if (oneProdPackage.pckCode === appPackage) {
 				prodPackage = oneProdPackage;
-				services = Object.keys(oneProdPackage.acl[env.toLowerCase()]);
-				for (let i = services.length - 1; i >= 0; i--) {
-					if (tenantConfig.excludedServices.indexOf(services[i]) !== -1) {
-						services.splice(i, 1);
+				if(oneProdPackage.acl && oneProdPackage.acl[env.toLowerCase()]){
+					services = Object.keys(oneProdPackage.acl[env.toLowerCase()]);
+					for (let i = services.length - 1; i >= 0; i--) {
+						if (tenantConfig.excludedServices.indexOf(services[i]) !== -1) {
+							services.splice(i, 1);
+						}
 					}
 				}
+				
 			}
 		});
 		

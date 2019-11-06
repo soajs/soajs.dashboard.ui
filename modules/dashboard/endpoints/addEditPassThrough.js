@@ -336,6 +336,15 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					$scope.form = {};
 				}
 				let data = angular.copy(response);
+				if (data.tags){
+					data.tags = data.tags.toString();
+				}
+				if (data.program){
+					data.program = data.program.toString();
+				}
+				if (data.attributes){
+					data.attributes = JSON.stringify(data.attributes, null, 2);
+				}
 				if (data.maintenance) {
 					data.port = data.maintenance.port ? data.maintenance.port.value : null;
 					data.path = data.maintenance.readiness;
@@ -785,6 +794,18 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 				}
 			},
 			path: {
+				required: false
+			},
+			program: {
+				required: false
+			},
+			tags: {
+				required: false
+			},
+			attributes: {
+				required: false
+			},
+			tab: {
 				required: false
 			},
 			port: {
@@ -1364,6 +1385,17 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 		let opts = angular.copy($scope.mainEndpoint);
 		if (opts.program){
 			opts.program = opts.program.split(",");
+		}
+		if (opts.tags){
+			opts.tags = opts.tags.split(",");
+		}
+		if (opts.attributes){
+			try {
+				opts.attributes = JSON.parse(opts.attributes);
+			}
+			catch (e) {
+				console.log(e);
+			}
 		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": method,

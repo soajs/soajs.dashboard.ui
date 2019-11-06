@@ -243,6 +243,70 @@ var swaggerEditorConfig = {
 					},
 				]
 			},
+			// {
+			// 	'name': 'metadata',
+			// 	'type': 'group',
+			// 	'label': 'MetaData',
+			// 	'entries': [
+			// 		{
+			// 			'name': 'programs',
+			// 			'label': "Programs",
+			// 			'type': 'text',
+			// 			'placeholder': "program1, program2",
+			// 			'value': '',
+			// 			'tooltip': "The programs of your service",
+			// 			'required': false,
+			// 			"fieldMsg": "The programs of your service. Use , to add multiple programs. example: program1,program2"
+			// 		},
+			// 		{
+			// 			'name': 'tags',
+			// 			'label': "Tags",
+			// 			'type': 'text',
+			// 			'placeholder': "tag1, tag2",
+			// 			'value': '',
+			// 			'tooltip': "The tags of your service",
+			// 			'required': false,
+			// 			"fieldMsg": "The tags of your service. Use , to add multiple tags. example: tag1,tag2"
+			// 		},
+			// 		{
+			// 			'name': 'attributes',
+			// 			'label': "Attributes",
+			// 			'type': 'jsoneditor',
+			// 			'value': '',
+			// 			'tooltip': "The attributes of your service",
+			// 			'required': false,
+			// 			"fieldMsg": "The attributes of your service. example {key: [attrib1, attrib2]}",
+			// 			'height': 100
+			// 		},
+			// 		{
+			// 			'name': 'tab',
+			// 			'label': "Tab",
+			// 			'type': 'group',
+			// 			'entries' :[
+			// 				{
+			// 					'name': 'main',
+			// 					'label': "Main",
+			// 					'type': 'text',
+			// 					'placeholder': "main tab",
+			// 					'value': '',
+			// 					'tooltip': "The main tab of your service",
+			// 					'required': false,
+			// 					"fieldMsg": "The main tab of your service"
+			// 				},
+			// 				{
+			// 					'name': 'sub',
+			// 					'label': "Tags",
+			// 					'type': 'text',
+			// 					'placeholder': "sub tab",
+			// 					'value': '',
+			// 					'tooltip': "The sub tab of your service",
+			// 					'required': false,
+			// 					"fieldMsg": "The sub tab of your service."
+			// 				},
+			// 			]
+			// 		}
+			// 	]
+			// },
 			{
 				'name': 'dbs',
 				'label': 'Database',

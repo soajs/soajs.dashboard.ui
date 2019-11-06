@@ -39,9 +39,16 @@
 			<fieldset>
 				<legend>MetaData</legend>
 				<label>Programs</label>
-				<input type="text" class="form-control" ng-model="form.formData.program" ng-required="false" placeholder="program"/>
-				<span class="manualToolTip">The program of your endpoint. Use , to add multiple programs. example: program1,program2</span>
+				<input type="text" class="form-control" ng-model="form.formData.program" ng-required="false" placeholder="program1,program2"/>
+				<span class="manualToolTip">The program of your service. Use , to add multiple programs. example: program1,program2</span>
 				<br>
+				<label>Tags</label>
+				<input type="text" class="form-control" ng-model="form.formData.tags" ng-required="false" placeholder="tag1,tag2"/>
+				<span class="manualToolTip">The tags of your service. Use , to add multiple tags. example: tag1,tag2</span>
+				<br>
+				<label>Attributes</label>
+				<div ui-ace="{maxLines: Infinity, useWrapMode : true, showGutter: true, mode: 'json', firstLineNumber: 1, onLoad: entry.onLoad, onChange: entry.onUpdate}" ng-model="form.formData.attributes"></div>
+				<div class="manualToolTip"> The attributes of your service. example {key: [attrib1, attrib2]}</div>
 				<fieldset>
 					<legend>Tab</legend>
 					<div>

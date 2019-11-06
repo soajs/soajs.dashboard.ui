@@ -747,7 +747,6 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		}
 		return newMethod
 	};
-	console.log($scope)
 	$scope.minimize = function (envCode, service) {
 		if(!$scope.aclFill[envCode][service.name]){
 			$scope.aclFill[envCode][service.name] = {};

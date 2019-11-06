@@ -266,7 +266,7 @@
 												<ul ng-show="service.maintenance && service.maintenance.commands" class="dropdown-menu" aria-labelledby="serviceOpsDropdown"
 												    ng-repeat="operation in service.maintenance.commands">
 													<li><a href=""
-													       ng-if="service.deployment && operation && operation.path!=='/reloadRegistry' && operation.path!=='/awarenessStat' && operation.path!=='/loadProvision' && operation.path!=='/infoHost' && operation.path!=='/daemonStats' && operation.path!=='/reloadDaemonConf'"
+													       ng-if="service.deployment && oneSubType=='/reloadRegistry' && operation.path!=='/awarenessStat' && operation.path!=='/loadProvision' && operation.path!=='/infoHost' && operation.path!=='/daemonStats' && operation.path!=='/reloadDaemonConf'"
 													       ng-click="executeOperation(service, operation)"><span
 															class="icon icon-{{operation.icon}}"></span>&nbsp;{{operation.label}}</a>
 													</li>
@@ -339,7 +339,7 @@
 															class="icon icon-info"></span>&nbsp;Inspect</a></li>
 													<li><a href=""
 													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="oneSubType === 'soajs'"
+													       ng-show="oneSubType === 'soajs' || (service.maintenance && service.maintenance.readiness)"
 													       ng-click="executeHeartbeatTest(service)"><span
 															class="icon icon-heart"></span> Heart Beat</a></li>
 													<li><a href=""

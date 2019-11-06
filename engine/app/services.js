@@ -615,26 +615,29 @@ soajsApp.service("aclDrawHelpers", function () {
 			for (var version in currentService.versions) {
 				if (currentService.versions.hasOwnProperty(version)) {
 					if (!service[version]) {
-						service[version] = {};
-					}
-					service[version].include = true;
-					if (service[version].access) {
-						if (service[version].access === true) {
-							service[version].accessType = 'private';
-						} else if (service[version].access === false) {
-							service[version].accessType = 'public';
-						} else if (Array.isArray(service[version].access)) {
-							service[version].accessType = 'groups';
-							service[version].grpCodes = {};
-							service[version].access.forEach(function (c) {
-								service[version].grpCodes[c] = true;
-							});
-						}
+						service[version] = {
+							include: false
+						};
 					} else {
-						service[version].accessType = 'public';
-					}
-					if (service[version].apisPermission === 'restricted') {
-						service[version].apisRestrictPermission = true;
+						service[version].include = true;
+						if (service[version].access) {
+							if (service[version].access === true) {
+								service[version].accessType = 'private';
+							} else if (service[version].access === false) {
+								service[version].accessType = 'public';
+							} else if (Array.isArray(service[version].access)) {
+								service[version].accessType = 'groups';
+								service[version].grpCodes = {};
+								service[version].access.forEach(function (c) {
+									service[version].grpCodes[c] = true;
+								});
+							}
+						} else {
+							service[version].accessType = 'public';
+						}
+						if (service[version].apisPermission === 'restricted') {
+							service[version].apisRestrictPermission = true;
+						}
 					}
 				}
 			}

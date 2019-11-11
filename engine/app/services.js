@@ -847,7 +847,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 		}
 		var apiParams = {
 			"method": "get",
-			"routeName": "/urac/account/getUser",
+			"routeName": "/urac/user",
 			"headers": {
 				"key": apiConfiguration.key
 			},

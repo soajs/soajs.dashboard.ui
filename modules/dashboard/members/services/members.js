@@ -7,16 +7,14 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		var tenantId = (callback) ? currentScope.tId : userCookie.tenant.id;
 		var opts = {
 			"method": "get",
-			"routeName": "/urac/admin/listUsers",
-			"params": {'tId': tenantId}
+			"routeName": "/urac/admin/users"
 		};
 		if (env && ext){
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'tId': tenantId,
-					'proxyRoute': '/urac/admin/listUsers',
+					'proxyRoute': '/urac/admin/users',
 					"extKey": ext
 				},
 				"headers": {
@@ -50,16 +48,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		let tenantId = currentScope.tenant._id;
 		var opts = {
 			"method": "get",
-			"routeName": "/urac/admin/listUsers",
-			"params": {'tId': tenantId, "config": true}
+			"routeName": "/urac/admin/users",
+			"params": {"config": true}
 		};
 		if (env && ext){
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'tId': mainTenantId,
-					'proxyRoute': '/urac/admin/listUsers',
+					'proxyRoute': '/urac/admin/users',
 					"config": true,
 					"extKey": ext
 				},
@@ -172,23 +169,18 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function addMember(currentScope, moduleConfig, useCookie, env, ext) {
-		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(moduleConfig.form);
-		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
-		var tenantCode = (useCookie) ? userCookie.tenant.code : currentScope.tenant.code;
 		overlayLoading.show();
 		var opts ={
 			"method": "get",
-			"routeName": "/urac/admin/group/list",
-			"params": {'tId': tenantId}
+			"routeName": "/urac/admin/groups",
 		};
 		if (env && ext){
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'tId': tenantId,
-					'proxyRoute': '/urac/admin/group/list',
+					'proxyRoute': '/urac/admin/groups',
 					"extKey": ext
 				},
 				"headers": {
@@ -266,8 +258,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'lastName': formData.lastName,
 									'email': formData.email,
 									'groups': formData.groups ? [formData.groups] : [],
-									'tId': tenantId,
-									'tCode': tenantCode
 								};
 								if (formData.pin){
 									postData.pin = {
@@ -278,7 +268,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								overlayLoading.show();
 								var opts = {
 									"method": "post",
-									"routeName": "/urac/admin/addUser",
+									"routeName": "/urac/admin/user",
 									"data": postData
 								};
 								if (env && ext){
@@ -286,7 +276,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 										"method": "post",
 										"routeName": "/proxy/redirect",
 										"params": {
-											'proxyRoute': '/urac/admin/addUser',
+											'proxyRoute': '/urac/admin/user',
 											"extKey": ext
 										},
 										"headers": {
@@ -333,12 +323,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function inviteUser(currentScope, moduleConfig, useCookie, env, ext, subExt) {
-		let tenantId = currentScope.tenant._id;
 		overlayLoading.show();
 		let opts ={
 			"method": "get",
-			"routeName": "/urac/admin/group/list",
-			"params": {'tId': tenantId}
+			"routeName": "/urac/admin/groups"
 		};
 		//this should use the subtenanant ext key
 		if (env && ext){
@@ -346,8 +334,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'tId': tenantId,
-					'proxyRoute': '/urac/admin/group/list',
+					'proxyRoute': '/urac/admin/groups',
 					"extKey": subExt
 				},
 				"headers": {
@@ -399,7 +386,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						$scope.checkUsername = function (username){
 							let opts ={
 								"method": "get",
-								"routeName": "/urac/account/getUser",
+								"routeName": "/urac/user",
 								"params": {
 									"username": username
 								}
@@ -410,7 +397,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"routeName": "/proxy/redirect",
 									"params": {
 										"username": username,
-										'proxyRoute': '/urac/account/getUser',
+										'proxyRoute': '/urac/user',
 										"extKey": ext
 									},
 									"headers": {
@@ -437,13 +424,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						};
 						$scope.onSubmit= function () {
 							let opts ={
-								"method": "post",
-								"routeName": "/urac/admin/inviteUser",
-								"params": {
-									"username": $scope.formData.username
-								},
+								"method": "put",
+								"routeName": "/urac/admin/users/invite",
 								"data": {
-								
+									"users": []
 								}
 							};
 							if (env && ext){
@@ -451,27 +435,30 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"method": "post",
 									"routeName": "/proxy/redirect",
 									"params": {
-										"username": $scope.formData.username,
-										'proxyRoute': '/urac/admin/inviteUser',
+										'proxyRoute': "/urac/admin/users/invite",
 										"extKey": subExt
 									},
 									"headers": {
 										"__env": env
 									},
 									"data": {
-									
+										"users": []
 									}
 								};
 							}
+							let userRecord = {
+								username : $scope.formData.username,
+							};
 							if ($scope.formData.group){
-								opts.data.groups = [$scope.formData.group]
+								userRecord.groups = [$scope.formData.group]
 							}
 							if ($scope.formData.pinCode){
-								opts.data.pin = {
+								userRecord.pin = {
 									code: $scope.formData.pinCode,
 									allowed : !!$scope.formData.allowLogin
 								}
 							}
+							opts.data.users.push(userRecord);
 							if (currentScope.key) {
 								if (!opts.headers){
 									opts.headers = {};
@@ -511,7 +498,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		overlayLoading.show();
 		let opts ={
 			"method": "put",
-			"routeName": "/urac/admin/unInviteUsers",
+			"routeName": "/urac/admin/users/uninvite",
 			"data": {
 				"username": usernames
 			}
@@ -521,14 +508,18 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"method": "put",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'proxyRoute': '/urac/admin/unInviteUsers',
+					'proxyRoute': "/urac/admin/users/uninvite",
 					"extKey": ext
 				},
 				"headers": {
 					"__env": env
 				},
 				"data": {
-					"username": usernames
+					"users": [{
+						"user" :{
+							"username": usernames
+						}
+					}]
 				}
 			};
 		}
@@ -552,20 +543,17 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	
 	function editMember(currentScope, moduleConfig, mainData, useCookie, env, ext) {
 		let data = angular.copy(mainData);
-		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(moduleConfig.form);
-		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
 		var opts = {
 			"method": "get",
-			"routeName": "/urac/admin/group/list",
-			"params": {'tId': tenantId}
+			"routeName": "/urac/admin/groups",
 		};
 		if (env && ext){
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
-				"params": {
-					'proxyRoute': '/urac/admin/group/list',
+				"para ms": {
+					'proxyRoute': '/urac/admin/groups',
 					"extKey": ext
 				},
 				"headers": {
@@ -656,29 +644,23 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'firstName': formData.firstName,
 									'lastName': formData.lastName,
 									'email': formData.email,
-									'tId': tenantId,
+									'id': data['_id'],
 									'status': (Array.isArray(formData.status)) ? formData.status.join(",") : formData.status
 								};
 								if (formData.groups){
 									postData.groups = [formData.groups];
 								}
-								postData.pin = {
-									code: !!formData.pinCode,
-									allowed: !!formData.allowedLogin
-								};
 								var opts = {
-									"method": "post",
-									"routeName": "/urac/admin/editUser",
-									"params": {"uId": data['_id']},
+									"method": "put",
+									"routeName": "/urac/admin/user",
 									"data": postData
 								};
 								if (env && ext){
 									opts = {
-										"method": "post",
+										"method": "put",
 										"routeName": "/proxy/redirect",
 										"params": {
-											"uId": data['_id'],
-											'proxyRoute': '/urac/admin/editUser',
+											'proxyRoute': '/urac/admin/user',
 											"extKey": ext
 										},
 										"headers": {
@@ -698,10 +680,44 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 										currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 									}
 									else {
-										currentScope.$parent.displayAlert('success', translation.memberUpdatedSuccessfully[LANG]);
-										currentScope.modalInstance.close();
-										currentScope.form.formData = {};
-										currentScope.listMembers();
+										postData = {
+											user: {
+												username: formData.username
+											},
+											pin : {
+												reset : !!formData.pinCode,
+												allowed: !!formData.allowedLogin
+											}
+										};
+										opts = {
+											"method": "put",
+											"routeName": "/urac/admin/user/pin",
+											"data": postData
+										};
+										if (env && ext){
+											opts = {
+												"method": "put",
+												"routeName": "/proxy/redirect",
+												"params": {
+													'proxyRoute': '/urac/admin/user/pin',
+													"extKey": ext
+												},
+												"headers": {
+													"__env": env
+												},
+												"data": postData
+											};
+										}
+										getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+											if (error) {
+												currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+											} else {
+												currentScope.$parent.displayAlert('success', translation.memberUpdatedSuccessfully[LANG]);
+												currentScope.modalInstance.close();
+												currentScope.form.formData = {};
+												currentScope.listMembers();
+											}
+										});
 									}
 								});
 							}
@@ -723,12 +739,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function editSubMember(currentScope, moduleConfig, data, useCookie, env, subExt) {
-		let tenantId = currentScope.tenant._id;
 		overlayLoading.show();
 		let opts ={
 			"method": "get",
-			"routeName": "/urac/admin/group/list",
-			"params": {'tId': tenantId}
+			"routeName": "/urac/admin/groups",
 		};
 		if (env && subExt){
 			opts = {
@@ -815,11 +829,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						$scope.onSubmit= function () {
 							let opts ={
 								"method": "put",
-								"routeName": "/urac/admin/userTenantConfig",
-								"params": {
-									"username": $scope.username
-								},
+								"routeName": "/urac/admin/user/pin",
 								"data": {
+									"user": {username : $scope.username}
 								}
 							};
 							if (env && subExt){
@@ -827,23 +839,20 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"method": "put",
 									"routeName": "/proxy/redirect",
 									"params": {
-										"username": $scope.username,
-										'proxyRoute': '/urac/admin/userTenantConfig',
+										'proxyRoute': '/urac/admin/user/pin',
 										"extKey": subExt
 									},
 									"headers": {
 										"__env": env
 									},
 									"data": {
-									
+										"user": {username : $scope.username}
 									}
 								};
 							}
-							if ($scope.formData.group) {
-								opts.data.groups = [$scope.formData.group]
-							}
+							
 							opts.data.pin = {
-								code: $scope.formData.pinCode,
+								reset: !$scope.formData.pinCode,
 								allowed: !!$scope.formData.allowLogin
 							};
 							if (currentScope.key) {
@@ -854,14 +863,52 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							}
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-								overlayLoading.hide();
 								if (error) {
+									overlayLoading.hide();
 									$scope.displayAlert('danger', error.message);
 								} else if (response) {
-									currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
-									overlayLoading.hide();
-									currentScope.listSubMembers();
-									modal.close();
+									if ($scope.formData.group) {
+										let opts ={
+											"method": "put",
+											"routeName": "/urac/admin/user/groups",
+											"data": {
+												"user": {username : $scope.username}
+											}
+										};
+										if (env && subExt){
+											opts = {
+												"method": "put",
+												"routeName": "/proxy/redirect",
+												"params": {
+													'proxyRoute': '/urac/admin/user/groups',
+													"extKey": subExt
+												},
+												"headers": {
+													"__env": env
+												},
+												"data": {
+													"user": {username : $scope.username}
+												}
+											};
+										}
+										opts.data.groups = [$scope.formData.group];
+										getSendDataFromServer(currentScope, ngDataApi, opts, function (error, result) {
+											overlayLoading.hide();
+											if (error) {
+												$scope.displayAlert('danger', error.message);
+											} else if (result) {
+												currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+												currentScope.listSubMembers();
+												modal.close();
+											}
+										});
+									}
+									else {
+										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+										overlayLoading.hide();
+										currentScope.listSubMembers();
+										modal.close();
+									}
 								}
 							});
 						};
@@ -884,12 +931,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		};
 		if (env && ext){
 			config = {
-				"method": "delete",
+				"method": "put",
 				"routeName": "/proxy/redirect",
 				"params": {
 					'username': data.username,
-					'proxyRoute': '/urac/admin/pinConfig',
+					'proxyRoute': '/urac/admin/user/pin',
 					"extKey": ext
+				},
+				"data": {
+					"delete": true
 				},
 				"headers": {
 					"__env": env,
@@ -919,9 +969,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			"headers": {
 				"key": currentScope.key
 			},
-			'method': 'get',
-			'routeName': "/urac/admin/changeUserStatus",
-			"params": {'uId': '%id%', 'status': 'active'},
+			'method': 'put',
+			'routeName': "/urac/admin/user/status",
+			"data": {'id': '%id%', 'status': 'active'},
 			'msg': {
 				'error': translation.errorMessageActivateMembers[LANG],
 				'success': translation.successMessageActivateMembers[LANG]
@@ -929,13 +979,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		};
 		if (env && ext){
 			config = {
-				"method": "get",
+				"method": "put",
 				"routeName": "/proxy/redirect",
 				"params": {
-					"params": {'uId': '%id%', 'status': 'active'},
-					'proxyRoute': '/urac/admin/changeUserStatus',
+					'proxyRoute': '/urac/admin/user/status',
 					"extKey": ext
 				},
+				"data": {'id': '%id%', 'status': 'active'},
 				"headers": {
 					"__env": env,
 					"key": currentScope.key
@@ -958,9 +1008,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			"headers": {
 				"key": currentScope.key
 			},
-			'method': 'get',
-			'routeName': "/urac/admin/changeUserStatus",
-			"params": {'uId': '%id%', 'status': 'inactive'},
+			'method': 'put',
+			'routeName': "/urac/admin/user/status",
+			"params": {'id': '%id%', 'status': 'inactive'},
 			'msg': {
 				'error': translation.errorMessageDeactivateMembers[LANG],
 				'success': translation.successMessageDeactivateMembers[LANG]
@@ -968,11 +1018,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		};
 		if (env && ext){
 			config = {
-				"method": "get",
+				"method": "put",
 				"routeName": "/proxy/redirect",
 				"params": {
-					"params": {'uId': '%id%', 'status': 'inactive'},
-					'proxyRoute': '/urac/admin/changeUserStatus',
+					"params": {'id': '%id%', 'status': 'inactive'},
+					'proxyRoute': '/urac/admin/user/status',
 					"extKey": ext
 				},
 				"headers": {

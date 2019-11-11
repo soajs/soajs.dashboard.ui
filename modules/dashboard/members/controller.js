@@ -245,7 +245,7 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'proxyRoute': '/urac/admin/listUsers',
+					'proxyRoute': '/urac/admin/users',
 					"extKey": extKey
 				},
 				"headers": {
@@ -346,7 +346,7 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'proxyRoute': '/urac/admin/group/list',
+					'proxyRoute': '/urac/admin/groups',
 					"__env": env.toLowerCase(),
 					"extKey": extKey
 				}
@@ -446,7 +446,7 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 			"method": "get",
 			"routeName": "/proxy/redirect",
 			"params": {
-				'proxyRoute': '/urac/admin/listUsers',
+				'proxyRoute': '/urac/admin/users',
 				"extKey": extKey,
 				"config": true,
 			},
@@ -560,7 +560,7 @@ membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routePara
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'proxyRoute': '/urac/admin/group/list',
+					'proxyRoute': '/urac/admin/groups',
 					"__env": env.toLowerCase(),
 					"extKey": extKey
 				}

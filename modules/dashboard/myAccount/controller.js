@@ -20,16 +20,16 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 					'btn': 'primary',
 					'action': function (formData) {
 						var postData = {
-							'email': formData.email
+							'email': formData.email,
+							"id": $scope.memberData._id
 						};
 						overlayLoading.show();
 						getSendDataFromServer($scope, ngDataApi, {
-							"method": "send",
+							"method": "put",
 							"headers": {
 								"key": apiConfiguration.key
 							},
-							"routeName": "/urac/account/changeEmail",
-							"params": { "uId": $scope.memberData._id },
+							"routeName": "/urac/account/email",
 							"data": postData
 						}, function (error) {
 							overlayLoading.hide();
@@ -74,7 +74,8 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 						var postData = {
 							'password': formData.password,
 							'oldPassword': formData.oldPassword,
-							'confirmation': formData.confirmPassword
+							'confirmation': formData.confirmPassword,
+							"id": $scope.memberData._id
 						};
 						if (formData.password != formData.confirmPassword) {
 							$scope.form.displayAlert('danger', translation.errorMessageChangePassword[LANG]);
@@ -82,12 +83,11 @@ myAccountApp.controller('changeSecurityCtrl', ['$scope', '$timeout', '$modal', '
 						}
 						overlayLoading.show();
 						getSendDataFromServer($scope, ngDataApi, {
-							"method": "send",
+							"method": "put",
 							"headers": {
 								"key": apiConfiguration.key
 							},
-							"routeName": "/urac/account/changePassword",
-							"params": { "uId": $scope.memberData._id },
+							"routeName": "/urac/account/password",
 							"data": postData
 						}, function (error) {
 							overlayLoading.hide();
@@ -194,15 +194,15 @@ myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDat
 							'username': formData.username,
 							'firstName': formData.firstName,
 							'lastName': formData.lastName,
-							'profile': profileObj
+							'profile': profileObj,
+							"id": $scope.uId
 						};
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "send",
-							"routeName": "/urac/account/editProfile",
+							"routeName": "/urac/account",
 							"headers": {
 								"key": apiConfiguration.key
 							},
-							"params": { "uId": $scope.uId },
 							"data": postData
 						}, function (error) {
 							if (error) {
@@ -231,7 +231,7 @@ myAccountApp.controller('myAccountCtrl', ['$scope', '$timeout', '$modal', 'ngDat
 				"headers": {
 					"key": apiConfiguration.key
 				},
-				"routeName": "/urac/account/getUser",
+				"routeName": "/urac/user",
 				"params": { "username": username }
 			}, function (error, response) {
 				if (error) {
@@ -265,7 +265,7 @@ myAccountApp.controller('validateCtrl', ['$scope', 'ngDataApi', '$route', 'isUse
 	$scope.validateChangeEmail = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/urac/changeEmail/validate",
+			"routeName": "/urac/validate/changeEmail",
 			"params": { "token": $route.current.params.token }
 		}, function (error) {
 			if (error) {
@@ -346,7 +346,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 				function uracLogin() {
 					var options = {
 						"method": "get",
-						"routeName": "/urac/account/getUser",
+						"routeName": "/urac/user",
 						"params": {
 							'username': formData.username
 						}
@@ -409,7 +409,7 @@ myAccountApp.controller('forgotPwCtrl', ['$scope', 'ngDataApi', 'isUserLoggedIn'
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "get",
-				"routeName": "/urac/forgotPassword",
+				"routeName": "/urac/password/forgot",
 				"params": postData
 			}, function (error) {
 				overlayLoading.hide();
@@ -441,19 +441,20 @@ myAccountApp.controller('setPasswordCtrl', ['$scope', 'ngDataApi', '$routeParams
 		'btn': 'primary',
 		'action': function (formData) {
 			var postData = {
-				'password': formData.password, 'confirmation': formData.confirmPassword
+				'password': formData.password,
+				'confirmation': formData.confirmPassword,
+				"token": $routeParams.token
 			};
 			if (formData.password != formData.confirmPassword) {
 				$scope.$parent.displayAlert('danger', translation.errorMessageChangePassword[LANG]);
 				return;
 			}
 			getSendDataFromServer($scope, ngDataApi, {
-				"method": "send",
+				"method": "put",
 				"headers": {
 					"key": apiConfiguration.key
 				},
-				"routeName": "/urac/resetPassword",
-				"params": { "token": $routeParams.token },
+				"routeName": "/urac/password/reset",
 				"data": postData
 			}, function (error) {
 				if (error) {
@@ -485,7 +486,9 @@ myAccountApp.controller('resetPwCtrl', ['$scope', 'ngDataApi', '$routeParams', '
 		'btn': 'primary',
 		'action': function (formData) {
 			var postData = {
-				'password': formData.password, 'confirmation': formData.confirmPassword
+				'password': formData.password,
+				'confirmation': formData.confirmPassword,
+				"token": $routeParams.token
 			};
 			if (formData.password != formData.confirmPassword) {
 				$scope.$parent.displayAlert('danger', translation.passwordConfirmFieldsNotMatch[LANG]);
@@ -493,8 +496,7 @@ myAccountApp.controller('resetPwCtrl', ['$scope', 'ngDataApi', '$routeParams', '
 			}
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "send",
-				"routeName": "/urac/resetPassword",
-				"params": { "token": $routeParams.token },
+				"routeName": "/urac/password/reset",
 				"data": postData
 			}, function (error) {
 				if (error) {

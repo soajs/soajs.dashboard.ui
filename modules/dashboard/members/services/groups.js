@@ -27,9 +27,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 	
 	function listGroups(currentScope, groupsConfig, env, ext, callback) {
-		var userCookie = currentScope.$parent.userCookie;
-		var tenantId = (callback) ? currentScope.tId : userCookie.tenant.id;
-		
 		if (currentScope.access.adminGroup.list) {
 			var opts = {
 				"method": "get",
@@ -125,10 +122,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 	}
 
 	function addGroup(currentScope, groupsConfig, useCookie, env, ext) {
-		var userCookie = currentScope.$parent.userCookie;
 		var config = angular.copy(groupsConfig.form);
-		var tenantId = (useCookie) ? userCookie.tenant.id : currentScope.tId;
-		var tenantCode = (useCookie) ? userCookie.tenant.code : currentScope.tenant.code;
 		overlayLoading.show();
 		if (currentScope.tenant.code === groupsConfig.consoleTenant){
 			listConsoleProducts (currentScope, (error)=>{
@@ -175,30 +169,23 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								'label': translation.addGroup[LANG],
 								'btn': 'primary',
 								'action': function (formData) {
-									let allowedPackages = {};
-									let allowedEnvironments = {};
+									let allowedPackages = [];
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
 											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
-												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+												allowedPackages.push({
+													product: formData[key].split("$%$")[1],
+													packages: [formData[key].split("$%$")[0]]
+												});
 											}
-										}
-										if(key && key.indexOf("allowedEnvironments")!== -1){
-											formData[key].forEach((oneKey)=>{
-												allowedEnvironments[oneKey] = {};
-											});
 										}
 									});
 									var postData = {
 										'name': formData.name,
 										'code': formData.code,
 										'description': formData.description,
-										'tId': tenantId,
-										'tCode': tenantCode,
-										'config' : {
-											allowedPackages : allowedPackages,
-											allowedEnvironments: allowedEnvironments
-										}
+										"packages": allowedPackages,
+										"environments": formData.allowedEnvironments
 									};
 									
 									var opts = {
@@ -254,9 +241,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 					currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				} else {
 					let count = 0;
-					let selectablePackages = [];
 					let postData = {};
-					let allowedPackages = {};
 					
 					let modal = $modal.open({
 						templateUrl: "modules/dashboard/members/directives/addGroup.tmpl",
@@ -313,11 +298,20 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 							};
 							$scope.onSubmit = function () {
+								let packages = [];
+								for (let prod in allowedPackages) {
+									if (allowedPackages.hasOwnProperty(prod)){
+										packages.push({
+											product: prod,
+											packages : allowedPackages[prod]
+										});
+									}
+								}
 								postData = {
 									'name': $scope.formData.name,
 									'code': $scope.formData.code,
 									'description': $scope.formData.description,
-									'packages' : allowedPackages
+									'packages' : packages
 								};
 								let opts = {
 									"method": "post",
@@ -438,30 +432,27 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								'label': translation.editGroup[LANG],
 								'btn': 'primary',
 								'action': function (formData) {
-									let allowedPackages = {};
-									let allowedEnvironments = {};
+									let packages = [];
 									Object.keys(formData).forEach((key)=>{
 										if(key && key.indexOf("package")!== -1){
 											if (formData[key] && formData[key].split("$%$")[1] && formData[key].split("$%$")[0]){
-												allowedPackages[formData[key].split("$%$")[1]] = [formData[key].split("$%$")[0]];
+												packages.push({
+													product: formData[key].split("$%$")[1],
+													packages : [formData[key].split("$%$")[0]]
+												});
 											}
-										}
-										if(key && key.indexOf("allowedEnvironments")!== -1){
-											formData[key].forEach((oneKey)=>{
-												allowedEnvironments[oneKey] = {};
-											});
 										}
 									});
 									var postData = {
 										'name': formData.name,
 										'description': formData.description,
-										"packages" : allowedPackages,
-										"environments": allowedEnvironments
+										"packages" : packages,
+										"environments": formData.allowedEnvironments,
+										"id": data['_id'],
 									};
 									var opts = {
 										"method": "put",
 										"routeName": "/urac/admin/group",
-										"params": {"id": data['_id']},
 										"data": postData
 									};
 									if (env && ext){
@@ -469,7 +460,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 											"method": "put",
 											"routeName": "/proxy/redirect",
 											"params": {
-												"id": data['_id'],
 												'proxyRoute': '/urac/admin/group',
 												"extKey": ext
 											},
@@ -531,9 +521,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 						prod = Object.keys(data.config.allowedPackages) ;
 					}
 					let count = 0;
-					let selectablePackages = [];
 					let postData = {};
-					let allowedPackages = {};
 					
 					let modal = $modal.open({
 						templateUrl: "modules/dashboard/members/directives/editGroup.tmpl",
@@ -598,16 +586,25 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 							};
 							$scope.onSubmit = function () {
+								let packages = [];
+								for (let prod in allowedPackages) {
+									if (allowedPackages.hasOwnProperty(prod)) {
+										packages.push({
+											product: prod,
+											packages: allowedPackages[prod]
+										});
+									}
+								}
 								postData = {
 									'name': $scope.formData.name,
 									'code': $scope.formData.code,
 									'description': $scope.formData.description,
-									'packages' : allowedPackages
+									'packages' : packages,
+									"id": data['_id']
 								};
 								var opts = {
 									"method": "put",
 									"routeName": "/urac/admin/group",
-									"params": {"id": data['_id']},
 									"data": postData
 								};
 								if (env && ext){
@@ -615,7 +612,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										"method": "put",
 										"routeName": "/proxy/redirect",
 										"params": {
-											"id": data['_id'],
 											'proxyRoute': '/urac/admin/group',
 											"extKey": ext
 										},

@@ -68,22 +68,21 @@ var membersConfig = {
 		},
 		"adminAll": ['urac', '/admin/all', 'get'],
 		'adminUser': {
-			'list': ['urac', '/admin/listUsers', 'get'],
-			'changeStatusAccess': ['urac', '/admin/changeUserStatus', 'get'],
-			'editUser': ['urac', '/admin/editUser', 'post'],
-			'editUserConfig': ['urac', '/admin/editUserConfig', 'post'],
-			'addUser': ['urac', '/admin/addUser', 'post'],
-			'inviteUser':  ['urac', '/admin/inviteUser', 'post'],
-			'unInviteUser':  ['urac', '/admin/unInviteUser', 'put'],
-			'editUserTenantConfig':  ['urac', '/admin/userTenantConfig', 'put'],
-			'deletePinConfig':  ['urac', '/admin/pinConfig', 'delete'],
+			'list': ['urac', '/admin/users', 'get'],
+			'changeStatusAccess': ['urac', '/admin/user/status', 'get'],
+			'editUser': ['urac', '/admin/user', 'put'],
+			'addUser': ['urac', '/admin/user', 'post'],
+			'inviteUser':  ['urac', '/admin/users/invite', 'put'],
+			'unInviteUser':  ['urac', '/admin/users/uninvite', 'put'],
+			'editPinCode':  ['urac', '/admin/user/pin', 'put'],
+			'editUserGroup':  ['urac', 'admin/user/groups', 'put'],
 		},
 		'adminGroup': {
-			'list': ['urac', '/admin/group/list', 'get'],
-			'add': ['urac', '/admin/group/add', 'post'],
-			'edit': ['urac', '/admin/group/edit', 'post'],
-			'delete': ['urac', '/admin/group/delete', 'delete'],
-			'addUsers': ['urac', '/admin/group/addUsers', 'post']
+			'list': ['urac', '/admin/groups', 'get'],
+			'add': ['urac', '/admin/group', 'post'],
+			'edit': ['urac', '/admin/group', 'put'],
+			'delete': ['urac', '/admin/group', 'delete'],
+			'addUsers': ['urac', '/admin/group', 'post']
 		}
 	}
 };

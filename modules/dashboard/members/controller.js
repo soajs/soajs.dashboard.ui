@@ -155,19 +155,19 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 					$scope.tenantMembers.users = users;
 					if ($scope.tenantMembers.users && $scope.tenantMembers.users[$scope.tId]) {
 						var myUsers = $scope.tenantMembers.users[$scope.tenantMembers.tId].list;
-						membersHelper.printMembers($scope.tenantMembers, membersConfig, myUsers);
+						membersHelper.printMembers($scope.tenantMembers, membersConfig, myUsers, true);
 					}
 				}
 				
 				$scope.tenantMembers.listMembers = function () {
 					membersHelper.listMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
-						membersHelper.printMembers($scope.tenantMembers, membersConfig, response);
+						membersHelper.printMembers($scope.tenantMembers, membersConfig, response, true);
 					});
 				};
 				
 				$scope.tenantMembers.listSubMembers = function () {
 					membersHelper.listSubMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
-						membersHelper.printMembers($scope.tenantMembers, membersConfig, response);
+						membersHelper.printMembers($scope.tenantMembers, membersConfig, response, true);
 					});
 				};
 				
@@ -189,6 +189,10 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 				
 				$scope.tenantMembers.editSubMember = function (data) {
 					membersHelper.editSubMember($scope.tenantMembers, membersConfig, data, false, env, ext);
+				};
+				
+				$scope.tenantMembers.editMemberPin = function (data) {
+					membersHelper.editMemberPin($scope.tenantMembers, membersConfig, data, false, env, ext);
 				};
 				
 				$scope.tenantMembers.activateMembers = function () {
@@ -381,13 +385,13 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 					$scope.subTenantMembers.mainTenant = mainTenantRecord;
 					if ($scope.subTenantMembers.users && $scope.subTenantMembers.users[$scope.tId]) {
 						let myUsers = $scope.subTenantMembers.users[$scope.subTenantMembers.tId].list;
-						membersHelper.printMembers($scope.subTenantMembers, membersConfig, myUsers);
+						membersHelper.printMembers($scope.subTenantMembers, membersConfig, myUsers, true);
 					}
 				}
 				
 				$scope.subTenantMembers.listSubMembers = function () {
 					membersHelper.listSubMembers($scope.subTenantMembers, membersConfig, env, mainExt, function (response) {
-						membersHelper.printMembers($scope.subTenantMembers, membersConfig, response);
+						membersHelper.printMembers($scope.subTenantMembers, membersConfig, response, true);
 					});
 				};
 				
@@ -401,6 +405,10 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				
 				$scope.subTenantMembers.editSubMember = function (data) {
 					membersHelper.editSubMember($scope.subTenantMembers, membersConfig, data, false, env, subExt);
+				};
+				
+				$scope.subTenantMembers.editSubMemberPin = function (data) {
+					membersHelper.editSubMemberPin($scope.subTenantMembers, membersConfig, data, false, env, subExt);
 				};
 				$scope.subTenantMembers.removePin = function (data) {
 					membersHelper.removePin($scope.subTenantMembers, membersConfig, data, env, subExt);

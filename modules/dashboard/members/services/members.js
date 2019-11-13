@@ -3,13 +3,13 @@ var membersService = soajsApp.components;
 membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', function (ngDataApi, $timeout, $modal) {
 	
 	function listMembers(currentScope, moduleConfig, env, ext, callback) {
-		var userCookie = currentScope.$parent.userCookie;
-		var tenantId = (callback) ? currentScope.tId : userCookie.tenant.id;
 		var opts = {
 			"method": "get",
 			"routeName": "/urac/admin/users"
 		};
+		let proxy= false;
 		if (env && ext){
+			proxy =true;
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
@@ -37,14 +37,14 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					return callback(response);
 				}
 				else {
-					printMembers(currentScope, moduleConfig, response);
+					printMembers(currentScope, moduleConfig, response, proxy);
 				}
 			}
 		});
 	}
 	
 	function listSubMembers(currentScope, moduleConfig, env, ext, callback) {
-		let mainTenantId = currentScope.mainTenant._id;
+		let proxy= false;
 		let tenantId = currentScope.tenant._id;
 		var opts = {
 			"method": "get",
@@ -52,6 +52,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			"params": {"config": true}
 		};
 		if (env && ext){
+			proxy =true;
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
@@ -93,13 +94,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					return callback(users);
 				}
 				else {
-					printMembers(currentScope, moduleConfig, users);
+					printMembers(currentScope, moduleConfig, users, proxy);
 				}
 			}
 		});
 	}
 
-	function printMembers(currentScope, moduleConfig, response) {
+	function printMembers(currentScope, moduleConfig, response, proxy) {
 		for (var x = 0; x < response.length; x++) {
 			if (response[x].groups) {
 				response[x].grpsArr = response[x].groups.join(', ');
@@ -124,8 +125,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'handler': 'editMember'
 			});
 		}
-		
-		if (currentScope.access.adminUser.editUserTenantConfig && currentScope.tenant
+		if (currentScope.access.adminUser.editUserGroup && currentScope.tenant
 			&& currentScope.tenant.type === 'client') {
 			options.left.push({
 				'label': translation.edit[LANG],
@@ -133,7 +133,21 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'handler': 'editSubMember'
 			});
 		}
-		if (currentScope.access.adminUser.deletePinConfig && currentScope.tenant
+		if (proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type === 'client') {
+			options.left.push({
+				'label': translation.edit[LANG],
+				'icon': 'calculator',
+				'handler': 'editSubMemberPin'
+			});
+		}
+		if (proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type !== 'client') {
+			options.left.push({
+				'label': translation.edit[LANG],
+				'icon': 'calculator',
+				'handler': 'editMemberPin'
+			});
+		}
+		if (currentScope.access.adminUser.editPinCode && currentScope.tenant
 			&& currentScope.tenant.type === 'client') {
 			options.left.push({
 				'label': translation.removePin[LANG],
@@ -204,7 +218,8 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				for (var x = 0; x < response.length; x++) {
 					grps.push({'v': response[x].code, 'l': response[x].name, 'selected': false});
 				}
-				config.entries.push({
+				if (env && ext){
+					config.entries.push({
 						'name': 'pinConfiguration',
 						'type': 'group',
 						'label': translation.pinConfiguration[LANG],
@@ -226,7 +241,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								'required': false
 							}
 						]
-				});
+					});
+				}
+				
 				let groupEntry = {
 					'name': 'groups',
 					'label': translation.groups[LANG],
@@ -432,7 +449,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							};
 							if (env && ext){
 								opts = {
-									"method": "post",
+									"method": "put",
 									"routeName": "/proxy/redirect",
 									"params": {
 										'proxyRoute': "/urac/admin/users/invite",
@@ -447,7 +464,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								};
 							}
 							let userRecord = {
+								user : {
 								username : $scope.formData.username,
+								}
 							};
 							if ($scope.formData.group){
 								userRecord.groups = [$scope.formData.group]
@@ -552,7 +571,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			opts = {
 				"method": "get",
 				"routeName": "/proxy/redirect",
-				"para ms": {
+				"params": {
 					'proxyRoute': '/urac/admin/groups',
 					"extKey": ext
 				},
@@ -582,29 +601,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					sel = datagroups.indexOf(response[x].code) > -1;
 					grps.push({'v': response[x].code, 'l': response[x].name, 'selected': sel});
 				}
-				config.entries.push({
-					'name': 'pinConfiguration',
-					'type': 'group',
-					'label': translation.pinConfiguration[LANG],
-					'entries': [
-						{
-							'name': 'pinCode',
-							'label': 'PIN',
-							'type': 'buttonSlider',
-							'value': data.tenant.pin ? data.tenant.pin.code: null,
-							'tooltip': 'Check to add Pin Code',
-							'required': false
-						},
-						{
-							'name': 'allowedLogin',
-							'label': 'Check if this user is allowed to start Pin Code login:',
-							'type': 'buttonSlider',
-							'value': data.tenant.pin?data.tenant.pin.allowed: false,
-							'tooltip': 'Check if this user is allowed to start Pin Code login:',
-							'required': false
-						}
-					]
-				});
 				let groupEntry = {
 					'name': 'groups',
 					'label': translation.groups[LANG],
@@ -680,44 +676,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 										currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 									}
 									else {
-										postData = {
-											user: {
-												username: formData.username
-											},
-											pin : {
-												reset : !!formData.pinCode,
-												allowed: !!formData.allowedLogin
-											}
-										};
-										opts = {
-											"method": "put",
-											"routeName": "/urac/admin/user/pin",
-											"data": postData
-										};
-										if (env && ext){
-											opts = {
-												"method": "put",
-												"routeName": "/proxy/redirect",
-												"params": {
-													'proxyRoute': '/urac/admin/user/pin',
-													"extKey": ext
-												},
-												"headers": {
-													"__env": env
-												},
-												"data": postData
-											};
-										}
-										getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
-											if (error) {
-												currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-											} else {
-												currentScope.$parent.displayAlert('success', translation.memberUpdatedSuccessfully[LANG]);
-												currentScope.modalInstance.close();
-												currentScope.form.formData = {};
-												currentScope.listMembers();
-											}
-										});
+										currentScope.$parent.displayAlert('success', translation.memberUpdatedSuccessfully[LANG]);
+										currentScope.modalInstance.close();
+										currentScope.form.formData = {};
+										currentScope.listMembers();
 									}
 								});
 							}
@@ -749,7 +711,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"method": "get",
 				"routeName": "/proxy/redirect",
 				"params": {
-					'proxyRoute': '/urac/admin/group/list',
+					'proxyRoute': '/urac/admin/groups',
 					"extKey": subExt
 				},
 				"headers": {
@@ -814,22 +776,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						$scope.groups = groups;
 						$scope.username = data.username;
 						$scope.email = data.email;
-						if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
-							if (index !== -1){
-								if (data.config.allowedTenants[index].tenant){
-									if (data.config.allowedTenants[index].tenant.pin) {
-										if (data.config.allowedTenants[index].tenant.pin.hasOwnProperty("allowed")) {
-											$scope.allowedLogin = data.config.allowedTenants[index].tenant.pin.allowed;
-										}
-									}
-								}
-							}
-						}
 						$scope.formData = {};
 						$scope.onSubmit= function () {
 							let opts ={
 								"method": "put",
-								"routeName": "/urac/admin/user/pin",
+								"routeName": "/urac/admin/user/groups",
 								"data": {
 									"user": {username : $scope.username}
 								}
@@ -839,7 +790,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"method": "put",
 									"routeName": "/proxy/redirect",
 									"params": {
-										'proxyRoute': '/urac/admin/user/pin',
+										'proxyRoute': '/urac/admin/user/groups',
 										"extKey": subExt
 									},
 									"headers": {
@@ -851,15 +802,17 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								};
 							}
 							
-							opts.data.pin = {
-								reset: !$scope.formData.pinCode,
-								allowed: !!$scope.formData.allowLogin
-							};
 							if (currentScope.key) {
 								if (!opts.headers) {
 									opts.headers = {};
 								}
 								opts.headers.key = currentScope.key;
+							}
+							if ($scope.formData.group){
+								opts.data.groups = [$scope.formData.group];
+							}
+							else {
+								opts.data.groups = [];
 							}
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
@@ -867,48 +820,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									overlayLoading.hide();
 									$scope.displayAlert('danger', error.message);
 								} else if (response) {
-									if ($scope.formData.group) {
-										let opts ={
-											"method": "put",
-											"routeName": "/urac/admin/user/groups",
-											"data": {
-												"user": {username : $scope.username}
-											}
-										};
-										if (env && subExt){
-											opts = {
-												"method": "put",
-												"routeName": "/proxy/redirect",
-												"params": {
-													'proxyRoute': '/urac/admin/user/groups',
-													"extKey": subExt
-												},
-												"headers": {
-													"__env": env
-												},
-												"data": {
-													"user": {username : $scope.username}
-												}
-											};
-										}
-										opts.data.groups = [$scope.formData.group];
-										getSendDataFromServer(currentScope, ngDataApi, opts, function (error, result) {
-											overlayLoading.hide();
-											if (error) {
-												$scope.displayAlert('danger', error.message);
-											} else if (result) {
-												currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
-												currentScope.listSubMembers();
-												modal.close();
-											}
-										});
-									}
-									else {
-										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
-										overlayLoading.hide();
-										currentScope.listSubMembers();
-										modal.close();
-									}
+									currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+									overlayLoading.hide();
+									currentScope.listSubMembers();
+									modal.close();
 								}
 							});
 						};
@@ -918,6 +833,178 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						};
 					}
 				});
+			}
+		});
+	}
+	
+	function editSubMemberPin(currentScope, moduleConfig, data, useCookie, env, subExt) {
+		let index;
+		if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
+			index = data.config.allowedTenants.map(x => {
+				return x.tenant.id;
+			}).indexOf(currentScope.tenant['_id']);
+		}
+		let modal = $modal.open({
+			templateUrl: "modules/dashboard/members/directives/editInviteUserPin.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope) {
+				fixBackDrop();
+				$scope.title = 'Edit User Pin';
+				$scope.message = {};
+				$scope.displayAlert = function (type, message) {
+					$scope.message[type] = message;
+					$timeout(() => {
+						$scope.message = {};
+					}, 5000);
+				};
+				$scope.username = data.username;
+				$scope.email = data.email;
+				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
+					if (index !== -1){
+						if (data.config.allowedTenants[index].tenant){
+							if (data.config.allowedTenants[index].tenant.pin) {
+								if (data.config.allowedTenants[index].tenant.pin.hasOwnProperty("allowed")) {
+									$scope.allowedLogin = data.config.allowedTenants[index].tenant.pin.allowed;
+								}
+							}
+						}
+					}
+				}
+				$scope.formData = {};
+				$scope.onSubmit= function () {
+					let opts ={
+						"method": "put",
+						"routeName": "/urac/admin/user/pin",
+						"data": {
+							"user": {username : $scope.username}
+						}
+					};
+					if (env && subExt){
+						opts = {
+							"method": "put",
+							"routeName": "/proxy/redirect",
+							"params": {
+								'proxyRoute': '/urac/admin/user/pin',
+								"extKey": subExt
+							},
+							"headers": {
+								"__env": env
+							},
+							"data": {
+								"user": {username : $scope.username}
+							}
+						};
+					}
+					
+					opts.data.pin = {
+						reset: $scope.formData.pinCode,
+						allowed: !!$scope.formData.allowLogin
+					};
+					if (currentScope.key) {
+						if (!opts.headers) {
+							opts.headers = {};
+						}
+						opts.headers.key = currentScope.key;
+					}
+					overlayLoading.show();
+					getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+						if (error) {
+							overlayLoading.hide();
+							$scope.displayAlert('danger', error.message);
+						} else if (response) {
+							currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+							overlayLoading.hide();
+							currentScope.listSubMembers();
+							modal.close();
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					modal.close();
+				};
+			}
+		});
+	}
+	
+	function editMemberPin(currentScope, moduleConfig, data, useCookie, env, ext) {
+		let modal = $modal.open({
+			templateUrl: "modules/dashboard/members/directives/editInviteUserPin.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope) {
+				fixBackDrop();
+				$scope.title = 'Edit User Pin';
+				$scope.message = {};
+				$scope.displayAlert = function (type, message) {
+					$scope.message[type] = message;
+					$timeout(() => {
+						$scope.message = {};
+					}, 5000);
+				};
+				$scope.username = data.username;
+				$scope.email = data.email;
+				if (data.tenant && data.tenant.pin){
+					if ( data.tenant.pin.hasOwnProperty("allowed")) {
+						$scope.allowedLogin =  data.tenant.pin.allowed;
+					}
+				}
+				$scope.formData = {};
+				$scope.onSubmit= function () {
+					let opts ={
+						"method": "put",
+						"routeName": "/urac/admin/user/pin",
+						"data": {
+							"user": {username : $scope.username}
+						}
+					};
+					if (env && ext){
+						opts = {
+							"method": "put",
+							"routeName": "/proxy/redirect",
+							"params": {
+								'proxyRoute': '/urac/admin/user/pin',
+								"extKey": ext
+							},
+							"headers": {
+								"__env": env
+							},
+							"data": {
+								"user": {username : $scope.username}
+							}
+						};
+					}
+					
+					opts.data.pin = {
+						reset: $scope.formData.pinCode,
+						allowed: !!$scope.formData.allowLogin
+					};
+					if (currentScope.key) {
+						if (!opts.headers) {
+							opts.headers = {};
+						}
+						opts.headers.key = currentScope.key;
+					}
+					overlayLoading.show();
+					getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+						if (error) {
+							overlayLoading.hide();
+							$scope.displayAlert('danger', error.message);
+						} else if (response) {
+							currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+							overlayLoading.hide();
+							currentScope.listMembers();
+							modal.close();
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					modal.close();
+				};
 			}
 		});
 	}
@@ -1050,6 +1137,8 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		'addMember': addMember,
 		'editMember': editMember,
 		'editSubMember': editSubMember,
+		'editSubMemberPin': editSubMemberPin,
+		'editMemberPin': editMemberPin,
 		'activateMembers': activateMembers,
 		'deactivateMembers': deactivateMembers,
 		'removePin': removePin

@@ -231,11 +231,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	};
 
 	function proceedWithForm(currentScope, mainFormConfig, data, submitAction) {
-		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0
+		var envCounter = 0, volumeCounter = 0, portCounter = 0, labelCounter = 0;
 		
-		if (["service"].indexOf(data.type) === -1){
-			mainFormConfig[5].tabs[6].entries.pop();
-		}
 		if (data.type !== 'server' && mainFormConfig[5].tabs[1].entries[2]) {
 			mainFormConfig[5].tabs[1].entries.pop();
 		}
@@ -1300,7 +1297,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 										}
 									}
 									//remove from entries
-									form.entries[5].tabs[5].entries.splice(i, 1);
+									form.entries[5].tabs[6].entries.splice(i, 1);
 									break;
 								}
 							}
@@ -1363,7 +1360,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 										}
 									}
 									//remove from entries
-									form.entries[5].tabs[6].entries.splice(i, 1);
+									form.entries[5].tabs[7].entries.splice(i, 1);
 									break;
 								}
 							}
@@ -1414,7 +1411,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 										}
 									}
 									//remove from formEntries
-									form.entries[5].tabs[7].entries.splice(i, 1);
+									form.entries[5].tabs[8].entries.splice(i, 1);
 									break;
 								}
 							}
@@ -1705,7 +1702,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 				else if (!data.recipe.deployOptions.voluming || (data.recipe.deployOptions.voluming || data.recipe.deployOptions.voluming.length === 0 )) {
-					modalScope.form.entries[5].tabs[5].entries.splice(modalScope.form.entries[5].tabs[6].entries.length - 1, 0, {
+					modalScope.form.entries[5].tabs[6].entries.splice(modalScope.form.entries[5].tabs[6].entries.length - 1, 0, {
 						'type': 'html',
 						'value': "<br /><div class='alert alert-warning'>No Volumes Configured for this Recipe.</div><br />"
 					});

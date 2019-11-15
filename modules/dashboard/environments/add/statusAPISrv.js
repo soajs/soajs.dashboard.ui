@@ -159,7 +159,7 @@ statusServices.service('statusAPISrv', ['ngDataApi', '$timeout', '$modal', '$loc
 
 	function appendGroupEnvs (currentScope, callback){
 		var options = {
-			"method": "post",
+			"method": "put",
 			"routeName": "/urac/admin/groups/environments",
 			"data": {
 				"groups": $localStorage.soajs_user.groups,

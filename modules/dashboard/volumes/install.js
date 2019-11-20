@@ -12,7 +12,7 @@ var volumesNav = [
 	    "fallbackLocation": "#/environments",
         'url': '#/volumes',
         'tplPath': 'modules/dashboard/volumes/directives/list.tmpl',
-        'icon': 'eye-blocked',
+        'icon': 'folder',
         'pillar': {
             'name': 'deployment',
             'label': translation.secrets[LANG],

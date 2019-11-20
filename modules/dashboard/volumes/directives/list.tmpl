@@ -1,0 +1,47 @@
+<script type="text/ng-template" id="newVolume.tmpl">
+	<div class="form">
+		<div class="modal-header">
+			<h3 class="modal-title">Create New Volume</h3>
+		</div>
+		<div class="">
+			<ngform></ngform>
+		</div>
+	</div>
+</script>
+
+<section ng-controller="volumesAppCtrl" class="volumesAppCtrl">
+
+	<div class="f-right searchBoxContainer" style="width:9% !important">
+		<button class="btn btn-success f-right" ng-click="listVolumes()">
+			Refresh&nbsp;&nbsp;<span class="icon icon-loop2"></span>
+		</button>
+	</div>
+
+	<div class="f-right">
+		<span ng-if="envPlatform === 'kubernetes' && namespaces.length > 0">
+			<span class="w100">
+				<select class="form-control" ng-options="namespace.id as namespace.name for namespace in namespaces" ng-model="namespaceConfig.namespace" ng-change="listVolumes(namespace.name)"></select>&nbsp;&nbsp;
+			</span>
+		</span>
+	</div>
+
+	<div>
+		<button class="btn btn-primary" type="button" aria-haspopup="true" aria-expanded="true" ng-click="addVolume()">
+			Add New Volume
+		</button>
+	</div>
+
+	<div ng-if="volumes && volumes.length === 0">
+		<br />
+		<br />
+		<alert type="warning">No volumes found</alert>
+	</div>
+
+	<div ng-if="access.list">
+		<div ng-if="volumes && volumes.length > 0" class="entryBoxes">
+			<nglist></nglist>
+		</div>
+	</div>
+
+
+</section>

@@ -78,7 +78,8 @@ var modules = {
 		"dashboard": {
 			environments: 'modules/dashboard/environments/install.js',
 			resources: 'modules/dashboard/resources/install.js',
-			secrets: 'modules/dashboard/secrets/install.js'
+			secrets: 'modules/dashboard/secrets/install.js',
+			volumes: 'modules/dashboard/volumes/install.js'
 		}
 	},
 	"dashboard": {

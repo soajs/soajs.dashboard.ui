@@ -48,7 +48,7 @@ volumesApp.service('volumesService', ['ngDataApi', '$timeout', '$window', functi
 				name: formData.name,
 				namespace: formData.namespace,
 				env: currentScope.selectedEnvironment.code,
-				storage: formData.storage,
+				storage: formData.storage + "Gi",
 				accessModes: formData.accessModes
 			};
 			

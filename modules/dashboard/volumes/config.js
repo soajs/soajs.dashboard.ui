@@ -7,13 +7,15 @@ var volumesAppConfig = {
 				'name': 'name',
 				'label': 'Name',
 				'type': 'text',
-				'required': true
+				'required': true,
+				'pattern': '^[A-Za-z0-9]+$'
 			},
 			{
 				'name': 'storage',
 				'label': 'Storage',
 				'fieldMsg': "Size is in GB (GigaBytes)",
-				'type': 'text',
+				'value': '1',
+				'type': 'number',
 				'required': true
 			},
 			{

@@ -52,8 +52,6 @@ volumesApp.service('volumesService', ['ngDataApi', '$timeout', '$window', functi
 				accessModes: formData.accessModes
 			};
 			
-			console.log(input);
-			
 			$modalInstance.close();
 			
 			getSendDataFromServer(currentScope, ngDataApi, {

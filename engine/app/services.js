@@ -721,7 +721,7 @@ soajsApp.service("aclDrawHelpers", function () {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
 									for (let method in service) {
-										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission"].indexOf(method) === -1) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
 											aclEnvObj[serviceName][version][method] = [];
 											for (let group in service[method]) {
 												if (service[method][group] && service[method][group].apis) {

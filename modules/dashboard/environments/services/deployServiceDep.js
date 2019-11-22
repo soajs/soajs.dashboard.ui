@@ -507,12 +507,10 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 									newCatalogInput.fields[1].value = $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom.env[envVariable].key;
 								}
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
-								if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
-									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = {
-										secret: catalogRecipe.recipe.buildOptions.env[envVariable].secret || "",
-										key: catalogRecipe.recipe.buildOptions.env[envVariable].key || ""
-									};
-								}
+								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = {
+									secret: catalogRecipe.recipe.buildOptions.env[envVariable].secret || "",
+									key: catalogRecipe.recipe.buildOptions.env[envVariable].key || ""
+								};
 							}
 						}
 						if (Object.keys($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env).length === 0) {

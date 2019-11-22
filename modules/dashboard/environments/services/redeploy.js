@@ -57,230 +57,257 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 				currentScope.displayAlert('danger', error.message);
 			}
 			else {
-				var formConfig = {
-					entries: [
-						{
-							"type": "group",
-							"label": "Deployment Options",
-							"entries": []
-						}
-					]
-				};
-
-				if (catalogRecipe.recipe.deployOptions.image.override) {
-					//append images
-					formConfig.entries[0].entries.push({
-						'name': "ImagePrefix",
-						'label': "Image Prefix",
-						'type': 'text',
-						'value': catalogRecipe.recipe.deployOptions.image.prefix,
-						'fieldMsg': "Override the image prefix if you want"
-					});
-
-					formConfig.entries[0].entries.push({
-						'name': "ImageName",
-						'label': "Image Name",
-						'type': 'text',
-						'value': catalogRecipe.recipe.deployOptions.image.name,
-						'fieldMsg': "Override the image name if you want"
-					});
-
-					formConfig.entries[0].entries.push({
-						'name': "ImageTag",
-						'label': "Image Tag",
-						'type': 'text',
-						'value': catalogRecipe.recipe.deployOptions.image.tag,
-						'fieldMsg': "Override the image tag if you want"
-					});
-				}
-
-				let nodePort =0, LoadBalancer=0;
-				if(service.catalogUpdate){
-					service.ports = catalogRecipe.recipe.deployOptions.ports;
-				}
-
-				if (service.ports && Array.isArray(service.ports) && service.ports.length > 0){
-					//let ports = [];
-					if(catalogRecipe.recipe.deployOptions && catalogRecipe.recipe.deployOptions.ports && Array.isArray(catalogRecipe.recipe.deployOptions.ports)){
-						catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
-							if (oneCatalogPort.isPublished || oneCatalogPort.published){
-								if (oneCatalogPort.published){
-									nodePort++;
-								}
-								else {
-									LoadBalancer++;
-								}
+				getSendDataFromServer(currentScope, ngDataApi, {
+					'method': 'get',
+					'routeName': '/dashboard/secrets/list',
+					'params': {
+						env : currentScope.envCode
+					}
+				}, function (error, secrets) {
+					if (error) {
+						currentScope.displayAlert('danger', error.message);
+					} else {
+						currentScope.secrets = [];
+						secrets.forEach((oneSecret) => {
+							if (oneSecret.namespace === currentScope.envCode.toLowerCase()) {
+								currentScope.secrets.push({'v': oneSecret.name, 'l': oneSecret.name});
 							}
-							service.ports.forEach(function (oneServicePort) {
-								if (oneServicePort.published && oneServicePort.published > 30000){
-									oneServicePort.published -= 30000;
-								}
-								if (oneCatalogPort.target === oneServicePort.target){
-									oneServicePort.name = oneCatalogPort.name;
-								}
-							});
 						});
-					}
-
-					let publishedPortEntry = {
-						"type": "group",
-						"label": "Published Ports",
-						"entries": []
-					};
-
-					if (LoadBalancer > 0){
-						publishedPortEntry.entries.push({
-							'type': 'html',
-							'value': '<label>Load Balancer</label> <label class="toggleSwitch f-right"><input type="checkbox"  disabled=true checked=true><span class="buttonSlider round"></span></label> <label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>'
-						});
-					}
-					if(nodePort > 0) {
-						if (!formConfig.data) {
-							formConfig.data = {};
-						}
-						formConfig.data.ports = [];
-						service.ports.forEach(function (onePort, key) {
-							formConfig.data.ports.push({
-								"name": onePort.name,
-								"target": parseInt(onePort.target),
-								"preserveClientIP": onePort.preserveClientIP
-							});
-
-							if(onePort.published) {
-								formConfig.data.ports[key].isPublished = true;
-								formConfig.data.ports[key].published = parseInt(onePort.published);
-								publishedPortEntry.entries.push({
-									"name": "group-" + onePort.protocol,
-									"label": onePort.name + ":" + onePort.target,
+						let formConfig = {
+							entries: [
+								{
 									"type": "group",
-									"entries": [{
-										'name': onePort.name+onePort.target,
-										'type': 'number',
-										'label': 'Published Port',
-										'value': parseInt(onePort.published),
-										'fieldMsg': "Detected Published Port: " + onePort.name + " with internal value " + onePort.target + ". Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.",
-										"min": 1,
-										"max": 2767
-									}]
-								});
-								formConfig.data[onePort.name+onePort.target] = parseInt(onePort.published);
-							}
-
-						});
-					}
-					if(nodePort > 0 || LoadBalancer > 0){
-						formConfig.entries[0].entries.push(publishedPortEntry);
-					}
-				}
-
-				if (LoadBalancer !== 0 && nodePort !== 0){
-					$modal.open({
-						templateUrl: "portConfigurationReDepoly.tmpl",
-						size: 'm',
-						backdrop: true,
-						keyboard: true,
-						controller: function ($scope, $modalInstance) {
-							fixBackDrop();
-							$scope.currentScope = currentScope;
-							$scope.title = 'Port Configuration';
-							$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + catalogRecipe.name;
-							$scope.closeModal = function () {
-								$modalInstance.close();
-							};
-						}
-					});
-				}
-				else {
-					for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
-						if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
-
-							var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
-							//todo: get value from service.env
-							service.env.forEach(function (oneEnv) {
-								if (oneEnv.indexOf(envVariable) !== -1) {
-									defaultValue = oneEnv.split("=")[1];
+									"label": "Deployment Options",
+									"entries": []
 								}
-							});
-							//push a new input for this variable
-							var newInput = {
-								'name': '_ci_' + envVariable,
-								'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
+							]
+						};
+						
+						if (catalogRecipe.recipe.deployOptions.image.override) {
+							//append images
+							formConfig.entries[0].entries.push({
+								'name': "ImagePrefix",
+								'label': "Image Prefix",
 								'type': 'text',
-								'value': defaultValue,
-								'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
-								'required': false
-							};
-
-							//if the default value is ***, clear the value and set the field as required
-							//this is applicable for tokens whose values are masked by *
-							if (newInput.value.match(/^\*+$/g)) {
-								newInput.value = '';
-								newInput.required = true;
-							}
-
-							formConfig.entries[0].entries.push(newInput);
+								'value': catalogRecipe.recipe.deployOptions.image.prefix,
+								'fieldMsg': "Override the image prefix if you want"
+							});
+							
+							formConfig.entries[0].entries.push({
+								'name': "ImageName",
+								'label': "Image Name",
+								'type': 'text',
+								'value': catalogRecipe.recipe.deployOptions.image.name,
+								'fieldMsg': "Override the image name if you want"
+							});
+							
+							formConfig.entries[0].entries.push({
+								'name': "ImageTag",
+								'label': "Image Tag",
+								'type': 'text',
+								'value': catalogRecipe.recipe.deployOptions.image.tag,
+								'fieldMsg': "Override the image tag if you want"
+							});
 						}
-					}
-					for (var envVariableS in catalogRecipe.recipe.buildOptions.env) {
-						if (catalogRecipe.recipe.buildOptions.env[envVariableS].type === 'secret') {
-							var defaultValueS = catalogRecipe.recipe.buildOptions.env[envVariableS].default || '';
-							//todo: get value from service.env
-							service.env.forEach(function (oneEnv) {
-								if (oneEnv.indexOf(envVariableS) !== -1) {
-									defaultValueS = oneEnv.split("=")[1];
+						
+						let nodePort =0, LoadBalancer=0;
+						if(service.catalogUpdate){
+							service.ports = catalogRecipe.recipe.deployOptions.ports;
+						}
+						
+						if (service.ports && Array.isArray(service.ports) && service.ports.length > 0){
+							//let ports = [];
+							if(catalogRecipe.recipe.deployOptions && catalogRecipe.recipe.deployOptions.ports && Array.isArray(catalogRecipe.recipe.deployOptions.ports)){
+								catalogRecipe.recipe.deployOptions.ports.forEach((oneCatalogPort) =>{
+									if (oneCatalogPort.isPublished || oneCatalogPort.published){
+										if (oneCatalogPort.published){
+											nodePort++;
+										}
+										else {
+											LoadBalancer++;
+										}
+									}
+									service.ports.forEach(function (oneServicePort) {
+										if (oneServicePort.published && oneServicePort.published > 30000){
+											oneServicePort.published -= 30000;
+										}
+										if (oneCatalogPort.target === oneServicePort.target){
+											oneServicePort.name = oneCatalogPort.name;
+										}
+									});
+								});
+							}
+							
+							let publishedPortEntry = {
+								"type": "group",
+								"label": "Published Ports",
+								"entries": []
+							};
+							
+							if (LoadBalancer > 0){
+								publishedPortEntry.entries.push({
+									'type': 'html',
+									'value': '<label>Load Balancer</label> <label class="toggleSwitch f-right"><input type="checkbox"  disabled=true checked=true><span class="buttonSlider round"></span></label> <label class="fieldMsg">This recipe allows LoadBalancer port configuration only.</label>'
+								});
+							}
+							if(nodePort > 0) {
+								if (!formConfig.data) {
+									formConfig.data = {};
+								}
+								formConfig.data.ports = [];
+								service.ports.forEach(function (onePort, key) {
+									formConfig.data.ports.push({
+										"name": onePort.name,
+										"target": parseInt(onePort.target),
+										"preserveClientIP": onePort.preserveClientIP
+									});
+									
+									if(onePort.published) {
+										formConfig.data.ports[key].isPublished = true;
+										formConfig.data.ports[key].published = parseInt(onePort.published);
+										publishedPortEntry.entries.push({
+											"name": "group-" + onePort.protocol,
+											"label": onePort.name + ":" + onePort.target,
+											"type": "group",
+											"entries": [{
+												'name': onePort.name+onePort.target,
+												'type': 'number',
+												'label': 'Published Port',
+												'value': parseInt(onePort.published),
+												'fieldMsg': "Detected Published Port: " + onePort.name + " with internal value " + onePort.target + ". Enter a value if you want to expose this resource to a specific port; Port values are limited to a range between 0 and 2767.",
+												"min": 1,
+												"max": 2767
+											}]
+										});
+										formConfig.data[onePort.name+onePort.target] = parseInt(onePort.published);
+									}
+									
+								});
+							}
+							if(nodePort > 0 || LoadBalancer > 0){
+								formConfig.entries[0].entries.push(publishedPortEntry);
+							}
+						}
+						
+						if (LoadBalancer !== 0 && nodePort !== 0){
+							$modal.open({
+								templateUrl: "portConfigurationReDepoly.tmpl",
+								size: 'm',
+								backdrop: true,
+								keyboard: true,
+								controller: function ($scope, $modalInstance) {
+									fixBackDrop();
+									$scope.currentScope = currentScope;
+									$scope.title = 'Port Configuration';
+									$scope.message = 'Unable to proceed, Detected port conflict in Catalog recipe: ' + catalogRecipe.name;
+									$scope.closeModal = function () {
+										$modalInstance.close();
+									};
 								}
 							});
-							//push a new input for this variable
-							try {
-								let data = JSON.parse(defaultValueS);
-								let label = catalogRecipe.recipe.buildOptions.env[envVariableS].label || envVariableS;
-								var secretEnv = [
-									{
-										'type': 'html',
-										'name': 'hr' + envVariableS,
-										'value': '<hr>'
-									},
-									{
-										'type': 'html',
-										'name': 'name' + envVariableS,
-										'value': `<h4>${label}</h4>`
-									},
-									{
-										'name': '_cis_' + envVariableS,
-										'label': 'Secret',
+						}
+						else {
+							for (var envVariable in catalogRecipe.recipe.buildOptions.env) {
+								if (catalogRecipe.recipe.buildOptions.env[envVariable].type === 'userInput') {
+									
+									var defaultValue = catalogRecipe.recipe.buildOptions.env[envVariable].default || '';
+									//todo: get value from service.env
+									service.env.forEach(function (oneEnv) {
+										if (oneEnv.indexOf(envVariable) !== -1) {
+											defaultValue = oneEnv.split("=")[1];
+										}
+									});
+									//push a new input for this variable
+									var newInput = {
+										'name': '_ci_' + envVariable,
+										'label': catalogRecipe.recipe.buildOptions.env[envVariable].label || envVariable,
 										'type': 'text',
-										'value': data.secretKeyRef.name,
-										'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
+										'value': defaultValue,
+										'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariable].fieldMsg,
 										'required': false
-									},
-									{
-										'name': '_cik_' + envVariableS,
-										'label': 'Key',
-										'type': 'text',
-										'value': data.secretKeyRef.key,
-										'fieldMsg': catalogRecipe.recipe.buildOptions.env[envVariableS].fieldMsg,
-										'required': false
-									}];
-								if (formConfig.entries[0].entries.length === 0){
-									secretEnv.shift();
+									};
+									
+									//if the default value is ***, clear the value and set the field as required
+									//this is applicable for tokens whose values are masked by *
+									if (newInput.value.match(/^\*+$/g)) {
+										newInput.value = '';
+										newInput.required = true;
+									}
+									
+									formConfig.entries[0].entries.push(newInput);
 								}
-								formConfig.entries[0].entries = formConfig.entries[0].entries.concat(secretEnv);
 							}
-							catch (e) {
-								console.log(e);
+							for (var envVariableS in catalogRecipe.recipe.buildOptions.env) {
+								if (catalogRecipe.recipe.buildOptions.env[envVariableS].type === 'secret') {
+									let defaultValueS = '';
+									//todo: get value from service.env
+									service.env.forEach(function (oneEnv) {
+										if (oneEnv.indexOf(envVariableS) !== -1) {
+											defaultValueS = oneEnv.split("=")[1];
+										}
+									});
+									
+									//push a new input for this variable
+									try {
+										let data = {};
+										let original = angular.copy(currentScope.secrets);
+										if(defaultValueS){
+											data = JSON.parse(defaultValueS);
+											original.forEach((oneSecret)=>{
+												if ( data.secretKeyRef && oneSecret.l === data.secretKeyRef.name){
+													oneSecret.selected = data.secretKeyRef.name;
+												}
+											});
+										}
+										
+										let label = catalogRecipe.recipe.buildOptions.env[envVariableS].label || envVariableS;
+										var secretEnv = [
+											{
+												'type': 'html',
+												'name': 'hr' + envVariableS,
+												'value': '<hr>'
+											},
+											{
+												'type': 'html',
+												'name': 'name' + envVariableS,
+												'value': `<h4>${label}</h4>`
+											},
+											{
+												'name': '_cis_' + envVariableS,
+												'label': 'Secret',
+												'type': 'select',
+												'value': original,
+												'required': true
+											},
+											{
+												'name': '_cik_' + envVariableS,
+												'label': 'Key',
+												'type': 'text',
+												'value': data.secretKeyRef ? data.secretKeyRef.key : null,
+												'required': true
+											}];
+										if (formConfig.entries[0].entries.length === 0){
+											secretEnv.shift();
+										}
+										formConfig.entries[0].entries = formConfig.entries[0].entries.concat(secretEnv);
+									}
+									catch (e) {
+										console.log(e);
+									}
+								}
 							}
+							
+							checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
+								for (let i = formConfig.entries.length - 1; i >= 0; i--) {
+									if (formConfig.entries[i].entries.length === 0) {
+										formConfig.entries.splice(i, 1);
+									}
+								}
+								checkifRepoBranch(accounts, catalogRecipe, formConfig);
+							});
 						}
 					}
-
-					checkForSourceCode(formConfig, catalogRecipe, (accounts) => {
-						for (let i = formConfig.entries.length - 1; i >= 0; i--) {
-							if (formConfig.entries[i].entries.length === 0) {
-								formConfig.entries.splice(i, 1);
-							}
-						}
-						checkifRepoBranch(accounts, catalogRecipe, formConfig);
-					});
-				}
+				});
 			}
 		});
 

@@ -295,10 +295,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 			else if ($scope.currentDeployer.type === 'manual') {
 				if(currentSelectedEnvironment === 'dashboard'){
-					hide = (['secrets', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
+					hide = (['secrets', 'volumes', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
 				}
 				else{
-					hide = (['secrets', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
+					hide = (['secrets', 'volumes', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
 				}
 			}
 			else {

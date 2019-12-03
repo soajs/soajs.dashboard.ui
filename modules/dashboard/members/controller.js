@@ -657,7 +657,13 @@ membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				$scope.tenantsList = response;
+				if (response){
+					for (let i = 0; i < response.length; i++) {
+						if (response[i].oauth && response[i].oauth.loginMode === "urac"){
+							$scope.tenantsList = response[i];
+						}
+					}
+				}
 			}
 		});
 	};

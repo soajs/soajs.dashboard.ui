@@ -1932,43 +1932,43 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.splitTenantsByType(tenantFromAPI, function () {
-					if ($scope.tenantsList && $scope.tenantsList.rows) {
-						$scope.tenantsList.rows.forEach((tenantInUI) => {
-							if (tenantInUI.code === tenantFromAPI.code) {
-								tenantFromAPI.showKeys = tenantInUI.showKeys;
-								tenantInUI.applications.forEach((oneAppInUI) => {
-									tenantFromAPI.applications.forEach((oneAppFromAPI) => {
-										if (oneAppInUI.appId === oneAppFromAPI.appId) {
-											oneAppFromAPI.showKeys = oneAppInUI.showKeys;
-										}
-									});
-								});
-							}
-						});
-					}
-					$scope.tenantsList = {
-						rows: angular.copy(tenantFromAPI)
-					};
-					$scope.tenantsList.actions = {
-						'viewTenant': {
-							'label': translation.viewTenant[LANG],
-							'command': function (row) {
-								$scope.view_Tenant(row);
-							}
-						},
-						'updateOAuth': {
-							'label': translation.updateOAuth[LANG],
-							'command': function (row) {
-								$scope.update_oAuth(row);
-							}
-						},
-						'turnOffOAuth': {
-							'label': translation.turnOffOAuth[LANG],
-							'command': function (row) {
-								$scope.turnOffOAuth(row);
-							}
-						}
-					};
+					// if ($scope.tenantsList && $scope.tenantsList.rows) {
+					// 	$scope.tenantsList.rows.forEach((tenantInUI) => {
+					// 		if (tenantInUI.code === tenantFromAPI.code) {
+					// 			tenantFromAPI.showKeys = tenantInUI.showKeys;
+					// 			tenantInUI.applications.forEach((oneAppInUI) => {
+					// 				tenantFromAPI.applications.forEach((oneAppFromAPI) => {
+					// 					if (oneAppInUI.appId === oneAppFromAPI.appId) {
+					// 						oneAppFromAPI.showKeys = oneAppInUI.showKeys;
+					// 					}
+					// 				});
+					// 			});
+					// 		}
+					// 	});
+					// }
+					// $scope.tenantsList = {
+					// 	rows: angular.copy(tenantFromAPI)
+					// };
+					// $scope.tenantsList.actions = {
+					// 	'viewTenant': {
+					// 		'label': translation.viewTenant[LANG],
+					// 		'command': function (row) {
+					// 			$scope.view_Tenant(row);
+					// 		}
+					// 	},
+					// 	'updateOAuth': {
+					// 		'label': translation.updateOAuth[LANG],
+					// 		'command': function (row) {
+					// 			$scope.update_oAuth(row);
+					// 		}
+					// 	},
+					// 	'turnOffOAuth': {
+					// 		'label': translation.turnOffOAuth[LANG],
+					// 		'command': function (row) {
+					// 			$scope.turnOffOAuth(row);
+					// 		}
+					// 	}
+					// };
 					
 					if (cb && typeof cb === 'function') {
 						return cb();
@@ -2009,27 +2009,29 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		return output;
 	};
 	
-	$scope.splitTenantsByType = function (oneTenant, callback) {
-		var tenantInfo = $scope.getTenantLoginMode(oneTenant);
-		oneTenant.loginMode = tenantInfo.loginMode;
-		oneTenant.atLeastOneKey = tenantInfo.atLeastOneKey;
-		$scope.consoleTenant = oneTenant;
-		//re-render allowed environments
-		oneTenant.applications.forEach((oneApplication) => {
-			$scope.availablePackages.forEach((onePackage) => {
-				if (onePackage.pckCode === oneApplication.package) {
-					if (!oneApplication.availableEnvs) {
-						oneApplication.availableEnvs = [];
-					}
-					
-					let packAclEnv = Object.keys(onePackage.acl);
-					packAclEnv.forEach((onePackAclEnv) => {
-						if ($scope.availableEnv.indexOf(onePackAclEnv) !== -1) {
-							oneApplication.availableEnvs.push(onePackAclEnv);
+	$scope.splitTenantsByType = function (tenants, callback) {
+		tenants.forEach(function (oneTenant) {
+			let  tenantInfo = $scope.getTenantLoginMode(oneTenant);
+			oneTenant.loginMode = tenantInfo.loginMode;
+			oneTenant.atLeastOneKey = tenantInfo.atLeastOneKey;
+			//re-render allowed environments
+			oneTenant.applications.forEach((oneApplication) => {
+				$scope.availablePackages.forEach((onePackage) => {
+					if (onePackage.pckCode === oneApplication.package) {
+						if (!oneApplication.availableEnvs) {
+							oneApplication.availableEnvs = [];
 						}
-					});
-				}
+						
+						let packAclEnv = Object.keys(onePackage.acl);
+						packAclEnv.forEach((onePackAclEnv) => {
+							if ($scope.availableEnv.indexOf(onePackAclEnv) !== -1) {
+								oneApplication.availableEnvs.push(onePackAclEnv);
+							}
+						});
+					}
+				});
 			});
+			$scope.consoleTenants = tenants;
 		});
 		callback();
 	};
@@ -2444,35 +2446,40 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 			if (error) {
 				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
 			} else {
-				var apps = $scope.consoleTenant.applications;
-				for (var j = 0; j < apps.length; j++) {
-					if (apps[j].appId === appId) {
-						var app = apps[j];
-						var keys = app.keys;
-						for (var v = 0; v < keys.length; v++) {
-							if (keys[v].key === key) {
-								delete response['soajsauth'];
-								var dashboardAccess = false;
-								response.forEach(function (extKeyObj) {
-									if (extKeyObj.dashboardAccess) {
-										$scope.consoleTenant.dashboardAccess = true;
-										$scope.consoleTenant.applications[j].dashboardAccess = true;
-										$scope.consoleTenant.applications[j].keys[v].dashboardAccess = true;
-										dashboardAccess = true;
+				for (var i = 0; i < $scope.consoleTenants.length; i++) {
+					if ($scope.consoleTenants[i]['_id'] === tId) {
+						var apps = $scope.consoleTenants[i].applications;
+						for (var j = 0; j < apps.length; j++) {
+							if (apps[j].appId === appId) {
+								var app = apps[j];
+								var keys = app.keys;
+								for (var v = 0; v < keys.length; v++) {
+									if (keys[v].key === key) {
+										delete response['soajsauth'];
+										var dashboardAccess = false;
+										response.forEach(function (extKeyObj) {
+											if (extKeyObj.dashboardAccess) {
+												$scope.consoleTenants[i].dashboardAccess = true;
+												$scope.consoleTenants[i].applications[j].dashboardAccess = true;
+												$scope.consoleTenants[i].applications[j].keys[v].dashboardAccess = true;
+												dashboardAccess = true;
+											}
+										});
+										//in case tenant previously had an external key with dashboard access but now is deleted
+										if (!dashboardAccess && $scope.consoleTenants[i].dashboardAccess) {
+											$scope.consoleTenants[i].dashboardAccess = false;
+											$scope.consoleTenants[i].applications[j].dashboardAccess = false;
+											$scope.consoleTenants[i].applications[j].keys[v].dashboardAccess = false;
+										}
+										$scope.consoleTenants[i].applications[j].keys[v].extKeys = response;
 									}
-								});
-								//in case tenant previously had an external key with dashboard access but now is deleted
-								if (!dashboardAccess && $scope.tenantsList.rows.dashboardAccess) {
-									$scope.consoleTenant.dashboardAccess = false;
-									scope.consoleTenant.applications[j].dashboardAccess = false;
-									$scope.consoleTenant.applications[j].keys[v].dashboardAccess = false;
 								}
-								$scope.consoleTenant.applications[j].keys[v].extKeys = response;
+								break;
 							}
 						}
-						break;
 					}
 				}
+				
 			}
 		});
 	};
@@ -2513,6 +2520,179 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 				}
 			}
 		});
+	};
+	
+	$scope.reloadOauthUsers = function (tId) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/tenant/oauth/users/list",
+			"params": {"id": tId}
+		}, function (error, response) {
+			if (error) {
+				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
+			} else {
+				for (var i = 0; i < $scope.consoleTenants.length; i++) {
+					if ($scope.consoleTenants[i]['_id'] === tId) {
+						$scope.consoleTenants[i].oAuthUsers = response;
+						break;
+					}
+				}
+			}
+		});
+	};
+	
+	$scope.removeTenantOauthUser = function (tId, user) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "delete",
+			"routeName": "/dashboard/tenant/oauth/users/delete",
+			"params": {"id": tId, 'uId': user['_id']}
+		}, function (error) {
+			if (error) {
+				$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
+			} else {
+				$scope.mt.displayAlert('success', translation.userDeletedSuccessfully[LANG], tId);
+				$scope.reloadOauthUsers(tId);
+			}
+		});
+	};
+	
+	$scope.editTenantOauthUser = function (tId, user) {
+		user.password = null;
+		user.confirmPassword = null;
+		var options = {
+			timeout: $timeout,
+			form: angular.copy(tenantConfig.form.oauthUserUpdate),
+			name: 'updateUser',
+			label: translation.updateUser[LANG],
+			data: user,
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.updateoAuthUser[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						var postData = {
+							'userId': formData.userId
+						};
+						if (formData.password && formData.password !== '') {
+							if (formData.password !== formData.confirmPassword) {
+								$scope.form.displayAlert('danger', translation.passwordConfirmFieldsNotMatch[LANG]);
+								return;
+							} else {
+								postData.password = formData.password;
+							}
+						}
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "put",
+							"routeName": "/dashboard/tenant/oauth/users/update",
+							"data": postData,
+							"params": {"id": tId, 'uId': user['_id']}
+						}, function (error) {
+							if (error) {
+								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							} else {
+								$scope.mt.displayAlert('success', translation.userUpdatedSuccessfully[LANG], tId);
+								$scope.modalInstance.close();
+								$scope.form.formData = {};
+								$scope.reloadOauthUsers(tId);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						$scope.modalInstance.dismiss('cancel');
+						$scope.form.formData = {};
+					}
+				}
+			]
+		};
+		
+		buildFormWithModal($scope, $modal, options);
+	};
+	
+	$scope.addOauthUser = function (tId) {
+		var options = {
+			timeout: $timeout,
+			form: angular.copy(tenantConfig.form.oauthUser),
+			name: 'add_oauthUser',
+			label: translation.addNewoAuthUser[LANG],
+			data: {
+				'userId': null,
+				'user_password': null
+			},
+			actions: [
+				{
+					'type': 'submit',
+					'label': translation.addoAuthUser[LANG],
+					'btn': 'primary',
+					'action': function (formData) {
+						var postData = {
+							'userId': formData.userId,
+							'password': formData.user_password
+						};
+						if (formData.user_password !== formData.confirmPassword) {
+							$scope.form.displayAlert('danger', translation.passwordConfirmFieldsNotMatch[LANG]);
+							return;
+						}
+						
+						getSendDataFromServer($scope, ngDataApi, {
+							"method": "post",
+							"routeName": "/dashboard/tenant/oauth/users/add",
+							"data": postData,
+							"params": {"id": tId}
+						}, function (error) {
+							if (error) {
+								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
+							} else {
+								$scope.mt.displayAlert('success', translation.userAddedSuccessfully[LANG], tId);
+								$scope.modalInstance.close();
+								$scope.form.formData = {};
+								$scope.reloadOauthUsers(tId);
+							}
+						});
+					}
+				},
+				{
+					'type': 'reset',
+					'label': translation.cancel[LANG],
+					'btn': 'danger',
+					'action': function () {
+						$scope.modalInstance.dismiss('cancel');
+						$scope.form.formData = {};
+					}
+				}
+			]
+		};
+		buildFormWithModal($scope, $modal, options);
+	};
+	
+	$scope.listOauthUsers = function (row) {
+		var tId = row['_id'];
+		if (!row.alreadyGotAuthUsers) {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/dashboard/tenant/oauth/users/list",
+				"params": {"id": tId}
+			}, function (error, response) {
+				if (error) {
+					$scope.mt.displayAlert('danger', error.code, tId, true, 'dashboard', error.message);
+				} else {
+					row.alreadyGotAuthUsers = true;
+					if (response.length > 0) {
+						for (var i = 0; i < $scope.consoleTenants.length; i++) {
+							if ($scope.consoleTenants[i]['_id'] === tId) {
+								$scope.consoleTenants[i].oAuthUsers = response;
+								break;
+							}
+						}
+					}
+				}
+			});
+		}
 	};
 	
 	//default operation

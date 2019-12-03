@@ -1097,7 +1097,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			},
 			'method': 'put',
 			'routeName': "/urac/admin/user/status",
-			"params": {'id': '%id%', 'status': 'inactive'},
+			"data": {'id': '%id%', 'status': 'inactive'},
 			'msg': {
 				'error': translation.errorMessageDeactivateMembers[LANG],
 				'success': translation.successMessageDeactivateMembers[LANG]
@@ -1108,10 +1108,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				"method": "put",
 				"routeName": "/proxy/redirect",
 				"params": {
-					"params": {'id': '%id%', 'status': 'inactive'},
 					'proxyRoute': '/urac/admin/user/status',
 					"extKey": ext
 				},
+				"data": {'id': '%id%', 'status': 'inactive'},
 				"headers": {
 					"__env": env,
 					"key": currentScope.key

@@ -858,15 +858,21 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 							for (var env in recipes[i].recipe.buildOptions.env) {
 								if (recipes[i].recipe.buildOptions.env[env].type === 'userInput') {
 									context.mainData.recipeUserInput.envs[env] = recipes[i].recipe.buildOptions.env[env];
-
 									if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.env && context.formData.deployOptions.custom.env[env]) {
-										context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
+										if(!context.formData.deployOptions.custom.env[env].secret){
+											context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env];
+										}
 									}
 								}
 								if (recipes[i].recipe.buildOptions.env[env].type === 'secret') {
 									context.mainData.recipeUserInput.envs[env] = recipes[i].recipe.buildOptions.env[env];
+									if (context.mainData.recipeUserInput.envs[env]){
+										context.mainData.recipeUserInput.envs[env].default = angular.copy(recipes[i].recipe.buildOptions.env[env]);
+									}
 									if (context.formData.deployOptions.custom && context.formData.deployOptions.custom.env && context.formData.deployOptions.custom.env[env]) {
-										context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env]; //if user input already set, set it's value as default
+										if(context.formData.deployOptions.custom.env[env].secret){
+											context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env];
+										}
 									}
 								}
 							}
@@ -1792,7 +1798,7 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				});
 			});
 		}
-
+		
 		context.fillForm();
 
 		if (cb && typeof cb === 'function'){

@@ -29,8 +29,7 @@ jobs:
 
     - git config --local user.name ${GIT_USER}
     - git config --local user.email ${GIT_EMAIL}
-    - git tag $PACKAGE_VERSION
-    - git push --tags
+    - git tag ${PACKAGE_VERSION}
 
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
@@ -42,3 +41,7 @@ jobs:
     - docker tag soajsorg/consoleui:latest soajsorg/consoleui:${MAJOR_VERSION}.x
 
     - docker push soajsorg/consoleui
+    deploy:
+      provider: releases
+      api_key: ${GIT_TOKEN}
+      skip_cleanup: true

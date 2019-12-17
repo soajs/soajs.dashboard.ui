@@ -26,6 +26,12 @@ jobs:
     - export MAJOR_VERSION=$(echo ${PACKAGE_VERSION} | awk -F. '{ print $1 }')
     - echo Package version ${PACKAGE_VERSION}
     - echo Major version ${MAJOR_VERSION}
+
+    - git config --local user.name ${GIT_USER}
+    - git config --local user.email ${GIT_EMAIL}
+    - git tag $PACKAGE_VERSION
+    - git push --tags
+
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
     - docker build -t soajsorg/consoleui .

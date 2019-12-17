@@ -664,9 +664,6 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 					if(serviceEnvs['SOAJS_GIT_BRANCH']) {
 						sourceCode.custom["branch"] = serviceEnvs['SOAJS_GIT_BRANCH'];
 					}
-					if(serviceEnvs['SOAJS_GIT_PATH']) {
-						sourceCode.custom["path"] = serviceEnvs['SOAJS_GIT_PATH'];
-					}
 
 					let extraRepo = [
 						{

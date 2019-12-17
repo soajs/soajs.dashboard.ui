@@ -443,8 +443,6 @@ var catalogAppConfig = {
 			'type': 'select',
 			'groups': ['NodeJs', 'SOAJS Service', 'SOAJS Daemon', 'SOAJS Service/Daemon', 'SOAJS Deployer', 'SOAJS GCS', 'GIT Information', 'SOAJS Mongo', 'SOAJS Nginx'],
 			'value':[
-				{'v': '$SOAJS_SRV_MEMORY', 'l': "$SOAJS_SRV_MEMORY", "group": "NodeJs"},
-
 				{'v': '$SOAJS_SRV_PORT', 'l': "$SOAJS_SRV_PORT", "group": "SOAJS Service"},
 				{'v': '$SOAJS_SRV_PORT_MAINTENANCE', 'l': "$SOAJS_SRV_PORT_MAINTENANCE", "group": "SOAJS Service"},
 
@@ -453,16 +451,11 @@ var catalogAppConfig = {
 				{'v': '$SOAJS_ENV', 'l': "$SOAJS_ENV", "group": "SOAJS Service/Daemon"},
 				{'v': '$SOAJS_PROFILE', 'l': "$SOAJS_PROFILE", "group": "SOAJS Service/Daemon"},
 
-				{'v': '$SOAJS_SRV_MAIN', 'l': "$SOAJS_SRV_MAIN", "group": "SOAJS Service/Daemon"},
 				{'v': '$SOAJS_SERVICE_NAME', 'l': "$SOAJS_SERVICE_NAME", "group": "SOAJS Service/Daemon"},
 
 				{'v': '$SOAJS_DEPLOY_HA', 'l': "$SOAJS_DEPLOY_HA", "group": "SOAJS Deployer"},
-				{'v': '$SOAJS_HA_NAME', 'l': "$SOAJS_HA_NAME", "group": "SOAJS Deployer"},
 				{'v': '$SOAJS_CONTROLLER_PORT_MAINTENANCE', 'l': "$SOAJS_CONTROLLER_PORT_MAINTENANCE", "group": "SOAJS Deployer"},
 				{'v': '$SOAJS_REGISTRY_API', 'l': "$SOAJS_REGISTRY_API", "group": "SOAJS Deployer"},
-
-				{'v': '$SOAJS_GC_NAME', 'l': "$SOAJS_GC_NAME", "group": "SOAJS GCS"},
-				{'v': '$SOAJS_GC_VERSION', 'l': "$SOAJS_GC_VERSION", "group": "SOAJS GCS"},
 
 				{'v': '$SOAJS_GIT_OWNER', 'l': "$SOAJS_GIT_OWNER", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_BRANCH', 'l': "$SOAJS_GIT_BRANCH", "group": "GIT Information"},
@@ -471,17 +464,6 @@ var catalogAppConfig = {
 				{'v': '$SOAJS_GIT_TOKEN', 'l': "$SOAJS_GIT_TOKEN", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_PROVIDER', 'l': "$SOAJS_GIT_PROVIDER", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_DOMAIN', 'l': "$SOAJS_GIT_DOMAIN", "group": "GIT Information"},
-				{'v': '$SOAJS_GIT_PATH', 'l': "$SOAJS_GIT_PATH", "group": "GIT Information"},
-
-				{'v': '$SOAJS_MONGO_NB', 'l': "$SOAJS_MONGO_NB", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_PREFIX', 'l': "$SOAJS_MONGO_PREFIX", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_RSNAME', 'l': "$SOAJS_MONGO_RSNAME", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_AUTH_DB', 'l': "$SOAJS_MONGO_AUTH_DB", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_SSL', 'l': "$SOAJS_MONGO_SSL", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_IP_N', 'l': "$SOAJS_MONGO_IP_N", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_PORT_N', 'l': "$SOAJS_MONGO_PORT_N", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_USERNAME', 'l': "$SOAJS_MONGO_USERNAME", "group": "SOAJS Mongo"},
-				{'v': '$SOAJS_MONGO_PASSWORD', 'l': "$SOAJS_MONGO_PASSWORD", "group": "SOAJS Mongo"},
 
 				{'v': '$SOAJS_EXTKEY', 'l': "$SOAJS_EXTKEY", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_DOMAIN', 'l': "$SOAJS_NX_DOMAIN", "group": "SOAJS Nginx"},

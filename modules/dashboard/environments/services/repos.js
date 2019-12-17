@@ -1117,7 +1117,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		}
 		if(oneDeployedEntry.env) {
 			oneDeployedEntry.env.forEach(function (oneEnv) {
-				if(!deploySettings.options.deployConfig.memoryLimit && oneEnv.indexOf("SOAJS_SRV_MEMORY") !== -1){
+				if(!deploySettings.options.deployConfig.memoryLimit){
 					deploySettings.options.deployConfig.memoryLimit = oneEnv.split("=")[1] * 1048576;
 				}
 				if(oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1){

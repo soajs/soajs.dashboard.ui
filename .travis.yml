@@ -42,6 +42,8 @@ jobs:
 
     - docker push soajsorg/consoleui
     deploy:
+      on:
+        all_branches: true
       provider: releases
       api_key: ${GIT_TOKEN}
       skip_cleanup: true

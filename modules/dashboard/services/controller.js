@@ -750,7 +750,6 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					x[3].proxyRoute = $scope.url;
 					x[3].tenant_access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 					x[3].basePath = '/proxy/redirect';
-					console.log(x)
 					console.log("switching to new domain:", x[3].host);
 					swaggerParser.execute.apply(null, x);
 				}

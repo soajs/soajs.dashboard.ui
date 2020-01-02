@@ -143,6 +143,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				for(let i in oneProvider.deploy){
 					postData.selectedInfraProvider.deploy[i] = oneProvider.deploy[i];
 				}
+			}else if(oneProvider.api) {
+				postData.selectedInfraProvider.deploy.config = oneProvider.api;
 			}
 		});
 		

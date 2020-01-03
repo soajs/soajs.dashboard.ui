@@ -495,7 +495,7 @@ myAccountApp.controller('resetPwCtrl', ['$scope', 'ngDataApi', '$routeParams', '
 				return;
 			}
 			getSendDataFromServer($scope, ngDataApi, {
-				"method": "send",
+				"method": "put",
 				"routeName": "/urac/password/reset",
 				"data": postData
 			}, function (error) {

@@ -1735,7 +1735,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	$scope.reloadConfiguration = function (tId, appId, key, index) {
 		$scope.currentApplicationKey = key;
 		$scope.currentApplicationKeyIndex = index;
-		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/config/list",
@@ -1747,7 +1746,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
 				}
-				if (typeof response === "object") {
+				if (typeof response === "object" && $scope.tenantsList && $scope.tenantsList.rows) {
 					for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
 						if ($scope.tenantsList.rows[i]['_id'] === tId) {
 							var apps = $scope.tenantsList.rows[i].applications;
@@ -2487,7 +2486,6 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	$scope.reloadConfiguration = function (tId, appId, key, index) {
 		$scope.currentApplicationKey = key;
 		$scope.currentApplicationKeyIndex = index;
-		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/tenant/application/key/config/list",
@@ -2499,17 +2497,17 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
 				}
-				if (typeof response === "object") {
-					for (var i = 0; i < $scope.tenantsList.rows.length; i++) {
-						if ($scope.tenantsList.rows[i]['_id'] === tId) {
-							var apps = $scope.tenantsList.rows[i].applications;
+				if (typeof response === "object" &&  $scope.consoleTenants &&  $scope.consoleTenants) {
+					for (var i = 0; i < $scope.consoleTenants.length; i++) {
+						if ($scope.consoleTenants[i]['_id'] === tId) {
+							var apps = $scope.consoleTenants[i].applications;
 							for (var j = 0; j < apps.length; j++) {
 								if (apps[j].appId === appId) {
 									var app = apps[j];
 									var keys = app.keys;
 									for (var v = 0; v < keys.length; v++) {
 										if (keys[v].key === key) {
-											$scope.tenantsList.rows[i].applications[j].keys[v].config = response;
+											$scope.consoleTenants[i].applications[j].keys[v].config = response;
 										}
 									}
 									break;

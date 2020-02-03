@@ -45,10 +45,10 @@ var apiConfiguration = {
 };
 
 var consoleAclConfig = {
-	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant'],
+	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories'],
 	"OTHER": ["urac"]
 };
-var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant'];
+var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant', 'soajs.repositories'];
 var KUBERNETES_SYSTEM_DEPLOYMENTS = [ 'kube-dns', 'kube-proxy', 'kube-apiserver', 'kube-scheduler', 'kube-controller-manager', 'kube-flannel-ds' ];
 var soajsAppModules = ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.select', 'luegg.directives', 'angular-sortable-view', 'ngRoute', 'ngCookies', 'ngStorage', 'textAngular', "ngFileUpload", "swaggerUi", "ui.ace", "ngCkeditor", "chart.js"];
 
@@ -58,6 +58,8 @@ var modules = {
 			services: 'modules/dashboard/services/install.js',
 			endpoints: 'modules/dashboard/endpoints/install.js',
 			githubApp: 'modules/dashboard/gitAccounts/install.js',
+			gitAccountManagement: 'modules/dashboard/gitManagement/install.js',
+			gitRepositories: 'modules/dashboard/repositories/install.js',
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',
 			catalogs: 'modules/dashboard/catalogs/install.js',
 			ci: 'modules/dashboard/ci/install.js',

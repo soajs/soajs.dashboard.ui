@@ -196,9 +196,9 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				repo.branches.forEach((branch) => {
-					if (branch && branch.name === branch) {
-						branch.active = true;
+				repo.branches.forEach((oneBranch) => {
+					if (oneBranch && oneBranch.name === branch) {
+						oneBranch.active = true;
 					}
 				});
 				$scope.displayAlert('success', result.data);
@@ -291,9 +291,9 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				repo.branches.forEach((branch) => {
-					if (branch && branch.name === branch) {
-						branch.active = false;
+				repo.branches.forEach((oneBranch) => {
+					if (oneBranch && oneBranch.name === branch) {
+						oneBranch.active = false;
 					}
 				});
 				$scope.displayAlert('success', response.data);

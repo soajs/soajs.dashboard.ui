@@ -4,9 +4,23 @@
 	</alert>
 	<br>
 </div>
-<div>
+<div ng-if="gitAccounts.length > 1">
+	<fieldset class="searchBarFieldSet">
+		<div class="f-left" style="width: 50%">
+			<label class="searchLabel"> Select Account: </label>
+			<select class="limitSelect" ng-options="owner.owner for owner in gitAccounts"
+			        ng-model="owner"></select>
+		</div>
+		<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
+			<a href="" class="btn btn-primary" tooltip="Apply" ng-click="applyAccount(owner)">
+				<span class="icon icon-undo"></span>search
+			</a>
+		</div>
+	</fieldset>
+</div>
+<div ng-if="gitAccounts.length === 1 || showConfiguration">
 	<div class="f-right">
-		<a href="" ng-click="configureRepo(myCurrentRepo, gitAccount)" class="btn btn-success btn-sm">
+		<a href="" ng-click="configureRepo(myCurrentRepo)" class="btn btn-success btn-sm">
 			<span class="icon icon-undo"></span>&nbsp;Refresh
 		</a>&nbsp;
 		<input type="button" class="btn btn-sm btn-danger" value="Go Back" ng-click="cancel();"/>
@@ -16,7 +30,7 @@
 			<alert type="warning">No Continuous Integration Configuration Found. Please visit
 				<a href="" ng-click="goTOCI()">Continuous Integration</a> Section and configure a provider before you
 				can proceed.
-				<input class="btn btn-sm btn-warning" value="Refresh" ng-click="configureRepo(myCurrentRepo, gitAccount)">
+				<input class="btn btn-sm btn-warning" value="Refresh" ng-click="configureRepo(myCurrentRepo)">
 			</alert>
 		</div>
 		<tab ng-if="!noCiConfig" ng-repeat="oneProvider in ciProviders" class="{{oneProvider.provider}}" heading="{{oneProvider.provider}}" ng-click="showCIConfigForm(oneProvider)">

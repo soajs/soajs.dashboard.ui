@@ -1,191 +1,196 @@
 <section ng-controller="repositoriesAppCtrl">
-	<div clas="row">
-		<div class="col-md-3">
-			<fieldset class="searchBarFieldSet tabFieldSetHeight">
-				<h4>Organization: </h4>
-				<div>
-					<input type="text" class="searchInput90 searchRepoBar" ng-model="orgSearch"
-					       placeholder="Search ..."/>
-				</div>
-				<br>
-				<div class="scrollableOrgs">
-					<div ng-repeat="org in repoSearch.organizations | orgSearchFilter:orgSearch">
-						<div class="labelLength f-left scrollableValues">
-							<span>{{org.l}} </span>
-						</div>
-						<div class="inputLength f-right">
-							<input type="checkbox" class="removeMarginCheckBox" ng-model="org.selected">
-						</div>
-						<br>
+	<div ng-if="configureRepoEditor">
+		<div ng-include="'modules/dashboard/repositories/directives/configure.tmpl'"></div>
+	</div>
+	<div ng-if="!configureRepoEditor">
+		<div clas="row">
+			<div class="col-md-3">
+				<fieldset class="searchBarFieldSet tabFieldSetHeight">
+					<h4>Organization: </h4>
+					<div>
+						<input type="text" class="searchInput90 searchRepoBar" ng-model="orgSearch"
+						       placeholder="Search ..."/>
 					</div>
-				</div>
-			</fieldset>
-		</div>
-		<div class="col-md-2">
-			<fieldset class="searchBarFieldSet tabFieldSetHeight">
-				<div>
-					<label class="searchLabel marginTopRep">Provider:</label>
-					<input type="text" class="searchInput90" ng-model="repoSearch.provider"/>
-				</div>
-				<br>
-				<br>
-				<hr>
-				<div>
-					<label class="searchLabel">Name:</label>
-					<input type="text" class="searchInput90" ng-model="repoSearch.name"/>
-				</div>
-			</fieldset>
-		</div>
-		<div class="col-md-4">
-			<fieldset class="searchBarFieldSet tabFieldSetHeight">
-				<div>
-					<label class="searchLabel marginTopRep">Text Search:</label>
-					<input type="text" class="searchInput90" ng-model="repoSearch.textSearch"/>
-				</div>
-				<br>
-				<br>
-				<hr>
-				<div class="searchLabel">
-					<label> Only Activated:  </label>
-					<input type="checkbox" class="activeRepoCheck" ng-model="repoSearch.active">
-				</div>
-				
-				<br>
-				<div class="">
-					<label class="searchLabel"> Limit: </label>
-					<select class="limitSelect" ng-options="limit.l for limit in limits" ng-init="100"
-					        ng-model="repoSearch.limit" ng-change="search()"></select>
-				</div>
-			</fieldset>
-		</div>
-	</div>
-	<div clas="row">
-		<div class="col-md-12">
-			<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
-				<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="search()">
-					<span class="icon icon-undo"></span>search
-				</a>
-			</div>
-			<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
-				<a href="" class="btn btn-info" tooltip="Apply Filter" ng-click="reset()">
-					<span class="icon icon-loop2"></span>reset
-				</a>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<hr>
-		</div>
-	</div>
-	<div clas="row">
-		<div class="col-md-12">
-			<div ng-if="repositories.length > 0 && access.searchRepos">
-				<div id="repoList">
-					<ul class="blueListing">
-						<li class="blueLi row-list {{repo.status}}" ng-repeat="repo in repositories"
-						    ng-style="{'width': '99%'}">
-							<span class="repoFullName">{{repo.repository}}</span>
-							<span ng-if="repo.status === 'deleted'" class="f-right mr11"><span
-									class="icon icon-warning"></span>{{translation.repoHasBeenDeleted[LANG]}}</span>
-							<span ng-if="repo.status === 'active'" class="f-right mr11"><span
-									class="icon icon-checkmark"></span>{{translation.activeRepo[LANG]}}</span>
-							<span ng-if="repo.type && repo.status === 'active'" class="f-right mr11"><span
-									class="icon icon-price-tag"></span>{{repo.type}}</span>
-							
-							<div class="rightActions">
-								<a href="" ng-if="repo.status === 'active' && repo.branches && repo.branches"
-								   ng-click="showRepos(repo)" ng-style="{'margin-top': '-19px'}"
-								   ng-hide="repo.showDetails">
-									<span class="icon icon-plus" tooltip="expand"></span>
-								</a>
-								<a href="" ng-if="repo.status === 'active'  && repo && repo.branches"
-								   ng-click="hideRepos(repo)" ng-style="{'margin-top': '-19px'}"
-								   ng-show="repo.showDetails">
-									<span class="icon icon-minus" tooltip="collapse"></span>
-									<a href="" ng-if="access.activateRepo && repo.status === 'inactive'"
-									   ng-click="activateRepo(repo)" ng-style="{'margin-top': '-19px'}">
-										<span class="icon icon-switch" tooltip="Turn On"></span>
-									</a>
-									<a href="" ng-if="access.syncRepo && repo.status === 'active'"
-									   ng-click="syncRepo(repo)" ng-style="{'margin-top': '-19px'}">
-										<span class="icon icon-loop2" tooltip="{{translation.sync[LANG]}}"></span>
-									</a>
-									<a href=""
-									   ng-if="access.getCIRepoSettings && access.getCIAccountInfo  && repo.status === 'active'"
-									   ng-click="configureRepo(repo)" ng-style="{'margin-top': '-19px'}">
-										<span tooltip="Configure" class="icon icon-cog"></span>
-									</a>
-								</a>
+					<br>
+					<div class="scrollableOrgs">
+						<div ng-repeat="org in repoSearch.organizations | orgSearchFilter:orgSearch">
+							<div class="labelLength f-left scrollableValues">
+								<span>{{org.l}} </span>
 							</div>
-							<div ng-if="access.activateRepo && repo.status === 'active'" ng-show="repo.showDetails">
-								<accordion ng-if="repo && repo.branches">
-									<accordion-group is-open="true"
-									                 class="activeBranchAccordion">
-										<accordion-heading>
-											<span>Branches</span>
-											<div style="float: right;">
-												<a href="" ng-if="access.deactivateRepo && repo.status"
-												   ng-click="deactivateRepo(repo)"
-												   ng-style="{'margin-top': '-19px'}"
-												   ng-confirm-click="Are you sure you want to deactivate this repository?">
-													<span class="icon icon-cross" tooltip="Turn Off"></span>
-												</a>
-												<a href="" ng-if="access.activateRepo && !repo.status"
-												   ng-click="activateRepo(repo)"
-												   ng-style="{'margin-top': '-19px'}">
-													<span class="icon icon-switch" tooltip="Turn On"></span>
-												</a>
-											</div>
-										</accordion-heading>
-										<div class="entryBoxes entryBoxesGrid" ng-if="repo">
-											<div class="entryBox pl0" style="width: 32%; background-color: #eeeeee"
-											     ng-repeat="branch in repo.branches" ng-class="{greenBox: branch.activate}">
-												<div class="header opened" style="border-bottom: unset"
-												     ng-class="{greenBoxHeader: branch.activate}">
-													{{branch.name}}
-													<div style="float: right;">
+							<div class="inputLength f-right">
+								<input type="checkbox" class="removeMarginCheckBox" ng-model="org.selected">
+							</div>
+							<br>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div class="col-md-2">
+				<fieldset class="searchBarFieldSet tabFieldSetHeight">
+					<div>
+						<label class="searchLabel marginTopRep">Provider:</label>
+						<input type="text" class="searchInput90" ng-model="repoSearch.provider"/>
+					</div>
+					<br>
+					<br>
+					<hr>
+					<div>
+						<label class="searchLabel">Name:</label>
+						<input type="text" class="searchInput90" ng-model="repoSearch.name"/>
+					</div>
+				</fieldset>
+			</div>
+			<div class="col-md-4">
+				<fieldset class="searchBarFieldSet tabFieldSetHeight">
+					<div>
+						<label class="searchLabel marginTopRep">Text Search:</label>
+						<input type="text" class="searchInput90" ng-model="repoSearch.textSearch"/>
+					</div>
+					<br>
+					<br>
+					<hr>
+					<div class="searchLabel">
+						<label> Only Activated:  </label>
+						<input type="checkbox" class="activeRepoCheck" ng-model="repoSearch.active">
+					</div>
+					
+					<br>
+					<div class="">
+						<label class="searchLabel"> Limit: </label>
+						<select class="limitSelect" ng-options="limit.l for limit in limits" ng-init="100"
+						        ng-model="repoSearch.limit" ng-change="search()"></select>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+		<div clas="row">
+			<div class="col-md-12">
+				<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
+					<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="search()">
+						<span class="icon icon-undo"></span>search
+					</a>
+				</div>
+				<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
+					<a href="" class="btn btn-info" tooltip="Apply Filter" ng-click="reset()">
+						<span class="icon icon-loop2"></span>reset
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<hr>
+			</div>
+		</div>
+		<div clas="row">
+			<div class="col-md-12">
+				<div ng-if="repositories.length > 0 && access.searchRepos">
+					<div id="repoList">
+						<ul class="blueListing">
+							<li class="blueLi row-list {{repo.status}}" ng-repeat="repo in repositories"
+							    ng-style="{'width': '99%'}">
+								<span class="repoFullName">{{repo.repository}}</span>
+								<span ng-if="repo.status === 'deleted'" class="f-right mr11"><span
+										class="icon icon-warning"></span>{{translation.repoHasBeenDeleted[LANG]}}</span>
+								<span ng-if="repo.status === 'active'" class="f-right mr11"><span
+										class="icon icon-checkmark"></span>{{translation.activeRepo[LANG]}}</span>
+								<span ng-if="repo.type && repo.status === 'active'" class="f-right mr11"><span
+										class="icon icon-price-tag"></span>{{repo.type}}</span>
+								
+								<div class="rightActions">
+									<a href="" ng-if="repo.status === 'active' && repo.branches && repo.branches"
+									   ng-click="showRepos(repo)" ng-style="{'margin-top': '-19px'}"
+									   ng-hide="repo.showDetails">
+										<span class="icon icon-plus" tooltip="expand"></span>
+									</a>
+									<a href="" ng-if="repo.status === 'active'  && repo && repo.branches"
+									   ng-click="hideRepos(repo)" ng-style="{'margin-top': '-19px'}"
+									   ng-show="repo.showDetails">
+										<span class="icon icon-minus" tooltip="collapse"></span>
+										<a href="" ng-if="access.activateRepo && repo.status === 'inactive'"
+										   ng-click="activateRepo(repo)" ng-style="{'margin-top': '-19px'}">
+											<span class="icon icon-switch" tooltip="Turn On"></span>
+										</a>
+										<a href="" ng-if="access.syncRepo && repo.status === 'active'"
+										   ng-click="syncRepo(repo)" ng-style="{'margin-top': '-19px'}">
+											<span class="icon icon-loop2" tooltip="{{translation.sync[LANG]}}"></span>
+										</a>
+										<a href=""
+										   ng-if="access.getCIRepoSettings && access.getCIAccountInfo  && repo.status === 'active'"
+										   ng-click="configureRepo(repo)" ng-style="{'margin-top': '-19px'}">
+											<span tooltip="Configure" class="icon icon-cog"></span>
+										</a>
+									</a>
+								</div>
+								<div ng-if="access.activateRepo && repo.status === 'active'" ng-show="repo.showDetails">
+									<accordion ng-if="repo && repo.branches">
+										<accordion-group is-open="true"
+										                 class="activeBranchAccordion">
+											<accordion-heading>
+												<span>Branches</span>
+												<div style="float: right;">
+													<a href="" ng-if="access.deactivateRepo && repo.status"
+													   ng-click="deactivateRepo(repo)"
+													   ng-style="{'margin-top': '-19px'}"
+													   ng-confirm-click="Are you sure you want to deactivate this repository?">
+														<span class="icon icon-cross" tooltip="Turn Off"></span>
+													</a>
+													<a href="" ng-if="access.activateRepo && !repo.status"
+													   ng-click="activateRepo(repo)"
+													   ng-style="{'margin-top': '-19px'}">
+														<span class="icon icon-switch" tooltip="Turn On"></span>
+													</a>
+												</div>
+											</accordion-heading>
+											<div class="entryBoxes entryBoxesGrid" ng-if="repo">
+												<div class="entryBox pl0" style="width: 32%; background-color: #eeeeee"
+												     ng-repeat="branch in repo.branches" ng-class="{greenBox: branch.activate}">
+													<div class="header opened" style="border-bottom: unset"
+													     ng-class="{greenBoxHeader: branch.activate}">
+														{{branch.name}}
+														<div style="float: right;">
 													<span ng-if="branch.active"
 													      style="margin-right: 0px; margin-left: 0px "><span
 															class="icon icon-checkmark"></span>Active Branch</span>
-														<a href="" ng-if="access.activateBranch && !branch.active"
-														   ng-click="activateBranch(repo, branch.name)">
+															<a href="" ng-if="access.activateBranch && !branch.active"
+															   ng-click="activateBranch(repo, branch.name)">
 														<span class="icon icon-switch"
 														      tooltip="{{translation.activate[LANG]}} Branch"></span>
-														</a>
-														<a href="" ng-if="access.syncRepo && branch.active"
-														   ng-click="syncBranch(repo, branch.name)">
+															</a>
+															<a href="" ng-if="access.syncRepo && branch.active"
+															   ng-click="syncBranch(repo, branch.name)">
 														<span class="icon icon-loop2"
 														      style="margin-right: 0px;margin-left: 0px"
 														      tooltip="{{translation.sync[LANG]}}"></span>
-														</a>
-														<a href="" ng-if="access.deactivateBranch && branch.active"
-														   ng-click="deactivateBranch(repo, branch.name)"
-														   ng-confirm-click="Are you sure you want to deactivate this branch?">
+															</a>
+															<a href="" ng-if="access.deactivateBranch && branch.active"
+															   ng-click="deactivateBranch(repo, branch.name)"
+															   ng-confirm-click="Are you sure you want to deactivate this branch?">
 														<span class="icon icon-cross"
 														      style="margin-right: 0px;margin-left: 0px"
 														      tooltip="{{translation.deactivate[LANG]}} Branch"></span>
-														</a>
+															</a>
+														</div>
 													</div>
 												</div>
 											</div>
-										</div>
-									</accordion-group>
-								</accordion>
-							</div>
-						</li>
-					</ul>
+										</accordion-group>
+									</accordion>
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
 		<tr>
 			<td align="right">
 				<pagination total-items="pagination.totalItems" ng-click="search(pagination.currentPage)" ng-model="pagination.currentPage" max-size="pagination.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="pagination.numPages" items-per-page="pagination.itemsPerPage"></pagination>
 			</td>
 		</tr>
 	</table>
+	</div>
 </section>
 
 <script type="text/ng-template" id="errorDisplay.tmpl">

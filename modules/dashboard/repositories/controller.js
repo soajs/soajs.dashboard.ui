@@ -300,9 +300,9 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			}
 		});
 	};
-	
-	$scope.configureRepo = function (oneRepo, gitAccount) {
-		repoSrv.configureRepo($scope, oneRepo, gitAccount, gitAccountsAppConfig);
+	$scope.configureRepoEditor = false;
+	$scope.configureRepo = function (oneRepo) {
+		repoSrv.configureRepo($scope, oneRepo, $scope.accounts, repositoriesAppConfig);
 	};
 	injectFiles.injectCss("modules/dashboard/repositories/repositories.css");
 	if ($scope.access.searchRepos) {

@@ -33,6 +33,7 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			v: 100,
 		}
 	];
+	
 	$scope.repoSearch = {
 		limit: $scope.limits[1]
 	};
@@ -63,6 +64,20 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				$scope.displayAlert('danger', error.message);
 			} else {
 				$scope.accounts = response;
+				$scope.repoSearch.providers = [
+					{
+						l: "Github",
+						v: "github",
+					},
+					{
+						l: "Bitbucket",
+						v: "bitbucket",
+					},
+					{
+						l: "Bitbucket Enterprise",
+						v: "bitbucket_enterprise",
+					}
+				];
 				let orgs = [];
 				$scope.accounts.forEach(function (oneAccount) {
 					if (oneAccount.metadata && oneAccount.metadata.organizations) {
@@ -105,15 +120,19 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				}
 			});
 		}
+		if ($scope.repoSearch.providers.length > 0) {
+			$scope.repoSearch.providers.forEach((provider) => {
+				if (provider.selected) {
+					if (!opts.provider) {
+						opts.provider = [provider.v];
+					} else {
+						opts.provider.push(provider.v);
+					}
+				}
+			});
+		}
 		if ($scope.repoSearch.active) {
 			opts.active = true;
-		}
-		
-		if ($scope.repoSearch.provider) {
-			opts.provider = $scope.repoSearch.provider;
-		}
-		if ($scope.repoSearch.name) {
-			opts.name = $scope.repoSearch.name;
 		}
 		if ($scope.repoSearch.textSearch) {
 			opts.textSearch = $scope.repoSearch.textSearch;

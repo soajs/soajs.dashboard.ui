@@ -25,38 +25,44 @@
 					</div>
 				</fieldset>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<fieldset class="searchBarFieldSet tabFieldSetHeight">
+					<h4>Provider: </h4>
 					<div>
-						<label class="searchLabel marginTopRep">Provider:</label>
-						<input type="text" class="searchInput90" ng-model="repoSearch.provider"/>
+						<input type="text" class="searchInput90 searchRepoBar" ng-model="providerSearch"
+						       placeholder="Search ..."/>
 					</div>
 					<br>
-					<br>
-					<hr>
-					<div>
-						<label class="searchLabel">Name:</label>
-						<input type="text" class="searchInput90" ng-model="repoSearch.name"/>
+					<div class="scrollableOrgs">
+						<div ng-repeat="provider in repoSearch.providers | orgSearchFilter:orgSearch">
+							<div class="labelLength f-left scrollableValues">
+								<span>{{provider.l}} </span>
+							</div>
+							<div class="inputLength f-right">
+								<input type="checkbox" class="removeMarginCheckBox" ng-model="provider.selected">
+							</div>
+							<br>
+						</div>
 					</div>
 				</fieldset>
 			</div>
 			<div class="col-md-4">
 				<fieldset class="searchBarFieldSet tabFieldSetHeight">
 					<div>
-						<label class="searchLabel marginTopRep">Text Search:</label>
+						<label class="searchLabel marginTopRep">Search:</label>
 						<input type="text" class="searchInput90" ng-model="repoSearch.textSearch"/>
 					</div>
 					<br>
 					<br>
 					<hr>
 					<div class="searchLabel">
-						<label> Only Activated:  </label>
+						<label> Only Activated Repositories:  </label>
 						<input type="checkbox" class="activeRepoCheck" ng-model="repoSearch.active">
 					</div>
 					
 					<br>
 					<div class="">
-						<label class="searchLabel"> Limit: </label>
+						<label class="searchLabel"> Result Limit: </label>
 						<select class="limitSelect" ng-options="limit.l for limit in limits" ng-init="100"
 						        ng-model="repoSearch.limit" ng-change="search()"></select>
 					</div>

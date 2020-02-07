@@ -20,8 +20,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < response.length; i++) {
 					if (response[i].locked) {
 						var lockedProd = response[i];
@@ -56,12 +55,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/product/delete",
-			"params": { "id": row._id }
+			"params": {"id": row._id}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.productRemovedSuccessfully[LANG]);
 				$scope.listProducts();
 			}
@@ -93,8 +91,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.$parent.displayAlert('success', translation.productAddedSuccessfully[LANG]);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -133,7 +130,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 					formConfig.form.entries[i].value = row[inputName];
 				}
 			});
-			if (formConfig.form.entries[i].name === "code"){
+			if (formConfig.form.entries[i].name === "code") {
 				formConfig.form.entries[i].required = true;
 			}
 		}
@@ -152,12 +149,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 						"method": "put",
 						"routeName": "/dashboard/product/update",
 						"data": postData,
-						"params": { "id": row['_id'] }
+						"params": {"id": row['_id']}
 					}, function (error) {
 						if (error) {
 							$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						else {
+						} else {
 							$scope.$parent.displayAlert('success', translation.productUpdatedSuccessfully[LANG]);
 							$scope.modalInstance.close();
 							$scope.form.formData = {};
@@ -183,12 +179,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/product/packages/list",
-			"params": { "id": productId }
+			"params": {"id": productId}
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				for (var i = 0; i < $scope.grid.rows.length; i++) {
 					if ($scope.grid.rows[i]['_id'] === productId) {
 						$scope.grid.rows[i].packages = response;
@@ -230,12 +225,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 							"method": "post",
 							"routeName": "/dashboard/product/packages/add",
 							"data": postData,
-							"params": { "id": productId }
+							"params": {"id": productId}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.$parent.displayAlert('success', translation.productAddedSuccessfully[LANG]);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -274,7 +268,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 		
 		formConfig.entries[0].type = 'readonly';
 		for (var i = 0; i < formConfig.entries.length; i++) {
-			if (formConfig.entries[i].name === "code"){
+			if (formConfig.entries[i].name === "code") {
 				formConfig.entries[i].required = true;
 			}
 		}
@@ -300,12 +294,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 							"method": "put",
 							"routeName": "/dashboard/product/packages/update",
 							"data": postData,
-							"params": { "id": productId, "code": data.code.split("_")[1] }
+							"params": {"id": productId, "code": data.code.split("_")[1]}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.$parent.displayAlert('success', translation.productUpdatedSuccessfully[LANG]);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -334,12 +327,11 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/product/packages/delete",
-			"params": { "id": productId, "code": packageCode }
+			"params": {"id": productId, "code": packageCode}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.selectedPackageRemoved[LANG]);
 				$scope.reloadPackages(productId);
 			}
@@ -374,8 +366,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.grid = {
 					row: response
 				};
@@ -403,12 +394,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/product/delete",
-			"params": { "id": row._id }
+			"params": {"id": row._id}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.productRemovedSuccessfully[LANG]);
 				$scope.listConsoleProducts();
 			}
@@ -440,8 +430,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.$parent.displayAlert('success', translation.productAddedSuccessfully[LANG]);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -467,12 +456,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.editProduct = function (row) {
 		var formConfig = {};
 		formConfig.form = angular.copy(productizationConfig.form.product);
-		if(row.locked){
-			formConfig.form.entries.forEach((oneEntry)=>{
+		if (row.locked) {
+			formConfig.form.entries.forEach((oneEntry) => {
 				oneEntry.type = 'readonly';
 			});
-		}
-		else {
+		} else {
 			formConfig.form.entries[0].type = 'readonly';
 		}
 		
@@ -489,7 +477,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 			});
 		}
 		formConfig.actions = [];
-		if (!row.locked){
+		if (!row.locked) {
 			formConfig.actions.push({
 				'type': 'submit',
 				'label': translation.editProduct[LANG],
@@ -503,12 +491,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 						"method": "put",
 						"routeName": "/dashboard/product/update",
 						"data": postData,
-						"params": { "id": row['_id'] }
+						"params": {"id": row['_id']}
 					}, function (error) {
 						if (error) {
 							$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						else {
+						} else {
 							$scope.$parent.displayAlert('success', translation.productUpdatedSuccessfully[LANG]);
 							$scope.modalInstance.close();
 							$scope.form.formData = {};
@@ -534,12 +521,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/console/product/list",
-			"params": { "id": productId }
+			"params": {"id": productId}
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				if ($scope.grid.row['_id'] === productId) {
 					$scope.grid.row = response;
 				}
@@ -579,12 +565,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 							"method": "post",
 							"routeName": "/dashboard/product/packages/add",
 							"data": postData,
-							"params": { "id": productId }
+							"params": {"id": productId}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							}
-							else {
+							} else {
 								$scope.$parent.displayAlert('success', translation.productAddedSuccessfully[LANG]);
 								$scope.modalInstance.close();
 								$scope.form.formData = {};
@@ -621,15 +606,14 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 		var recordData = angular.copy(data);
 		delete recordData.acl;
 		recordData._TTL = recordData._TTL / 3600000;
-		if (data.locked){
-			formConfig.entries.forEach((oneEntry)=>{
-				if (oneEntry.type === 'select'){
+		if (data.locked) {
+			formConfig.entries.forEach((oneEntry) => {
+				if (oneEntry.type === 'select') {
 					oneEntry.value = '';
 				}
 				oneEntry.type = 'readonly';
 			});
-		}
-		else {
+		} else {
 			formConfig.entries[0].type = 'readonly';
 		}
 		var options = {
@@ -640,7 +624,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 			data: recordData,
 			actions: []
 		};
-		if (!data.locked){
+		if (!data.locked) {
 			options.actions.push({
 				'type': 'submit',
 				'label': translation.editPackage[LANG],
@@ -656,12 +640,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 						"method": "put",
 						"routeName": "/dashboard/product/packages/update",
 						"data": postData,
-						"params": { "id": productId, "code": data.code.split("_")[1] }
+						"params": {"id": productId, "code": data.code.split("_")[1]}
 					}, function (error) {
 						if (error) {
 							$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						}
-						else {
+						} else {
 							$scope.$parent.displayAlert('success', translation.productUpdatedSuccessfully[LANG]);
 							$scope.modalInstance.close();
 							$scope.form.formData = {};
@@ -688,12 +671,11 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
 			"routeName": "/dashboard/product/packages/delete",
-			"params": { "id": productId, "code": packageCode }
+			"params": {"id": productId, "code": packageCode}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.$parent.displayAlert('success', translation.selectedPackageRemoved[LANG]);
 				$scope.reloadPackages(productId);
 			}
@@ -719,11 +701,11 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	$scope.msg = {};
 	
 	$scope.normalizeMethod = function (method) {
-		if (!method){
+		if (!method) {
 			return null
 		}
 		let newMethod;
-		switch(method.toLowerCase()) {
+		switch (method.toLowerCase()) {
 			case 'get':
 				newMethod = 'Read';
 				break;
@@ -748,7 +730,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		return newMethod
 	};
 	$scope.minimize = function (envCode, service) {
-		if(!$scope.aclFill[envCode][service.name]){
+		if (!$scope.aclFill[envCode][service.name]) {
 			$scope.aclFill[envCode][service.name] = {};
 		}
 		$scope.aclFill[envCode][service.name].collapse = false;
@@ -756,10 +738,10 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if (!$scope.aclFill[envCode]){
+		if (!$scope.aclFill[envCode]) {
 			$scope.aclFill[envCode] = {};
 		}
-		if(!$scope.aclFill[envCode][service.name]){
+		if (!$scope.aclFill[envCode][service.name]) {
 			$scope.aclFill[envCode][service.name] = {};
 		}
 		$scope.aclFill[envCode][service.name].collapse = true;
@@ -776,8 +758,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				var code = $routeParams.code;
 				if (!response.locked) {
 					for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
@@ -799,14 +780,13 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 					return;
 				}
 				$scope.product = response;
-				if (response.scope && response.scope.acl){
+				if (response.scope && response.scope.acl) {
 					$scope.oldACL = false;
 					$scope.aclFill = response.scope.acl;
 					$scope.$evalAsync(function ($scope) {
 						aclHelpers.fillAcl($scope);
 					});
-				}
-				else {
+				} else {
 					$scope.oldACL = true;
 					overlayLoading.hide();
 				}
@@ -818,15 +798,14 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/list",
-			"params": { "short": true }
+			"params": {"short": true}
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				for (let x = response.length -1 ; x >= 0; x--) {
-					if(response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD"){
+			} else {
+				for (let x = response.length - 1; x >= 0; x--) {
+					if (response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD") {
 						response.splice(x, 1);
 						break;
 					}
@@ -847,8 +826,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.paginations = {};
 				let allServiceApis = {};
 				response.records.forEach(function (serv) {
@@ -909,8 +887,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -928,7 +905,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
-			$scope.aclFill[envCode][service.name][version].accessType= "public";
+			$scope.aclFill[envCode][service.name][version].accessType = "public";
 		}
 	};
 	$scope.purgeACL = function () {
@@ -945,8 +922,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				overlayLoading.hide();
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -972,7 +948,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	
 	$scope.normalizeMethod = function (method) {
 		let newMethod;
-		switch(method.toLowerCase()) {
+		switch (method.toLowerCase()) {
 			case 'get':
 				newMethod = 'Read';
 				break;
@@ -998,7 +974,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		return newMethod
 	};
 	$scope.minimize = function (envCode, service) {
-		if(!$scope.aclFill[envCode][service.name]){
+		if (!$scope.aclFill[envCode][service.name]) {
 			$scope.aclFill[envCode][service.name] = {};
 		}
 		$scope.aclFill[envCode][service.name].collapse = false;
@@ -1006,10 +982,10 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if (!$scope.aclFill[envCode]){
+		if (!$scope.aclFill[envCode]) {
 			$scope.aclFill[envCode] = {};
 		}
-		if(!$scope.aclFill[envCode][service.name]){
+		if (!$scope.aclFill[envCode][service.name]) {
 			$scope.aclFill[envCode][service.name] = {};
 		}
 		$scope.aclFill[envCode][service.name].collapse = true;
@@ -1026,22 +1002,20 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-			
+			} else {
+				
 				if ($scope.environments_codes.length === 0) {
 					overlayLoading.hide();
 					return;
 				}
 				$scope.product = response;
-				if (response.scope && response.scope.acl){
+				if (response.scope && response.scope.acl) {
 					$scope.aclFill = response.scope.acl;
 					$scope.oldACL = false;
 					$scope.$evalAsync(function ($scope) {
 						aclHelpers.fillAcl($scope);
 					});
-				}
-				else {
+				} else {
 					$scope.oldACL = true;
 					overlayLoading.hide();
 				}
@@ -1053,13 +1027,12 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/list",
-			"params": { "short": true }
+			"params": {"short": true}
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.environments_codes = response;
 				$scope.getAllServicesList();
 				
@@ -1071,8 +1044,8 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	//default operation
 	$scope.getAllServicesList = function () {
 		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
-			if($scope.environments_codes  && $scope.environments_codes[x] && $scope.environments_codes [x].code && $scope.environments_codes[x].code.toUpperCase() === "DASHBOARD"){
-				if($scope.environments_codes[x].services && $scope.environments_codes[x].services.controller && $scope.environments_codes[x].services.controller.services){
+			if ($scope.environments_codes && $scope.environments_codes[x] && $scope.environments_codes [x].code && $scope.environments_codes[x].code.toUpperCase() === "DASHBOARD") {
+				if ($scope.environments_codes[x].services && $scope.environments_codes[x].services.controller && $scope.environments_codes[x].services.controller.services) {
 					consoleAclConfig.DASHBOARD = $scope.environments_codes[x].services.controller.services;
 				}
 			}
@@ -1086,8 +1059,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.paginations = {};
 				let allServiceApis = {};
 				response.records.forEach(function (serv) {
@@ -1145,11 +1117,10 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			}
 		};
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-		overlayLoading.hide();
+			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -1167,7 +1138,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
-			$scope.aclFill[envCode][service.name][version].accessType= "public";
+			$scope.aclFill[envCode][service.name][version].accessType = "public";
 		}
 	};
 	$scope.purgeACL = function () {
@@ -1184,8 +1155,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				overlayLoading.hide();
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -1209,14 +1179,145 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	$scope.aclFill = {};
 	$scope.currentPackage = {};
 	$scope.msg = {};
+	$scope.itemsPerPage = 20;
+	$scope.maxSize = 5;
 	$scope.serviceGroup = [];
+	$scope.packageAclMode = [
+		{
+			l: "API Group based on product scope",
+			v: "apiGroup"
+		},
+		{
+			l: "Granular API",
+			v: "granular"
+		}
+	];
 	
+	function applyGranular() {
+		$scope.paginations = {};
+		let allServiceApis = {};
+		let serviceResponse = angular.copy($scope.allServiceApisResponse);
+		serviceResponse.records.forEach(function (serv) {
+			let acl = [];
+			if (serv.group) {
+				if (!allServiceApis[serv.group]) {
+					allServiceApis[serv.group] = []
+				}
+				if (!$scope.paginations[serv.group]) {
+					$scope.paginations[serv.group] = {
+						currentPage: 1,
+						totalItems: 1
+					}
+				} else {
+					$scope.paginations[serv.group].totalItems++;
+				}
+				if (serv.versions) {
+					for (let version in serv.versions) {
+						if (serv.versions.hasOwnProperty(version) && serv.versions[version]) {
+							if ($scope.serviceGroup.indexOf(serv.group) === -1) {
+								$scope.serviceGroup.push(serv.group);
+							}
+							let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
+							aclVersion["%v%"] = version;
+							acl.push(aclVersion);
+						}
+					}
+					serv.fixList = acl;
+				}
+				allServiceApis[serv.group].push(serv);
+			}
+		});
+		$scope.allServiceApis = allServiceApis;
+		
+		var code = $routeParams.code;
+		let response = angular.copy($scope.packageResponse);
+		if (!response.locked) {
+			for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
+				if ($scope.environments_codes[i].code === 'DASHBOARD') {
+					$scope.environments_codes.splice(i, 1);
+					break;
+				}
+			}
+		}
+		for (var x = 0; x < response.packages.length; x++) {
+			if (response.packages[x].code === code) {
+				$scope.currentPackage = angular.copy(response.packages[x]);
+				$scope.currentPackage._TTL = (response.packages[x]._TTL / 3600000).toString();
+				break;
+			}
+		}
+		if ($scope.environments_codes.length === 0) {
+			return;
+		}
+		$scope.product = response;
+		if (response.scope && response.scope.acl) {
+			$scope.oldACL = false;
+			$scope.aclFill =  $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
+			$scope.$evalAsync(function ($scope) {
+				aclHelpers.fillAcl($scope);
+			});
+		} else {
+			$scope.oldACL = true;
+		}
+	}
+	
+	function applyApiGroup() {
+		let response = angular.copy($scope.packageResponse);
+		$scope.allServiceApis = angular.copy($scope.allServiceApisResponse).records;
+		var code = $routeParams.code;
+		if (!response.locked) {
+			for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
+				if ($scope.environments_codes[i].code === 'DASHBOARD') {
+					$scope.environments_codes.splice(i, 1);
+					break;
+				}
+			}
+		}
+		for (var x = 0; x < response.packages.length; x++) {
+			if (response.packages[x].code === code) {
+				$scope.currentPackage = angular.copy(response.packages[x]);
+				$scope.currentPackage._TTL = (response.packages[x]._TTL / 3600000).toString();
+				break;
+			}
+		}
+		if ($scope.environments_codes.length === 0) {
+			overlayLoading.hide();
+			return;
+		}
+		$scope.product = angular.copy(response);
+		$scope.aclFill = $scope.currentPackage.acl;
+		$scope.aclFill =  !$scope.currentPackage.aclType || $scope.currentPackage.aclType !== 'granular' ? $scope.currentPackage.acl : {};
+		if (response.scope && response.scope.acl) {
+			$scope.scopeFill = response.scope.acl;
+			$scope.oldACL = false;
+			$scope.$evalAsync(function ($scope) {
+				aclHelpers.fillPackageAcl($scope);
+			});
+		} else {
+			$scope.oldACL = true;
+		}
+	}
+	
+	$scope.applyMode = function (aclMode) {
+		overlayLoading.show();
+		if (aclMode === 'granular') {
+			$scope.aclMode = $scope.packageAclMode[1];
+			applyGranular(()=>{
+				overlayLoading.hide();
+			});
+		} else {
+			$scope.aclMode = $scope.packageAclMode[0];
+			applyApiGroup(()=>{
+				overlayLoading.hide();
+			});
+		}
+	};
 	$scope.normalizeMethod = function (method) {
 		let newMethod;
-		if (!method){
+		if (!method) {
 			return null;
 		}
-		switch(method.toLowerCase()) {
+		switch (method.toLowerCase()) {
 			case 'get':
 				newMethod = 'Read';
 				break;
@@ -1269,7 +1370,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 									}
 								}
 							}
-							if (api.appeneded || data.apisPermission !== "restricted"){
+							if (api.appeneded || data.apisPermission !== "restricted") {
 								if (!data.methods[m]) {
 									data.methods[m] = [];
 								}
@@ -1290,10 +1391,10 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 				$scope.data = data;
 				$scope.normalizeMethod = function (method) {
 					let newMethod;
-					if (!method){
+					if (!method) {
 						return null;
 					}
-					switch(method.toLowerCase()) {
+					switch (method.toLowerCase()) {
 						case 'get':
 							newMethod = 'Read';
 							break;
@@ -1326,45 +1427,62 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.minimize = function (envCode, service) {
-		if (!$scope.aclFill[envCode]){
-			$scope.aclFill[envCode] = {};
+		if ($scope.aclMode.v === "granular") {
+			if (!$scope.aclFill[envCode][service.name]) {
+				$scope.aclFill[envCode][service.name] = {};
+			}
+			$scope.aclFill[envCode][service.name].collapse = false;
+			$scope.aclFill[envCode][service.name].include = true;
+		} else {
+			if (!$scope.aclFill[envCode]) {
+				$scope.aclFill[envCode] = {};
+			}
+			if (!$scope.aclFill[envCode][service]) {
+				$scope.aclFill[envCode][service] = {};
+			}
+			$scope.aclFill[envCode][service].collapse = false;
+			$scope.aclFill[envCode][service].include = true;
 		}
-		if(!$scope.aclFill[envCode][service]){
-			$scope.aclFill[envCode][service] = {};
-		}
-		$scope.aclFill[envCode][service].collapse = false;
-		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if (!$scope.aclFill[envCode]){
-			$scope.aclFill[envCode] = {};
+		if ($scope.aclMode.v === "granular") {
+			if (!$scope.aclFill[envCode]) {
+				$scope.aclFill[envCode] = {};
+			}
+			if (!$scope.aclFill[envCode][service.name]) {
+				$scope.aclFill[envCode][service.name] = {};
+			}
+			$scope.aclFill[envCode][service.name].collapse = true;
+			$scope.aclFill[envCode][service.name].include = true;
+		} else {
+			if (!$scope.aclFill[envCode]) {
+				$scope.aclFill[envCode] = {};
+			}
+			if (!$scope.aclFill[envCode][service]) {
+				$scope.aclFill[envCode][service] = {};
+			}
+			$scope.aclFill[envCode][service].collapse = true;
+			$scope.aclFill[envCode][service].include = true;
 		}
-		if(!$scope.aclFill[envCode][service]){
-			$scope.aclFill[envCode][service] = {};
-		}
-		$scope.aclFill[envCode][service].collapse = true;
-		$scope.aclFill[envCode][service].include = true;
 	};
 	
 	$scope.checkApiPermission = function (version) {
-		if (version && version.apisPermission === 'restricted'){
+		if (version && version.apisPermission === 'restricted') {
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	};
 	
 	$scope.checkGroupEmpty = function (version) {
 		let empty = true;
-		if (version && version.apisPermission){
-			if (Object.keys(version).length > 1){
+		if (version && version.apisPermission) {
+			if (Object.keys(version).length > 1) {
 				empty = false;
 			}
-		}
-		else {
-			if (Object.keys(version).length > 0){
+		} else {
+			if (Object.keys(version).length > 0) {
 				empty = false;
 			}
 		}
@@ -1381,40 +1499,21 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				var code = $routeParams.code;
-				if (!response.locked) {
-					for (var i = $scope.environments_codes.length - 1; i >= 0; i--) {
-						if ($scope.environments_codes[i].code === 'DASHBOARD') {
-							$scope.environments_codes.splice(i, 1);
-							break;
-						}
-					}
-				}
+			} else {
+				let currentPackage;
 				for (var x = 0; x < response.packages.length; x++) {
-					if (response.packages[x].code === code) {
-						$scope.currentPackage = angular.copy(response.packages[x]);
-						$scope.currentPackage._TTL = (response.packages[x]._TTL / 3600000).toString();
+					if (response.packages[x].code === $routeParams.code) {
+						currentPackage = angular.copy(response.packages[x]);
 						break;
 					}
 				}
-				if ($scope.environments_codes.length === 0) {
-					overlayLoading.hide();
-					return;
-				}
-				$scope.product = response;
-				$scope.aclFill = $scope.currentPackage.acl;
-				if (response.scope && response.scope.acl){
-					$scope.scopeFill = response.scope.acl;
-					$scope.oldACL = false;
-					$scope.$evalAsync(function ($scope) {
-						aclHelpers.fillPackageAcl($scope);
-					});
-				}
-				else {
-					$scope.oldACL = true;
-					overlayLoading.hide();
+				$scope.packageResponse = angular.copy(response);
+				$scope.aclMode = $scope.packageAclMode[0];
+				if (currentPackage.aclType === "granular") {
+					$scope.aclMode = $scope.packageAclMode[1];
+					applyGranular();
+				} else {
+					applyApiGroup();
 				}
 			}
 		});
@@ -1424,15 +1523,14 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/list",
-			"params": { "short": true }
+			"params": {"short": true}
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
-				for (let x = response.length -1 ; x >= 0; x--) {
-					if(response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD"){
+			} else {
+				for (let x = response.length - 1; x >= 0; x--) {
+					if (response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD") {
 						response.splice(x, 1);
 						break;
 					}
@@ -1451,9 +1549,9 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.allServiceApis = response.records;
+				$scope.allServiceApisResponse = angular.copy(response);
 				$scope.getEnvironments();
 			}
 		});
@@ -1462,7 +1560,13 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	$scope.saveACL = function () {
 		var productId = $routeParams.pid;
 		var postData = $scope.currentPackage;
-		var result = aclHelpers.constructAclFromPost($scope.aclFill, true);
+		var result;
+		
+		if ($scope.aclMode.v === "granular") {
+			result = aclHelpers.constructAclFromPost($scope.aclFill, false);
+		} else {
+			result = aclHelpers.constructAclFromPost($scope.aclFill, true);
+		}
 		postData.acl = result.data;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
@@ -1479,12 +1583,14 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 				'_TTL': postData._TTL
 			}
 		};
+		if ($scope.aclMode.v === "granular") {
+			options.params.type = "granular";
+		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -1505,8 +1611,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -1540,10 +1645,10 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	
 	$scope.normalizeMethod = function (method) {
 		let newMethod;
-		if (!method){
+		if (!method) {
 			return null;
 		}
-		switch(method.toLowerCase()) {
+		switch (method.toLowerCase()) {
 			case 'get':
 				newMethod = 'Read';
 				break;
@@ -1569,10 +1674,10 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	};
 	
 	$scope.minimize = function (envCode, service) {
-		if (!$scope.aclFill[envCode]){
+		if (!$scope.aclFill[envCode]) {
 			$scope.aclFill[envCode] = {};
 		}
-		if(!$scope.aclFill[envCode][service]){
+		if (!$scope.aclFill[envCode][service]) {
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = false;
@@ -1580,10 +1685,10 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if (!$scope.aclFill[envCode]){
+		if (!$scope.aclFill[envCode]) {
 			$scope.aclFill[envCode] = {};
 		}
-		if(!$scope.aclFill[envCode][service]){
+		if (!$scope.aclFill[envCode][service]) {
 			$scope.aclFill[envCode][service] = {};
 		}
 		$scope.aclFill[envCode][service].collapse = true;
@@ -1591,23 +1696,21 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	};
 	
 	$scope.checkApiPermission = function (version) {
-		if (version && version.apisPermission === 'restricted'){
+		if (version && version.apisPermission === 'restricted') {
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	};
 	
 	$scope.checkGroupEmpty = function (version) {
 		let empty = true;
-		if (version && version.apisPermission){
-			if (Object.keys(version).length > 1){
+		if (version && version.apisPermission) {
+			if (Object.keys(version).length > 1) {
 				empty = false;
 			}
-		}
-		else {
-			if (Object.keys(version).length > 0){
+		} else {
+			if (Object.keys(version).length > 0) {
 				empty = false;
 			}
 		}
@@ -1623,8 +1726,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				var code = $routeParams.code;
 				for (var x = 0; x < response.packages.length; x++) {
 					if (response.packages[x].code === code) {
@@ -1639,14 +1741,13 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				}
 				$scope.product = response;
 				$scope.aclFill = $scope.currentPackage.acl;
-				if (response.scope && response.scope.acl){
+				if (response.scope && response.scope.acl) {
 					$scope.scopeFill = response.scope.acl;
 					$scope.oldACL = false;
 					$scope.$evalAsync(function ($scope) {
 						aclHelpers.fillPackageAcl($scope);
 					});
-				}
-				else {
+				} else {
 					$scope.oldACL = true;
 					overlayLoading.hide();
 				}
@@ -1658,13 +1759,12 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/environment/list",
-			"params": { "short": true }
+			"params": {"short": true}
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.environments_codes = response;
 				$scope.getPackageAcl();
 			}
@@ -1679,8 +1779,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.allServiceApis = response.records;
 				$scope.getEnvironments();
 			}
@@ -1712,8 +1811,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -1736,8 +1834,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				
-			}
-			else {
+			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
@@ -1781,7 +1878,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 									}
 								}
 							}
-							if (api.appeneded || data.apisPermission !== "restricted"){
+							if (api.appeneded || data.apisPermission !== "restricted") {
 								if (!data.methods[m]) {
 									data.methods[m] = [];
 								}
@@ -1802,10 +1899,10 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				$scope.data = data;
 				$scope.normalizeMethod = function (method) {
 					let newMethod;
-					if (!method){
+					if (!method) {
 						return null;
 					}
-					switch(method.toLowerCase()) {
+					switch (method.toLowerCase()) {
 						case 'get':
 							newMethod = 'Read';
 							break;
@@ -1844,15 +1941,15 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	});
 }]);
 
-productizationApp.filter('reposSearchFilter', function() {
-	return function(input, searchKeyword) {
-		if(!searchKeyword) return input;
-		if(!input || !Array.isArray(input) || input.length === 0) return input;
+productizationApp.filter('reposSearchFilter', function () {
+	return function (input, searchKeyword) {
+		if (!searchKeyword) return input;
+		if (!input || !Array.isArray(input) || input.length === 0) return input;
 		var output = [];
-		input.forEach(function(oneInput) {
-			if(oneInput) {
+		input.forEach(function (oneInput) {
+			if (oneInput) {
 				//using full_name since it's composed of owner + name
-				if(oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
+				if (oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
 					output.push(oneInput);
 				}
 			}

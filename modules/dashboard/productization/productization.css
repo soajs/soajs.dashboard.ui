@@ -369,4 +369,8 @@ redAccordion .panel-heading a:focus {
     margin-bottom: 10px;
 }
 
+.aclToggleDiv{
+    background-color: #F8F8F8;
+}
+
 

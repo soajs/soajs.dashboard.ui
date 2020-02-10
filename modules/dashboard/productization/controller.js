@@ -1254,7 +1254,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			$scope.oldACL = false;
 			$scope.aclFill =  $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
 			$scope.$evalAsync(function ($scope) {
-				aclHelpers.fillAcl($scope);
+				aclHelpers.fillPackageAclGranular($scope);
 			});
 		} else {
 			$scope.oldACL = true;
@@ -1563,11 +1563,11 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		var result;
 		
 		if ($scope.aclMode.v === "granular") {
-			result = aclHelpers.constructAclFromPost($scope.aclFill, false);
+			result = aclHelpers.constructAclFromPost($scope.aclFill, "granular");
 		} else {
-			result = aclHelpers.constructAclFromPost($scope.aclFill, true);
+			result = aclHelpers.constructAclFromPost($scope.aclFill, "apiGroup");
 		}
-		postData.acl = result.data;
+		postData.acl = result;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
 			return;

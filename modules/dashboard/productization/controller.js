@@ -1568,7 +1568,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		} else {
 			result = aclHelpers.constructAclFromPost($scope.aclFill, "apiGroup");
 		}
-		postData.acl = result;
+		postData.acl = result.data;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
 			return;

@@ -792,6 +792,93 @@ soajsApp.service("aclDrawHelpers", function () {
 		return {'valid': true};
 	}
 	
+	function prepareSaveObjectPackGranular(aclEnvFill, aclEnvObj) {
+		var code, grpCodes;
+		for (var serviceName in aclEnvFill) {
+			if (aclEnvFill.hasOwnProperty(serviceName)) {
+				if (aclEnvFill[serviceName].include) {
+					aclEnvObj[serviceName] = {};
+					for (var version in aclEnvFill[serviceName]) {
+						if (aclEnvFill[serviceName].hasOwnProperty(version)) {
+							if (aclEnvFill[serviceName][version].include) {
+								var service = angular.copy(aclEnvFill[serviceName][version]);
+								if (service.include === true) {
+									aclEnvObj[serviceName][version] = {};
+									if (service.accessType === 'private') {
+										aclEnvObj[serviceName][version].access = true;
+									} else if (service.accessType === 'public') {
+										aclEnvObj[serviceName][version].access = false;
+									} else if (service.accessType === 'groups') {
+										aclEnvObj[serviceName][version].access = [];
+										grpCodes = aclEnvFill[version][serviceName].grpCodes;
+										if (grpCodes) {
+											for (code in grpCodes) {
+												if (grpCodes.hasOwnProperty(code)) {
+													aclEnvObj[serviceName][version].access.push(code);
+												}
+											}
+										}
+										if (aclEnvObj[serviceName][version].access.length === 0) {
+											return {'valid': false};
+										}
+									}
+									
+									if (service.apisRestrictPermission === true) {
+										aclEnvObj[serviceName][version].apisPermission = 'restricted';
+									}
+									for (let method in service) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
+											aclEnvObj[serviceName][version][method] = {
+												apis : {}
+											};
+											for (let group in service[method]) {
+												if (service[method][group] && service[method][group].apis) {
+													for (var apiName in service[method][group].apis) {
+														if (service[method][group].apis.hasOwnProperty(apiName)) {
+															let api = service[method][group].apis[apiName];
+															if ((service.apisRestrictPermission === true && api.include === true) || !service.apisRestrictPermission) {
+																/// need to also check for the default api if restricted
+																aclEnvObj[serviceName][version][method].apis[apiName] = {
+																	group: group
+																};
+																if (api.accessType === 'private') {
+																	aclEnvObj[serviceName][version][method].apis[apiName].access = true;
+																} else if (api.accessType === 'public') {
+																	aclEnvObj[serviceName][version][method].apis[apiName].access = false;
+																} else if (api.accessType === 'groups') {
+																	aclEnvObj[serviceName][version][method].apis[apiName].access = [];
+																	grpCodes = aclEnvFill[version][serviceName][method][group].apis[apiName].grpCodes;
+																	if (grpCodes) {
+																		for (code in grpCodes) {
+																			if (grpCodes.hasOwnProperty(code)) {
+																				aclEnvObj[serviceName][version][method].apis[apiName].access.push(code);
+																			}
+																		}
+																	}
+																	if (aclEnvObj[serviceName][version][method].apis[apiName].access.length === 0) {
+																		return {'valid': false};
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					if (Object.keys(aclEnvObj[serviceName]).length === 0) {
+						delete aclEnvObj[serviceName];
+					}
+				}
+			}
+		}
+		return {'valid': true};
+	}
+	
 	function prepareSaveObjectPack(aclEnvFill, aclEnvObj) {
 		for (var serviceName in aclEnvFill) {
 			if (aclEnvFill.hasOwnProperty(serviceName)) {
@@ -835,6 +922,7 @@ soajsApp.service("aclDrawHelpers", function () {
 		'applyApiRestriction': applyApiRestriction,
 		'prepareSaveObject': prepareSaveObject,
 		'prepareSaveObjectPack': prepareSaveObjectPack,
+		'prepareSaveObjectPackGranular': prepareSaveObjectPackGranular,
 		'groupApisForPackageDisplay': groupApisForPackageDisplay
 	}
 });

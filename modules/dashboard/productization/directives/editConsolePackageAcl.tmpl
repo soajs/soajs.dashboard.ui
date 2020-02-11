@@ -99,9 +99,9 @@
 										</span>
 										<span>
 											<input disabled value="public"
-											       ng-checked="my1Api.appeneded && !my1Api.access" type="radio"/> {{translation.public[LANG]}}</span>
+											       ng-checked="my1Api.appeneded && my1Api.showAppended && !my1Api.access" type="radio"/> {{translation.public[LANG]}}</span>
 										<span>
-											<input disabled ng-checked="my1Api.appeneded && my1Api.access"
+											<input disabled ng-checked="my1Api.appeneded && my1Api.showAppended && my1Api.access"
 											       value="private" type="radio"/> {{translation.private[LANG]}}</span>
 									</div>
 								</div>

@@ -90,6 +90,72 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		}
 	}
 	
+	function fillPackageAclGranular(currentScope) {
+		var count = 0;
+		var myAcl = {};
+		var envCodes = currentScope.environments_codes;
+		var aclFill = currentScope.aclFill;
+		envCodes.forEach(function (oneEnv) {
+			if (aclFill && aclFill[oneEnv.code.toLowerCase()]) {
+				if (objectIsEnv(aclFill[oneEnv.code.toLowerCase()])) {
+					count++;
+					myAcl[oneEnv.code.toUpperCase()] = reFormPackageAclGranular(aclFill[oneEnv.code.toLowerCase()]);
+					propagateAcl(currentScope, myAcl[oneEnv.code.toUpperCase()]);
+				}
+			}
+		});
+		currentScope.aclFill = myAcl;
+		
+		overlayLoading.hide();
+	}
+	
+	function reFormPackageAclGranular(acl) {
+		let newForm = {};
+		if (acl && Object.keys(acl).length > 0) {
+			for (let service in acl) {
+				if (acl.hasOwnProperty(service) && acl[service]) {
+					newForm[service] = {};
+					for (let version in acl[service]) {
+						if (acl[service].hasOwnProperty(version) && acl[service][version]) {
+							newForm[service][version] = {};
+							if (acl[service][version].hasOwnProperty('apisPermission')) {
+								newForm[service][version].apisPermission = acl[service][version].apisPermission;
+							}
+							if (acl[service][version].hasOwnProperty('access')) {
+								newForm[service][version].access = acl[service][version].access;
+							}
+							for (var method in acl[service][version]) {
+								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission'].indexOf(method) === -1) {
+									if (!newForm[service][version][method]) {
+										newForm[service][version][method] = {};
+									}
+									if (acl[service][version][method].apis && Object.keys(acl[service][version][method].apis).length > 0){
+										for (var api in acl[service][version][method].apis){
+											if (api && acl[service][version][method].apis[api] && acl[service][version][method].apis[api].group){
+												newForm[service][version][method][acl[service][version][method].apis[api].group] = {
+													apis: {}
+												};
+												if (!newForm[service][version][method][acl[service][version][method].apis[api].group]) {
+													newForm[service][version][method][acl[service][version][method].apis[api].group] = {
+														apis: {}
+													};
+												}
+												newForm[service][version][method][acl[service][version][method].apis[api].group].apis = {
+													[api] :{}
+												};
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return newForm;
+	}
+	
 	function fillPackageAcl(currentScope) {
 		var aclFill = angular.copy(currentScope.aclFill);
 		currentScope.fixList = compareWithScope(currentScope);
@@ -255,8 +321,11 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 			aclObj[envCode.toLowerCase()] = {};
 			if (!pak) {
 				var result = aclFromPostPerEnv(aclFill[envCode.toUpperCase()], aclObj[envCode.toLowerCase()]);
-			} else {
+			} else if(pak === "apiGroup"){
 				var result = aclFromPostPackPerEnv(aclFill[envCode.toUpperCase()], aclObj[envCode.toLowerCase()]);
+			}
+			else {
+				var result = aclFromPostPackGranularPerEnv(aclFill[envCode.toUpperCase()], aclObj[envCode.toLowerCase()]);
 			}
 			
 			if (!result.valid) {
@@ -288,10 +357,19 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		return {'valid': true, 'data': aclEnvObj};
 	}
 	
+	function aclFromPostPackGranularPerEnv(aclEnvFill, aclEnvObj) {
+		if (!aclDrawHelpers.prepareSaveObjectPackGranular(aclEnvFill, aclEnvObj).valid) {
+			return {'valid': false, 'data': aclEnvObj};
+		}
+		
+		return {'valid': true, 'data': aclEnvObj};
+	}
+	
 	return {
 		'groupApisForDisplay': groupApisForDisplay,
 		'fillAcl': fillAcl,
 		'fillPackageAcl': fillPackageAcl,
+		'fillPackageAclGranular': fillPackageAclGranular,
 		'applyPermissionRestriction': applyPermissionRestriction,
 		'checkForGroupDefault': checkForGroupDefault,
 		'constructAclFromPost': constructAclFromPost,

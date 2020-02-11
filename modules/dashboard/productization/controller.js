@@ -1254,7 +1254,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			$scope.oldACL = false;
 			$scope.aclFill =  $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
 			$scope.$evalAsync(function ($scope) {
-				aclHelpers.fillAcl($scope);
+				aclHelpers.fillPackageAclGranular($scope);
 			});
 		} else {
 			$scope.oldACL = true;
@@ -1365,7 +1365,8 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 									for (let a = 0; a < acl.length; a++) {
 										if (acl[a].apis && acl[a].apis[api.v]) {
 											api.appeneded = true;
-											api.access = acl[a].apis[api.v].access;
+											api.showAppended = acl[a].apis && acl[a].apis[api.v].hasOwnProperty('access');
+											api.access = !!acl[a].apis[api.v].access;
 										}
 									}
 								}
@@ -1563,11 +1564,11 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		var result;
 		
 		if ($scope.aclMode.v === "granular") {
-			result = aclHelpers.constructAclFromPost($scope.aclFill, false);
+			result = aclHelpers.constructAclFromPost($scope.aclFill, "granular");
 		} else {
-			result = aclHelpers.constructAclFromPost($scope.aclFill, true);
+			result = aclHelpers.constructAclFromPost($scope.aclFill, "apiGroup");
 		}
-		postData.acl = result.data;
+		postData.acl = result;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
 			return;
@@ -1873,7 +1874,8 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 									for (let a = 0; a < acl.length; a++) {
 										if (acl[a].apis && acl[a].apis[api.v]) {
 											api.appeneded = true;
-											api.access = acl[a].apis[api.v].access;
+											api.showAppended = acl[a].apis && acl[a].apis[api.v].hasOwnProperty('access');
+											api.access = !!acl[a].apis[api.v].access;
 										}
 									}
 								}
@@ -1890,6 +1892,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				break;
 			}
 		}
+		console.log(data)
 		$modal.open({
 			templateUrl: 'aclConsoleDescription.tmpl',
 			size: 'lg',

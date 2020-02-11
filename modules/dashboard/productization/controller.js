@@ -1365,7 +1365,8 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 									for (let a = 0; a < acl.length; a++) {
 										if (acl[a].apis && acl[a].apis[api.v]) {
 											api.appeneded = true;
-											api.access = acl[a].apis[api.v].access;
+											api.showAppended = acl[a].apis && acl[a].apis[api.v].hasOwnProperty('access');
+											api.access = !!acl[a].apis[api.v].access;
 										}
 									}
 								}
@@ -1873,7 +1874,8 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 									for (let a = 0; a < acl.length; a++) {
 										if (acl[a].apis && acl[a].apis[api.v]) {
 											api.appeneded = true;
-											api.access = acl[a].apis[api.v].access;
+											api.showAppended = acl[a].apis && acl[a].apis[api.v].hasOwnProperty('access');
+											api.access = !!acl[a].apis[api.v].access;
 										}
 									}
 								}
@@ -1890,6 +1892,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				break;
 			}
 		}
+		console.log(data)
 		$modal.open({
 			templateUrl: 'aclConsoleDescription.tmpl',
 			size: 'lg',

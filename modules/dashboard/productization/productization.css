@@ -166,7 +166,7 @@ redAccordion .panel-heading a:focus {
 }
 
 .readApis {
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
     background-color: #E6F0F7;
@@ -198,7 +198,7 @@ redAccordion .panel-heading a:focus {
 
 .addApis {
     background-color: #E6F7ED;
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
@@ -229,7 +229,7 @@ redAccordion .panel-heading a:focus {
 
 .updateApis {
     background-color: #F9F2E9;
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
@@ -260,7 +260,7 @@ redAccordion .panel-heading a:focus {
 
 .deleteApis {
     background-color: #F4E7E8;
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
@@ -291,7 +291,7 @@ redAccordion .panel-heading a:focus {
 
 .patchApis {
     background-color: rgba(80, 227, 194, .1);
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
@@ -322,7 +322,7 @@ redAccordion .panel-heading a:focus {
 
 .headApis {
     background-color: rgba(144, 18, 254, .1);
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
 }
@@ -353,7 +353,7 @@ redAccordion .panel-heading a:focus {
 
 .otherApis {
     background-color: #F0F0F0;
-    display: block;
+    display: flow-root;
     box-sizing: border-box;
     margin-bottom: 5px;
 }

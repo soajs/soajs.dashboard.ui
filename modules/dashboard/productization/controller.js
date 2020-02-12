@@ -851,6 +851,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 									}
 									let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
 									aclVersion["%v%"] = version;
+									aclVersion["%showApi%"] = false;
 									acl.push(aclVersion);
 								}
 							}
@@ -861,6 +862,18 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 				});
 				$scope.allServiceApis = allServiceApis;
 				$scope.getEnvironments();
+			}
+		});
+	};
+	
+	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
+		$scope.allServiceApis[group].forEach((service)=>{
+			if (service.name === serviceName){
+				service.fixList.forEach((version)=>{
+					if(version["%v%"] === v){
+						version["%showApi%"] = true;
+					}
+				});
 			}
 		});
 	};
@@ -1084,6 +1097,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 									}
 									let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
 									aclVersion["%v%"] = version;
+									aclVersion["%showApi%"] = false;
 									acl.push(aclVersion);
 								}
 							}
@@ -1094,6 +1108,19 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				});
 				$scope.allServiceApis = allServiceApis;
 				$scope.getConsoleScope();
+			}
+		});
+	};
+	
+	
+	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
+		$scope.allServiceApis[group].forEach((service)=>{
+			if (service.name === serviceName){
+				service.fixList.forEach((version)=>{
+					if(version["%v%"] === v){
+						version["%showApi%"] = true;
+					}
+				});
 			}
 		});
 	};
@@ -1219,6 +1246,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 							}
 							let aclVersion = aclHelpers.groupApisForDisplay(serv.versions[version].apis, 'group');
 							aclVersion["%v%"] = version;
+							aclVersion["%showApi%"] = false;
 							acl.push(aclVersion);
 						}
 					}
@@ -1622,6 +1650,18 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi) {
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi);
+	};
+	
+	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
+		$scope.allServiceApis[group].forEach((service)=>{
+			if (service.name === serviceName){
+				service.fixList.forEach((version)=>{
+					if(version["%v%"] === v){
+						version["%showApi%"] = true;
+					}
+				});
+			}
+		});
 	};
 	
 	$scope.applyRestriction = function (envCode, service) {

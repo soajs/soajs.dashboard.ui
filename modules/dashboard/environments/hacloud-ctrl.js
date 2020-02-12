@@ -17,7 +17,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	$scope.ShowMetrics = {};
 	$scope.servicesMetrics = {};
-	$scope.metricsRefreshInterval = 60000;
+	
 	$scope.oldStyle = false;
 
 	$scope.kubernetesSystemDeployments = KUBERNETES_SYSTEM_DEPLOYMENTS;
@@ -78,7 +78,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		l: '30 Minutes',
 		selected: true
 	};
-
 	if($cookies.getObject('selectedInterval', {'domain': interfaceDomain})){
 		$scope.selectedInterval = $cookies.getObject('selectedInterval', {'domain': interfaceDomain});
 	}
@@ -95,6 +94,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 					$cookies.putObject('selectedInterval', oneInt, {'domain': interfaceDomain});
 					//force reload autoRefresh
 					$scope.autoRefresh();
+					$scope.autoRefreshMetrics()
 				}
 			}
 		});
@@ -115,7 +115,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	};
 
 	$scope.autoRefreshMetrics = function () {
-		var tValue = $scope.metricsRefreshInterval;
+		var tValue = $scope.selectedInterval.v  * 1000;
 		autoRefreshTimeoutMetrics = $timeout(function () {
 			$scope.getServicesMetrics(function () {
 				if(!$scope.destroyed){

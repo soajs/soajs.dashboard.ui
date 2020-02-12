@@ -33,9 +33,9 @@
 				</div>
 				<br> <br>
 				<accordion close-others="true">
-					<accordion-group class="greenAccordion">
-						<accordion-heading><span class="icon icon-cloud"></span>API</accordion-heading>
-						<fieldset ng-repeat="(grp, val) in version" ng-if="grp !== '%v%'">
+					<accordion-group class="greenAccordion" ng-click="showHideServiceApi(oneEnv.code, group, service.name, version['%v%'])" >
+						<accordion-heading ><span class="icon icon-cloud"></span>API</accordion-heading>
+						<fieldset ng-repeat="(grp, val) in version" ng-if="grp !== '%v%' && grp !== '%showApi%' && version['%showApi%']">
 							<legend>{{grp}}</legend>
 							<div ng-if="val.apisRest">
 									<fieldset ng-repeat="(method, apisList) in val.apisRest">

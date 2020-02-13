@@ -29,7 +29,13 @@
 				</div>
 				<div ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include" class="f-left">
 					<span style="padding-left: 20px;"><b>- {{translation.checkRestrictAccessSelectedApi[LANG]}}</b></span>
-					<span style="padding-left: 15px;"><input ng-click="applyRestriction(oneEnv.code, service)" type="checkbox" name="apisRestrictPermission_{{service.name}}" ng-model="aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission" ng-checked="aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission===true" value="restricted"/></span>
+					<span style="padding-left: 15px;"><input ng-click="applyRestriction(aclFill[oneEnv.code][service.name][version['%v%']])" type="checkbox" name="apisRestrictPermission_{{service.name}}" ng-model="aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission" ng-checked="aclFill[oneEnv.code][service.name][version['%v%']].apisRestrictPermission===true" value="restricted"/></span>
+				</div>
+				<div ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include">
+					<br>
+				</div>
+				<div ng-if="aclFill[oneEnv.code][service.name][version['%v%']].include" class="f-left">
+					<span style="padding-left: 30px; font-style: italic; font-size: 13px;">If not selected, any api on this service will be available</span>
 				</div>
 				<br> <br>
 				<accordion close-others="true">

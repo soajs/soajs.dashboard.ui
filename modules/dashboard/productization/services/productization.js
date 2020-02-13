@@ -44,8 +44,11 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 							if (acl[service][version].hasOwnProperty('access')) {
 								newForm[service][version].access = acl[service][version].access;
 							}
+							if (acl[service][version].hasOwnProperty('packagesPermission')) {
+								newForm[service][version].packagesPermission = acl[service][version].packagesPermission;
+							}
 							for (var method in acl[service][version]) {
-								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission'].indexOf(method) === -1 && acl[service][version][method].length > 0) {
+								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission', 'packagesPermission'].indexOf(method) === -1 && acl[service][version][method].length > 0) {
 									if (!newForm[service][version][method]) {
 										newForm[service][version][method] = {};
 									}
@@ -85,7 +88,6 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 				}
 				aclDrawHelpers.fillServiceAccess(aclFill[serviceName], currentService);
 				aclDrawHelpers.fillServiceApiAccess(aclFill[serviceName], currentService);
-				aclDrawHelpers.applyApiRestriction(aclFill, currentService);
 			}
 		}
 	}
@@ -125,7 +127,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 								newForm[service][version].access = acl[service][version].access;
 							}
 							for (var method in acl[service][version]) {
-								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission'].indexOf(method) === -1) {
+								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission', 'packagesPermission'].indexOf(method) === -1) {
 									if (!newForm[service][version][method]) {
 										newForm[service][version][method] = {};
 									}
@@ -210,7 +212,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 								newForm[service][version].apisPermission = acl[service][version].apisPermission;
 							}
 							for (var method in acl[service][version]) {
-								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission'].indexOf(method) === -1 && acl[service][version][method].length > 0) {
+								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission', 'packagesPermission'].indexOf(method) === -1 && acl[service][version][method].length > 0) {
 									acl[service][version][method].forEach((oneMethod) => {
 										if (oneMethod.group && oneMethod.apis) {
 											if (!newForm[service][version][oneMethod.group]) {
@@ -305,9 +307,8 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 	}
 	
 	
-	function applyPermissionRestriction(scope, envCode, service) {
-		var aclFill = scope.aclFill[envCode];
-		aclDrawHelpers.applyApiRestriction(aclFill, service);
+	function applyPermissionRestriction(aclFill) {
+		aclDrawHelpers.applyApiRestriction(aclFill);
 	}
 	
 	function checkForGroupDefault(scope, envCode, service, grp, val, myApi, v) {

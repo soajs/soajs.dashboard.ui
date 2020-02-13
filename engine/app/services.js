@@ -522,48 +522,20 @@ soajsApp.service("aclDrawHelpers", function () {
 		return result;
 	}
 	
-	function applyApiRestriction(aclFill, service) {
-		
-		// if (service.name) {
-		// 	var aclServiceVersions = aclFill[service.name];
-		// }
-		// for (var version in aclServiceVersions) {
-		// 	if (aclServiceVersions.hasOwnProperty(version)) {
-		// 		let aclService = aclServiceVersions[version];
-		// 		if (aclService && aclService.apisRestrictPermission === true) {
-		// 			for (var grpLabel in service.fixList) {
-		// 				if (service.fixList.hasOwnProperty(grpLabel)) {
-		// 					var defaultApi = service.fixList[grpLabel]['defaultApi'];
-		// 					if (defaultApi) {
-		// 						var found = false;
-		// 						if (service.fixList[grpLabel].apisRest) {
-		// 							for (var m in service.fixList[grpLabel].apisRest) {
-		// 								if (aclService[m]) {
-		// 									if (aclService[m].apis && aclService[m].apis[defaultApi] && aclService[m].apis[defaultApi].include === true) {
-		// 										found = true;
-		// 										break;
-		// 									}
-		// 								}
-		// 							}
-		// 							if (!found) {
-		// 								for (var m in service.fixList[grpLabel].apisRest) {
-		// 									if (aclService[m]) {
-		// 										service.fixList[grpLabel].apisRest[m].forEach(function (oneApi) {
-		// 											if (aclService[m].apis && aclService[m].apis[oneApi.v]) {
-		// 												aclService[m].apis[oneApi.v].include = false;
-		// 											}
-		// 										});
-		// 									}
-		// 								}
-		// 							}
-		// 						}
-		// 						service.fixList[grpLabel].defaultIncluded = found;
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
+	function applyApiRestriction(aclFill) {
+		for (let method in aclFill) {
+			if (method && aclFill[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
+				for (let group in aclFill[method]) {
+					if (group && aclFill[method][group] && aclFill[method][group]){
+						for (let api in aclFill[method][group].apis) {
+							if (aclFill[method][group].apis[api]["accessType"] === "public" || aclFill[method][group].apis[api]["accessType"] === "private") {
+								aclFill[method][group].apis[api].include = true;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	function checkForGroupDefault(aclFill, service, grp, val, myApi, v) {
@@ -720,8 +692,11 @@ soajsApp.service("aclDrawHelpers", function () {
 									if (service.apisRestrictPermission === true) {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
+									if (service.packagesPermission) {
+										aclEnvObj[serviceName][version].packagesPermission = service.packagesPermission;
+									}
 									for (let method in service) {
-										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
 											aclEnvObj[serviceName][version][method] = [];
 											for (let group in service[method]) {
 												if (service[method][group] && service[method][group].apis) {
@@ -826,10 +801,11 @@ soajsApp.service("aclDrawHelpers", function () {
 									if (service.apisRestrictPermission === true) {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
+									
 									for (let method in service) {
-										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
 											aclEnvObj[serviceName][version][method] = {
-												apis : {}
+												apis: {}
 											};
 											for (let group in service[method]) {
 												if (service[method][group] && service[method][group].apis) {

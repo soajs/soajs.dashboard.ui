@@ -867,10 +867,10 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	};
 	
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
-		$scope.allServiceApis[group].forEach((service)=>{
-			if (service.name === serviceName){
-				service.fixList.forEach((version)=>{
-					if(version["%v%"] === v){
+		$scope.allServiceApis[group].forEach((service) => {
+			if (service.name === serviceName) {
+				service.fixList.forEach((version) => {
+					if (version["%v%"] === v) {
 						version["%showApi%"] = true;
 					}
 				});
@@ -912,13 +912,33 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi);
 	};
 	
-	$scope.applyRestriction = function (envCode, service) {
-		aclHelpers.applyPermissionRestriction($scope, envCode, service);
+	$scope.applyRestriction = function (aclFill) {
+		aclHelpers.applyPermissionRestriction(aclFill);
 	};
 	
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
 			$scope.aclFill[envCode][service.name][version].accessType = "public";
+			if (!$scope.aclFill[envCode][service.name][version].apisRestrictPermission){
+				$scope.aclFill[envCode][service.name][version].packagesPermission = "restricted";
+			}
+		}
+		//add all apis
+		if (include && service && service.versions && service.versions[version] && service.versions[version].apis && service.versions[version].apis.length > 0) {
+			service.versions[version].apis.forEach((api) => {
+				let group = api.group ? api.group : "General";
+				if (!$scope.aclFill[envCode][service.name][version][api.m]) {
+					$scope.aclFill[envCode][service.name][version][api.m] = {};
+				}
+				if (!$scope.aclFill[envCode][service.name][version][api.m][group]) {
+					$scope.aclFill[envCode][service.name][version][api.m][group] = {
+						apis: {}
+					};
+				}
+				if (!$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v]) {
+					$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v] = {};
+				}
+			});
 		}
 	};
 	$scope.purgeACL = function () {
@@ -1114,10 +1134,10 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	
 	
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
-		$scope.allServiceApis[group].forEach((service)=>{
-			if (service.name === serviceName){
-				service.fixList.forEach((version)=>{
-					if(version["%v%"] === v){
+		$scope.allServiceApis[group].forEach((service) => {
+			if (service.name === serviceName) {
+				service.fixList.forEach((version) => {
+					if (version["%v%"] === v) {
 						version["%showApi%"] = true;
 					}
 				});
@@ -1159,13 +1179,33 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi, v);
 	};
 	
-	$scope.applyRestriction = function (envCode, service) {
-		aclHelpers.applyPermissionRestriction($scope, envCode, service);
+	$scope.applyRestriction = function (aclFill) {
+		aclHelpers.applyPermissionRestriction(aclFill);
 	};
 	
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
 			$scope.aclFill[envCode][service.name][version].accessType = "public";
+			if (!$scope.aclFill[envCode][service.name][version].apisRestrictPermission){
+				$scope.aclFill[envCode][service.name][version].packagesPermission = "restricted";
+			}
+		}
+		//add all apis
+		if (include && service && service.versions && service.versions[version] && service.versions[version].apis && service.versions[version].apis.length > 0) {
+			service.versions[version].apis.forEach((api) => {
+				let group = api.group ? api.group : "General";
+				if (!$scope.aclFill[envCode][service.name][version][api.m]) {
+					$scope.aclFill[envCode][service.name][version][api.m] = {};
+				}
+				if (!$scope.aclFill[envCode][service.name][version][api.m][group]) {
+					$scope.aclFill[envCode][service.name][version][api.m][group] = {
+						apis: {}
+					};
+				}
+				if (!$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v]) {
+					$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v] = {};
+				}
+			});
 		}
 	};
 	$scope.purgeACL = function () {
@@ -1280,7 +1320,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		$scope.product = response;
 		if (response.scope && response.scope.acl) {
 			$scope.oldACL = false;
-			$scope.aclFill =  $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
+			$scope.aclFill = $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
 			$scope.$evalAsync(function ($scope) {
 				aclHelpers.fillPackageAclGranular($scope);
 			});
@@ -1314,7 +1354,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		}
 		$scope.product = angular.copy(response);
 		$scope.aclFill = $scope.currentPackage.acl;
-		$scope.aclFill =  !$scope.currentPackage.aclType || $scope.currentPackage.aclType !== 'granular' ? $scope.currentPackage.acl : {};
+		$scope.aclFill = !$scope.currentPackage.aclType || $scope.currentPackage.aclType !== 'granular' ? $scope.currentPackage.acl : {};
 		if (response.scope && response.scope.acl) {
 			$scope.scopeFill = response.scope.acl;
 			$scope.oldACL = false;
@@ -1330,12 +1370,12 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		overlayLoading.show();
 		if (aclMode === 'granular') {
 			$scope.aclMode = $scope.packageAclMode[1];
-			applyGranular(()=>{
+			applyGranular(() => {
 				overlayLoading.hide();
 			});
 		} else {
 			$scope.aclMode = $scope.packageAclMode[0];
-			applyApiGroup(()=>{
+			applyApiGroup(() => {
 				overlayLoading.hide();
 			});
 		}
@@ -1653,10 +1693,10 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
-		$scope.allServiceApis[group].forEach((service)=>{
-			if (service.name === serviceName){
-				service.fixList.forEach((version)=>{
-					if(version["%v%"] === v){
+		$scope.allServiceApis[group].forEach((service) => {
+			if (service.name === serviceName) {
+				service.fixList.forEach((version) => {
+					if (version["%v%"] === v) {
 						version["%showApi%"] = true;
 					}
 				});
@@ -1664,9 +1704,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		});
 	};
 	
-	$scope.applyRestriction = function (envCode, service) {
-		aclHelpers.applyPermissionRestriction($scope, envCode, service);
-	};
+	$scope.applyRestriction = function () {};
 	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
@@ -1888,8 +1926,8 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi, v);
 	};
 	
-	$scope.applyRestriction = function (envCode, service) {
-		aclHelpers.applyPermissionRestriction($scope, envCode, service);
+	$scope.applyRestriction = function () {
+	
 	};
 	$scope.viewGroupDetails = function (env, service, grp, version) {
 		let data = {

@@ -1869,7 +1869,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		var productId = $routeParams.pid;
 		var postData = $scope.currentPackage;
 		
-		var result = aclHelpers.constructAclFromPost($scope.aclFill, true);
+		var result = aclHelpers.constructAclFromPost($scope.aclFill, "apiGroup");
 		postData.acl = result.data;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);

@@ -729,25 +729,27 @@ soajsApp.service("aclDrawHelpers", function () {
 																		return {'valid': false};
 																	}
 																}
-																if (aclEnvObj[serviceName][version][method].length === 0) {
-																	aclEnvObj[serviceName][version][method].push(groupApi);
-																} else {
-																	let found = false;
-																	for (let x = 0; x < aclEnvObj[serviceName][version][method].length; x++) {
-																		if (aclEnvObj[serviceName][version][method][x].group === groupApi.group) {
-																			aclEnvObj[serviceName][version][method][x].apis[apiName] = groupApi.apis[apiName];
-																			found = true;
-																			break;
-																		}
-																	}
-																	if (!found) {
+																if (aclEnvObj[serviceName][version][method]){
+																	if (aclEnvObj[serviceName][version][method].length === 0) {
 																		aclEnvObj[serviceName][version][method].push(groupApi);
+																	} else {
+																		let found = false;
+																		for (let x = 0; x < aclEnvObj[serviceName][version][method].length; x++) {
+																			if (aclEnvObj[serviceName][version][method][x].group === groupApi.group) {
+																				aclEnvObj[serviceName][version][method][x].apis[apiName] = groupApi.apis[apiName];
+																				found = true;
+																				break;
+																			}
+																		}
+																		if (!found) {
+																			aclEnvObj[serviceName][version][method].push(groupApi);
+																		}
 																	}
 																}
 															}
 														}
 													}
-													if (aclEnvObj[serviceName][version][method].length === 0) {
+													if (aclEnvObj[serviceName][version][method] && aclEnvObj[serviceName][version][method].length === 0) {
 														delete aclEnvObj[serviceName][version][method];
 													}
 												}

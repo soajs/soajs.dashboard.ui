@@ -44,9 +44,9 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 							if (acl[service][version].hasOwnProperty('access')) {
 								newForm[service][version].access = acl[service][version].access;
 							}
-							if (acl[service][version].hasOwnProperty('packagesPermission')) {
-								newForm[service][version].packagesPermission = acl[service][version].packagesPermission;
-							}
+							// if (acl[service][version].hasOwnProperty('packagesPermission')) {
+							// 	newForm[service][version].packagesPermission = acl[service][version].packagesPermission;
+							// }
 							for (var method in acl[service][version]) {
 								if (acl[service][version].hasOwnProperty(method) && acl[service][version][method] && ['access', 'apisPermission', 'packagesPermission'].indexOf(method) === -1 && acl[service][version][method].length > 0) {
 									if (!newForm[service][version][method]) {

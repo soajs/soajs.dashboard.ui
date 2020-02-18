@@ -692,9 +692,9 @@ soajsApp.service("aclDrawHelpers", function () {
 									if (service.apisRestrictPermission === true) {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
-									if (service.packagesPermission) {
-										aclEnvObj[serviceName][version].packagesPermission = service.packagesPermission;
-									}
+									// if (service.packagesPermission) {
+									// 	aclEnvObj[serviceName][version].packagesPermission = service.packagesPermission;
+									// }
 									for (let method in service) {
 										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
 											aclEnvObj[serviceName][version][method] = [];

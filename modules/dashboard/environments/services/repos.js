@@ -1013,6 +1013,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 			if(formData.gitSource && formData.gitSource.branch){
 				params.custom.branch = formData.gitSource.branch;
 			}
+			if(formData.gitSource && formData.gitSource.commit){
+				params.custom.commit = formData.gitSource.commit;
+			}
 			if(formData.deployConfig && Object.hasOwnProperty.call(formData.deployConfig, 'memoryLimit')){
 				params.custom.memory = formData.deployConfig.memoryLimit;
 			}

@@ -524,7 +524,7 @@ soajsApp.service("aclDrawHelpers", function () {
 	
 	function applyApiRestriction(aclFill) {
 		for (let method in aclFill) {
-			if (method && aclFill[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
+			if (method && aclFill[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
 				for (let group in aclFill[method]) {
 					if (group && aclFill[method][group] && aclFill[method][group]){
 						for (let api in aclFill[method][group].apis) {
@@ -692,11 +692,9 @@ soajsApp.service("aclDrawHelpers", function () {
 									if (service.apisRestrictPermission === true) {
 										aclEnvObj[serviceName][version].apisPermission = 'restricted';
 									}
-									// if (service.packagesPermission) {
-									// 	aclEnvObj[serviceName][version].packagesPermission = service.packagesPermission;
-									// }
+									
 									for (let method in service) {
-										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
 											aclEnvObj[serviceName][version][method] = [];
 											for (let group in service[method]) {
 												if (service[method][group] && service[method][group].apis) {
@@ -805,7 +803,7 @@ soajsApp.service("aclDrawHelpers", function () {
 									}
 									
 									for (let method in service) {
-										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access", "packagesPermission"].indexOf(method) === -1) {
+										if (service[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
 											aclEnvObj[serviceName][version][method] = {
 												apis: {}
 											};

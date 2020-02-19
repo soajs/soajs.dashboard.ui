@@ -919,26 +919,6 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
 			$scope.aclFill[envCode][service.name][version].accessType = "public";
-			if (!$scope.aclFill[envCode][service.name][version].apisRestrictPermission){
-				$scope.aclFill[envCode][service.name][version].packagesPermission = "restricted";
-			}
-		}
-		//add all apis
-		if (include && service && service.versions && service.versions[version] && service.versions[version].apis && service.versions[version].apis.length > 0) {
-			service.versions[version].apis.forEach((api) => {
-				let group = api.group ? api.group : "General";
-				if (!$scope.aclFill[envCode][service.name][version][api.m]) {
-					$scope.aclFill[envCode][service.name][version][api.m] = {};
-				}
-				if (!$scope.aclFill[envCode][service.name][version][api.m][group]) {
-					$scope.aclFill[envCode][service.name][version][api.m][group] = {
-						apis: {}
-					};
-				}
-				if (!$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v]) {
-					$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v] = {};
-				}
-			});
 		}
 	};
 	$scope.purgeACL = function () {
@@ -1186,26 +1166,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.includeVersion = function (envCode, service, version, include) {
 		if (include && $scope.aclFill && $scope.aclFill[envCode] && $scope.aclFill[envCode][service.name][version]) {
 			$scope.aclFill[envCode][service.name][version].accessType = "public";
-			if (!$scope.aclFill[envCode][service.name][version].apisRestrictPermission){
-				$scope.aclFill[envCode][service.name][version].packagesPermission = "restricted";
-			}
-		}
-		//add all apis
-		if (include && service && service.versions && service.versions[version] && service.versions[version].apis && service.versions[version].apis.length > 0) {
-			service.versions[version].apis.forEach((api) => {
-				let group = api.group ? api.group : "General";
-				if (!$scope.aclFill[envCode][service.name][version][api.m]) {
-					$scope.aclFill[envCode][service.name][version][api.m] = {};
-				}
-				if (!$scope.aclFill[envCode][service.name][version][api.m][group]) {
-					$scope.aclFill[envCode][service.name][version][api.m][group] = {
-						apis: {}
-					};
-				}
-				if (!$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v]) {
-					$scope.aclFill[envCode][service.name][version][api.m][group].apis[api.v] = {};
-				}
-			});
 		}
 	};
 	$scope.purgeACL = function () {

@@ -1007,9 +1007,9 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		if(formData.deployConfig){
 			params.deployConfig = formData.deployConfig;
 		}
-		
 		if (formData.custom) {
 			params.custom = formData.custom;
+			params.recipe = formData.recipe;
 			if(formData.gitSource && formData.gitSource.branch){
 				params.custom.branch = formData.gitSource.branch;
 			}

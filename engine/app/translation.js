@@ -419,6 +419,14 @@ var translation = {
 		"ENG": "Close",
 		"FRA": "Fermer"
 	},
+	"refresh": {
+		"ENG": "Refresh",
+		"FRA": "Recharger"
+	},
+	"follow": {
+		"ENG": "Follow",
+		"FRA": "Suivre"
+	},
 	"active": {
 		"ENG": "Active",
 		"FRA": "Active"

@@ -992,6 +992,36 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 					$scope.ok = function () {
 						$modalInstance.dismiss('ok');
 					};
+					$scope.followLogs = function () {
+					
+					};
+					$scope.refreshLogs = function () {
+						getSendDataFromServer(currentScope, ngDataApi, {
+							method: "get",
+							routeName: "/dashboard/cloud/services/instances/logs",
+							params: {
+								env: currentScope.envCode,
+								namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
+								serviceId: task.ref.service.id,
+								taskId: task.id
+							}
+						}, function (error, response) {
+							if (error) {
+								currentScope.displayAlert('danger', error.message);
+							}
+							else {
+								$scope.data = remove_special(response.data).replace("undefined", "").toString();
+								if (!$scope.$$phase) {
+									$scope.$apply();
+								}
+								
+								fixBackDrop();
+								$timeout(function () {
+									highlightMyCode()
+								}, 500);
+							}
+						});
+					};
 
 					if(error) {
 						$scope.message = {
@@ -1003,40 +1033,6 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 						$timeout(function () {
 							highlightMyCode()
 						}, 500);
-
-						$scope.refreshLogs = function () {
-							getSendDataFromServer(currentScope, ngDataApi, {
-								method: "get",
-								routeName: "/dashboard/cloud/services/instances/logs",
-								params: {
-									env: currentScope.envCode,
-									namespace: service.namespace || '', //pass namespace in case of kubernetes deployment
-									serviceId: task.ref.service.id,
-									taskId: task.id
-								}
-							}, function (error, response) {
-								if (error) {
-									currentScope.displayAlert('danger', error.message);
-								}
-								else {
-									$scope.data = remove_special(response.data).replace("undefined", "").toString();
-									if (!$scope.$$phase) {
-										$scope.$apply();
-									}
-
-									fixBackDrop();
-									$timeout(function () {
-										highlightMyCode()
-									}, 500);
-
-									autoRefreshPromise = $timeout(function () {
-										$scope.refreshLogs();
-									}, 5000);
-								}
-							});
-						};
-
-						$scope.refreshLogs();
 					}
 				}
 			});

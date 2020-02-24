@@ -977,7 +977,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
-			var autoRefreshPromise;
+			//var autoRefreshPromise;
 
 			var mInstance = $modal.open({
 				templateUrl: "logBox.html",
@@ -993,7 +993,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 						$modalInstance.dismiss('ok');
 					};
 					$scope.followLogs = function () {
-					
+						//TODO call the same API with extra query param follow=true and display the result
 					};
 					$scope.refreshLogs = function () {
 						getSendDataFromServer(currentScope, ngDataApi, {
@@ -1040,11 +1040,11 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 			mInstance.result.then(function () {
 				//Get triggers when modal is closed
 				currentScope.pauseRefresh = false;
-				$timeout.cancel(autoRefreshPromise);
+				//$timeout.cancel(autoRefreshPromise);
 			}, function () {
 				//gets triggers when modal is dismissed.
 				currentScope.pauseRefresh = false;
-				$timeout.cancel(autoRefreshPromise);
+				//$timeout.cancel(autoRefreshPromise);
 			});
 		});
 

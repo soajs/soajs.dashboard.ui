@@ -992,7 +992,7 @@ hacloudServices.service('hacloudSrv', [ 'ngDataApi', 'hacloudSrvRedeploy', '$tim
 					$scope.ok = function () {
 						$modalInstance.dismiss('ok');
 					};
-					$scope.followLogs = function () {
+					$scope.tailLogs = function () {
 						//TODO call the same API with extra query param follow=true and display the result
 					};
 					$scope.refreshLogs = function () {

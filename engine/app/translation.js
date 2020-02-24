@@ -427,6 +427,10 @@ var translation = {
 		"ENG": "Follow",
 		"FRA": "Suivre"
 	},
+	"tail": {
+		"ENG": "Tail",
+		"FRA": "Tail"
+	},
 	"active": {
 		"ENG": "Active",
 		"FRA": "Active"

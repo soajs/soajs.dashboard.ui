@@ -1020,7 +1020,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 						};
 						var handleEndCallback = function (response) {
 							$scope.data += "\n";
-							$scope.data += "Error tailing log, please click the refresh and tail again!";
+							$scope.data += "Error tailing log, please click refresh or tail again!";
 							$scope.data += "\n";
 							if (evtSource) {
 								evtSource.close();

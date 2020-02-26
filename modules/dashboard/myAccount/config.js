@@ -25,7 +25,24 @@ var loginConfig = {
 				'fieldMsg': ' <a href="#/forgotPw">' + translation.forgotYourPassword[LANG] + '</a>',
 				'tooltip': translation.passwordsToolTip[LANG],
 				'required': true
-			}
+			},
+			{
+				'name': 'seperator',
+				'type': 'html',
+				'value': "<hr/>"
+			},
+			{
+				'name': '3rd-party-login',
+				'label': 'Third Party Login',
+				'type': 'group',
+				'entries': [
+					{
+						'name': 'azure',
+						'type': 'html',
+						'value': "<img height='32' src=\"modules/dashboard/environments/images/azure.png\">&nbsp; Microsoft Azure Login"
+					}
+				]
+			},
 		]
 	}
 };
@@ -58,7 +75,7 @@ var resetPwConfig = {
 				'required': true
 			}
 		]
-
+		
 	}
 };
 
@@ -108,7 +125,7 @@ var forgetPwConfig = {
 				'required': true
 			}
 		]
-
+		
 	}
 };
 
@@ -163,7 +180,7 @@ var changeEmailConfig = {
 				'required': true
 			}
 		]
-
+		
 	}
 };
 

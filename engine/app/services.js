@@ -36,6 +36,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		$cookies.remove('soajs_current_route', {'domain': interfaceDomain});
 		$cookies.remove('selectedInterval', {'domain': interfaceDomain});
 		$cookies.remove("soajs_dashboard_login", {'domain': interfaceDomain});
+		$cookies.remove("soajs_passport_login", {'domain': interfaceDomain});
 		
 		$localStorage.infraProviders = null;
 		$localStorage.soajs_user = null;

@@ -283,9 +283,14 @@ myAccountApp.controller('validateCtrl', ['$scope', 'ngDataApi', '$route', 'isUse
 	$scope.validateChangeEmail();
 }]);
 
-myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUserLoggedIn', '$localStorage', 'myAccountAccess',
-	function ($scope, ngDataApi, $cookies, isUserLoggedIn, $localStorage, myAccountAccess) {
+myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUserLoggedIn', '$localStorage', 'myAccountAccess', 'injectFiles',
+	function ($scope, ngDataApi, $cookies, isUserLoggedIn, $localStorage, myAccountAccess, injectFiles) {
 		var formConfig = loginConfig.formConf;
+		formConfig.entries[3].entries.forEach((oneEntry)=>{
+			oneEntry.onAction =  function (id) {
+				$scope.thirdPartyLogin(id);
+			};
+		});
 		formConfig.actions = [{
 			'type': 'submit',
 			'label': translation.login[LANG],
@@ -383,6 +388,10 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			}
 		}];
 		
+		$scope.thirdPartyLogin = function (passport){
+			overlayLoading.show();
+			window.location.href = apiConfiguration.domain + "/oauth/passport/login/" + passport + "?key=" + apiConfiguration.key;
+		};
 		if (!isUserLoggedIn($scope)) {
 			buildForm($scope, null, formConfig);
 		}
@@ -393,7 +402,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			}
 			$scope.$parent.go(gotoUrl);
 		}
-		
+		injectFiles.injectCss("modules/dashboard/myAccount/myAccount.css");
 	}]);
 
 myAccountApp.controller('forgotPwCtrl', ['$scope', 'ngDataApi', 'isUserLoggedIn', function ($scope, ngDataApi, isUserLoggedIn) {

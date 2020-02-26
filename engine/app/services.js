@@ -938,7 +938,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/key/permission/get"
+			"routeName": "/soajs/acl"
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
@@ -949,7 +949,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 				
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "get",
-					"routeName": "/key/permission/get"
+					"routeName": "/soajs/acl"
 				}, function (error, response) {
 					if (error) {
 						overlayLoading.hide();

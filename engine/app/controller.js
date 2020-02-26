@@ -366,7 +366,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					if ($scope.pillar && $scope.pillar.toLowerCase() === 'operate') {
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "get",
-							"routeName": "/key/permission/get"
+							"routeName": "/soajs/acl"
 						}, function (error, response) {
 							if (error) {
 								$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);

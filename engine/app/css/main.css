@@ -1615,3 +1615,54 @@ td.apiNavigationWide .pagination a {
     border-radius: 50%;
     border: solid 1px white;
 }
+
+@keyframes blink {
+    /**
+     * At the start of the animation the dot
+     * has an opacity of .2
+     */
+    0% {
+      opacity: .2;
+    }
+    /**
+     * At 20% the dot is fully visible and
+     * then fades out slowly
+     */
+    20% {
+      opacity: 1;
+    }
+    /**
+     * Until it reaches an opacity of .2 and
+     * the animation can start again
+     */
+    100% {
+      opacity: .2;
+    }
+}
+
+.loading {
+    display: inline-table;
+    font-size: 18px;
+}
+  
+.loading:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(4,end) 900ms infinite;      
+    animation: ellipsis steps(4,end) 900ms infinite;
+    content: "\2026"; /* ascii code for the ellipsis character */
+    width: 0px;
+}
+  
+@keyframes ellipsis {
+    to {
+      width: 1.25em;    
+    }
+}
+  
+@-webkit-keyframes ellipsis {
+    to {
+      width: 1.25em;    
+    }
+}

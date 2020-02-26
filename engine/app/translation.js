@@ -431,6 +431,10 @@ var translation = {
 		"ENG": "Tail",
 		"FRA": "Tail"
 	},
+	"tailing": {
+		"ENG": "Tailing",
+		"FRA": "Tailing"
+	},
 	"active": {
 		"ENG": "Active",
 		"FRA": "Active"

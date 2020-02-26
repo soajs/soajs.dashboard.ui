@@ -992,6 +992,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 					fixBackDrop();
 					
 					$scope.ok = function () {
+						$scope.isTailing = false;
 						$modalInstance.dismiss('ok');
 					};
 					
@@ -1009,6 +1010,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 							if (!$scope.$$phase) {
 								$scope.$apply();
 							}
+							$scope.isTailing = true;
 						};
 						var handleCallback = function (response) {
 							$scope.data += remove_special(response.data).replace("undefined", "").toString();
@@ -1016,6 +1018,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 							if (!$scope.$$phase) {
 								$scope.$apply();
 							}
+							$scope.isTailing = true;
 							highlightMyCode();
 						};
 						var handleEndCallback = function (response) {
@@ -1026,6 +1029,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 								evtSource.close();
 								evtSource = null;
 							}
+							$scope.isTailing = false;
 						};
 						
 						var uri = apiConfiguration.domain + '/dashboard/cloud/services/instances/logs?';
@@ -1048,6 +1052,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 						if (evtSource) {
 							evtSource.close();
 							evtSource = null;
+							$scope.isTailing = false;
 						}
 						getSendDataFromServer(currentScope, ngDataApi, {
 							method: "get",

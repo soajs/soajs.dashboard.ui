@@ -945,8 +945,6 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
 			} else {
-				$cookies.put("soajs_dashboard_key", response.extKey, {'domain': interfaceDomain});
-				
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "get",
 					"routeName": "/soajs/acl"
@@ -962,13 +960,22 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 						}
 					}
 					
-					if (response.acl) {
-						$localStorage.acl_access = response.acl;
+					if (response.finalACL) {
+						let acl = {
+							"dashboard": {}
+						};
+						for (var service in response.finalACL){
+							if (service && response.finalACL[service]){
+								let version = response.finalACL[service].version;
+								delete response.finalACL[service].version;
+								acl.dashboard[service] = {
+									[version] :  response.finalACL[service]
+								};
+							}
+						}
+						$localStorage.acl_access = acl;
 					} else {
 						console.log('Missing ACL');
-					}
-					if (response.environments) {
-						$localStorage.environments = response.environments;
 					}
 					var options = {
 						"method": "get",

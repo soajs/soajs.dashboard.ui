@@ -371,8 +371,23 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 							if (error) {
 								$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 							} else {
-								if (response.acl && response.acl[envRecord.code.toLowerCase()]) {
-									$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl[envRecord.code.toLowerCase()];
+								if (response.acl) {
+									$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl;
+								}
+								if (response.finalACL) {
+									let acl = {
+										"dashboard": {}
+									};
+									for (var service in response.finalACL){
+										if (service && response.finalACL[service]){
+											let version = response.finalACL[service].version;
+											delete response.finalACL[service].version;
+											acl.dashboard[service] = {
+												[version] :  response.finalACL[service]
+											};
+										}
+									}
+									$localStorage.acl_access = acl;
 								}
 								doEnvPerNav();
 								if ($routeParams && $routeParams.envCode) {

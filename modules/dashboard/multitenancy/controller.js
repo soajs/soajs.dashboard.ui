@@ -1464,26 +1464,19 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	
 	$scope.addNewExtKey = function (tId, appId, key, productCode) {
 		let formConfig = tenantConfig.form.extKey;
-		$scope.productsScopes.forEach(function (oneProduct) {
-			if (oneProduct.code === productCode) {
-				if (oneProduct.scope && oneProduct.scope.acl && typeof (oneProduct.scope.acl) === 'object') {
-					//new acl
-					formConfig.entries.forEach(function (oneFormField) {
-						if (oneFormField.name === 'environment') {
-							let list = [];
-							let availableEnvs = Object.keys(oneProduct.scope.acl);
-							// availableEnvs = $scope.availableEnv;
-							availableEnvs.forEach(function (envCode) {
-								list.push({
-									"v": envCode,
-									"l": envCode,
-									"selected": (envCode === $scope.currentEnv)
-								});
-							});
-							oneFormField.value = list;
-						}
+		formConfig.entries.forEach(function (oneFormField) {
+			if (oneFormField.name === 'environment') {
+				let list = [];
+				let availableEnvs = $scope.availableEnv;
+				// availableEnvs = $scope.availableEnv;
+				availableEnvs.forEach(function (envCode) {
+					list.push({
+						"v": envCode,
+						"l": envCode,
+						"selected": (envCode === $scope.currentEnv)
 					});
-				}
+				});
+				oneFormField.value = list;
 			}
 		});
 		

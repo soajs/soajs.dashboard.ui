@@ -1663,13 +1663,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                 output['certificates'] = "none"
 			}
 
-			if (data.recipe.buildOptions.settings && Object.hasOwnProperty.call(data.recipe.buildOptions.settings, 'accelerateDeployment')) {
-				output.accelerateDeployment = data.recipe.buildOptions.settings.accelerateDeployment.toString();
-			}
-			else {
-				output.accelerateDeployment = 'false';
-			}
-
 			if (postForm) {
 				output["readinessProbe"] = data.recipe.deployOptions.readinessProbe;
 				setEditorContent("readinessProbe", output['readinessProbe'], mainFormConfig[5].tabs[2].entries[0].height, modalScope);
@@ -1977,13 +1970,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
                 })
 			}
 
-		}
-
-		if (formData.accelerateDeployment) {
-			if (!apiData.recipe.buildOptions.settings) {
-				apiData.recipe.buildOptions.settings = {};
-			}
-			apiData.recipe.buildOptions.settings.accelerateDeployment = (formData.accelerateDeployment === 'true');
 		}
 
 

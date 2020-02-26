@@ -31,6 +31,7 @@ var loginConfig = {
 				'type': 'html',
 				'value': "<hr/>"
 			},
+			/*
 			{
 				'name': '3rd-party-login',
 				'label': 'Third Party Login',
@@ -43,6 +44,7 @@ var loginConfig = {
 					}
 				]
 			},
+			*/
 		]
 	}
 };

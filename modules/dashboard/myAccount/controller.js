@@ -286,11 +286,13 @@ myAccountApp.controller('validateCtrl', ['$scope', 'ngDataApi', '$route', 'isUse
 myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUserLoggedIn', '$localStorage', 'myAccountAccess', 'injectFiles',
 	function ($scope, ngDataApi, $cookies, isUserLoggedIn, $localStorage, myAccountAccess, injectFiles) {
 		var formConfig = loginConfig.formConf;
+		/*
 		formConfig.entries[3].entries.forEach((oneEntry)=>{
 			oneEntry.onAction =  function (id) {
 				$scope.thirdPartyLogin(id);
 			};
 		});
+		*/
 		formConfig.actions = [{
 			'type': 'submit',
 			'label': translation.login[LANG],
@@ -402,7 +404,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			}
 			$scope.$parent.go(gotoUrl);
 		}
-		injectFiles.injectCss("modules/dashboard/myAccount/myAccount.css");
+		//injectFiles.injectCss("modules/dashboard/myAccount/myAccount.css");
 	}]);
 
 myAccountApp.controller('forgotPwCtrl', ['$scope', 'ngDataApi', 'isUserLoggedIn', function ($scope, ngDataApi, isUserLoggedIn) {

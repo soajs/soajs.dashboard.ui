@@ -41,7 +41,17 @@
 				style="white-space: pre !important;" class="sh" ng-bind-html="data"></code></pre>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
+		<table width="100%">
+			<tr>
+				<td width="80%" align="left">
+					<button class="btn btn-primary" ng-click="refreshLogs()">{{translation.refresh[LANG]}}</button>
+					<button class="btn btn-primary" ng-click="tailLogs()">{{translation.tail[LANG]}}</button>
+				</td>
+				<td width="20%" align="right">
+					<button class="btn btn-primary" ng-click="ok()">{{translation.close[LANG]}}</button>
+				</td>
+			</tr>
+		</table>
 	</div>
 </script>
 

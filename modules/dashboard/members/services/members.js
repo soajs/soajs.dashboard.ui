@@ -12,7 +12,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			proxy =true;
 			opts = {
 				"method": "get",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/users',
 					"extKey": ext
@@ -55,7 +55,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			proxy =true;
 			opts = {
 				"method": "get",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/users',
 					"config": true,
@@ -192,7 +192,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			opts = {
 				"method": "get",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/groups',
 					"extKey": ext
@@ -291,7 +291,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								if (env && ext){
 									opts = {
 										"method": "post",
-										"routeName": "/proxy/redirect",
+										"routeName": "/soajs/proxy",
 										"params": {
 											'proxyRoute': '/urac/admin/user',
 											"extKey": ext
@@ -349,7 +349,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			opts = {
 				"method": "get",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/groups',
 					"extKey": subExt
@@ -411,7 +411,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							if (env && ext){
 								opts = {
 									"method": "get",
-									"routeName": "/proxy/redirect",
+									"routeName": "/soajs/proxy",
 									"params": {
 										"username": username,
 										'proxyRoute': '/urac/user',
@@ -450,7 +450,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							if (env && ext){
 								opts = {
 									"method": "put",
-									"routeName": "/proxy/redirect",
+									"routeName": "/soajs/proxy",
 									"params": {
 										'proxyRoute': "/urac/admin/users/invite",
 										"extKey": subExt
@@ -525,7 +525,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			opts = {
 				"method": "put",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': "/urac/admin/users/uninvite",
 					"extKey": ext
@@ -570,7 +570,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			opts = {
 				"method": "get",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/groups',
 					"extKey": ext
@@ -654,7 +654,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								if (env && ext){
 									opts = {
 										"method": "put",
-										"routeName": "/proxy/redirect",
+										"routeName": "/soajs/proxy",
 										"params": {
 											'proxyRoute': '/urac/admin/user',
 											"extKey": ext
@@ -709,7 +709,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && subExt){
 			opts = {
 				"method": "get",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/groups',
 					"extKey": subExt
@@ -788,7 +788,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							if (env && subExt){
 								opts = {
 									"method": "put",
-									"routeName": "/proxy/redirect",
+									"routeName": "/soajs/proxy",
 									"params": {
 										'proxyRoute': '/urac/admin/user/groups',
 										"extKey": subExt
@@ -884,7 +884,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					if (env && subExt){
 						opts = {
 							"method": "put",
-							"routeName": "/proxy/redirect",
+							"routeName": "/soajs/proxy",
 							"params": {
 								'proxyRoute': '/urac/admin/user/pin',
 								"extKey": subExt
@@ -964,7 +964,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					if (env && ext){
 						opts = {
 							"method": "put",
-							"routeName": "/proxy/redirect",
+							"routeName": "/soajs/proxy",
 							"params": {
 								'proxyRoute': '/urac/admin/user/pin',
 								"extKey": ext
@@ -1019,7 +1019,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			config = {
 				"method": "put",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'username': data.username,
 					'proxyRoute': '/urac/admin/user/pin',
@@ -1067,7 +1067,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			config = {
 				"method": "put",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/user/status',
 					"extKey": ext
@@ -1106,7 +1106,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		if (env && ext){
 			config = {
 				"method": "put",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/user/status',
 					"extKey": ext

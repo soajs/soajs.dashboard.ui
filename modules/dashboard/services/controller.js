@@ -712,7 +712,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 				x[3].info.host = apiConfiguration.domain.replace(/^(http|https):\/\//, "");
 				x[3].info.scheme = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
 				x[3].schemes[0] = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
-				x[3].basePath = '/proxy/redirect';
+				x[3].basePath = '/soajs/proxy';
 				x[3].__env = $scope.envSelected;
 				x[3].tenant_access_token = $cookies.get('access_token', {'domain': interfaceDomain});
 				if ($scope.selectedEnvTenant) {
@@ -749,7 +749,7 @@ servicesApp.controller('serviceDetailView', ['$scope', '$routeParams', 'ngDataAp
 					x[3].schemes[0] = (apiConfiguration.domain.indexOf("https://") !== -1) ? "https" : "http";
 					x[3].proxyRoute = $scope.url;
 					x[3].tenant_access_token = $cookies.get('access_token', {'domain': interfaceDomain});
-					x[3].basePath = '/proxy/redirect';
+					x[3].basePath = '/soajs/proxy';
 					console.log("switching to new domain:", x[3].host);
 					swaggerParser.execute.apply(null, x);
 				}

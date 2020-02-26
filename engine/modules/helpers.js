@@ -50,13 +50,13 @@ function getSendDataFromServer($scope, ngDataApi, options, callback) {
 	var exclude = ['urac', 'dashboard', 'oauth', 'key', 'proxy'];
 	if (exclude.indexOf(pathParams[1]) !== -1) {
 		if (options.proxy && $scope.checkAuthEnvCookie()) {
-			apiOptions.url = (options.url) ? options.url + "/proxy/redirect" : apiConfiguration.domain + "/proxy/redirect";
+			apiOptions.url = (options.url) ? options.url + "/soajs/proxy" : apiConfiguration.domain + "/soajs/proxy";
 			apiOptions.url += "?proxyRoute=" + encodeURIComponent(options.routeName);
 			apiOptions.proxy = true;
 		}
 	}
 	else if ($scope.checkAuthEnvCookie()) {
-		apiOptions.url = (options.url) ? options.url + "/proxy/redirect" : apiConfiguration.domain + "/proxy/redirect";
+		apiOptions.url = (options.url) ? options.url + "/soajs/proxy" : apiConfiguration.domain + "/soajs/proxy";
 		apiOptions.url += "?proxyRoute=" + encodeURIComponent(options.routeName);
 		apiOptions.proxy = true;
 	}

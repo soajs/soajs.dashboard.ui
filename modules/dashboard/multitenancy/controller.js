@@ -1468,7 +1468,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			if (oneFormField.name === 'environment') {
 				let list = [];
 				let availableEnvs = $scope.availableEnv;
-				// availableEnvs = $scope.availableEnv;
 				availableEnvs.forEach(function (envCode) {
 					list.push({
 						"v": envCode,

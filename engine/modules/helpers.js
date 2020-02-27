@@ -57,7 +57,7 @@ function getSendDataFromServer($scope, ngDataApi, options, callback) {
 	}
 	else if ($scope.checkAuthEnvCookie()) {
 		apiOptions.url = (options.url) ? options.url + "/soajs/proxy" : apiConfiguration.domain + "/soajs/proxy";
-		apiOptions.url += "?proxyRoute=" + encodeURIComponent(options.routeName);
+		//apiOptions.url += "?proxyRoute=" + encodeURIComponent(options.routeName);
 		apiOptions.proxy = true;
 	}
 	

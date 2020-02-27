@@ -280,7 +280,7 @@ myAccountApp.controller('validateCtrl', ['$scope', 'ngDataApi', '$route', 'isUse
 myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUserLoggedIn', '$localStorage', 'myAccountAccess', 'injectFiles',
 	function ($scope, ngDataApi, $cookies, isUserLoggedIn, $localStorage, myAccountAccess, injectFiles) {
 		if (loginConfig){
-			var formConfig = loginConfig.formConf;
+			var formConfig = angular.copy(loginConfig.formConf);
 			formConfig.actions = [{
 				'type': 'submit',
 				'label': translation.login[LANG],

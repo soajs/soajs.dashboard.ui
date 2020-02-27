@@ -279,101 +279,102 @@ myAccountApp.controller('validateCtrl', ['$scope', 'ngDataApi', '$route', 'isUse
 
 myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUserLoggedIn', '$localStorage', 'myAccountAccess', 'injectFiles',
 	function ($scope, ngDataApi, $cookies, isUserLoggedIn, $localStorage, myAccountAccess, injectFiles) {
-		var formConfig = loginConfig.formConf;
-		formConfig.actions = [{
-			'type': 'submit',
-			'label': translation.login[LANG],
-			'btn': 'primary',
-			'action': function (formData) {
-				var postData = {
-					'username': formData.username,
-					'password': formData.password,
-					'grant_type': "password"
-				};
-				overlayLoading.show();
-				var authValue;
-				
-				function loginOauth() {
-					var options1 = {
-						"token": false,
-						"method": "get",
-						"routeName": "/oauth/authorization"
+		if (loginConfig){
+			var formConfig = loginConfig.formConf;
+			formConfig.actions = [{
+				'type': 'submit',
+				'label': translation.login[LANG],
+				'btn': 'primary',
+				'action': function (formData) {
+					var postData = {
+						'username': formData.username,
+						'password': formData.password,
+						'grant_type': "password"
 					};
-					getSendDataFromServer($scope, ngDataApi, options1, function (error, response) {
-						if (error) {
-							overlayLoading.hide();
-							$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-						} else {
-							authValue = response.data;
-							
-							var options2 = {
-								"method": "post",
-								"routeName": "/oauth/token",
-								"data": postData,
-								"headers": {
-									'accept': '*/*',
-									"Authorization": authValue
-								}
-							};
-							getSendDataFromServer($scope, ngDataApi, options2, function (error, response) {
-								if (error) {
-									overlayLoading.hide();
-									$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-								} else {
-									if (Object.hasOwnProperty.call(response, "access_token")) {
-										$cookies.put('access_token', response.access_token, {'domain': interfaceDomain});
-										$cookies.put('refresh_token', response.refresh_token, {'domain': interfaceDomain});
-									}
-									uracLogin();
-								}
-							});
-							
-						}
-					});
-				}
-				
-				loginOauth();
-				var myUser;
-				
-				function uracLogin() {
-					var options = {
-						"method": "get",
-						"routeName": "/urac/user",
-						"params": {
-							'username': formData.username
-						}
-					};
-					getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
-						if (error) {
-							overlayLoading.hide();
-							ngDataApi.logoutUser($scope);
-							$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-						} else {
-							myUser = response;
-							//get dashboard keys
-							getKeys();
-						}
-					});
-				}
-				
-				function getKeys() {
-					$localStorage.acl_access = null;
-					$localStorage.environments = null;
-					$localStorage.soajs_user = myUser;
-					$cookies.put("soajs_username", myUser.username, {'domain': interfaceDomain});
+					overlayLoading.show();
+					var authValue;
 					
-					myAccountAccess.getKeyPermissions($scope, function (result) {
-						if (result) {
-							$scope.$parent.$emit("loadUserInterface", {});
-							$scope.$parent.$emit('refreshWelcome', {});
-						} else {
-							ngDataApi.logoutUser($scope);
-						}
-					});
+					function loginOauth() {
+						var options1 = {
+							"token": false,
+							"method": "get",
+							"routeName": "/oauth/authorization"
+						};
+						getSendDataFromServer($scope, ngDataApi, options1, function (error, response) {
+							if (error) {
+								overlayLoading.hide();
+								$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+							} else {
+								authValue = response.data;
+								
+								var options2 = {
+									"method": "post",
+									"routeName": "/oauth/token",
+									"data": postData,
+									"headers": {
+										'accept': '*/*',
+										"Authorization": authValue
+									}
+								};
+								getSendDataFromServer($scope, ngDataApi, options2, function (error, response) {
+									if (error) {
+										overlayLoading.hide();
+										$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+									} else {
+										if (Object.hasOwnProperty.call(response, "access_token")) {
+											$cookies.put('access_token', response.access_token, {'domain': interfaceDomain});
+											$cookies.put('refresh_token', response.refresh_token, {'domain': interfaceDomain});
+										}
+										uracLogin();
+									}
+								});
+								
+							}
+						});
+					}
+					
+					loginOauth();
+					var myUser;
+					
+					function uracLogin() {
+						var options = {
+							"method": "get",
+							"routeName": "/urac/user",
+							"params": {
+								'username': formData.username
+							}
+						};
+						getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+							if (error) {
+								overlayLoading.hide();
+								ngDataApi.logoutUser($scope);
+								$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+							} else {
+								myUser = response;
+								//get dashboard keys
+								getKeys();
+							}
+						});
+					}
+					
+					function getKeys() {
+						$localStorage.acl_access = null;
+						$localStorage.environments = null;
+						$localStorage.soajs_user = myUser;
+						$cookies.put("soajs_username", myUser.username, {'domain': interfaceDomain});
+						
+						myAccountAccess.getKeyPermissions($scope, function (result) {
+							if (result) {
+								$scope.$parent.$emit("loadUserInterface", {});
+								$scope.$parent.$emit('refreshWelcome', {});
+							} else {
+								ngDataApi.logoutUser($scope);
+							}
+						});
+					}
 				}
-			}
-		}];
-		
+			}];
+		}
 		$scope.thirdPartyLogin = function (passport) {
 			overlayLoading.show();
 			window.location.href = apiConfiguration.domain + "/oauth/passport/login/" + passport + "?key=" + apiConfiguration.key;
@@ -412,20 +413,24 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 								// code block
 							}
 						});
-						if (formConfig.entries.length > 0) {
-							formConfig.entries.push({
-								'name': 'seperator',
-								'type': 'html',
-								'value': "<hr/>"
-							});
+						const result = formConfig.entries.find( ({ name }) => name === '3rd-party-login' );
+						if (!result){
+							if (formConfig.entries.length > 0) {
+								formConfig.entries.push({
+									'name': 'seperator',
+									'type': 'html',
+									'value': "<hr/>"
+								});
+							}
+							
+							formConfig.entries.push(
+								{
+									'name': '3rd-party-login',
+									'label': 'Third Party Login',
+									'type': 'group',
+									'entries': entries
+								});
 						}
-						formConfig.entries.push(
-							{
-								'name': '3rd-party-login',
-								'label': 'Third Party Login',
-								'type': 'group',
-								'entries': entries
-							})
 					}
 					buildForm($scope, null, formConfig);
 				}

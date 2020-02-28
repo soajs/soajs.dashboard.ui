@@ -863,6 +863,20 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 						myAccountAccess.getUser($scope, username, function (result) {
 							if (result) {
 								myAccountAccess.getKeyPermissions($scope, function (success) {
+									overlayLoading.show();
+									if (success) {
+										if ($localStorage.acl_access) {
+											$timeout(function () {
+												overlayLoading.hide();
+												$scope.enableInterface = true;
+												$scope.enableLeftInterface = true;
+											}, 300);
+										} else {
+											overlayLoading.hide();
+										}
+									} else {
+										overlayLoading.hide();
+									}
 								});
 							} else {
 								ngDataApi.logoutUser($scope);

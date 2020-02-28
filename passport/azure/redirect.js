@@ -1,5 +1,7 @@
 let API_URL = apiConfiguration.domain + "/oauth/passport/validate/azure" + window.location.search + "&key=" + apiConfiguration.key;
 let soajsAzureApp = angular.module('soajsAzureApp', ['ngCookies', 'ngStorage', 'textAngular', 'ui.bootstrap']);
+var interfaceDomain = location.host;
+interfaceDomain = mydomain.split(":")[0];
 soajsAzureApp.controller('soajsAzureController', ['$scope', '$cookies', '$localStorage', '$timeout', '$modal', function ($scope, $cookies, $localStorage, $timeout, $modal) {
 	$scope.go = function (route) {
 		window.location.href = window.location.origin + "/#" + route;
@@ -63,15 +65,20 @@ soajsAzureApp.controller('soajsAzureController', ['$scope', '$cookies', '$localS
 		.then((response) => {
 			if (response && response.data && response.data.access) {
 				$cookies.put('access_token', response.data.access.access_token, {
-					'domain': interfaceDomain
+					'domain': interfaceDomain,
+					'path': "/"
 				});
 				$cookies.put('refresh_token', response.data.access.refresh_token, {
-					'domain': interfaceDomain
+					'domain': interfaceDomain,
+					'path': "/"
 				});
-				$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
-				$cookies.put("soajs_passport_login", true, {'domain': interfaceDomain});
+				$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain,
+					'path': "/"});
+				$cookies.put("soajs_passport_login", true, {'domain': interfaceDomain,
+					'path': "/"});
 				$cookies.put("soajs_username", response.data.email ? response.data.email : response.data.username, {
-					'domain': interfaceDomain
+					'domain': interfaceDomain,
+					'path': "/"
 				});
 				$timeout(function () {
 					window.location.href = window.location.origin + "/#/dashboard";

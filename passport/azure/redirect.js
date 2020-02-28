@@ -63,18 +63,15 @@ soajsAzureApp.controller('soajsAzureController', ['$scope', '$cookies', '$localS
 		.then((response) => {
 			if (response && response.data && response.data.access) {
 				$cookies.put('access_token', response.data.access.access_token, {
-					'domain': window.location.hostname,
-					'path': "/"
+					'domain': interfaceDomain
 				});
 				$cookies.put('refresh_token', response.data.access.refresh_token, {
-					'domain': window.location.hostname,
-					'path': "/"
+					'domain': interfaceDomain
 				});
-				$cookies.put("soajs_dashboard_login", true, {'domain': window.location.hostname, 'path': "/"});
-				$cookies.put("soajs_passport_login", true, {'domain': window.location.hostname, 'path': "/"});
+				$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
+				$cookies.put("soajs_passport_login", true, {'domain': interfaceDomain});
 				$cookies.put("soajs_username", response.data.email ? response.data.email : response.data.username, {
-					'domain': window.location.hostname,
-					'path': "/"
+					'domain': interfaceDomain
 				});
 				$timeout(function () {
 					window.location.href = window.location.origin + "/#/dashboard";

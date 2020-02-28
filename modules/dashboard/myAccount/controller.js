@@ -387,8 +387,8 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 			};
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, opt, function (error, response) {
+				overlayLoading.hide();
 				if (error) {
-					overlayLoading.hide();
 					$scope.$parent.displayAlert('danger', error.code, true, 'oauth', error.message);
 					buildForm($scope, null, formConfig);
 				} else {

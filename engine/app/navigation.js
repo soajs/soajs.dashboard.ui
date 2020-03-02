@@ -14,7 +14,7 @@ var navigation = [
 	},
 	{
 		'id': 'login',
-		'label': translation.home[LANG],
+		'label': translation.login[LANG],
 		'url': '#/login',
 		'tplPath': 'modules/dashboard/myAccount/directives/login.tmpl',
 		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js']

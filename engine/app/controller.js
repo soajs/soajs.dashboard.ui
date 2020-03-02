@@ -868,8 +868,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 										if ($localStorage.acl_access) {
 											$timeout(function () {
 												overlayLoading.hide();
-												$scope.enableInterface = true;
-												$scope.enableLeftInterface = true;
+												$scope.$parent.$emit("loadUserInterface", {});
+												$scope.$parent.$emit('refreshWelcome', {});
 											}, 300);
 										} else {
 											overlayLoading.hide();

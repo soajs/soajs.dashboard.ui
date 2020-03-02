@@ -374,75 +374,76 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 					}
 				}
 			}];
+			if (!isUserLoggedIn($scope)) {
+				buildForm($scope, null, formConfig);
+				var opt = {
+					"method": "get",
+					"routeName": "/oauth/available/login",
+				};
+				overlayLoading.show();
+				getSendDataFromServer($scope, ngDataApi, opt, function (error, response) {
+					overlayLoading.hide();
+					if (error) {
+						$scope.$parent.displayAlert('danger', error.code, true, 'oauth', error.message);
+						buildForm($scope, null, formConfig);
+					} else {
+						if (response && response.local && !response.local.available) {
+							formConfig.entries = [];
+						}
+						if (response && response.thirdparty && response.thirdparty.length > 0) {
+							let entries = [];
+							response.thirdparty.forEach((strategy) => {
+								switch (strategy) {
+									case "azure":
+										entries.push({
+											'name': 'azure',
+											'type': 'html',
+											'value': "<img height='32' src=\"modules/dashboard/environments/images/azure.png\">&nbsp; Microsoft Azure Login",
+											'onAction': function (id) {
+												$scope.thirdPartyLogin(id);
+											}
+										});
+										break;
+									default:
+									// code block
+								}
+							});
+							const result = formConfig.entries.find( ({ name }) => name === '3rd-party-login' );
+							if (!result){
+								if (formConfig.entries.length > 0) {
+									formConfig.entries.push({
+										'name': 'seperator',
+										'type': 'html',
+										'value': "<hr/>"
+									});
+								}
+								
+								formConfig.entries.push(
+									{
+										'name': '3rd-party-login',
+										'label': 'Third Party Login',
+										'type': 'group',
+										'entries': entries
+									});
+							}
+						}
+						buildForm($scope, null, formConfig);
+					}
+				});
+				
+			} else {
+				var gotoUrl = '/dashboard';
+				if ($scope.$parent.mainMenu.links && $scope.$parent.mainMenu.links[0]) {
+					gotoUrl = $scope.$parent.mainMenu.links[0].entries[0].url.replace("#", "");
+				}
+				$scope.$parent.go(gotoUrl);
+			}
 		}
 		$scope.thirdPartyLogin = function (passport) {
 			overlayLoading.show();
 			window.location.href = apiConfiguration.domain + "/oauth/passport/login/" + passport + "?key=" + apiConfiguration.key;
 		};
-		if (!isUserLoggedIn($scope)) {
-			buildForm($scope, null, formConfig);
-			var opt = {
-				"method": "get",
-				"routeName": "/oauth/available/login",
-			};
-			overlayLoading.show();
-			getSendDataFromServer($scope, ngDataApi, opt, function (error, response) {
-				overlayLoading.hide();
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'oauth', error.message);
-					buildForm($scope, null, formConfig);
-				} else {
-					if (response && response.local && !response.local.available) {
-						formConfig.entries = [];
-					}
-					if (response && response.thirdparty && response.thirdparty.length > 0) {
-						let entries = [];
-						response.thirdparty.forEach((strategy) => {
-							switch (strategy) {
-								case "azure":
-									entries.push({
-										'name': 'azure',
-										'type': 'html',
-										'value': "<img height='32' src=\"modules/dashboard/environments/images/azure.png\">&nbsp; Microsoft Azure Login",
-										'onAction': function (id) {
-											$scope.thirdPartyLogin(id);
-										}
-									});
-									break;
-								default:
-								// code block
-							}
-						});
-						const result = formConfig.entries.find( ({ name }) => name === '3rd-party-login' );
-						if (!result){
-							if (formConfig.entries.length > 0) {
-								formConfig.entries.push({
-									'name': 'seperator',
-									'type': 'html',
-									'value': "<hr/>"
-								});
-							}
-							
-							formConfig.entries.push(
-								{
-									'name': '3rd-party-login',
-									'label': 'Third Party Login',
-									'type': 'group',
-									'entries': entries
-								});
-						}
-					}
-					buildForm($scope, null, formConfig);
-				}
-			});
-			
-		} else {
-			var gotoUrl = '/dashboard';
-			if ($scope.$parent.mainMenu.links && $scope.$parent.mainMenu.links[0]) {
-				gotoUrl = $scope.$parent.mainMenu.links[0].entries[0].url.replace("#", "");
-			}
-			$scope.$parent.go(gotoUrl);
-		}
+		
 		injectFiles.injectCss("modules/dashboard/myAccount/myAccount.css");
 	}]);
 

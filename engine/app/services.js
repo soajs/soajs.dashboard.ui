@@ -944,67 +944,56 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
-			} else {
-				getSendDataFromServer(currentScope, ngDataApi, {
-					"method": "get",
-					"routeName": "/soajs/acl"
-				}, function (error, response) {
-					if (error) {
-						overlayLoading.hide();
-						currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-						return cb(false);
-					}
-					if (response.locked) {
-						if ($localStorage.soajs_user) {
-							$localStorage.soajs_user.locked = response.locked;
-						}
-					}
-					
-					if (response.finalACL) {
-						let acl = {
-							"dashboard": {}
-						};
-						for (var service in response.finalACL){
-							if (service && response.finalACL[service]){
-								let version = response.finalACL[service].version;
-								delete response.finalACL[service].version;
-								acl.dashboard[service] = {
-									[version] :  response.finalACL[service]
-								};
-							}
-						}
-						$localStorage.acl_access = acl;
-					} else {
-						console.log('Missing ACL');
-					}
-					var options = {
-						"method": "get",
-						"routeName": "/dashboard/environment/list",
-						"params": {}
-					};
-					getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
-						if (error) {
-							overlayLoading.hide();
-							if (error.code === 600) {
-								ngDataApi.logoutUser(currentScope);
-								currentScope.displayAlert('danger', "Login Failed !");
-								return cb(false);
-							} else {
-								console.log('Failed to get environments');
-								$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
-								return cb(true);
-							}
-						} else {
-							$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
-							$localStorage.environments = angular.copy(envs);
-							$timeout(function () {
-								overlayLoading.hide();
-								return cb(true);
-							}, 150);
-						}
-					});
-				});
 			}
+			if (response.locked) {
+				if ($localStorage.soajs_user) {
+					$localStorage.soajs_user.locked = response.locked;
+				}
+			}
+			
+			if (response.finalACL) {
+				let acl = {
+					"dashboard": {}
+				};
+				for (var service in response.finalACL){
+					if (service && response.finalACL[service]){
+						let version = response.finalACL[service].version;
+						delete response.finalACL[service].version;
+						acl.dashboard[service] = {
+							[version] :  response.finalACL[service]
+						};
+					}
+				}
+				$localStorage.acl_access = acl;
+			} else {
+				console.log('Missing ACL');
+			}
+			var options = {
+				"method": "get",
+				"routeName": "/dashboard/environment/list",
+				"params": {}
+			};
+			getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
+				if (error) {
+					overlayLoading.hide();
+					if (error.code === 600) {
+						ngDataApi.logoutUser(currentScope);
+						currentScope.displayAlert('danger', "Login Failed !");
+						return cb(false);
+					} else {
+						console.log('Failed to get environments');
+						$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
+						return cb(true);
+					}
+				} else {
+					$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
+					$localStorage.environments = angular.copy(envs);
+					$timeout(function () {
+						overlayLoading.hide();
+						return cb(true);
+					}, 150);
+				}
+			});
 		});
 	}
 	

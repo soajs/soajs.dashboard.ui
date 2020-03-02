@@ -35,7 +35,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 			if (env && ext){
 				opts = {
 					"method": "get",
-					"routeName": "/proxy/redirect",
+					"routeName": "/soajs/proxy",
 					"params": {
 						'proxyRoute': '/urac/admin/groups',
 						"extKey": ext
@@ -321,7 +321,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								if (env && ext){
 									opts = {
 										"method": "post",
-										"routeName": "/proxy/redirect",
+										"routeName": "/soajs/proxy",
 										"params": {
 											'proxyRoute': '/urac/admin/group',
 											"extKey": ext
@@ -458,7 +458,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 									if (env && ext){
 										opts = {
 											"method": "put",
-											"routeName": "/proxy/redirect",
+											"routeName": "/soajs/proxy",
 											"params": {
 												'proxyRoute': '/urac/admin/group',
 												"extKey": ext
@@ -610,7 +610,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								if (env && ext){
 									opts = {
 										"method": "put",
-										"routeName": "/proxy/redirect",
+										"routeName": "/soajs/proxy",
 										"params": {
 											'proxyRoute': '/urac/admin/group',
 											"extKey": ext
@@ -667,7 +667,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		if (env && ext){
 			config = {
 				"method": "delete",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'id': '%id%',
 					'proxyRoute': '/urac/admin/group',
@@ -699,7 +699,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 		if (env && ext){
 			opts = {
 				"method": "delete",
-				"routeName": "/proxy/redirect",
+				"routeName": "/soajs/proxy",
 				"params": {
 					'id': data._id,
 					'proxyRoute': '/urac/admin/group',

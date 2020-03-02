@@ -139,8 +139,12 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 														apis: {}
 													};
 												}
+												let accessObject = {};
+												if (acl[service][version][method].apis[api].hasOwnProperty('access')){
+													accessObject.access = acl[service][version][method].apis[api].access;
+												}
 												newForm[service][version][method][acl[service][version][method].apis[api].group].apis = {
-													[api] :{}
+													[api] : accessObject
 												};
 											}
 										}
@@ -333,8 +337,15 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 				delete aclObj[envCode.toLowerCase()];
 			}
 		}
-		if (result.valid) {
+		if (result && result.valid) {
 			result.data = aclObj;
+			
+		}
+		else if (!result && pak === 'granular') {
+			result =  {
+				valid : true,
+				data: {}
+			};
 		}
 		return result;
 	}

@@ -36,6 +36,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		$cookies.remove('soajs_current_route', {'domain': interfaceDomain});
 		$cookies.remove('selectedInterval', {'domain': interfaceDomain});
 		$cookies.remove("soajs_dashboard_login", {'domain': interfaceDomain});
+		$cookies.remove("soajs_passport_login", {'domain': interfaceDomain});
 		
 		$localStorage.infraProviders = null;
 		$localStorage.soajs_user = null;
@@ -937,18 +938,16 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 		
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
-			"routeName": "/key/permission/get"
+			"routeName": "/soajs/acl"
 		}, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 				return cb(false);
 			} else {
-				$cookies.put("soajs_dashboard_key", response.extKey, {'domain': interfaceDomain});
-				
 				getSendDataFromServer(currentScope, ngDataApi, {
 					"method": "get",
-					"routeName": "/key/permission/get"
+					"routeName": "/soajs/acl"
 				}, function (error, response) {
 					if (error) {
 						overlayLoading.hide();
@@ -961,13 +960,22 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 						}
 					}
 					
-					if (response.acl) {
-						$localStorage.acl_access = response.acl;
+					if (response.finalACL) {
+						let acl = {
+							"dashboard": {}
+						};
+						for (var service in response.finalACL){
+							if (service && response.finalACL[service]){
+								let version = response.finalACL[service].version;
+								delete response.finalACL[service].version;
+								acl.dashboard[service] = {
+									[version] :  response.finalACL[service]
+								};
+							}
+						}
+						$localStorage.acl_access = acl;
 					} else {
 						console.log('Missing ACL');
-					}
-					if (response.environments) {
-						$localStorage.environments = response.environments;
 					}
 					var options = {
 						"method": "get",

@@ -58,7 +58,7 @@ var resetPwConfig = {
 				'required': true
 			}
 		]
-
+		
 	}
 };
 
@@ -108,7 +108,7 @@ var forgetPwConfig = {
 				'required': true
 			}
 		]
-
+		
 	}
 };
 
@@ -163,7 +163,7 @@ var changeEmailConfig = {
 				'required': true
 			}
 		]
-
+		
 	}
 };
 

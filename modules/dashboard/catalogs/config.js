@@ -348,18 +348,6 @@ var catalogAppConfig = {
 						'label': 'Service',
 						'entries': [
 							{
-								'name': 'accelerateDeployment',
-								'label': 'Accelerate Deployment',
-								'type': 'select',
-								'value': [
-									{'v': 'true', 'l': "Yes", 'selected': true},
-									{'v': 'false', 'l': "No"},
-								],
-								'required': false,
-								'tooltip': "SOAJS Deployer will copy <b>soajs</b> from the <b>soajsorg/soajs</b> image instead of installing it using <b>npm</b>.",
-								'fieldMsg': "SOAJS Deployer will copy <b>soajs</b> from the <b>soajsorg/soajs</b> image instead of installing it using <b>npm</b>."
-							},
-							{
 								'name': 'command',
 								'label': 'Container Command',
 								'type': 'text',
@@ -695,7 +683,6 @@ var catalogAppConfig = {
 				},
 				"buildOptions": {
 					"settings": {
-						"accelerateDeployment": true
 					},
 					"env": {},
 					"cmd": {

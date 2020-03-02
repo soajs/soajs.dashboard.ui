@@ -1281,6 +1281,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		if (response.scope && response.scope.acl) {
 			$scope.oldACL = false;
 			$scope.aclFill = $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
+			console.log($scope)
 			$scope.$evalAsync(function ($scope) {
 				aclHelpers.fillPackageAclGranular($scope);
 			});

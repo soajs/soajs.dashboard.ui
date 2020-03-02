@@ -867,10 +867,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 									if (success) {
 										if ($localStorage.acl_access) {
 											$timeout(function () {
-												overlayLoading.hide();
-												$scope.$parent.$emit("loadUserInterface", {});
-												$scope.$parent.$emit('refreshWelcome', {});
-											}, 300);
+												$scope.rebuildMenus(() => {
+													$scope.enableInterface = true;
+													$scope.enableLeftInterface = true;
+													$scope.$emit('refreshWelcome', {});
+													overlayLoading.hide();
+												});
+											}, 200);
 										} else {
 											overlayLoading.hide();
 										}

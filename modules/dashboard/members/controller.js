@@ -146,7 +146,7 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 	let users = [];
 	$scope.getTenantUsers = function (tenantRecord, env, ext) {
 		if ($scope.access.adminUser) {
-			$scope.showGet= true;
+			$scope.showGet = true;
 			$scope.getAllUsers(env, ext, () => {
 				if (tenantRecord) {
 					$scope.tenantMembers = angular.extend($scope);
@@ -215,26 +215,16 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 			let result = {};
 			if (arr) {
 				for (let i = 0; i < arr.length; i++) {
-					let group, subTenant;
-					if (arr[i].tenant.id) {
-						group = arr[i].tenant.id;
-					}
-					if (group) {
-						if (!result[group]) {
-							result[group] = {};
-							result[group].list = [];
-						}
-						result[group].list.push(arr[i]);
-					}
+					let tenant;
 					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
 						arr[i].config.allowedTenants.forEach((one) => {
 							if (one.tenant && one.tenant.id) {
-								subTenant = one.tenant.id;
-								if (!result[subTenant]) {
-									result[subTenant] = {};
-									result[subTenant].list = [];
+								tenant = one.tenant.id;
+								if (!result[tenant]) {
+									result[tenant] = {};
+									result[tenant].list = [];
 								}
-								result[subTenant].list.push(arr[i]);
+								result[tenant].list.push(arr[i]);
 							}
 						});
 					}
@@ -253,7 +243,7 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 					"extKey": extKey
 				},
 				"headers": {
-					"__env":  env.toLowerCase()
+					"__env": env.toLowerCase()
 				}
 			};
 		}
@@ -273,7 +263,7 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 	let groups = {};
 	$scope.getTenantGroups = function (tenantRecord, env, ext) {
 		if ($scope.access.adminGroup) {
-			$scope.showGet= true;
+			$scope.showGet = true;
 			$scope.getAllGroups(env, ext, () => {
 				if (tenantRecord) {
 					$scope.groupsMembers = angular.extend($scope);
@@ -316,17 +306,7 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 			let result = {};
 			if (arr) {
 				for (let i = 0; i < arr.length; i++) {
-					let group, subTenant;
-					if (arr[i].tenant.id) {
-						group = arr[i].tenant.id;
-					}
-					if (group) {
-						if (!result[group]) {
-							result[group] = {};
-							result[group].list = [];
-						}
-						result[group].list.push(arr[i]);
-					}
+					let subTenant;
 					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
 						arr[i].config.allowedTenants.forEach((one) => {
 							if (one.tenant && one.tenant.id) {
@@ -422,17 +402,7 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 			let result = {};
 			if (arr) {
 				for (let i = 0; i < arr.length; i++) {
-					let group, subTenant;
-					if (arr[i].tenant.id) {
-						group = arr[i].tenant.id;
-					}
-					if (group) {
-						if (!result[group]) {
-							result[group] = {};
-							result[group].list = [];
-						}
-						result[group].list.push(arr[i]);
-					}
+					let subTenant;
 					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
 						arr[i].config.allowedTenants.forEach((one) => {
 							if (one.tenant && one.tenant.id) {
@@ -478,7 +448,7 @@ membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routePara
 	let groups = [];
 	$scope.getSubTenantGroups = function (tenantRecord, env, ext) {
 		if ($scope.access.adminGroup) {
-			$scope.showGet= true;
+			$scope.showGet = true;
 			$scope.getAllSubGroups(env, ext, () => {
 				if (tenantRecord) {
 					$scope.subGroupsSubMembers = angular.extend($scope);
@@ -521,17 +491,8 @@ membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routePara
 			let result = {};
 			if (arr) {
 				for (let i = 0; i < arr.length; i++) {
-					let group, subTenant;
-					if (arr[i].tenant.id) {
-						group = arr[i].tenant.id;
-					}
-					if (group) {
-						if (!result[group]) {
-							result[group] = {};
-							result[group].list = [];
-						}
-						result[group].list.push(arr[i]);
-					}
+					let subTenant;
+					
 					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
 						arr[i].config.allowedTenants.forEach((one) => {
 							if (one.tenant && one.tenant.id) {
@@ -644,9 +605,9 @@ membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				if (response){
+				if (response) {
 					for (let i = 0; i < response.length; i++) {
-						if (response[i].oauth && response[i].oauth.loginMode === "urac"){
+						if (response[i].oauth && response[i].oauth.loginMode === "urac") {
 							$scope.tenantsList = response[i];
 						}
 					}
@@ -781,7 +742,7 @@ membersApp.controller('tenantConsoleGroupsCtrl', ['$scope', 'groupsHelper', '$ti
 		};
 		
 		$scope.tenantGroups.delete1Group = function (data) {
-			groupsHelper.delete1Group($scope.tenantGroups, data, false, env, ext) ;
+			groupsHelper.delete1Group($scope.tenantGroups, data, false, env, ext);
 		};
 	}, 1000);
 	

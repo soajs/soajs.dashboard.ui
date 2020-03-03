@@ -1664,7 +1664,8 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		});
 	};
 	
-	$scope.applyRestriction = function () {};
+	$scope.applyRestriction = function () {
+	};
 	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation

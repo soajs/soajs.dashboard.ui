@@ -131,9 +131,6 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 									if (acl[service][version][method].apis && Object.keys(acl[service][version][method].apis).length > 0){
 										for (var api in acl[service][version][method].apis){
 											if (api && acl[service][version][method].apis[api] && acl[service][version][method].apis[api].group){
-												newForm[service][version][method][acl[service][version][method].apis[api].group] = {
-													apis: {}
-												};
 												if (!newForm[service][version][method][acl[service][version][method].apis[api].group]) {
 													newForm[service][version][method][acl[service][version][method].apis[api].group] = {
 														apis: {}
@@ -143,9 +140,7 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 												if (acl[service][version][method].apis[api].hasOwnProperty('access')){
 													accessObject.access = acl[service][version][method].apis[api].access;
 												}
-												newForm[service][version][method][acl[service][version][method].apis[api].group].apis = {
-													[api] : accessObject
-												};
+												newForm[service][version][method][acl[service][version][method].apis[api].group].apis[api] = accessObject;
 											}
 										}
 									}

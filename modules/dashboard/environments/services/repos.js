@@ -572,7 +572,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 										if (oneDeployedEntry.labels && oneDeployedEntry.labels['soajs.service.name']) {
 											if(
 												(oneService.type === 'daemon' && oneDeployedEntry.labels['soajs.service.name'] === oneService.name + "-" + oneDeployedEntry.labels['soajs.daemon.group']) ||
-												oneDeployedEntry.labels['soajs.service.name'] === oneService.name
+												oneDeployedEntry.labels['soajs.service.name'] === oneService.name && oneDeployedEntry.labels['soajs.service.type'] === oneService.type
 											){
 												oneService.deployed = true;
 												if (oneService.versions && oneService.versions.length > 0) {

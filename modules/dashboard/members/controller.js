@@ -467,19 +467,6 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
 			}
 			else {
-				users = [];
-				if (response && response.length > 0){
-					response.forEach ((oneUser)=>{
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length> 0){
-							let index =  oneUser.config.allowedTenants.map(x => {
-								return x.tenant.id;
-							}).indexOf(tenantRecord._id);
-							if (index !== -1){
-								users.push(oneUser);
-							}
-						}
-					});
-				}
 				users = arrGroupByTenant(response);
 				return cb();
 			}

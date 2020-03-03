@@ -13,8 +13,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 		currentScope.showCtrlHosts = true;
 		currentScope.soajsServices = false;
 		currentScope.controllers = [];
-		currentScope.recipeTypes = environmentsConfig.recipeTypes;
-		
+		//currentScope.recipeTypes = environmentsConfig.recipeTypes;
+		currentScope.recipeTypes = {};
 		if (currentScope.access.hacloud.services.list && !currentScope.pauseRefresh) {
 			
 			getSendDataFromServer(currentScope, ngDataApi, {
@@ -96,7 +96,17 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 								if (serviceType === 'nginx' || serviceType === 'database') {
 									currentScope.oldStyle = true;
 								}
-								
+								if (!currentScope.recipeTypes[serviceType]){
+									currentScope.recipeTypes[serviceType] = {
+										l : serviceType.toLowerCase() === "soajs".toLowerCase() ? "SOAJS": serviceType[0].toUpperCase() + serviceType.slice(1),
+										categories : {}
+									}
+								}
+								if (!currentScope.recipeTypes[serviceType].categories[serviceSubType]){
+									currentScope.recipeTypes[serviceType].categories[serviceSubType] = {
+										l : serviceSubType.toLowerCase() === "soajs".toLowerCase() ? "SOAJS": serviceSubType[0].toUpperCase() + serviceSubType.slice(1),
+									};
+								}
 								if (!hosts[serviceType]) {
 									hosts[serviceType] = {};
 								}

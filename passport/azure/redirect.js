@@ -81,7 +81,7 @@ soajsAzureApp.controller('soajsAzureController', ['$scope', '$cookies', '$localS
 					'path': "/"
 				});
 				$timeout(function () {
-					window.location.href = window.location.origin + "/#/login";
+					window.location.href = window.location.origin + "/#/dashboard";
 				}, 200);
 			}
 		});

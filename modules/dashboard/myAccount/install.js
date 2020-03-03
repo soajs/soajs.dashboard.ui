@@ -149,14 +149,6 @@ for (var attrname in accTranslation) {
 
 var myAccountNav = [
 	{
-		'id': 'login',
-		'label': translation.login[LANG],
-		'url': '#/login',
-		'guestMenu': true,
-		'tplPath': 'modules/dashboard/myAccount/directives/login.tmpl',
-		'scripts': ['modules/dashboard/myAccount/config.js', 'modules/dashboard/myAccount/controller.js']
-	},
-	{
 		'id': 'forgot_password',
 		//'label': 'Forgot Password',
 		'url': '#/forgotPw',

@@ -705,128 +705,128 @@ var environmentsConfig = {
 
 	providers: serviceProviders,
 
-	recipeTypes: {
-		soajs: {
-			l: "SOAJS",
-			'categories': {
-				other: {'l': "Other"}
-			}
-		},
-		database: {
-			l: "Database",
-			'categories': {
-				other: {'l': "Other"}
-			}
-		},
-		nginx: {
-			l: "Nginx",
-			'categories': {
-				other: {'l': "Other"}
-			}
-		},
-		service: {
-			'l': "Service",
-			'categories': {
-				soajs: {
-					l: 'SOAJS'
-				},
-				nodejs: {
-					l: 'NodeJs'
-				},
-				golang: {
-					l: 'GoLang'
-				},
-				php: {
-					l: 'PHP'
-				},
-				java: {
-					l: 'Java'
-				},
-				asp: {
-					l: 'ASP'
-				},
-				other: {
-					l: 'Other'
-				}
-			}
-		},
-		daemon: {
-			'l': "Daemon",
-			'categories': {
-				soajs: {
-					l: 'SOAJS'
-				},
-				nodejs: {
-					l: 'NodeJs'
-				},
-				golang: {
-					l: 'GoLang'
-				},
-				php: {
-					l: 'PHP'
-				},
-				java: {
-					l: 'Java'
-				},
-				asp: {
-					l: 'ASP'
-				},
-				other: {
-					l: 'Other'
-				}
-			}
-		},
-		cluster: {
-			'l': "Cluster",
-			'categories': {
-				mongo: {'l': "Mongo"},
-				elasticsearch: {'l': "ElasticSearch"},
-				mysql: {'l': "MySQL"},
-				sql: {'l': "SQL"},
-				oracle: {'l': "Oracle"},
-				other: {'l': "Other"}
-			}
-		},
-		server: {
-			'l': "Server",
-			'categories': {
-				nginx: {
-					'l': "Nginx"
-				},
-				apache: {
-					'l': "Apache"
-				},
-				iis: {
-					'l': "IIS"
-				},
-				other: {
-					'l': "Other"
-				}
-			}
-		},
-		cdn: {
-			'l': "CDN",
-			'categories': {
-				amazons3: {"l": "Amazon S3"},
-				rackspace: {"l": "Rackspace"},
-				// cloudflare: {"l": "Cloudflare"},
-				other: {"l": "Other"}
-			}
-		},
-		system: {
-			'l': "System",
-			'categories': {
-				other: {"l": "Other"},
-				heapster: {"l": "Heapster"}
-			}
-		},
-		other: {
-			'l': "Other",
-			'categories': {
-				other: {'l': "Other"}
-			}
-		}
-	}
+	// recipeTypes: {
+	// 	soajs: {
+	// 		l: "SOAJS",
+	// 		'categories': {
+	// 			other: {'l': "Other"}
+	// 		}
+	// 	},
+	// 	database: {
+	// 		l: "Database",
+	// 		'categories': {
+	// 			other: {'l': "Other"}
+	// 		}
+	// 	},
+	// 	nginx: {
+	// 		l: "Nginx",
+	// 		'categories': {
+	// 			other: {'l': "Other"}
+	// 		}
+	// 	},
+	// 	service: {
+	// 		'l': "Service",
+	// 		'categories': {
+	// 			soajs: {
+	// 				l: 'SOAJS'
+	// 			},
+	// 			nodejs: {
+	// 				l: 'NodeJs'
+	// 			},
+	// 			golang: {
+	// 				l: 'GoLang'
+	// 			},
+	// 			php: {
+	// 				l: 'PHP'
+	// 			},
+	// 			java: {
+	// 				l: 'Java'
+	// 			},
+	// 			asp: {
+	// 				l: 'ASP'
+	// 			},
+	// 			other: {
+	// 				l: 'Other'
+	// 			}
+	// 		}
+	// 	},
+	// 	daemon: {
+	// 		'l': "Daemon",
+	// 		'categories': {
+	// 			soajs: {
+	// 				l: 'SOAJS'
+	// 			},
+	// 			nodejs: {
+	// 				l: 'NodeJs'
+	// 			},
+	// 			golang: {
+	// 				l: 'GoLang'
+	// 			},
+	// 			php: {
+	// 				l: 'PHP'
+	// 			},
+	// 			java: {
+	// 				l: 'Java'
+	// 			},
+	// 			asp: {
+	// 				l: 'ASP'
+	// 			},
+	// 			other: {
+	// 				l: 'Other'
+	// 			}
+	// 		}
+	// 	},
+	// 	cluster: {
+	// 		'l': "Cluster",
+	// 		'categories': {
+	// 			mongo: {'l': "Mongo"},
+	// 			elasticsearch: {'l': "ElasticSearch"},
+	// 			mysql: {'l': "MySQL"},
+	// 			sql: {'l': "SQL"},
+	// 			oracle: {'l': "Oracle"},
+	// 			other: {'l': "Other"}
+	// 		}
+	// 	},
+	// 	server: {
+	// 		'l': "Server",
+	// 		'categories': {
+	// 			nginx: {
+	// 				'l': "Nginx"
+	// 			},
+	// 			apache: {
+	// 				'l': "Apache"
+	// 			},
+	// 			iis: {
+	// 				'l': "IIS"
+	// 			},
+	// 			other: {
+	// 				'l': "Other"
+	// 			}
+	// 		}
+	// 	},
+	// 	cdn: {
+	// 		'l': "CDN",
+	// 		'categories': {
+	// 			amazons3: {"l": "Amazon S3"},
+	// 			rackspace: {"l": "Rackspace"},
+	// 			// cloudflare: {"l": "Cloudflare"},
+	// 			other: {"l": "Other"}
+	// 		}
+	// 	},
+	// 	system: {
+	// 		'l': "System",
+	// 		'categories': {
+	// 			other: {"l": "Other"},
+	// 			heapster: {"l": "Heapster"}
+	// 		}
+	// 	},
+	// 	other: {
+	// 		'l': "Other",
+	// 		'categories': {
+	// 			other: {'l': "Other"}
+	// 		}
+	// 	}
+	// }
 };
 
 var iconsAllowed = {

@@ -306,18 +306,16 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 			let result = {};
 			if (arr) {
 				for (let i = 0; i < arr.length; i++) {
-					let subTenant;
-					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
-						arr[i].config.allowedTenants.forEach((one) => {
-							if (one.tenant && one.tenant.id) {
-								subTenant = one.tenant.id;
-								if (!result[subTenant]) {
-									result[subTenant] = {};
-									result[subTenant].list = [];
-								}
-								result[subTenant].list.push(arr[i]);
-							}
-						});
+					let group;
+					if (arr[i] && arr[i].tenant && arr[i].tenant.id) {
+						group = arr[i].tenant.id;
+					}
+					if (group) {
+						if (!result[group]) {
+							result[group] = {};
+							result[group].list = [];
+						}
+						result[group].list.push(arr[i]);
 					}
 				}
 			}
@@ -491,19 +489,16 @@ membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routePara
 			let result = {};
 			if (arr) {
 				for (let i = 0; i < arr.length; i++) {
-					let subTenant;
-					
-					if (arr[i].config && arr[i].config.allowedTenants && arr[i].config.allowedTenants.length > 0) {
-						arr[i].config.allowedTenants.forEach((one) => {
-							if (one.tenant && one.tenant.id) {
-								subTenant = one.tenant.id;
-								if (!result[subTenant]) {
-									result[subTenant] = {};
-									result[subTenant].list = [];
-								}
-								result[subTenant].list.push(arr[i]);
-							}
-						});
+					let group;
+					if (arr[i] && arr[i].tenant && arr[i].tenant.id) {
+						group = arr[i].tenant.id;
+					}
+					if (group) {
+						if (!result[group]) {
+							result[group] = {};
+							result[group].list = [];
+						}
+						result[group].list.push(arr[i]);
 					}
 				}
 			}

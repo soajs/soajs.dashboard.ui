@@ -1,4 +1,12 @@
 {
+  "prefix" : {
+    "name": "prefix",
+    "label": "Prefix",
+    "value": "",
+    "type": "text",
+    "placeholder": "prefix ...",
+    "required": false
+  },
   "servers": {
     "type": "group",
     "name": "servers",

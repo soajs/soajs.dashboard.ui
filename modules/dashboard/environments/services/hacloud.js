@@ -96,15 +96,15 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 								if (serviceType === 'nginx' || serviceType === 'database') {
 									currentScope.oldStyle = true;
 								}
-								if (!currentScope.recipeTypes[serviceType]){
+								if (!currentScope.recipeTypes[serviceType]) {
 									currentScope.recipeTypes[serviceType] = {
-										l : serviceType.toLowerCase() === "soajs".toLowerCase() ? "SOAJS": serviceType[0].toUpperCase() + serviceType.slice(1),
-										categories : {}
+										l: serviceType.toLowerCase() === "soajs".toLowerCase() ? "SOAJS" : serviceType[0].toUpperCase() + serviceType.slice(1),
+										categories: {}
 									}
 								}
-								if (!currentScope.recipeTypes[serviceType].categories[serviceSubType]){
+								if (!currentScope.recipeTypes[serviceType].categories[serviceSubType]) {
 									currentScope.recipeTypes[serviceType].categories[serviceSubType] = {
-										l : serviceSubType.toLowerCase() === "soajs".toLowerCase() ? "SOAJS": serviceSubType[0].toUpperCase() + serviceSubType.slice(1),
+										l: serviceSubType.toLowerCase() === "soajs".toLowerCase() ? "SOAJS" : serviceSubType[0].toUpperCase() + serviceSubType.slice(1),
 									};
 								}
 								if (!hosts[serviceType]) {
@@ -991,6 +991,13 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 			
 			var evtSource = null;
 			
+			function terminateTailing() {
+				if (evtSource) {
+					evtSource.close();
+					evtSource = null;
+				}
+			}
+			
 			var mInstance = $modal.open({
 				templateUrl: "logBox.html",
 				size: 'lg',
@@ -1000,25 +1007,25 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 				controller: function ($scope, $modalInstance) {
 					$scope.title = "Host Logs of " + task.name;
 					fixBackDrop();
+					terminateTailing();
 					
 					$scope.ok = function () {
 						$modalInstance.dismiss('ok');
 					};
 					
 					$scope.tailLogs = function () {
-						
-						if (evtSource) {
-							evtSource.close();
-							evtSource = null;
-						}
-						
+						terminateTailing();
 						// handles the callback from the received event
 						var handleOpenCallback = function (response) {
+							$scope.isTailing = true;
 							$scope.data = remove_special(response.data).replace("undefined", "").toString();
 							$scope.data += "\n";
 							if (!$scope.$$phase) {
 								$scope.$apply();
 							}
+						};
+						var handleKeepaliveCallback = function (response) {
+							$scope.isTailing = true;
 						};
 						var handleCallback = function (response) {
 							$scope.data += remove_special(response.data).replace("undefined", "").toString();
@@ -1029,13 +1036,11 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 							highlightMyCode();
 						};
 						var handleEndCallback = function (response) {
+							$scope.isTailing = false;
 							$scope.data += "\n";
 							$scope.data += "Error tailing log, please click refresh or tail again!";
 							$scope.data += "\n";
-							if (evtSource) {
-								evtSource.close();
-								evtSource = null;
-							}
+							terminateTailing();
 						};
 						
 						var uri = apiConfiguration.domain + '/dashboard/cloud/services/instances/logs?';
@@ -1049,16 +1054,15 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 						
 						evtSource = new EventSource(uri);
 						evtSource.addEventListener('open', handleOpenCallback, false);
+						evtSource.addEventListener('keepalive', handleKeepaliveCallback, false);
 						evtSource.addEventListener('message', handleCallback, false);
 						evtSource.addEventListener('error', handleEndCallback, false);
 						evtSource.addEventListener('end', handleEndCallback, false);
 					};
 					
 					$scope.refreshLogs = function () {
-						if (evtSource) {
-							evtSource.close();
-							evtSource = null;
-						}
+						$scope.isTailing = false;
+						terminateTailing();
 						getSendDataFromServer(currentScope, ngDataApi, {
 							method: "get",
 							routeName: "/dashboard/cloud/services/instances/logs",
@@ -1102,22 +1106,10 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 			
 			mInstance.result.then(function () {
 				//Get triggers when modal is closed
-				currentScope.pauseRefresh = false;
-				
-				if (evtSource) {
-					evtSource.close();
-					evtSource = null;
-				}
-				//$timeout.cancel(autoRefreshPromise);
+				terminateTailing();
 			}, function () {
 				//gets triggers when modal is dismissed.
-				currentScope.pauseRefresh = false;
-				
-				if (evtSource) {
-					evtSource.close();
-					evtSource = null;
-				}
-				//$timeout.cancel(autoRefreshPromise);
+				terminateTailing();
 			});
 		});
 		

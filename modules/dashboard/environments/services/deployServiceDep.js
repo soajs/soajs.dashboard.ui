@@ -469,6 +469,10 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 									type: 'userInput'
 								};
 								$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].custom[envVariable] = newCatalogInput;
+								if ($scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]
+									&& typeof $scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] !== "string"){
+									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]  = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";
+								}
 								if (!$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable]) {
 									$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.custom.env[envVariable] = catalogRecipe.recipe.buildOptions.env[envVariable].default || "";
 								}

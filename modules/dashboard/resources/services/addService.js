@@ -37,7 +37,11 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							shared: formData.shared || false,
 							config: formData.config
 						};
-
+						if (saveOptions.config && saveOptions.config.credentials &&
+							saveOptions.config.credentials.username === "" &&
+							saveOptions.config.credentials.password === ""){
+							saveOptions.config.credentials= null;
+						}
 						if (formData.deployOptions.custom && formData.deployOptions.custom.ports && formData.deployOptions.custom.ports.length > 0) {
 							formData.deployOptions.custom.ports.forEach(function (onePort) {
 								if (Object.hasOwnProperty.call(onePort, 'loadBalancer')) {

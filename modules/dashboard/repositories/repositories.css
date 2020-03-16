@@ -462,3 +462,7 @@ li.accountType {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
+
+.blueListing li.versionControlTab a{
+    margin-left: 0px !important;
+}

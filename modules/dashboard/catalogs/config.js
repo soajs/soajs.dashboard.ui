@@ -188,7 +188,17 @@ var catalogAppConfig = {
 								'tooltip': "Define if the Image can be overridden while deploying service(s) from it",
 								'fieldMsg': "Define if the Image can be overridden while deploying service(s) from it",
 								'required': false
-							}
+							},
+							{
+								'type': 'text',
+								'value': '/bin/bash',
+								'name': 'imageShell',
+								'label': 'Image Shell Type',
+								'placeholder': '/bin/bash',
+								'tooltip': "Enter the Shell Type the Image Runs",
+								'fieldMsg': "A shell is the user's interface to access an operating system's services. Enter the Shell Type the Image Runs:<br>Examples : /bin/bash, /bin/sh<br> ",
+								'required': false
+							},
 						]
 					},
 					{

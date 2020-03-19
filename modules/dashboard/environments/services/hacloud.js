@@ -864,7 +864,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', 'hacloudSrvRedeploy', '$time
 									}
 								]
 							});
-							if (!oneHeartBeat.response.result) {
+							if (oneHeartBeat.response === "Maintenance operation { heartbeat } failed..") {
 								oneServiceTask.status.state = 'Unreachable';
 								if (oneHeartBeat.response.error) {
 									var tooltip = "<b>Code:</b> " + oneHeartBeat.response.error.code + "<br>";

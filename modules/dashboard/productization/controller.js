@@ -878,11 +878,11 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		});
 	};
 	
-	$scope.saveACL = function () {
+	$scope.saveACL = function (env) {
 		var productId = $routeParams.pid;
 		var postData = $scope.currentPackage;
-		var result = aclHelpers.constructAclFromPost($scope.aclFill);
-		postData.scope = result.data;
+		var result = aclHelpers.constructAclFromPost($scope.aclFill, null, env);
+		postData.acl = result.data[env.toLowerCase()];
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
 			return;
@@ -890,10 +890,11 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/scope/update",
+			"routeName": "/dashboard/product/scope/env",
 			"data": postData,
 			"params": {
-				"id": productId
+				"id": productId,
+				"env": env.toLowerCase()
 			}
 		};
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
@@ -903,7 +904,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG] + " for " + env);
 			}
 		});
 	};
@@ -1125,11 +1126,11 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		});
 	};
 	
-	$scope.saveACL = function () {
+	$scope.saveACL = function (env) {
 		var productId = $routeParams.pid;
 		var postData = $scope.currentPackage;
-		var result = aclHelpers.constructAclFromPost($scope.aclFill);
-		postData.scope = result.data;
+		var result = aclHelpers.constructAclFromPost($scope.aclFill, null, env);
+		postData.acl = result.data[env.toLowerCase()];
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
 			return;
@@ -1137,10 +1138,11 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/scope/update",
+			"routeName": "/dashboard/product/scope/env",
 			"data": postData,
 			"params": {
-				"id": productId
+				"id": productId,
+				"env": env.toLowerCase()
 			}
 		};
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
@@ -1150,7 +1152,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG] + " for " + env);
 			}
 		});
 	};
@@ -1220,7 +1222,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		}
 	];
 	
-	function applyGranular() {
+	function applyGranular(env) {
 		$scope.paginations = {};
 		let allServiceApis = {};
 		let serviceResponse = angular.copy($scope.allServiceApisResponse);
@@ -1255,7 +1257,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 				allServiceApis[serv.group].push(serv);
 			}
 		});
-		$scope.allServiceApis = allServiceApis;
+		$scope.allServiceApisGranular = allServiceApis;
 		
 		var code = $routeParams.code;
 		let response = angular.copy($scope.packageResponse);
@@ -1278,18 +1280,17 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			return;
 		}
 		$scope.product = response;
-		if (response.scope && response.scope.acl) {
 			$scope.oldACL = false;
-			$scope.aclFill = $scope.currentPackage.aclType && $scope.currentPackage.aclType === 'granular' ? $scope.currentPackage.acl : {};
-			$scope.$evalAsync(function ($scope) {
-				aclHelpers.fillPackageAclGranular($scope);
-			});
-		} else {
-			$scope.oldACL = true;
+		if (!$scope.aclFill){
+			$scope.aclFill = {};
 		}
+		$scope.aclFill[env.toUpperCase()] = $scope.currentPackage.aclTypeByEnv && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] &&  $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] === 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
+			$scope.$evalAsync(function ($scope) {
+			aclHelpers.fillPackageAclGranular($scope, env.toUpperCase());
+			});
 	}
 	
-	function applyApiGroup() {
+	function applyApiGroup(env) {
 		let response = angular.copy($scope.packageResponse);
 		$scope.allServiceApis = angular.copy($scope.allServiceApisResponse).records;
 		var code = $routeParams.code;
@@ -1313,29 +1314,31 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			return;
 		}
 		$scope.product = angular.copy(response);
-		$scope.aclFill = $scope.currentPackage.acl;
-		$scope.aclFill = !$scope.currentPackage.aclType || $scope.currentPackage.aclType !== 'granular' ? $scope.currentPackage.acl : {};
+		if (!$scope.aclFill){
+			$scope.aclFill = {};
+		}
+		$scope.aclFill[env.toUpperCase()] = !$scope.currentPackage.aclTypeByEnv || !$scope.currentPackage.aclTypeByEnv[env.toLowerCase()] || $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] !== 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
 		if (response.scope && response.scope.acl) {
 			$scope.scopeFill = response.scope.acl;
 			$scope.oldACL = false;
 			$scope.$evalAsync(function ($scope) {
-				aclHelpers.fillPackageAcl($scope);
+				aclHelpers.fillPackageAcl($scope, env.toUpperCase());
 			});
 		} else {
 			$scope.oldACL = true;
 		}
 	}
 	
-	$scope.applyMode = function (aclMode) {
+	$scope.applyMode = function (aclMode, env) {
 		overlayLoading.show();
 		if (aclMode === 'granular') {
-			$scope.aclMode = $scope.packageAclMode[1];
-			applyGranular(() => {
+			$scope.aclMode[env.toLowerCase()] = $scope.packageAclMode[1];
+			applyGranular(env.toLowerCase(), () => {
 				overlayLoading.hide();
 			});
 		} else {
-			$scope.aclMode = $scope.packageAclMode[0];
-			applyApiGroup(() => {
+			$scope.aclMode[env.toLowerCase()] = $scope.packageAclMode[0];
+			applyApiGroup(env.toLowerCase(), () => {
 				overlayLoading.hide();
 			});
 		}
@@ -1456,7 +1459,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.minimize = function (envCode, service) {
-		if ($scope.aclMode.v === "granular") {
+		if ($scope.aclMode[envCode.toLowerCase()].v === "granular") {
 			if (!$scope.aclFill[envCode][service.name]) {
 				$scope.aclFill[envCode][service.name] = {};
 			}
@@ -1475,7 +1478,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.expand = function (envCode, service) {
-		if ($scope.aclMode.v === "granular") {
+		if ($scope.aclMode[envCode.toLowerCase()].v === "granular") {
 			if (!$scope.aclFill[envCode]) {
 				$scope.aclFill[envCode] = {};
 			}
@@ -1536,14 +1539,31 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 						break;
 					}
 				}
+				
+				$scope.aclMode = {};
 				$scope.packageResponse = angular.copy(response);
-				$scope.aclMode = $scope.packageAclMode[0];
-				if (currentPackage.aclType === "granular") {
-					$scope.aclMode = $scope.packageAclMode[1];
-					applyGranular();
-				} else {
-					applyApiGroup();
+				$scope.environments_codes.forEach((environment) =>{
+					if (currentPackage.acl[environment.code.toLowerCase()]){
+						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular"){
+							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[1];
+							applyGranular(environment.code.toLowerCase());
+						}
+						else {
+							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[0];
+							applyApiGroup(environment.code.toLowerCase());
+						}
+					}
+					else {
+						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular"){
+							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[1];
+							applyGranular(environment.code.toLowerCase());
+						}
+						else {
+							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[0];
+							applyApiGroup(environment.code.toLowerCase());
 				}
+			}
+		});
 			}
 		});
 	};
@@ -1586,17 +1606,15 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		});
 	};
 	
-	$scope.saveACL = function () {
+	$scope.saveACL = function (env) {
 		var productId = $routeParams.pid;
-		var postData = $scope.currentPackage;
 		var result;
 		
-		if ($scope.aclMode.v === "granular") {
-			result = aclHelpers.constructAclFromPost($scope.aclFill, "granular");
+		if ($scope.aclMode[env.toLowerCase()].v === "granular") {
+			result = aclHelpers.constructAclFromPost($scope.aclFill, "granular", env);
 		} else {
-			result = aclHelpers.constructAclFromPost($scope.aclFill, "apiGroup");
+			result = aclHelpers.constructAclFromPost($scope.aclFill, "apiGroup", env);
 		}
-		postData.acl = result.data;
 		if (!result.valid) {
 			$scope.$parent.displayAlert('danger', translation.youNeedToChangeOneGroupAccessTypeGroups[LANG]);
 			return;
@@ -1604,15 +1622,17 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/packages/update",
-			"data": postData,
+			"routeName": "/dashboard/product/packages/acl/env",
+			"data": {
+				acl : result.data[env.toLowerCase()],
+			},
 			"params": {
 				"id": productId,
-				"code": postData.code.split("_")[1],
-				'_TTL': postData._TTL
+				"code": $scope.currentPackage.code.split("_")[1],
+				"env": env.toLowerCase(),
 			}
 		};
-		if ($scope.aclMode.v === "granular") {
+		if ($scope.aclMode[env.toLowerCase()].v === "granular") {
 			options.params.type = "granular";
 		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error) {
@@ -1622,7 +1642,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
+				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG] + "for ", env.toUpperCase());
 			}
 		});
 	};
@@ -1653,7 +1673,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
-		$scope.allServiceApis[group].forEach((service) => {
+		$scope.allServiceApisGranular[group].forEach((service) => {
 			if (service.name === serviceName) {
 				service.fixList.forEach((version) => {
 					if (version["%v%"] === v) {
@@ -1931,7 +1951,6 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				break;
 			}
 		}
-		console.log(data)
 		$modal.open({
 			templateUrl: 'aclConsoleDescription.tmpl',
 			size: 'lg',

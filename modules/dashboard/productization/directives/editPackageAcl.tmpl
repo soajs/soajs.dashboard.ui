@@ -1,3 +1,4 @@
+<script src="../config.js"></script>
 <section>
 	<div class='form' ng-controller="aclPackageCtrl as formCtrl">
 		<form novalidate="" class="css-form ng-pristine" name="">
@@ -21,18 +22,16 @@
 					</alert>
 				</div>
 				<div ng-if="oldACL!==true">
-					<div class="aclToggleDiv">
-						<fieldset>
-							<div class="">
-								<label>Select the ACL Mode for this Package: </label>
-								<select style="margin-left: 7px" ng-options="mode.l for mode in packageAclMode"
-								        ng-model="aclMode" ng-change="applyMode(aclMode.v)"></select>
-							</div>
-						</fieldset>
-					</div>
-					<div ng-if="aclMode.v === 'apiGroup'">
 						<tabset>
 							<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
+								<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'apiGroup'">
+									<div class="aclToggleDiv">
+										<label>Select the ACL Mode for Environment {{oneEnv.code}}: </label>
+										<select style="margin-left: 7px"
+										        ng-options="mode.l for mode in packageAclMode"
+										        ng-model="aclMode[oneEnv.code.toLowerCase()]"
+										        ng-change="applyMode(aclMode[oneEnv.code.toLowerCase()].v, oneEnv.code)"></select>
+									</div>
 								<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
 									<div id="s_{{oneEnv.code}}_{{group._id}}" ng-repeat="group in serviceGroup">
 										<fieldset>
@@ -53,15 +52,25 @@
 										</fieldset>
 									</div>
 								</div>
-							</tab>
-						</tabset>
+									<div ng-if="oldACL!==true" class="footer" ng-if="environments_codes.length"><br/>
+										<input type="submit" class="btn btn-sm btn-primary"
+										       ng-click="saveACL(oneEnv.code.toLowerCase())"
+										       value="Save ACL for {{oneEnv.code}}"/>
+									</div>
+								</div>
+								<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'granular'">
+									<input type="text" class="form-control acl-search" ng-model="searchKeyword"
+									       placeholder="Search ..."/>
+									<div class="aclToggleDiv">
+										<label>Select the ACL Mode for Environment {{oneEnv.code}}: </label>
+										<select style="margin-left: 7px"
+										        ng-options="mode.l for mode in packageAclMode"
+										        ng-model="aclMode[oneEnv.code.toLowerCase()]"
+										        ng-change="applyMode(aclMode[oneEnv.code.toLowerCase()].v, oneEnv.code)"></select>
 					</div>
-					<div ng-if="aclMode.v === 'granular'">
-						<tabset>
-							<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
-								<input type="text" class="form-control acl-search" ng-model="searchKeyword" placeholder="Search ..."/>
 								<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
-									<div id="s_{{oneEnv.code}}_{{group}}" ng-repeat="(group, services) in allServiceApis">
+										<div id="s_{{oneEnv.code}}_{{group}}"
+										     ng-repeat="(group, services) in allServiceApisGranular">
 										<div ng-if="group === 'SOAJS Core Services'">
 											<fieldset class="width100">
 												<legend>{{group}}</legend>
@@ -93,16 +102,16 @@
 										</div>
 									</div>
 								</div>
-							</tab>
-						</tabset>
+									<div ng-if="oldACL!==true" class="footer" ng-if="environments_codes.length"><br/>
+										<input type="submit" class="btn btn-sm btn-primary"
+										       ng-click="saveACL(oneEnv.code.toLowerCase())"
+										       value="Save ACL for {{oneEnv.code}}"/>
+									
 					</div>
 				</div>
+							</tab>
+						</tabset>
 			</div>
-			<div ng-if="oldACL!==true" class="footer" ng-if="environments_codes.length"><br/>
-				<input type="submit" class="btn btn-sm btn-primary" ng-click="saveACL()" value="Save ACL"/>
-			</div>
-			<div ng-if="oldACL===true" class="footer"><br/>
-				<input type="submit" class="btn btn-sm btn-danger" ng-click="purgeACL()" value="Purge ACL"/>
 			</div>
 		</form>
 	</div>

@@ -89,22 +89,36 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		}
 	}
 	
-	function fillPackageAclGranular(currentScope) {
-		var count = 0;
-		var myAcl = {};
-		var envCodes = currentScope.environments_codes;
-		var aclFill = currentScope.aclFill;
-		envCodes.forEach(function (oneEnv) {
-			if (aclFill && aclFill[oneEnv.code.toLowerCase()]) {
-				if (objectIsEnv(aclFill[oneEnv.code.toLowerCase()])) {
-					count++;
-					myAcl[oneEnv.code.toUpperCase()] = reFormPackageAclGranular(aclFill[oneEnv.code.toLowerCase()]);
-					propagateAcl(currentScope, myAcl[oneEnv.code.toUpperCase()]);
+	function propagateAclGranular(currentScope, aclFill) {
+		for (var serviceName in aclFill) {
+			if (aclFill.hasOwnProperty(serviceName)) {
+				var currentService = {};
+				for (let group in currentScope.allServiceApisGranular) {
+					if (group && currentScope.allServiceApisGranular[group]) {
+						for (var x = 0; x < currentScope.allServiceApisGranular[group].length; x++) {
+							if (currentScope.allServiceApisGranular[group][x].name === serviceName) {
+								currentService = currentScope.allServiceApisGranular[group][x];
+								break;
+							}
+						}
+					}
 				}
+				aclDrawHelpers.fillServiceAccess(aclFill[serviceName], currentService);
+				aclDrawHelpers.fillServiceApiAccess(aclFill[serviceName], currentService);
 			}
-		});
-		currentScope.aclFill = myAcl;
-		
+		}
+	}
+	
+	function fillPackageAclGranular(currentScope, env) {
+		var myAcl = {};
+		var aclFill = currentScope.aclFill;
+		if (aclFill && aclFill[env.toUpperCase()]) {
+			if (objectIsEnv(aclFill[env.toUpperCase()])) {
+				myAcl[env.toUpperCase()] = reFormPackageAclGranular(aclFill[env.toUpperCase()]);
+				propagateAclGranular(currentScope, myAcl[env.toUpperCase()]);
+			}
+		}
+		currentScope.aclFill[env.toUpperCase()] = myAcl[env.toUpperCase()];
 		overlayLoading.hide();
 	}
 	
@@ -154,44 +168,40 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		return newForm;
 	}
 	
-	function fillPackageAcl(currentScope) {
+	function fillPackageAcl(currentScope, envS) {
 		var aclFill = angular.copy(currentScope.aclFill);
 		currentScope.fixList = compareWithScope(currentScope);
 		let fixAcl = {};
-		for (let envS in aclFill) {
-			if (aclFill[envS]) {
-				let env = envS.toUpperCase();
-				fixAcl[env] = {};
-				for (let service in aclFill[envS]) {
-					if (aclFill[envS][service]) {
-						fixAcl[env][service] = {};
-						if (aclFill[envS][service].length > 0) {
-							aclFill[envS][service].forEach((v) => {
-								if (v.version) {
-									fixAcl[env][service][v.version] = {
-										"include": true,
-										"collapse": false
-									};
-									for (let method in v) {
-										if (v[method] && method !== "version") {
-											if (v[method].length > 0) {
-												v[method].forEach((group) => {
-													if (!fixAcl[env][service][v.version][group]) {
-														fixAcl[env][service][v.version][group] = {};
-													}
-													fixAcl[env][service][v.version][group][method] = true;
-												});
+		let env = envS.toUpperCase();
+		fixAcl[env] = {};
+		for (let service in aclFill[envS]) {
+			if (aclFill[envS][service]) {
+				fixAcl[env][service] = {};
+				if (aclFill[envS][service].length > 0) {
+					aclFill[envS][service].forEach((v) => {
+						if (v.version) {
+							fixAcl[env][service][v.version] = {
+								"include": true,
+								"collapse": false
+							};
+							for (let method in v) {
+								if (v[method] && method !== "version") {
+									if (v[method].length > 0) {
+										v[method].forEach((group) => {
+											if (!fixAcl[env][service][v.version][group]) {
+												fixAcl[env][service][v.version][group] = {};
 											}
-										}
+											fixAcl[env][service][v.version][group][method] = true;
+										});
 									}
 								}
-							});
+							}
 						}
-					}
+					});
 				}
 			}
 		}
-		currentScope.aclFill = fixAcl;
+		currentScope.aclFill[env] = fixAcl[env];
 		overlayLoading.hide();
 	}
 	
@@ -312,12 +322,15 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		aclDrawHelpers.checkForGroupDefault(aclFill, service, grp, val, myApi, v);
 	}
 	
-	function constructAclFromPost(aclFill, pak) {
-		var aclObj = {};
+	function constructAclFromPost(aclFill, pak, env) {
+		var aclObj = {
+			[env.toLowerCase()] : {}
+		};
+		
 		for (var envCode in aclFill) {
 			aclObj[envCode.toLowerCase()] = {};
 			if (!pak) {
-				var result = aclFromPostPerEnv(aclFill[envCode.toUpperCase()], aclObj[envCode.toLowerCase()]);
+				var result = aclFromPostPerEnv(aclFill[env.toUpperCase()], aclObj[env.toLowerCase()]);
 			} else if(pak === "apiGroup"){
 				var result = aclFromPostPackPerEnv(aclFill[envCode.toUpperCase()], aclObj[envCode.toLowerCase()]);
 			}
@@ -327,9 +340,6 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 			
 			if (!result.valid) {
 				return result;
-			}
-			if (Object.keys(aclObj[envCode.toLowerCase()]).length === 0) {
-				delete aclObj[envCode.toLowerCase()];
 			}
 		}
 		if (result && result.valid) {

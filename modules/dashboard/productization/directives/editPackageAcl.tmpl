@@ -1,3 +1,4 @@
+<script src="../config.js"></script>
 <section>
 	<div class='form' ng-controller="aclPackageCtrl as formCtrl">
 		<form novalidate="" class="css-form ng-pristine" name="">
@@ -21,88 +22,107 @@
 					</alert>
 				</div>
 				<div ng-if="oldACL!==true">
-					<div class="aclToggleDiv">
-						<fieldset>
-							<div class="">
-								<label>Select the ACL Mode for this Package: </label>
-								<select style="margin-left: 7px" ng-options="mode.l for mode in packageAclMode"
-								        ng-model="aclMode" ng-change="applyMode(aclMode.v)"></select>
-							</div>
-						</fieldset>
-					</div>
-					<div ng-if="aclMode.v === 'apiGroup'">
 						<tabset>
 							<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
-								<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
-									<div id="s_{{oneEnv.code}}_{{group._id}}" ng-repeat="group in serviceGroup">
-										<fieldset>
-											<legend>{{group}}</legend>
-											<div ng-repeat="(env, environment) in fixList">
-												<div ng-repeat="(g, groups) in environment"
-												     ng-if="oneEnv.code.toLowerCase() === env">
-													<div ng-repeat="(s, service) in groups" ng-if="g===group"
-													     class="clearfix service-container">
-														<div class="clearfix serviceNameHead">
-															<div ng-include="'modules/dashboard/productization/directives/service-name-package.tmpl'"></div>
+								<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'apiGroup'">
+									<div class="aclToggleDiv">
+										<label>Select the ACL Mode for Environment {{oneEnv.code}}: </label>
+										<select style="margin-left: 7px"
+										        ng-options="mode.l for mode in packageAclMode"
+										        ng-model="aclMode[oneEnv.code.toLowerCase()]"
+										        ng-change="applyMode(aclMode[oneEnv.code.toLowerCase()].v, oneEnv.code)"></select>
+									</div>
+									<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
+										<div id="s_{{oneEnv.code}}_{{group._id}}" ng-repeat="group in serviceGroup">
+											<fieldset>
+												<legend>{{group}}</legend>
+												<div ng-repeat="(env, environment) in fixList">
+													<div ng-repeat="(g, groups) in environment"
+													     ng-if="oneEnv.code.toLowerCase() === env">
+														<div ng-repeat="(s, service) in groups" ng-if="g===group"
+														     class="clearfix service-container">
+															<div class="clearfix serviceNameHead">
+																<div ng-include="'modules/dashboard/productization/directives/service-name-package.tmpl'"></div>
+															</div>
+															<div ng-include="'modules/dashboard/productization/directives/api-permission-package.tmpl'"></div>
 														</div>
-														<div ng-include="'modules/dashboard/productization/directives/api-permission-package.tmpl'"></div>
 													</div>
+												
 												</div>
-											
+											</fieldset>
+										</div>
+									</div>
+									<div ng-if="oldACL!==true" class="footer" ng-if="environments_codes.length"><br/>
+										<input type="submit" class="btn btn-sm btn-primary"
+										       ng-click="saveACL(oneEnv.code.toLowerCase())"
+										       value="Save ACL for {{oneEnv.code}}"/>
+									</div>
+								</div>
+								<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'granular'">
+									<input type="text" class="form-control acl-search" ng-model="searchKeyword"
+									       placeholder="Search ..."/>
+									<div class="aclToggleDiv">
+										<label>Select the ACL Mode for Environment {{oneEnv.code}}: </label>
+										<select style="margin-left: 7px"
+										        ng-options="mode.l for mode in packageAclMode"
+										        ng-model="aclMode[oneEnv.code.toLowerCase()]"
+										        ng-change="applyMode(aclMode[oneEnv.code.toLowerCase()].v, oneEnv.code)"></select>
+									</div>
+									<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
+										<div id="s_{{oneEnv.code}}_{{group}}"
+										     ng-repeat="(group, services) in allServiceApisGranular">
+											<div ng-if="group === 'SOAJS Core Services'">
+												<fieldset class="width100">
+													<legend>{{group}}</legend>
+													<div ng-repeat="service in services| reposSearchFilter:searchKeyword"
+													     class="clearfix service-container"
+													     ng-if="service.name !== 'controller'">
+														<div class="clearfix serviceNameHead">
+															<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
+														</div>
+														<div ng-include="'modules/dashboard/productization/directives/api-permission.tmpl'"></div>
+													</div>
+												</fieldset>
 											</div>
-										</fieldset>
+											<div ng-if="group !== 'SOAJS Core Services'">
+												<fieldset class="width100">
+													<legend>{{group}}</legend>
+													<div ng-repeat="service in services.slice(((paginations[group].currentPage-1)*itemsPerPage), ((paginations[group].currentPage)*itemsPerPage))| reposSearchFilter:searchKeyword"
+													     class="clearfix service-container"
+													     ng-if="service.name !== 'controller'">
+														<div class="clearfix serviceNameHead">
+															<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
+														</div>
+														<div ng-include="'modules/dashboard/productization/directives/api-permission.tmpl'"></div>
+													</div>
+													<table border="0" ng-if="group!== 'SOAJS Core Services'"
+													       cellspacing="0" cellpadding="0" width="100%"
+													       class="navigation">
+														<tr>
+															<td align="right">
+																<pagination total-items="paginations[group].totalItems"
+																            ng-model="paginations[group].currentPage"
+																            max-size="maxSize" class="pagination-sm"
+																            boundary-links="true" rotate="false"
+																            num-pages="numPages"
+																            items-per-page="itemsPerPage"></pagination>
+															</td>
+														</tr>
+													</table>
+												</fieldset>
+											</div>
+										</div>
+									</div>
+									<div ng-if="oldACL!==true" class="footer" ng-if="environments_codes.length"><br/>
+										<input type="submit" class="btn btn-sm btn-primary"
+										       ng-click="saveACL(oneEnv.code.toLowerCase())"
+										       value="Save ACL for {{oneEnv.code}}"/>
+									
 									</div>
 								</div>
 							</tab>
 						</tabset>
-					</div>
-					<div ng-if="aclMode.v === 'granular'">
-						<tabset>
-							<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
-								<input type="text" class="form-control acl-search" ng-model="searchKeyword" placeholder="Search ..."/>
-								<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
-									<div id="s_{{oneEnv.code}}_{{group}}" ng-repeat="(group, services) in allServiceApis">
-										<div ng-if="group === 'SOAJS Core Services'">
-											<fieldset class="width100">
-												<legend>{{group}}</legend>
-												<div ng-repeat="service in services| reposSearchFilter:searchKeyword" class="clearfix service-container" ng-if="service.name !== 'controller'">
-													<div class="clearfix serviceNameHead">
-														<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
-													</div>
-													<div ng-include="'modules/dashboard/productization/directives/api-permission.tmpl'"></div>
-												</div>
-											</fieldset>
-										</div>
-										<div ng-if="group !== 'SOAJS Core Services'">
-											<fieldset class="width100">
-												<legend>{{group}}</legend>
-												<div ng-repeat="service in services.slice(((paginations[group].currentPage-1)*itemsPerPage), ((paginations[group].currentPage)*itemsPerPage))| reposSearchFilter:searchKeyword" class="clearfix service-container" ng-if="service.name !== 'controller'">
-													<div class="clearfix serviceNameHead">
-														<div ng-include="'modules/dashboard/productization/directives/service-name.tmpl'"></div>
-													</div>
-													<div ng-include="'modules/dashboard/productization/directives/api-permission.tmpl'"></div>
-												</div>
-												<table border="0" ng-if="group!== 'SOAJS Core Services'" cellspacing="0" cellpadding="0" width="100%" class="navigation">
-													<tr>
-														<td align="right">
-															<pagination total-items="paginations[group].totalItems" ng-model="paginations[group].currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
-														</td>
-													</tr>
-												</table>
-											</fieldset>
-										</div>
-									</div>
-								</div>
-							</tab>
-						</tabset>
-					</div>
 				</div>
-			</div>
-			<div ng-if="oldACL!==true" class="footer" ng-if="environments_codes.length"><br/>
-				<input type="submit" class="btn btn-sm btn-primary" ng-click="saveACL()" value="Save ACL"/>
-			</div>
-			<div ng-if="oldACL===true" class="footer"><br/>
-				<input type="submit" class="btn btn-sm btn-danger" ng-click="purgeACL()" value="Purge ACL"/>
 			</div>
 		</form>
 	</div>
@@ -158,9 +178,11 @@
 										</span>
 										<span>
 											<input disabled value="public"
-											       ng-checked="my1Api.appeneded && my1Api.showAppended && !my1Api.access" type="radio"/> {{translation.public[LANG]}}</span>
+											       ng-checked="my1Api.appeneded && my1Api.showAppended && !my1Api.access"
+											       type="radio"/> {{translation.public[LANG]}}</span>
 										<span>
-											<input disabled ng-checked="my1Api.appeneded && my1Api.showAppended && my1Api.access"
+											<input disabled
+											       ng-checked="my1Api.appeneded && my1Api.showAppended && my1Api.access"
 											       value="private" type="radio"/> {{translation.private[LANG]}}</span>
 									</div>
 								</div>

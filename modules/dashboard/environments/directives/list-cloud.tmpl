@@ -278,14 +278,13 @@
 													Service Operations
 													<span class="caret"></span>
 												</button>
-												<ul ng-show="service.maintenance && service.maintenance.commands" class="dropdown-menu" aria-labelledby="serviceOpsDropdown"
-												    ng-repeat="operation in service.maintenance.commands">
-													<li><a href=""
+												<ul ng-show="service.maintenance && service.maintenance.commands" class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
+													<li    ng-repeat="operation in service.maintenance.commands"><a href=""
 													       ng-if="service.deployment && oneSubType ==='soajs' && operation.path !=='/reloadRegistry' && operation.path!=='/awarenessStat' && operation.path!=='/loadProvision' && operation.path!=='/infoHost' && operation.path!=='/daemonStats' && operation.path!=='/reloadDaemonConf'"
 													       ng-click="executeOperation(service, operation)"><span
-															class="icon icon-{{operation.icon}}"></span>&nbsp;{{operation.label}}</a>
+															class="{{operation.icon}}"></span>&nbsp;{{operation.label}}</a>
 													</li>
-													<li><a href=""
+													<li    ng-repeat="operation in service.maintenance.commands"><a href=""
 													       ng-if="service.deployment && oneSubType !=='soajs'"
 													       ng-click="executeOperation(service, operation)"><i
 															class="{{operation.icon}} font-awesome-margin-10"></i>&nbsp;{{operation.label}}</a>

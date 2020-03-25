@@ -93,11 +93,11 @@ var modules = {
 			dashboard: 'modules/dashboard/settings/install.js',
 		}
 	},
-	"common": {
-		"dashboard": {
-			myAccount: 'modules/dashboard/myAccount/install.js'
-		}
-	}
+	// "common": {
+	// 	"dashboard": {
+	// 		myAccount: 'modules/dashboard/myAccount/install.js'
+	// 	}
+	// }
 };
 
 var whitelistedRepos = [

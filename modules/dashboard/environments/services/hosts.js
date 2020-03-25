@@ -139,9 +139,9 @@ hostsServices.service('envHosts', ['ngDataApi', '$timeout', '$modal', '$compile'
 			if (maintenance.commands) {
 				maintenance.commands.forEach((onCom) => {
 					if (onCom) {
-						if (onCom.path && onCom.icon && iconsAllowed[onCom.icon]) {
+						if (onCom.path && onCom.icon) {
 							mainArray.push({
-								icon: iconsAllowed[onCom.icon],
+								icon: iconsAllowed[onCom.icon] ? iconsAllowed[onCom.icon] : onCom.icon,
 								title: onCom.label,
 								action: function (envCode, oneIp) {
 									showDialogBox(currentScope, envCode, oneIp.name, oneIp.version, onCom.path.replace(/\//, "", maintenance.port));

@@ -116,8 +116,8 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 			if (objectIsEnv(aclFill[env.toUpperCase()])) {
 				myAcl[env.toUpperCase()] = reFormPackageAclGranular(aclFill[env.toUpperCase()]);
 				propagateAclGranular(currentScope, myAcl[env.toUpperCase()]);
+				}
 			}
-		}
 		currentScope.aclFill[env.toUpperCase()] = myAcl[env.toUpperCase()];
 		overlayLoading.hide();
 	}
@@ -172,35 +172,35 @@ productizationService.service('aclHelpers', ['aclDrawHelpers', function (aclDraw
 		var aclFill = angular.copy(currentScope.aclFill);
 		currentScope.fixList = compareWithScope(currentScope);
 		let fixAcl = {};
-		let env = envS.toUpperCase();
-		fixAcl[env] = {};
-		for (let service in aclFill[envS]) {
-			if (aclFill[envS][service]) {
-				fixAcl[env][service] = {};
-				if (aclFill[envS][service].length > 0) {
-					aclFill[envS][service].forEach((v) => {
-						if (v.version) {
-							fixAcl[env][service][v.version] = {
-								"include": true,
-								"collapse": false
-							};
-							for (let method in v) {
-								if (v[method] && method !== "version") {
-									if (v[method].length > 0) {
-										v[method].forEach((group) => {
-											if (!fixAcl[env][service][v.version][group]) {
-												fixAcl[env][service][v.version][group] = {};
+				let env = envS.toUpperCase();
+				fixAcl[env] = {};
+				for (let service in aclFill[envS]) {
+					if (aclFill[envS][service]) {
+						fixAcl[env][service] = {};
+						if (aclFill[envS][service].length > 0) {
+							aclFill[envS][service].forEach((v) => {
+								if (v.version) {
+									fixAcl[env][service][v.version] = {
+										"include": true,
+										"collapse": false
+									};
+									for (let method in v) {
+										if (v[method] && method !== "version") {
+											if (v[method].length > 0) {
+												v[method].forEach((group) => {
+													if (!fixAcl[env][service][v.version][group]) {
+														fixAcl[env][service][v.version][group] = {};
+													}
+													fixAcl[env][service][v.version][group][method] = true;
+												});
 											}
-											fixAcl[env][service][v.version][group][method] = true;
-										});
+										}
 									}
 								}
-							}
+							});
 						}
-					});
+					}
 				}
-			}
-		}
 		currentScope.aclFill[env] = fixAcl[env];
 		overlayLoading.hide();
 	}

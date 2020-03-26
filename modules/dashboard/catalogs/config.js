@@ -196,7 +196,7 @@ var catalogAppConfig = {
 								'label': 'Image Shell Type',
 								'placeholder': '/bin/bash',
 								'tooltip': "Enter the Shell Type the Image Runs",
-								'fieldMsg': "A shell is the user's interface to access an operating system's services. Enter the Shell Type the Image Runs:<br>Examples : /bin/bash, /bin/sh<br> ",
+								'fieldMsg': "A shell is the user's interface to access an operating system's services. Enter the Shell Type the Image Runs:<br>Examples : /bin/bash, /bin/sh<br>  By default, SOAJS sets it as /bin/bash.",
 								'required': false
 							},
 						]

@@ -851,9 +851,9 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 										} else {
 											context.formData.deployOptions.custom.env[env] = "";
 										}
-									}
-									if (!context.formData.deployOptions.custom.env[env].secret) {
-										context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env];
+										if (!context.formData.deployOptions.custom.env[env].secret) {
+											context.mainData.recipeUserInput.envs[env].default = context.formData.deployOptions.custom.env[env];
+										}
 									}
 								}
 								if (recipes[i].recipe.buildOptions.env[env].type === 'secret') {

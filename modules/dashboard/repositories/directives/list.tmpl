@@ -193,8 +193,8 @@
 													<br>
 													<div>
 														<label>Search Tag: </label>
-														<input type="text" ng-class="{tagNotFound: !searchTag[repo.repository], tagFound: searchTag[repo.repository]}" ng-model="tag" ng-change="getTag(repo, tag)"
-														       placeholder="Search tags.." ng-disabled="disabled[repo.repository]" />
+														<input type="text" ng-class="{tagNotFound: !searchTag[repo.repository], tagFound: searchTag[repo.repository]}" ng-model="tag" ng-model-options="{ debounce: 1000 }" ng-change="getTag(repo, tag)"
+														       placeholder="Search tags.." />
 														<span ng-show="searchTag[repo.repository]" class="icon icon-checkmark green tagIcon"></span>
 														<span ng-show="!searchTag[repo.repository]" class="icon icon-cross red tagIcon"></span>
 													</div>

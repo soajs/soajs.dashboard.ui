@@ -289,12 +289,9 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			}
 		});
 	};
-	$scope.disabled = {};
 	$scope.getTag = function (repo, tag) {
-		$scope.disabled[repo.repository] = true;
 		if (!tag){
 			$scope.tags[repo.repository] = 	$scope.allTags[repo.repository];
-			$scope.disabled[repo.repository] = false;
 		}
 		else {
 			getSendDataFromServer($scope, ngDataApi, {
@@ -305,7 +302,6 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 					tag: tag
 				}
 			}, function (error, result) {
-				$scope.disabled[repo.repository] = false;
 				$scope.searchTag[repo.repository] = !(error || !result);
 				if (result){
 					$scope.tags[repo.repository] = [result]

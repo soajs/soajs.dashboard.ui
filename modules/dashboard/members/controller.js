@@ -45,6 +45,19 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 	
 	$scope.tenantsList = [];
 	
+	$scope.changeEnv = function () {
+		let tenantsList = angular.copy($scope.tenantsList);
+		$scope.subTenants = [];
+		$scope.mainTenants = [];
+		tenantsList.forEach((oneTenant) => {
+			if (oneTenant.type === "product") {
+				$scope.mainTenants.push(oneTenant);
+			} else if (oneTenant.type === "client") {
+				$scope.subTenants.push(oneTenant);
+			}
+		});
+	};
+	
 	$scope.getTenantExtKeys = function (env, tenant) {
 		$scope.tenantExtKeys = [];
 		if (env && tenant && tenant.applications && tenant.applications.length > 0) {
@@ -67,7 +80,7 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 		}
 		
 		$scope.selectedTenant = $scope.mainTenants.find(function (element) {
-			return element.code === tenant.code;
+			return element ? element.code === tenant.code : false;
 		});
 		$scope.getSubTenants(tenant);
 	};

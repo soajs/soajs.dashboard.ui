@@ -82,7 +82,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					response.forEach ((oneUser)=>{
 						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length> 0){
 							let index =  oneUser.config.allowedTenants.map(x => {
-								return x.tenant.id;
+								return x.tenant ? x.tenant.id : null;
 							}).indexOf(tenantId);
 							if (index !== -1){
 								users.push(oneUser);
@@ -736,7 +736,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				let index;
 				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
 					index = data.config.allowedTenants.map(x => {
-						return x.tenant.id;
+						return  x.tenant ? x.tenant.id: null;
 					}).indexOf(currentScope.tenant['_id']);
 				}
 				
@@ -810,22 +810,22 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							}
 							if ($scope.formData.group){
 								opts.data.groups = [$scope.formData.group];
+								overlayLoading.show();
+								getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+									if (error) {
+										overlayLoading.hide();
+										$scope.displayAlert('danger', error.message);
+									} else if (response) {
+										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+										overlayLoading.hide();
+										currentScope.listSubMembers();
+										modal.close();
+									}
+								});
 							}
 							else {
-								opts.data.groups = [];
+								modal.close();
 							}
-							overlayLoading.show();
-							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-								if (error) {
-									overlayLoading.hide();
-									$scope.displayAlert('danger', error.message);
-								} else if (response) {
-									currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
-									overlayLoading.hide();
-									currentScope.listSubMembers();
-									modal.close();
-								}
-							});
 						};
 						
 						$scope.closeModal = function () {

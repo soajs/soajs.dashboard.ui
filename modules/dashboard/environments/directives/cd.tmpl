@@ -12,10 +12,13 @@
 		</div>
 		<div>
 			<label>Memory Limit Per Instance (in MBytes)</label>
-			<input type="number" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit" ng-required="true"/>
+			<input type="string" class="form-control" ng-model="cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit" ng-required="true"/>
 			<label class="fieldMsg">
-				Specify the Maximum memory limit (in Megabytes) that should be provided when deploying your service/daemon.<br />
-				You can use 0 if you want the deployment to use elastic memory from the node where it will be deployed in.
+				Specify the Maximum memory limit that should be provided when deploying your resources.<br />
+				Click <a href=https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory" target="_blank">here </a>for
+				more information.
+				You can use 0 if you want the deployment to use elastic memory from the node where it will be deployed in.<br />
+				Note: This is the maximum allowed memory this resource is allowed to have. A default 128Mi minimum will be added.
 			</label>
 			<br/>
 		</div>

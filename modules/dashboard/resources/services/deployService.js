@@ -435,10 +435,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 					context.options.enableAutoScale = true;
 				}
 				
-				if (context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.memoryLimit) {
-					context.formData.deployOptions.deployConfig.memoryLimit /= 1048576; //convert memory limit from bytes to megabytes
-				}
-				
 				// take source code configuration from cicd on edit
 				updateCustomRepoName();
 				

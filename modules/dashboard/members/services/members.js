@@ -620,7 +620,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					'name': 'status',
 					'label': translation.status[LANG],
 					'type': 'radio',
-					'value': [{'v': 'pendingNew'}, {'v': 'active'}, {'v': 'inactive'}],
+					'value': [{'v': 'pendingNew'}, {'v': 'active'}, {'v': 'inactive'}, {'v': 'pendingJoin'}],
 					'tooltip': translation.selectStatusUser[LANG]
 				});
 				var options = {

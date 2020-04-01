@@ -175,8 +175,10 @@ var repositoriesAppConfig = {
 	
 		activateRepo: ['repositories', '/git/repo/activate', 'put'],
 		activateBranch: ['repositories', '/git/branch/activate', 'put'],
+		activateTag: ['repositories', '/git/repo/activate', 'put'],
 		deactivateRepo: ['repositories', '/git/repo/deactivate', 'put'],
 		deactivateBranch: ['repositories', '/git/branch/deactivate', 'put'],
+		deactivateTag: ['repositories', '/git/tag/deactivate', 'put'],
 		syncRepo: ['repositories', '/git/sync/repository', 'put'],
 		syncRepoBranches: ['repositories', '/git/sync/branch', 'put'],
 		searchRepos: ['repositories', '/git/repos', 'get'],

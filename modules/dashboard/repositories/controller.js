@@ -226,6 +226,34 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 		
 	};
 	
+	$scope.activateTag = function (repo, tag) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/repositories/git/tag/activate',
+			params: {
+				id: repo._id.toString(),
+				owner: repo.source[0].name,
+				provider: repo.provider,
+				tag: tag
+			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				
+				// repo.branches.forEach((oneBranch) => {
+				// 	if (oneBranch && oneBranch.name === branch) {
+				// 		oneBranch.active = true;
+				// 	}
+				// });
+				$scope.displayAlert('success', result.data);
+			}
+		});
+		
+	};
+	
 	$scope.syncRepo = function (repo, branch) {
 		overlayLoading.show();
 		let opsData = {
@@ -261,6 +289,27 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				owner: repo.source[0].name,
 				provider: repo.provider,
 				branch: branch
+			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', result.data);
+			}
+		});
+	};
+	
+	$scope.syncTag = function (repo, tag) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/repositories/git/sync/tag',
+			params: {
+				id: repo._id.toString(),
+				owner: repo.source[0].name,
+				provider: repo.provider,
+				tag: tag
 			}
 		}, function (error, result) {
 			overlayLoading.hide();
@@ -344,9 +393,6 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				branch: branch
 			}
 		};
-		if (branch) {
-			opts.params.branch = branch;
-		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
 			if (error) {
 				$scope.displayAlert('danger', error.message);
@@ -356,6 +402,31 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 						oneBranch.active = false;
 					}
 				});
+				$scope.displayAlert('success', response.data);
+			}
+		});
+	};
+	
+	$scope.deactivateTag = function (repo, tag) {
+		let opts = {
+			method: 'put',
+			routeName: '/repositories/git/tag/deactivate',
+			params: {
+				id: repo._id.toString(),
+				owner: repo.source[0].name,
+				provider: repo.provider,
+				tag: tag
+			}
+		};
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				// repo.branches.forEach((oneBranch) => {
+				// 	if (oneBranch && oneBranch.name === branch) {
+				// 		oneBranch.active = false;
+				// 	}
+				// });
 				$scope.displayAlert('success', response.data);
 			}
 		});

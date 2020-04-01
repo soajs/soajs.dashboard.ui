@@ -170,7 +170,7 @@
 														<span class="icon icon-switch"
 														      tooltip="{{translation.activate[LANG]}} Branch"></span>
 																	</a>
-																	<a href="" ng-if="access.syncRepo && branch.active"
+																	<a href="" ng-if="access.syncRepoBranches && branch.active"
 																	   ng-click="syncBranch(repo, branch.name)">
 														<span class="icon icon-loop2"
 														      style="margin-right: 0px;margin-left: 0px"
@@ -200,6 +200,7 @@
 													</div>
 													<div  ng-if="tags[repo.repository]">
 														<hr>
+														<br>
 														<div class="entryBoxes entryBoxesGrid">
 															<div class="entryBox pl0"
 															     style="width: 32%; background-color: #eeeeee"
@@ -213,20 +214,20 @@
 													      style="margin-right: 0px; margin-left: 0px "><span
 															class="icon icon-checkmark"></span>Active Tag</span>
 																		<a href=""
-																		   ng-if="access.activateBranch && !tag.active"
-																		   ng-click="activateBranch(repo, tag.name)">
+																		   ng-if="access.activateTag && !tag.active"
+																		   ng-click="activateTag(repo, tag.name)">
 														<span class="icon icon-switch"
 														      tooltip="{{translation.activate[LANG]}} Branch"></span>
 																		</a>
 																		<a href="" ng-if="access.syncRepo && tag.active"
-																		   ng-click="syncBranch(repo, tag.name)">
+																		   ng-click="syncTag(repo, tag.name)">
 														<span class="icon icon-loop2"
 														      style="margin-right: 0px;margin-left: 0px"
 														      tooltip="{{translation.sync[LANG]}}"></span>
 																		</a>
 																		<a href=""
-																		   ng-if="access.deactivateBranch && branch.tag"
-																		   ng-click="deactivateBranch(repo, tag.name)"
+																		   ng-if="access.deactivateTag && tag.active"
+																		   ng-click="deactivateTag(repo, tag.name)"
 																		   ng-confirm-click="Are you sure you want to deactivate this tag?">
 														<span class="icon icon-cross"
 														      style="margin-right: 0px;margin-left: 0px"

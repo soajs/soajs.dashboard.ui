@@ -424,6 +424,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 			if (action === 'add') {
 				context.formData.type = settings.type;
 				context.formData.category = settings.category;
+				if (!context.formData.deployOptions){
+					context.formData.deployOptions = {};
+				}
+				if (!context.formData.deployOptions.deployConfig){
+					context.formData.deployOptions.deployConfig = {};
+				}
+				context.formData.deployOptions.deployConfig.memoryLimit= "0";
 			} else {
 				context.formData = angular.copy(resource);
 				context.getEnvs();

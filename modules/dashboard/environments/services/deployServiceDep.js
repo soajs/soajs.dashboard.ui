@@ -372,6 +372,9 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.cpuLimit = service.prerequisites.cpu;
 					}
 				}
+				else {
+					$scope.cdConfiguration[oneSrv][oneEnv].cdData.versions[version].options.deployConfig.memoryLimit = "0";
+				}
 			}
 			if (service && $scope.serviceType === 'daemon' && service.grpConf) {
 				$scope.groupConfigs = service.grpConf;

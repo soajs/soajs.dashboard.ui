@@ -45,11 +45,11 @@
 			<label>Memory Limit</label>
 			<input type="string" class="form-control" ng-model="formData.deployOptions.deployConfig.memoryLimit" ng-required="true"/>
 			<label class="fieldMsg">
-				Specify the Maximum memory limit that should be provided when deploying your resources.<br />
+				Specify the Maximum memory limit that should be provided for this deployment.<br />
+				Note: This is the maximum allowed memory only, a default 128Mi minimum memory will be added.<br />
+				Example: You can set it to 1024Mi or 1Gi.
 				Click <a href=https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory" target="_blank">here </a>for
-				more information.
-				You can use 0 if you want the deployment to use elastic memory from the node where it will be deployed in.<br />
-				Note: This is the maximum allowed memory this resource is allowed to have. A default 128Mi minimum will be added.
+				more information. You can use 0 if you want the memory limits (minimum and maximum) to be elastic.
 			</label>
 			<br/>
 		</div>

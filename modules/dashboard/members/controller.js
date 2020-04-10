@@ -80,7 +80,7 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 		}
 		
 		$scope.selectedTenant = $scope.mainTenants.find(function (element) {
-			return element ? element.code === tenant.code : false;
+			return element && tenant ? element.code === tenant.code : false;
 		});
 		$scope.getSubTenants(tenant);
 	};

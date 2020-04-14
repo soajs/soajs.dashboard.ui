@@ -11,7 +11,7 @@
 		<br>
 		<div ng-show="tenantEnvironments.length > 0 && tenantsList.length > 0">
 			<label>Select Environment: </label>
-			<select id="mainEnv" style="margin-left: 10px" ng-options="env.code as env.code for env in tenantEnvironments" tooltip="Select Environment" ng-model="env">
+			<select id="mainEnv" style="margin-left: 10px" ng-options="env.code as env.code for env in tenantEnvironments" tooltip="Select Environment" ng-model="env" ng-change="changeEnv(env)">
 			</select>
 			<br>
 			<br>

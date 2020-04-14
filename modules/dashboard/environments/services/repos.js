@@ -837,8 +837,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				}
 				configuration.default.options = angular.copy(currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options);
 				if (configuration.default.options && configuration.default.options.deployConfig && Object.hasOwnProperty.call(configuration.default.options.deployConfig, 'memoryLimit')) {
-					configuration.default.options.deployConfig.memoryLimit *= 1048576;
-					
 					if(configuration.custom && configuration.custom.memory){
 						configuration.custom.memory = configuration.default.options.deployConfig.memoryLimit;
 					}
@@ -880,7 +878,6 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				configuration.version.options = angular.copy(currentScope.cdConfiguration[oneRepo][oneEnv].cdData.versions[version].options);
 				
 				if (configuration.version.options && configuration.version.options.deployConfig && Object.hasOwnProperty.call(configuration.version.options.deployConfig, 'memoryLimit')) {
-					configuration.version.options.deployConfig.memoryLimit *= 1048576;
 					
 					if(configuration.version.options.custom){
 						configuration.version.options.custom.memory = configuration.version.options.deployConfig.memoryLimit;
@@ -1073,7 +1070,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 				deploySettings.options.env = oneDeployedEntry.labels['soajs.env.code'];
 			}
 			if(oneDeployedEntry.labels['memoryLimit']){
-				deploySettings.options.deployConfig.memoryLimit = oneDeployedEntry.labels['soajs.service.memoryLimit'] * 1048576;
+				deploySettings.options.deployConfig.memoryLimit = oneDeployedEntry.labels['soajs.service.memoryLimit'];
 			}
 			if (oneDeployedEntry.labels['soajs.service.mode']) {
 				deploySettings.options.deployConfig.replication.mode = oneDeployedEntry.labels['soajs.service.mode'];
@@ -1121,7 +1118,7 @@ deployReposService.service('deployRepos', ['ngDataApi', '$timeout', '$modal', '$
 		if(oneDeployedEntry.env) {
 			oneDeployedEntry.env.forEach(function (oneEnv) {
 				if(!deploySettings.options.deployConfig.memoryLimit){
-					deploySettings.options.deployConfig.memoryLimit = oneEnv.split("=")[1] * 1048576;
+					deploySettings.options.deployConfig.memoryLimit = oneEnv.split("=")[1];
 				}
 				if(oneEnv.indexOf("SOAJS_DAEMON_GRP_CONF") !== -1){
 					deploySettings.options.custom.daemonGroup = oneEnv.split("=")[1];

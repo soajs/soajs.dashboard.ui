@@ -399,7 +399,7 @@ dynamicResourceServices.service('dynamicResourceSrv', ['$timeout', '$compile', '
 									"replication": {
 										"mode": imfv.deployOptions.deployConfig.replication ? imfv.deployOptions.deployConfig.replication.mode : ""
 									},
-									"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit * 1048576
+									"memoryLimit": imfv.deployOptions.deployConfig.memoryLimit
 								},
 								"custom": imfv.deployOptions.custom,
 								"recipe": imfv.deployOptions.recipe,

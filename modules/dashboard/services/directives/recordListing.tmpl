@@ -51,10 +51,10 @@
 		<tab ng-repeat="oneList in service.fixList" heading="Version {{oneList._ver}} {{(service.latest === oneList._ver)?'( Latest )':'' }}">
 			<br />
 			<div ng-if="oneList.settings.lastSync" >
-				<div style="float: left;">
+				<div>
 					<span><b>Last Sync:</b></span>
 					<span style="margin-right: 10px; margin-left: 10px;"><b>{{oneList.settings.lastSync.branch}}</b> - {{oneList.settings.lastSync.ts | date: 'd/M/yy h:mm a'}}</span>
-					<b>Branches</b>:<span> [ {{oneList.settings.branches.toString()}} ] </span>
+					<b>Branches</b>:<span class="lastSyncBranches" tooltip="{{oneList.settings.branches.join(', ')}}"  tooltip-placement="bottom" tooltip-class="customClass"> [ {{oneList.settings.branches.join(', ')}} ] </span>
 				</div>
 			</div>
 			<br />

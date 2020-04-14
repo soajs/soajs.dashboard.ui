@@ -424,6 +424,13 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 			if (action === 'add') {
 				context.formData.type = settings.type;
 				context.formData.category = settings.category;
+				if (!context.formData.deployOptions){
+					context.formData.deployOptions = {};
+				}
+				if (!context.formData.deployOptions.deployConfig){
+					context.formData.deployOptions.deployConfig = {};
+				}
+				context.formData.deployOptions.deployConfig.memoryLimit= "0";
 			} else {
 				context.formData = angular.copy(resource);
 				context.getEnvs();
@@ -433,10 +440,6 @@ resourceDeployService.service('resourceDeploy', ['resourceConfiguration', '$wind
 				
 				if (context.formData && context.formData.deployOptions && context.formData.deployOptions.autoScale && context.formData.deployOptions.autoScale.replicas && context.formData.deployOptions.autoScale.metrics) {
 					context.options.enableAutoScale = true;
-				}
-				
-				if (context.formData && context.formData.deployOptions && context.formData.deployOptions.deployConfig && context.formData.deployOptions.deployConfig.memoryLimit) {
-					context.formData.deployOptions.deployConfig.memoryLimit /= 1048576; //convert memory limit from bytes to megabytes
 				}
 				
 				// take source code configuration from cicd on edit

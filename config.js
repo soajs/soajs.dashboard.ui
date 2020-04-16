@@ -45,7 +45,7 @@ var apiConfiguration = {
 };
 
 var consoleAclConfig = {
-	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories'],
+	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories', 'marketplace'],
 	"OTHER": ["urac"]
 };
 var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant', 'soajs.repositories'];

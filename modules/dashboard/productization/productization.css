@@ -369,8 +369,257 @@ redAccordion .panel-heading a:focus {
     margin-bottom: 10px;
 }
 
-.aclToggleDiv{
+.aclToggleDiv {
     margin-left: 20px;
+}
+.envSwitch {
+    margin-top: 5px !important;
+}
+
+.buttonCompare {
+    margin-right: 1%;
+    float: right;
+}
+
+/*
+service view
+*/
+#serviceCompactView {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 98%;
+    margin: 15px;
+}
+
+#serviceCompactView .toggleSwitch{
+    position: relative;
+    display: inline-block;
+    width: 50px !important;
+    height: 20px !important;
+    top:10px;
+    left: 6px;
+}
+
+#serviceCompactView td, #serviceCompactView th {
+    border: 1px solid #ddd;
+    padding: 0px 5px 0px 5px;
+}
+
+#serviceCompactView tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#serviceCompactView tr:last-child {
+    background-color: white !important;
+}
+
+#serviceCompactView tr:hover {
+    background-color: #ddd;
+}
+
+#serviceCompactView th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: darkgrey;
+    color: white;
+}
+
+#serviceCompactView .serviceCompactViewService {
+    width : 10%;
+}
+
+#serviceCompactView .serviceCompactViewVersion {
+    width : 5%;
+}
+
+#serviceCompactView .serviceCompactViewEnv {
+    /*width : 20%;*/
+}
+
+#serviceCompactView .alignCenter {
+    text-align: center;
+}
+
+#serviceCompactView .envAccess {
+    display: inline-block;
+    margin: -5px 10% 5px 15%;
+}
+
+#serviceCompactView .envAccessType {
+    display: inline-block;
+    margin-top: -5px;
+    margin-bottom: 5px;
+    margin-right: 5%;
+}
+
+#serviceCompactView .envAccessRestriction {
+    display: inline-block;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+#serviceCompactView .accessPublic {
+
+}
+
+#serviceCompactView .accessPrivate {
+    margin-left: 10px;
+}
+
+#serviceCompactView .saveEnvButton {
+    margin-left: 40%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+/*
+api view
+*/
+
+#apiCompactView {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 98%;
+    margin: 15px;
+}
+
+#apiCompactView .toggleSwitch{
+    position: relative;
+    display: inline-block;
+    width: 50px !important;
+    height: 20px !important;
+    top:10px;
+    left: 6px;
+}
+
+#apiCompactView td, #apiCompactView th {
+    border: 1px solid #ddd;
+    padding: 0px 5px 0px 5px;
+}
+
+#apiCompactView tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#apiCompactView tr:last-child {
+    background-color: white !important;
+}
+
+#apiCompactView tr:hover {
+    background-color: #ddd;
+}
+
+#apiCompactView th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: darkgrey;
+    color: white;
+}
+
+#apiCompactView .apiCompactViewService {
+    width : 10%;
+}
+
+#apiCompactView .apiCompactViewVersion {
+    width : 5%;
+}
+
+#apiCompactView .serviceCompactViewGroup {
+    width : 10%;
+}
+
+#apiCompactView .serviceCompactViewMethod {
+    width : 5%;
+}
+
+#apiCompactView .serviceCompactViewApi {
+}
+
+#apiCompactView .serviceCompactViewEnv {
+    width : 20%;
+}
+
+#apiCompactView .alignCenter {
+    text-align: center;
+}
+
+#apiCompactView .envAccess {
+    display: inline-block;
+    float: left;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+#apiCompactView .envAccessType {
+    display: inline-block;
+    float: right;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+#apiCompactView .accessPublic {
+
+}
+
+#apiCompactView .accessPrivate {
+    margin-left: 10px;
+}
+
+#apiCompactView .saveEnvButton {
+    margin-left: 30%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.restrictionAstrix {
+    font-style: italic;
+    font-size: 12px;
+    margin-left: 1%;
+}
+
+#envCompareListing {
+    display: grid;
+    grid-template-columns: 150px 150px 150px 150px;
+    grid-gap: 15px;
+    background-color: #fff;
+    color: #444;
+    margin: 15px 10px;
+}
+
+#envCompareListing .envBoxesAllowed {
+     background-color: lightblue;
+     color: #fff;
+     border-radius: 5px;
+     padding: 10px;
+     font-size: 150%;
+     text-align: center;
+     cursor:pointer
+ }
+
+#envCompareListing .envBoxes {
+    background-color: lightgray;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 150%;
+    text-align: center;
+    cursor: not-allowed;
+}
+.compareHeaderBox {
+    background: lightblue;
+}
+
+.onClickEnv {
+    background: cornflowerblue !important;
+    border-style: double;
+}
+
+
+
+.showInfoEnv{
+    margin-top: 15px;
 }
 
 

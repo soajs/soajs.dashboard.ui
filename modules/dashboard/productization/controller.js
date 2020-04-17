@@ -1280,14 +1280,14 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			return;
 		}
 		$scope.product = response;
-			$scope.oldACL = false;
-		if (!$scope.aclFill){
+		$scope.oldACL = false;
+		if (!$scope.aclFill) {
 			$scope.aclFill = {};
 		}
-		$scope.aclFill[env.toUpperCase()] = $scope.currentPackage.aclTypeByEnv && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] &&  $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] === 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
-			$scope.$evalAsync(function ($scope) {
+		$scope.aclFill[env.toUpperCase()] = $scope.currentPackage.aclTypeByEnv && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] === 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
+		$scope.$evalAsync(function ($scope) {
 			aclHelpers.fillPackageAclGranular($scope, env.toUpperCase());
-			});
+		});
 	}
 	
 	function applyApiGroup(env) {
@@ -1314,7 +1314,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			return;
 		}
 		$scope.product = angular.copy(response);
-		if (!$scope.aclFill){
+		if (!$scope.aclFill) {
 			$scope.aclFill = {};
 		}
 		$scope.aclFill[env.toUpperCase()] = !$scope.currentPackage.aclTypeByEnv || !$scope.currentPackage.aclTypeByEnv[env.toLowerCase()] || $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] !== 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
@@ -1542,28 +1542,25 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 				
 				$scope.aclMode = {};
 				$scope.packageResponse = angular.copy(response);
-				$scope.environments_codes.forEach((environment) =>{
-					if (currentPackage.acl[environment.code.toLowerCase()]){
-						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular"){
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[1];
+				$scope.environments_codes.forEach((environment) => {
+					if (currentPackage.acl[environment.code.toLowerCase()]) {
+						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular") {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[1];
 							applyGranular(environment.code.toLowerCase());
+						} else {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[0];
+							applyApiGroup(environment.code.toLowerCase());
 						}
-						else {
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[0];
+					} else {
+						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular") {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[1];
+							applyGranular(environment.code.toLowerCase());
+						} else {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[0];
 							applyApiGroup(environment.code.toLowerCase());
 						}
 					}
-					else {
-						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular"){
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[1];
-							applyGranular(environment.code.toLowerCase());
-						}
-						else {
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[0];
-							applyApiGroup(environment.code.toLowerCase());
-				}
-			}
-		});
+				});
 			}
 		});
 	};
@@ -1624,7 +1621,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			"method": "put",
 			"routeName": "/dashboard/product/packages/acl/env",
 			"data": {
-				acl : result.data[env.toLowerCase()],
+				acl: result.data[env.toLowerCase()],
 			},
 			"params": {
 				"id": productId,
@@ -1684,9 +1681,12 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		});
 	};
 	
-	$scope.applyRestriction = function () {
+	$scope.preview = function (env, packCode, product) {
+		console.log(env);
+		console.log(packCode);
+		console.log(product);
+		$scope.$parent.go("/product/TPROD/package/TPROD_BASIC/env/dev");
 	};
-	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
 	overlayLoading.show(function () {
@@ -1774,10 +1774,10 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		}
 		$scope.product = response;
 		$scope.oldACL = false;
-		if (!$scope.aclFill){
+		if (!$scope.aclFill) {
 			$scope.aclFill = {};
 		}
-		$scope.aclFill[env.toUpperCase()] = $scope.currentPackage.aclTypeByEnv && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] &&  $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] === 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
+		$scope.aclFill[env.toUpperCase()] = $scope.currentPackage.aclTypeByEnv && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] && $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] === 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
 		$scope.$evalAsync(function ($scope) {
 			aclHelpers.fillPackageAclGranular($scope, env.toUpperCase());
 		});
@@ -1807,7 +1807,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			return;
 		}
 		$scope.product = angular.copy(response);
-		if (!$scope.aclFill){
+		if (!$scope.aclFill) {
 			$scope.aclFill = {};
 		}
 		$scope.aclFill[env.toUpperCase()] = !$scope.currentPackage.aclTypeByEnv || !$scope.currentPackage.aclTypeByEnv[env.toLowerCase()] || $scope.currentPackage.aclTypeByEnv[env.toLowerCase()] !== 'granular' ? $scope.currentPackage.acl[env.toLowerCase()] : {};
@@ -1951,24 +1951,21 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				
 				$scope.aclMode = {};
 				$scope.packageResponse = angular.copy(response);
-				$scope.environments_codes.forEach((environment) =>{
-					if (currentPackage.acl[environment.code.toLowerCase()]){
-						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular"){
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[1];
+				$scope.environments_codes.forEach((environment) => {
+					if (currentPackage.acl[environment.code.toLowerCase()]) {
+						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular") {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[1];
 							applyGranular(environment.code.toLowerCase());
-						}
-						else {
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[0];
+						} else {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[0];
 							applyApiGroup(environment.code.toLowerCase());
 						}
-					}
-					else {
-						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular"){
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[1];
+					} else {
+						if (currentPackage.aclTypeByEnv && currentPackage.aclTypeByEnv[environment.code.toLowerCase()] === "granular") {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[1];
 							applyGranular(environment.code.toLowerCase());
-						}
-						else {
-							$scope.aclMode[environment.code.toLowerCase()] =  $scope.packageAclMode[0];
+						} else {
+							$scope.aclMode[environment.code.toLowerCase()] = $scope.packageAclMode[0];
 							applyApiGroup(environment.code.toLowerCase());
 						}
 					}
@@ -2027,7 +2024,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			"method": "put",
 			"routeName": "/dashboard/product/packages/acl/env",
 			"data": {
-				acl : result.data[env.toLowerCase()],
+				acl: result.data[env.toLowerCase()],
 			},
 			"params": {
 				"id": productId,
@@ -2182,6 +2179,437 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		$scope.getAllServicesList();
 	});
 }]);
+
+productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal', '$routeParams', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, $routeParams, ngDataApi, injectFiles) {
+	$scope.$parent.isUserLoggedIn();
+	
+	$scope.access = {};
+	constructModulePermissions($scope, $scope.access, productizationConfig.permissions);
+	
+	$scope.getEnvironments = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment/list",
+			"params": {"short": true}
+		}, function (error, response) {
+			if (error) {
+				overlayLoading.hide();
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				for (let x = response.length - 1; x >= 0; x--) {
+					if (response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD") {
+						response.splice(x, 1);
+						break;
+					}
+				}
+				$scope.environments_codes = response;
+				$scope.getPreviewService();
+			}
+		});
+	};
+	$scope.getPreviewService = function (env) {
+		let opts = {
+			"method": "get",
+			"routeName": "/dashboard/product/packages/aclPreview/service",
+			"params": {
+				"packageCode": $routeParams.code,
+				"productCode": $routeParams.pid,
+				"mainEnv": $routeParams.env,
+			}
+		};
+		if (env) {
+			opts.params.secEnv = env;
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.compactViewService = response
+			}
+		});
+	};
+	
+	$scope.previewType = [
+		{
+			l: "Service Compact Preview",
+			v: "service"
+		},
+		{
+			l: "APi Compact Preview",
+			v: "api"
+		}
+	];
+	
+	$scope.previewMode = $scope.previewType[0];
+	$scope.compactViewApi = {
+		package: "TPROD_BASIC",
+		product: "TPROD",
+		acl: [
+			{
+				service: "service1",
+				api: "/ap1",
+				group: "group1",
+				method: "get",
+				version: "1",
+				access: {
+					dev: true,
+				},
+				envs: {
+					dev: true,
+				}
+			},
+			{
+				service: "service1",
+				api: "/ap2",
+				group: "group2",
+				method: "put",
+				version: "1",
+				access: {
+					dev: false,
+				},
+				envs: {
+					dev: true,
+				}
+			},
+			{
+				service: "service1",
+				api: "/apsadsdssdsdsdsdsasdasdasdasdasdasdasdasdasdawdwewew3",
+				group: "group1",
+				method: "post",
+				version: "1",
+				access: {
+					dev: true,
+				},
+				envs: {
+					dev: true,
+				}
+			},
+			{
+				service: "service2",
+				api: "/ap1",
+				group: "group1",
+				method: "get",
+				version: "1",
+				access: {
+					dev: true,
+				},
+				envs: {
+					dev: true,
+				}
+			},
+			{
+				service: "service2",
+				api: "/ap34",
+				group: "group12",
+				method: "get",
+				version: "1",
+				access: {
+					dev: true,
+				},
+				envs: {
+					dev: true,
+				}
+			}
+		],
+		aclTypeByEnv: {
+			dev: "granular",
+			stg: "granular"
+		}
+	};
+	$scope.mainEnv = [$routeParams.env];
+	
+	$scope.selectPreview = function() {
+		//cal api
+	};
+	$scope.saveEnv = function (env) {
+		console.log(env);
+	};
+	$scope.compareEnv = function () {
+		let currentScope = $scope;
+		$modal.open({
+			templateUrl: "compareEnv.tmpl",
+			size: 'm',
+			backdrop: false,
+			keyboard: false,
+			controller: function ($scope, $modalInstance) {
+				$scope.envList = [];
+				$scope.mainEnv = $routeParams.env;
+				if (currentScope.previewMode.v === "service") {
+					currentScope.environments_codes.forEach((env) => {
+						if (env.code.toLowerCase() !== $routeParams.env.toLowerCase()){
+							if (currentScope.compactViewService.aclTypeByEnv && currentScope.compactViewService.aclTypeByEnv[$routeParams.env]) {
+								if (currentScope.compactViewService.aclTypeByEnv[ env.code.toLowerCase()]) {
+									$scope.envList.push({
+										code:  env.code.toLowerCase(),
+										allowed: true
+									});
+								}
+								else {
+									$scope.envList.push({
+										code:  env.code.toLowerCase(),
+										allowed: false
+									});
+								}
+							}
+							else {
+								if ((!currentScope.compactViewService.aclTypeByEnv || !currentScope.compactViewService.aclTypeByEnv[ env.code.toLowerCase()])) {
+									$scope.envList.push({
+										code: env.code.toLowerCase(),
+										allowed: true
+									});
+								}
+								else {
+									$scope.envList.push({
+										code:  env.code.toLowerCase(),
+										allowed: false
+									});
+								}
+							}
+						}
+					});
+				} else {
+					currentScope.environments_codes.forEach((env) => {
+						if (env.code.toLowerCase() !== $routeParams.env.toLowerCase()){
+							if (currentScope.compactViewApi.aclTypeByEnv && currentScope.compactViewApi.aclTypeByEnv[$routeParams.env]) {
+								if (currentScope.compactViewApi.aclTypeByEnv[ env.code.toLowerCase()]) {
+									$scope.envList.push({
+										code:  env.code.toLowerCase(),
+										allowed: true
+									});
+								}
+								else {
+									$scope.envList.push({
+										code:  env.code.toLowerCase(),
+										allowed: false
+									});
+								}
+							}
+							else {
+								if ((!currentScope.compactViewApi.aclTypeByEnv || !currentScope.compactViewApi.aclTypeByEnv[ env.code.toLowerCase()])) {
+									$scope.envList.push({
+										code: env.code.toLowerCase(),
+										allowed: true
+									});
+								}
+								else {
+									$scope.envList.push({
+										code:  env.code.toLowerCase(),
+										allowed: false
+									});
+								}
+							}
+						}
+					});
+				}
+				$scope.selectEnv = function (env){
+					if (env.allowed){
+						$scope.selectedEnv = env.code;
+						jQuery('[id^="env_code_"]').removeClass("onClickEnv");
+						jQuery('#env_code_' + env.code).addClass('onClickEnv');
+						$scope.showWarning = false;
+					}
+					else {
+						$scope.selectedEnv = null;
+						jQuery('[id^="env_code_"]').removeClass("onClickEnv");
+						$scope.showWarning = true;
+					}
+				};
+				
+				$scope.onSubmit = function () {
+					//call the apis
+					console.log("submit")
+					$scope.closeModal();
+				};
+				
+				$scope.closeModal = function () {
+					$modalInstance.close();
+				};
+			}
+		});
+		// $scope.mainEnv = ["dev", "stg"];
+		// $scope.compactViewApi = {
+		// 	package: "TPROD_BASIC",
+		// 	product: "TPROD",
+		// 	acl: [
+		// 		{
+		// 			service: "service1",
+		// 			api: "/ap1",
+		// 			group: "group1",
+		// 			method: "get",
+		// 			version: "1",
+		// 			access: {
+		// 				dev: true,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: false
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service1",
+		// 			api: "/ap2",
+		// 			group: "group2",
+		// 			method: "put",
+		// 			version: "1",
+		// 			access: {
+		// 				dev: true,
+		// 				stg: true
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: true
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service1",
+		// 			api: "/apsadsdssdsdsdsdsasdasdasdasdasdasdasdasdasdawdwewew3",
+		// 			group: "group1",
+		// 			method: "post",
+		// 			version: "1",
+		// 			access: {
+		// 				dev: false,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: false
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service2",
+		// 			api: "/ap1",
+		// 			group: "group1",
+		// 			method: "get",
+		// 			version: "1",
+		// 			access: {
+		// 				dev: false,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: false
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service2",
+		// 			api: "/ap34",
+		// 			group: "group12",
+		// 			method: "get",
+		// 			version: "1",
+		// 			access: {
+		// 				dev: false,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: false
+		// 			}
+		// 		}
+		// 	],
+		// 	aclTypeByEnv: {
+		// 		dev: "granular",
+		// 		stg: "granular"
+		// 	}
+		// };
+		// $scope.compactViewService = {
+		// 	package: "TPROD_BASIC",
+		// 	product: "TPROD",
+		// 	acl: [
+		// 		{
+		// 			service: "service1",
+		// 			version: "1",
+		// 			restriction: {
+		// 				dev: true,
+		// 				stg: true
+		// 			},
+		// 			access: {
+		// 				dev: true,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: false
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service2",
+		// 			version: "1",
+		// 			restriction: {
+		// 				dev: true,
+		// 				stg: true
+		// 			},
+		// 			access: {
+		// 				dev: false,
+		// 				stg: true
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: true
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service3",
+		// 			version: "1",
+		// 			restriction: {
+		// 				dev: true,
+		// 				stg: false
+		// 			},
+		// 			access: {
+		// 				dev: true,
+		// 				stg: true
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: true
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service4",
+		// 			version: "1",
+		// 			restriction: {
+		// 				dev: false,
+		// 				stg: true
+		// 			},
+		// 			access: {
+		// 				dev: true,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: true
+		// 			}
+		// 		},
+		// 		{
+		// 			service: "service4",
+		// 			version: "2",
+		// 			restriction: {
+		// 				dev: false,
+		// 				stg: false
+		// 			},
+		// 			access: {
+		// 				dev: true,
+		// 				stg: false
+		// 			},
+		// 			envs: {
+		// 				dev: true,
+		// 				stg: true
+		// 			}
+		// 		}
+		// 	],
+		// 	aclTypeByEnv: {
+		// 		dev: "granular",
+		// 	}
+		// };
+	};
+	//default operation
+	if ($scope.access.previewPackService) {
+		$scope.getEnvironments();
+	}
+	
+	injectFiles.injectCss("modules/dashboard/productization/productization.css");
+}]);
+
 
 productizationApp.filter('reposSearchFilter', function () {
 	return function (input, searchKeyword) {

@@ -109,6 +109,7 @@ var productizationConfig = {
 		'addPck' : ['dashboard', '/product/packages/add', 'post'],
 		'deletePck' : ['dashboard', '/product/packages/delete', 'delete'],
 		'updatePck' : ['dashboard', '/product/packages/update', 'put'],
-		'updateProdScope' : ['dashboard', '/product/scope/update', 'put']
+		'updateProdScope' : ['dashboard', '/product/scope/update', 'put'],
+		'previewPackService': ['dashboard', '/product/packages/aclPreview/service', 'get'],
 	}
 };

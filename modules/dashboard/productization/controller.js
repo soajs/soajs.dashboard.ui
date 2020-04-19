@@ -1682,9 +1682,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.preview = function (env, packCode, product) {
-		console.log(env);
-		console.log(packCode);
-		console.log(product);
 		$scope.$parent.go("/product/TPROD/package/TPROD_BASIC/env/dev");
 	};
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
@@ -2184,6 +2181,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
+	$scope.page = 1;
 	constructModulePermissions($scope, $scope.access, productizationConfig.permissions);
 	
 	$scope.getEnvironments = function () {
@@ -2217,14 +2215,105 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 				"mainEnv": $routeParams.env,
 			}
 		};
-		if (env) {
-			opts.params.secEnv = env;
+		if ($scope.mainEnv[1]) {
+			opts.params.secEnv = env || $scope.mainEnv[1];
 		}
+		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.compactViewService = response
+			}
+		});
+	};
+	
+	$scope.getPreviewApi = function (env) {
+		let opts = {
+			"method": "get",
+			"routeName": "/dashboard/product/packages/aclPreview/api",
+			"params": {
+				"packageCode": $routeParams.code,
+				"productCode": $routeParams.pid,
+				"mainEnv": $routeParams.env,
+			}
+		};
+		if ($scope.mainEnv[1]) {
+			opts.params.secEnv = env || $scope.mainEnv[1];
+		}
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.compactViewApi = response
+			}
+		});
+	};
+	$scope.showLoadMore = true;
+	$scope.loadMoreApi = function (env) {
+		$scope.page++;
+		let opts = {
+			"method": "get",
+			"routeName": "/dashboard/product/packages/aclPreview/api",
+			"params": {
+				"packageCode": $routeParams.code,
+				"productCode": $routeParams.pid,
+				"mainEnv": $routeParams.env,
+				"page": $scope.page
+			}
+		};
+		if ($scope.mainEnv[1]) {
+			opts.params.secEnv = env || $scope.mainEnv[1];
+		}
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				if (response.acl.length !== 0){
+					$scope.compactViewApi.acl = $scope.compactViewApi.acl.concat(response.acl);
+					$scope.showLoadMore = true;
+				}
+				else {
+					$scope.showLoadMore = false;
+				}
+			
+			}
+		});
+	};
+	$scope.loadMoreService = function (env) {
+		$scope.page++;
+		let opts = {
+			"method": "get",
+			"routeName": "/dashboard/product/packages/aclPreview/service",
+			"params": {
+				"packageCode": $routeParams.code,
+				"productCode": $routeParams.pid,
+				"mainEnv": $routeParams.env,
+				"page": $scope.page
+			}
+		};
+		if ($scope.mainEnv[1]) {
+			opts.params.secEnv = env || $scope.mainEnv[1];
+		}
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				if (response.acl.length !== 0){
+					$scope.compactViewService.acl = $scope.compactViewService.acl.concat(response.acl);
+					$scope.showLoadMore = true;
+				}
+				else {
+					$scope.showLoadMore = false;
+				}
+				
 			}
 		});
 	};
@@ -2241,88 +2330,74 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 	];
 	
 	$scope.previewMode = $scope.previewType[0];
-	$scope.compactViewApi = {
-		package: "TPROD_BASIC",
-		product: "TPROD",
-		acl: [
-			{
-				service: "service1",
-				api: "/ap1",
-				group: "group1",
-				method: "get",
-				version: "1",
-				access: {
-					dev: true,
-				},
-				envs: {
-					dev: true,
-				}
-			},
-			{
-				service: "service1",
-				api: "/ap2",
-				group: "group2",
-				method: "put",
-				version: "1",
-				access: {
-					dev: false,
-				},
-				envs: {
-					dev: true,
-				}
-			},
-			{
-				service: "service1",
-				api: "/apsadsdssdsdsdsdsasdasdasdasdasdasdasdasdasdawdwewew3",
-				group: "group1",
-				method: "post",
-				version: "1",
-				access: {
-					dev: true,
-				},
-				envs: {
-					dev: true,
-				}
-			},
-			{
-				service: "service2",
-				api: "/ap1",
-				group: "group1",
-				method: "get",
-				version: "1",
-				access: {
-					dev: true,
-				},
-				envs: {
-					dev: true,
-				}
-			},
-			{
-				service: "service2",
-				api: "/ap34",
-				group: "group12",
-				method: "get",
-				version: "1",
-				access: {
-					dev: true,
-				},
-				envs: {
-					dev: true,
-				}
-			}
-		],
-		aclTypeByEnv: {
-			dev: "granular",
-			stg: "granular"
-		}
-	};
 	$scope.mainEnv = [$routeParams.env];
 	
-	$scope.selectPreview = function() {
-		//cal api
+	$scope.selectPreview = function(previewMode) {
+		$scope.page = 1;
+		$scope.showLoadMore = true;
+		if (previewMode === "service"){
+			$scope.getPreviewService();
+		}
+		else {
+			$scope.getPreviewApi();
+		}
 	};
-	$scope.saveEnv = function (env) {
-		console.log(env);
+	
+	$scope.saveEnvApi = function (env, acl) {
+		$scope.page = 1;
+		$scope.showLoadMore = true;
+		let opts = {
+			"method": "put",
+			"routeName": "/dashboard/product/packages/aclPreview/api",
+			"params": {
+				"packageCode": $routeParams.code,
+				"productCode": $routeParams.pid,
+				"env": env
+			},
+			"data": {
+				"acl": acl
+			}
+		};
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.getPreviewApi();
+			}
+		});
+	};
+	
+	$scope.saveEnvService = function (env, acl) {
+		$scope.page = 1;
+		$scope.showLoadMore = true;
+		let opts = {
+			"method": "put",
+			"routeName": "/dashboard/product/packages/aclPreview/service",
+			"params": {
+				"packageCode": $routeParams.code,
+				"productCode": $routeParams.pid,
+				"env": env
+			},
+			"data": {
+				"acl": acl
+			}
+			
+		};
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.getPreviewService();
+			}
+		});
+	};
+	$scope.showRestriction = function (acl){
+		jQuery('[id^="restriction_message_"]').removeClass("showMessageRestrictionApi");
+		jQuery('#restriction_message_' + acl.service + "_" +  acl.version + "_" +  acl.method + "_" +  acl.api.substr(1).replace("/", "_")).addClass('showMessageRestrictionApi');
 	};
 	$scope.compareEnv = function () {
 		let currentScope = $scope;
@@ -2334,6 +2409,8 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 			controller: function ($scope, $modalInstance) {
 				$scope.envList = [];
 				$scope.mainEnv = $routeParams.env;
+				$scope.secEnv = currentScope.mainEnv[1];
+				$scope.previewMode = currentScope.previewMode.v;
 				if (currentScope.previewMode.v === "service") {
 					currentScope.environments_codes.forEach((env) => {
 						if (env.code.toLowerCase() !== $routeParams.env.toLowerCase()){
@@ -2417,7 +2494,15 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 				
 				$scope.onSubmit = function () {
 					//call the apis
-					console.log("submit")
+					currentScope.page = 1;
+					currentScope.showLoadMore = true;
+					currentScope.mainEnv[1] = $scope.selectedEnv;
+					if ($scope.previewMode === "service"){
+						currentScope.getPreviewService($scope.selectedEnv);
+					}
+					else {
+						currentScope.getPreviewApi($scope.selectedEnv);
+					}
 					$scope.closeModal();
 				};
 				
@@ -2426,181 +2511,6 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 				};
 			}
 		});
-		// $scope.mainEnv = ["dev", "stg"];
-		// $scope.compactViewApi = {
-		// 	package: "TPROD_BASIC",
-		// 	product: "TPROD",
-		// 	acl: [
-		// 		{
-		// 			service: "service1",
-		// 			api: "/ap1",
-		// 			group: "group1",
-		// 			method: "get",
-		// 			version: "1",
-		// 			access: {
-		// 				dev: true,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: false
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service1",
-		// 			api: "/ap2",
-		// 			group: "group2",
-		// 			method: "put",
-		// 			version: "1",
-		// 			access: {
-		// 				dev: true,
-		// 				stg: true
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: true
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service1",
-		// 			api: "/apsadsdssdsdsdsdsasdasdasdasdasdasdasdasdasdawdwewew3",
-		// 			group: "group1",
-		// 			method: "post",
-		// 			version: "1",
-		// 			access: {
-		// 				dev: false,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: false
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service2",
-		// 			api: "/ap1",
-		// 			group: "group1",
-		// 			method: "get",
-		// 			version: "1",
-		// 			access: {
-		// 				dev: false,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: false
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service2",
-		// 			api: "/ap34",
-		// 			group: "group12",
-		// 			method: "get",
-		// 			version: "1",
-		// 			access: {
-		// 				dev: false,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: false
-		// 			}
-		// 		}
-		// 	],
-		// 	aclTypeByEnv: {
-		// 		dev: "granular",
-		// 		stg: "granular"
-		// 	}
-		// };
-		// $scope.compactViewService = {
-		// 	package: "TPROD_BASIC",
-		// 	product: "TPROD",
-		// 	acl: [
-		// 		{
-		// 			service: "service1",
-		// 			version: "1",
-		// 			restriction: {
-		// 				dev: true,
-		// 				stg: true
-		// 			},
-		// 			access: {
-		// 				dev: true,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: false
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service2",
-		// 			version: "1",
-		// 			restriction: {
-		// 				dev: true,
-		// 				stg: true
-		// 			},
-		// 			access: {
-		// 				dev: false,
-		// 				stg: true
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: true
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service3",
-		// 			version: "1",
-		// 			restriction: {
-		// 				dev: true,
-		// 				stg: false
-		// 			},
-		// 			access: {
-		// 				dev: true,
-		// 				stg: true
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: true
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service4",
-		// 			version: "1",
-		// 			restriction: {
-		// 				dev: false,
-		// 				stg: true
-		// 			},
-		// 			access: {
-		// 				dev: true,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: true
-		// 			}
-		// 		},
-		// 		{
-		// 			service: "service4",
-		// 			version: "2",
-		// 			restriction: {
-		// 				dev: false,
-		// 				stg: false
-		// 			},
-		// 			access: {
-		// 				dev: true,
-		// 				stg: false
-		// 			},
-		// 			envs: {
-		// 				dev: true,
-		// 				stg: true
-		// 			}
-		// 		}
-		// 	],
-		// 	aclTypeByEnv: {
-		// 		dev: "granular",
-		// 	}
-		// };
 	};
 	//default operation
 	if ($scope.access.previewPackService) {

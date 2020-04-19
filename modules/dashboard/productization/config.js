@@ -111,5 +111,6 @@ var productizationConfig = {
 		'updatePck' : ['dashboard', '/product/packages/update', 'put'],
 		'updateProdScope' : ['dashboard', '/product/scope/update', 'put'],
 		'previewPackService': ['dashboard', '/product/packages/aclPreview/service', 'get'],
+		'previewPackApi': ['dashboard', '/product/packages/aclPreview/api', 'get'],
 	}
 };

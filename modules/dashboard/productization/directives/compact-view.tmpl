@@ -7,7 +7,7 @@
 				<select style="margin-left: 7px"
 				        ng-options="preview.l for preview in previewType"
 				        ng-model="previewMode"
-						ng-click="selectPreview()">
+						ng-change="selectPreview(previewMode.v)">
 				</select>
 			</div>
 			<div>
@@ -32,41 +32,47 @@
 							<td class="apiCompactViewMethod alignCenter">{{acl.method}}</td>
 							<td class="apiCompactViewApi alignCenter">{{acl.api}}</td>
 							<td ng-repeat="(key, value) in acl.envs" class="apiCompactViewEnv">
-								<div class="envAccess">
-									<label class="accessEnvironment"> Access</label>
-									<label class="toggleSwitch envSwitch">
-										<input  type="checkbox"  ng-model="acl.envs[key]" ng-checked="acl.envs[key]" />
-										<span class="buttonSlider round"></span>
-									</label>
+								<div ng-click="showRestriction(acl)">
+									<div class="envAccess">
+										<label class="accessEnvironment"> Access</label>
+										<label class="toggleSwitch envSwitch">
+											<input  type="checkbox"  ng-if="!acl.restriction[key]" ng-model="acl.envs[key]" ng-checked="acl.envs[key]" disabled/>
+											<input  type="checkbox"  ng-if="acl.restriction[key]" ng-model="acl.envs[key]" ng-checked="acl.envs[key]" />
+											<span class="buttonSlider round"></span>
+										</label>
+									</div>
+									
+									<div class="envAccessType" ng-if="acl.envs[key]">
+										<label class="accessPublic"> Public</label>
+										<label class="toggleSwitch envSwitch">
+											<input  type="checkbox"   ng-if="!acl.restriction[key]" ng-model="acl.access[key]" ng-checked="acl.access[key]" disabled />
+											<input  type="checkbox"   ng-if="acl.restriction[key]" ng-model="acl.access[key]" ng-checked="acl.access[key]"  />
+											<span class="buttonSlider round"></span>
+										</label>
+										<label class="accessPrivate"> Private </label>
+									</div>
 								</div>
-								
-								<div class="envAccessType" ng-if="acl.envs[key]">
-									<label class="accessPublic"> Public</label>
-									<label class="toggleSwitch envSwitch">
-										<input  type="checkbox"  ng-model="acl.access[key]" ng-checked="acl.access[key]" />
-										<span class="buttonSlider round"></span>
-									</label>
-									<label class="accessPrivate"> Private </label>
+								<div>
+									<br>
+									<br>
+									<div class="restrictionMessage" id = "restriction_message_{{acl.service}}_{{acl.version}}_{{acl.method}}_{{acl.api.substr(1).replace('/', '_')}}" ng-if="!acl.restriction[key]"><span > Go to Service Compact view and enable APi Restriction First. </span></div>
 								</div>
-							
 							</td>
 						</tr>
 						<tr >
-							<td style="border: none;"></td>
-							<td style="border: none;"></td>
-							<td style="border: none;"></td>
-							<td style="border: none;"></td>
-							<td style="border: none;"></td>
+							<td colspan="5" style="border: none; text-align: center"><a ng-if="showLoadMore" href="" ng-click="loadMoreApi()" class="btn btn-primary">
+								<span class="icon icon-undo"></span> Load More
+							</a></td>
 							<td ng-repeat="env in mainEnv" class="apiCompactViewEnv">
-								<input class="btn btn-sm btn-success saveEnvButton" ng-click="saveEnv(env)" value="Save for {{env}}"/>
+								<input class="btn btn-sm btn-success saveEnvButton" ng-click="saveEnvApi(env, compactViewApi.acl)" value="Save for {{env}}"/>
 							</td>
 						</tr>
 					</table>
 				</div>
 			
 				<div  ng-show="previewMode.v === 'service'">
-					<span class="restrictionAstrix">* Restriction: If not selected, any api on this service will be available</span>
-					<table id="serviceCompactView">
+					<span class="restrictionAstrix">* API Restriction: If not selected, any api on this service will be available</span>
+					<table id="serviceCompactView" align="center">
 						<tr >
 							<th class="serviceCompactViewService alignCenter">Service</th>
 							<th class="serviceCompactViewVersion alignCenter">Version</th>
@@ -76,37 +82,40 @@
 							<td class="serviceCompactViewService alignCenter">{{acl.service}}</td>
 							<td class="serviceCompactViewVersion alignCenter">{{acl.version}}</td>
 							<td ng-repeat="(key, value) in acl.envs" class="serviceCompactViewEnv">
-								<div class="envAccess">
-									<label class="accessEnvironment"> Access</label>
-									<label class="toggleSwitch envSwitch">
-										<input  type="checkbox"  ng-model="acl.envs[key]" ng-checked="acl.envs[key]" />
-										<span class="buttonSlider round"></span>
-									</label>
-								</div>
-								
-								<div class="envAccessType" ng-if="acl.envs[key]">
-									<label class="accessPublic"> Public</label>
-									<label class="toggleSwitch envSwitch">
-										<input  type="checkbox"  ng-model="acl.access[key]" ng-checked="acl.access[key]" />
-										<span class="buttonSlider round"></span>
-									</label>
-									<label class="accessPrivate"> Private </label>
-								</div>
-								
-								<div class="envAccessRestriction" ng-if="acl.envs[key]">
-									<label class="accessPublic"> Restriction</label>
-									<label class="toggleSwitch envSwitch">
-										<input  type="checkbox"  ng-model="acl.restriction[key]" ng-checked="acl.restriction[key]" />
-										<span class="buttonSlider round"></span>
-									</label>
+								<div  ng-class="{'access1Env': !mainEnv[1], 'access2Env': !!mainEnv[1] }">
+									<div class="envAccess">
+										<label class="accessEnvironment"> Access</label>
+										<label class="toggleSwitch envSwitch">
+											<input  type="checkbox"  ng-model="acl.envs[key]" ng-checked="acl.envs[key]" />
+											<span class="buttonSlider round"></span>
+										</label>
+									</div>
+									
+									<div class="envAccessType" ng-show="acl.envs[key]">
+										<label class="accessPublic"> Public</label>
+										<label class="toggleSwitch envSwitch">
+											<input  type="checkbox"  ng-model="acl.access[key]" ng-checked="acl.access[key]" />
+											<span class="buttonSlider round"></span>
+										</label>
+										<label class="accessPrivate"> Private </label>
+									</div>
+									
+									<div class="envAccessRestriction" ng-show="acl.envs[key]">
+										<label class="accessPublic"> API Restriction</label>
+										<label class="toggleSwitch envSwitch">
+											<input  type="checkbox"  ng-model="acl.restriction[key]" ng-checked="acl.restriction[key]" />
+											<span class="buttonSlider round"></span>
+										</label>
+									</div>
 								</div>
 							</td>
 						</tr>
 						<tr >
-							<td style="border: none;"></td>
-							<td style="border: none;"></td>
+							<td colspan="2" style="border: none; text-align: center"><a ng-if="showLoadMore" href="" ng-click="loadMoreService()" class="btn btn-primary">
+								<span class="icon icon-undo"></span> Load More
+							</a></td>
 							<td ng-repeat="env in mainEnv" class="serviceCompactViewEnv">
-								<input class="btn btn-sm btn-success saveEnvButton" ng-click="saveEnv(env)" value="Save for {{env}}"/>
+								<input class="btn btn-sm btn-success saveEnvButton"ng-click="saveEnvService(env, compactViewService.acl)" value="Save for {{env}}"/>
 							</td>
 						</tr>
 					</table>
@@ -124,7 +133,7 @@
 		</div>
 		<div>
 			<alert ng-if="showWarning" class = "showInfoEnv" type="warning">You are not allowed to compare environments with different Acl Types!</alert>
-			<alert ng-if="selectedEnv"  class = "showInfoEnv" type="info">You can only compare 2 environments at a time, make sure you clicked save for STG.</alert>
+			<alert ng-if="selectedEnv && secEnv"  class = "showInfoEnv" type="info">You can only compare 2 environments at a time, make sure you clicked save for {{secEnv}}.</alert>
 			<div id="envCompareListing">
 				<div  ng-class="{'envBoxesAllowed': env.allowed, 'envBoxes': !env.allowed }" id="env_code_{{env.code}}" ng-repeat="env in envList" ng-click="selectEnv(env)">
 					<span >{{env.code}}</span>
@@ -132,7 +141,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<input ng-if="selectedEnv" class="btn btn-success" type="submit" value="submit"/>
+			<input ng-if="selectedEnv" class="btn btn-success" ng-click="onSubmit()" type="submit" value="submit"/>
 			<button class="btn btn-danger" type="button" ng-click="closeModal()" value="Cancel">Cancel</button>
 		</div>
 	</div>

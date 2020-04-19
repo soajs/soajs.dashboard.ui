@@ -14,6 +14,14 @@ var ProdTranslation = {
 		"ENG": "Edit Package ACL",
 		"FRA": "Edit Package ACL"
 	},
+	"compactView": {
+		"ENG": "Compact View",
+		"FRA": "Compact View",
+	},
+	"compactViewPackage": {
+		"ENG": "Compact View for Package",
+		"FRA": "Compact View for Package",
+	},
 	"editProductACL": {
 		"ENG": "Edit Product ACL",
 		"FRA": "Edit Product ACL"
@@ -292,6 +300,25 @@ var productizationNav =[
 		},
 		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
 		'ancestor': [translation.home[LANG], translation.consolePackages[LANG]]
+	},
+	{
+		'id': 'preview-package-acl',
+		'label': translation.compactView[LANG],
+		'url': '#/product/:pid/package/:code/env/:env',
+		'tplPath': 'modules/dashboard/productization/directives/compact-view.tmpl',
+		'tracker': true,
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'/product/packages/update',
+			'method': 'get'
+		},
+		'pillar':{
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
+		'ancestor': [translation.home[LANG], translation.productization[LANG]]
 	},
 ];
 navigation = navigation.concat(productizationNav);

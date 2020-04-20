@@ -2396,9 +2396,9 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 			}
 		});
 	};
-	$scope.showRestriction = function (acl){
+	$scope.showRestriction = function (acl, key){
 		jQuery('[id^="restriction_message_"]').removeClass("showMessageRestrictionApi");
-		jQuery('#restriction_message_' + acl.service + "_" +  acl.version + "_" +  acl.method + "_" +  acl.api.substr(1).replace("/", "_")).addClass('showMessageRestrictionApi');
+		jQuery('#restriction_message_' + key + "_" + acl.service + "_" +  acl.version + "_" +  acl.method + "_" +  acl.api.substr(1).replace("/", "_")).addClass('showMessageRestrictionApi');
 	};
 	$scope.compareEnv = function () {
 		let currentScope = $scope;

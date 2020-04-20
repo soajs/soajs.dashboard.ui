@@ -32,7 +32,7 @@
 							<td class="apiCompactViewMethod alignCenter">{{acl.method}}</td>
 							<td class="apiCompactViewApi alignCenter">{{acl.api}}</td>
 							<td ng-repeat="(key, value) in acl.envs" class="apiCompactViewEnv">
-								<div ng-click="showRestriction(acl)">
+								<div ng-click="showRestriction(acl, key)">
 									<div class="envAccess">
 										<label class="accessEnvironment"> Access</label>
 										<label class="toggleSwitch envSwitch">
@@ -55,7 +55,7 @@
 								<div>
 									<br>
 									<br>
-									<div class="restrictionMessage" id = "restriction_message_{{acl.service}}_{{acl.version}}_{{acl.method}}_{{acl.api.substr(1).replace('/', '_')}}" ng-if="!acl.restriction[key]"><span > Go to Service Compact view and enable APi Restriction First. </span></div>
+									<div class="restrictionMessage" id = "restriction_message_{{key}}_{{acl.service}}_{{acl.version}}_{{acl.method}}_{{acl.api.substr(1).replace('/', '_')}}" ng-if="!acl.restriction[key]"><span > Go to Service Compact view and enable APi Restriction First. </span></div>
 								</div>
 							</td>
 						</tr>

@@ -2397,8 +2397,10 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 		});
 	};
 	$scope.showRestriction = function (acl, key){
-		jQuery('[id^="restriction_message_"]').removeClass("showMessageRestrictionApi");
-		jQuery('#restriction_message_' + key + "_" + acl.service + "_" +  acl.version + "_" +  acl.method + "_" +  acl.api.substr(1).replace("/", "_")).addClass('showMessageRestrictionApi');
+		//jQuery('[id^="restriction_message_"]').removeClass("showMessageRestrictionApi");
+		$(document.querySelectorAll('[id^="restriction_message_"]')).removeClass("showMessageRestrictionApi");
+		$(document.getElementById('restriction_message_' + key + "_" + acl.service + "_" +  acl.version + "_" +  acl.method + "_" +  acl.api.substr(1).replace("/", "_"))).addClass('showMessageRestrictionApi');
+		//jQuery(jQuery('#restriction_message_' + key + "_" + acl.service + "_" +  acl.version + "_" +  acl.method + "_" +  acl.api.substr(1).replace("/", "_")).addClass('showMessageRestrictionApi');
 	};
 	$scope.compareEnv = function () {
 		let currentScope = $scope;

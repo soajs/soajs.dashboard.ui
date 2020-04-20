@@ -2182,6 +2182,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 	
 	$scope.access = {};
 	$scope.page = 1;
+	$scope.currentPackage = $routeParams.code;
 	constructModulePermissions($scope, $scope.access, productizationConfig.permissions);
 	
 	$scope.getEnvironments = function () {

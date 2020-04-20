@@ -1682,7 +1682,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	};
 	
 	$scope.preview = function (env, packCode, product) {
-		$scope.$parent.go("/product/TPROD/package/TPROD_BASIC/env/dev");
+		$scope.$parent.go("/product/" + product.code + "/package/" + packCode.code + "/env/" + env.toLowerCase());
 	};
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation

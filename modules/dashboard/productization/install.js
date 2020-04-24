@@ -22,6 +22,10 @@ var ProdTranslation = {
 		"ENG": "Compact View for Package",
 		"FRA": "Compact View for Package",
 	},
+	"compactViewScope": {
+		"ENG": "Compact View for Product Scope",
+		"FRA": "Compact View for  Product Scope",
+	},
 	"editProductACL": {
 		"ENG": "Edit Product ACL",
 		"FRA": "Edit Product ACL"
@@ -306,6 +310,25 @@ var productizationNav =[
 		'label': translation.compactView[LANG],
 		'url': '#/product/:pid/package/:code/env/:env',
 		'tplPath': 'modules/dashboard/productization/directives/compact-view.tmpl',
+		'tracker': true,
+		'checkPermission':{
+			'service':'dashboard',
+			'route':'/product/packages/update',
+			'method': 'get'
+		},
+		'pillar':{
+			'name': 'management',
+			'label': translation.manage[LANG],
+			'position': 2
+		},
+		'scripts': ['modules/dashboard/productization/config.js', 'modules/dashboard/productization/controller.js', 'modules/dashboard/productization/services/productization.js'],
+		'ancestor': [translation.home[LANG], translation.productization[LANG]]
+	},
+	{
+		'id': 'preview-product-acl',
+		'label': translation.compactView[LANG],
+		'url': '#/product/:pid/env/:env',
+		'tplPath': 'modules/dashboard/productization/directives/compact-view-scope.tmpl',
 		'tracker': true,
 		'checkPermission':{
 			'service':'dashboard',

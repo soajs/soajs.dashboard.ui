@@ -441,7 +441,7 @@ deployService.service('deployServiceDep', ['ngDataApi', '$timeout', '$modal', '$
 						if ($scope.isKubernetes) {
 							if ($scope.secrets && $scope.secrets.length > 0) {
 								$scope.registrySecrets = $scope.secrets.filter(function (element) {
-									return element.type === 'kubernetes.io/dockercfg' && element.namespace === "soajs";
+									return element.type === 'kubernetes.io/dockercfg';
 								});
 							}
 						}

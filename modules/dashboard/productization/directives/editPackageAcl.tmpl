@@ -22,7 +22,8 @@
 				</div>
 				<div ng-if="oldACL!==true">
 					<tabset>
-						<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
+						<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}">
+							<br>
 							<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'apiGroup'">
 								<div class="aclToggleDiv">
 									<label>Select the ACL Mode for Environment {{oneEnv.code}}: </label>
@@ -31,6 +32,7 @@
 									        ng-model="aclMode[oneEnv.code.toLowerCase()]"
 									        ng-change="applyMode(aclMode[oneEnv.code.toLowerCase()].v, oneEnv.code)"></select>
 								</div>
+								
 								<div id="generate-ApiList-{{oneEnv.code}}" class="entryServiceBoxes">
 									<div id="s_{{oneEnv.code}}_{{group._id}}" ng-repeat="group in serviceGroup">
 										<fieldset>
@@ -58,6 +60,9 @@
 								</div>
 							</div>
 							<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'granular'">
+								<div>
+									<input class="btn btn-sm btn-primary f-right" ng-click="preview(oneEnv.code, currentPackage, product)" value="Compact View"/>
+								</div>
 								<input type="text" class="form-control acl-search" ng-model="searchKeyword"
 								       placeholder="Search ..."/>
 								<div class="aclToggleDiv">

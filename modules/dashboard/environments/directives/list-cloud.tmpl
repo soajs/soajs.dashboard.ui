@@ -279,117 +279,25 @@
 													<span class="caret"></span>
 												</button>
 												<ul ng-show="service.maintenance && service.maintenance.commands" class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
-													<li    ng-repeat="operation in service.maintenance.commands"><a href=""
-													       ng-if="service.deployment && oneSubType ==='soajs' && operation.path !=='/reloadRegistry' && operation.path!=='/awarenessStat' && operation.path!=='/loadProvision' && operation.path!=='/infoHost' && operation.path!=='/daemonStats' && operation.path!=='/reloadDaemonConf'"
-													       ng-click="executeOperation(service, operation)"><span
-															class="{{operation.icon}}"></span>&nbsp;{{operation.label}}</a>
-													</li>
-													<li    ng-repeat="operation in service.maintenance.commands"><a href=""
-													       ng-if="service.deployment && oneSubType !=='soajs'"
-													       ng-click="executeOperation(service, operation)"><i
+													
+													<li><a href="" ng-click="inspectService(service)"><span
+															class="icon icon-info"></span>&nbsp;Inspect</a></li>
+													<li><a href=""
+													       ng-if="service.deployment && access.hacloud.services.operation"
+													       ng-show="oneSubType === 'soajs' || (service.maintenance && service.maintenance.readiness)"
+													       ng-click="executeHeartbeatTest(service)"><span
+															class="icon icon-heart"></span> Heart Beat</a></li>
+													<li ng-repeat="operation in service.maintenance.commands"><a href=""
+													                                                             ng-if="service.deployment && operation.path !=='/heartbeat'"
+													                                                             ng-click="executeOperation(service, operation)"><i
 															class="{{operation.icon}} font-awesome-margin-10"></i>&nbsp;{{operation.label}}</a>
 													</li>
-													<li><a href="" ng-click="inspectService(service)"><span
-															class="icon icon-info"></span>&nbsp;Inspect</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="oneSubType === 'soajs' || (service.maintenance && service.maintenance.readiness)"
-													       ng-click="executeHeartbeatTest(service)"><span
-															class="icon icon-heart"></span> Heart Beat</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="type === 'daemon'"
-													       ng-click="loadDaemonStats(service)"><span
-															class="icon icon-stats-dots"></span>&nbsp;{{translation.loadDaemonStatisticsOperation[LANG]}}</a>
-													</li>
 													<li><a href=""
 													       ng-if="service.deployment && access.hacloud.services.operation"
 													       ng-show="type === 'daemon'"
 													       ng-click="loadDaemonGroupConfig(service)"><span
 															class="icon icon-equalizer"></span>&nbsp;{{translation.loadDaemonGroupConfig[LANG]}}</a>
 													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="service.labels['soajs.service.name'] === 'controller'"
-													       ng-click="executeAwarenessTest(service)"><span
-															class="icon icon-connection"></span>&nbsp;Awareness Stat</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="['controller','oauth'].indexOf(service.labels['soajs.service.name']) !== -1"
-													       ng-click="loadServiceProvision(service)"><span
-															class="icon icon-download3"></span>&nbsp;Load Provision</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="oneSubType === 'soajs'"
-													       ng-click="reloadServiceRegistry(service)"><span
-															class="icon icon-undo"></span>&nbsp;Reload Registry</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.scale && service.labels['soajs.service.mode'] !== 'global' && service.labels['soajs.service.mode'] !== 'daemonset'"
-													       ng-click="scaleService(service, groupName)"><span
-															class="icon icon-enlarge"></span>&nbsp;Scale Service</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.autoScale && isAutoScalable"
-													       ng-click="autoScale(service)"><span
-															class="icon icon-enlarge"></span>&nbsp;Auto Scale
-														Service</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.redeploy"
-													       ng-click="redeployService(service)"
-													       ng-confirm-click="Are you sure you want to restart this service?"><span
-															class="icon icon-undo"></span>&nbsp;Restart Service</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.redeploy"
-													       ng-show="service.labels['soajs.catalog.id']"
-													       ng-click="rebuildService(service, '')"
-													       ng-confirm-click="Are you sure you want to redeploy this service?"><span
-															class="icon icon-loop2"></span>&nbsp;Redeploy Service</a>
-													</li>
-													<li><a href=""
-													       ng-if="access.hacloud.services.delete && (kubernetesSystemDeployments.indexOf(service.name) === -1) && ((envCode.toLowerCase() === 'dashboard' && ((service.namespace && service.namespace !== 'soajs') || service.labels['soajs.service.group'] !== 'soajs-core-services')) || (envCode.toLowerCase() !== 'dashboard'))"
-													       ng-click="deleteService(service, groupName)"
-													       ng-confirm-click="Are you sure you want to delete this service?"><span
-															class="icon icon-cross"></span>&nbsp;Delete Service</a></li>
-												</ul>
-												<ul ng-show="!service.maintenance || !service.maintenance.commands" class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
-													<li><a href="" ng-click="inspectService(service)"><span
-															class="icon icon-info"></span>&nbsp;Inspect</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="oneSubType === 'soajs' || (service.maintenance && service.maintenance.readiness)"
-													       ng-click="executeHeartbeatTest(service)"><span
-															class="icon icon-heart"></span> Heart Beat</a></li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="type === 'daemon'"
-													       ng-click="loadDaemonStats(service)"><span
-															class="icon icon-stats-dots"></span>&nbsp;{{translation.loadDaemonStatisticsOperation[LANG]}}</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="type === 'daemon'"
-													       ng-click="loadDaemonGroupConfig(service)"><span
-															class="icon icon-equalizer"></span>&nbsp;{{translation.loadDaemonGroupConfig[LANG]}}</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="service.labels['soajs.service.name'] === 'controller'"
-													       ng-click="executeAwarenessTest(service)"><span
-															class="icon icon-connection"></span>&nbsp;Awareness Stat</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="['controller','oauth'].indexOf(service.labels['soajs.service.name']) !== -1"
-													       ng-click="loadServiceProvision(service)"><span
-															class="icon icon-download3"></span>&nbsp;Load Provision</a>
-													</li>
-													<li><a href=""
-													       ng-if="service.deployment && access.hacloud.services.operation"
-													       ng-show="oneSubType === 'soajs'"
-													       ng-click="reloadServiceRegistry(service)"><span
-															class="icon icon-undo"></span>&nbsp;Reload Registry</a></li>
 													<li><a href=""
 													       ng-if="service.deployment && access.hacloud.services.scale && service.labels['soajs.service.mode'] !== 'global' && service.labels['soajs.service.mode'] !== 'daemonset'"
 													       ng-click="scaleService(service, groupName)"><span

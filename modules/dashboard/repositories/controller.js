@@ -242,12 +242,7 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				
-				// repo.branches.forEach((oneBranch) => {
-				// 	if (oneBranch && oneBranch.name === branch) {
-				// 		oneBranch.active = true;
-				// 	}
-				// });
+				$scope.listTags(repo);
 				$scope.displayAlert('success', result.data);
 			}
 		});
@@ -317,11 +312,11 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				$scope.displayAlert('danger', error.message);
 			} else {
 				$scope.displayAlert('success', result.data);
+				$scope.listTags(repo);
 			}
 		});
 	};
 	$scope.tags = {};
-	$scope.allTags = {};
 	$scope.listTags = function (repo) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -331,11 +326,31 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				size: 10
 			}
 		}, function (error, result) {
-			if (result && result.tags){
-				$scope.tags[repo.repository] = result.tags;
-				$scope.allTags[repo.repository] = result.tags;
-				console.log($scope.tags)
+			if (error) {
+				$scope.displayAlert('danger', error.message);
 			}
+			else {
+				let temp = result.tags;
+				
+				if (repo.tags && repo.tags.length){
+					repo.tags.forEach((oneTag)=>{
+						if (temp && temp.length > 0){
+							let found = false;
+							temp.forEach((tag)=>{
+								if(oneTag.name === tag.name){
+									tag.active = !!oneTag.active;
+									found = true
+								}
+							});
+							if (!found){
+								temp.push(oneTag)
+							}
+						}
+					})
+				}
+				$scope.tags[repo.repository] = temp;
+			}
+			
 		});
 	};
 	$scope.getTag = function (repo, tag) {
@@ -427,6 +442,7 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				// 		oneBranch.active = false;
 				// 	}
 				// });
+				$scope.listTags(repo);
 				$scope.displayAlert('success', response.data);
 			}
 		});

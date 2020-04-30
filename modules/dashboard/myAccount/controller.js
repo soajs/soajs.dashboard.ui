@@ -303,7 +303,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 						getSendDataFromServer($scope, ngDataApi, options1, function (error, response) {
 							if (error) {
 								overlayLoading.hide();
-								$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+								$scope.$parent.displayAlert('danger', error.code, true, 'oauth', error.message);
 							} else {
 								authValue = response.data;
 								
@@ -319,7 +319,7 @@ myAccountApp.controller('loginCtrl', ['$scope', 'ngDataApi', '$cookies', 'isUser
 								getSendDataFromServer($scope, ngDataApi, options2, function (error, response) {
 									if (error) {
 										overlayLoading.hide();
-										$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+										$scope.$parent.displayAlert('danger', error.code, true, 'oauth', error.message);
 									} else {
 										if (Object.hasOwnProperty.call(response, "access_token")) {
 											$cookies.put('access_token', response.access_token, {'domain': interfaceDomain});

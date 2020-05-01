@@ -242,6 +242,14 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
+				if (!repo.tags){
+					repo.tags = [];
+				}
+				repo.tags.push({
+					name: tag,
+					active: true
+				});
+				
 				$scope.listTags(repo);
 				$scope.displayAlert('success', result.data);
 			}
@@ -416,11 +424,13 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				// repo.branches.forEach((oneBranch) => {
-				// 	if (oneBranch && oneBranch.name === branch) {
-				// 		oneBranch.active = false;
-				// 	}
-				// });
+				if (!repo.tags){
+					repo.tags = [];
+				}
+				repo.tags.push({
+					name: tag,
+					active: false
+				});
 				$scope.listTags(repo);
 				$scope.displayAlert('success', response.data);
 			}

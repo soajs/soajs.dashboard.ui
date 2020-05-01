@@ -304,6 +304,7 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 	};
 	
 	$scope.tags = {};
+	$scope.allTags = {};
 	$scope.listTags = function (repo) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
@@ -335,6 +336,7 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 						}
 					})
 				}
+				$scope.allTags[repo.repository] = result.tags;
 				$scope.tags[repo.repository] = temp;
 			}
 			

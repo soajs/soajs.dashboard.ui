@@ -224,14 +224,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 	$scope.inspectService = function (service) {
 		hacloudSrv.inspectService($scope, service);
 	};
-
-	$scope.reloadServiceRegistry = function (service) {
-		hacloudSrv.reloadServiceRegistry($scope, service);
-	};
-
-	$scope.loadServiceProvision = function (service) {
-		hacloudSrv.loadServiceProvision($scope, service);
-	};
 	
 	$scope.executeOperation = function (service, operation) {
 		hacloudSrv.executeOperation($scope, service, operation);
@@ -239,18 +231,6 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 
 	$scope.executeHeartbeatTest = function (service) {
 		hacloudSrv.executeHeartbeatTest($scope, service);
-	};
-
-	$scope.executeAwarenessTest = function (service) {
-		hacloudSrv.executeAwarenessTest($scope, service);
-	};
-
-	$scope.loadDaemonStats = function(service){
-		hacloudSrv.loadDaemonStats($scope, service);
-	};
-
-	$scope.loadDaemonGroupConfig = function(service){
-		hacloudSrv.loadDaemonGroupConfig($scope, service);
 	};
 
 	$scope.hostLogs = function (service, task) {

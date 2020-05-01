@@ -97,9 +97,7 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 							deployOptions.custom.sourceCode = $scope.reformatSourceCodeForCicd(deployOptions.sourceCode);
 							delete deployOptions.sourceCode;
 
-							if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
-								deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
-							}
+							
 							apiParams['resourceName'] = formData.name;
 							apiParams['deploy'] = formData.canBeDeployed || false;
 							apiParams['options'] = deployOptions;
@@ -167,18 +165,12 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 									deployOptions.custom.resourceId = $scope.newResource._id;
 								}
 								deployOptions.env = $scope.options.envCode;
-
-								if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
-									deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
-								}
+								
 							}
 							else {
 								deployOptions.custom.resourceId = formData._id;
 								deployOptions.env = formData.created;
-
-								if (deployOptions.deployConfig && deployOptions.deployConfig.memoryLimit) {
-									deployOptions.deployConfig.memoryLimit *= 1048576; //convert memory limit to bytes
-								}
+								
 							}
 							apiParams["deployOptions"] = deployOptions;
 							if (formData.deployOptions.deployConfig.type === "vm" && formData.deployOptions.deployConfig.vmConfiguration && formData.deployOptions.deployConfig.vmConfiguration.vmLayer) {
@@ -210,7 +202,6 @@ addService.service('addService', ['$timeout', 'ngDataApi', '$modal', 'resourceDe
 						rebuildOptions = angular.copy(formData.deployOptions.custom);
 						apiParams['deployType'] = "saveAndRebuild";
 						rebuildOptions.memory = formData.deployOptions.deployConfig.memoryLimit; //convert memory limit back to bytes
-						rebuildOptions.memory *= 1048576;
 
 						rebuildOptions.cpuLimit = formData.deployOptions.deployConfig.cpuLimit;
 						apiParams["rebuildOptions"] = rebuildOptions;

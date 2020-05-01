@@ -434,10 +434,10 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 				id: account._id.toString()
 			}
 		}, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.message);
 			} else {
-				overlayLoading.hide();
 				if (error) {
 					$scope.form.displayAlert('danger', error.message);
 				} else {

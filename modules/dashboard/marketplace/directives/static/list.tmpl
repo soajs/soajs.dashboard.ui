@@ -1,12 +1,12 @@
-<section ng-controller="soajsCatalogCtrl">
+<section ng-controller="staticCatalogCtrl">
 	<div ng-if="access.listServices" class="f-right">
-		<a href="" ng-click="listSoajsCatalog()" class="btn btn-primary f-right">
+		<a href="" ng-click="listStaticCatalog()" class="btn btn-primary f-right">
 			<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
 		</a>
 		<br/><br/>
 	</div>
 	<div ng-show="!showCatalog">
-		br>
+		<br>
 		<br>
 		<alert type="warning">No Soajs Catalogs found</alert>
 	</div>
@@ -21,7 +21,7 @@
 							<legend>{{group}}</legend>
 							<div class="entryBoxes">
 								<div  id="s_{{service._id}}" ng-repeat="service in records" class="entryBox" ng-init="service.hide = true;">
-									<div ng-include="'modules/dashboard/marketplace/directives/soajs/recordListing.tmpl'"></div>
+									<div ng-include="'modules/dashboard/marketplace/directives/static/recordListing.tmpl'"></div>
 								</div>
 							</div>
 						</fieldset>

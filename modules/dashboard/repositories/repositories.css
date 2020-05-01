@@ -462,3 +462,27 @@ li.accountType {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
+
+.blueListing li.versionControlTab a{
+    margin-left: 0px !important;
+}
+
+.tagNotFound{
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: darkslategrey;
+}
+
+.tagFound{
+    color: green;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.tagIcon{
+    margin-left: 10px
+}

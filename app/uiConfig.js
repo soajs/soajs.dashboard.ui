@@ -23,7 +23,7 @@ var apiConfiguration = {
 };
 
 var consoleAclConfig = {
-	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories'],
+	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories', 'marketplace'],
 	"OTHER": ["urac"]
 };
 

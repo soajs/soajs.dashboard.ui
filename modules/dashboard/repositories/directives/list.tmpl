@@ -56,7 +56,7 @@
 					<br>
 					<hr>
 					<div class="searchLabel">
-						<label> Only Activated Repositories:  </label>
+						<label> Only Activated Repositories: </label>
 						<input type="checkbox" class="activeRepoCheck" ng-model="repoSearch.active">
 					</div>
 					
@@ -129,11 +129,11 @@
 									</a>
 								</div>
 								<div ng-if="access.activateRepo && repo.status === 'active'" ng-show="repo.showDetails">
-									<accordion ng-if="repo && repo.branches">
+									<accordion ng-if="repo && (repo.branches || repo.tags)">
 										<accordion-group is-open="true"
 										                 class="activeBranchAccordion">
 											<accordion-heading>
-												<span>Branches</span>
+												<span>Version Control</span>
 												<div style="float: right;">
 													<a href="" ng-if="access.deactivateRepo && repo.status"
 													   ng-click="deactivateRepo(repo)"
@@ -148,40 +148,101 @@
 													</a>
 												</div>
 											</accordion-heading>
-											<div class="entryBoxes entryBoxesGrid" ng-if="repo">
-												<div class="entryBox pl0" style="width: 32%; background-color: #eeeeee"
-												     ng-repeat="branch in repo.branches" ng-class="{greenBox: branch.activate}">
-													<div class="header opened" style="border-bottom: unset"
-													     ng-class="{greenBoxHeader: branch.activate}">
-														{{branch.name}}
-														<div style="float: right;">
+											<tabset>
+												<tab heading="Branches" ng-if="repo.branches" active="true"
+												     class="versionControlTab">
+													<br>
+													<div class="entryBoxes entryBoxesGrid">
+														<div class="entryBox pl0"
+														     style="width: 32%; background-color: #eeeeee"
+														     ng-repeat="branch in repo.branches"
+														     ng-class="{greenBox: branch.activate}">
+															<div class="header opened" style="border-bottom: unset"
+															     ng-class="{greenBoxHeader: branch.activate}">
+																{{branch.name}}
+																<div style="float: right;">
 													<span ng-if="branch.active"
 													      style="margin-right: 0px; margin-left: 0px "><span
 															class="icon icon-checkmark"></span>Active Branch</span>
-															<a href="" ng-if="access.activateBranch && !branch.active"
-															   ng-click="activateBranch(repo, branch.name)">
+																	<a href=""
+																	   ng-if="access.activateBranch && !branch.active"
+																	   ng-click="activateBranch(repo, branch.name)">
 														<span class="icon icon-switch"
 														      tooltip="{{translation.activate[LANG]}} Branch"></span>
-															</a>
-															<a href="" ng-if="access.syncRepo && branch.active"
-															   ng-click="syncBranch(repo, branch.name)">
+																	</a>
+																	<a href="" ng-if="access.syncRepoBranches && branch.active"
+																	   ng-click="syncBranch(repo, branch.name)">
 														<span class="icon icon-loop2"
 														      style="margin-right: 0px;margin-left: 0px"
 														      tooltip="{{translation.sync[LANG]}}"></span>
-															</a>
-															<a href="" ng-if="access.deactivateBranch && branch.active"
-															   ng-click="deactivateBranch(repo, branch.name)"
-															   ng-confirm-click="Are you sure you want to deactivate this branch?">
+																	</a>
+																	<a href=""
+																	   ng-if="access.deactivateBranch && branch.active"
+																	   ng-click="deactivateBranch(repo, branch.name)"
+																	   ng-confirm-click="Are you sure you want to deactivate this branch?">
 														<span class="icon icon-cross"
 														      style="margin-right: 0px;margin-left: 0px"
 														      tooltip="{{translation.deactivate[LANG]}} Branch"></span>
-															</a>
+																	</a>
+																</div>
+															</div>
 														</div>
 													</div>
-												</div>
-											</div>
+												</tab>
+												<tab heading="Tags" ng-click="listTags(repo)">
+													<br>
+													<div>
+														<label>Search Tag: </label>
+														<input type="text" ng-class="{tagNotFound: !searchTag[repo.repository], tagFound: searchTag[repo.repository]}" ng-model="tag" ng-model-options="{ debounce: 1000 }" ng-change="getTag(repo, tag)"
+														       placeholder="Search tags.." />
+														<span ng-show="searchTag[repo.repository]" class="icon icon-checkmark green tagIcon"></span>
+														<span ng-show="!searchTag[repo.repository]" class="icon icon-cross red tagIcon"></span>
+													</div>
+													<div  ng-if="tags[repo.repository]">
+														<hr>
+														<br>
+														<div class="entryBoxes entryBoxesGrid">
+															<div class="entryBox pl0"
+															     style="width: 32%; background-color: #eeeeee"
+															     ng-repeat="tag in tags[repo.repository]"
+															     ng-class="{greenBox: tag.activate}">
+																<div class="header opened" style="border-bottom: unset"
+																     ng-class="{greenBoxHeader: tag.activate}">
+																	{{tag.name}}
+																	<div style="float: right;">
+													<span ng-if="tag.active"
+													      style="margin-right: 0px; margin-left: 0px "><span
+															class="icon icon-checkmark"></span>Active Tag</span>
+																		<a href=""
+																		   ng-if="access.activateTag && !tag.active"
+																		   ng-click="activateTag(repo, tag.name)">
+														<span class="icon icon-switch"
+														      tooltip="{{translation.activate[LANG]}} Tag"></span>
+																		</a>
+																		<a href="" ng-if="access.syncRepo && tag.active"
+																		   ng-click="syncTag(repo, tag.name)">
+														<span class="icon icon-loop2"
+														      style="margin-right: 0px;margin-left: 0px"
+														      tooltip="{{translation.sync[LANG]}}"></span>
+																		</a>
+																		<a href=""
+																		   ng-if="access.deactivateTag && tag.active"
+																		   ng-click="deactivateTag(repo, tag.name)"
+																		   ng-confirm-click="Are you sure you want to deactivate this tag?">
+														<span class="icon icon-cross"
+														      style="margin-right: 0px;margin-left: 0px"
+														      tooltip="{{translation.deactivate[LANG]}} Tag"></span>
+																		</a>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</tab>
+											</tabset>
 										</accordion-group>
 									</accordion>
+								
 								</div>
 							</li>
 						</ul>
@@ -190,12 +251,15 @@
 			</div>
 		</div>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
-		<tr>
-			<td align="right">
-				<pagination total-items="pagination.totalItems" ng-click="search(pagination.currentPage)" ng-model="pagination.currentPage" max-size="pagination.maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="pagination.numPages" items-per-page="pagination.itemsPerPage"></pagination>
-			</td>
-		</tr>
-	</table>
+			<tr>
+				<td align="right">
+					<pagination total-items="pagination.totalItems" ng-click="search(pagination.currentPage)"
+					            ng-model="pagination.currentPage" max-size="pagination.maxSize" class="pagination-sm"
+					            boundary-links="true" rotate="false" num-pages="pagination.numPages"
+					            items-per-page="pagination.itemsPerPage"></pagination>
+				</td>
+			</tr>
+		</table>
 	</div>
 </section>
 

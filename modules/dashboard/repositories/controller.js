@@ -33,7 +33,7 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			v: 100,
 		}
 	];
-	
+	$scope.searchTag = {};
 	$scope.repoSearch = {
 		limit: $scope.limits[1]
 	};
@@ -226,6 +226,29 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 		
 	};
 	
+	$scope.activateTag = function (repo, tag) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/repositories/git/tag/activate',
+			params: {
+				id: repo._id.toString(),
+				owner: repo.source[0].name,
+				provider: repo.provider,
+				tag: tag
+			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.listTags(repo);
+				$scope.displayAlert('success', result.data);
+			}
+		});
+		
+	};
+	
 	$scope.syncRepo = function (repo, branch) {
 		overlayLoading.show();
 		let opsData = {
@@ -272,6 +295,88 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 		});
 	};
 	
+	$scope.syncTag = function (repo, tag) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'put',
+			routeName: '/repositories/git/sync/tag',
+			params: {
+				id: repo._id.toString(),
+				owner: repo.source[0].name,
+				provider: repo.provider,
+				tag: tag
+			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', result.data);
+				$scope.listTags(repo);
+			}
+		});
+	};
+	$scope.tags = {};
+	$scope.listTags = function (repo) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'get',
+			routeName: '/repositories/git/tags',
+			params: {
+				id: repo._id.toString(),
+				size: 10
+			}
+		}, function (error, result) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			}
+			else {
+				let temp = result.tags;
+				
+				if (repo.tags && repo.tags.length){
+					repo.tags.forEach((oneTag)=>{
+						if (temp && temp.length > 0){
+							let found = false;
+							temp.forEach((tag)=>{
+								if(oneTag.name === tag.name){
+									tag.active = !!oneTag.active;
+									found = true
+								}
+							});
+							if (!found){
+								temp.push(oneTag)
+							}
+						}
+					})
+				}
+				$scope.tags[repo.repository] = temp;
+			}
+			
+		});
+	};
+	$scope.getTag = function (repo, tag) {
+		if (!tag){
+			$scope.tags[repo.repository] = 	$scope.allTags[repo.repository];
+		}
+		else {
+			getSendDataFromServer($scope, ngDataApi, {
+				method: 'get',
+				routeName: '/repositories/git/tag',
+				params: {
+					id: repo._id.toString(),
+					tag: tag
+				}
+			}, function (error, result) {
+				$scope.searchTag[repo.repository] = !(error || !result);
+				if (result){
+					$scope.tags[repo.repository] = [result]
+				}
+				else {
+					$scope.tags[repo.repository] = [];
+				}
+			});
+		}
+	};
+	
 	$scope.deactivateRepo = function (repo) {
 		let opts = {
 			method: 'put',
@@ -303,9 +408,6 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				branch: branch
 			}
 		};
-		if (branch) {
-			opts.params.branch = branch;
-		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
 			if (error) {
 				$scope.displayAlert('danger', error.message);
@@ -319,6 +421,33 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 			}
 		});
 	};
+	
+	$scope.deactivateTag = function (repo, tag) {
+		let opts = {
+			method: 'put',
+			routeName: '/repositories/git/tag/deactivate',
+			params: {
+				id: repo._id.toString(),
+				owner: repo.source[0].name,
+				provider: repo.provider,
+				tag: tag
+			}
+		};
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				// repo.branches.forEach((oneBranch) => {
+				// 	if (oneBranch && oneBranch.name === branch) {
+				// 		oneBranch.active = false;
+				// 	}
+				// });
+				$scope.listTags(repo);
+				$scope.displayAlert('success', response.data);
+			}
+		});
+	};
+	
 	$scope.configureRepoEditor = false;
 	$scope.configureRepo = function (oneRepo) {
 		repoSrv.configureRepo($scope, oneRepo, $scope.accounts, repositoriesAppConfig);

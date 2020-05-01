@@ -1159,7 +1159,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			}
 		});
 	};
-	
 	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi, v) {
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi, v);
 	};
@@ -1646,6 +1645,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			}
 		});
 	};
+	
 	$scope.purgeACL = function () {
 		var productId = $routeParams.pid;
 		let options = {
@@ -1668,6 +1668,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			}
 		});
 	};
+	
 	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi) {
 		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi);
 	};

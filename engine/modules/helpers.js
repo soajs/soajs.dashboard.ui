@@ -47,7 +47,7 @@ function getSendDataFromServer($scope, ngDataApi, options, callback) {
 	};
 	
 	var pathParams = options.routeName.split("/");
-	var exclude = ['urac', 'dashboard', 'oauth', 'repositories', 'key', 'multitenant', 'proxy'];
+	var exclude = ['urac', 'dashboard', 'oauth', 'repositories', 'key', 'multitenant', 'marketplace', 'proxy'];
 	if (exclude.indexOf(pathParams[1]) !== -1) {
 		if (options.proxy && $scope.checkAuthEnvCookie()) {
 			apiOptions.url = (options.url) ? options.url + "/soajs/proxy" : apiConfiguration.domain + "/soajs/proxy";

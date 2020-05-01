@@ -216,11 +216,6 @@
 																		<a href=""
 																		   ng-if="access.activateTag && !tag.active"
 																		   ng-click="activateTag(repo, tag.name)">
-														<span class="icon icon-switch"
-														      tooltip="{{translation.activate[LANG]}} Tag"></span>
-																		</a>
-																		<a href="" ng-if="access.syncRepo && tag.active"
-																		   ng-click="syncTag(repo, tag.name)">
 														<span class="icon icon-loop2"
 														      style="margin-right: 0px;margin-left: 0px"
 														      tooltip="{{translation.sync[LANG]}}"></span>

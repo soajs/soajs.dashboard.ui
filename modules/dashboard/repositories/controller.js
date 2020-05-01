@@ -295,27 +295,6 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 		});
 	};
 	
-	$scope.syncTag = function (repo, tag) {
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'put',
-			routeName: '/repositories/git/sync/tag',
-			params: {
-				id: repo._id.toString(),
-				owner: repo.source[0].name,
-				provider: repo.provider,
-				tag: tag
-			}
-		}, function (error, result) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				$scope.displayAlert('success', result.data);
-				$scope.listTags(repo);
-			}
-		});
-	};
 	$scope.tags = {};
 	$scope.listTags = function (repo) {
 		getSendDataFromServer($scope, ngDataApi, {

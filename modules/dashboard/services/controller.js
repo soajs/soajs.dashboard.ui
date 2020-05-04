@@ -41,7 +41,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 			"routeName": "/dashboard/favorite",
 			"params": {
 				"service": service.name,
-				"type": 'apiCatalog'
+				"type": 'service'
 			}
 		}, function (error) {
 			if (error) {
@@ -104,7 +104,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 			"routeName": "/dashboard/favorite",
 			"params": {
 				"service": service.name,
-				"type": 'apiCatalog'
+				"type": 'service'
 			}
 		}, function (error) {
 			if (error) {
@@ -178,7 +178,7 @@ servicesApp.controller('servicesCtrl', ['$scope', '$timeout', '$modal', '$compil
 					"routeName": "/dashboard/favorite",
 					"params": {
 						"username": user,
-						"type": 'apiCatalog'
+						"type": 'service'
 					}
 				}, function (error, favoriteResponse) {
 					if (error) {

@@ -93,7 +93,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					} else {
 						if (response.records) {
-							$scope.showCatalog = response.record.length > 0;
+							$scope.showCatalog = response.records.length > 0;
 							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
 						}
 					}
@@ -102,6 +102,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 			}
 		});
 	};
+	
 	function getCatalogs(records, favoriteRecords){
 		let tabs = {};
 		
@@ -163,6 +164,12 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				service.favorite = true;
 				let main = service.ui && service.ui.main ? service.ui.main : "Console";
 				let group = service.configuration && service.configuration.group ?  service.configuration.group : defaultGroup;
+				if (!$scope.mainTabs[main]["Favorites"]){
+					$scope.mainTabs[main]["Favorites"] = {};
+				}
+				if (!$scope.mainTabs[main]["Favorites"][group]){
+					$scope.mainTabs[main]["Favorites"][group] = [];
+				}
 				if ($scope.mainTabs && $scope.mainTabs[main] && $scope.mainTabs[main]["Favorites"] && $scope.mainTabs[main]["Favorites"][group]){
 					$scope.mainTabs[main]["Favorites"][group].push(service);
 				}
@@ -299,7 +306,7 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					} else {
 						if (response.records) {
-							$scope.showCatalog = response.record.length > 0;
+							$scope.showCatalog = response.records.length > 0;
 							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
 						}
 					}
@@ -308,6 +315,7 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 			}
 		});
 	};
+	
 	function getCatalogs(records, favoriteRecords){
 		let tabs = {};
 		
@@ -369,6 +377,12 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 				service.favorite = true;
 				let main = service.ui && service.ui.main ? service.ui.main : "Static";
 				let group = service.configuration && service.configuration.group ?  service.configuration.group : defaultGroup;
+				if (!$scope.mainTabs[main]["Favorites"]){
+					$scope.mainTabs[main]["Favorites"] = {};
+				}
+				if (!$scope.mainTabs[main]["Favorites"][group]){
+					$scope.mainTabs[main]["Favorites"][group] = [];
+				}
 				if ($scope.mainTabs && $scope.mainTabs[main] && $scope.mainTabs[main]["Favorites"] && $scope.mainTabs[main]["Favorites"][group]){
 					$scope.mainTabs[main]["Favorites"][group].push(service);
 				}
@@ -505,7 +519,7 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					} else {
 						if (response.records) {
-							$scope.showCatalog = response.record.length > 0;
+							$scope.showCatalog = response.records.length > 0;
 							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
 						}
 					}
@@ -514,6 +528,7 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 			}
 		});
 	};
+	
 	function getCatalogs(records, favoriteRecords){
 		let tabs = {};
 		
@@ -575,6 +590,12 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 				service.favorite = true;
 				let main = service.ui && service.ui.main ? service.ui.main : "Config";
 				let group = service.configuration && service.configuration.group ?  service.configuration.group : defaultGroup;
+				if (!$scope.mainTabs[main]["Favorites"]){
+					$scope.mainTabs[main]["Favorites"] = {};
+				}
+				if (!$scope.mainTabs[main]["Favorites"][group]){
+					$scope.mainTabs[main]["Favorites"][group] = [];
+				}
 				if ($scope.mainTabs && $scope.mainTabs[main] && $scope.mainTabs[main]["Favorites"] && $scope.mainTabs[main]["Favorites"][group]){
 					$scope.mainTabs[main]["Favorites"][group].push(service);
 				}
@@ -711,7 +732,7 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 						$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 					} else {
 						if (response.records) {
-							$scope.showCatalog = response.record.length > 0;
+							$scope.showCatalog = response.records.length > 0;
 							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
 						}
 					}
@@ -720,6 +741,7 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 			}
 		});
 	};
+	
 	function getCatalogs(records, favoriteRecords){
 		let tabs = {};
 		
@@ -781,6 +803,12 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 				service.favorite = true;
 				let main = service.ui && service.ui.main ? service.ui.main : "Custom";
 				let group = service.configuration && service.configuration.group ?  service.configuration.group : defaultGroup;
+				if (!$scope.mainTabs[main]["Favorites"]){
+					$scope.mainTabs[main]["Favorites"] = {};
+				}
+				if (!$scope.mainTabs[main]["Favorites"][group]){
+					$scope.mainTabs[main]["Favorites"][group] = [];
+				}
 				if ($scope.mainTabs && $scope.mainTabs[main] && $scope.mainTabs[main]["Favorites"] && $scope.mainTabs[main]["Favorites"][group]){
 					$scope.mainTabs[main]["Favorites"][group].push(service);
 				}
@@ -821,7 +849,6 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 	}
 	
 }]);
-
 
 soajsCatalogApp.filter('timeInMillisConverter', function () {
 	return function (time) {

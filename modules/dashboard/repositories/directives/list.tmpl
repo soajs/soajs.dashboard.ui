@@ -52,12 +52,19 @@
 						<label class="searchLabel marginTopRep">Search:</label>
 						<input type="text" class="searchInput90" ng-model="repoSearch.textSearch"/>
 					</div>
-					<br>
-					<br>
 					<hr>
 					<div class="searchLabel">
 						<label> Only Activated Repositories: </label>
 						<input type="checkbox" class="activeRepoCheck" ng-model="repoSearch.active">
+					</div>
+					<br>
+					<div class="searchLabel">
+						<label> Only Leaf Repositories: </label>
+						<input type="checkbox" class="activeRepoCheck" ng-model="repoSearch.leaf">
+						
+						<a ng-show="repoSearch.leaf" href="" class="btn btn-danger deleteLeaf" tooltip="Apply Filter" ng-click="deleteAllLeaf()">
+							<span></span> Clean Repositories
+						</a>
 					</div>
 					
 					<br>
@@ -127,6 +134,8 @@
 											<span tooltip="Configure" class="icon icon-cog"></span>
 										</a>
 									</a>
+									<a ng-if="repo.status === 'deleted'"  ng-click="deleteRepo(repo)" ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+											tooltip="delete repository" class="icon icon-cross" ng-style="{'color': 'crimson'}"></span></a>
 								</div>
 								<div ng-if="access.activateRepo && repo.status === 'active'" ng-show="repo.showDetails">
 									<accordion ng-if="repo && (repo.branches || repo.tags)">

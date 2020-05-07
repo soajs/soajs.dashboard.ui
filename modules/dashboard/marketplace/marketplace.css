@@ -451,3 +451,7 @@ hr{
     word-wrap: break-word;
     width: 50px!important;
 }
+
+.closeGroup {
+    display: none;
+}

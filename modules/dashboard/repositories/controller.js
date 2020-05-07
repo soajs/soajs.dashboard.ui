@@ -134,6 +134,11 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 		if ($scope.repoSearch.active) {
 			opts.active = true;
 		}
+		
+		if ($scope.repoSearch.leaf) {
+			opts.leaf = true;
+		}
+		
 		if ($scope.repoSearch.textSearch) {
 			opts.textSearch = $scope.repoSearch.textSearch;
 		}
@@ -188,6 +193,40 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				owner: repo.source[0].name,
 				provider: repo.provider
 			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.search($scope.pagination.currentPage);
+				$scope.displayAlert('success', result.data);
+			}
+		});
+	};
+	
+	$scope.deleteRepo = function (repo) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/repositories/git/repo',
+			params: {
+				id: repo._id.toString(),
+			}
+		}, function (error, result) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.search($scope.pagination.currentPage);
+				$scope.displayAlert('success', result.data);
+			}
+		});
+	};
+	$scope.deleteAllLeaf = function () {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/repositories/git/repositories',
 		}, function (error, result) {
 			overlayLoading.hide();
 			if (error) {

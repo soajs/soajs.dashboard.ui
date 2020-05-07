@@ -1,0 +1,45 @@
+<section ng-controller="editResourceCatalogCtrl">
+	<br>
+	<fieldset>
+		<legend>
+			<a href="" ng-click="showHide(addItem.soa)"><span class="icon icon-{{addItem.soa.icon}}"></span></a>
+			Add SOA Information
+		</legend>
+		<div id="soa" style="width: 50%; margin-left: 1%;">
+			<span>Follow this link for more <a href='https://soajsorg.atlassian.net/wiki/x/BgBfW' target='_blank'>information</a></span>
+			<br>
+			<br>
+			<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'json', theme:'twilight', firstLineNumber: 1, onLoad: aceLoaded}"
+					ng-model="soa"></div>
+		</div>
+	</fieldset>
+	
+	<br>
+	<fieldset>
+		<legend>
+			<a href="" ng-click="showHide(addItem.release)"><span class="icon icon-{{addItem.release.icon}}"></span></a>
+			Add Release Notes (Optional)
+		</legend>
+		<div id="release" class = "closeGroup" style="width: 50%; margin-left: 1%;">
+			<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'markdown', theme:'javascript', firstLineNumber: 1, onLoad: aceLoaded}"
+			     ng-model="release"></div>
+		</div>
+	</fieldset>
+	
+	<br>
+	<fieldset>
+		<legend>
+			<a href="" ng-click="showHide(addItem.readme)"><span class="icon icon-{{addItem.readme.icon}}"></span></a>
+			Add Readme (Optional)
+		</legend>
+		<div id="readme" class = "closeGroup" style="width: 50%; margin-left: 1%;">
+			<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'markdown', theme:'javascript', firstLineNumber: 1, onLoad: aceLoaded}"
+			     ng-model="readme"></div>
+		</div>
+	</fieldset>
+	<br>
+	<div class="f-right">
+		<input class="btn btn-primary" ng-click="save()" value="Save" ng-disabled="soa===''" type="submit">
+		<button class="btn btn-danger" type="button" ng-click="close()" value="Cancel">Cancel</button>
+	</div>
+</section>

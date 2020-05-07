@@ -486,3 +486,10 @@ li.accountType {
 .tagIcon{
     margin-left: 10px
 }
+
+.deleteLeaf {
+    float: right;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-top: 3px;
+}

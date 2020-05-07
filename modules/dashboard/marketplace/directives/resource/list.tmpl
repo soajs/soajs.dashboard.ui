@@ -1,0 +1,38 @@
+<section ng-controller="resourceCatalogCtrl">
+	<div ng-if="access.listServices" class="f-right">
+		<a href="" ng-click="listResourceCatalog()" class="btn btn-primary f-right">
+			<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
+		</a>
+		<a href="" ng-click="addResourceCatalog()" style="margin-right: 10px;" class="btn btn-success f-right">
+			<span class="icon icon-plus" tooltip="Add Item"></span>{{translation.addItem[LANG]}}
+		</a>
+		<br/><br/>
+	</div>
+	<div ng-show="!showCatalog">
+		<br>
+		<br>
+		<alert type="warning">No Catalogs found</alert>
+	</div>
+	<tabset ng-show="showCatalog">
+		<tab ng-repeat="(main, subTabs) in mainTabs track by $index" heading="{{main}}">
+			<br>
+			<tabset>
+				<tab ng-repeat="(sub, groups) in subTabs track by $index" heading="{{sub}}">
+					<br>
+					<div  ng-repeat="(group, records) in groups track by $index">
+						<fieldset class="custom-fieldset" ng-show="group">
+							<legend>{{group}}</legend>
+							<div class="entryBoxes">
+								<div  id="s_{{service._id}}" ng-repeat="service in records" class="entryBox" ng-init="service.hide = true;">
+									<div ng-include="'modules/dashboard/marketplace/directives/resource/recordListing.tmpl'"></div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+				
+				</tab>
+			</tabset>
+		
+		</tab>
+	</tabset>
+</section>

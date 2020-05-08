@@ -1,6 +1,6 @@
-<section ng-controller="customCatalogCtrl">
+<section ng-controller="apiCatalogCtrl">
 	<div ng-if="access.listServices" class="f-right">
-		<a href="" ng-click="listCustomCatalog()" class="btn btn-primary f-right">
+		<a href="" ng-click="listApiCatalog()" class="btn btn-primary f-right">
 			<span class="icon icon-undo" tooltip="Refresh List"></span>{{translation.refresh[LANG]}}
 		</a>
 		<br/><br/>
@@ -21,7 +21,7 @@
 							<legend>{{group}}</legend>
 							<div class="entryBoxes">
 								<div  id="s_{{service._id}}" ng-repeat="service in records" class="entryBox" ng-init="service.hide = true;">
-									<div ng-include="'modules/dashboard/marketplace/directives/custom/recordListing.tmpl'"></div>
+									<div ng-include="'modules/dashboard/marketplace/directives/service/recordListing.tmpl'"></div>
 								</div>
 							</div>
 						</fieldset>

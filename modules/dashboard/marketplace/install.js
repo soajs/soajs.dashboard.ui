@@ -20,9 +20,21 @@ var sCTranslation = {
 		"ENG": "Resource Catalog",
 		"FRA": "Resource Catalog"
 	},
+	"apiCatalog": {
+		"ENG": "Api Catalog",
+		"FRA": "Api Catalog"
+	},
+	"daemonCatalog": {
+		"ENG": "Daemon Catalog",
+		"FRA": "Daemon Catalog"
+	},
 	"addItem": {
 		"ENG": "Add Item",
 		"FRA": "Add Item"
+	},
+	"repository": {
+		"ENG": "Repository",
+		"FRA": "Repository"
 	},
 };
 
@@ -76,6 +88,50 @@ var soajsCatalog = [
 		'ancestor': [translation.home[LANG]]
 	},
 	{
+		'id': 'apiCatalog',
+		'label': translation.apiCatalog[LANG],
+		'checkPermission': {
+			'service': 'marketplace',
+			'route': '/items',
+			'method': 'get'
+		},
+		'url': '#/apiCatalog',
+		'tplPath': 'modules/dashboard/marketplace/directives/service/list.tmpl',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'catalogs',
+			'label': translation.catalogs[LANG],
+			'position': 1
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 2,
+		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'daemonCatalog',
+		'label': translation.daemonCatalog[LANG],
+		'checkPermission': {
+			'service': 'marketplace',
+			'route': '/items',
+			'method': 'get'
+		},
+		'url': '#/daemonCatalog',
+		'tplPath': 'modules/dashboard/marketplace/directives/daemon/list.tmpl',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'catalogs',
+			'label': translation.catalogs[LANG],
+			'position': 1
+		},
+		'mainMenu': true,
+		'tracker': true,
+		'order': 3,
+		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
 		'id': 'configCatalog',
 		'label': translation.configCatalog[LANG],
 		'checkPermission': {
@@ -93,7 +149,7 @@ var soajsCatalog = [
 		},
 		'mainMenu': true,
 		'tracker': true,
-		'order': 3,
+		'order': 4,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -115,7 +171,7 @@ var soajsCatalog = [
 		},
 		'mainMenu': true,
 		'tracker': true,
-		'order': 4,
+		'order': 5,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -137,7 +193,7 @@ var soajsCatalog = [
 		},
 		'mainMenu': true,
 		'tracker': true,
-		'order': 5,
+		'order': 6,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -158,7 +214,7 @@ var soajsCatalog = [
 			'position': 1
 		},
 		'tracker': true,
-		'order': 5,
+		'order': 6,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -179,7 +235,7 @@ var soajsCatalog = [
 			'position': 1
 		},
 		'tracker': true,
-		'order': 5,
+		'order': 6,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	}

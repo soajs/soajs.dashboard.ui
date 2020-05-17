@@ -1,6 +1,6 @@
 "use strict";
 var soajsCatalogApp = soajsApp.components;
-soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', 'detectBrowser', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParam, detectBrowser) {
+soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -95,6 +95,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 						if (response.records) {
 							$scope.showCatalog = response.records.length > 0;
 							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
+							$scope.getEnvironments();
 						}
 					}
 				});
@@ -202,6 +203,93 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				}
 			}
 		});
+	};
+	
+	$scope.getEnvironments = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment/list"
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.envs = [];
+				$scope.envList = response;
+				$scope.envList.forEach((env)=>{
+					$scope.envs.push(env.code.toLowerCase());
+				});
+			}
+		});
+	};
+	
+	// $scope.updateServiceSettings = function (env, version, serviceRecord) {
+	// 	var currentScope = $scope;
+	// 	$modal.open({
+	// 		templateUrl: "updateServiceSettings.tmpl",
+	// 		size: 'lg',
+	// 		backdrop: true,
+	// 		keyboard: true,
+	// 		controller: function ($scope, $modalInstance) {
+	// 			fixBackDrop();
+	//
+	// 			$scope.title = 'Update ' + serviceRecord.name + ' service settings in ' + env + ' Environment';
+	// 			console.log(version)
+	// 			let versionedRecord = serviceRecord.versions.find(element => element.version === version);
+	// 			$scope.settings = {
+	// 				extKeyRequired: versionedRecord.extKeyRequired || false,
+	// 				oauth: versionedRecord.oauth || false,
+	// 				urac: versionedRecord.urac || false,
+	// 				urac_Profile: versionedRecord.urac_Profile || false,
+	// 				urac_ACL: versionedRecord.urac_ACL || false,
+	// 				provision_ACL: versionedRecord.provision_ACL || false
+	// 			};
+	// 			if (versionedRecord.customByEnv[env]) {
+	// 				var versionEnvRecord = versionedRecord.customByEnv[env];
+	// 				$scope.settings.extKeyRequired = versionEnvRecord.extKeyRequired || false;
+	// 				$scope.settings.oauth = versionEnvRecord.oauth || false;
+	// 			}
+	//
+	// 			$scope.onOff = function (oneSetting) {
+	// 				$scope.settings[oneSetting] = !$scope.settings[oneSetting];
+	// 			};
+	//
+	// 			$scope.onSubmit = function () {
+	// 				overlayLoading.show();
+	// 				getSendDataFromServer($scope, ngDataApi, {
+	// 					"method": "put",
+	// 					"routeName": "/marketplace/item/version/configuration",
+	// 					"params": {
+	// 						"id": serviceRecord._id.toString()
+	// 					},
+	// 					"data": {
+	// 						"env": env,
+	// 						"version": version,
+	// 						"settings": $scope.settings
+	// 					}
+	// 				}, function (error) {
+	// 					overlayLoading.hide();
+	// 					$modalInstance.close();
+	// 					if (error) {
+	// 						currentScope.displayAlert('danger', error.code, true, 'marketplace', error.message);
+	// 					} else {
+	// 						currentScope.displayAlert('success', 'Item settings updated successfully');
+	// 						currentScope.listServices();
+	// 					}
+	// 				});
+	// 			};
+	//
+	// 			$scope.closeModal = function () {
+	// 				$modalInstance.close();
+	// 			};
+	// 		}
+	// 	});
+	// };
+	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
 	};
 	
 	if ($scope.access.listServices) {
@@ -365,6 +453,12 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 		});
 	};
 	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
+	};
 	if ($scope.access.listServices) {
 		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
 		$scope.listStaticCatalog();
@@ -524,6 +618,13 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 				}
 			}
 		});
+	};
+	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
 	};
 	
 	if ($scope.access.listServices) {
@@ -687,6 +788,13 @@ soajsCatalogApp.controller('daemonCatalogCtrl', ['$scope', '$timeout', '$modal',
 		});
 	};
 	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	
 	if ($scope.access.listServices) {
 		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
 		$scope.listDaemonCatalog();
@@ -846,6 +954,13 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 				}
 			}
 		});
+	};
+	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
 	};
 	
 	if ($scope.access.listServices) {
@@ -1032,6 +1147,13 @@ soajsCatalogApp.controller('resourceCatalogCtrl', ['$scope', '$timeout', '$modal
 	
 	$scope.addResourceCatalog = function () {
 		$scope.$parent.go("#/catalog/resource/add");
+	};
+	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
 	};
 	
 	if ($scope.access.listServices) {
@@ -1264,6 +1386,12 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 		});
 	};
 	
+	$scope.openServiceView = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
+	};
+	$scope.openSettings = function (serviceName, type) {
+		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
+	};
 	
 	if ($scope.access.listServices) {
 		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
@@ -1287,17 +1415,17 @@ soajsCatalogApp.controller('addResourceCatalogCtrl', ['$scope', '$timeout', '$mo
 		_editor.$blockScrolling = Infinity;
 	};
 	$scope.addItem = {
-		"soa" : {
+		"soa": {
 			icon: "minus",
 			active: true,
 			id: "soa"
 		},
-		"release" : {
+		"release": {
 			icon: "plus",
 			active: false,
 			id: "release"
 		},
-		"readme" : {
+		"readme": {
 			icon: "plus",
 			active: false,
 			id: "readme"
@@ -1308,8 +1436,7 @@ soajsCatalogApp.controller('addResourceCatalogCtrl', ['$scope', '$timeout', '$mo
 			jQuery('#' + account.id).addClass("closeGroup");
 			account.icon = 'plus';
 			account.active = false;
-		}
-		else {
+		} else {
 			jQuery('#' + account.id).removeClass("closeGroup");
 			account.icon = 'minus';
 			account.active = true;
@@ -1329,10 +1456,10 @@ soajsCatalogApp.controller('addResourceCatalogCtrl', ['$scope', '$timeout', '$mo
 			if ($scope.readme !== '' || $scope.release !== '') {
 				opts.item.documentation = {};
 			}
-			if ($scope.readme !== ''){
+			if ($scope.readme !== '') {
 				opts.item.documentation.readme = $scope.readme;
 			}
-			if ($scope.release !== ''){
+			if ($scope.release !== '') {
 				opts.item.documentation.release = $scope.release;
 			}
 			getSendDataFromServer($scope, ngDataApi, {
@@ -1371,17 +1498,17 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 		_editor.$blockScrolling = Infinity;
 	};
 	$scope.addItem = {
-		"soa" : {
+		"soa": {
 			icon: "minus",
 			active: true,
 			id: "soa"
 		},
-		"release" : {
+		"release": {
 			icon: "plus",
 			active: false,
 			id: "release"
 		},
-		"readme" : {
+		"readme": {
 			icon: "plus",
 			active: false,
 			id: "readme"
@@ -1392,8 +1519,7 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 			jQuery('#' + account.id).addClass("closeGroup");
 			account.icon = 'plus';
 			account.active = false;
-		}
-		else {
+		} else {
 			jQuery('#' + account.id).removeClass("closeGroup");
 			account.icon = 'minus';
 			account.active = true;
@@ -1413,10 +1539,10 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 			if ($scope.readme !== '' || $scope.release !== '') {
 				opts.item.documentation = {};
 			}
-			if ($scope.readme !== ''){
+			if ($scope.readme !== '') {
 				opts.item.documentation.readme = $scope.readme;
 			}
-			if ($scope.release !== ''){
+			if ($scope.release !== '') {
 				opts.item.documentation.release = $scope.release;
 			}
 			overlayLoading.show();
@@ -1437,7 +1563,7 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 		}
 	};
 	
-	$scope.getResource = function (name, version){
+	$scope.getResource = function (name, version) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -1451,20 +1577,19 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
 			} else {
-				if (response && response.versions){
-					response.versions.forEach((oneVersion)=>{
-						if (oneVersion.version === version){
+				if (response && response.versions) {
+					response.versions.forEach((oneVersion) => {
+						if (oneVersion.version === version) {
 							try {
 								$scope.soa = JSON.stringify(JSON.parse(oneVersion.soa), null, 2);
-							}
-							catch (e) {
+							} catch (e) {
 								$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', e.message);
 							}
-							if (oneVersion.documentation ){
-								if (oneVersion.documentation.release){
+							if (oneVersion.documentation) {
+								if (oneVersion.documentation.release) {
 									$scope.release = oneVersion.documentation.release;
 								}
-								if (oneVersion.documentation.readme){
+								if (oneVersion.documentation.readme) {
 									$scope.readme = oneVersion.documentation.readme;
 								}
 							}
@@ -1481,9 +1606,361 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 	
 	if ($scope.access.listServices) {
 		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
-		console.log($routeParams)
 		$scope.getResource($routeParams.name, $routeParams.version);
 	}
+}]);
+
+soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams) {
+	$scope.$parent.isUserLoggedIn();
+	
+	$scope.access = {};
+	constructModulePermissions($scope, $scope.access, soajsCatalogConfig.permissions);
+	
+	$scope.addItem = {
+		"profile": {
+			icon: "minus",
+			active: true,
+			id: "profile"
+		},
+		"readme": {
+			icon: "plus",
+			active: true,
+			id: "readme"
+		},
+		"release": {
+			icon: "minus",
+			active: false,
+			id: "release"
+		}
+	};
+	$scope.showHide = function (account) {
+		if (account.active) {
+			jQuery('#' + account.id).addClass("closeGroup");
+			account.icon = 'plus';
+			account.active = false;
+		} else {
+			jQuery('#' + account.id).removeClass("closeGroup");
+			account.icon = 'minus';
+			account.active = true;
+		}
+	};
+	
+	$scope.aceLoaded = function (_editor) {
+		$scope.editor = _editor;
+		_editor.setShowPrintMargin(false);
+		_editor.setReadOnly(true);
+		_editor.$blockScrolling = Infinity;
+	};
+	
+	$scope.changetoJSON = function (object) {
+		if (object) {
+			try {
+				return JSON.stringify(object, null, 2);
+			} catch (e) {
+				console.log(e);
+				return object;
+			}
+		}
+	};
+	
+	$scope.parseObject = function (object) {
+		if (object) {
+			try {
+				return JSON.parse(object, null, 2);
+			} catch (e) {
+				console.log(e);
+				return object;
+			}
+		}
+	};
+	
+	$scope.getCatalog = function (name, type) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/marketplace/item/type",
+			"params": {
+				"name": name,
+				"type": type
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+			} else {
+				$scope.service = response;
+				if (response) {
+					$scope.service = response;
+					if ($scope.service.metadata && $scope.service.metadata.attributes) {
+						$scope.service.metadata.attributes = $scope.changetoJSON($scope.service.metadata.attributes);
+					}
+					if ($scope.service.configuration && $scope.service.configuration.prerequisites) {
+						$scope.service.configuration.prerequisites = $scope.changetoJSON($scope.service.configuration.prerequisites);
+					}
+					if($scope.service.versions){
+						$scope.service.versions.forEach((oneVersion)=>{
+							oneVersion.swagger = $scope.parseObject(oneVersion.swagger);
+							oneVersion.maintenance = $scope.changetoJSON(oneVersion.maintenance);
+							oneVersion.profile = $scope.changetoJSON(oneVersion.profile);
+						});
+					}
+				}
+			}
+		});
+	};
+	if ($scope.access.listServices) {
+		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
+		$scope.getCatalog($routeParams.serviceName, $routeParams.serviceType);
+	}
+	
+}]);
+
+soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams) {
+	$scope.$parent.isUserLoggedIn();
+	
+	$scope.access = {};
+	constructModulePermissions($scope, $scope.access, soajsCatalogConfig.permissions);
+	
+	$scope.envs = {
+		envType: false,
+		selectedEnvs: []
+	};
+	$scope.groups = {
+		groupType: false,
+		selectedGroups: []
+	};
+	$scope.recipes = {
+		selectedRecipes: []
+	};
+	$scope.limit = 10;
+	$scope.recipeSize = 10;
+	$scope.getCatalog = function (name, type) {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/marketplace/item/type",
+			"params": {
+				"name": name,
+				"type": type
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+			} else {
+				$scope.service = response;
+				if ($scope.service.settings){
+					if ($scope.service.settings.acl){
+						if ($scope.service.settings.acl.groups){
+							$scope.showGroupButtonSlider = true;
+							if ($scope.service.settings.acl.groups.value){
+								$scope.groups.selectedGroups = $scope.service.settings.acl.groups.value;
+							}
+							$scope.groups.groupType = $scope.service.settings.acl.groups.type === "blacklist";
+						}
+					}
+					if ($scope.service.settings.environments){
+						$scope.showEnvButtonSlider = true;
+						if ($scope.service.settings.environments.value){
+							$scope.envs.selectedEnvs = $scope.service.settings.environments.value;
+						}
+						$scope.envs.envType = $scope.service.settings.environments.type === "blacklist";
+					}
+					if ($scope.service.settings.recipes){
+						$scope.recipes.selectedRecipes = $scope.service.settings.recipes;
+					}
+				}
+				$scope.getGroups();
+			}
+		});
+	};
+	
+	$scope.getGroups = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/urac/admin/groups",
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'urac', error.message);
+			} else {
+				$scope.groupsList =  angular.copy(response);
+				$scope.getEnvironments();
+				$scope.groupsList.forEach((oneGroup)=>{
+					if ($scope.groups.selectedGroups.indexOf(oneGroup.code) !== -1){
+						oneGroup.allowed = true;
+					}
+				});
+			}
+		});
+	};
+	
+	$scope.getEnvironments = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/dashboard/environment/list"
+		}, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.environmentsList = angular.copy(response);
+				$scope.environmentsList.forEach((oneEnv)=>{
+					if ($scope.envs.selectedEnvs.indexOf(oneEnv.code) !== -1){
+						oneEnv.allowed = true;
+					}
+				});
+				$scope.getRecipes();
+			}
+		});
+	};
+	
+	$scope.getRecipes = function (loadMore) {
+		if (loadMore){
+			$scope.recipeSize =  $scope.recipeSize +  $scope.limit;
+		}
+		let opts = {
+			"method": "get",
+			routeName: '/dashboard/catalog/recipes/list',
+			params: {
+				limit : $scope.recipeSize
+			}
+		};
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.recipeList = angular.copy(response);
+				if ($scope.recipeList.length <  $scope.recipeSize){
+					$scope.hideLoadMore = true;
+				}
+			}
+		});
+	};
+	function removeA(arr) {
+		var what, a = arguments, L = a.length, ax;
+		while (L > 1 && arr.length) {
+			what = a[--L];
+			while ((ax= arr.indexOf(what)) !== -1) {
+				arr.splice(ax, 1);
+			}
+		}
+		return arr;
+	}
+	$scope.selectEnv = function (env){
+		$scope.showEnvButtonSlider = true;
+		if (env.allowed){
+			removeA($scope.envs.selectedEnvs, env.code);
+			env.allowed = false;
+		}
+		else {
+			$scope.envs.selectedEnvs.push(env.code);
+			env.allowed = true;
+		}
+	};
+	$scope.selectGroup = function (group){
+		$scope.showGroupButtonSlider = true;
+		if (group.allowed){
+			removeA($scope.groups.selectedGroups, group.code);
+			group.allowed = false;
+		}
+		else {
+			group.allowed = true;
+			$scope.groups.selectedGroups.push(group.code);
+		}
+	};
+	$scope.selectRecipes = function (recipe){
+		let found = false;
+		for (let i = 0; i < $scope.recipes.selectedRecipes.length; i++){
+			if ($scope.recipes.selectedRecipes[i]._id === recipe._id) {
+				found = true;
+				break;
+			}
+		}
+		if (!found){
+			$scope.recipes.selectedRecipes.push(recipe);
+		}
+	
+	};
+	$scope.removeRecipes = function (recipe){
+		for (let i = 0; i < $scope.recipes.selectedRecipes.length; i++){
+			if ($scope.recipes.selectedRecipes[i]._id === recipe._id) {
+				$scope.recipes.selectedRecipes.splice(i, 1);
+				break;
+			}
+		}
+	};
+	
+	$scope.saveACl = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "put",
+			"routeName": '/marketplace/soajs/item/acl',
+			"data": {
+				id: $scope.service._id.toString(),
+				type: $scope.groups.groupType ? 'blacklist' : "whitelist",
+				groups:  $scope.groups.selectedGroups
+			}
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.$parent.displayAlert('success', "Acl updated Successfully for Item");
+			}
+			$scope.getCatalog($routeParams.serviceName);
+		});
+	};
+	
+	$scope.saveEnv = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "put",
+			"routeName": '/marketplace/soajs/item/environments',
+			"data": {
+				id: $scope.service._id.toString(),
+				type: $scope.envs.envType ? 'blacklist' : "whitelist",
+				environments:  $scope.envs.selectedEnvs
+			}
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.$parent.displayAlert('success', "Environments updated Successfully for Item");
+			}
+			$scope.getCatalog($routeParams.serviceName);
+		});
+	};
+	
+	$scope.saveRecipes = function () {
+		let opts = {
+			"method": "put",
+			"routeName": '/marketplace/soajs/item/recipes',
+			data: {
+				id: $scope.service._id.toString(),
+				recipes:  []
+			},
+		
+		};
+		$scope.recipes.selectedRecipes.forEach((oneRecipe)=>{
+			opts.data.recipes.push({
+				_id: oneRecipe._id,
+				v: oneRecipe.v,
+				name: oneRecipe.name,
+				type: oneRecipe.type,
+				subtype: oneRecipe.subtype,
+			});
+		});
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				$scope.$parent.displayAlert('success', "Recipes updated Successfully for Item");
+			}
+			$scope.getCatalog($routeParams.serviceName);
+		});
+	};
+	
+	if ($scope.access.listServices) {
+		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
+		$scope.getCatalog($routeParams.serviceName, $routeParams.serviceType);
+	}
+	
 }]);
 
 soajsCatalogApp.filter('timeInMillisConverter', function () {
@@ -1508,5 +1985,23 @@ soajsCatalogApp.filter('timeInMillisConverter', function () {
 		}
 		return time.toFixed(2) + " " + unit;
 	};
+});
+
+soajsCatalogApp.filter('recipesSearchFilter', function () {
+	return function (input, searchKeyword) {
+		if (!searchKeyword) return input;
+		if (!input || !Array.isArray(input) || input.length === 0) return input;
+		
+		var output = [];
+		input.forEach(function (oneInput) {
+			if (oneInput) {
+				//using full_name since it's composed of owner + name
+				if (oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
+					output.push(oneInput);
+				}
+			}
+		});
+		return output;
+	}
 });
 

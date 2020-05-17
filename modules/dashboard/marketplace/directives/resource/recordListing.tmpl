@@ -1,28 +1,38 @@
 <div class="header closed">
 	<table width="100%" class="">
 		<tr>
-			<td>
+			<td class="">
 				<a href="" ng-click="showHide(service)">
 					<span class="icon icon-{{service.icon || 'plus'}}"></span>
 				</a>
 				<span ><b style="margin:0;">{{service['name']|uppercase}}</b></span>
 			</td>
-			<td>
-				<span ng-if="service.src['repo']"><b>{{translation.repository[LANG]}}</b>:<span>{{service.src['repo']}}</span></span>
+			
+			<td class="f-right customResourceList">
+				<a href="" ng-click="openServiceView(service.name, service.type)" title="click to run Service Detail View" >
+								<span><img style="height: 25px; width:25px;" src="modules/dashboard/marketplace/directives/images/service-detail.png">
+								</span>
+				</a>
 			</td>
-			<td class="t-right" ng-if="!service.favorite">
+			<td class="f-right customResourceList paddingIconResource">
+				<a href="" ng-click="openSettings(service.name, service.type)" class="icon icon-cog" title="click to run Service Configuration" >
+								<span>
+								</span>
+				</a>
+			</td>
+			<td class="f-right customResourceList paddingIconResource">
+				<a href=""   ng-click="removeResource(service)" title="remove" >
+					<span class="icon icon-cross"></span>
+				</a>
+			</td>
+			<td class="f-right customResourceList paddingIconResource" ng-if="!service.favorite">
 				<a href=""   ng-click="setFavorite(service)" title="click to set as favorite" >
 					<span class="icon icon-star-empty"></span>
 				</a>
 			</td>
-			<td class="t-right" ng-if="service.favorite">
+			<td class="f-right customResourceList paddingIconResource" ng-if="service.favorite">
 				<a href=""   ng-click="removeFavorite(service)" title="click to set as favorite" >
 					<span class="icon icon-star-full"></span>
-				</a>
-			</td>
-			<td class="t-right" style="width: 10px;">
-				<a href=""   ng-click="removeResource(service)" title="remove" >
-					<span class="icon icon-cross"></span>
 				</a>
 			</td>
 		</tr>

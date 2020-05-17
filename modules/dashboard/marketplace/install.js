@@ -238,6 +238,46 @@ var soajsCatalog = [
 		'order': 6,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'serviceDetailView',
+		'label': "Service Detail View",
+		'url': '#/catalogs/serviceDetailView/:serviceType/:serviceName',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'catalogs',
+			'label': translation.catalogs[LANG],
+			'position': 1
+		},
+		'checkPermission': {
+			'service': 'marketplace',
+			'route': '/item/type',
+			'method': 'get'
+		},
+		'tracker': true,
+		'order': 6,
+		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
+		'tplPath': 'modules/dashboard/marketplace/directives/global/serviceDetailView.tmpl'
+	},
+	{
+		'id': 'configDetailView',
+		'label': "Config Detail View",
+		'url': '#/catalogs/configDetailView/:serviceType/:serviceName',
+		'icon': 'cloud',
+		'pillar': {
+			'name': 'catalogs',
+			'label': translation.catalogs[LANG],
+			'position': 1
+		},
+		'checkPermission': {
+			'service': 'marketplace',
+			'route': '/item/type',
+			'method': 'get'
+		},
+		'tracker': true,
+		'order': 6,
+		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
+		'tplPath': 'modules/dashboard/marketplace/directives/global/configDetailView.tmpl'
 	}
 ];
 navigation = navigation.concat(soajsCatalog);

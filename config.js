@@ -57,7 +57,7 @@ var modules = {
 		"dashboard": {
 			marketplace: 'modules/dashboard/marketplace/install.js',
 			//services: 'modules/dashboard/services/install.js',
-			endpoints: 'modules/dashboard/endpoints/install.js',
+			//endpoints: 'modules/dashboard/endpoints/install.js',
 			githubApp: 'modules/dashboard/gitAccounts/install.js',
 			gitAccountManagement: 'modules/dashboard/gitManagement/install.js',
 			gitRepositories: 'modules/dashboard/repositories/install.js',
@@ -66,7 +66,7 @@ var modules = {
 			ci: 'modules/dashboard/ci/install.js',
 			cd: 'modules/dashboard/cd/install.js',
 			templates: 'modules/dashboard/templates/install.js',
-			importExport: 'modules/dashboard/importExport/install.js',
+			//importExport: 'modules/dashboard/importExport/install.js',
 			infra: 'modules/dashboard/infra/install.js',
 			myAccount: 'modules/dashboard/myAccount/install.js'
 		}

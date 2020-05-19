@@ -50,13 +50,13 @@
 	<tabset>
 		<tab ng-repeat="oneList in service.versions" heading="Version {{oneList.version}}">
 			<br />
-			<div class="f-left" ng-if="oneList.lastSync" >
-				<div>
-					<span><b>Last Sync:</b></span>
-					<span style="margin-right: 10px; margin-left: 10px;"><b>{{oneList.lastSync.branch}}</b> - {{oneList.lastSync.ts | date: 'd/M/yy h:mm a'}}</span>
-					<b>Branches</b>:<span class="lastSyncBranches" tooltip="{{oneList.branches.join(', ')}}"  tooltip-placement="bottom" tooltip-class="customClass"> [ {{oneList.branches.join(', ')}} ] </span>
-				</div>
-			</div>
+<!--			<div class="f-left" ng-if="oneList.lastSync" >-->
+<!--				<div>-->
+<!--					<span><b>Last Sync:</b></span>-->
+<!--					<span style="margin-right: 10px; margin-left: 10px;"><b>{{oneList.lastSync.branch}}</b> - {{oneList.lastSync.ts | date: 'd/M/yy h:mm a'}}</span>-->
+<!--					<b>Branches</b>:<span class="lastSyncBranches" tooltip="{{oneList.branches.join(', ')}}"  tooltip-placement="bottom" tooltip-class="customClass"> [ {{oneList.branches.join(', ')}} ] </span>-->
+<!--				</div>-->
+<!--			</div>-->
 			<input class="btn btn-primary f-right" ng-click="editResource(service.name, oneList.version)" value="edit">
 			<br />
 		</tab>

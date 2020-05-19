@@ -43,7 +43,7 @@
 			</div>
 			<div class="f-right">
 				<input class="btn btn-primary" ng-click="saveACl()" value="Save" type="submit">
-				<button class="btn btn-danger" type="button" ng-click="close()" value="Cancel">Cancel</button>
+				<button class="btn btn-danger" type="button" ng-click="close(service)" value="Cancel">Cancel</button>
 			</div>
 		</tab>
 		<tab heading="Environments">
@@ -66,7 +66,7 @@
 			</div>
 			<div class="f-right">
 				<input class="btn btn-primary" ng-click="saveEnv()" value="SaveEnv" type="submit">
-				<button class="btn btn-danger" type="button" ng-click="close()" value="Cancel">Cancel</button>
+				<button class="btn btn-danger" type="button" ng-click="close(service)" value="Cancel">Cancel</button>
 			</div>
 		</tab>
 		<tab heading="Recipes" ng-show="service.type !== 'config'">
@@ -100,7 +100,7 @@
 			</div>
 			<div class="f-right">
 				<input class="btn btn-primary" ng-click="saveRecipes()" value="SaveEnv" type="submit">
-				<button class="btn btn-danger" type="button" ng-click="close()" value="Cancel">Cancel</button>
+				<button class="btn btn-danger" type="button" ng-click="close(service)" value="Cancel">Cancel</button>
 			</div>
 	</tabset>
 </section>

@@ -53,7 +53,7 @@ var soajsCatalog = [
 		},
 		'url': '#/soajsCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/soajs/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'drive',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],
@@ -75,7 +75,7 @@ var soajsCatalog = [
 		},
 		'url': '#/staticCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/static/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'insert-template',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],
@@ -97,7 +97,7 @@ var soajsCatalog = [
 		},
 		'url': '#/apiCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/service/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'drive',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],
@@ -119,7 +119,7 @@ var soajsCatalog = [
 		},
 		'url': '#/daemonCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/daemon/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'evil2',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],
@@ -141,7 +141,7 @@ var soajsCatalog = [
 		},
 		'url': '#/configCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/config/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'drawer',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],
@@ -163,7 +163,7 @@ var soajsCatalog = [
 		},
 		'url': '#/customCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/custom/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'delicious',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],
@@ -185,7 +185,7 @@ var soajsCatalog = [
 		},
 		'url': '#/resourceCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/resource/list.tmpl',
-		'icon': 'cloud',
+		'icon': 'database',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],

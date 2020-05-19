@@ -48,6 +48,7 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 	
 	$scope.delete = function (account) {
 		if (account.access === 'public' || account.provider !== 'github') {
+			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
 				'method': 'delete',
 				'routeName': '/repositories/git/account',
@@ -55,6 +56,7 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 					id: account._id.toString()
 				}
 			}, function (error) {
+				overlayLoading.hide();
 				if (error) {
 					$scope.displayAlert('danger', error.message);
 				} else {
@@ -63,6 +65,7 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 				}
 			});
 		} else if (account.access === 'private') {
+			
 			var formConfig = angular.copy(gitAccManagementConfig.form.logout);
 			var options = {
 				timeout: $timeout,
@@ -79,11 +82,13 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 								id: account._id.toString(),
 								password: formData.password
 							};
+							overlayLoading.show();
 							getSendDataFromServer($scope, ngDataApi, {
 								'method': 'delete',
 								'routeName': '/repositories/git/account',
 								'params': params
 							}, function (error, response) {
+								overlayLoading.hide();
 								if (error) {
 									$scope.$parent.displayAlert('danger', error.message);
 									$scope.modalInstance.close();
@@ -101,11 +106,13 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 													'btn': 'primary',
 													'action': function (formData) {
 														params.on2fa = formData.on2fa;
+														overlayLoading.show();
 														getSendDataFromServer($scope, ngDataApi, {
 															'method': 'delete',
 															'routeName': '/repositories/git/account',
 															'params': params
 														}, function (error, response) {
+															overlayLoading.hide();
 															if (error) {
 																if (error.message.indexOf(420) > -1){
 																	var options = {
@@ -120,11 +127,13 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 																				'btn': 'primary',
 																				'action': function (formData) {
 																					params.on2fa = formData.on2fa;
+																					overlayLoading.show();
 																					getSendDataFromServer($scope, ngDataApi, {
 																						'method': 'delete',
 																						'routeName': '/repositories/git/account',
 																						'params': params
 																					}, function (error, response) {
+																						overlayLoading.hide();
 																						if (error) {
 																							$scope.$parent.displayAlert('danger', error.message);
 																							$scope.modalInstance.close();
@@ -168,6 +177,7 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 													'label': 'Cancel',
 													'btn': 'danger',
 													'action': function () {
+														overlayLoading.hide();
 														$scope.modalInstance.dismiss('cancel');
 														$scope.form.formData = {};
 													}
@@ -178,6 +188,7 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 									}
 									
 								} else {
+									overlayLoading.hide();
 									$scope.$parent.displayAlert('success', response.message);
 									$scope.modalInstance.close();
 									$scope.form.formData = {};
@@ -392,13 +403,14 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 						} else {
 							body.password = formData.password;
 						}
-						
+						overlayLoading.show();
 						getSendDataFromServer($scope, ngDataApi, {
 							'method': 'put',
 							'routeName': '/repositories/git/account',
 							'params': params,
 							'data': body
 						}, function (error, response) {
+							overlayLoading.hide();
 							if (error) {
 								$scope.$parent.displayAlert('danger', error.message);
 								$scope.modalInstance.close();

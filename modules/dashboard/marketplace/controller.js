@@ -222,68 +222,69 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 		});
 	};
 	
-	// $scope.updateServiceSettings = function (env, version, serviceRecord) {
-	// 	var currentScope = $scope;
-	// 	$modal.open({
-	// 		templateUrl: "updateServiceSettings.tmpl",
-	// 		size: 'lg',
-	// 		backdrop: true,
-	// 		keyboard: true,
-	// 		controller: function ($scope, $modalInstance) {
-	// 			fixBackDrop();
-	//
-	// 			$scope.title = 'Update ' + serviceRecord.name + ' service settings in ' + env + ' Environment';
-	// 			console.log(version)
-	// 			let versionedRecord = serviceRecord.versions.find(element => element.version === version);
-	// 			$scope.settings = {
-	// 				extKeyRequired: versionedRecord.extKeyRequired || false,
-	// 				oauth: versionedRecord.oauth || false,
-	// 				urac: versionedRecord.urac || false,
-	// 				urac_Profile: versionedRecord.urac_Profile || false,
-	// 				urac_ACL: versionedRecord.urac_ACL || false,
-	// 				provision_ACL: versionedRecord.provision_ACL || false
-	// 			};
-	// 			if (versionedRecord.customByEnv[env]) {
-	// 				var versionEnvRecord = versionedRecord.customByEnv[env];
-	// 				$scope.settings.extKeyRequired = versionEnvRecord.extKeyRequired || false;
-	// 				$scope.settings.oauth = versionEnvRecord.oauth || false;
-	// 			}
-	//
-	// 			$scope.onOff = function (oneSetting) {
-	// 				$scope.settings[oneSetting] = !$scope.settings[oneSetting];
-	// 			};
-	//
-	// 			$scope.onSubmit = function () {
-	// 				overlayLoading.show();
-	// 				getSendDataFromServer($scope, ngDataApi, {
-	// 					"method": "put",
-	// 					"routeName": "/marketplace/item/version/configuration",
-	// 					"params": {
-	// 						"id": serviceRecord._id.toString()
-	// 					},
-	// 					"data": {
-	// 						"env": env,
-	// 						"version": version,
-	// 						"settings": $scope.settings
-	// 					}
-	// 				}, function (error) {
-	// 					overlayLoading.hide();
-	// 					$modalInstance.close();
-	// 					if (error) {
-	// 						currentScope.displayAlert('danger', error.code, true, 'marketplace', error.message);
-	// 					} else {
-	// 						currentScope.displayAlert('success', 'Item settings updated successfully');
-	// 						currentScope.listServices();
-	// 					}
-	// 				});
-	// 			};
-	//
-	// 			$scope.closeModal = function () {
-	// 				$modalInstance.close();
-	// 			};
-	// 		}
-	// 	});
-	// };
+	$scope.updateServiceSettings = function (env, version, serviceRecord) {
+		var currentScope = $scope;
+		$modal.open({
+			templateUrl: "updateServiceSettings.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+
+				$scope.title = 'Update ' + serviceRecord.name + ' service settings in ' + env + ' Environment';
+				let versionedRecord = serviceRecord.versions.find(element => element.version === version);
+				$scope.settings = {
+					extKeyRequired: versionedRecord.extKeyRequired || false,
+					oauth: versionedRecord.oauth || false,
+					urac: versionedRecord.urac || false,
+					urac_Profile: versionedRecord.urac_Profile || false,
+					urac_ACL: versionedRecord.urac_ACL || false,
+					provision_ACL: versionedRecord.provision_ACL || false
+				};
+				if (versionedRecord.customByEnv && versionedRecord.customByEnv[env]) {
+					var versionEnvRecord = versionedRecord.customByEnv[env];
+					$scope.settings.extKeyRequired = versionEnvRecord.extKeyRequired || false;
+					$scope.settings.oauth = versionEnvRecord.oauth || false;
+				}
+
+				$scope.onOff = function (oneSetting) {
+					$scope.settings[oneSetting] = !$scope.settings[oneSetting];
+				};
+
+				$scope.onSubmit = function () {
+					overlayLoading.show();
+					getSendDataFromServer($scope, ngDataApi, {
+						"method": "put",
+						"routeName": "/marketplace/item/version/configuration",
+						"data": {
+							"env": env,
+							"version": version,
+							"settings": {
+								extKeyRequired: $scope.settings.extKeyRequired,
+								oauth: $scope.settings.oauth
+							},
+							"name": serviceRecord.name,
+							"type": serviceRecord.type
+						}
+					}, function (error) {
+						overlayLoading.hide();
+						$modalInstance.close();
+						if (error) {
+							currentScope.displayAlert('danger', error.code, true, 'marketplace', error.message);
+						} else {
+							currentScope.displayAlert('success', 'Item settings updated successfully');
+							currentScope.listServices();
+						}
+					});
+				};
+
+				$scope.closeModal = function () {
+					$modalInstance.close();
+				};
+			}
+		});
+	};
 	
 	$scope.openServiceView = function (serviceName, type) {
 		$scope.$parent.go("#/catalogs/serviceDetailView/" + type + '/' + serviceName, "_blank");
@@ -1392,6 +1393,69 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 	$scope.openSettings = function (serviceName, type) {
 		$scope.$parent.go("#/catalogs/configDetailView/" + type + '/' + serviceName, "_blank");
 	};
+	$scope.updateServiceSettings = function (env, version, serviceRecord) {
+		var currentScope = $scope;
+		$modal.open({
+			templateUrl: "updateServiceSettings.tmpl",
+			size: 'lg',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+				
+				$scope.title = 'Update ' + serviceRecord.name + ' service settings in ' + env + ' Environment';
+				let versionedRecord = serviceRecord.versions.find(element => element.version === version);
+				$scope.settings = {
+					extKeyRequired: versionedRecord.extKeyRequired || false,
+					oauth: versionedRecord.oauth || false,
+					urac: versionedRecord.urac || false,
+					urac_Profile: versionedRecord.urac_Profile || false,
+					urac_ACL: versionedRecord.urac_ACL || false,
+					provision_ACL: versionedRecord.provision_ACL || false
+				};
+				if (versionedRecord.customByEnv && versionedRecord.customByEnv[env]) {
+					var versionEnvRecord = versionedRecord.customByEnv[env];
+					$scope.settings.extKeyRequired = versionEnvRecord.extKeyRequired || false;
+					$scope.settings.oauth = versionEnvRecord.oauth || false;
+				}
+				
+				$scope.onOff = function (oneSetting) {
+					$scope.settings[oneSetting] = !$scope.settings[oneSetting];
+				};
+				
+				$scope.onSubmit = function () {
+					overlayLoading.show();
+					getSendDataFromServer($scope, ngDataApi, {
+						"method": "put",
+						"routeName": "/marketplace/item/version/configuration",
+						"data": {
+							"env": env,
+							"version": version,
+							"settings": {
+								extKeyRequired: $scope.settings.extKeyRequired,
+								oauth: $scope.settings.oauth
+							},
+							"name": serviceRecord.name,
+							"type": serviceRecord.type
+						}
+					}, function (error) {
+						overlayLoading.hide();
+						$modalInstance.close();
+						if (error) {
+							currentScope.displayAlert('danger', error.code, true, 'marketplace', error.message);
+						} else {
+							currentScope.displayAlert('success', 'Item settings updated successfully');
+							currentScope.listServices();
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					$modalInstance.close();
+				};
+			}
+		});
+	};
 	
 	if ($scope.access.listServices) {
 		injectFiles.injectCss("modules/dashboard/marketplace/marketplace.css");
@@ -1768,6 +1832,22 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 					}
 					if ($scope.service.settings.recipes){
 						$scope.recipes.selectedRecipes = $scope.service.settings.recipes;
+						if ($scope.service.settings.recipes.length > 0){
+							let opts = {
+								"method": "post",
+								routeName: '/dashboard/catalog/recipes/list',
+								data: {
+									ids : $scope.service.settings.recipes
+								}
+							};
+							getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+								if (error) {
+									$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+								} else {
+									$scope.recipes.selectedRecipes = response;
+								}
+							});
+						}
 					}
 				}
 				$scope.getGroups();
@@ -1890,61 +1970,66 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.saveACl = function () {
-		getSendDataFromServer($scope, ngDataApi, {
+		let opts = {
 			"method": "put",
-			"routeName": '/marketplace/soajs/item/acl',
+			"routeName": '/marketplace/item/acl',
 			"data": {
 				id: $scope.service._id.toString(),
 				type: $scope.groups.groupType ? 'blacklist' : "whitelist",
 				groups:  $scope.groups.selectedGroups
 			}
-		}, function (error) {
+		};
+		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+			opts.routeName = '/marketplace/soajs/item/acl';
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.$parent.displayAlert('success', "Acl updated Successfully for Item");
 			}
-			$scope.getCatalog($routeParams.serviceName);
+			$scope.getCatalog($routeParams.serviceName, $routeParams.serviceType);
 		});
 	};
 	
 	$scope.saveEnv = function () {
-		getSendDataFromServer($scope, ngDataApi, {
+		let opts = {
 			"method": "put",
-			"routeName": '/marketplace/soajs/item/environments',
+			"routeName": '/marketplace/item/environments',
 			"data": {
 				id: $scope.service._id.toString(),
-				type: $scope.envs.envType ? 'blacklist' : "whitelist",
-				environments:  $scope.envs.selectedEnvs
+				type: $scope.groups.groupType ? 'blacklist' : "whitelist",
+				groups:  $scope.groups.selectedGroups
 			}
-		}, function (error) {
+		};
+		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+			opts.routeName = '/marketplace/soajs/item/environments';
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.$parent.displayAlert('success', "Environments updated Successfully for Item");
 			}
-			$scope.getCatalog($routeParams.serviceName);
+			$scope.getCatalog($routeParams.serviceName, $routeParams.serviceType);
 		});
 	};
 	
 	$scope.saveRecipes = function () {
 		let opts = {
 			"method": "put",
-			"routeName": '/marketplace/soajs/item/recipes',
+			"routeName": '/marketplace/item/recipes',
 			data: {
 				id: $scope.service._id.toString(),
 				recipes:  []
 			},
 		
 		};
+		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+			opts.routeName = '/marketplace/soajs/item/environments';
+		}
 		$scope.recipes.selectedRecipes.forEach((oneRecipe)=>{
-			opts.data.recipes.push({
-				_id: oneRecipe._id,
-				v: oneRecipe.v,
-				name: oneRecipe.name,
-				type: oneRecipe.type,
-				subtype: oneRecipe.subtype,
-			});
+			opts.data.recipes.push( oneRecipe._id);
 		});
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
@@ -1952,8 +2037,38 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			} else {
 				$scope.$parent.displayAlert('success', "Recipes updated Successfully for Item");
 			}
-			$scope.getCatalog($routeParams.serviceName);
+			$scope.getCatalog($routeParams.serviceName, $routeParams.serviceType);
 		});
+	};
+	
+	$scope.close = function (service) {
+		switch(service.type) {
+			case "service":
+				if (service.configuration && service.configuration.subType === "soajs"){
+					$scope.$parent.go("#/soajsCatalog", "_blank");
+				}
+				else {
+					$scope.$parent.go("#/apiCatalog", "_blank");
+				}
+				break;
+			case "config":
+				$scope.$parent.go("#/configCatalog", "_blank");
+				break;
+			case "static":
+				$scope.$parent.go("#/staticCatalog", "_blank");
+				break;
+			case "daemon":
+				$scope.$parent.go("#/daemonCatalog", "_blank");
+				break;
+			case "custom":
+				$scope.$parent.go("#/customCatalog", "_blank");
+				break;
+			case "resource":
+				$scope.$parent.go("#/resourceCatalog", "_blank");
+				break;
+			default:
+				$scope.$parent.go("#/soajsCatalog", "_blank");
+		}
 	};
 	
 	if ($scope.access.listServices) {

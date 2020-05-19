@@ -1526,54 +1526,54 @@ var environmentsNav = [
 		],
 		'ancestor': [translation.home[LANG]]
 	},
-	{
-		'id': 'repositories',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/cloud/services/list',
-			'method': 'get'
-		},
-		'label': translation.repositories[LANG],
-		'url': '#/deploy-repositories',
-		'tplPath': 'modules/dashboard/environments/directives/list-repos.tmpl',
-		'icon': 'git',
-		'excludedEnvs': ['dashboard'],
-		"fallbackLocation": "#/environments",
-		'pillar': {
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'order': 2,
-		'mainMenu': true,
-		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
-		'ancestor': [translation.home[LANG]]
-	},
-	{
-		'id': 'endpoints',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/cloud/services/list',
-			'method': 'get'
-		},
-		'label': translation.endpoints[LANG],
-		'url': '#/deploy-endpoints',
-		'tplPath': 'modules/dashboard/environments/directives/list-endpoints.tmpl',
-		'icon': 'laptop',
-		'excludedEnvs': ['dashboard'],
-		"fallbackLocation": "#/environments",
-		'pillar': {
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'order': 2,
-		'mainMenu': true,
-		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/endpoint-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
-		'ancestor': [translation.home[LANG]]
-	},
+	// {
+	// 	'id': 'repositories',
+	// 	'checkPermission': {
+	// 		'service': 'dashboard',
+	// 		'route': '/cloud/services/list',
+	// 		'method': 'get'
+	// 	},
+	// 	'label': translation.repositories[LANG],
+	// 	'url': '#/deploy-repositories',
+	// 	'tplPath': 'modules/dashboard/environments/directives/list-repos.tmpl',
+	// 	'icon': 'git',
+	// 	'excludedEnvs': ['dashboard'],
+	// 	"fallbackLocation": "#/environments",
+	// 	'pillar': {
+	// 		'name': 'deployment',
+	// 		'label': translation.deploy[LANG],
+	// 		'position': 3
+	// 	},
+	// 	'order': 2,
+	// 	'mainMenu': true,
+	// 	'tracker': true,
+	// 	'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
+	// 	'ancestor': [translation.home[LANG]]
+	// },
+	// {
+	// 	'id': 'endpoints',
+	// 	'checkPermission': {
+	// 		'service': 'dashboard',
+	// 		'route': '/cloud/services/list',
+	// 		'method': 'get'
+	// 	},
+	// 	'label': translation.endpoints[LANG],
+	// 	'url': '#/deploy-endpoints',
+	// 	'tplPath': 'modules/dashboard/environments/directives/list-endpoints.tmpl',
+	// 	'icon': 'laptop',
+	// 	'excludedEnvs': ['dashboard'],
+	// 	"fallbackLocation": "#/environments",
+	// 	'pillar': {
+	// 		'name': 'deployment',
+	// 		'label': translation.deploy[LANG],
+	// 		'position': 3
+	// 	},
+	// 	'order': 2,
+	// 	'mainMenu': true,
+	// 	'tracker': true,
+	// 	'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/endpoint-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
+	// 	'ancestor': [translation.home[LANG]]
+	// },
 	{
 		'id': 'environments-platforms',
 		'checkPermission': {

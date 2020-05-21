@@ -37,7 +37,7 @@ var modules = {
 			marketplace: 'modules/dashboard/marketplace/install.js',
 			//services: 'modules/dashboard/services/install.js',
 			// endpoints: 'modules/dashboard/endpoints/install.js',
-			githubApp: 'modules/dashboard/gitAccounts/install.js',
+			//githubApp: 'modules/dashboard/gitAccounts/install.js',
 			gitAccountManagement: 'modules/dashboard/gitManagement/install.js',
 			gitRepositories: 'modules/dashboard/repositories/install.js',
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',

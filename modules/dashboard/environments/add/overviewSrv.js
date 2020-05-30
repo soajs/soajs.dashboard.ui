@@ -56,7 +56,14 @@ overviewServices.service('overviewSrv', ['ngDataApi', '$timeout', '$modal', '$lo
 		};
 		
 		overlayLoading.show();
-		
+		currentScope.editNamespace = function (){
+			currentScope.showEdit = true;
+		};
+		currentScope.saveNamespace = function (namespace){
+			currentScope.containers.config.namespace.default = namespace;
+			currentScope.wizard.deployment.namespace = namespace;
+			currentScope.showEdit = false;
+		};
 		let options = {
 			timeout: $timeout,
 			entries: [],

@@ -209,7 +209,9 @@ environmentsApp.controller('addEnvironmentCtrl', ['$scope', '$window', '$modal',
 				deploy: apiTemplateDeployInfo
 			}
 		};
-		
+		if (wizard.deployment.namespace){
+			output.data.namespace = wizard.deployment.namespace;
+		}
 		if(wizard.selectedInfraProvider){
 			output.data.infraId = wizard.selectedInfraProvider._id; // required
 			output.selectedInfraProvider = wizard.selectedInfraProvider;

@@ -1,0 +1,58 @@
+<section ng-controller="cloudsCtrl">
+	<tabset>
+		<tab heading="Secrets" ng-click="listSecrets()" ng-if="access.kubernetes.secret.list">
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-secrets.tmpl'"></div>
+		</tab>
+		<tab heading="PVC" ng-click="listPVC()" ng-if="access.kubernetes.pvc.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-pvc.tmpl'"></div>
+		</tab>
+		<tab heading="PV" ng-click="listPV()" ng-if="access.kubernetes.pv.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-pv.tmpl'"></div>
+		</tab>
+		<tab heading="Services" ng-click="listServices()" ng-if="access.kubernetes.service.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-service.tmpl'"></div>
+		</tab>
+		<tab heading="Deployments" ng-click="listDeployments()" ng-if="access.kubernetes.deployment.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-deployment.tmpl'"></div>
+		</tab>
+		<tab heading="DaemonSets" ng-click="listDaemonSets()" ng-if="access.kubernetes.daemonSet.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-daemonSet.tmpl'"></div>
+		</tab>
+		<tab heading="HPA" ng-click="listHPA()" ng-if="access.kubernetes.hpa.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-hpa.tmpl'"></div>
+		</tab>
+		<tab heading="CronJobs" ng-click="listCronJobs()" ng-if="access.kubernetes.cronJob.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-cronJob.tmpl'"></div>
+		</tab>
+		<tab heading="StorageClass" ng-click="listStorageClass()" ng-if="access.kubernetes.storageClass.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-storageClass.tmpl'"></div>
+		</tab>
+		<tab heading="Pods" ng-click="listPods()" ng-if="access.kubernetes.pod.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-pod.tmpl'"></div>
+		</tab>
+		<tab heading="Nodes" ng-click="listNodes()" ng-if="access.kubernetes.node.list">
+			<br/>
+			<br/>
+			<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-node.tmpl'"></div>
+		</tab>
+	</tabset>
+</section>

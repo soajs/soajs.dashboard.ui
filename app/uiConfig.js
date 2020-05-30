@@ -23,11 +23,11 @@ var apiConfiguration = {
 };
 
 var consoleAclConfig = {
-	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories', 'marketplace'],
-	"OTHER": ["urac"]
+	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories', 'marketplace', 'infra'],
+	"OTHER": ["urac", "infra"]
 };
 
-var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant', 'soajs.repositories'];
+var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant', 'soajs.repositories', 'soajs.infra'];
 var KUBERNETES_SYSTEM_DEPLOYMENTS = [ 'kube-dns', 'kube-proxy', 'kube-apiserver', 'kube-scheduler', 'kube-controller-manager', 'kube-flannel-ds' ];
 var soajsAppModules = ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.select', 'luegg.directives', 'angular-sortable-view', 'ngRoute', 'ngCookies', 'ngStorage', 'textAngular', "ngFileUpload", "swaggerUi", "ui.ace", "ngCkeditor", "chart.js"];
 
@@ -36,8 +36,8 @@ var modules = {
 		"dashboard": {
 			marketplace: 'modules/dashboard/marketplace/install.js',
 			//services: 'modules/dashboard/services/install.js',
-			// endpoints: 'modules/dashboard/endpoints/install.js',
-			githubApp: 'modules/dashboard/gitAccounts/install.js',
+			//endpoints: 'modules/dashboard/endpoints/install.js',
+			//githubApp: 'modules/dashboard/gitAccounts/install.js',
 			gitAccountManagement: 'modules/dashboard/gitManagement/install.js',
 			gitRepositories: 'modules/dashboard/repositories/install.js',
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',
@@ -60,9 +60,9 @@ var modules = {
 	"deploy": {
 		"dashboard": {
 			environments: 'modules/dashboard/environments/install.js',
-			resources: 'modules/dashboard/resources/install.js',
-			secrets: 'modules/dashboard/secrets/install.js',
-			volumes: 'modules/dashboard/volumes/install.js'
+			//resources: 'modules/dashboard/resources/install.js',
+			// secrets: 'modules/dashboard/secrets/install.js',
+			// volumes: 'modules/dashboard/volumes/install.js'
 		}
 	},
 	"dashboard": {

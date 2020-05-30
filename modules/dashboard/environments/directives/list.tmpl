@@ -210,6 +210,14 @@
 			<br />
 			<div ng-include="'modules/dashboard/environments/directives/throttling.tmpl'"></div>
 		</tab>
+		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Databases">
+			<br />
+			<div ng-include="'modules/dashboard/environments/directives/list-databases.tmpl'"></div>
+		</tab>
+		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Resource Configuration">
+			<br />
+			<div ng-include="'modules/dashboard/environments/directives/list-resources.tmpl'"></div>
+		</tab>
 	</tabset>
 </section>
 

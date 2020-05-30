@@ -288,9 +288,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
 			} else if ($scope.currentDeployer.type === 'manual') {
 				if (currentSelectedEnvironment === 'dashboard') {
-					hide = (['secrets', 'volumes', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
+					hide = (['secrets', 'volumes', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints', 'environments-clouds-deployments'].indexOf(link.id) !== -1);
 				} else {
-					hide = (['secrets', 'volumes', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
+					hide = (['secrets', 'volumes', 'updates-upgrades', 'continuous-delivery', 'endpoints', 'environments-clouds-deployments'].indexOf(link.id) !== -1);
 				}
 			} else {
 				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)
@@ -616,9 +616,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			doEnvPerNav();
 			if ($scope.pillar === 'deployment' && $cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 				let envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
-				if (updateNotifications) {
-					updateNotifications($scope, envCode, ngDataApi);
-				}
+				// if (updateNotifications) {
+				// 	updateNotifications($scope, envCode, ngDataApi);
+				// }
 			}
 			
 			checkSOAJSStore();

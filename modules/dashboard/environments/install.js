@@ -1496,7 +1496,14 @@ var environmentsNav = [
 		'scripts': ['modules/dashboard/environments/config.js',
 			'modules/dashboard/environments/controller.js',
 			'modules/dashboard/environments/services/custom_registry.js',
-			'modules/dashboard/environments/services/throttling.js'
+			'modules/dashboard/environments/services/throttling.js',
+			'modules/dashboard/environments/dbs-ctrl.js',
+			'modules/dashboard/environments/services/database.js',
+			'modules/dashboard/environments/resources/controller.js',
+			'modules/dashboard/environments/resources/services/configurationService.js',
+			'modules/dashboard/environments/resources/services/commonService.js',
+			'modules/dashboard/environments/resources/services/addService.js',
+			'modules/dashboard/environments/resources/services/deployService.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},
@@ -1605,38 +1612,38 @@ var environmentsNav = [
 		],
 		'ancestor': [translation.home[LANG]]
 	},
-	{
-		'id': 'environments-dbs',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environment/dbs/list',
-			'method': 'get'
-		},
-		'label': translation.databases[LANG],
-		'url': '#/environments-dbs',
-		'tplPath': 'modules/dashboard/environments/directives/list-databases.tmpl',
-		'icon': 'database',
-		'pillar': {
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'order': 6,
-		'mainMenu': true,
-		'tracker': true,
-		'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/dbs-ctrl.js', 'modules/dashboard/environments/services/database.js'],
-		'ancestor': [translation.home[LANG]]
-	},
+	// {
+	// 	'id': 'environments-dbs',
+	// 	'checkPermission': {
+	// 		'service': 'dashboard',
+	// 		'route': '/environment/dbs/list',
+	// 		'method': 'get'
+	// 	},
+	// 	'label': translation.databases[LANG],
+	// 	'url': '#/environments-dbs',
+	// 	'tplPath': 'modules/dashboard/environments/directives/list-databases.tmpl',
+	// 	'icon': 'database',
+	// 	'pillar': {
+	// 		'name': 'deployment',
+	// 		'label': translation.deploy[LANG],
+	// 		'position': 3
+	// 	},
+	// 	'order': 6,
+	// 	'mainMenu': true,
+	// 	'tracker': true,
+	// 	'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/dbs-ctrl.js', 'modules/dashboard/environments/services/database.js'],
+	// 	'ancestor': [translation.home[LANG]]
+	// },
 	{
 		'id': 'environments-clouds-deployments',
 		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/cloud/nodes/list',
+			'service': 'infra',
+			'route': '/kubernetes/secrets',
 			'method': 'get'
 		},
 		'label': "Clouds & Deployments",
 		'url': '#/environments-clouds-deployments',
-		'tplPath': 'modules/dashboard/environments/directives/cloud-deployments.tmpl',
+		'tplPath': 'modules/dashboard/environments/directives/list-cloud-kube.tmpl',
 		'icon': 'sphere',
 		'pillar': {
 			'name': 'deployment',
@@ -1648,11 +1655,22 @@ var environmentsNav = [
 		'tracker': true,
 		'scripts': [
 			'modules/dashboard/environments/config.js',
-			'modules/dashboard/environments/clouds.js', 'modules/dashboard/environments/hosts-ctrl.js',
-			'modules/dashboard/environments/services/hosts.js', 'modules/dashboard/environments/services/deploy.js',
-			'modules/dashboard/environments/hacloud-ctrl.js', 'modules/dashboard/environments/services/nodes.js',
-			'modules/dashboard/environments/services/redeploy.js', 'modules/dashboard/environments/services/hacloud.js',
-			'modules/dashboard/environments/services/metrics.js', 'modules/dashboard/environments/services/vms.js'
+			'modules/dashboard/environments/clouds.js',
+			'modules/dashboard/environments/services/secretsService.js',
+			'modules/dashboard/environments/services/pvcService.js',
+			'modules/dashboard/environments/services/cloudServices.js',
+		
+			
+			//'modules/dashboard/environments/clouds.js',
+			// 'modules/dashboard/environments/hosts-ctrl.js',
+			// 'modules/dashboard/environments/services/hosts.js',
+			// 'modules/dashboard/environments/services/deploy.js',
+			// 'modules/dashboard/environments/hacloud-ctrl.js',
+			// 'modules/dashboard/environments/services/nodes.js',
+			// 'modules/dashboard/environments/services/redeploy.js',
+			//'modules/dashboard/environments/services/hacloud.js',
+			// 'modules/dashboard/environments/services/metrics.js',
+			// 'modules/dashboard/environments/services/vms.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	}

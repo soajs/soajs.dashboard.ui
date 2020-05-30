@@ -106,7 +106,7 @@ var serviceProviders = {
 		kubernetes: {
 			ui: {
 				form: {
-					deploy:{
+					deploy: {
 						entries: []
 					}
 				}
@@ -115,7 +115,7 @@ var serviceProviders = {
 		docker: {
 			ui: {
 				form: {
-					deploy:{
+					deploy: {
 						entries: []
 					}
 				}
@@ -135,10 +135,10 @@ var environmentsConfig = {
 		}
 	},
 	
-	predefinedPortalTemplateName : "SOAJS Portal Environment",
-
+	predefinedPortalTemplateName: "SOAJS Portal Environment",
+	
 	customRegistryIncrement: 20,
-
+	
 	form: {
 		add: {
 			deploy: {
@@ -615,9 +615,240 @@ var environmentsConfig = {
 					value: "<br /><p class='fieldMsg'>If you are not familiar with how API Traffic Throttling works, <a href='https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/679641089/API+Traffic+Throttling' target='_blank'>Click Here</a></p>"
 				}
 			]
+		},
+		addSecret: [
+			{
+				'name': 'secretName',
+				'label': 'Name',
+				'type': 'text',
+				'required': true
+			},
+			{
+				"type": "tabset",
+				"tabs": [
+					{
+						"label": "Text Content",
+						"description": "",
+						"entries": [
+							{
+								'name': 'secretLabel',
+								'label': 'Label',
+								'type': 'text',
+								'required': true
+							},
+							{
+								'name': 'textMode',
+								'label': 'I am adding a text value',
+								'fieldMsg': "Turn on this mode if the value you are about to enter is made up of text only (Default mode does not support text only)",
+								'type': 'buttonSlider',
+								'value': false,
+								'required': true
+							},
+							{
+								'name': 'secretData',
+								'value': '',
+								'label': 'Secret Content Data',
+								'type': 'jsoneditor',
+								'required': true,
+								'fieldMsg': "Provide the content of the secret as text/json",
+								'height': 100
+							}
+						],
+						"onAction": function (id, data, form) {
+							form.formData.secretType = "Opaque";
+						}
+					},
+					{
+						"label": "File Content",
+						"description": "",
+						"entries": [
+							{
+								'name': 'secretLabel',
+								'label': 'Label',
+								'type': 'text',
+								'required': true
+							},
+							{
+								"label": "File Upload",
+								"fieldMsg": "Select a file to create the secret content from it",
+								'name': 'secretFile',
+								"directive": "modules/dashboard/secrets/directives/file.tmpl",
+								"required": false
+							}
+						],
+						"onAction": function (id, data, form) {
+							form.formData.secretType = "Opaque";
+						}
+					},
+					{
+						"label": "Registry Secret",
+						"description": "",
+						"entries": [
+							{
+								'type': 'text',
+								'value': '',
+								'name': 'registryServer',
+								'label': 'Registry Server',
+								'placeholder': 'https://index.docker.io/v1/',
+								'tooltip': "Enter the Registry Server",
+								'fieldMsg': "Enter the  Registry Server",
+								'required': true
+							},
+							{
+								'type': 'text',
+								'value': '',
+								'name': 'registryEmail',
+								'label': 'registryEmail',
+								'placeholder': 'email',
+								'tooltip': "Enter your Registry Email",
+								'fieldMsg': "Enter the  Registry Email",
+								'required': true
+							},
+							{
+								'type': 'text',
+								'value': '',
+								'name': 'registryUsername',
+								'label': 'Registry Username',
+								'placeholder': 'username',
+								'tooltip': "Enter the Registry Username",
+								'fieldMsg': "Enter the  Registry Username",
+								'required': true
+							},
+							{
+								'type': 'password',
+								'value': '',
+								'name': 'registryPassword',
+								'label': 'Registry Password',
+								'placeholder': 'password',
+								'tooltip': "Enter the Registry Password",
+								'fieldMsg': "Enter the  Registry Password",
+								'required': true
+							}
+						],
+						"onAction": function (id, data, form) {
+							form.formData.secretType = "kubernetes.io/dockercfg";
+						}
+					}
+				]
+			}
+		],
+		addVolume: [
+			{
+				'name': 'name',
+				'label': 'Name',
+				'type': 'text',
+				'required': true,
+				'pattern': '^[A-Za-z0-9]+$'
+			},
+			{
+				'name': 'storage',
+				'label': 'Storage',
+				'fieldMsg': "Size is in GB (GigaBytes)",
+				'value': '1',
+				'type': 'number',
+				'required': true
+			},
+			{
+				'name': 'storageClassName',
+				'label': 'Storage Class Name',
+				'type': 'text',
+				'required': false,
+				'pattern': '^[A-Za-z0-9]+$'
+			},
+			{
+				'name': 'accessModes',
+				'label': 'Access Modes',
+				'type': 'checkbox',
+				'required': true,
+				'value': [
+					{l: 'ReadWriteOnce', v: 'ReadWriteOnce', selected: true},
+					{l: 'ReadOnlyMany', v: 'ReadOnlyMany'},
+					{l: 'ReadWriteMany', v: 'ReadWriteMany'}
+				],
+				'tooltip': 'Choose access mode',
+				'fieldMsg':
+					`<div>ReadWriteOnce – the pvc can be mounted as readwrite by a single node.<br>
+					ReadOnlyMany – the pvc can be mounted readonly by many nodes.<br>
+					ReadWriteMany – the pvc can be mounted as readwrite by many nodes.</div>`
+			},
+			{
+				'name': 'volumeMode',
+				'label': 'Volume Modes',
+				'type': 'radio',
+				'required': false,
+				'value': [
+					{l: 'Filesystem', v: 'Filesystem'},
+					{l: 'Block', v: 'Block'}
+				],
+				'tooltip': 'Choose volume mode'
+			}
+		],
+		addResource: {
+			entries: [
+				{
+					'name': 'type',
+					'label': "Resource Type",
+					'type': 'select',
+					'fieldMsg': "Pick the type of resource you want to create depending on its purpose.",
+					'value': [],
+					'required': true
+				},
+				{
+					'name': 'category',
+					'label': "Resource Category",
+					'type': 'select',
+					'value': [],
+					'required': true,
+					'hidden': true
+				}
+			],
+			data: {
+				types: [
+					{'v': 'cluster', 'l': "Cluster"},
+					{'v': 'server', 'l': "Server"},
+					{'v': 'cdn', 'l': "CDN"},
+					{'v': 'system', 'l': "System"},
+					{'v': 'authorization', 'l': "Authorization"},
+					{'v': 'other', 'l': "Other"}
+				],
+				categories: [
+					{'v': 'mongo', 'l': "Local/External Mongo", "group": "cluster"},
+					{'v': 'elasticsearch', 'l': "Local/External ElasticSearch", "group": "cluster"},
+					
+					{'v': 'objectrocket_mongo', 'l': "Object Rocket - Mongo SAAS", "group": "cluster"},
+					{'v': 'objectrocket_elasticsearch', 'l': "Object Rocket - ElasticSearch SAAS", "group": "cluster"},
+					
+					{'v': 'mysql', 'l': "MySQL", "group": "cluster"},
+					{'v': 'sql', 'l': "SQL", "group": "cluster"},
+					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
+					{'v': 'other', 'l': "Other", "group": "cluster"},
+					
+					{'v': 'nginx', 'l': "Nginx", "group": "server"},
+					{'v': 'apache', 'l': "Apache", "group": "server"},
+					{'v': 'iis', 'l': "IIS", "group": "server"},
+					{'v': 'other', 'l': "Other", "group": "server"},
+					
+					{'v': 'amazons3', 'l': "Amazon S3", "group": "cdn"},
+					{'v': 'rackspace', 'l': "Rackspace", "group": "cdn"},
+					{'v': 'other', 'l': "Other", "group": "cdn"},
+					
+					{'v': 'other', 'l': "Other", "group": "system"},
+					
+					{'v': 'basicauth', 'l': "Basic Auth", "group": "authorization"},
+					{'v': 'soapbasicauth', 'l': "SOAP Basic Auth", "group": "authorization"},
+					{'v': 'digestauth', 'l': "Digest Auth", "group": "authorization"},
+					{'v': 'oauth1', 'l': "Oauth 1", "group": "authorization"},
+					{'v': 'oauth2', 'l': "Oauth 2", "group": "authorization"},
+					{'v': 'hawkauth', 'l': "Hawk Auth", "group": "authorization"},
+					{'v': 'awssignature', 'l': "AWS Signature", "group": "authorization"},
+					{'v': 'custom', 'l': "Custom", "group": "authorization"},
+					
+					{'v': 'other', 'l': "Other", "group": "other"}
+				]
+			}
 		}
 	},
-
+	
 	nginxRequiredCerts: {
 		certificate: {
 			label: 'Chained Certificate',
@@ -629,12 +860,86 @@ var environmentsConfig = {
 			msg: 'Key from SSL Provider'
 		}
 	},
-
+	
 	jsoneditorConfig: {
 		'height': '200px'
 	},
-
+	
 	permissions: {
+		
+		kubernetes: {
+			secret: {
+				"list": ['infra', "/kubernetes/resources/Secret", "get"],
+				"addItem": ['infra', "/kubernetes/resources/Secret", "post"],
+				"add": ["infra", "/kubernetes/secret", "post"],
+				"addRegistry": ["infra", "/kubernetes/secret/registry", "post"],
+				"delete": ["infra", "/kubernetes/secret", "delete"],
+			},
+			pvc: {
+				"list": ['infra', "/kubernetes/resources/PVC", "get"],
+				"addItem": ['infra', "/kubernetes/resources/PVC", "post"],
+				"add": ["infra", "/kubernetes/pvc", "post"],
+				"delete": ["infra", "/kubernetes/pvc", "delete"],
+			},
+			pv: {
+				"list": ['infra', "/kubernetes/resources/PV", "get"],
+				"addItem": ['infra', "/kubernetes/resources/PV", "post"],
+				"delete": ["infra", "/kubernetes/pv", "delete"],
+			},
+			service: {
+				"list": ['infra', "/kubernetes/resources/Service", "get"],
+				"addItem": ['infra', "/kubernetes/resources/Service", "post"],
+				"edit": ["infra", "/kubernetes/Service", "put"],
+				"delete": ["infra", "/kubernetes/resource/Service", "delete"],
+			},
+			deployment: {
+				"list": ['infra', "/kubernetes/resources/Deployment", "get"],
+				"addItem": ['infra', "/kubernetes/resources/Deployment", "post"],
+				"edit": ["infra", "/kubernetes/Deployment", "put"],
+				"delete": ["infra", "/kubernetes/resource/Deployment", "delete"],
+			},
+			daemonSet: {
+				"list": ['infra', "/kubernetes/resources/DaemonSet", "get"],
+				"addItem": ['infra', "/kubernetes/resources/DaemonSet", "post"],
+				"edit": ["infra", "/kubernetes/DaemonSet", "put"],
+				"delete": ["infra", "/kubernetes/resource/DaemonSet", "delete"],
+			},
+			cronJob: {
+				"list": ['infra', "/kubernetes/resources/CronJob", "get"],
+				"addItem": ['infra', "/kubernetes/resources/CronJob", "post"],
+				"edit": ["infra", "/kubernetes/CronJob", "put"],
+				"delete": ["infra", "/kubernetes/resource/CronJob", "delete"],
+			},
+			hpa: {
+				"list": ['infra', "/kubernetes/resources/HPA", "get"],
+				"addItem": ['infra', "/kubernetes/resources/HPA", "post"],
+				"edit": ["infra", "/kubernetes/HPA", "put"],
+				"delete": ["infra", "/kubernetes/resource/HorizontalPodAutoscaler", "delete"],
+			},
+			storageClass: {
+				"list": ['infra', "/kubernetes/resources/StorageClass", "get"],
+				"addItem": ['infra', "/kubernetes/resources/StorageClass", "post"],
+				"edit": ["infra", "/kubernetes/StorageClass", "put"],
+				"delete": ["infra", "/kubernetes/StorageClass", "delete"],
+			},
+			pod: {
+				"list": ['infra', "/kubernetes/resources/Pod", "get"],
+			},
+			node: {
+				"list": ['infra', "/kubernetes/resources/Node", "get"],
+			}
+		},
+		
+		//resources
+		"listResources": ['dashboard', '/resources', 'get'],
+		"addResources": ['dashboard', '/resources', 'post'],
+		"updateResources": ['dashboard', '/resources/update', 'put'],
+		"deleteResources": ['dashboard', '/resources', 'delete'],
+		"upgradeResources": ['dashboard', '/resources/upgrade', 'get'],
+		"getConfig": ['dashboard', '/resources/config', 'get'],
+		"setConfig": ['dashboard', '/resources/config/update', 'put'],
+		
+		
 		"listEnvironments": ['dashboard', '/environment/list', 'get'],
 		"getEnvironment": ['dashboard', '/environment', 'get'],
 		"addEnvironment": ['dashboard', '/environment/add', 'post'],
@@ -702,9 +1007,9 @@ var environmentsConfig = {
 			"delete": ["dashboard", "/customRegistry/delete", "delete"]
 		}
 	},
-
+	
 	providers: serviceProviders,
-
+	
 	// recipeTypes: {
 	// 	soajs: {
 	// 		l: "SOAJS",

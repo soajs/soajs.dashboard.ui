@@ -63,22 +63,25 @@
 				</div>
 			</div>
 			<br />
-			<accordion-group is-open="true" class="blueAccordion">
-				<accordion-heading><span class="icon icon-cog"></span>Configuration</accordion-heading>
-				<fieldset>
-					<legend>Environment(s)</legend>
-					<div class="entryBoxes entryBoxesGrid">
-						<div ng-repeat="env in envs">
-							<div class="entryBox greyBox" ng-style="{'width': '200px'}" ng-class="{ blueBox: oneList.settings[env] }">
-								<b>{{env}} {{translation.environment[LANG]}}</b>&nbsp;&nbsp;
-								<a href="" ng-style="{'float': 'right'}" ng-click="updateServiceSettings(env, oneList.version, service)">
-									<span class="icon icon-pencil" tooltip="{{translation.editServiceConfiguration[LANG]}}"></span>
-								</a>
+			<accordion>
+				<accordion-group is-open="true" class="blueAccordion">
+					<accordion-heading><span class="icon icon-cog"></span>Configuration</accordion-heading>
+					<fieldset>
+						<legend>Environment(s)</legend>
+						<div class="entryBoxes entryBoxesGrid">
+							<div ng-repeat="env in envs">
+								<div class="entryBox greyBox" ng-style="{'width': '200px'}" ng-class="{ blueBox: oneList.settings[env] }">
+									<b>{{env}} {{translation.environment[LANG]}}</b>&nbsp;&nbsp;
+									<a href="" ng-style="{'float': 'right'}" ng-click="updateServiceSettings(env, oneList.version, service)">
+										<span class="icon icon-pencil" tooltip="{{translation.editServiceConfiguration[LANG]}}"></span>
+									</a>
+								</div>
 							</div>
 						</div>
-					</div>
-				</fieldset>
-			</accordion-group>
+					</fieldset>
+				</accordion-group>
+			</accordion>
+			
 			<accordion close-others="true">
 				<accordion-group class="greenAccordion">
 					<accordion-heading><span class="icon icon-cloud"></span>API</accordion-heading>

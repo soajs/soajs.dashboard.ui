@@ -349,7 +349,6 @@ customRegistryServices.service('customRegistrySrv', ['ngDataApi', '$timeout', '$
 			function saveCustomRegistry(cb) {
 				var saveOptions = {
 					name: $scope.formData.name,
-					locked: $scope.formData.locked || false,
 					plugged: $scope.formData.plugged || false,
 					shared: $scope.formData.shared || false
 				};

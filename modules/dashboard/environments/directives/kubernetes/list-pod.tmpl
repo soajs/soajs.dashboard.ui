@@ -37,11 +37,11 @@
 						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
 								tooltip="exec command" class="icon icon icon-list2"></span></a>
 					</div>
-<!--					<div  ng-if="access.kubernetes.pod.metrics" style="float: right">-->
-<!--						<a ng-click="getMetrics(item)"-->
-<!--						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span-->
-<!--								tooltip="view metrics" class="icon icon icon-stats-dots"></span></a>-->
-<!--					</div>-->
+					<div  ng-if="access.kubernetes.pod.metrics" style="float: right">
+						<a ng-click="getMetrics(item)"
+						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+								tooltip="view metrics" class="icon icon icon-stats-dots"></span></a>
+					</div>
 					<div ng-if="access.kubernetes.pod.delete" style="float: right">
 						<a ng-click="deletePod(item)" ng-confirm-click="Are you sure you want to delete this pod?"
 						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
@@ -115,21 +115,27 @@
 <script type="text/ng-template" id="showMetrics.tmpl">
 	<div class="form">
 		<div class="modal-header">
-			<h3 class="modal-title">Exec Commands</h3>
+			<h3 class="modal-title">View Metrics</h3>
 		</div>
+		<br>
+		<div class="f-right">
+		<span class="dropdown refreshDropDown">
+			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
+			        aria-expanded="true">
+				<span class="icon icon-loop2"></span>&nbsp;{{selectedInterval.l}}
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="refreshDropdown">
+				<li ng-repeat="oneInterval in refreshIntervals">
+					<a href="" ng-click="changeInterval(oneInterval)">{{oneInterval.l}}</a></li>
+			</ul>
+		</span>
+		</div>
+		<br>
+		<hr>
 		<div class="row">
 			<div class="col-md-6"
-			     ng-if="servicesMetrics[instanceName].cpuPercent">
-				<canvas id="cpuPercent{{instanceName}}"
-				        class="chart chart-line"
-				        chart-data="servicesMetrics[instanceName].cpuPercent"
-				        chart-labels="servicesMetrics[instanceName].timestamp"
-				        chart-options="chartOptions[instanceName].cpuPercent.options"
-				        chart-dataset-override="chartOptions[instanceName].cpuPercent.override">
-				</canvas>
-			</div>
-			<div class="col-md-6"
-			     ng-if="!servicesMetrics[instanceName].cpuPercent && servicesMetrics[instanceName].cpu">
+			     ng-if="servicesMetrics[instanceName].cpu">
 				<canvas id="cpu{{instanceName}}"
 				        class="chart chart-line"
 				        chart-data="servicesMetrics[instanceName].cpu"
@@ -148,38 +154,12 @@
 				        chart-dataset-override="chartOptions[instanceName].memory.override">
 				</canvas>
 			</div>
-			<div class="col-md-6"
-			     ng-if="!servicesMetrics[instanceName].memory && servicesMetrics[instanceName].memPercent">
-				<canvas id="memPercent{{instanceName}}"
-				        class="chart chart-line"
-				        chart-data="servicesMetrics[instanceName].memPercent"
-				        chart-labels="servicesMetrics[instanceName].timestamp"
-				        chart-options="chartOptions[instanceName].memPercent.options"
-				        chart-dataset-override="chartOptions[instanceName].memPercent.override">
-				</canvas>
-			</div>
-			<div class="col-md-6"
-			     ng-if="servicesMetrics[instanceName].blkIO">
-				<canvas id="blkIO{{instanceName}}"
-				        class="chart chart-line"
-				        chart-data="servicesMetrics[instanceName].blkIO"
-				        chart-labels="servicesMetrics[instanceName].timestamp"
-				        chart-series="chartOptions[instanceName].blkIO.series"
-				        chart-options="chartOptions[instanceName].blkIO.options"
-				        chart-dataset-override="chartOptions[instanceName].blkIO.override">
-				</canvas>
-			</div>
-			<div class="col-md-6"
-			     ng-if="servicesMetrics[instanceName].netIO">
-				<canvas id="netIO{{instanceName}}"
-				        class="chart chart-line"
-				        chart-data="servicesMetrics[instanceName].netIO"
-				        chart-labels="servicesMetrics[instanceName].timestamp"
-				        chart-series="chartOptions[instanceName].netIO.series"
-				        chart-options="chartOptions[instanceName].netIO.options"
-				        chart-dataset-override="chartOptions[instanceName].netIO.override">
-				</canvas>
-			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-danger f-right" type="button" aria-haspopup="true"
+			        aria-expanded="true"  ng-click="close()">
+				<span class="icon icon-cross"></span>&nbsp;close
+			</button>
 		</div>
 	</div>
 </script>

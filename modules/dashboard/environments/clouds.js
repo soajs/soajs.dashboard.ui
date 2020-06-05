@@ -896,10 +896,16 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		$modal.open({
 			templateUrl: "showMetrics.tmpl",
 			size: 'lg',
-			backdrop: false,
+			backdrop: true,
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
-				podService.getMetrics($scope, $modalInstance, currentScope, pod);
+				overlayLoading.show();
+				$scope.selectedInterval = {
+					v: 5,
+					l: '5 Seconds',
+					selected: true
+				};
+				podService.autoRefreshMetrics($scope, $modalInstance, currentScope, pod);
 			}
 		});
 	};

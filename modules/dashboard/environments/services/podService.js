@@ -418,6 +418,6 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', function (
 	
 	return {
 		'execCommand': execCommand,
-		'getMetrics': getMetrics
+		// 'getMetrics': getMetrics
 	}
 }]);

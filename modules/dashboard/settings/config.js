@@ -19,7 +19,7 @@ var catalogAppConfig = {
 					'type': 'select',
 					'tooltip': "Choose the Type of Recipe you want to create",
 					'fieldMsg': "Pick the type of recipes you want to create depending on what you are aiming to deploy.",
-					'value' :[
+					'value': [
 						{'v': 'service', 'l': "Service"},
 						{'v': 'daemon', 'l': "Daemon"},
 						{'v': 'cluster', 'l': "Cluster"},
@@ -35,7 +35,7 @@ var catalogAppConfig = {
 				'name': 'subtype',
 				'label': "Category",
 				'type': 'select',
-				'value' : [
+				'value': [
 					{'v': 'soajs', 'l': "SOAJS", "group": "service"},
 					{'v': 'golang', 'l': "GoLang", "group": "service"},
 					{'v': 'nodejs', 'l': "NodeJs", "group": "service"},
@@ -43,7 +43,7 @@ var catalogAppConfig = {
 					{'v': 'java', 'l': "Java", "group": "service"},
 					{'v': 'asp', 'l': "ASP", "group": "service"},
 					{'v': 'other', 'l': "Other", "group": "service"},
-
+					
 					{'v': 'soajs', 'l': "SOAJS", "group": "daemon"},
 					{'v': 'golang', 'l': "GoLang", "group": "daemon"},
 					{'v': 'nodejs', 'l': "NodeJs", "group": "daemon"},
@@ -51,28 +51,28 @@ var catalogAppConfig = {
 					{'v': 'java', 'l': "Java", "group": "daemon"},
 					{'v': 'asp', 'l': "ASP", "group": "daemon"},
 					{'v': 'other', 'l': "Other", "group": "daemon"},
-
+					
 					{'v': 'mongo', 'l': "Mongo", "group": "cluster"},
 					{'v': 'elasticsearch', 'l': "ElasticSearch", "cluster": "cluster"},
 					{'v': 'mysql', 'l': "MySQL", "group": "cluster"},
 					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
 					{'v': 'other', 'l': "Other", "group": "cluster"},
-
+					
 					{'v': 'nginx', 'l': "Nginx", "group": "server"},
 					{'v': 'apache', 'l': "Apache", "group": "server"},
 					{'v': 'iis', 'l': "IIS", "group": "server"},
 					{'v': 'other', 'l': "Other", "group": "server"},
-
+					
 					{'v': 'amazons3', 'l': "Amazon S3", "group": "cdn"},
 					{'v': 'rackspace', 'l': "Rackspace", "cluster": "cdn"},
 					{'v': 'other', 'l': "Other", "group": "cdn"},
-
+					
 					{'v': 'other', 'l': "Other", "group": "system"}
 				],
 				'required': true
 			}
 		},
-
+		
 		entries: [
 			{
 				'name': 'name',
@@ -108,8 +108,8 @@ var catalogAppConfig = {
 				'label': 'Category',
 				'type': 'text',
 				'value': '',
-                'fieldMsg' : 'To Learn more about Catalog Recipes, <a target="_blank" href = "https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes">Click Here</a>',
-                'disabled': true,
+				'fieldMsg': 'To Learn more about Catalog Recipes, <a target="_blank" href = "https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes">Click Here</a>',
+				'disabled': true,
 				'readonly': true
 			},
 			{
@@ -192,10 +192,10 @@ var catalogAppConfig = {
 						]
 					},
 					{
-                        'label': 'Source Code',
-                        'name': 'Repositories',
-                        "type": "group",
-                        'entries': [],
+						'label': 'Source Code',
+						'name': 'Repositories',
+						"type": "group",
+						'entries': [],
 					},
 					{
 						'label': 'Readiness Probe',
@@ -230,15 +230,18 @@ var catalogAppConfig = {
 					{
 						'label': 'Certificates',
 						'entries': [
-                            {
-                                'name': 'certificates',
-                                'label': 'Allow File Attachments',
-                                'type': 'select',
-                                'tooltip': "",
-                                'fieldMsg': "Specify if this recipe requires a file attachments when deploying",
-                                'value': [{"l":"No" , "v": "none"}, {"l":"Yes" , "v": "required"},{"l":"Maybe" , "v": "optional"}],
-                                'required': false
-                            },
+							{
+								'name': 'certificates',
+								'label': 'Allow File Attachments',
+								'type': 'select',
+								'tooltip': "",
+								'fieldMsg': "Specify if this recipe requires a file attachments when deploying",
+								'value': [{"l": "No", "v": "none"}, {"l": "Yes", "v": "required"}, {
+									"l": "Maybe",
+									"v": "optional"
+								}],
+								'required': false
+							},
 						]
 					},
 					{
@@ -264,26 +267,26 @@ var catalogAppConfig = {
 								'fieldMsg': "Enter a default working directory to use connected to the container via SSH",
 								'required': false
 							},
-                            {
-                                'type': 'text',
-                                'value': '',
-                                'label': 'Restart Condition',
-                                'name': 'condition',
-                                'placeholder': 'any',
-                                'tooltip': "Define the condition that docker base the restart container policy upon",
-                                'fieldMsg': "Define the condition that docker base the restart container policy upon",
-                                'required': false
-                            },
-                            {
-                                'type': 'number',
-                                'value': '',
-                                'label': 'Maximum Restart Attempts',
-                                'name': 'maxAttempts',
-                                'placeholder': '5',
-                                'tooltip': "Define how many times docker should restart the container after failure",
-                                'fieldMsg': "Define how many times docker should restart the container after failure",
-                                'required': false
-                            }
+							{
+								'type': 'text',
+								'value': '',
+								'label': 'Restart Condition',
+								'name': 'condition',
+								'placeholder': 'any',
+								'tooltip': "Define the condition that docker base the restart container policy upon",
+								'fieldMsg': "Define the condition that docker base the restart container policy upon",
+								'required': false
+							},
+							{
+								'type': 'number',
+								'value': '',
+								'label': 'Maximum Restart Attempts',
+								'name': 'maxAttempts',
+								'placeholder': '5',
+								'tooltip': "Define how many times docker should restart the container after failure",
+								'fieldMsg': "Define how many times docker should restart the container after failure",
+								'required': false
+							}
 						]
 					},
 					{
@@ -298,18 +301,18 @@ var catalogAppConfig = {
 					},
 					{
 						'label': 'Exposed Ports',
-                        'description': {
-                            'type': "info",
-                            'content': 	"<p>Expose ports to access deployments created from this recipe directly using either <b>Load Balancer</b> or <b>Specific Port</b> strategies.<br />" +
-                            "<b>Load Balancer</b> &raquo; { name: 'http', target: 80, isPublished: true, preserveClientIP: true }<br />" +
-                            "<b>Specific Port</b> &raquo; { name: 'http', target: 80, isPublished: true, published: 2080, preserveClientIP: true }" +
-                            "</p><br />" +
-							"<label>If you wish to use a <b>Specific Port</b>, make sure that the published port is within these ranges:</label><br />" +
-							"<ul>" +
-							"<li>For <b>virtual machine</b> compatible recipes: <b>0 - 65535</b></li>" +
-							"<li>For <b>container</b> compatible recipes: <b>0 - 2767</b> (the selected port number will be automatically incremented by 30000)</li>" +
-							"</ul>"
-                        },
+						'description': {
+							'type': "info",
+							'content': "<p>Expose ports to access deployments created from this recipe directly using either <b>Load Balancer</b> or <b>Specific Port</b> strategies.<br />" +
+								"<b>Load Balancer</b> &raquo; { name: 'http', target: 80, isPublished: true, preserveClientIP: true }<br />" +
+								"<b>Specific Port</b> &raquo; { name: 'http', target: 80, isPublished: true, published: 2080, preserveClientIP: true }" +
+								"</p><br />" +
+								"<label>If you wish to use a <b>Specific Port</b>, make sure that the published port is within these ranges:</label><br />" +
+								"<ul>" +
+								"<li>For <b>virtual machine</b> compatible recipes: <b>0 - 65535</b></li>" +
+								"<li>For <b>container</b> compatible recipes: <b>0 - 2767</b> (the selected port number will be automatically incremented by 30000)</li>" +
+								"</ul>"
+						},
 						'entries': [
 							{
 								'type': 'html',
@@ -394,7 +397,7 @@ var catalogAppConfig = {
 				]
 			}
 		],
-
+		
 		envVars: {
 			'name': 'envVarGroup',
 			'type': 'group',
@@ -436,28 +439,32 @@ var catalogAppConfig = {
 				}
 			]
 		},
-
+		
 		computedVar: {
 			'name': 'computedVar',
 			'label': 'Computed Variable',
 			'type': 'select',
 			'groups': ['NodeJs', 'SOAJS Service', 'SOAJS Daemon', 'SOAJS Service/Daemon', 'SOAJS Deployer', 'SOAJS GCS', 'GIT Information', 'SOAJS Mongo', 'SOAJS Nginx'],
-			'value':[
-
+			'value': [
+				
 				{'v': '$SOAJS_SRV_PORT', 'l': "$SOAJS_SRV_PORT", "group": "SOAJS Service"},
 				{'v': '$SOAJS_SRV_PORT_MAINTENANCE', 'l': "$SOAJS_SRV_PORT_MAINTENANCE", "group": "SOAJS Service"},
-
+				
 				{'v': '$SOAJS_DAEMON_GRP_CONF', 'l': "$SOAJS_DAEMON_GRP_CONF", "group": "SOAJS Daemon"},
-
+				
 				{'v': '$SOAJS_ENV', 'l': "$SOAJS_ENV", "group": "SOAJS Service/Daemon"},
 				{'v': '$SOAJS_PROFILE', 'l': "$SOAJS_PROFILE", "group": "SOAJS Service/Daemon"},
-
+				
 				{'v': '$SOAJS_SERVICE_NAME', 'l': "$SOAJS_SERVICE_NAME", "group": "SOAJS Service/Daemon"},
-
+				
 				{'v': '$SOAJS_DEPLOY_HA', 'l': "$SOAJS_DEPLOY_HA", "group": "SOAJS Deployer"},
-				{'v': '$SOAJS_CONTROLLER_PORT_MAINTENANCE', 'l': "$SOAJS_CONTROLLER_PORT_MAINTENANCE", "group": "SOAJS Deployer"},
+				{
+					'v': '$SOAJS_CONTROLLER_PORT_MAINTENANCE',
+					'l': "$SOAJS_CONTROLLER_PORT_MAINTENANCE",
+					"group": "SOAJS Deployer"
+				},
 				{'v': '$SOAJS_REGISTRY_API', 'l': "$SOAJS_REGISTRY_API", "group": "SOAJS Deployer"},
-
+				
 				{'v': '$SOAJS_GIT_OWNER', 'l': "$SOAJS_GIT_OWNER", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_BRANCH', 'l': "$SOAJS_GIT_BRANCH", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_COMMIT', 'l': "$SOAJS_GIT_COMMIT", "group": "GIT Information"},
@@ -465,7 +472,7 @@ var catalogAppConfig = {
 				{'v': '$SOAJS_GIT_TOKEN', 'l': "$SOAJS_GIT_TOKEN", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_PROVIDER', 'l': "$SOAJS_GIT_PROVIDER", "group": "GIT Information"},
 				{'v': '$SOAJS_GIT_DOMAIN', 'l': "$SOAJS_GIT_DOMAIN", "group": "GIT Information"},
-
+				
 				{'v': '$SOAJS_EXTKEY', 'l': "$SOAJS_EXTKEY", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_DOMAIN', 'l': "$SOAJS_NX_DOMAIN", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_API_DOMAIN', 'l': "$SOAJS_NX_API_DOMAIN", "group": "SOAJS Nginx"},
@@ -518,7 +525,7 @@ var catalogAppConfig = {
 			'fieldMsg': 'Enter the value of your environment variable',
 			"placeholder": "My Var Value"
 		},
-
+		
 		userInputVar: {
 			'type': 'group',
 			'name': 'userInputVar',
@@ -557,7 +564,7 @@ var catalogAppConfig = {
 				}
 			]
 		},
-
+		
 		volumeInput: {
 			'name': 'volumeGroup',
 			"type": "group",
@@ -590,7 +597,7 @@ var catalogAppConfig = {
 				}
 			]
 		},
-
+		
 		portInput: {
 			'name': 'portGroup',
 			'type': 'group',
@@ -612,7 +619,7 @@ var catalogAppConfig = {
 				}
 			]
 		},
-
+		
 		labelInput: {
 			'name': 'labelGroup',
 			'type': 'group',
@@ -644,6 +651,20 @@ var catalogAppConfig = {
 					'value': '<span class="icon icon-cross"></span>'
 				}
 			]
+		},
+		
+		token: {
+			add: {
+				entries: [
+					{
+						'name': 'label',
+						'label': 'Label',
+						'type': 'text',
+						'value': "",
+						'required': true
+					}
+				],
+			}
 		}
 	},
 	templates: {
@@ -716,7 +737,12 @@ var catalogAppConfig = {
 		delete: ['dashboard', '/catalog/recipes/delete', 'delete'],
 		upgrade: ['dashboard', '/catalog/recipes/upgrade', 'get'],
 		import: ['dashboard', '/templates/import', 'post'],
-		export: ['dashboard', '/templates/export', 'post']
+		export: ['dashboard', '/templates/export', 'post'],
+		listTokens: ['infra', '/cd/tokens', 'get'],
+		getToken: ['infra', '/cd/token', 'get'],
+		changeTokenStatus: ['infra', '/cd/token/status', 'put'],
+		addToken: ['infra', '/cd/token', 'post'],
+		deleteToken: ['infra', '/cd/token', 'delete']
 	}
-
+	
 };

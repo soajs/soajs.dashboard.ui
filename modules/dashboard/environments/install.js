@@ -1589,7 +1589,7 @@ var environmentsNav = [
 			'method': 'get'
 		},
 		"fallbackLocation": "#/environments",
-		'label': "Infrastructure",
+		'label': "Environment Configuration",
 		'url': '#/environments-platforms',
 		'tplPath': 'modules/dashboard/environments/infra/directives/list-platforms.tmpl',
 		'icon': 'drawer',
@@ -1657,6 +1657,7 @@ var environmentsNav = [
 			'modules/dashboard/environments/config.js',
 			'modules/dashboard/environments/clouds.js',
 			'modules/dashboard/environments/services/secretsService.js',
+			'modules/dashboard/environments/services/podService.js',
 			'modules/dashboard/environments/services/pvcService.js',
 			'modules/dashboard/environments/services/cloudServices.js',
 		

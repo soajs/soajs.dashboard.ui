@@ -832,3 +832,12 @@ pre.bash{
 .iconPlus {
     margin-top: 5px;
 }
+
+
+.envHeader {
+    background-color: lightgray;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    overflow: hidden;
+}

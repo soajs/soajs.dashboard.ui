@@ -38,16 +38,64 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 					'label': "Create " + type,
 					'btn': 'primary',
 					action: function (formData) {
-						getSendDataFromServer(currentScope, ngDataApi, {
+						let route;
+						switch(type) {
+							case "Secret":
+								route = '/infra/kubernetes/configuration/' + type;
+								break;
+							case "PVC":
+								route = '/infra/kubernetes/storage/' + type;
+								break;
+							case "PV":
+								route = '/infra/kubernetes/storage/' + type;
+								break;
+							case "Service":
+								route = '/infra/kubernetes/service/' + type;
+								break;
+							case "Deployment":
+								route = '/infra/kubernetes/workload/' + type;
+								break;
+							case "DaemonSet":
+								route = '/infra/kubernetes/workload/' + type;
+								break;
+							case "CronJob":
+								route = '/infra/kubernetes/workload/' + type;
+								break;
+							case "HPA":
+								route = '/infra/kubernetes/workload/' + type;
+								break;
+							case "StorageClass":
+								route = '/infra/kubernetes/storage/' + type;
+								break;
+							case "ClusterRole":
+								route = '/infra/kubernetes/rbac/' + type;
+								break;
+							case "ClusterRoleBinding":
+								route = '/infra/kubernetes/rbac/' + type;
+								break;
+							case "RoleBinding":
+								route = '/infra/kubernetes/rbac/' + type;
+								break;
+							case "APIService":
+								route = '/infra/kubernetes/rbac/' + type;
+								break;
+							case "ServiceAccount":
+								route = '/infra/kubernetes/rbac/' + type;
+								break;
+							default:
+								route = '/infra/kubernetes/configuration/' + type;
+						}
+						let opts = {
 							method: 'post',
-							routeName: '/infra/kubernetes/resource/' + type,
+							routeName: route,
 							data: {
 								configuration: {
 									env: currentScope.selectedEnvironment.code,
 								},
 								body: formData.jsonData
 							},
-						}, function (error) {
+						};
+						getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 							if (error) {
 								currentScope.displayAlert('danger', error.message);
 							} else {
@@ -80,8 +128,23 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 									case "StorageClass":
 										currentScope.listStorageClass();
 										break;
+									case "ClusterRole":
+										currentScope.listClusterRoles();
+										break;
+									case "ClusterRoleBinding":
+										currentScope.listClusterRoleBindings();
+										break;
+									case "RoleBinding":
+										currentScope.listRoleBindings();
+										break;
+									case "APIService":
+										currentScope.listApiServices();
+										break;
+									case "ServiceAccount":
+										currentScope.listServiceAccounts();
+										break;
 									default:
-										currentScope.listServices();
+										currentScope.listDeployments();
 								}
 								currentScope.modalInstance.dismiss('cancel');
 								currentScope.form.formData = {};
@@ -119,7 +182,6 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 					action: function (formData) {
 						let opts = {
 							method: 'put',
-							routeName: '/infra/kubernetes/resource/' + type,
 							data: {
 								configuration: {
 									env: currentScope.selectedEnvironment.code,
@@ -130,27 +192,35 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 						switch(type) {
 							case "PV":
 								opts.data.body.kind = 'PersistentVolume';
+								opts.routeName = '/infra/kubernetes/storage/' + type;
 								break;
 							case "Service":
 								opts.data.body.kind = 'Service';
+								opts.routeName = '/infra/kubernetes/service/' + type;
 								break;
 							case "Deployment":
 								opts.data.body.kind = 'Deployment';
+								opts.routeName = '/infra/kubernetes/workload/' + type;
 								break;
 							case "DaemonSet":
 								opts.data.body.kind = 'DaemonSet';
+								opts.routeName = '/infra/kubernetes/workload/' + type;
 								break;
 							case "CronJob":
 								opts.data.body.kind = 'CronJob';
+								opts.routeName = '/infra/kubernetes/workload/' + type;
 								break;
 							case "HPA":
 								opts.data.body.kind = 'HorizontalPodAutoscaler';
+								opts.routeName = '/infra/kubernetes/workload/' + type;
 								break;
 							case "StorageClass":
 								opts.data.body.kind = 'StorageClass';
+								opts.routeName = '/infra/kubernetes/storage/' + type;
 								break;
 							default:
-								opts.data.body.kind = 'Service';
+								opts.data.body.kind = 'Deployment';
+								opts.routeName = '/infra/kubernetes/workload/' + type;
 						}
 						getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 							if (error) {
@@ -180,7 +250,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 										currentScope.listStorageClass();
 										break;
 									default:
-										currentScope.listServices();
+										currentScope.listDeployments();
 								}
 								currentScope.modalInstance.dismiss('cancel');
 								currentScope.form.formData = {};

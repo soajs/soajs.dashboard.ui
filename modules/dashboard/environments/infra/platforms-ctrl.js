@@ -12,7 +12,7 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 	$scope.includeVMErrors = true;
 	$scope.errorVMLayers = null;
-	
+	console.log($scope)
 	$scope.getEnvPlatform = function(overlay){
 		if(overlay){
 			overlayLoading.show();
@@ -38,6 +38,7 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		});
 	};
 	
+	
 	$scope.calculateType = function(response){
 		//calculate environment type
 		if(response.restriction && Object.keys(response.restriction).length > 0){
@@ -56,6 +57,7 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	
 	if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 		$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+		$scope.envDescription = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).description;
 		
 		if($scope.envCode && $scope.access.platforms.getEnvironment){
 			$scope.getEnvPlatform();

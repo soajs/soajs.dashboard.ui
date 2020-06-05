@@ -15,12 +15,8 @@
 			<ul class="blueListing">
 				<li class="blueLi row-list active" ng-repeat="item in pods.items"
 				    ng-style="{'width': '99%'}">
-					<div style="width: 20%;display: inline-block">
+					<div style="width: 55%;display: inline-block">
 						<span class="">{{item.metadata.name}}</span>
-					</div>
-					
-					<div style="width: 25%;display: inline-block">
-						<span>UID: </span> <span class="">{{item.metadata.uid}}</span>
 					</div>
 					
 					<div style="width: 20%;display: inline-block">
@@ -30,6 +26,26 @@
 						<a ng-click="inspectItem(item)"
 						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
 								tooltip="inspect pod" class="icon icon-info"></span></a>
+					</div>
+					<div ng-if="access.kubernetes.pod.logs" style="float: right">
+						<a ng-click="getLogs(item)"
+						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+								tooltip="get pod logs" class="icon icon icon-terminal"></span></a>
+					</div>
+					<div ng-if="access.kubernetes.pod.singleExec" style="float: right">
+						<a ng-click="execCommand(item)"
+						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+								tooltip="exec command" class="icon icon icon-list2"></span></a>
+					</div>
+<!--					<div  ng-if="access.kubernetes.pod.metrics" style="float: right">-->
+<!--						<a ng-click="getMetrics(item)"-->
+<!--						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span-->
+<!--								tooltip="view metrics" class="icon icon icon-stats-dots"></span></a>-->
+<!--					</div>-->
+					<div ng-if="access.kubernetes.pod.delete" style="float: right">
+						<a ng-click="deletePod(item)" ng-confirm-click="Are you sure you want to delete this pod?"
+						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+								tooltip="delete pod" class="icon icon-cross"></span></a>
 					</div>
 				</li>
 				<li class="blueLi row-list" ng-show="pods.metadata.continue" ng-style="{'width': '99%'}">
@@ -45,3 +61,125 @@
 	</div>
 
 </section>
+
+<script type="text/ng-template" id="logBox.html">
+	<div class="modal-header">
+		<table width="100%">
+			<tr>
+				<td width="80%">
+					<h3 class="modal-title">{{title}}</h3>
+				</td>
+				<td width="20%" align="center">
+					<span><text-size-slider min="10" max="36" unit="px" value="12" idt="code"></text-size-slider></span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="modal-body">
+		<alert type="warning" style="text-align:center;" ng-if="message.warning"><span
+				ng-bind-html="message.warning|toTrustedHtml"></span></alert>
+		<pre id="code" ng-if="!message || !message.warning" class="preBox" scroll-glue><code
+				style="white-space: pre !important;" class="sh" ng-bind-html="data"></code></pre>
+	</div>
+	<div class="modal-footer">
+		<table width="100%">
+			<tr>
+				<td width="80%" align="left">
+					<button style="float: left;" class="btn btn-primary" ng-click="refreshLogs()">
+						{{translation.refresh[LANG]}}
+					</button>
+					<button style="float: left;" class="btn btn-primary" ng-click="tailLogs()">
+						{{translation.tail[LANG]}}
+					</button>
+					<span style="float: left;margin-left: 10px;margin-top: 7px;" ng-if="isTailing"><div class="loading">{{translation.tailing[LANG]}}</div></span>
+				</td>
+				<td width="20%" align="right">
+					<button class="btn btn-primary" ng-click="ok()">{{translation.close[LANG]}}</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</script>
+
+<script type="text/ng-template" id="execCommandPod.tmpl">
+	<div class="form">
+		<div class="modal-header">
+			<h3 class="modal-title">Exec Commands</h3>
+		</div>
+		<div class="">
+			<ngform></ngform>
+		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="showMetrics.tmpl">
+	<div class="form">
+		<div class="modal-header">
+			<h3 class="modal-title">Exec Commands</h3>
+		</div>
+		<div class="row">
+			<div class="col-md-6"
+			     ng-if="servicesMetrics[instanceName].cpuPercent">
+				<canvas id="cpuPercent{{instanceName}}"
+				        class="chart chart-line"
+				        chart-data="servicesMetrics[instanceName].cpuPercent"
+				        chart-labels="servicesMetrics[instanceName].timestamp"
+				        chart-options="chartOptions[instanceName].cpuPercent.options"
+				        chart-dataset-override="chartOptions[instanceName].cpuPercent.override">
+				</canvas>
+			</div>
+			<div class="col-md-6"
+			     ng-if="!servicesMetrics[instanceName].cpuPercent && servicesMetrics[instanceName].cpu">
+				<canvas id="cpu{{instanceName}}"
+				        class="chart chart-line"
+				        chart-data="servicesMetrics[instanceName].cpu"
+				        chart-labels="servicesMetrics[instanceName].timestamp"
+				        chart-options="chartOptions[instanceName].cpu.options"
+				        chart-dataset-override="chartOptions[instanceName].cpu.override">
+				</canvas>
+			</div>
+			<div class="col-md-6"
+			     ng-if="servicesMetrics[instanceName].memory">
+				<canvas id="memory{{instanceName}}"
+				        class="chart chart-line"
+				        chart-data="servicesMetrics[instanceName].memory"
+				        chart-labels="servicesMetrics[instanceName].timestamp"
+				        chart-options="chartOptions[instanceName].memory.options"
+				        chart-dataset-override="chartOptions[instanceName].memory.override">
+				</canvas>
+			</div>
+			<div class="col-md-6"
+			     ng-if="!servicesMetrics[instanceName].memory && servicesMetrics[instanceName].memPercent">
+				<canvas id="memPercent{{instanceName}}"
+				        class="chart chart-line"
+				        chart-data="servicesMetrics[instanceName].memPercent"
+				        chart-labels="servicesMetrics[instanceName].timestamp"
+				        chart-options="chartOptions[instanceName].memPercent.options"
+				        chart-dataset-override="chartOptions[instanceName].memPercent.override">
+				</canvas>
+			</div>
+			<div class="col-md-6"
+			     ng-if="servicesMetrics[instanceName].blkIO">
+				<canvas id="blkIO{{instanceName}}"
+				        class="chart chart-line"
+				        chart-data="servicesMetrics[instanceName].blkIO"
+				        chart-labels="servicesMetrics[instanceName].timestamp"
+				        chart-series="chartOptions[instanceName].blkIO.series"
+				        chart-options="chartOptions[instanceName].blkIO.options"
+				        chart-dataset-override="chartOptions[instanceName].blkIO.override">
+				</canvas>
+			</div>
+			<div class="col-md-6"
+			     ng-if="servicesMetrics[instanceName].netIO">
+				<canvas id="netIO{{instanceName}}"
+				        class="chart chart-line"
+				        chart-data="servicesMetrics[instanceName].netIO"
+				        chart-labels="servicesMetrics[instanceName].timestamp"
+				        chart-series="chartOptions[instanceName].netIO.series"
+				        chart-options="chartOptions[instanceName].netIO.options"
+				        chart-dataset-override="chartOptions[instanceName].netIO.override">
+				</canvas>
+			</div>
+		</div>
+	</div>
+</script>

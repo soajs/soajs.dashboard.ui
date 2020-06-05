@@ -1,7 +1,7 @@
 "use strict";
 
 var environmentsApp = soajsApp.components;
-environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage', 'ngDataApi', 'secretsService', 'pvcService', 'hacloudSrv', '$modal', 'injectFiles', function ($scope, $cookies, $localStorage, ngDataApi, secretsService, pvcService, hacloudSrv, $modal, injectFiles) {
+environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage', 'ngDataApi', 'secretsService', 'pvcService', 'podService', 'hacloudSrv', '$modal', 'injectFiles', '$timeout', function ($scope, $cookies, $localStorage, ngDataApi, secretsService, pvcService, podService, hacloudSrv, $modal, injectFiles, $timeout) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -31,7 +31,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/Secret',
+			"routeName": '/infra/kubernetes/configurations/Secret',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -82,7 +82,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 	$scope.deleteSecret = function (secret) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/secret',
+			routeName: '/infra/kubernetes/configurations/secret',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
@@ -107,7 +107,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/PVC',
+			"routeName": '/infra/kubernetes/storages/PVC',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -155,15 +155,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deletePVC = function (secret) {
+	$scope.deletePVC = function (pvc) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/pvc',
+			routeName: '/infra/kubernetes/storage/pvc',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: pvc.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -180,7 +180,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/PV',
+			"routeName": '/infra/kubernetes/storages/PV',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -219,7 +219,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 	$scope.deletePV = function (pv) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/pv',
+			routeName: '/infra/kubernetes/storage/pv',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
@@ -241,7 +241,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/Service',
+			"routeName": '/infra/kubernetes/services/Service',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -277,15 +277,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deleteService = function (secret) {
+	$scope.deleteService = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/resource/Service',
+			routeName: '/infra/kubernetes/service/Service',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: service.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -302,7 +302,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/Deployment',
+			"routeName": '/infra/kubernetes/workloads/Deployment',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -338,15 +338,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deleteDeployment = function (secret) {
+	$scope.deleteDeployment = function (deployment) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/resource/Deployment',
+			routeName: '/infra/kubernetes/workload/Deployment',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: deployment.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -363,7 +363,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/DaemonSet',
+			"routeName": '/infra/kubernetes/workloads/DaemonSet',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -399,15 +399,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deleteDaemonSet= function (secret) {
+	$scope.deleteDaemonSet = function (daemonset) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/resource/DaemonSet',
+			routeName: '/infra/kubernetes/workload/DaemonSet',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: daemonset.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -424,7 +424,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/CronJob',
+			"routeName": '/infra/kubernetes/workloads/CronJob',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -460,15 +460,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deleteCronJob = function (secret) {
+	$scope.deleteCronJob = function (cron) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/resource/CronJob',
+			routeName: '/infra/kubernetes/workload/CronJob',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: cron.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -485,7 +485,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/HPA',
+			"routeName": '/infra/kubernetes/workloads/HPA',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -521,15 +521,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deleteHPA = function (secret) {
+	$scope.deleteHPA = function (hpa) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/resource/HPA',
+			routeName: '/infra/kubernetes/workload/HPA',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: hpa.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -546,7 +546,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/StorageClass',
+			"routeName": '/infra/kubernetes/storages/StorageClass',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -582,15 +582,15 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	$scope.deleteStorageClass= function (secret) {
+	$scope.deleteStorageClass = function (storage) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/StorageClass',
+			routeName: '/infra/kubernetes/storage/StorageClass',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,
 				},
-				name: secret.metadata.name
+				name: storage.metadata.name
 			},
 		}, function (error) {
 			if (error) {
@@ -607,68 +607,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/Node',
-			"params": {
-				"configuration": {
-					"env": $scope.selectedEnvironment.code,
-				},
-				"limit": 100
-			}
-		};
-		if ($scope.nodes && $scope.nodes.metadata && $scope.nodes.metadata.continue) {
-			opts.params.continue = $scope.nodes.metadata.continue;
-		}
-		if (fieldSelector) {
-			opts.params.filter = {
-				fieldSelector: 'metadata.name=' + fieldSelector
-			}
-		}
-		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				if (fieldSelector !== $scope.nodeFieldSelector || !$scope.nodeFieldSelector) {
-					$scope.nodes = response;
-				} else {
-					if ($scope.nodes && $scope.nodes.items) {
-						response.items = response.items.concat($scope.nodes.items);
-						$scope.nodes = response;
-					} else {
-						$scope.nodes = response;
-					}
-				}
-				$scope.nodeFieldSelector = fieldSelector;
-				
-			}
-		});
-	};
-	$scope.deleteNode= function (node) {
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'delete',
-			routeName: '/infra/kubernetes/Node',
-			params: {
-				configuration: {
-					env: $scope.selectedEnvironment.code,
-				},
-				name: node.metadata.name
-			},
-		}, function (error) {
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				$scope.displayAlert('success', 'Nodes deleted successfully.');
-				$scope.listNodes();
-			}
-		});
-	};
-	
-	//nodes
-	$scope.listNodes = function (fieldSelector) {
-		overlayLoading.show();
-		let opts = {
-			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/Node',
+			"routeName": '/infra/kubernetes/clusters/Node',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -710,7 +649,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/resources/Pod',
+			"routeName": '/infra/kubernetes/workloads/Pod',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -746,10 +685,531 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
+	$scope.deletePod = function (pod) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/infra/kubernetes/pods',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+			},
+			data: {
+				filter: {
+					fieldSelector: 'metadata.name=' + pod.metadata.name
+				}
+			},
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', 'Pod deleted successfully.');
+				$scope.listPods();
+			}
+		});
+	};
+	$scope.getLogs = function (pod) {
+		overlayLoading.show();
+		$scope.pauseRefresh = true;
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'get',
+			routeName: '/infra/kubernetes/pod/log',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+				name: pod.metadata.name
+			},
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				//var autoRefreshPromise;
+				
+				var evtSource = null;
+				
+				function terminateTailing() {
+					if (evtSource) {
+						evtSource.close();
+						evtSource = null;
+					}
+				}
+				
+				let currentScope = $scope;
+				var mInstance = $modal.open({
+					templateUrl: "logBox.html",
+					size: 'lg',
+					backdrop: true,
+					keyboard: false,
+					windowClass: 'large-Modal',
+					controller: function ($scope, $modalInstance) {
+						$scope.title = "Host Logs of " + pod.metadata.name;
+						fixBackDrop();
+						terminateTailing();
+						
+						$scope.ok = function () {
+							$modalInstance.dismiss('ok');
+						};
+						
+						$scope.tailLogs = function () {
+							terminateTailing();
+							// handles the callback from the received event
+							var handleOpenCallback = function (response) {
+								$scope.isTailing = true;
+								$scope.data = remove_special(response.data).replace("undefined", "").toString();
+								$scope.data += "\n";
+								if (!$scope.$$phase) {
+									$scope.$apply();
+								}
+							};
+							var handleKeepaliveCallback = function (response) {
+								$scope.isTailing = true;
+							};
+							var handleCallback = function (response) {
+								$scope.data += remove_special(response.data).replace("undefined", "").toString();
+								$scope.data += "\n";
+								if (!$scope.$$phase) {
+									$scope.$apply();
+								}
+								highlightMyCode();
+							};
+							var handleEndCallback = function (response) {
+								$scope.isTailing = false;
+								$scope.data += "\n";
+								$scope.data += "Error tailing log, please click refresh or tail again!";
+								$scope.data += "\n";
+								terminateTailing();
+							};
+							
+							var uri = apiConfiguration.domain + '/infra/kubernetes/pod/log?';
+							uri += "configuration=%7B%22env%22:%22" + currentScope.selectedEnvironment.code + "%22%7D";
+							uri += "&follow=true";
+							uri += "&access_token=" + $cookies.get('access_token', {'domain': interfaceDomain});
+							uri += "&name=" + pod.metadata.name;
+							uri += "&key=" + apiConfiguration.key;
+							
+							evtSource = new EventSource(uri);
+							evtSource.addEventListener('open', handleOpenCallback, false);
+							evtSource.addEventListener('keepalive', handleKeepaliveCallback, false);
+							evtSource.addEventListener('message', handleCallback, false);
+							evtSource.addEventListener('error', handleEndCallback, false);
+							evtSource.addEventListener('end', handleEndCallback, false);
+						};
+						
+						$scope.refreshLogs = function () {
+							$scope.isTailing = false;
+							terminateTailing();
+							getSendDataFromServer(currentScope, ngDataApi, {
+								method: "get",
+								routeName: '/infra/kubernetes/pod/log',
+								params: {
+									configuration: {
+										env: $scope.selectedEnvironment.code,
+									},
+									name: pod.metadata.name
+								}
+							}, function (error, response) {
+								if (error) {
+									currentScope.displayAlert('danger', error.message);
+								} else {
+									$scope.data = remove_special(response.data).replace("undefined", "").toString();
+									if (!$scope.$$phase) {
+										$scope.$apply();
+									}
+									
+									fixBackDrop();
+									$timeout(function () {
+										highlightMyCode()
+									}, 500);
+								}
+							});
+						};
+						
+						if (error) {
+							$scope.message = {
+								warning: 'Instance logs are not available at the moment. Make sure that the instance is <strong style="color:green;">running</strong> and healthy.<br> If this is a newly deployed instance, please try again in a few moments.'
+							};
+						} else {
+							$scope.data = remove_special(response.data);
+							$timeout(function () {
+								highlightMyCode()
+							}, 500);
+						}
+					}
+				});
+				
+				mInstance.result.then(function () {
+					//Get triggers when modal is closed
+					terminateTailing();
+				}, function () {
+					//gets triggers when modal is dismissed.
+					terminateTailing();
+				});
+			}
+		});
+		
+		function remove_special(str) {
+			if (!str) {
+				return 'No logs found for this instance'; //in case container has no logs, return message to display
+			}
+			var rExps = [/[\xC0-\xC2]/g, /[\xE0-\xE2]/g,
+				/[\xC8-\xCA]/g, /[\xE8-\xEB]/g,
+				/[\xCC-\xCE]/g, /[\xEC-\xEE]/g,
+				/[\xD2-\xD4]/g, /[\xF2-\xF4]/g,
+				/[\xD9-\xDB]/g, /[\xF9-\xFB]/g,
+				/\xD1/, /\xF1/g,
+				"/[\u00a0|\u1680|[\u2000-\u2009]|u200a|\u200b|\u2028|\u2029|\u202f|\u205f|\u3000|\xa0]/g",
+				/\uFFFD/g,
+				/\u000b/g, '/[\u180e|\u000c]/g',
+				/\u2013/g, /\u2014/g,
+				/\xa9/g, /\xae/g, /\xb7/g, /\u2018/g, /\u2019/g, /\u201c/g, /\u201d/g, /\u2026/g,
+				/</g, />/g
+			];
+			var repChar = ['A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'N', 'n', ' ', '', '\t', '', '-', '--', '(c)', '(r)', '*', "'", "'", '"', '"', '...', '&lt;', '&gt;'];
+			for (var i = 0; i < rExps.length; i++) {
+				str = str.replace(rExps[i], repChar[i]);
+			}
+			for (var x = 0; x < str.length; x++) {
+				var charcode = str.charCodeAt(x);
+				if ((charcode < 32 || charcode > 126) && charcode != 10 && charcode != 13) {
+					str = str.replace(str.charAt(x), "");
+				}
+			}
+			return str;
+		}
+	};
+	$scope.execCommand = function (pod) {
+		let currentScope = $scope;
+		$modal.open({
+			templateUrl: "execCommandPod.tmpl",
+			size: 'lg',
+			backdrop: false,
+			keyboard: false,
+			controller: function ($scope, $modalInstance) {
+				podService.execCommand($scope, $modalInstance, currentScope, pod);
+			}
+		});
+	};
+	$scope.getMetrics = function (pod) {
+		let currentScope = $scope;
+		$modal.open({
+			templateUrl: "showMetrics.tmpl",
+			size: 'lg',
+			backdrop: false,
+			keyboard: false,
+			controller: function ($scope, $modalInstance) {
+				podService.getMetrics($scope, $modalInstance, currentScope, pod);
+			}
+		});
+	};
 	
+	//clusterRole
+	$scope.listClusterRoles = function (fieldSelector) {
+		overlayLoading.show();
+		let opts = {
+			"method": 'get',
+			"routeName": '/infra/kubernetes/rbacs/ClusterRole',
+			"params": {
+				"configuration": {
+					"env": $scope.selectedEnvironment.code,
+				},
+				"limit": 100
+			}
+		};
+		if ($scope.clusterRoles && $scope.clusterRoles.metadata && $scope.clusterRoles.metadata.continue) {
+			opts.params.continue = $scope.clusterRoles.metadata.continue;
+		}
+		if (fieldSelector) {
+			opts.params.filter = {
+				fieldSelector: 'metadata.name=' + fieldSelector
+			}
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				if (fieldSelector !== $scope.clusterRolesFieldSelector || !$scope.clusterRolesFieldSelector) {
+					$scope.clusterRoles = response;
+				} else {
+					if ($scope.clusterRoles && $scope.clusterRoles.items) {
+						response.items = response.items.concat($scope.clusterRoles.items);
+						$scope.clusterRoles = response;
+					} else {
+						$scope.clusterRoles = response;
+					}
+				}
+				$scope.clusterRolesFieldSelector = fieldSelector;
+				
+			}
+		});
+	};
+	$scope.deleteClusterRole = function (clusterRole) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/infra/kubernetes/rbac/ClusterRole',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+				name: clusterRole.metadata.name
+			},
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', 'ClusterRole deleted successfully.');
+				$scope.listClusterRoles();
+			}
+		});
+	};
 	
-	if ($scope.access.kubernetes.secret.list) {
-		$scope.listSecrets();
+	//clusterRoleBinding
+	$scope.listClusterRoleBindings = function (fieldSelector) {
+		overlayLoading.show();
+		let opts = {
+			"method": 'get',
+			"routeName": '/infra/kubernetes/rbacs/ClusterRoleBinding',
+			"params": {
+				"configuration": {
+					"env": $scope.selectedEnvironment.code,
+				},
+				"limit": 100
+			}
+		};
+		if ($scope.clusterRoleBindings && $scope.clusterRoleBindings.metadata && $scope.clusterRoleBindings.metadata.continue) {
+			opts.params.continue = $scope.clusterRoleBindings.metadata.continue;
+		}
+		if (fieldSelector) {
+			opts.params.filter = {
+				fieldSelector: 'metadata.name=' + fieldSelector
+			}
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				if (fieldSelector !== $scope.clusterRoleBindingsFieldSelector || !$scope.clusterRoleBindingsFieldSelector) {
+					$scope.clusterRoleBindings = response;
+				} else {
+					if ($scope.clusterRoleBindings && $scope.clusterRoleBindings.items) {
+						response.items = response.items.concat($scope.clusterRoleBindings.items);
+						$scope.clusterRoleBindings = response;
+					} else {
+						$scope.clusterRoleBindings = response;
+					}
+				}
+				$scope.clusterRoleBindingsFieldSelector = fieldSelector;
+				
+			}
+		});
+	};
+	$scope.deleteClusterRoleBinding = function (clusterRoleBinding) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/infra/kubernetes/rbac/ClusterRoleBinding',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+				name: clusterRoleBinding.metadata.name
+			},
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', 'ClusterRoleBinding deleted successfully.');
+				$scope.listClusterRoleBindings();
+			}
+		});
+	};
+	
+	//roleBinding
+	$scope.listRoleBindings = function (fieldSelector) {
+		overlayLoading.show();
+		let opts = {
+			"method": 'get',
+			"routeName": '/infra/kubernetes/rbacs/ClusterRoleBinding',
+			"params": {
+				"configuration": {
+					"env": $scope.selectedEnvironment.code,
+				},
+				"limit": 100
+			}
+		};
+		if ($scope.roleBindings && $scope.roleBindings.metadata && $scope.roleBindings.metadata.continue) {
+			opts.params.continue = $scope.roleBindings.metadata.continue;
+		}
+		if (fieldSelector) {
+			opts.params.filter = {
+				fieldSelector: 'metadata.name=' + fieldSelector
+			}
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				if (fieldSelector !== $scope.roleBindingsFieldSelector || !$scope.roleBindingsFieldSelector) {
+					$scope.roleBindings = response;
+				} else {
+					if ($scope.roleBindings && $scope.roleBindings.items) {
+						response.items = response.items.concat($scope.roleBindings.items);
+						$scope.roleBindings = response;
+					} else {
+						$scope.roleBindings = response;
+					}
+				}
+				$scope.roleBindingsFieldSelector = fieldSelector;
+				
+			}
+		});
+	};
+	$scope.deleteRoleBinding = function (roleBinding) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/infra/kubernetes/rbac/ClusterRoleBinding',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+				name: roleBinding.metadata.name
+			},
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', 'ClusterRoleBinding deleted successfully.');
+				$scope.listRoleBindings();
+			}
+		});
+	};
+	
+	//apiService
+	$scope.listApiServices = function (fieldSelector) {
+		overlayLoading.show();
+		let opts = {
+			"method": 'get',
+			"routeName": '/infra/kubernetes/rbacs/APIService',
+			"params": {
+				"configuration": {
+					"env": $scope.selectedEnvironment.code,
+				},
+				"limit": 100
+			}
+		};
+		if ($scope.apiServices && $scope.apiServices.metadata && $scope.apiServices.metadata.continue) {
+			opts.params.continue = $scope.apiServices.metadata.continue;
+		}
+		if (fieldSelector) {
+			opts.params.filter = {
+				fieldSelector: 'metadata.name=' + fieldSelector
+			}
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				if (fieldSelector !== $scope.apiServicesFieldSelector || !$scope.apiServicesFieldSelector) {
+					$scope.apiServices = response;
+				} else {
+					if ($scope.apiServices && $scope.apiServices.items) {
+						response.items = response.items.concat($scope.apiServices.items);
+						$scope.apiServices = response;
+					} else {
+						$scope.apiServices = response;
+					}
+				}
+				$scope.apiServicesFieldSelector = fieldSelector;
+				
+			}
+		});
+	};
+	$scope.deleteApiService = function (apiService) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/infra/kubernetes/rbac/APIService',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+				name: apiService.metadata.name
+			},
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', 'APIService deleted successfully.');
+				$scope.listApiServices();
+			}
+		});
+	};
+	
+	//serviceAccount
+	$scope.listServiceAccounts = function (fieldSelector) {
+		overlayLoading.show();
+		let opts = {
+			"method": 'get',
+			"routeName": '/infra/kubernetes/rbacs/ServiceAccount',
+			"params": {
+				"configuration": {
+					"env": $scope.selectedEnvironment.code,
+				},
+				"limit": 100
+			}
+		};
+		if ($scope.serviceAccounts && $scope.serviceAccounts.metadata && $scope.serviceAccounts.metadata.continue) {
+			opts.params.continue = $scope.serviceAccounts.metadata.continue;
+		}
+		if (fieldSelector) {
+			opts.params.filter = {
+				fieldSelector: 'metadata.name=' + fieldSelector
+			}
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				if (fieldSelector !== $scope.serviceAccountsFieldSelector || !$scope.serviceAccountsFieldSelector) {
+					$scope.serviceAccounts = response;
+				} else {
+					if ($scope.serviceAccounts && $scope.serviceAccounts.items) {
+						response.items = response.items.concat($scope.serviceAccounts.items);
+						$scope.serviceAccounts = response;
+					} else {
+						$scope.serviceAccounts = response;
+					}
+				}
+				$scope.serviceAccountsFieldSelector = fieldSelector;
+				
+			}
+		});
+	};
+	$scope.deleteServiceAccounts = function (serviceAccount) {
+		getSendDataFromServer($scope, ngDataApi, {
+			method: 'delete',
+			routeName: '/infra/kubernetes/rbac/ServiceAccount',
+			params: {
+				configuration: {
+					env: $scope.selectedEnvironment.code,
+				},
+				name: serviceAccount.metadata.name
+			},
+		}, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', 'ServiceAccount deleted successfully.');
+				$scope.listServiceAccounts();
+			}
+		});
+	};
+	if ($scope.access.kubernetes.deployment) {
+		$scope.listDeployments();
 	}
 	
 	injectFiles.injectCss("modules/dashboard/environments/kubeItems.css");

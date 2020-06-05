@@ -24,9 +24,9 @@ var resourcesAppConfig = {
             data: {
                 types: [
                     {'v': 'cluster', 'l': "Cluster"},
-                    {'v': 'server', 'l': "Server"},
+                    // {'v': 'server', 'l': "Server"},
                     {'v': 'cdn', 'l': "CDN"},
-                    {'v': 'system', 'l': "System"},
+                    // {'v': 'system', 'l': "System"},
                     {'v': 'authorization', 'l': "Authorization"},
                     {'v': 'other', 'l': "Other"}
                 ],
@@ -42,10 +42,10 @@ var resourcesAppConfig = {
 					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
 					{'v': 'other', 'l': "Other", "group": "cluster"},
 
-					{'v': 'nginx', 'l': "Nginx", "group": "server"},
-					{'v': 'apache', 'l': "Apache", "group": "server"},
-					{'v': 'iis', 'l': "IIS", "group": "server"},
-					{'v': 'other', 'l': "Other", "group": "server"},
+					// {'v': 'nginx', 'l': "Nginx", "group": "server"},
+					// {'v': 'apache', 'l': "Apache", "group": "server"},
+					// {'v': 'iis', 'l': "IIS", "group": "server"},
+					// {'v': 'other', 'l': "Other", "group": "server"},
 
 					{'v': 'amazons3', 'l': "Amazon S3", "group": "cdn"},
 					{'v': 'rackspace', 'l': "Rackspace", "group": "cdn"},

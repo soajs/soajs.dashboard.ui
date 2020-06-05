@@ -1,5 +1,15 @@
 <section ng-controller="platformsCtrl">
-	
+	<div class="envHeader">
+		<table width="100%" class="">
+			<tr>
+				<td style="width: 15%">
+					<span><b style="margin:0;">{{envCode}}</b></span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<em style="margin-left: 5px">{{envDescription}}</em>
+	<hr>
 	<div ng-switch="environment.type">
 		<div ng-switch-when="manual">
 			<div ng-include="'modules/dashboard/environments/infra/directives/manual.tmpl'"></div>

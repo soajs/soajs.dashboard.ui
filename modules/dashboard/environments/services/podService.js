@@ -4,7 +4,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 	
 	function autoRefreshMetrics($scope, $modalInstance, currentScope, pod) {
 		let autoRefreshTimeoutMetrics;
-	
+		
 		$scope.refreshIntervals = [
 			{
 				v: 5,
@@ -23,11 +23,11 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 				l: '1 Minute'
 			}
 		];
-		let tValue = $scope.selectedInterval.v  * 1000;
-		$scope.changeInterval = function(oneInt){
-			$scope.refreshIntervals.forEach(function(oneInterval){
-				if(oneInterval.v === oneInt.v){
-					if(oneInt.v !== $scope.selectedInterval.v){
+		let tValue = $scope.selectedInterval.v * 1000;
+		$scope.changeInterval = function (oneInt) {
+			$scope.refreshIntervals.forEach(function (oneInterval) {
+				if (oneInterval.v === oneInt.v) {
+					if (oneInt.v !== $scope.selectedInterval.v) {
 						$scope.selectedInterval = oneInt;
 						$cookies.putObject('selectedInterval', oneInt, {'domain': interfaceDomain});
 						$timeout.cancel(autoRefreshTimeoutMetrics);
@@ -37,18 +37,21 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 			});
 		};
 		
-		$scope.close = function(){
+		$scope.close = function () {
+			$timeout.cancel(autoRefreshTimeoutMetrics);
 			$modalInstance.dismiss('cancel');
 		};
 		
-		// var tValue = 5 * 1000;
+		$modalInstance.result.then(function () {
+		}, function () {
+			$timeout.cancel(autoRefreshTimeoutMetrics);
+		});
 		
 		autoRefreshTimeoutMetrics = $timeout(function () {
-			getMetrics($scope, $modalInstance, currentScope, pod, function () {
-				if(!currentScope.destroyed){
+			getMetrics($scope, $modalInstance, currentScope, pod, function (error) {
+				if (!currentScope.destroyed && !error) {
 					autoRefreshMetrics($scope, $modalInstance, currentScope, pod);
-				}
-				else{
+				} else {
 					$timeout.cancel(autoRefreshTimeoutMetrics);
 				}
 			});
@@ -68,16 +71,18 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 				process: true
 			}
 		}, function (error, oldMetrics) {
+			$scope.showMetrics = true;
 			if (error || !oldMetrics) {
+				overlayLoading.hide();
 				console.log(translation.unableRetrieveServicesMetrics[LANG]);
-				return cb();
+				return cb(true);
 			} else {
 				let usage = {
 					cpu: 0,
 					memory: 0
 				};
 				let metrics = {};
-				oldMetrics.containers.forEach((oneContainer)=>{
+				oldMetrics.containers.forEach((oneContainer) => {
 					try {
 						usage.cpu += parseInt(oneContainer.usage.cpu.replace("m", ""));
 						// convert memory from ki to Bytes.
@@ -93,15 +98,15 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 					if (!$scope.servicesMetrics) {
 						$scope.servicesMetrics = {};
 					}
-
+					
 					if (!$scope.servicesMetrics[oneContainer]) {
 						$scope.servicesMetrics[oneContainer] = {};
 					}
-
+					
 					if (!$scope.chartOptions) {
 						$scope.chartOptions = {};
 					}
-
+					
 					if (!$scope.chartOptions[oneContainer]) {
 						$scope.chartOptions[oneContainer] = {};
 					}
@@ -111,7 +116,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 						if (metrics[oneContainer].hasOwnProperty('online_cpus')) {
 							$scope.servicesMetrics[oneContainer].online_cpus = metrics[oneContainer].online_cpus;
 						}
-
+						
 						if (metrics[oneContainer].hasOwnProperty('timestamp')) {
 							var ts = new Date(metrics[oneContainer].timestamp).toLocaleString('en-US', {
 								hour: 'numeric',
@@ -127,7 +132,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 							// 	$scope.servicesMetrics[oneContainer].timestamp.shift();
 							// }
 						}
-
+						
 						if (metrics[oneContainer].hasOwnProperty('memory')) {
 							overlayLoading.hide();
 							if (!$scope.servicesMetrics[oneContainer].memory) {
@@ -165,7 +170,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 													scaleLabel: {
 														labelString: 'Memory (Bytes)',
 														display: true,
-
+														
 													},
 													ticks: {
 														callback: function (bytes) {
@@ -180,7 +185,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-
+														
 													}
 												}
 											]
@@ -194,7 +199,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 							// 	$scope.servicesMetrics[oneContainer].memory.shift();
 							// }
 						}
-
+						
 						if (metrics[oneContainer].hasOwnProperty('cpu')) {
 							overlayLoading.hide();
 							if (!$scope.servicesMetrics[oneContainer].cpu) {
@@ -225,7 +230,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 													scaleLabel: {
 														labelString: 'CPU (milliCores)',
 														display: true,
-
+														
 													},
 													ticks: {
 														beginAtZero: true
@@ -237,7 +242,7 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 													scaleLabel: {
 														labelString: 'Time',
 														display: true,
-
+														
 													}
 												}
 											]
@@ -258,9 +263,9 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 				}
 			}
 		});
-
+		
 	}
-
+	
 	function convertBytes(bytes) {
 		if (bytes < 1024) {
 			return (bytes) + ' B';

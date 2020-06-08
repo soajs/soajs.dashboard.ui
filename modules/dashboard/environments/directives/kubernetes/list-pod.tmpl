@@ -7,7 +7,7 @@
 			</button>
 			<input type="text" class="secret-search form-control f-right" ng-model="searchKeyword"
 			       placeholder="Search ..."/>
-			
+		
 		</div>
 		<br>
 		<br>
@@ -37,7 +37,7 @@
 						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
 								tooltip="exec command" class="icon icon icon-list2"></span></a>
 					</div>
-					<div  ng-if="access.kubernetes.pod.metrics" style="float: right">
+					<div ng-if="access.kubernetes.pod.metrics" style="float: right">
 						<a ng-click="getMetrics(item)"
 						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
 								tooltip="view metrics" class="icon icon icon-stats-dots"></span></a>
@@ -118,7 +118,8 @@
 			<h3 class="modal-title">View Metrics</h3>
 		</div>
 		<br>
-		<div class="f-right">
+		<div ng-if="servicesMetrics">
+			<div class="f-right">
 		<span class="dropdown refreshDropDown">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
 			        aria-expanded="true">
@@ -130,36 +131,47 @@
 					<a href="" ng-click="changeInterval(oneInterval)">{{oneInterval.l}}</a></li>
 			</ul>
 		</span>
-		</div>
-		<br>
-		<hr>
-		<div class="row">
-			<div class="col-md-6"
-			     ng-if="servicesMetrics[instanceName].cpu">
-				<canvas id="cpu{{instanceName}}"
-				        class="chart chart-line"
-				        chart-data="servicesMetrics[instanceName].cpu"
-				        chart-labels="servicesMetrics[instanceName].timestamp"
-				        chart-options="chartOptions[instanceName].cpu.options"
-				        chart-dataset-override="chartOptions[instanceName].cpu.override">
-				</canvas>
 			</div>
-			<div class="col-md-6"
-			     ng-if="servicesMetrics[instanceName].memory">
-				<canvas id="memory{{instanceName}}"
-				        class="chart chart-line"
-				        chart-data="servicesMetrics[instanceName].memory"
-				        chart-labels="servicesMetrics[instanceName].timestamp"
-				        chart-options="chartOptions[instanceName].memory.options"
-				        chart-dataset-override="chartOptions[instanceName].memory.override">
-				</canvas>
+			<br>
+			<hr>
+			<div class="row">
+				<div class="col-md-6"
+				     ng-if="servicesMetrics[instanceName].cpu">
+					<canvas id="cpu{{instanceName}}"
+					        class="chart chart-line"
+					        chart-data="servicesMetrics[instanceName].cpu"
+					        chart-labels="servicesMetrics[instanceName].timestamp"
+					        chart-options="chartOptions[instanceName].cpu.options"
+					        chart-dataset-override="chartOptions[instanceName].cpu.override">
+					</canvas>
+				</div>
+				<div class="col-md-6"
+				     ng-if="servicesMetrics[instanceName].memory">
+					<canvas id="memory{{instanceName}}"
+					        class="chart chart-line"
+					        chart-data="servicesMetrics[instanceName].memory"
+					        chart-labels="servicesMetrics[instanceName].timestamp"
+					        chart-options="chartOptions[instanceName].memory.options"
+					        chart-dataset-override="chartOptions[instanceName].memory.override">
+					</canvas>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger f-right" type="button" aria-haspopup="true"
+				        aria-expanded="true" ng-click="close()">
+					<span class="icon icon-cross"></span>&nbsp;close
+				</button>
 			</div>
 		</div>
-		<div class="modal-footer">
-			<button class="btn btn-danger f-right" type="button" aria-haspopup="true"
-			        aria-expanded="true"  ng-click="close()">
-				<span class="icon icon-cross"></span>&nbsp;close
-			</button>
+		<div ng-if="showMetrics && !servicesMetrics">
+			<alert type="warning">{{translation.unableRetrieveServicesMetrics[LANG]}}, please try again later!</alert>
+			<br><br>
+			<div class="modal-footer">
+				<button class="btn btn-danger f-right" type="button" aria-haspopup="true"
+				        aria-expanded="true" ng-click="close()">
+					<span class="icon icon-cross"></span>&nbsp;close
+				</button>
+			</div>
 		</div>
 	</div>
 </script>

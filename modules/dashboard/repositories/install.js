@@ -7,7 +7,11 @@ var gaTranslation = {
 	gitRepositories: {
 		ENG: "Git Repositories",
 		FRA: "Git Repositories"
-	}
+	},
+	theFollowingModulesWereAdded: {
+		ENG: "The following modules were added:",
+		FRA: "The following modules were added:"
+	},
 };
 
 for (var attrname in gaTranslation) {

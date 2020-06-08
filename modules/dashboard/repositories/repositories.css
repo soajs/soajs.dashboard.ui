@@ -493,3 +493,15 @@ li.accountType {
     padding-bottom: 1px;
     margin-top: 3px;
 }
+
+#activeRepos .grid table{
+    min-width:100%
+}
+
+.row-error{
+    color : red
+}
+
+.row-active{
+    color : green
+}

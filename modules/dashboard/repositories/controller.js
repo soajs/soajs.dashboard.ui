@@ -259,6 +259,27 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 						oneBranch.active = true;
 					}
 				});
+				
+				let activateResponse = $modal.open({
+					templateUrl: 'activateResponse.tmpl',
+					size: 'lg',
+					backdrop: true,
+					keyboard: true,
+					controller: function ($scope) {
+						fixBackDrop();
+						if(result && Array.isArray(result)){
+							$scope.multi = true;
+							$scope.activatedRespo = result;
+						}
+						else {
+							$scope.activatedRespo = [result];
+						}
+						$scope.title = "Result";
+						$scope.ok = function () {
+							activateResponse.close();
+						}
+					}
+				});
 				$scope.displayAlert('success', result.data);
 			}
 		});

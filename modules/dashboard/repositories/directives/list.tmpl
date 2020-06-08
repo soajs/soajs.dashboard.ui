@@ -276,3 +276,32 @@
 		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
 	</div>
 </script>
+
+<script type="text/ng-template" id="activateResponse.tmpl">
+	<div class="modal-body" id="activeRepos">
+		<h4>{{title}}</h4>
+		<div class="grid" style="width:100%">
+			<table cellspacing="0" cellpadding="0" border="0">
+				<tbody>
+				<tr>
+					<th>{{translation.name[LANG]}}</th>
+					<th>{{translation.type[LANG]}}</th>
+					<th>Swagger</th>
+					<th>Failed</th>
+					<th>Error</th>
+				</tr>
+				<tr ng-repeat="entry in activatedRespo"   ng-class="{'row-error': entry.error, 'row-active': !entry.error}">
+					<td>{{entry.name}}</td>
+					<td>{{entry.type}}</td>
+					<td ng-if="entry.type === 'service'">{{entry.swagger}}</td>
+					<td ng-if="entry.error">True</td>
+					<td ng-if="entry.error">{{entry.error}}</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="ok()">{{translation.ok[LANG]}}</button>
+	</div>
+</script>

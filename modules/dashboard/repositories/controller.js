@@ -280,7 +280,6 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 						}
 					}
 				});
-				$scope.displayAlert('success', result.data);
 			}
 		});
 		
@@ -311,7 +310,26 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 				});
 				
 				$scope.listTags(repo);
-				$scope.displayAlert('success', result.data);
+				let activateResponse = $modal.open({
+					templateUrl: 'activateResponse.tmpl',
+					size: 'lg',
+					backdrop: true,
+					keyboard: true,
+					controller: function ($scope) {
+						fixBackDrop();
+						if(result && Array.isArray(result)){
+							$scope.multi = true;
+							$scope.activatedRespo = result;
+						}
+						else {
+							$scope.activatedRespo = [result];
+						}
+						$scope.title = "Result";
+						$scope.ok = function () {
+							activateResponse.close();
+						}
+					}
+				});
 			}
 		});
 		

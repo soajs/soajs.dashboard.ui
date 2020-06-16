@@ -12,14 +12,14 @@ var infraApp = soajsApp.components;
 infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$localStorage', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', function ($scope, $window, $modal, $timeout, $localStorage, $cookies, injectFiles, ngDataApi, infraCommonSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraConfig.permissions);
-
+	
 	infraCommonSrv.getInfraFromCookie($scope);
-
+	
 	$scope.getProviders = function () {
-		$localStorage.infraProviders =[];
+		$localStorage.infraProviders = [];
 		$scope.updateParentScope('infraProviders', []);
 		
 		infraCommonSrv.getInfra($scope, {
@@ -40,18 +40,18 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 					if (!$scope.getFromParentScope('currentSelectedInfra')) {
 						infraCommonSrv.switchInfra($scope, infras[0]);
 					}
-					else{
+					else {
 						infraCommonSrv.switchInfra($scope, $scope.getFromParentScope('currentSelectedInfra'));
 					}
 				}
-				else{
+				else {
 					$scope.removeFromParentScope('currentSelectedInfra');
-					$cookies.remove('myInfra', { 'domain': interfaceDomain });
+					$cookies.remove('myInfra', {'domain': interfaceDomain});
 				}
 			}
 		});
 	};
-
+	
 	$scope.$parent.$parent.switchInfra = function (oneInfra) {
 		infraCommonSrv.switchInfra($scope, oneInfra, ["groups", "regions", "templates"]);
 	};
@@ -59,21 +59,22 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 	$scope.$parent.$parent.activateProvider = function (cloud) {
 		infraCommonSrv.activateProvider($scope, cloud);
 	};
-
+	
 	$scope.editProvider = function (oneProvider) {
-		let providerName = oneProvider.name;
-		if (oneProvider.name === 'local') {
-			providerName = oneProvider.technologies[0];
-		}
+		let providerName = oneProvider.type;
+		// let providerName = oneProvider.name;
+		// if (oneProvider.name === 'local') {
+		// 	providerName = oneProvider.technologies[0];
+		// }
 		let editEntriesList = angular.copy(infraConfig.form[providerName]);
 		editEntriesList.shift();
-
+		oneProvider.configuration.description = oneProvider.description;
 		let options = {
 			timeout: $timeout,
 			form: {
 				"entries": editEntriesList
 			},
-			data: oneProvider.api,
+			data: oneProvider.configuration,
 			name: 'editProvider',
 			label: "Modify Connection of " + oneProvider.label,
 			actions: [
@@ -82,15 +83,18 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 					'btn': 'primary',
 					'label': 'Save',
 					'action': function (formData) {
+						let data = angular.copy(formData);
 						overlayLoading.show();
+						data.type = "secret";
+						delete data.description;
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
-							"routeName": "/dashboard/infra",
-							"params": {
-								"id": oneProvider._id
-							},
+							"routeName": "/infra/account/kubernetes/configuration",
+							"params": {},
 							"data": {
-								"api": formData
+								"id": oneProvider._id,
+								"description": formData.description,
+								"configuration": data
 							}
 						}, function (error) {
 							overlayLoading.hide();
@@ -116,15 +120,15 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 				}
 			]
 		};
-
+		
 		buildFormWithModal($scope, $modal, options);
 	};
-
+	
 	$scope.deactivateProvider = function (oneProvider) {
 		let options = {
 			"method": "delete",
-			"routeName": "/dashboard/infra",
-			"params": {
+			"routeName": "/infra/account/kubernetes",
+			"data": {
 				"id": oneProvider._id
 			}
 		};
@@ -141,7 +145,7 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			}
 		});
 	};
-
+	
 	if ($scope.access.list) {
 		$scope.getProviders();
 	}

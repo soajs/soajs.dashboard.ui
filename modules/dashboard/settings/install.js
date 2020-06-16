@@ -23,6 +23,7 @@ var settingsNav = [
         'scripts': ['modules/dashboard/settings/config.js', 'modules/dashboard/settings/controller.js'],
         'ancestor': [translation.home[LANG]]
     },
+	/*
 	{
 		'id': 'release-update',
 		'label': "Release update",
@@ -44,7 +45,7 @@ var settingsNav = [
 		'order': 2,
 		'scripts': ['modules/dashboard/settings/config.js', 'modules/dashboard/settings/controller.js'],
 		'ancestor': [translation.home[LANG]]
-	},
+	},*/
 	{
 		'id': 'deploy-auth-token',
 		'label': "Deployment Auth Token",

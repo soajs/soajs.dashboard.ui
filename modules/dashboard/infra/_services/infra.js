@@ -1,53 +1,54 @@
 "use strict";
 let infraCommonCSrv = soajsApp.components;
 infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$window', '$cookies', 'Upload', function (ngDataApi, $timeout, $modal, $window, $cookies, Upload) {
-
+	
 	const dynamicInfraSections = ['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
-
+	
 	function getInfraDriverName(currentScope) {
 		let oneInfra = currentScope.getFromParentScope('currentSelectedInfra');
-		let name = oneInfra.name; // -> azure
+		//let name = oneInfra.name; // -> azure
+		let name = oneInfra.type; // -> azure
 		return name;
 	}
-
+	
 	function getInfraFromCookie(currentScope) {
 		let cookieInfra = $cookies.getObject('myInfra', {'domain': interfaceDomain});
 		let scopeInfra = currentScope.getFromParentScope('currentSelectedInfra');
 		if (cookieInfra) {
-			if(!scopeInfra || cookieInfra._id !== scopeInfra._id){
+			if (!scopeInfra || cookieInfra._id !== scopeInfra._id) {
 				hideSidebarMenusForUnwantedProviders(currentScope, cookieInfra);
 			}
 			currentScope.updateParentScope('currentSelectedInfra', cookieInfra);
 		}
 	}
-
+	
 	function getInfra(currentScope, opts, cb) {
 		let options = {
 			"method": "get",
-			"routeName": "/dashboard/infra",
+			"routeName": "/infra/account/kubernetes",
 			"params": {
-				"exclude[]": ["groups", "regions", "templates"]
+				//"exclude[]": ["groups", "regions", "templates"]
 			}
 		};
-
+		
 		if (opts.id) {
 			options.params.id = opts.id;
 		}
-
-		if(opts.exclude){
+		
+		if (opts.exclude) {
 			options.params['exclude[]'] = opts.exclude;
 		}
 		
 		overlayLoading.show();
 		getSendDataFromServer(currentScope, ngDataApi, options, (error, response) => {
 			overlayLoading.hide();
-			if(error){
+			if (error) {
 				return cb(error);
 			}
 			
 			if (response.length === 0) {
 				currentScope.getFromParentScope('leftMenu').links.forEach((oneNavigationEntry) => {
-					if(dynamicInfraSections.indexOf(oneNavigationEntry.id) !== -1){
+					if (dynamicInfraSections.indexOf(oneNavigationEntry.id) !== -1) {
 						oneNavigationEntry.hideMe = true;
 					}
 				});
@@ -55,7 +56,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			return cb(null, response);
 		});
 	}
-
+	
 	function switchInfra(currentScope, oneInfra, exclude, cb) {
 		currentScope.showTemplateForm = false;
 		
@@ -72,14 +73,14 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			else {
 				hideSidebarMenusForUnwantedProviders(currentScope, myInfra);
 				updateInfraLabels(myInfra, () => {
-					if(cb && typeof cb === 'function'){
+					if (cb && typeof cb === 'function') {
 						return cb();
 					}
 				});
 			}
 		});
 		
-		function updateInfraLabels(myInfra, cb){
+		function updateInfraLabels(myInfra, cb) {
 			currentScope.updateParentScope('currentSelectedInfra', myInfra);
 			
 			let infraCookieCopy = angular.copy(myInfra);
@@ -91,80 +92,90 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			$cookies.putObject('myInfra', infraCookieCopy, {'domain': interfaceDomain});
 			
 			infraConfig.form.providers.forEach((oneProvider) => {
-				if(myInfra.name === 'local'){
-					if(myInfra.technologies[0] === oneProvider.name){
-						myInfra.logo = oneProvider.value;
-					}
-				}
-				else if(myInfra.name === oneProvider.name){
+				if (myInfra.type === oneProvider.name) {
 					myInfra.logo = oneProvider.value;
 				}
+				// if (myInfra.name === 'local') {
+				// 	if (myInfra.technologies[0] === oneProvider.name) {
+				// 		myInfra.logo = oneProvider.value;
+				// 	}
+				// }
+				// else if (myInfra.name === oneProvider.name) {
+				// 	myInfra.logo = oneProvider.value;
+				// }
 			});
-			
-			if(myInfra.name === 'local'){
-				myInfra.icon = infraConfig.logos[myInfra.technologies[0]];
-			}
-			else{
-				myInfra.icon = infraConfig.logos[myInfra.name];
-			}
+			myInfra.icon = infraConfig.logos[myInfra.type];
+			// if (myInfra.name === 'local') {
+			// 	myInfra.icon = infraConfig.logos[myInfra.technologies[0]];
+			// }
+			// else {
+			// 	myInfra.icon = infraConfig.logos[myInfra.name];
+			// }
 			
 			return cb();
 		}
 	}
-
-	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra){
-		let awsExcluded = [ 'infra-groups' ];
-		let azureExcluded = [ 'infra-deployments', 'infra-keyPairs', 'infra-certificates' ];
-		let googleExcluded = [ 'infra-groups', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
-		let localExcluded = [ 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates' ];
-
+	
+	function hideSidebarMenusForUnwantedProviders(currentScope, myInfra) {
+		let awsExcluded = ['infra-groups'];
+		let azureExcluded = ['infra-deployments', 'infra-keyPairs', 'infra-certificates'];
+		let googleExcluded = ['infra-groups', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
+		let localExcluded = ['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
+		
 		//fix the menu; local driver has not templates
-		if(currentScope.getFromParentScope('appNavigation')){
+		if (currentScope.getFromParentScope('appNavigation')) {
 			$timeout(() => {
 				overlayLoading.show();
 				currentScope.getFromParentScope('appNavigation').forEach((oneNavigationEntry) => {
 					oneNavigationEntry.hideMe = false;
 					
-					if(myInfra.name === 'local'){
-						if(localExcluded.indexOf(oneNavigationEntry.id) !== -1){
-							oneNavigationEntry.hideMe = true;
-							
-							if(oneNavigationEntry.url === $window.location.hash){
-								currentScope.go(oneNavigationEntry.fallbackLocation);
-							}
+					if (localExcluded.indexOf(oneNavigationEntry.id) !== -1) {
+						oneNavigationEntry.hideMe = true;
+						if (oneNavigationEntry.url === $window.location.hash) {
+							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
-					else if(['azure'].indexOf(myInfra.name) !== -1){
-						if(azureExcluded.indexOf(oneNavigationEntry.id) !== -1){
-							oneNavigationEntry.hideMe = true;
-							
-							if(oneNavigationEntry.url === $window.location.hash){
-								currentScope.go(oneNavigationEntry.fallbackLocation);
-							}
-						}
-					}
-					else if(['google'].indexOf(myInfra.name) !== -1){
-						if(googleExcluded.indexOf(oneNavigationEntry.id) !== -1){
-							oneNavigationEntry.hideMe = true;
-							
-							if(oneNavigationEntry.url === $window.location.hash){
-								currentScope.go(oneNavigationEntry.fallbackLocation);
-							}
-						}
-					}
-					//disable resource groups section for AWS only
-					else if(['aws'].indexOf(myInfra.name) !== -1){
-						if(awsExcluded.indexOf(oneNavigationEntry.id) !== -1){
-							oneNavigationEntry.hideMe = true;
-							
-							if(oneNavigationEntry.url === $window.location.hash){
-								currentScope.go(oneNavigationEntry.fallbackLocation);
-							}
-						}
-					}
+					
+					// if(myInfra.name === 'local'){
+					// 	if(localExcluded.indexOf(oneNavigationEntry.id) !== -1){
+					// 		oneNavigationEntry.hideMe = true;
+					//
+					// 		if(oneNavigationEntry.url === $window.location.hash){
+					// 			currentScope.go(oneNavigationEntry.fallbackLocation);
+					// 		}
+					// 	}
+					// }
+					// else if(['azure'].indexOf(myInfra.name) !== -1){
+					// 	if(azureExcluded.indexOf(oneNavigationEntry.id) !== -1){
+					// 		oneNavigationEntry.hideMe = true;
+					//
+					// 		if(oneNavigationEntry.url === $window.location.hash){
+					// 			currentScope.go(oneNavigationEntry.fallbackLocation);
+					// 		}
+					// 	}
+					// }
+					// else if(['google'].indexOf(myInfra.name) !== -1){
+					// 	if(googleExcluded.indexOf(oneNavigationEntry.id) !== -1){
+					// 		oneNavigationEntry.hideMe = true;
+					//
+					// 		if(oneNavigationEntry.url === $window.location.hash){
+					// 			currentScope.go(oneNavigationEntry.fallbackLocation);
+					// 		}
+					// 	}
+					// }
+					// //disable resource groups section for AWS only
+					// else if(['aws'].indexOf(myInfra.name) !== -1){
+					// 	if(awsExcluded.indexOf(oneNavigationEntry.id) !== -1){
+					// 		oneNavigationEntry.hideMe = true;
+					//
+					// 		if(oneNavigationEntry.url === $window.location.hash){
+					// 			currentScope.go(oneNavigationEntry.fallbackLocation);
+					// 		}
+					// 	}
+					// }
 				});
-			
-			
+				
+				
 				let rebuildMenus = currentScope.getFromParentScope('rebuildMenus');
 				rebuildMenus(() => {
 					overlayLoading.hide();
@@ -172,15 +183,15 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}, 100);
 		}
 	}
-
+	
 	function activateProvider(currentScope, cloudProvider) {
 		
 		let providersList;
-		if(cloudProvider){
-			providersList= angular.copy(infraConfig.form.providers);
+		if (cloudProvider) {
+			providersList = angular.copy(infraConfig.form.providers);
 		}
-		else{
-			providersList= angular.copy(infraConfig.form.technologies);
+		else {
+			providersList = angular.copy(infraConfig.form.technologies);
 		}
 		providersList.forEach((oneProvider) => {
 			oneProvider.onAction = function (id, value, form) {
@@ -190,7 +201,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}, 10);
 			}
 		});
-
+		
 		let options = {
 			timeout: $timeout,
 			form: {
@@ -210,9 +221,9 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				}
 			]
 		};
-
+		
 		buildFormWithModal(currentScope, $modal, options);
-
+		
 		function step2(selectedProvider) {
 			let options = {
 				timeout: $timeout,
@@ -229,14 +240,16 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 						'action': function (formData) {
 							let data = angular.copy(formData);
 							delete data.label;
+							delete data.description;
+							data.type = "secret";
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, {
 								"method": "post",
-								"routeName": "/dashboard/infra",
+								"routeName": "/infra/account/kubernetes",
 								"data": {
-									"name": selectedProvider,
 									"label": formData.label,
-									"api": data
+									"description": formData.description,
+									"configuration": data
 								}
 							}, function (error) {
 								overlayLoading.hide();
@@ -247,7 +260,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 									currentScope.form.displayAlert('success', "Provider Connected & Activated");
 									currentScope.modalInstance.close();
 									currentScope.go("#/infra");
-
+									
 									//get all infras
 									getInfra(currentScope, {}, (error, infras) => {
 										if (error) {
@@ -255,11 +268,11 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 										} else {
 											//reset flag to hide "no infras" warning
 											currentScope.noInfraProvidersConfigured = false;
-
+											
 											//copy infras to scope and parent scope
 											currentScope.infraProviders = infras;
 											currentScope.updateParentScope('infraProviders', angular.copy(currentScope.infraProviders));
-
+											
 											//switch to the latest added infra
 											switchInfra(currentScope, infras[infras.length - 1]);
 										}
@@ -279,30 +292,30 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 					}
 				]
 			};
-
+			
 			buildFormWithModal(currentScope, $modal, options);
 		}
 	}
-
-	function getVMLayers(currentScope, cb){
+	
+	function getVMLayers(currentScope, cb) {
 		let oneProvider = currentScope.getFromParentScope('currentSelectedInfra');
 		
 		let requestOptions = {
 			"method": "get",
 			"routeName": "/dashboard/cloud/vm/list",
-			"params":{
+			"params": {
 				"infraId": oneProvider._id,
 			}
 		};
 		
-		switch(currentScope.currentInfraName){
+		switch (currentScope.currentInfraName) {
 			case 'aws':
-				if(currentScope.selectedRegion){
+				if (currentScope.selectedRegion) {
 					requestOptions.params.region = currentScope.selectedRegion;
 				}
 				break;
 			case 'azure':
-				if(currentScope.selectedGroup){
+				if (currentScope.selectedGroup) {
 					requestOptions.params.group = currentScope.selectedGroup.name;
 					requestOptions.params.region = currentScope.selectedGroup.region;
 				}
@@ -318,11 +331,11 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}
 			else {
 				let allVMs = [];
-
+				
 				delete providerVMs.soajsauth;
-
+				
 				//aggregate response and generate layers from list returned
-				if(providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0){
+				if (providerVMs[oneProvider.name] && Array.isArray(providerVMs[oneProvider.name]) && providerVMs[oneProvider.name].length > 0) {
 					providerVMs[oneProvider.name].forEach((oneVM) => {
 						delete oneVM.template;
 						allVMs.push(oneVM);
@@ -332,7 +345,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 			}
 		});
 	}
-
+	
 	return {
 		"getInfraDriverName": getInfraDriverName,
 		"activateProvider": activateProvider,

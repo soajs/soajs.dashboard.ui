@@ -1998,8 +1998,8 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			"routeName": '/marketplace/item/environments',
 			"data": {
 				id: $scope.service._id.toString(),
-				type: $scope.groups.groupType ? 'blacklist' : "whitelist",
-				groups:  $scope.groups.selectedGroups
+				type: $scope.envs.envType ? 'blacklist' : "whitelist",
+				environments:  $scope.envs.selectedEnvs
 			}
 		};
 		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){

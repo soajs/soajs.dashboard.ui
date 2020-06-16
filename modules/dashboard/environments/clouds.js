@@ -1037,7 +1037,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		let opts = {
 			"method": 'get',
-			"routeName": '/infra/kubernetes/rbacs/ClusterRoleBinding',
+			"routeName": '/infra/kubernetes/rbacs/RoleBinding',
 			"params": {
 				"configuration": {
 					"env": $scope.selectedEnvironment.code,
@@ -1076,7 +1076,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 	$scope.deleteRoleBinding = function (roleBinding) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/rbac/ClusterRoleBinding',
+			routeName: '/infra/kubernetes/rbac/RoleBinding',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,

@@ -11,10 +11,10 @@
 
 let infraConfig = {
 	permissions: {
-		list: ['dashboard', '/infra', 'get'],
-		activate: ['dashboard', '/infra', 'post'],
-		edit: ['dashboard', '/infra', 'put'],
-		deactivate: ['dashboard', '/infra', 'delete']
+		list: ['infra', '/account/kubernetes', 'get'],
+		activate: ['infra', '/account/kubernetes', 'post'],
+		edit: ['infra', '/account/kubernetes/configuration', 'put'],
+		deactivate: ['infra', '/account/kubernetes', 'delete']
 	},
 	
 	logos: {
@@ -44,11 +44,13 @@ let infraConfig = {
 			}
 		],
 		technologies: [
+			/*
 			{
 				'name': 'docker',
 				'type': 'html',
 				'value': "<img height='32' src=\"modules/dashboard/infra/main/images/docker.png\">&nbsp; Docker Swarm Cluster"
 			},
+			*/
 			{
 				'name': 'kubernetes',
 				'type': 'html',
@@ -95,7 +97,7 @@ let infraConfig = {
 				'required': true
 			},
 			{
-				'name': 'ipaddress',
+				'name': 'url',
 				'label': 'Kubernetes IP Address',
 				'type': 'text',
 				'value': "",
@@ -104,11 +106,19 @@ let infraConfig = {
 				'required': true
 			},
 			{
-				'name': 'port',
-				'label': 'Kubernetes Port',
+				'name': 'description',
+				'label': 'Description',
 				'type': 'text',
 				'value': "",
-				'placeholder': '6443',
+				'fieldMsg': 'Provide a description about this driver.',
+				'required': false
+			},
+			{
+				'name': 'port',
+				'label': 'Kubernetes Port',
+				'type': 'number',
+				'value': "",
+				'placeholder': 443,
 				'fieldMsg': 'Provide the port kubernetes is using on this machine.',
 				'required': true
 			},

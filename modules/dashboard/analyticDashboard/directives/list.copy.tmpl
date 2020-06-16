@@ -1,0 +1,320 @@
+
+<section ng-controller="dashboardAppCtrl" class="dashboardAppCtrl">
+	<tabset>
+		<tab heading="API Metircs">
+			<br>
+			<div clas="row">
+				<div class="col-md-2 leftTab">
+					<fieldset class="leftTabFieldSet">
+						<div style="margin-bottom: 5px">
+							<label class="blueColor includeSoajs labelLength f-left">Include SOAJS services:</label>
+							<input type="checkbox" class="inputLength f-right" ng-model="services.includeSOAJS" ng-click="toggleServicesSOAJS()">
+						</div>
+						<div>
+							<label class="blueColor">Service Name:</label>
+							<input type="text" class="input90" ng-model="services.form.serviceName"/>
+							<br>
+							<label class="blueColor">Service Group:</label>
+							<input type="text" class="input90" ng-model="services.form.serviceGroup"/>
+						</div>
+						<hr>
+						<div>
+							<label class="blueColor">Programs:</label>
+							<div class="scrollableDiv">
+								<div ng-repeat="dv in services.programs">
+									<div class="labelLength f-left">
+										<span>{{dv.l}} </span>
+									</div>
+									<div class="inputLength f-right">
+										<input type="checkbox" class="removeMarginCheckBox" ng-model="dv.selected" ng-click="toggleServicesSelection('programs', dv.v)">
+									</div>
+									<br>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div>
+							<label class="blueColor">Tags:</label>
+							<div class="scrollableDiv">
+								<div ng-repeat="dv in services.tags">
+									<div class="labelLength f-left">
+										<span>{{dv.l}} </span>
+									</div>
+									<div class="inputLength f-right">
+										<input type="checkbox" class="removeMarginCheckBox" ng-model="dv.selected" ng-click="toggleServicesSelection('tags', dv.v)">
+									</div>
+									<br>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<fieldset>
+							<legend>Attributes</legend>
+							<div ng-repeat="(key, value) in services.attributes">
+								<div class="attributeDivLabel">
+									<label class="blueColor f-left">{{key}}:</label>
+									<a href ng-click="showHide(key)" class="icon icon-circle-{{ services.showHide[key]? 'down' : 'up'}} f-right" style="padding-right: 5%; margin-bottom: 5px"> </a>
+								</div>
+								<div id="attrib__{{key}}" class="attribDivHide">
+									<div ng-repeat="dv in value">
+										<div class="labelLength f-left">
+											<span>{{dv.l}} </span>
+										</div>
+										<div class="inputLength f-right">
+											<input type="checkbox" class="removeMarginCheckBox" ng-model="dv.selected" ng-click="toggleServicesSelection(key, dv.v)">
+										</div>
+										<br>
+									</div>
+								</div>
+								<hr>
+							</div>
+						</fieldset>
+						<button class="btn btn-primary updateButton" ng-click="submitServices()">
+							<span class="icon icon-undo"></span>apply
+						</button>
+						<button class="btn btn-info updateButton" ng-click="resetServices()">
+							<span class="icon icon-loop2"></span>reset
+						</button>
+					</fieldset>
+				</div>
+				<div class="col-md-10">
+					<div class="row">
+						<div class="col-md-6">
+							<Label class="pieTitle">
+								Programs Chart
+							</Label>
+						</div>
+						<div class="col-md-6">
+							<Label class="pieTitle">
+								API Methods Chart
+							</Label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<canvas class="chart chart-doughnut" chart-data="services.data.pie.programs.data" chart-options="services.data.pie.programs.options" chart-colors="colors" chart-labels="services.data.pie.programs.labels"></canvas>
+						</div>
+						<div class="col-md-6">
+							<canvas class="chart chart-pie" chart-data="services.data.pie.methods.data" chart-colors="colors" chart-options="services.data.pie.methods.options" chart-labels="services.data.pie.methods.labels"></canvas>
+						
+						</div>
+					</div>
+					<br>
+					<div class="row">
+						<hr class="col-md-12">
+					</div>
+					<div class="row">
+						<div class="col-md-16">
+							<Label class="barTitle">
+								Service Groups Chart
+							</Label>
+						</div>
+					</div>
+					<div class="row">
+						<canvas class="chart chart-bar col-md-16" chart-data="services.data.bar.serviceGroups.data" chart-colors="colors" chart-options="services.data.bar.methods.options" chart-labels="services.data.bar.serviceGroups.labels"></canvas>
+					</div>
+					<div class="row">
+						<hr class="col-md-12">
+					</div>
+					<div class="row">
+						<table style="width: 100%">
+							<tr>
+								<th class="listing">
+									<legend>Service Name</legend>
+								</th>
+								<th class="listing">
+									<legend>Service Group</legend>
+								</th>
+								<th class="listing">
+									<legend>Program</legend>
+								</th>
+								<th class="listing">
+									<legend># of APIS</legend>
+								</th>
+								<th class="listing">
+									<legend># of Versions</legend>
+								</th>
+							</tr>
+							<tr ng-repeat="service in services.services">
+								<td class="listing">
+									<a href ng-click="redirectToService(service.serviceName)">
+										{{service.serviceName}}
+									</a>
+								
+								</td>
+								<td class="listing">
+									{{service.serviceGroups}}
+								</td>
+								<td class="listing">
+									{{service.program}}
+								</td>
+								<td class="listing">
+									{{service.APIs}}
+								</td>
+								<td class="listing">
+									{{service.versions}}
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</tab>
+		
+		<tab heading="API Catalog" active="activateApiCatalogTab">
+			<br>
+			<div clas="row">
+				<div class="col-md-2">
+					<fieldset class="leftTabFieldSet tabHeight">
+						<div style="margin-bottom: 5px">
+							<label class="blueColor includeSoajs labelLength f-left">Include SOAJS services:</label>
+							<input type="checkbox" class="removeMarginCheckBox" class="inputLength f-right" ng-model="apiRoutes.includeSOAJS" ng-click="toggleApiRoutesSOAJS()">
+						</div>
+						<br>
+						<br>
+						<div>
+							<label class="blueColor">Service Name:</label>
+							<input type="text" class="input90" ng-model="apiRoutes.form.serviceName"/>
+						</div>
+						<hr>
+						<div>
+							<label class="blueColor">Service Group:</label>
+							<input type="text" class="input90" ng-model="apiRoutes.form.serviceGroup"/>
+						</div>
+					</fieldset>
+				</div>
+				<div class="col-md-2">
+					<fieldset class="leftTabFieldSet tabHeight">
+						<h4>Programs: {{apiRoutes.programs.length}}</h4>
+						<div>
+							<input type="text" class="input90 searchBar" ng-model="programSearch" placeholder="Search ..."/>
+						</div>
+						<br>
+						<div class="scrollableProgramTags">
+							<div ng-repeat="dv in apiRoutes.programs | searchFilter:programSearch">
+								<div class="labelLength f-left">
+									<span>{{dv.l}} </span>
+								</div>
+								<div class="inputLength f-right">
+									<input type="checkbox" class="removeMarginCheckBox" ng-model="dv.selected" ng-click="toggleApiRoutesSelection('programs', dv.v)">
+								</div>
+								<br>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<div class="col-md-2">
+					<fieldset class="leftTabFieldSet tabHeight">
+						<h4>Tags: {{apiRoutes.tags.length}}</h4>
+						<div>
+							<input type="text" class="input90 searchBar" ng-model="tagsSearch" placeholder="Search ...">
+						</div>
+						<br>
+						<div class="scrollableProgramTags">
+							<div ng-repeat="dv in apiRoutes.tags| searchFilter:tagsSearch">
+								<div class="labelLength f-left">
+									<span>{{dv.l}} </span>
+								</div>
+								<div class="inputLength f-right">
+									<input type="checkbox" class="removeMarginCheckBox" ng-model="dv.selected" ng-click="toggleApiRoutesSelection('tags', dv.v)">
+								</div>
+								<br>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				
+				<div class="col-md-6">
+					<fieldset class="leftTabFieldSet scrollableAttrib">
+						<h4>Attributes: </h4>
+						<br>
+						<div class="row" ng-repeat="rows in apiRoutes.attributes">
+							<div class="col-md-4" ng-repeat="colomns in rows">
+								<div ng-repeat="(key, value) in colomns">
+									<label class="blueColor">{{key}}: <span>{{value.length}}</span></label>
+									<div>
+										<input type="text" ng-model="attributeSearch" class="searchBar" placeholder="Search ..."/>
+									</div>
+									<br>
+									<div class="scrollableDivAttrib">
+										<div ng-repeat="dv in value | searchFilter:attributeSearch">
+											<div class="labelLength f-left">
+												<span>{{dv.l}} </span>
+											</div>
+											<div class="inputLength f-right">
+												<input type="checkbox" class="removeMarginCheckBox" ng-model="dv.selected" ng-click="toggleApiRoutesSelection(key, dv.v)">
+											</div>
+											<br>
+										</div>
+										<br>
+									</div>
+									<hr>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div clas="row">
+				<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
+					<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="submitApiRoutes()">
+						<span class="icon icon-undo"></span>apply
+					</a>
+				</div>
+				<div class="f-right" style="margin-bottom: 10px; margin-right: 15px">
+					<a href="" class="btn btn-info" tooltip="Apply Filter" ng-click="resetApiRoutes()">
+						<span class="icon icon-loop2"></span>reset
+					</a>
+				</div>
+			</div>
+			<div clas="row">
+				<div class="col-md-12">
+					<fieldset>
+						<div class="f-left" style="width: 100%">
+							<div class="f-left">
+								<h4>List of APIs: {{apiRoutes.routes.length}}</h4>
+							</div>
+							<div class="f-right">
+								<input type="text" class="input90 searchBar" ng-model="apiSearch" ng-change='filterItems(apiSearch)' placeholder="Search ..."/>
+							</div>
+						</div>
+						<div class="f-left" style="width: 100%">
+							<ul class="removeTab">
+								<li class="deleteSquare f-left">Delete: remove information from applications</li>
+								<li class="addSquare f-left">Add: add information to applications</li>
+								<li class="updateSquare f-left">Update: update information from applications</li>
+								<li class="getSquare f-left">Read: get information from applications</li>
+							</ul>
+							<ul class="removeTab">
+								<li class="patchSquare f-left">Patch: partial update to applications</li>
+								<li class="headSquare f-left">Head: fetch the header information only</li>
+								<li class="otherSquare f-left">Other: custom requests to applications</li>
+							</ul>
+						</div>
+						<div class="f-left apiRoutesHr">
+							<hr>
+						</div>
+						<div ng-repeat="api in displayItems |limitTo: itemsPerPage:apiRoutes.paginations.currentPage-1  as filteredItems">
+							<div ng-class="{updateRoute: api.method ==='put', addRoute:api.method ==='post', readRoute:  api.method ==='get', deleteRoute:  api.method ==='delete', patchRoute: api.method==='patch', headRoute: api.method==='head', otherRoute: api.method !=='head' && api.method !=='patch' && api.method !=='head' && api.method !=='get' && api.method !=='post' && api.method !=='put' && api.method !=='delete'}">
+								<span class="f-left apiRoute">{{api.route}}</span>
+								<span class="f-left apiLabel">{{api.label}}</span>
+								<span class="f-left apiServiceName">{{api.serviceName}}</span>
+								<a href ng-click="redirectToService(api.serviceName, true)" class="f-right"><img style="height: 18px; width:18px; margin-left: 5px;" src="modules/dashboard/analyticDashboard/directives/images/service-detail.png"></a>
+							</div>
+							<br>
+						</div>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+							<tr>
+								<td align="right">
+									<pagination total-items="apiRoutes.paginations.totalItems" ng-model="apiRoutes.paginations.currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+								</td>
+							</tr>
+						</table>
+					</fieldset>
+				</div>
+			</div>
+		</tab>
+	</tabset>
+
+
+</section>

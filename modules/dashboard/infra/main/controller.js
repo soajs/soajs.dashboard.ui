@@ -68,7 +68,9 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 		// }
 		let editEntriesList = angular.copy(infraConfig.form[providerName]);
 		editEntriesList.shift();
-		oneProvider.configuration.description = oneProvider.description;
+		if (oneProvider.configuration) {
+			oneProvider.configuration.description = oneProvider.description;
+		}
 		let options = {
 			timeout: $timeout,
 			form: {

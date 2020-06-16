@@ -729,12 +729,12 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 				
 				var evtSource = null;
 				
-				function terminateTailing() {
+				let terminateTailing = () => {
 					if (evtSource) {
 						evtSource.close();
 						evtSource = null;
 					}
-				}
+				};
 				
 				let currentScope = $scope;
 				var mInstance = $modal.open({

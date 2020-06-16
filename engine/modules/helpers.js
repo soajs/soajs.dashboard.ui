@@ -4,7 +4,7 @@
  * build the access permissions of a module from permissionsObj
  */
 function constructModulePermissions(scope, access, permissionsObj, forceEnv) {
-	var exclude = ['urac', 'dashboard', 'infra', "repositories", "marketplace", "multitenant"];
+	var exclude = ['urac', 'oauth', 'dashboard', 'infra', "repositories", "marketplace", "multitenant", "console"];
 	for (var permission in permissionsObj) {
 		if (Array.isArray(permissionsObj[permission])) {
 			var env;
@@ -47,7 +47,7 @@ function getSendDataFromServer($scope, ngDataApi, options, callback) {
 	};
 	
 	var pathParams = options.routeName.split("/");
-	var exclude = ['urac', 'dashboard', 'oauth', 'repositories', 'key', 'multitenant', 'marketplace', 'proxy', "infra"];
+	var exclude = ['urac', 'dashboard', 'oauth', 'repositories', 'key', 'multitenant', 'marketplace', 'proxy', "infra", "console"];
 	if (exclude.indexOf(pathParams[1]) !== -1) {
 		if (options.proxy && $scope.checkAuthEnvCookie()) {
 			apiOptions.url = (options.url) ? options.url + "/soajs/proxy" : apiConfiguration.domain + "/soajs/proxy";

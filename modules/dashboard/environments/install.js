@@ -1490,7 +1490,7 @@ var environmentsNav = [
 			'label': translation.deploy[LANG],
 			'position': 3
 		},
-		'order': 1,
+		'order': 2,
 		'mainMenu': true,
 		'tracker': true,
 		'scripts': ['modules/dashboard/environments/config.js',
@@ -1589,7 +1589,7 @@ var environmentsNav = [
 			'method': 'get'
 		},
 		"fallbackLocation": "#/environments",
-		'label': "Environment Configuration",
+		'label': "Configuration",
 		'url': '#/environments-platforms',
 		'tplPath': 'modules/dashboard/environments/infra/directives/list-platforms.tmpl',
 		'icon': 'drawer',
@@ -1598,7 +1598,7 @@ var environmentsNav = [
 			'label': translation.deploy[LANG],
 			'position': 3
 		},
-		'order': 4,
+		'order': 1,
 		'mainMenu': true,
 		'tracker': true,
 		'scripts': [

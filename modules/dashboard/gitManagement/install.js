@@ -243,11 +243,11 @@ var gitAccountsNav = [
         'pillar': {
             'name': 'development',
             'label': translation.develop[LANG],
-            'position': 3
+            'position': 2
         },
         'mainMenu': true,
         'tracker': true,
-        'order': 3,
+        'order': 1,
         'scripts': ['modules/dashboard/gitManagement/config.js', 'modules/dashboard/gitManagement/controller.js'],
         'ancestor': [translation.home[LANG]]
     }

@@ -45,10 +45,10 @@ var apiConfiguration = {
 };
 
 var consoleAclConfig = {
-	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories', 'marketplace', 'infra'],
-	"OTHER": ["urac", "infra"]
+	"DASHBOARD": ["dashboard", "oauth", "urac", 'multitenant', 'repositories', 'marketplace', 'infra', "console"],
+	"OTHER": ["urac", "oauth"]
 };
-var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant', 'soajs.repositories', 'soajs.infra'];
+var SOAJSRMS = ['soajs.controller','soajs.urac','soajs.oauth','soajs.dashboard','soajs.prx','soajs.gcs', 'soajs.multitenant', 'soajs.repositories', 'soajs.infra', 'soajs.console'];
 var KUBERNETES_SYSTEM_DEPLOYMENTS = [ 'kube-dns', 'kube-proxy', 'kube-apiserver', 'kube-scheduler', 'kube-controller-manager', 'kube-flannel-ds' ];
 var soajsAppModules = ['ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.select', 'luegg.directives', 'angular-sortable-view', 'ngRoute', 'ngCookies', 'ngStorage', 'textAngular', "ngFileUpload", "swaggerUi", "ui.ace", "ngCkeditor", "chart.js"];
 
@@ -63,7 +63,7 @@ var modules = {
 			gitRepositories: 'modules/dashboard/repositories/install.js',
 			swaggerEditorApp: 'modules/dashboard/swaggerEditor/install.js',
 			catalogs: 'modules/dashboard/catalogs/install.js',
-			ci: 'modules/dashboard/ci/install.js',
+			//ci: 'modules/dashboard/ci/install.js',
 			cd: 'modules/dashboard/cd/install.js',
 			templates: 'modules/dashboard/templates/install.js',
 			//importExport: 'modules/dashboard/importExport/install.js',

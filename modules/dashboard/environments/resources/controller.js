@@ -149,7 +149,8 @@ resourcesApp.controller('resourcesAppCtrl', ['$scope', '$http', '$timeout', '$mo
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/environment/platforms/list",
+			//"routeName": "/dashboard/environment/platforms/list",
+			"routeName": "/console/registry/deployer",
 			"params": {
 				"env": $scope.context.envCode
 			}

@@ -55,10 +55,10 @@
 			<img ng-if="containers.platform === 'docker'" ng-src="{{containers.dockerImagePath}}" height="80px" alt="Docker Logo"/>
 			<img ng-if="containers.platform === 'kubernetes'" ng-src="{{containers.kubernetesImagePath}}" height="80px" alt="Kubernetes Logo"/>
 		</legend>
-		<div class="t-right">
-			<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="containers.detachContainer()" ng-if="!containers.form.formData.selectedProvider">
-			<input type="button" class="btn btn-sm btn-danger" value="Delete Container Cluster" ng-click="containers.detachContainer()" ng-if="containers.form.formData.selectedProvider">
-		</div>
+		<!--<div class="t-right">-->
+			<!--<input type="button" class="btn btn-sm btn-danger" value="Detach Container Technology" ng-click="containers.detachContainer()" ng-if="!containers.form.formData.selectedProvider">-->
+			<!--<input type="button" class="btn btn-sm btn-danger" value="Delete Container Cluster" ng-click="containers.detachContainer()" ng-if="containers.form.formData.selectedProvider">-->
+		<!--</div>-->
 		<div class="entryBoxes entryBoxesGrid">
 			<div class="entryBox driverEntryBox">
 				<div class="header">

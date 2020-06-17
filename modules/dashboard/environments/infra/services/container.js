@@ -435,13 +435,13 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				"error": record.error
 			};
 			
-			for(let container in data.deployer.container){
-				for(let driver in data.deployer.container[container]){
-					if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
-						delete data.deployer.container[container][driver].auth.token;
-					}
-				}
-			}
+			// for(let container in data.deployer.container){
+			// 	for(let driver in data.deployer.container[container]){
+			// 		if(data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token){
+			// 			delete data.deployer.container[container][driver].auth.token;
+			// 		}
+			// 	}
+			// }
 			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
 
 			overlayLoading.show();

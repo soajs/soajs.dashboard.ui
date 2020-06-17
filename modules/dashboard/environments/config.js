@@ -805,7 +805,7 @@ var environmentsConfig = {
 			data: {
 				types: [
 					{'v': 'cluster', 'l': "Cluster"},
-					{'v': 'server', 'l': "Server"},
+					//{'v': 'server', 'l': "Server"},
 					{'v': 'cdn', 'l': "CDN"},
 					{'v': 'system', 'l': "System"},
 					{'v': 'authorization', 'l': "Authorization"},

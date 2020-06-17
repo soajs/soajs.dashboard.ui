@@ -1584,8 +1584,8 @@ var environmentsNav = [
 	{
 		'id': 'environments-platforms',
 		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environment/platforms/list',
+			'service': 'console',
+			'route': '/registry/deployer',
 			'method': 'get'
 		},
 		"fallbackLocation": "#/environments",

@@ -19,7 +19,8 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/environment/platforms/list",
+			//"routeName": "/dashboard/environment/platforms/list",
+			"routeName": "/console/registry/deployer",
 			"params": {
 				"env": $scope.envCode
 			}

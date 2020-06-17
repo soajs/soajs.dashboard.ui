@@ -4,7 +4,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 	$scope.$parent.isUserLoggedIn();
 	$scope.newEntry = true;
 	$scope.envId = null;
-	$scope.formEnvironment = { services: {} };
+	$scope.formEnvironment = {services: {}};
 	$scope.formEnvironment.config_loggerObj = '';
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
@@ -23,14 +23,14 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			"pending": record.pending,
 			"error": record.error
 		};
-		for (let container in data.deployer.container) {
-			for (let driver in data.deployer.container[container]) {
-				if (data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token) {
-					delete data.deployer.container[container][driver].auth.token;
-				}
-			}
-		}
-		$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
+		// for (let container in data.deployer.container) {
+		// 	for (let driver in data.deployer.container[container]) {
+		// 		if (data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token) {
+		// 			delete data.deployer.container[container][driver].auth.token;
+		// 		}
+		// 	}
+		// }
+		$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		$scope.$parent.switchEnvironment(data);
 		$timeout(() => {
 			$scope.$parent.rebuildMenus(function () {
@@ -98,7 +98,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					if (!$localStorage.addEnv) {
 						$localStorage.addEnv = {};
 					}
-					$localStorage.addEnv.gi = { code: oneEnv.code };
+					$localStorage.addEnv.gi = {code: oneEnv.code};
 					$scope.$parent.go("#/environments-add");
 				}
 			}
@@ -137,11 +137,12 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					if ($scope.formEnvironment.deployer.type === 'manual') {
 						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer.manual.nodes;
 					}
-					else {
-						let deployerInfo = $scope.formEnvironment.deployer.selected.split(".");
-						if (deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') {
-							$scope.formEnvironment.machineip = $scope.formEnvironment.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
-						}
+					else if ($scope.formEnvironment.deployer.type === 'container') {
+						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer.container.kubernetes.url;
+						//let deployerInfo = $scope.formEnvironment.deployer.selected.split(".");
+						//if (deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') {
+						//$scope.formEnvironment.machineip = $scope.formEnvironment.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+						//}
 					}
 					
 					$scope.waitMessage.message = '';
@@ -168,8 +169,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						$scope.$parent.rebuildMenus(function () {
 						});
 					}
-
-					var myEnvCookie = $cookies.getObject('myEnv', { 'domain': interfaceDomain });
+					
+					var myEnvCookie = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 					var found = false;
 					var newList = [];
 					if (myEnvCookie) {
@@ -178,11 +179,13 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								if (response[i].deployer.type === 'manual') {
 									response[i].machineip = response[i].deployer.manual.nodes;
 								}
-								else {
-									let deployerInfo = response[i].deployer.selected.split(".");
-									if ((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')) {
-										response[i].machineip = response[i].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
-									}
+								else if (response[i].deployer.type === 'container') {
+									response[i].machineip = response[i].deployer.container.kubernetes.url;
+									//let deployerInfo = response[i].deployer.selected.split(".");
+									//if ((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')) {
+									//	response[i].machineip = response[i].deployer.kubernetes.url
+									//response[i].machineip = response[i].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+									//}
 								}
 								
 								newList.push(response[i]);
@@ -196,18 +199,19 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						if (response[0].deployer.type === 'manual') {
 							response[0].machineip = response[0].deployer.manual.nodes;
 						}
-						else {
-							let deployerInfo = response[0].deployer.selected.split(".");
-							if ((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')) {
-								response[0].machineip = response[0].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
-							}
+						else if (response[0].deployer.type === 'container') {
+							response[0].machineip = response[i].deployer.container.kubernetes.url;
+							//let deployerInfo = response[0].deployer.selected.split(".");
+							//if ((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')) {
+							//response[0].machineip = response[0].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
+							//}
 						}
 						
 						newList.push(response[0]);
 						putMyEnv(response[0]);
 					}
 					
-					$scope.grid = { rows: newList };
+					$scope.grid = {rows: newList};
 					if ($scope.grid.rows && $scope.grid.rows.length) {
 						$scope.jsonEditor.custom.data = JSON.stringify($scope.grid.rows[0].custom, null, 2);
 					}
@@ -327,7 +331,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": (($scope.newEntry) ? "post" : "put"),
 			"routeName": "/dashboard/environment/" + (($scope.newEntry) ? "add" : "update"),
-			"params": ($scope.newEntry) ? {} : { "id": $scope.envId },
+			"params": ($scope.newEntry) ? {} : {"id": $scope.envId},
 			"data": postData
 		}, function (error, response) {
 			if (error) {
@@ -350,7 +354,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "put",
 				"routeName": "/dashboard/environment/key/update",
-				"params": { "id": $scope.envId },
+				"params": {"id": $scope.envId},
 				"data": {
 					'algorithm': $scope.formEnvironment.services.config.key.algorithm,
 					'password': $scope.formEnvironment.services.config.key.password
@@ -368,7 +372,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						$scope.isDashEnv = true;
 					}
 					var currentScope = $scope;
-
+					
 					if (response.newKeys) {
 						for (var app in response.newKeys) {
 							response.newKeys[app].newKeys.forEach(function (oneKey) {
@@ -487,7 +491,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "delete",
 				"routeName": "/dashboard/product/delete",
-				"params": { "code": "PORTAL" }
+				"params": {"code": "PORTAL"}
 			}, function (error) {
 				if (error) {
 					cb(error);
@@ -497,7 +501,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					getSendDataFromServer(currentScope, ngDataApi, {
 						"method": "delete",
 						"routeName": "/dashboard/tenant/delete",
-						"params": { "code": "PRTL" }
+						"params": {"code": "PRTL"}
 					}, cb);
 				}
 			});
@@ -507,7 +511,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			let opts = {
 				"method": "delete",
 				"routeName": "/dashboard/environment/delete",
-				"params": { "id": row['_id'] }
+				"params": {"id": row['_id']}
 			};
 			
 			if (flag) {
@@ -516,7 +520,7 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			getSendDataFromServer(currentScope, ngDataApi, opts, cb);
 		}
 	};
-
+	
 	$scope.startLimit = 0;
 	$scope.totalCount = 0;
 	$scope.endLimit = environmentsConfig.customRegistryIncrement;
@@ -592,8 +596,8 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 		}
 	}
 	if ($scope.access.customRegistry.list) {
-		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
-			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
+		if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
+			$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		}
 		$scope.listCustomRegistry();
 	}

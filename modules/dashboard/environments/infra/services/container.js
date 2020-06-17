@@ -1,5 +1,4 @@
 "use strict";
-const _get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
 
 var platformContainerServices = soajsApp.components;
 platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', '$localStorage', function (ngDataApi, $timeout, $modal, $cookies, $window, $localStorage) {

@@ -1,7 +1,5 @@
 "use strict";
 
-const _get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
-
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', '$window', 'customRegistrySrv', 'throttlingSrv', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage, $window, customRegistrySrv, throttlingSrv) {
 	$scope.$parent.isUserLoggedIn();

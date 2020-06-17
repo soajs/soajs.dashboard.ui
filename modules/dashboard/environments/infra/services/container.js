@@ -1,5 +1,5 @@
 "use strict";
-const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
+const _get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
 
 var platformContainerServices = soajsApp.components;
 platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', '$localStorage', function (ngDataApi, $timeout, $modal, $cookies, $window, $localStorage) {
@@ -503,9 +503,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				$scope.listNamespaces = function () {
 					getSendDataFromServer(currentScope, ngDataApi, {
 						method: 'get',
-						routeName: '/dashboard/cloud/namespaces/list',
+						//routeName: '/dashboard/cloud/namespaces/list',
+						routeName: '/infra/kubernetes/clusters/Namespace',
 						params: {
-							env: currentScope.envCode.toLowerCase()
+							configuration: {env: currentScope.envCode.toLowerCase()}
 						}
 					}, function (error, namespaces) {
 						if (error) {
@@ -517,9 +518,16 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							}, 5000);
 						}
 						else {
-							namespaces.forEach(function (oneNamespace) {
-								$scope.namespaces.ui.list.push({value: oneNamespace.id, label: oneNamespace.name});
-							});
+							if (namespaces && namespaces.items) {
+								namespaces.items.forEach(function (oneNamespace) {
+									if (oneNamespace && oneNamespace.metadata) {
+										$scope.namespaces.ui.list.push({
+											value: oneNamespace.metadata.name,
+											label: oneNamespace.metadata.name
+										});
+									}
+								});
+							}
 						}
 					});
 				};
@@ -575,10 +583,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 */
 	function checkContainerTechnology(currentScope) {
 		let registry = currentScope.environment;
-		let depSeleted = get(["selected"], registry);
+		let depSeleted = _get(["selected"], registry);
 		let regConf = null;
 		if (depSeleted && depSeleted.includes("kubernetes")) {
-			regConf = get([].concat(depSeleted.split(".")), registry);
+			regConf = _get([].concat(depSeleted.split(".")), registry);
 		}
 		
 		if (regConf) {

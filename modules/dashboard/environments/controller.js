@@ -1,6 +1,6 @@
 "use strict";
 
-const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
+const _get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
 
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', '$window', 'customRegistrySrv', 'throttlingSrv', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage, $window, customRegistrySrv, throttlingSrv) {
@@ -142,10 +142,10 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 					}
 					else if ($scope.formEnvironment.deployer.type === 'container') {
 						let registry = $scope.formEnvironment;
-						let depSeleted = get(["deployer", "selected"], registry);
+						let depSeleted = _get(["deployer", "selected"], registry);
 						let regConf = null;
 						if (depSeleted && depSeleted.includes("kubernetes")) {
-							regConf = get(["deployer"].concat(depSeleted.split(".")), registry);
+							regConf = _get(["deployer"].concat(depSeleted.split(".")), registry);
 						}
 						if (regConf) {
 							$scope.formEnvironment.machineip = regConf.url;
@@ -192,10 +192,10 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 								}
 								else if (response[i].deployer.type === 'container') {
 									let registry = response[i];
-									let depSeleted = get(["deployer", "selected"], registry);
+									let depSeleted = _get(["deployer", "selected"], registry);
 									let regConf = null;
 									if (depSeleted && depSeleted.includes("kubernetes")) {
-										regConf = get(["deployer"].concat(depSeleted.split(".")), registry);
+										regConf = _get(["deployer"].concat(depSeleted.split(".")), registry);
 									}
 									if (regConf) {
 										response[i].machineip = regConf.url;
@@ -220,10 +220,10 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						}
 						else if (response[0].deployer.type === 'container') {
 							let registry = response[0];
-							let depSeleted = get(["deployer", "selected"], registry);
+							let depSeleted = _get(["deployer", "selected"], registry);
 							let regConf = null;
 							if (depSeleted && depSeleted.includes("kubernetes")) {
-								regConf = get(["deployer"].concat(depSeleted.split(".")), registry);
+								regConf = _get(["deployer"].concat(depSeleted.split(".")), registry);
 							}
 							if (regConf) {
 								response[0].machineip = regConf.url;

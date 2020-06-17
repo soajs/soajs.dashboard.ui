@@ -1,0 +1,225 @@
+<div class="envType">
+	<div ng-if="!showTemplates">
+		<form>
+			<div class="header">
+				<h3>Environment Type</h3>
+			</div>
+		</form>
+		
+		<p class="fieldMsg">
+			Choose the type of environment you would like to create
+		</p>
+		<div class="table" ng-if="noProviders && noTechnology">
+			<alert type="warning">
+				<h4>No Cloud Provider or Technology Found!</h4>
+				<hr>
+				<a href="#/infra" class="btn btn-primary connectInfra f-right">
+					<span class="glyphicon glyphicon-link"/> Click to Connect a Cloud Provider or a Technology
+				</a>
+				<p style="color:black;">
+					Cloud Clustering is disabled because no <b>cloud provider</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+				<p style="color:black;">
+					Containerized Environment is disabled because no active <b>technology</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+			</alert>
+		</div>
+		<div class="table" ng-if="noProviders && !noTechnology">
+			<alert type="warning">
+				<h4>No Cloud Provider Found!</h4>
+				<hr>
+				<a href="#/infra" class="btn btn-primary connectInfra f-right" style="margin-top:-5px;">
+					<span class="glyphicon glyphicon-link"/> Click to Connect a Cloud Provider
+				</a>
+				<p style="color:black;">
+					Cloud Clustering is disabled because no <b>cloud provider</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+			</alert>
+		</div>
+		<div class="table" ng-if="noTechnology && !noProviders">
+			<alert type="warning" >
+				<h4>No Technology Found!</h4>
+				<hr>
+				<a href="#/infra" class="btn btn-primary connectInfra f-right" style="margin-top:-5px;">
+					<span class="glyphicon glyphicon-link"/> Click to Connect a Technology
+				</a>
+				<p style="color:black;">
+					Containerized Environment is disabled because no active <b>technology</b> was found,
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank">
+						Learn More
+					</a>
+				</p>
+			</alert>
+		</div>
+		<div class="table mb20">
+			<div class="text-center w50 table-cell environmentBox2" ng-class="{'selectedEnv': envType ==='manual'}" ng-click="switchEnv('manual')">
+				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
+					<img ng-src="modules/dashboard/environments/images/development.png" height="32"/>
+				</div>
+				<h4 class="t-left">Manual Development</h4>
+				<hr>
+				<div>
+					<div class="envDescription">Helps engineers build and test API on their local machines & Manage the needed configuration</div>
+					<ul class="fieldMsg">
+						<li>API Lifecycle Management Configuration
+							<ul>
+								<li>Multi Tenancy & Multi Security</li>
+								<li>Productization & Profiling</li>
+								<li>Cataloging</li>
+							</ul>
+						</li>
+						<li>Resource Deployment & Management Configuration
+							<ul>
+								<li>Custom Registries</li>
+								<li>3rd Party/Existing Resource Configuration</li>
+								<li>Newly Introduced Resource Deployment & Configuration</li>
+							</ul>
+						</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483000331/Development+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="text-center w50 table-cell environmentBox2" ng-class="{'noHover': noTechnology, 'selectedEnv': envType==='container'}" ng-click="switchEnv('container')">
+				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
+					<img ng-src="modules/dashboard/environments/images/development.png" height="32"/>
+				</div>
+				<h4 class="t-left">Containerized Development</h4>
+				<hr>
+				<div>
+					<div class="envDescription">Connects an existing container cluster as infrastructure enabling container deployment & orchestration.</div>
+					<ul class="fieldMsg">
+						<li>Support Container Technology: Docker Swarm & Kubernetes
+							<ul>
+								<li>Secrets Management</li>
+								<li>Container Orchestration</li>
+								<li>High Availability</li>
+							</ul>
+						</li>
+						<li>Configure & Manage
+							<ul>
+								<li>Catalog Deployment: Source Code & Resources</li>
+								<li>Custom CI/CD</li>
+							</ul>
+						</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="table">
+			<div class="text-center w50 table-cell environmentBox2" ng-class="{'noHover': noProviders, 'selectedEnv': envType==='singleInfra'}" ng-click="switchEnv('singleInfra')">
+				<div style="font-size: 28px; padding: 3px 6px; margin-right:20px;" class="f-left">
+					<span style="color: #337ab7;" class="icon icon-cloud"></span>
+				</div>
+				<h4 class="t-left">Single Cloud Clustering</h4>
+				<hr>
+				<div>
+					<div class="envDescription">Creates a multi tier clustering using multi technology & orchestrate multi cloud providers without VPN support.</div>
+					<ul class="fieldMsg">
+						<li>Support Container & VM Technology</li>
+						<li>Support Multi Cloud Providers</li>
+						<li>Support Multi Tier Clustering</li>
+						<li>A Cluster is limited to a single cloud provider</li>
+						<li>No VPN Support, uses public IP for communication between multi providers</li>
+						<li>Configure & Manage
+							<ul>
+								<li>Load Balancers</li>
+								<li>Catalog Deployment</li>
+								<li>Custom CI/CD</li>
+							</ul>
+						</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164173/Single+Cloud+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="text-center w50 table-cell environmentBox2 noHover" ng-class="{'selectedEnv': envType==='multiInfra'}">
+				<div class="f-left" style="padding: 3px 6px; margin-right:20px;">
+					<img ng-src="modules/dashboard/environments/images/multiCloud.png" height="32"/>
+				</div>
+				<h4 class="t-left">Multi Cloud Clustering</h4>
+				<hr>
+				<div>
+					<div class="envDescription">Creates a multi tier clustering using multi technology & orchestrate multi cloud providers with VPN support.</div>
+					<ul class="fieldMsg">
+						<li>Support Container & VM Technology</li>
+						<li>Support Multi Cloud Providers</li>
+						<li>Support Multi Tier Clustering</li>
+						<li>A cluster spreads across Multi Providers</li>
+						<li>VPN Support, uses private IP for communication between multi providers</li>
+						<li>Configure & Manage
+							<ul>
+								<li>Load Balancers</li>
+								<li>Catalog Deployment</li>
+								<li>Custom CI/CD</li>
+							</ul>
+						</li>
+					</ul>
+					<br>
+					<div class="readmore">
+						<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/483164189/Multi+Cloud+Environment" target="_blank" tooltip="Learn&nbsp;More">
+							<span class="icon icon-info"/>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div ng-if="showTemplates">
+		<form>
+			<div class="header">
+				<h3>Environment Template</h3>
+			</div>
+		</form>
+		<accordion close-others="false">
+			<accordion-group ng-if="showTemplates" is-open="showTemplates" id="templates">
+				<accordion-heading>Environment Template</accordion-heading>
+				<p class="fieldMsg">
+					Choose a template from the available list below and SOAJS will create your environment according to its content.
+					<a href="https://soajsorg.atlassian.net/wiki/spaces/DSBRD/pages/400326661/Environment+Templates" target="_blank" tooltip="Click to Learn More about Environment Templates">[ Learn More ]</a>
+				</p>
+				<hr>
+				<div class="table" style="padding:20px 0 0 15px;">
+					<div ng-repeat="template in templates" class="text-center table-cell f-left environmentBox2 box-of-3" ng-class="{'selectedEnv': template.selected }">
+						<div ng-click="chooseTemplate(template);">
+							<div class="title">
+								<img ng-if="template.logo" ng-src="{{template.logo}}" height="32" class="f-left"/>
+								<h4>{{template.name}}</h4>
+							</div>
+							<hr>
+							<div class="content">
+								<div class="fieldMsg">{{template.description}}</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</accordion-group>
+		</accordion>
+	</div>
+	<div>
+		<div ng-include="'modules/dashboard/environments/directives/add/actions.tmpl'"></div>
+	</div>
+</div>

@@ -1,0 +1,51 @@
+<!--
+  ~  **********************************************************************************
+  ~   (C) Copyright Herrontech (www.herrontech.com)
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   Contributors:
+  ~   - Mike Hajj <mikehajj>
+  ~  **********************************************************************************
+  -->
+<div class="t-right">
+	<br />
+	<a class="btn btn-sm btn-success" ng-click="vms.listVMLayers(true)" ng-if="access.vm.list">
+		<span class="icon icon-undo"></span>
+		Refresh
+	</a>
+</div>
+<br />
+<alert type="warning">
+	<div>
+		<span class="icon icon-warning"></span>
+		The following virtual machine clusters failed to be created at the cloud provider, each entry below contains details about why it failed.
+	</div>
+</alert>
+<br />
+<div class="c-both w100 entryBoxes">
+	<div ng-repeat="(oneVMId, oneVMLayer) in vms.errorVMLayers">
+		<div class="entryBox redEntryBox mb20">
+			<div class="header" style="border-bottom: none; border-radius: 5px;">
+				<img height="26" ng-src="/modules/dashboard/environments/images/{{oneVMLayer.infraProvider.name}}.png" alt="{{oneVMLayer.infraProvider.name}}" tooltip="{{oneVMLayer.infraProvider.label}}"/>
+				&nbsp;
+				<span class="serviceLabelBox" style="font-weight:bold;">
+					{{oneVMLayer.layerName}}&nbsp;&nbsp;
+				</span>
+				
+				<span class="f-right">
+					<a href="" ng-click="oneVMLayer.expand = !oneVMLayer.expand;" tooltip="Show/Hide Error Details">
+						<span class="icon" ng-class="{'icon-plus':!oneVMLayer.expand, 'icon-minus': oneVMLayer.expand}"></span>
+					</a>
+				</span>
+				<span class="f-right">{{oneVMLayer.ts|prettyLocalDate}}</span>
+			</div>
+			<div ng-show="oneVMLayer.expand" style="padding: 10px;">
+				<div>
+					<b>Infra Code Template:</b>&nbsp;<a href="">{{oneVMLayer.infraCodeTemplate}}</a>
+					<hr>
+				</div>
+				<div><b>Error: {{oneVMLayer.error.code}}</b></div>
+				<div style="padding: 10px; white-space: pre-line">{{oneVMLayer.error.message}}</div>
+			</div>
+		</div>
+	</div>
+</div>

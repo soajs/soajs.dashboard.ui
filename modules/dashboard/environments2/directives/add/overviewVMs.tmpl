@@ -1,0 +1,54 @@
+<fieldset ng-repeat="oneVMLayer in overview.vms">
+	<legend style="width:15%;">
+		<img ng-src="modules/dashboard/environments/images/{{cloud.selectedProvider.name}}.png" alt="{{cloud.selectedProvider.name}}" height="32"/>&nbsp;{{cloud.selectedProvider.name}}
+	</legend>
+	<br />
+	<div class="c-both w100 entryBoxes">
+		<div class="entryBox mb20">
+			<div class="header table">
+				<span class="serviceLabelBox">
+					<span>
+						<b style="margin:0;">{{oneVMLayer.name}}</b>
+						<!--<span ng-if="oneVMLayer.list.length > 1">/ Replica of {{oneVMLayer.list.length}}</span>-->
+						<!--<span ng-if="oneVMLayer.list.length === 1">/ Single Instance</span>-->
+					</span>
+					&nbsp;&nbsp;
+				</span>
+			</div>
+			<div class="body">
+				<div class="grid">
+					<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
+						<thead>
+							<tr class="header">
+								<td width="50%" class="nameHeader">Template</td>
+								<td class="nameHeader">Region</td>
+								<td class="nameHeader">Group</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="cloud-tr-bgColor">
+								<td>{{oneVMLayer.template}}</td>
+								<td>{{oneVMLayer.region}}</td>
+								<td>{{oneVMLayer.group}}</td>
+							</tr>
+						</tbody>
+					</table>
+					<table cellspacing="0" cellpadding="0" border="1" width="100%" class="customTable">
+						<thead>
+							<tr class="header">
+								<td class="nameHeader">VM Specs</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="cloud-tr-bgColor">
+								<td>
+									<div ng-bind-html="oneVMLayer.specs|object" class="vmSpecsBox"></div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</fieldset>

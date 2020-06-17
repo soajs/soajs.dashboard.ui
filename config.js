@@ -80,7 +80,7 @@ var modules = {
 	},
 	"deploy": {
 		"dashboard": {
-			environments: 'modules/dashboard/environments/install.js',
+			environments: 'modules/dashboard/environments2/install.js',
 			//resources: 'modules/dashboard/resources/install.js',
 			// secrets: 'modules/dashboard/secrets/install.js',
 			// volumes: 'modules/dashboard/volumes/install.js'

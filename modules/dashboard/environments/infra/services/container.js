@@ -1,4 +1,6 @@
 "use strict";
+const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
+
 var platformContainerServices = soajsApp.components;
 platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$modal', '$cookies', '$window', '$localStorage', function (ngDataApi, $timeout, $modal, $cookies, $window, $localStorage) {
 	
@@ -10,7 +12,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * Open container technology form
 	 * @param currentScope
 	 */
-	function openContainerWizard(currentScope, cb){
+	function openContainerWizard(currentScope, cb) {
 		
 		let options = {
 			timeout: $timeout,
@@ -47,7 +49,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						}
 					});
 					
-					if(cb && typeof cb === 'function'){
+					if (cb && typeof cb === 'function') {
 						return cb();
 					}
 				});
@@ -62,7 +64,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param formData
 	 * @returns {boolean}
 	 */
-	function attachContainerTechnology(currentScope, formData){
+	function attachContainerTechnology(currentScope, formData) {
 		let postData = {};
 		
 		if (currentScope.containers.platforms && currentScope.containers.platforms.previous) {
@@ -71,7 +73,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				return false;
 			}
 			
-			if(currentScope.wizard){
+			if (currentScope.wizard) {
 				postData.deployment = {
 					'selectedDriver': currentScope.containers.platform,
 					'previousEnvironment': currentScope.containers.previousEnvironment
@@ -80,7 +82,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				//link the infra that was used for this environment
 				currentScope.containers.techProviders.forEach((oneProvider) => {
 					oneProvider.deployments.forEach((oneDeployment) => {
-						if(oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1){
+						if (oneDeployment.environments.indexOf(currentScope.containers.previousEnvironment) !== -1) {
 							postData.selectedInfraProvider = {
 								_id: oneProvider._id,
 								name: oneProvider.name,
@@ -91,7 +93,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				});
 			}
 		}
-		else if(currentScope.containers.platforms && currentScope.containers.platforms.docker){
+		else if (currentScope.containers.platforms && currentScope.containers.platforms.docker) {
 			delete currentScope.containers.form.previousEnvironment;
 			
 			postData.deployment = {
@@ -100,7 +102,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			
 			//link the infra that was used for this environment
 			currentScope.containers.techProviders.forEach((oneProvider) => {
-				if(oneProvider.deploy){
+				if (oneProvider.deploy) {
 					postData.selectedInfraProvider = {
 						_id: oneProvider._id,
 						name: oneProvider.name,
@@ -109,7 +111,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				}
 			});
 		}
-		else if(currentScope.containers.platforms && currentScope.containers.platforms.kubernetes){
+		else if (currentScope.containers.platforms && currentScope.containers.platforms.kubernetes) {
 			delete currentScope.containers.form.previousEnvironment;
 			postData.deployment = {
 				'selectedDriver': 'kubernetes'
@@ -117,7 +119,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			
 			//link the infra that was used for this environment
 			currentScope.containers.techProviders.forEach((oneProvider) => {
-				if(oneProvider.deploy){
+				if (oneProvider.deploy) {
 					postData.selectedInfraProvider = {
 						_id: oneProvider._id,
 						name: oneProvider.name,
@@ -127,9 +129,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			});
 			
 		}
-		else{
+		else {
 			delete currentScope.containers.form.previousEnvironment;
-			// wair nikna !
 			$window.alert("Invalid Configuration Provided, unable to proceed!");
 			return false;
 		}
@@ -139,11 +140,11 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		};
 		
 		currentScope.containers.techProviders.forEach((oneProvider) => {
-			if(oneProvider.deploy) {
-				for(let i in oneProvider.deploy){
+			if (oneProvider.deploy) {
+				for (let i in oneProvider.deploy) {
 					postData.selectedInfraProvider.deploy[i] = oneProvider.deploy[i];
 				}
-			}else if(oneProvider.api) {
+			} else if (oneProvider.api) {
 				postData.selectedInfraProvider.deploy.config = oneProvider.api;
 			}
 		});
@@ -151,7 +152,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		currentScope.containers.defaultAttachContainerAction(currentScope, postData);
 	}
 	
-	function defaultAttachContainerAction(currentScope, formData){
+	function defaultAttachContainerAction(currentScope, formData) {
 		
 		let postData = angular.copy(formData);
 		delete postData.selectedInfraProvider.deploy.config;
@@ -185,10 +186,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param cb
 	 */
 	function getEnvironments(currentScope, cb) {
-		if(currentScope.wizard && currentScope.availableEnvironments && Array.isArray(currentScope.availableEnvironments) && currentScope.availableEnvironments.length > 0){
+		if (currentScope.wizard && currentScope.availableEnvironments && Array.isArray(currentScope.availableEnvironments) && currentScope.availableEnvironments.length > 0) {
 			filterEnvironments(angular.copy(currentScope.availableEnvironments));
 		}
-		else{
+		else {
 			//get the available providers
 			getSendDataFromServer(currentScope, ngDataApi, {
 				"method": "get",
@@ -205,16 +206,16 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			});
 		}
 		
-		function filterEnvironments(environments){
-			if(currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider){
-				for(let i = environments.length -1; i >=0; i--){
-					if(environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()){
+		function filterEnvironments(environments) {
+			if (currentScope.cloud && currentScope.cloud.form && currentScope.cloud.form.formData && currentScope.cloud.form.formData.selectedProvider) {
+				for (let i = environments.length - 1; i >= 0; i--) {
+					if (environments[i].code.toUpperCase() === currentScope.envCode.toUpperCase()) {
 						environments.splice(i, 1);
 					}
-					else if(!environments[i].restriction){
+					else if (!environments[i].restriction) {
 						environments.splice(i, 1);
 					}
-					else if(environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]){
+					else if (environments[i].restriction && !environments[i].restriction[currentScope.cloud.form.formData.selectedProvider._id]) {
 						environments.splice(i, 1);
 					}
 				}
@@ -228,11 +229,11 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					}
 				}
 			}
-			else{
+			else {
 				currentScope.containers.availableEnvironments = environments;
 				if (currentScope.containers.availableEnvironments.length > 0) {
 					for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
-						if(currentScope.containers.availableEnvironments[i].restriction){
+						if (currentScope.containers.availableEnvironments[i].restriction) {
 							currentScope.containers.availableEnvironments.splice(i, 1);
 						}
 						else if (currentScope.containers.availableEnvironments[i].deployer.type === 'manual') {
@@ -242,7 +243,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				}
 			}
 			
-			if(currentScope.wizard){
+			if (currentScope.wizard) {
 				currentScope.availableEnvironments = angular.copy(currentScope.containers.availableEnvironments);
 			}
 			return cb(environments);
@@ -262,7 +263,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		getSendDataFromServer(currentScope, ngDataApi, {
 			"method": "get",
 			"routeName": "/dashboard/infra",
-			"params":{
+			"params": {
 				"type": 'technology'
 			}
 		}, function (error, providers) {
@@ -275,11 +276,11 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				delete currentScope.containers.techProviders.soajsauth;
 				
 				currentScope.containers.techProviders.forEach((oneProvider) => {
-					if(oneProvider.technologies.indexOf('docker') !== -1){
+					if (oneProvider.technologies.indexOf('docker') !== -1) {
 						currentScope.containers.showDocker = true;
 					}
 					
-					if(oneProvider.technologies.indexOf('kubernetes') !== -1){
+					if (oneProvider.technologies.indexOf('kubernetes') !== -1) {
 						currentScope.containers.showKube = true;
 					}
 					
@@ -299,10 +300,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		delete currentScope.containers.platform;
 		delete currentScope.containers.driver;
 		delete currentScope.containers.config;
-		if(currentScope.containers.previousEnvironment && currentScope.containers.previousEnvironment !== ''){
+		if (currentScope.containers.previousEnvironment && currentScope.containers.previousEnvironment !== '') {
 			currentScope.containers.previousPlatformDeployment = true;
 			
-			if(currentScope.containers.availableEnvironments){
+			if (currentScope.containers.availableEnvironments) {
 				for (let i = currentScope.containers.availableEnvironments.length - 1; i >= 0; i--) {
 					if (currentScope.containers.availableEnvironments[i].code === currentScope.containers.previousEnvironment) {
 						currentScope.containers.platform = currentScope.containers.availableEnvironments[i].deployer.selected.split(".")[1];
@@ -312,7 +313,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				}
 			}
 		}
-		else{
+		else {
 			currentScope.containers.previousPlatformDeployment = false;
 		}
 	}
@@ -329,11 +330,11 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
 				
-				if(currentScope.cloud && currentScope.cloud.selectProvider){
+				if (currentScope.cloud && currentScope.cloud.selectProvider) {
 					$scope.selectedProvider = angular.copy(currentScope.cloud.selectedProvider);
 				}
-
-				$scope.proceed = function(){
+				
+				$scope.proceed = function () {
 					overlayLoading.show();
 					getSendDataFromServer(currentScope, ngDataApi, {
 						"method": "delete",
@@ -354,10 +355,10 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 							getEnvRecord(currentScope);
 						}
 					});
-
+					
 				};
-
-				$scope.cancel = function(){
+				
+				$scope.cancel = function () {
 					$modalInstance.close();
 				};
 			}
@@ -384,14 +385,14 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				currentScope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
-				if(!response.deployer.pending && !response.deployer.error){
+				if (!response.deployer.pending && !response.deployer.error) {
 					currentScope.environment = response.deployer;
 					
 					//update env type
 					currentScope.calculateType(response.deployer);
 					
 					//udpate display
-					if(currentScope.attach){
+					if (currentScope.attach) {
 						checkContainerTechnology(currentScope);
 						delete currentScope.attach;
 					}
@@ -400,26 +401,26 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 					putMyEnv(angular.copy(response));
 					
 					//update local storage
-					for(let i = 0; i < $localStorage.environments.length; i++){
-						if($localStorage.environments[i].code === response.code){
+					for (let i = 0; i < $localStorage.environments.length; i++) {
+						if ($localStorage.environments[i].code === response.code) {
 							$localStorage.environments[i] = angular.copy(response);
 						}
 					}
 				}
 				else {
 					let autoRefreshTimeoutProgress = $timeout(() => {
-						if(!currentScope.environment.pending){
+						if (!currentScope.environment.pending) {
 							currentScope.getEnvPlatform(true);
 							$timeout.cancel(autoRefreshTimeoutProgress);
 						}
-						else{
+						else {
 							getEnvRecord(currentScope);
 						}
 					}, 10 * 1000);
 				}
 			}
 		});
-
+		
 		function putMyEnv(record) {
 			let data = {
 				"_id": record._id,
@@ -442,8 +443,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			// 		}
 			// 	}
 			// }
-			$cookies.putObject('myEnv', data, { 'domain': interfaceDomain });
-
+			$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
+			
 			overlayLoading.show();
 			currentScope.updateParentScope('currentSelectedEnvironment', record.code.toLowerCase());
 			currentScope.updateParentScope('currentDeployer', {"type": record.deployer.type});
@@ -474,19 +475,19 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				$scope.namespaces = {
 					ui: {
 						selection: [
-							{ value: 'existing', label: 'Choose Existing Namespace' },
-							{ value: 'new', label: 'Create New Namespace' }
+							{value: 'existing', label: 'Choose Existing Namespace'},
+							{value: 'new', label: 'Create New Namespace'}
 						],
 						list: [],
-						type: [
-							{ value: 'global', label: 'Global' },
-							{ value: 'perService', label: 'Per Service' }
-						]
+						// type: [
+						// 	{value: 'global', label: 'Global'},
+						// 	{value: 'perService', label: 'Per Service'}
+						// ]
 					},
 					data: {
 						selection: 'existing',
-						default: currentConfig.namespace.default,
-						type: (currentConfig.namespace.perService) ? 'perService' : 'global'
+						default: currentConfig.namespace,
+						// type: (currentConfig.namespace.perService) ? 'perService' : 'global'
 					}
 				};
 				
@@ -495,7 +496,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						$scope.namespaces.data.default = '';
 					}
 					else {
-						$scope.namespaces.data.default = currentConfig.namespace.default;
+						$scope.namespaces.data.default = currentConfig.namespace;
 					}
 				};
 				
@@ -504,7 +505,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						method: 'get',
 						routeName: '/dashboard/cloud/namespaces/list',
 						params: {
-							env : currentScope.envCode.toLowerCase()
+							env: currentScope.envCode.toLowerCase()
 						}
 					}, function (error, namespaces) {
 						if (error) {
@@ -517,7 +518,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						}
 						else {
 							namespaces.forEach(function (oneNamespace) {
-								$scope.namespaces.ui.list.push({ value: oneNamespace.id, label: oneNamespace.name });
+								$scope.namespaces.ui.list.push({value: oneNamespace.id, label: oneNamespace.name});
 							});
 						}
 					});
@@ -573,26 +574,38 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param currentScope
 	 */
 	function checkContainerTechnology(currentScope) {
-		
-		currentScope.containers.platform = currentScope.environment.selected.split(".")[1];
-		currentScope.containers.driver = currentScope.environment.selected.split(".")[2];
-		currentScope.containers.config = currentScope.environment.container[currentScope.containers.platform][currentScope.containers.driver];
-		
-		if (currentScope.originalEnvironment.certs) {
-			let certs = [];
-			currentScope.originalEnvironment.certs.forEach((oneCert) => {
-				if (oneCert.metadata.env[currentScope.envCode.toUpperCase()]) {
-					certs.push({
-						_id: oneCert._id,
-						filename: oneCert.filename,
-						certType: oneCert.metadata.certType
-					});
-				}
-			});
-			currentScope.containers.config.certs = certs;
+		let registry = currentScope.environment;
+		let depSeleted = get(["selected"], registry);
+		let regConf = null;
+		if (depSeleted && depSeleted.includes("kubernetes")) {
+			regConf = get([].concat(depSeleted.split(".")), registry);
 		}
 		
-		currentScope.containers.oldDocker = (!currentScope.containers.config.auth && !currentScope.containers.config.auth.token && currentScope.containers.config.certs && currentScope.containers.config.certs.length > 0);
+		if (regConf) {
+			currentScope.containers.platform = "kubernetes";
+			currentScope.containers.config = regConf.configuration;
+			currentScope.containers.config.namespace = regConf.namespace;
+			
+		}
+		//currentScope.containers.platform = currentScope.environment.selected.split(".")[1];
+		//currentScope.containers.driver = currentScope.environment.selected.split(".")[2];
+		//currentScope.containers.config = currentScope.environment.container[currentScope.containers.platform][currentScope.containers.driver];
+		
+		// if (currentScope.originalEnvironment.certs) {
+		// 	let certs = [];
+		// 	currentScope.originalEnvironment.certs.forEach((oneCert) => {
+		// 		if (oneCert.metadata.env[currentScope.envCode.toUpperCase()]) {
+		// 			certs.push({
+		// 				_id: oneCert._id,
+		// 				filename: oneCert.filename,
+		// 				certType: oneCert.metadata.certType
+		// 			});
+		// 		}
+		// 	});
+		// 	currentScope.containers.config.certs = certs;
+		// }
+		//
+		// currentScope.containers.oldDocker = (!currentScope.containers.config.auth && !currentScope.containers.config.auth.token && currentScope.containers.config.certs && currentScope.containers.config.certs.length > 0);
 	}
 	
 	/**
@@ -600,17 +613,17 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 	 * @param currentScope
 	 * @param operation
 	 */
-	function go(currentScope, operation, cb){
+	function go(currentScope, operation, cb) {
 		
-		if(!currentScope.containers){
+		if (!currentScope.containers) {
 			currentScope.containers = currentScope.$new(); //true means detached from main currentScope
 		}
 		
-		currentScope.containers.selectProvider = function(oneProvider, technology){
+		currentScope.containers.selectProvider = function (oneProvider, technology) {
 			
 			//remove previous environment if set
 			delete currentScope.containers.previousEnvironment;
-			if(currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment){
+			if (currentScope.containers.form && currentScope.containers.form.formData && currentScope.containers.form.formData.previousEnvironment) {
 				delete currentScope.containers.form.formData.previousEnvironment;
 			}
 			renderPreviousDeployInfo(currentScope);
@@ -669,7 +682,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 		
 		currentScope.containers.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 		
-		currentScope.containers.renderDisplay = function(){
+		currentScope.containers.renderDisplay = function () {
 			checkContainerTechnology(currentScope);
 		};
 		
@@ -677,25 +690,25 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			updateNamespaceConfig(currentScope, driver);
 		};
 		
-		currentScope.containers.attachContainer = function(cb){
+		currentScope.containers.attachContainer = function (cb) {
 			openContainerWizard(currentScope, cb);
 		};
 		
-		currentScope.containers.detachContainer = function(){
+		currentScope.containers.detachContainer = function () {
 			detachContainerTechnology(currentScope);
 		};
 		
-		currentScope.containers.attachContainerTechnology = function(formData) {
+		currentScope.containers.attachContainerTechnology = function (formData) {
 			attachContainerTechnology(currentScope, formData);
 		};
 		
 		currentScope.containers.defaultAttachContainerAction = defaultAttachContainerAction;
 		
-		currentScope.containers.getEnvironments = function(cb) {
+		currentScope.containers.getEnvironments = function (cb) {
 			getEnvironments(currentScope, cb);
 		};
 		
-		if(operation){
+		if (operation) {
 			currentScope.containers[operation](cb);
 		}
 	}

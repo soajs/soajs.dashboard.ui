@@ -1,4 +1,7 @@
 "use strict";
+
+const get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
+
 var environmentsApp = soajsApp.components;
 environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '$routeParams', '$cookies', 'ngDataApi', 'Upload', 'injectFiles', '$localStorage', '$window', 'customRegistrySrv', 'throttlingSrv', function ($scope, $timeout, $modal, $routeParams, $cookies, ngDataApi, Upload, injectFiles, $localStorage, $window, customRegistrySrv, throttlingSrv) {
 	$scope.$parent.isUserLoggedIn();
@@ -138,7 +141,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer.manual.nodes;
 					}
 					else if ($scope.formEnvironment.deployer.type === 'container') {
-						$scope.formEnvironment.machineip = $scope.formEnvironment.deployer.container.kubernetes.url;
+						let registry = $scope.formEnvironment;
+						let depSeleted = get(["deployer", "selected"], registry);
+						let regConf = null;
+						if (depSeleted && depSeleted.includes("kubernetes")) {
+							regConf = get(["deployer"].concat(depSeleted.split(".")), registry);
+						}
+						if (regConf) {
+							$scope.formEnvironment.machineip = regConf.url;
+						}
 						//let deployerInfo = $scope.formEnvironment.deployer.selected.split(".");
 						//if (deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') {
 						//$scope.formEnvironment.machineip = $scope.formEnvironment.deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;
@@ -180,7 +191,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 									response[i].machineip = response[i].deployer.manual.nodes;
 								}
 								else if (response[i].deployer.type === 'container') {
-									response[i].machineip = response[i].deployer.container.kubernetes.url;
+									let registry = response[i];
+									let depSeleted = get(["deployer", "selected"], registry);
+									let regConf = null;
+									if (depSeleted && depSeleted.includes("kubernetes")) {
+										regConf = get(["deployer"].concat(depSeleted.split(".")), registry);
+									}
+									if (regConf) {
+										response[i].machineip = regConf.url;
+									}
 									//let deployerInfo = response[i].deployer.selected.split(".");
 									//if ((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')) {
 									//	response[i].machineip = response[i].deployer.kubernetes.url
@@ -200,7 +219,15 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 							response[0].machineip = response[0].deployer.manual.nodes;
 						}
 						else if (response[0].deployer.type === 'container') {
-							response[0].machineip = response[i].deployer.container.kubernetes.url;
+							let registry = response[0];
+							let depSeleted = get(["deployer", "selected"], registry);
+							let regConf = null;
+							if (depSeleted && depSeleted.includes("kubernetes")) {
+								regConf = get(["deployer"].concat(depSeleted.split(".")), registry);
+							}
+							if (regConf) {
+								response[0].machineip = regConf.url;
+							}
 							//let deployerInfo = response[0].deployer.selected.split(".");
 							//if ((deployerInfo[1] !== 'docker' && deployerInfo[2] !== 'local') || (deployerInfo[1] === 'docker' && deployerInfo[2] !== 'local')) {
 							//response[0].machineip = response[0].deployer[deployerInfo[0]][deployerInfo[1]][deployerInfo[2]].nodes;

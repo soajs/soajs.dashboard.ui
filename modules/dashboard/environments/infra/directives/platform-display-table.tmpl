@@ -17,25 +17,25 @@
 				<td width="50%">
 					<b>Master Node IP</b>
 				</td>
-				<td>{{containers.config.nodes}}</td>
+				<td>{{containers.config.url}}</td>
 			</tr>
 			<tr class="even">
 				<td width="50%">
 					<b>Docker Port</b>
 				</td>
-				<td>{{containers.config.apiPort}}</td>
+				<td>{{containers.config.port}}</td>
 			</tr>
 			<tr class="odd first" ng-if="!containers.oldDocker">
 				<td width="50%">
 					<b>Protocol</b>
 				</td>
-				<td>{{containers.config.apiProtocol}}</td>
+				<td>{{containers.config.protocol}}</td>
 			</tr>
 			<tr class="odd" ng-if="!containers.oldDocker">
 				<td colspan="2"><b>Token</b></td>
 			</tr>
 			<tr class="even last" ng-if="!containers.oldDocker">
-				<td colspan="2">{{containers.config.auth.token}}</td>
+				<td colspan="2">{{containers.config.token}}</td>
 			</tr>
 			<tr class="odd" ng-if="containers.oldDocker">
 				<td colspan="2"><b>Certificates</b></td>
@@ -60,17 +60,17 @@
 			<td width="50%">
 				<b>Master Node IP</b>
 			</td>
-			<td>{{containers.config.nodes}}</td>
+			<td>{{containers.config.url}}</td>
 		</tr>
-		<tr class="even" ng-class="{ 'red' : !containers.config.namespace.default}">
+		<tr class="even">
 			<td width="50%">
 				<b>Namespace Configuration</b>
 			</td>
 			<td>
-				<span ng-if="!showEdit">{{containers.config.namespace.default || "N/A"}}</span>
-				<input ng-if="showEdit" type="text" style="width: 30%;display: inline-block;" class="form-control" ng-required="true" ng-model="containers.config.namespace.default" />
+				<span ng-if="!showEdit">{{containers.config.namespace || "N/A"}}</span>
+				<input ng-if="showEdit" type="text" style="width: 30%;display: inline-block;" class="form-control" ng-required="true" ng-model="containers.config.namespace" />
 				<a  ng-if="!showEdit && environmentWizard" style="padding: 5px 15px;float: right;" class="btn btn-sm btn-primary" href="" ng-click="editNamespace()">Edit</a>
-				<a  ng-if="showEdit" style="padding: 5px 15px;float: right;" class="btn btn-sm btn-primary" href="" ng-click="saveNamespace(containers.config.namespace.default)">Save</a>
+				<a  ng-if="showEdit" style="padding: 5px 15px;float: right;" class="btn btn-sm btn-primary" href="" ng-click="saveNamespace(containers.config.namespace)">Save</a>
 			</td>
 		</tr>
 		<!--<tr class="odd">-->

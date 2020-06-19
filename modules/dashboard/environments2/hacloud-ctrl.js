@@ -338,7 +338,7 @@ environmentsApp.controller('hacloudCtrl', ['$scope', '$cookies', '$timeout', 'no
 		orchestrateVMS.deleteVM($scope, oneVMLayer, oneVMInstance);
 	};
 
-	injectFiles.injectCss('modules/dashboard/environments/environments.css');
+	injectFiles.injectCss('modules/dashboard/environments2/environments.css');
 	if($cookies.getObject('myEnv', {'domain': interfaceDomain})){
 		$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;

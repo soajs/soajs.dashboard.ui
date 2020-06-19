@@ -87,7 +87,7 @@
 							<br />
 						</div>
 						
-						<div ng-include="'modules/dashboard/environments/directives/list-service-config.tmpl'"></div>
+						<div ng-include="'modules/dashboard/environments2/directives/list-service-config.tmpl'"></div>
 						<div class="entryAction" ng-show="!oneEnv.pending && !oneEnv.error">
 
 							<a ng-if="access.editEnvironment" href="" ng-click="updateEnvironment(oneEnv);">
@@ -208,15 +208,15 @@
 		</tab>
 		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Throttling">
 			<br />
-			<div ng-include="'modules/dashboard/environments/directives/throttling.tmpl'"></div>
+			<div ng-include="'modules/dashboard/environments2/directives/throttling.tmpl'"></div>
 		</tab>
 		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Databases">
 			<br />
-			<div ng-include="'modules/dashboard/environments/directives/list-databases.tmpl'"></div>
+			<div ng-include="'modules/dashboard/environments2/directives/list-databases.tmpl'"></div>
 		</tab>
 		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Resource Configuration">
 			<br />
-			<div ng-include="'modules/dashboard/environments/directives/list-resources.tmpl'"></div>
+			<div ng-include="'modules/dashboard/environments2/directives/list-resources.tmpl'"></div>
 		</tab>
 	</tabset>
 </section>
@@ -227,7 +227,7 @@
 		</h3>
 	</div>
 	<div class="modal-body">
-		<div class="form" ng-include="'modules/dashboard/environments/directives/customRegistry.tmpl'"></div>
+		<div class="form" ng-include="'modules/dashboard/environments2/directives/customRegistry.tmpl'"></div>
 	</div>
 	<div class="modal-footer">
 	    <span ng-if="options.allowEdit">

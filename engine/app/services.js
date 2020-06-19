@@ -149,9 +149,9 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		} else if (response && !Object.hasOwnProperty.call(response, "result")) {
 			return cb(null, response);
 		} else if (response && response.result === true) {
-			if (response.soajsauth && $cookies.get('soajs_auth', {'domain': interfaceDomain})) {
-				$cookies.put("soajs_auth", response.soajsauth, {'domain': interfaceDomain});
-			}
+			// if (response.soajsauth && $cookies.get('soajs_auth', {'domain': interfaceDomain})) {
+			// 	$cookies.put("soajs_auth", response.soajsauth, {'domain': interfaceDomain});
+			// }
 			var resp = {};
 			for (var i in response) {
 				resp[i] = response[i];
@@ -169,7 +169,7 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			} else {
 				resp.data = {};
 			}
-			resp.data.soajsauth = resp.soajsauth;
+			// resp.data.soajsauth = resp.soajsauth;
 			return cb(null, resp.data);
 		} else {
 			//try to refresh the access token before logging out the user
@@ -208,10 +208,10 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			json: true
 		};
 		
-		var soajsAuthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
-		if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
-			config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
-		}
+		// var soajsAuthCookie = $cookies.get('soajs_auth', {'domain': interfaceDomain});
+		// if (soajsAuthCookie && soajsAuthCookie.indexOf("Basic ") !== -1) {
+		// 	config.headers.soajsauth = soajsAuthCookie.replace(/\"/g, '');
+		// }
 		
 		if (opts.headers.key) {
 			config.headers.key = opts.headers.key;
@@ -970,7 +970,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 			}
 			var options = {
 				"method": "get",
-				"routeName": "/dashboard/environment/list",
+				"routeName": "/console/environment",
 				"params": {}
 			};
 			getSendDataFromServer(currentScope, ngDataApi, options, function (error, envs) {
@@ -987,6 +987,7 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 					}
 				} else {
 					$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
+					//envs = [];
 					$localStorage.environments = angular.copy(envs);
 					$timeout(function () {
 						overlayLoading.hide();

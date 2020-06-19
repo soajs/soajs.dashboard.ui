@@ -69,7 +69,7 @@ environmentsApp.controller('deployReposCtrl', ['$scope', '$cookies', 'injectFile
 		deployRepos.stopService($scope, oneRepo, version);
 	};
 
-	injectFiles.injectCss("modules/dashboard/environments/environments.css");
+	injectFiles.injectCss("modules/dashboard/environments2/environments.css");
 	//default operation
 	if ($scope.access.git.listAccounts) {
 		if ($cookies.getObject('myEnv', { 'domain': interfaceDomain })) {

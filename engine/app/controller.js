@@ -92,6 +92,8 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.pillar = null;
 		$scope.enableInterface = false;
 		$scope.enableLeftInterface = true;
+		
+		// AH: needed
 		$scope.go = function (path) {
 			if (path === '/dashboard') {
 				// reset left menu items and seleted pillar when redirecting to home page
@@ -108,30 +110,13 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 		};
 		
+		// AH: needed
 		function putMyEnv(record) {
-			var data = {
+			let data = {
 				"_id": record._id,
 				"code": record.code,
-				"sensitive": record.sensitive,
-				"domain": record.domain,
-				"profile": record.profile,
-				"sitePrefix": record.sitePrefix,
-				"apiPrefix": record.apiPrefix,
-				"description": record.description,
-				"deployer": record.deployer
+				"description": record.description
 			};
-			if (!$scope.currentDeployer) {
-				$scope.currentDeployer = {type: ''};
-			}
-			$scope.currentDeployer.type = record.deployer.type;
-			
-			for (let container in data.deployer.container) {
-				for (let driver in data.deployer.container[container]) {
-					if (data.deployer.container[container][driver].auth && data.deployer.container[container][driver].auth.token) {
-						delete data.deployer.container[container][driver].auth.token;
-					}
-				}
-			}
 			$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		}
 		
@@ -299,6 +284,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			return hide;
 		};
 		
+		// AH: needed
 		$scope.reRenderMenu = function (pillarName) {
 			$scope.leftMenu.links = [];
 			$scope.leftMenu.environments = [];
@@ -309,31 +295,12 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					$scope.leftMenu.links = $scope.mainMenu.links[j].entries;
 					//var pillarsPerEnv = [3, 4];
 					if (pillarName === "deployment") {
-						//if (pillarsPerEnv.indexOf($scope.mainMenu.links[j].pillar.position) !== -1) {
 						$scope.leftMenu.environments = angular.copy($localStorage.environments);
 						
-						//if (pillarName === "deployment"){
 						if ($scope.leftMenu.environments.length === 0) {
 							$scope.leftMenu.links = [];
 						}
-						//}
-						// if ($scope.mainMenu.links[j].pillar.position === 3) {
-						// 	if ($scope.leftMenu.environments.length === 0) {
-						// 		$scope.leftMenu.links = [];
-						// 	}
-						// }
-						// if ($scope.mainMenu.links[j].pillar.position === 4) {
-						// 	for (var k = $scope.leftMenu.environments.length - 1; k >= 0; k--) {
-						// 		if ($scope.leftMenu.environments[k].code.toLowerCase() === "dashboard") {
-						// 			$scope.leftMenu.environments.splice(k, 1);
-						// 		}
-						// 	}
-						// 	if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
-						// 		if ($cookies.getObject('myEnv', {'domain': interfaceDomain}).code.replace(/\"/g, '').toLowerCase() === 'dashboard') {
-						// 			putMyEnv($scope.leftMenu.environments[0]);
-						// 		}
-						// 	}
-						// }
+						
 						if ($cookies.getObject('myEnv')) {
 							$scope.switchEnvironment($cookies.getObject('myEnv', {'domain': interfaceDomain}));
 						} else {
@@ -345,6 +312,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 		};
 		
+		// AH: needed
 		$scope.switchEnvironment = function (envRecord, forceEnvRecord) {
 			if (envRecord) {
 				if ($routeParams && $routeParams.envCode && $routeParams.envCode !== envRecord.code) {
@@ -416,6 +384,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 		};
 		
+		// AH: needed
 		$scope.updateSelectedMenus = function (cb) {
 			$scope.mainMenu.selectedMenu = '#/' + $location.path().split("/")[1];
 			$localStorage.mainMenu = $scope.mainMenu;
@@ -495,7 +464,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				});
 			}
 		};
-		
+		// AH: needed
 		$scope.rebuildMenus = function (cb) {
 			$scope.mainMenu = {};
 			$scope.mainMenu.links = [];
@@ -793,10 +762,10 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 				$scope.currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 				
-				if (!$scope.currentDeployer) {
-					$scope.currentDeployer = {type: ''};
-				}
-				$scope.currentDeployer.type = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer.type;
+				// if (!$scope.currentDeployer) {
+				// 	$scope.currentDeployer = {type: ''};
+				// }
+				// $scope.currentDeployer.type = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer.type;
 			}
 		}
 		

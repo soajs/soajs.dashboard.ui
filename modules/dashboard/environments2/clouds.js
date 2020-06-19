@@ -1218,5 +1218,5 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 		$scope.listDeployments();
 	}
 	
-	injectFiles.injectCss("modules/dashboard/environments/kubeItems.css");
+	injectFiles.injectCss("modules/dashboard/environments2/kubeItems.css");
 }]);

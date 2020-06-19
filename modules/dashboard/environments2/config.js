@@ -984,11 +984,15 @@ var environmentsConfig = {
 		"setConfig": ['dashboard', '/resources/config/update', 'put'],
 		
 		
-		"listEnvironments": ['dashboard', '/environment/list', 'get'],
-		"getEnvironment": ['dashboard', '/environment', 'get'],
-		"addEnvironment": ['dashboard', '/environment/add', 'post'],
-		"deleteEnvironment": ['dashboard', '/environment/delete', 'delete'],
-		"editEnvironment": ['dashboard', '/environment/update', 'put'],
+		"listEnvironments": ['console', '/environment', 'get'],
+		"getEnvironment": ['console', '/environment', 'get'],
+		"addEnvironment": ['console', '/environment', 'post'],
+		"deleteEnvironment": ['console', '/environment', 'delete'],
+		"editEnvironment": ['console', '/environment', 'put'],
+		
+		"editRegistry": ['console', '/registry', 'put'],
+		
+		
 		"getEnvironmentProfile": ['dashboard', '/environment/profile', 'get'],
 		"tenantKeyUpdate": ['dashboard', '/environment/key/update', 'put'],
 		"listHosts": ['dashboard', '/hosts/list', 'get'],
@@ -1012,7 +1016,8 @@ var environmentsConfig = {
 			"logs": ['dashboard', '/cloud/vm/logs', 'post']
 		},
 		"platforms": {
-			"getEnvironment": ['dashboard', '/environment', 'get'],
+			"getEnvironment": ['console', '/registry/deployer', 'get'],
+			
 			"attachContainer": ['dashboard', '/environment/platforms/attach', 'post'],
 			"detachContainer": ['dashboard', '/environment/platforms/detach', 'delete'],
 			"createContainer": ['dashboard', '/environment/platforms/createContainer', 'post'],

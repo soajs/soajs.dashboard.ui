@@ -157,7 +157,7 @@ environmentsApp.controller('hostsCtrl', ['$scope', '$cookies', '$timeout', 'envH
 	};
 
 	if ($scope.access.listHosts) {
-		injectFiles.injectCss('modules/dashboard/environments/environments.css');
+		injectFiles.injectCss('modules/dashboard/environments2/environments.css');
 		if ($scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain })) {
 			$scope.envCode = $cookies.getObject('myEnv', { 'domain': interfaceDomain }).code;
 			$scope.listHosts($scope.envCode);

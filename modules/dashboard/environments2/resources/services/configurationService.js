@@ -6,13 +6,13 @@ resourceConfigurationService.service('resourceConfiguration', ['$http', '$timeou
 		let type = (resource && Object.keys(resource).length > 0) ? resource.type : settings.type;
 		let category = (resource && Object.keys(resource).length > 0) ? resource.category: settings.category;
 		
-		let schemaFile = "modules/dashboard/environments/resources/drivers/" + type + "/" + category + "/driver.json";
+		let schemaFile = "modules/dashboard/environments2/resources/drivers/" + type + "/" + category + "/driver.json";
 		let dynamicEntries = [];
 		
 		$http.get(schemaFile).success(function(entries) {
 			
-			let cssFile = "modules/dashboard/environments/resources/drivers/" + type + "/" + category + "/driver.css";
-			let logoPath = "modules/dashboard/environments/resources/drivers/" + type + "/" + category + "/logo.png";
+			let cssFile = "modules/dashboard/environments2/resources/drivers/" + type + "/" + category + "/driver.css";
+			let logoPath = "modules/dashboard/environments2/resources/drivers/" + type + "/" + category + "/logo.png";
 			currentScope.driverLogo = logoPath;
 			
 			currentScope.driverConfigurationSchema = entries;

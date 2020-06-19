@@ -439,7 +439,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 							delete currentScope.attach;
 							setTimeout(() => {
 								currentScope.environment.type = 'manual';
-								currentScope.getEnvPlatform(true);
+								currentScope.getRegistry(true);
 							}, 500);
 						}
 					});
@@ -692,7 +692,7 @@ platformCloudProviderServices.service('platformCloudProvider', ['ngDataApi', '$t
 								currentScope.displayAlert('danger', error.message);
 							}
 							else {
-								currentScope.getEnvPlatform(true);
+								currentScope.getRegistry(true);
 								delete currentScope.cloud;
 							}
 						});

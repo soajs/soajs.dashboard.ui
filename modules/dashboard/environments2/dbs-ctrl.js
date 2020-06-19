@@ -35,5 +35,5 @@ environmentsApp.controller('databaseCtrl', ['$scope', '$cookies', 'envDB', 'inje
 			$scope.listDatabases($scope.envCode);
 		}
 	}
-	injectFiles.injectCss('modules/dashboard/environments/environments.css');
+	injectFiles.injectCss('modules/dashboard/environments2/environments.css');
 }]);

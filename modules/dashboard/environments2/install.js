@@ -1475,13 +1475,63 @@ var environmentsNav = [
 		]
 	},
 	{
+		'id': 'registry',
+		'checkPermission': {
+			'service': 'console',
+			'route': '/registry',
+			'method': 'get'
+		},
+		'label': translation.registries[LANG],
+		'url': '#/registry',
+		'tplPath': 'modules/dashboard/environments2/registry/directives/list.tmpl',
+		'icon': 'earth',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'order': 2,
+		'mainMenu': true,
+		'tracker': true,
+		'scripts': [
+			'modules/dashboard/environments2/config.js',
+			'modules/dashboard/environments2/registry/registry-ctrl.js',
+			'modules/dashboard/environments2/registry/services/throttling.js'
+		],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'editRegistry',
+		'label': translation.registries[LANG],
+		'url': '#/registry/:code?',
+		'checkPermission': {
+			'service': 'console',
+			'route': '/registry',
+			'method': 'put'
+		},
+		'tplPath': 'modules/dashboard/environments2/registry/directives/edit.tmpl',
+		'tracker': true,
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': [
+			'modules/dashboard/environments2/config.js',
+			'modules/dashboard/environments2/registry/registry-ctrl.js',
+			'modules/dashboard/environments2/registry/services/throttling.js'
+		],
+		'ancestor': [translation.home[LANG]]
+	},
+	
+	{
 		'id': 'environments',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/environment/list',
 			'method': 'get'
 		},
-		'label': translation.registries[LANG],
+		'label': "OLD registry",
 		'url': '#/environments',
 		'tplPath': 'modules/dashboard/environments2/directives/list.tmpl',
 		'icon': 'earth',
@@ -1490,7 +1540,7 @@ var environmentsNav = [
 			'label': translation.deploy[LANG],
 			'position': 3
 		},
-		'order': 2,
+		'order': 3,
 		'mainMenu': true,
 		'tracker': true,
 		'scripts': [
@@ -1511,7 +1561,7 @@ var environmentsNav = [
 	{
 		'id': 'oneEnvironment',
 		'label': translation.environments[LANG],
-		'url': '#/environments/environment/:id?',
+		'url': '#/environments2/environment/:id?',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/environment/update',
@@ -1590,7 +1640,6 @@ var environmentsNav = [
 			'route': '/registry/deployer',
 			'method': 'get'
 		},
-		"fallbackLocation": "#/environments",
 		'label': "Configuration",
 		'url': '#/environments-platforms',
 		'tplPath': 'modules/dashboard/environments2/infra/directives/list-platforms.tmpl',
@@ -1606,11 +1655,7 @@ var environmentsNav = [
 		'scripts': [
 			'modules/dashboard/environments2/config.js',
 			'modules/dashboard/environments2/infra/platforms-ctrl.js',
-			'modules/dashboard/environments2/infra/services/platforms.js',
-			//'modules/dashboard/environments2/infra/services/vms.js',
-			'modules/dashboard/environments2/infra/services/container.js',
-			'modules/dashboard/environments2/infra/services/manual.js',
-			//'modules/dashboard/environments2/infra/services/cloudProvider.js'
+			'modules/dashboard/environments2/infra/services/container.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},

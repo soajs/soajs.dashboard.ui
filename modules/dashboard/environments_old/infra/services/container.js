@@ -409,7 +409,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 				else {
 					let autoRefreshTimeoutProgress = $timeout(() => {
 						if (!currentScope.environment.pending) {
-							currentScope.getEnvPlatform(true);
+							currentScope.getRegistry(true);
 							$timeout.cancel(autoRefreshTimeoutProgress);
 						}
 						else {
@@ -560,7 +560,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						else {
 							$scope.closeModal();
 							currentScope.displayAlert('success', 'Namespace configuration updated successfully');
-							currentScope.getEnvPlatform();
+							currentScope.getRegistry();
 						}
 					});
 				};

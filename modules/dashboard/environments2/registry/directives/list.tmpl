@@ -1,0 +1,52 @@
+<section ng-controller="registryCtrl">
+	
+	<div ng-show="!registry">
+		<hr>
+		<div class="table w100 c-both grid">
+			<table width="100%" cellpadding="10" cellspacing="10">
+				<tr class="odd">
+					<td style='padding:12px; font-size:15px;'>Empty registry.</td>
+				</tr>
+			</table>
+		</div>
+		<br/>
+	</div>
+	<tabset ng-show="registry">
+		<tab heading="{{translation.defaultRegistry[LANG]}}">
+			<br/>
+			
+			<div class="entryBoxes">
+				<div class="entryBox">
+					<div class="header">
+						<span>{{translation.code[LANG]}}: {{registry.code}}</span>
+						<span ng-show="registry['sitePrefix'] && registry.domain"> / {{translation.siteDomain[LANG]}}: {{registry.sitePrefix}}.{{registry.domain}}</span>
+						<span ng-show="registry['apiPrefix'] && registry.domain"> / {{translation.apiDomain[LANG]}} : {{registry.apiPrefix}}.{{registry.domain}}</span>
+					</div>
+					<div class="body">
+						<div class="description">
+							{{registry.description}}
+						</div>
+						<br/>
+						
+						<div ng-include="'modules/dashboard/environments2/registry/directives/list-service-config.tmpl'"></div>
+						<div class="entryAction">
+							
+							<a ng-if="access.editRegistry" href="" ng-click="updateRegisrty(registry);">
+								<span class="icon icon-pencil2" tooltip="{{translation.editEnvironment[LANG]}}"></span>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</tab>
+		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Throttling">
+			<br/>
+			<div ng-include="'modules/dashboard/environments2/registry/directives/throttling.tmpl'"></div>
+		</tab>
+		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Databases">
+			<br/>
+			<!--<div ng-include="'modules/dashboard/environments2/directives/list-databases.tmpl'"></div>-->
+		</tab>
+	
+	</tabset>
+</section>

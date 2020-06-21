@@ -5,7 +5,10 @@ manualServices.service('manualServices', [function () {
 	function init(currentScope) {
 		currentScope.wizard.currentStep = "manual";
 		currentScope.wizard.form.actions = [];
-		
+		currentScope.wizard.form.data.ip = "127.0.0.1";
+		if (!currentScope.wizard.form.data.port) {
+			currentScope.wizard.form.data.port = 10000;
+		}
 		//add go back button
 		currentScope.wizard.form.actions.push({
 			'type': 'button',

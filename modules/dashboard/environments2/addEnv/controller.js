@@ -17,7 +17,7 @@ addEnv.controller('addEnvCtrl', ['$scope', 'ngDataApi', 'injectFiles', 'typeServ
 			"data": {
 				"template": "Blank environment"
 			},
-			"entries": {},
+			//"entries": {},
 			"actions": []
 		},
 		"go": {
@@ -58,10 +58,10 @@ addEnv.controller('addEnvCtrl', ['$scope', 'ngDataApi', 'injectFiles', 'typeServ
 		$scope.$parent.go("/environments-platforms");
 	};
 	
-	injectFiles.injectCss('modules/dashboard/environments2/environments-add.css');
 	$scope.$parent.collapseExpandMainMenu(true);
 	$scope.reRenderMenu('empty');
 	
 	$scope.wizard.go.type();
 	
+	injectFiles.injectCss('modules/dashboard/environments2/environments-add.css');
 }]);

@@ -5,13 +5,12 @@ giServices.service('giServices', [function () {
 	function init(currentScope) {
 		currentScope.wizard.currentStep = "gi";
 		currentScope.wizard.form.actions = [];
-		currentScope.wizard.form.entries.code = {
-			required: true,
-			disabled: false
-		};
-		currentScope.wizard.form.entries.description = {
-			required: true
-		};
+		// currentScope.wizard.form.entries.code = {
+		// 	required: true
+		// };
+		// currentScope.wizard.form.entries.description = {
+		// 	required: true
+		// };
 		
 		//add go back button
 		currentScope.wizard.form.actions.push({

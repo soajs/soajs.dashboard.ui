@@ -1,6 +1,6 @@
 "use strict";
 let overviewServices = soajsApp.components;
-overviewServices.service('overviewServices', [function () {
+overviewServices.service('overviewServices', ['ngDataApi', function (ngDataApi) {
 	
 	function init(currentScope) {
 		currentScope.wizard.currentStep = "overview";
@@ -28,6 +28,34 @@ overviewServices.service('overviewServices', [function () {
 			'visible': true,
 			'trigger': () => {
 				console.log(currentScope.wizard);
+				let options = {
+					"method": "post",
+					"routeName": "/console/environment",
+					"data": {
+						"code": currentScope.wizard.form.data.code,
+						"description": currentScope.wizard.form.data.description,
+						"settings": {
+							"type": currentScope.wizard.envType
+						}
+					}
+				};
+				if (currentScope.wizard.envType === "manual") {
+					options.data.settings.port = currentScope.wizard.form.data.port;
+				}
+				if (currentScope.wizard.envType === "container") {
+					options.data.settings.namespace = currentScope.wizard.form.data.namespace;
+					options.data.settings.id = currentScope.wizard.provider._id;
+					options.data.settings.type = "kubernetes";
+				}
+				getSendDataFromServer(currentScope, ngDataApi, options, function (error, response) {
+					if (error) {
+						currentScope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+					}
+					if (response) {
+						currentScope.$parent.displayAlert('success', "Environment has been created.");
+						currentScope.exitWizard();
+					}
+				});
 			}
 		});
 		

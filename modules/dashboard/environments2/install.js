@@ -17,7 +17,7 @@ var envTranslation = {
 		"ENG": "Endpoints",
 		"FRA": "Endpoints"
 	},
-	"noEndPointsAdded":{
+	"noEndPointsAdded": {
 		"ENG": "No Endpoints Added",
 		"FRA": "No Endpoints Added"
 	},
@@ -816,7 +816,7 @@ var envTranslation = {
 		"ENG": "if oAuth type is oAuth2.0 & oAuth User Authentication Type is Client to server, load user profile from token to accelerate response",
 		"FRA": "if oAuth type is oAuth2.0 & oAuth User Authentication Type is Client to server, load user profile from token to accelerate response"
 	},
-
+	
 	"enterCommaSeparatedValues": {
 		"ENG": "Enter comma separated values",
 		"FRA": "Enter comma separated values"
@@ -982,7 +982,7 @@ var envTranslation = {
 	 You need to go to Multi-Tenancy and generate new keys for all your tenants
 	 Specify the algorithm to use and a password (minimum 5 characters) to encrypt tenant keys. More info on what options are supported is found at
 	 */
-
+	
 	"changingTenantKeySecurityEncryptionConfigurationDisablesTenantKeys": {
 		"ENG": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys.",
 		"FRA": "Changing the tenant key security encryption configuration, disables the usage of all tenant keys."
@@ -1280,7 +1280,7 @@ var envTranslation = {
 		"ENG": "Private Key",
 		"FRA": "Private Key"
 	},
-
+	
 	//list-service-config
 	"reloadRegistry": {
 		"ENG": "Reload Registry",
@@ -1408,14 +1408,14 @@ for (var attrname in envTranslation) {
 
 var environmentsNav = [
 	{
-		'id': 'add-environments',
+		'id': 'add-environments-old',
 		'checkPermission': {
 			'service': 'dashboard',
 			'route': '/environment/add',
 			'method': 'post'
 		},
 		'label': translation.addNewEnvironment[LANG],
-		'url': '#/environments-add',
+		'url': '#/environments-add-old',
 		'tplPath': 'modules/dashboard/environments2/directives/add/index.tmpl',
 		'pillar': {
 			'name': 'deployment',
@@ -1429,7 +1429,7 @@ var environmentsNav = [
 			'modules/dashboard/environments2/add/templateSrv.js',
 			
 			'modules/dashboard/environments2/add/giSrv.js',
-
+			
 			'modules/dashboard/environments2/add/manualSrv.js',
 			
 			'modules/dashboard/environments2/add/cloudProviderSrv.js',
@@ -1444,7 +1444,7 @@ var environmentsNav = [
 			'modules/dashboard/environments2/add/registrySrv.js',
 			
 			'modules/dashboard/environments2/add/overviewSrv.js',
-
+			
 			'modules/dashboard/environments2/add/nginxSrv.js',
 			
 			'modules/dashboard/environments2/add/dynamicSrv.js',
@@ -1459,19 +1459,80 @@ var environmentsNav = [
 			'modules/dashboard/environments2/services/custom_registry.js',
 			
 			'modules/dashboard/environments2/infra/services/vms.js',
-
+			
 			'modules/dashboard/resources/config.js',
 			'modules/dashboard/resources/services/deployService.js',
 			'modules/dashboard/resources/services/configurationService.js',
 			'modules/dashboard/resources/services/deployService.js',
 			'modules/dashboard/resources/services/commonService.js',
 			'modules/dashboard/resources/services/addService.js',
-
+			
 			'modules/dashboard/secrets/config.js',
 			'modules/dashboard/secrets/services/secretsService.js',
-
+			
 			'modules/dashboard/environments2/services/repos.js',
 			'modules/dashboard/environments2/services/deployServiceDep.js'
+		]
+	},
+	{
+		'id': 'environments',
+		'checkPermission': {
+			'service': 'dashboard',
+			'route': '/environment/list',
+			'method': 'get'
+		},
+		'label': "OLD registry",
+		'url': '#/environments',
+		'tplPath': 'modules/dashboard/environments2/directives/list.tmpl',
+		'icon': 'earth',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'order': 3,
+		'mainMenu': true,
+		'tracker': true,
+		'scripts': [
+			'modules/dashboard/environments2/config.js',
+			'modules/dashboard/environments2/controller.js',
+			'modules/dashboard/environments2/services/custom_registry.js',
+			'modules/dashboard/environments2/services/throttling.js',
+			'modules/dashboard/environments2/dbs-ctrl.js',
+			'modules/dashboard/environments2/services/database.js',
+			'modules/dashboard/environments2/resources/controller.js',
+			'modules/dashboard/environments2/resources/services/configurationService.js',
+			'modules/dashboard/environments2/resources/services/commonService.js',
+			'modules/dashboard/environments2/resources/services/addService.js',
+			'modules/dashboard/environments2/resources/services/deployService.js'
+		],
+		'ancestor': [translation.home[LANG]]
+	},
+	
+	
+	{
+		'id': 'add-environments',
+		'checkPermission': {
+			'service': 'console',
+			'route': '/environment',
+			'method': 'post'
+		},
+		'label': translation.addNewEnvironment[LANG],
+		'url': '#/environments-add',
+		'tplPath': 'modules/dashboard/environments2/addEnv/directives/index.tmpl',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': [
+			'modules/dashboard/environments2/config.js',
+			'modules/dashboard/environments2/addEnv/controller.js',
+			'modules/dashboard/environments2/addEnv/services/type.js',
+			'modules/dashboard/environments2/addEnv/services/gi.js',
+			'modules/dashboard/environments2/addEnv/services/manual.js',
+			'modules/dashboard/environments2/addEnv/services/container.js',
+			'modules/dashboard/environments2/addEnv/services/overview.js'
 		]
 	},
 	{
@@ -1523,116 +1584,6 @@ var environmentsNav = [
 		],
 		'ancestor': [translation.home[LANG]]
 	},
-	
-	{
-		'id': 'environments',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environment/list',
-			'method': 'get'
-		},
-		'label': "OLD registry",
-		'url': '#/environments',
-		'tplPath': 'modules/dashboard/environments2/directives/list.tmpl',
-		'icon': 'earth',
-		'pillar': {
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'order': 3,
-		'mainMenu': true,
-		'tracker': true,
-		'scripts': [
-			'modules/dashboard/environments2/config.js',
-			'modules/dashboard/environments2/controller.js',
-			'modules/dashboard/environments2/services/custom_registry.js',
-			'modules/dashboard/environments2/services/throttling.js',
-			'modules/dashboard/environments2/dbs-ctrl.js',
-			'modules/dashboard/environments2/services/database.js',
-			'modules/dashboard/environments2/resources/controller.js',
-			'modules/dashboard/environments2/resources/services/configurationService.js',
-			'modules/dashboard/environments2/resources/services/commonService.js',
-			'modules/dashboard/environments2/resources/services/addService.js',
-			'modules/dashboard/environments2/resources/services/deployService.js'
-		],
-		'ancestor': [translation.home[LANG]]
-	},
-	{
-		'id': 'oneEnvironment',
-		'label': translation.environments[LANG],
-		'url': '#/environments2/environment/:id?',
-		'checkPermission': {
-			'service': 'dashboard',
-			'route': '/environment/update',
-			'method': 'put'
-		},
-		'tplPath': 'modules/dashboard/environments2/directives/edit.tmpl',
-		'tracker': true,
-		'pillar': {
-			'name': 'deployment',
-			'label': translation.deploy[LANG],
-			'position': 3
-		},
-		'scripts': [
-			'modules/dashboard/environments2/config.js',
-			'modules/dashboard/environments2/controller.js',
-			'modules/dashboard/environments2/services/custom_registry.js',
-			'modules/dashboard/environments2/services/throttling.js',
-			'modules/dashboard/environments2/services/database.js',
-			'modules/dashboard/environments2/services/hosts.js',
-			'modules/dashboard/environments2/services/deploy.js'
-		],
-		'ancestor': [translation.home[LANG]]
-	},
-	// {
-	// 	'id': 'repositories',
-	// 	'checkPermission': {
-	// 		'service': 'dashboard',
-	// 		'route': '/cloud/services/list',
-	// 		'method': 'get'
-	// 	},
-	// 	'label': translation.repositories[LANG],
-	// 	'url': '#/deploy-repositories',
-	// 	'tplPath': 'modules/dashboard/environments/directives/list-repos.tmpl',
-	// 	'icon': 'git',
-	// 	'excludedEnvs': ['dashboard'],
-	// 	"fallbackLocation": "#/environments",
-	// 	'pillar': {
-	// 		'name': 'deployment',
-	// 		'label': translation.deploy[LANG],
-	// 		'position': 3
-	// 	},
-	// 	'order': 2,
-	// 	'mainMenu': true,
-	// 	'tracker': true,
-	// 	'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/repos-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
-	// 	'ancestor': [translation.home[LANG]]
-	// },
-	// {
-	// 	'id': 'endpoints',
-	// 	'checkPermission': {
-	// 		'service': 'dashboard',
-	// 		'route': '/cloud/services/list',
-	// 		'method': 'get'
-	// 	},
-	// 	'label': translation.endpoints[LANG],
-	// 	'url': '#/deploy-endpoints',
-	// 	'tplPath': 'modules/dashboard/environments/directives/list-endpoints.tmpl',
-	// 	'icon': 'laptop',
-	// 	'excludedEnvs': ['dashboard'],
-	// 	"fallbackLocation": "#/environments",
-	// 	'pillar': {
-	// 		'name': 'deployment',
-	// 		'label': translation.deploy[LANG],
-	// 		'position': 3
-	// 	},
-	// 	'order': 2,
-	// 	'mainMenu': true,
-	// 	'tracker': true,
-	// 	'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/endpoint-ctrl.js', 'modules/dashboard/environments/services/repos.js', 'modules/dashboard/environments/services/deployServiceDep.js'],
-	// 	'ancestor': [translation.home[LANG]]
-	// },
 	{
 		'id': 'environments-platforms',
 		'checkPermission': {
@@ -1659,28 +1610,6 @@ var environmentsNav = [
 		],
 		'ancestor': [translation.home[LANG]]
 	},
-	// {
-	// 	'id': 'environments-dbs',
-	// 	'checkPermission': {
-	// 		'service': 'dashboard',
-	// 		'route': '/environment/dbs/list',
-	// 		'method': 'get'
-	// 	},
-	// 	'label': translation.databases[LANG],
-	// 	'url': '#/environments-dbs',
-	// 	'tplPath': 'modules/dashboard/environments/directives/list-databases.tmpl',
-	// 	'icon': 'database',
-	// 	'pillar': {
-	// 		'name': 'deployment',
-	// 		'label': translation.deploy[LANG],
-	// 		'position': 3
-	// 	},
-	// 	'order': 6,
-	// 	'mainMenu': true,
-	// 	'tracker': true,
-	// 	'scripts': ['modules/dashboard/environments/config.js', 'modules/dashboard/environments/dbs-ctrl.js', 'modules/dashboard/environments/services/database.js'],
-	// 	'ancestor': [translation.home[LANG]]
-	// },
 	{
 		'id': 'environments-clouds-deployments',
 		'checkPermission': {
@@ -1707,7 +1636,7 @@ var environmentsNav = [
 			'modules/dashboard/environments2/services/podService.js',
 			'modules/dashboard/environments2/services/pvcService.js',
 			'modules/dashboard/environments2/services/cloudServices.js',
-		
+			
 			
 			//'modules/dashboard/environments/clouds.js',
 			// 'modules/dashboard/environments/hosts-ctrl.js',

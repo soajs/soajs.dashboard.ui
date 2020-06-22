@@ -2,7 +2,6 @@
 let addEnv = soajsApp.components;
 addEnv.controller('addEnvCtrl', ['$scope', 'ngDataApi', 'injectFiles', 'typeServices', 'giServices', 'manualServices', 'containerServices', 'overviewServices', function ($scope, ngDataApi, injectFiles, typeServices, giServices, manualServices, containerServices, overviewServices) {
 	$scope.$parent.isUserLoggedIn();
-	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
@@ -17,7 +16,6 @@ addEnv.controller('addEnvCtrl', ['$scope', 'ngDataApi', 'injectFiles', 'typeServ
 			"data": {
 				"template": "Blank environment"
 			},
-			//"entries": {},
 			"actions": []
 		},
 		"go": {

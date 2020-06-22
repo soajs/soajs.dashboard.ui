@@ -62,10 +62,7 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 		});
 	};
 	
-	$scope.getEnvPlatform = function (overlay) {
-		if (overlay) {
-			overlayLoading.show();
-		}
+	$scope.getEnvPlatform = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/console/registry/deployer",
@@ -73,9 +70,6 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 				"env": $scope.envCode
 			}
 		}, function (error, response) {
-			if (overlay) {
-				overlayLoading.hide();
-			}
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
 			}
@@ -107,9 +101,6 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 				"code": envCode
 			}
 		}, function (error) {
-			if (overlay) {
-				overlayLoading.hide();
-			}
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
 			}

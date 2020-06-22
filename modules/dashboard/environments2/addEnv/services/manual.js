@@ -26,7 +26,11 @@ manualServices.service('manualServices', [function () {
 			'btn': 'primary',
 			'visible': true,
 			'trigger': () => {
-				currentScope.wizard.go.overview();
+				if (!currentScope.wizard.form.data.port) {
+					currentScope.$parent.displayAlert('danger', null, true, 'console', "Please fill in all required fields!");
+				} else {
+					currentScope.wizard.go.overview();
+				}
 			}
 		});
 		

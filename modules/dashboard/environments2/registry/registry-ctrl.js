@@ -6,36 +6,6 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, environmentsConfig.permissions);
 	
-	$scope.getRegistry = function (overlay) {
-		if (overlay) {
-			overlayLoading.show();
-		}
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/console/registry",
-			"params": {
-				"env": $scope.envCode
-			}
-		}, function (error, response) {
-			if (overlay) {
-				overlayLoading.hide();
-			}
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
-			}
-			else {
-				$scope.registry = response || null;
-				throttlingSrv.get($scope, $scope.envCode, (error, response) => {
-					$scope.throttling = response.throttling;
-					$scope.throttlingStrategies = response.throttlingStrategies;
-				});
-			}
-		});
-	};
-	
-	$scope.updateRegisrty = function (data) {
-		$scope.$parent.go('/registry/' + data.code);
-	};
 	
 	$scope.updateThrottling = function (throttling) {
 		throttlingSrv.update($scope, $scope.envCode, throttling);
@@ -51,10 +21,45 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 	};
 	
 	
+	$scope.updateDbPrefix = function (code, prefix) {
+	
+	};
+	$scope.editSessionDatabase = function (code, sessionSettings) {
+	
+	};
+	$scope.removeDatabase = function (code, dbName) {
+	
+	};
+	$scope.addDatabase = function (code, session) {
+	
+	};
+	
+	
+	$scope.getRegistry = function () {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/console/registry",
+			"params": {
+				"env": $scope.envCode
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+			}
+			else {
+				$scope.registry = response || null;
+				throttlingSrv.get($scope, $scope.envCode, (error, response) => {
+					$scope.throttling = response.throttling;
+					$scope.throttlingStrategies = response.throttlingStrategies;
+				});
+			}
+		});
+	};
+	$scope.updateRegisrty = function (data) {
+		$scope.$parent.go('/registry/' + data.code);
+	};
+	
 	$scope.editRegistry = function (code) {
-		if (overlay) {
-			overlayLoading.show();
-		}
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/console/registry",
@@ -62,9 +67,6 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 				"env": code
 			}
 		}, function (error, response) {
-			if (overlay) {
-				overlayLoading.hide();
-			}
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
 			}

@@ -5,12 +5,6 @@ giServices.service('giServices', [function () {
 	function init(currentScope) {
 		currentScope.wizard.currentStep = "gi";
 		currentScope.wizard.form.actions = [];
-		// currentScope.wizard.form.entries.code = {
-		// 	required: true
-		// };
-		// currentScope.wizard.form.entries.description = {
-		// 	required: true
-		// };
 		
 		//add go back button
 		currentScope.wizard.form.actions.push({
@@ -29,14 +23,17 @@ giServices.service('giServices', [function () {
 			'btn': 'primary',
 			'visible': true,
 			'trigger': () => {
-				if (currentScope.wizard.envType === "manual") {
-					currentScope.wizard.go.manual();
-				} else if (currentScope.wizard.envType === "container") {
-					currentScope.wizard.go.container();
+				if (!currentScope.wizard.form.data.code || !currentScope.wizard.form.data.description) {
+					currentScope.$parent.displayAlert('danger', null, true, 'console', "Please fill in all required fields!");
+				} else {
+					if (currentScope.wizard.envType === "manual") {
+						currentScope.wizard.go.manual();
+					} else if (currentScope.wizard.envType === "container") {
+						currentScope.wizard.go.container();
+					}
 				}
 			}
 		});
-		
 		//add cancel all button
 		currentScope.wizard.form.actions.push({
 			'type': 'reset',

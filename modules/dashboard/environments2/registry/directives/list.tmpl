@@ -39,14 +39,21 @@
 				</div>
 			</div>
 		</tab>
-		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Throttling">
+		<tab heading="Throttling">
 			<br/>
 			<div ng-include="'modules/dashboard/environments2/registry/directives/throttling.tmpl'"></div>
 		</tab>
-		<tab ng-show="!grid.rows[0].pending && !grid.rows[0].error" heading="Databases">
+		<tab  heading="Databases">
 			<br/>
-			<!--<div ng-include="'modules/dashboard/environments2/directives/list-databases.tmpl'"></div>-->
+			<div ng-include="'modules/dashboard/environments2/registry/directives/list-databases.tmpl'"></div>
 		</tab>
-	
+		<tab heading="Custom Registry">
+			<br/>
+			<div ng-include="'modules/dashboard/environments2/customRegistry/directives/list.tmpl'"></div>
+		</tab>
+		<tab heading="Resource Configuration">
+			<br/>
+			<div ng-include="'modules/dashboard/environments2/resource/directives/list.tmpl'"></div>
+		</tab>
 	</tabset>
 </section>

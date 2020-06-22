@@ -1557,7 +1557,9 @@ var environmentsNav = [
 		'scripts': [
 			'modules/dashboard/environments2/config.js',
 			'modules/dashboard/environments2/registry/registry-ctrl.js',
-			'modules/dashboard/environments2/registry/services/throttling.js'
+			'modules/dashboard/environments2/registry/services/throttling.js',
+			'modules/dashboard/environments2/customRegistry/controller.js',
+			'modules/dashboard/environments2/resource/controller.js'
 		],
 		'ancestor': [translation.home[LANG]]
 	},

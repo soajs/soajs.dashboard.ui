@@ -1,0 +1,74 @@
+{
+  "password" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "password",
+    "label": "Password",
+    "placeholder": ""
+  },
+  "username" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "username",
+    "label": "Username",
+    "placeholder": ""
+  },
+  "realm" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "realm",
+    "label": "Realm",
+    "placeholder": ""
+  },
+  "nonce" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "nonce",
+    "label": "Nonce",
+    "placeholder": ""
+  },
+  "algorithm" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "algorithm",
+    "label": "Algorithm",
+    "placeholder": ""
+  },
+  "qop" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "qop",
+    "label": "QOP",
+    "placeholder": ""
+  },
+  "noncecount" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "noncecount",
+    "label": "Nonce count",
+    "placeholder": ""
+  },
+  "clientnonce" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "clientnonce",
+    "label": "Client nonce",
+    "placeholder": ""
+  },
+  "opaque" : {
+    "type": "text",
+    "required": true,
+    "value": "",
+    "name": "opaque",
+    "label": "Opaque",
+    "placeholder": ""
+  }
+}

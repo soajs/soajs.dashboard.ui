@@ -1,0 +1,70 @@
+<section>
+	<div>
+		<div>
+			<button class="btn btn-primary" type="button" aria-haspopup="true" aria-expanded="true"
+			        ng-click="addPVC()">
+				Add New PVC Wizard
+			</button>
+			<button ng-if="access.kubernetes.pvc.addItem" class="btn btn-primary" type="button" aria-haspopup="true" aria-expanded="true"
+			        ng-click="createItem('PVC')">
+				Add New PVC
+			</button>
+			<button class="btn btn-primary f-right" type="button" aria-haspopup="true" aria-expanded="true"
+			        ng-click="listPVC(searchKeyword)">
+				Search</span>
+			</button>
+			<input type="text" class="secret-search form-control f-right" ng-model="searchKeyword"
+			       placeholder="Search ..."/>
+			
+		</div>
+		<br>
+		<div ng-if="pvc && pvc.items.length > 0">
+			<ul class="blueListing">
+				<li class="blueLi row-list active" ng-repeat="item in pvc.items"
+				    ng-style="{'width': '99%'}">
+					<div style="width: 55%;display: inline-block">
+						<span class="">{{item.metadata.name}}</span>
+					</div>
+					
+					<div style="width: 25%;display: inline-block">
+						<span>Type: </span> <span class="">{{item.spec.accessModes.join(' - ')}}</span>
+					</div>
+					
+					<div style="width: 20%;display: inline-block">
+						<span>Created: </span> <span class="">{{item.metadata.creationTimestamp}}</span>
+					</div>
+					<div style="float: right">
+						<a ng-click="inspectItem(item)"
+						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+								tooltip="inspect PVC" class="icon icon-info"></span></a>
+					</div>
+					<div ng-if="access.kubernetes.pvc.delete" style="float: right">
+						<a ng-click="deletePVC(item)" ng-confirm-click="Are you sure you want to delete this PVC?"
+						   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
+								tooltip="delete PVC" class="icon icon-cross"></span></a>
+					</div>
+				</li>
+				<li class="blueLi row-list" ng-show="pvc.metadata.continue" ng-style="{'width': '99%'}">
+					<a href="" class="loadMore" ng-click="listPVC(searchKeyword)">Load More</a>
+				</li>
+			</ul>
+		</div>
+		<div ng-if="!pvc || pvc.items.length === 0">
+			<br/>
+			<br/>
+			<alert type="warning">No PVCs found</alert>
+		</div>
+	</div>
+
+</section>
+
+<script type="text/ng-template" id="newPvc.tmpl">
+	<div class="form">
+		<div class="modal-header">
+			<h3 class="modal-title">Create New PVC</h3>
+		</div>
+		<div class="">
+			<ngform></ngform>
+		</div>
+	</div>
+</script>

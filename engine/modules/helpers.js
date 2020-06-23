@@ -1,5 +1,8 @@
 "use strict";
 
+
+const _get = (p, o) => p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
+
 /**
  * build the access permissions of a module from permissionsObj
  */

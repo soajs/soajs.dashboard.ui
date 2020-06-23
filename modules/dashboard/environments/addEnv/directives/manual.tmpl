@@ -1,0 +1,33 @@
+<br/>
+<alert type="info">
+	<p>
+		I will Deploy Everything Myself on the Machine, I will also handle pulling and applying updates on the machine
+		of this Environment.
+	</p>
+</alert>
+<br/>
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+	<tbody>
+		<tr class="form-group machinePort-wrapper">
+			<td>
+				<div id="manualIP-wrapper">
+					<label class="f-left">Machine IP Address</label>
+					<input type="text" ng-model="wizard.form.data.ip" class="form-control" disabled/>
+					<div class="fieldMsg hint">All Deployments will be handled manually by Me on this Machine whose IP
+						address is ( 127.0.0.1 )
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr class="form-group machinePort-wrapper">
+			<td>
+				<div id="port-wrapper">
+					<label class="f-left">Gateway Port</label>
+					<input type="number" ng-model="wizard.form.data.port" class="form-control" ng-required="true"/>
+					<div class="fieldMsg hint">Provide the port value of the SOAJS API Gateway.</div>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div ng-include="'modules/dashboard/environments/addEnv/directives/actions.tmpl'"></div>

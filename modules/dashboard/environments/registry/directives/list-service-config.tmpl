@@ -1,0 +1,40 @@
+<br/>
+<div ng-if="registry.services">
+	<fieldset>
+		<div class="grid">
+			<h3>{{translation.reloadRegistry[LANG]}}</h3>
+			<p>{{translation.theFollowingConfigurationModifiedEveryTimeReloadRegistryMaintenanceOperation[LANG]}}</p>
+			<table width="100%">
+				<tr class="first odd">
+					<td width="10%" valign="top"><b>{{translation.awareness[LANG]}}</b></td>
+					<td width="40%" valign="top" ng-bind-html="registry.services.config.awareness|object"></td>
+					<td width="10%" valign="top"><b>Cors</b></td>
+					<td width="40%" valign="top" ng-bind-html="registry.services.config.cors|object"></td>
+				</tr>
+			</table>
+		</div>
+	</fieldset>
+	<br/>
+	<fieldset>
+		<div class="grid">
+			<h3>{{translation.restartService[LANG]}}</h3>
+			<p>
+				{{translation.theFollowingConfigurationModifiedEveryTimeReloadRegistryMaintenanceOperationRequiresServiceRestartContent[LANG]}}
+			</p>
+			<table width="100%">
+				<tr class="first odd">
+					<td width="10%" valign="top"><b>Controller</b></td>
+					<td valign="40%" ng-bind-html="registry.services.controller|object"></td>
+					<td width="10%" valign="top"><b>oAuth</b></td>
+					<td width="40%" valign="top" ng-bind-html="registry.services.config.oauth|object"></td>
+				</tr>
+				<tr class="even">
+					<td valign="top"><b>{{translation.logger[LANG]}}</b></td>
+					<td valign="top" ng-bind-html="registry.services.config.logger|object"></td>
+					<td valign="top"><b>Ports</b></td>
+					<td valign="top" ng-bind-html="registry.services.config.ports|object"></td>
+				</tr>
+			</table>
+		</div>
+	</fieldset>
+</div>

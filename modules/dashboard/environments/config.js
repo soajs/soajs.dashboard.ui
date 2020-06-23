@@ -805,7 +805,7 @@ var environmentsConfig = {
 			data: {
 				types: [
 					{'v': 'cluster', 'l': "Cluster"},
-					{'v': 'server', 'l': "Server"},
+					//{'v': 'server', 'l': "Server"},
 					{'v': 'cdn', 'l': "CDN"},
 					{'v': 'system', 'l': "System"},
 					{'v': 'authorization', 'l': "Authorization"},
@@ -984,11 +984,15 @@ var environmentsConfig = {
 		"setConfig": ['dashboard', '/resources/config/update', 'put'],
 		
 		
-		"listEnvironments": ['dashboard', '/environment/list', 'get'],
-		"getEnvironment": ['dashboard', '/environment', 'get'],
-		"addEnvironment": ['dashboard', '/environment/add', 'post'],
-		"deleteEnvironment": ['dashboard', '/environment/delete', 'delete'],
-		"editEnvironment": ['dashboard', '/environment/update', 'put'],
+		"listEnvironments": ['console', '/environment', 'get'],
+		"getEnvironment": ['console', '/environment', 'get'],
+		"addEnvironment": ['console', '/environment', 'post'],
+		"deleteEnvironment": ['console', '/environment', 'delete'],
+		"editEnvironment": ['console', '/environment', 'put'],
+		
+		"editRegistry": ['console', '/registry', 'put'],
+		
+		
 		"getEnvironmentProfile": ['dashboard', '/environment/profile', 'get'],
 		"tenantKeyUpdate": ['dashboard', '/environment/key/update', 'put'],
 		"listHosts": ['dashboard', '/hosts/list', 'get'],
@@ -996,11 +1000,11 @@ var environmentsConfig = {
 		"stopHost": ['dashboard', '/hosts/stop', 'post'],
 		"cd": ['dashboard', '/cd', 'post'],
 		"dbs": {
-			"list": ['dashboard', '/environment/dbs/list', 'get'],
-			"add": ['dashboard', '/environment/dbs/add', 'post'],
-			"delete": ['dashboard', '/environment/dbs/delete', 'delete'],
-			"update": ['dashboard', '/environment/dbs/update', 'put'],
-			"updatePrefix": ['dashboard', '/environment/dbs/updatePrefix', 'put']
+			"list": ['console', '/registry', 'get'],
+			"add": ['console', '/registry/db/custom', 'post'],
+			"delete": ['console', '/registry/db/custom', 'delete'],
+			"update": ['console', '/environment/dbs/update', 'put'],
+			"updatePrefix": ['console', '/registry/db/prefix', 'put']
 		},
 		"vm": {
 			"list": ['dashboard', '/cloud/vm/list', 'get'],
@@ -1012,7 +1016,8 @@ var environmentsConfig = {
 			"logs": ['dashboard', '/cloud/vm/logs', 'post']
 		},
 		"platforms": {
-			"getEnvironment": ['dashboard', '/environment', 'get'],
+			"getEnvironment": ['console', '/registry/deployer', 'get'],
+			
 			"attachContainer": ['dashboard', '/environment/platforms/attach', 'post'],
 			"detachContainer": ['dashboard', '/environment/platforms/detach', 'delete'],
 			"createContainer": ['dashboard', '/environment/platforms/createContainer', 'post'],
@@ -1044,11 +1049,16 @@ var environmentsConfig = {
 			"listAccountRepos": ["dashboard", "/gitAccounts/getRepos", "get"]
 		},
 		"customRegistry": {
-			"list": ["dashboard", "/customRegistry/list", "get"],
-			"add": ["dashboard", "/customRegistry/add", "post"],
-			"update": ["dashboard", "/customRegistry/update", "put"],
-			"upgrade": ["dashboard", "/customRegistry/upgrade", "put"],
-			"delete": ["dashboard", "/customRegistry/delete", "delete"]
+			"list": ["console", "/registry/custom", "get"],
+			"add": ["console", "/registry/custom", "post"],
+			"update": ["console", "/registry/custom", "put"],
+			"delete": ["console", "/registry/custom", "delete"]
+		},
+		"resource": {
+			"list": ["console", "/registry/resource", "get"],
+			"add": ["console", "/registry/resource", "post"],
+			"update": ["console", "/registry/resource", "put"],
+			"delete": ["console", "/registry/resource", "delete"]
 		}
 	},
 	

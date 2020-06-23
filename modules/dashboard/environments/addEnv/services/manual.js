@@ -1,0 +1,60 @@
+"use strict";
+let manualServices = soajsApp.components;
+manualServices.service('manualServices', [function () {
+	
+	function init(currentScope) {
+		currentScope.wizard.currentStep = "manual";
+		currentScope.wizard.form.actions = [];
+		currentScope.wizard.form.data.ip = "127.0.0.1";
+		if (!currentScope.wizard.form.data.port) {
+			currentScope.wizard.form.data.port = 10000;
+		}
+		//add go back button
+		currentScope.wizard.form.actions.push({
+			'type': 'button',
+			'label': 'Back',
+			'btn': 'success',
+			'visible': true,
+			'trigger': () => {
+				currentScope.wizard.go.gi();
+			}
+		});
+		//check and add next or finalize buttton
+		currentScope.wizard.form.actions.push({
+			'type': 'submit',
+			'label': 'Next',
+			'btn': 'primary',
+			'visible': true,
+			'trigger': () => {
+				if (!currentScope.wizard.form.data.port) {
+					currentScope.$parent.displayAlert('danger', null, true, 'console', "Please fill in all required fields!");
+				} else {
+					currentScope.wizard.go.overview();
+				}
+			}
+		});
+		
+		//add cancel all button
+		currentScope.wizard.form.actions.push({
+			'type': 'reset',
+			'label': translation.cancel[LANG],
+			'btn': 'danger',
+			'visible': true,
+			'trigger': () => {
+				currentScope.exitWizard();
+			}
+		});
+	}
+	
+	function addActions(currentScope) {
+		
+		currentScope.wizard.form.do = function (action) {
+			action.trigger();
+		}
+	}
+	
+	return {
+		"init": init,
+		"addActions": addActions
+	}
+}]);

@@ -57,3 +57,34 @@
 		</tab>
 	</tabset>
 </section>
+<script type="text/ng-template" id="session.tmpl">
+	<div class="modal-header custom-modal-header">
+		<h3 class="modal-title">Edit Session Database
+		</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form" ng-include="'modules/dashboard/environments/registry/directives/session.tmpl'"></div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" ng-click="submit()">
+			Save
+		</button>
+		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="db.tmpl">
+	<div class="modal-header custom-modal-header">
+		<h3 class="modal-title">Add Database
+		</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form" ng-include="'modules/dashboard/environments/registry/directives/db.tmpl'"></div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" ng-click="submit()">
+			Save
+		</button>
+		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+	</div>
+</script>

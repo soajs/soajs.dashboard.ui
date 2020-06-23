@@ -20,7 +20,7 @@
 	<accordion-group is-open="false">
 		<accordion-heading>Session</accordion-heading>
 		<div ng-if="!registry.dbs.session">
-			<a ng-click="addDatabase(registry.code,true)" class="btn btn-sm btn-primary">{{translation.addSessionDatabase[LANG]}}</a><br/><br/>
+			<a ng-click="editSessionDatabase()" class="btn btn-sm btn-primary">{{translation.addSessionDatabase[LANG]}}</a><br/><br/>
 		</div>
 		<ul class="blueListing" ng-if="registry.dbs.session">
 			<li class="blueLi">
@@ -50,7 +50,7 @@
 	<accordion-group is-open="true">
 		<accordion-heading>Databases</accordion-heading>
 		
-		<a ng-if="access.dbs.add" href="" ng-click="addDatabase(registry.code,false)" class="btn btn-sm btn-primary">{{translation.addNewDatabase[LANG]}}</a><br/><br/>
+		<a ng-if="access.dbs.add" href="" ng-click="addDatabase()" class="btn btn-sm btn-primary">{{translation.addNewDatabase[LANG]}}</a><br/><br/>
 		<div class="entryBoxes entryBoxesGrid">
 			<div ng-repeat="(dbName, dbInfo) in registry.dbs.databases track by dbName" class="dbBox">
 				<div class="head">

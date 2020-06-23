@@ -419,7 +419,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 		
 		$scope.edit = function (item) {
 			let options = {
-				"templateUrl": "edit.tmpl",
+				"templateUrl": "editResource.tmpl",
 				"item": angular.copy(item),
 				"submit": function (modalScope, modalInstance) {
 					if (!modalScope.formData.name || !modalScope.formData.config) {
@@ -487,7 +487,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 		};
 		$scope.add = function () {
 			let options = {
-				"templateUrl": "add.tmpl",
+				"templateUrl": "addResource.tmpl",
 				"item": {
 					"types": localConfig.data.type,
 					"categories": localConfig.data.category

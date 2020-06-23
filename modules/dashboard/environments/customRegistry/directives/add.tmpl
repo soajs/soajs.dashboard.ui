@@ -1,6 +1,6 @@
 <alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
 <br />
-<form name="add" ng-submit="add.$valid && onSubmit()">
+<form name="add">
 	<div class="form-group" ng-init="$root.valid = add.$valid" ng-keyup="$root.valid = add.$valid" ng-mousemove="$root.valid = add.$valid">
 		<tabset>
 			<tab heading="General">

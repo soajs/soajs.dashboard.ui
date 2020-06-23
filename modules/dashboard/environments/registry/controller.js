@@ -20,14 +20,58 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 		throttlingSrv.removeStrategy($scope, $scope.envCode, throttling, strategy);
 	};
 	
-	
 	$scope.updateDbPrefix = function (code, prefix) {
-	
-	};
-	$scope.editSessionDatabase = function (code, sessionSettings) {
-	
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "put",
+			"routeName": "/console/registry/db/prefix",
+			"data": {
+				"env": code,
+				"prefix": prefix || ""
+			}
+		}, function (error) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+			}
+			else {
+				$scope.$parent.displayAlert('success', 'DB prefix updated successfully');
+			}
+		});
 	};
 	$scope.removeDatabase = function (code, dbName) {
+		if (dbName === 'session') {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/console/registry/db/session",
+				"data": {
+					"env": code
+				}
+			}, function (error) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+				}
+				else {
+					$scope.$parent.displayAlert('success', 'DB deleted successfully');
+				}
+			});
+		} else {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "delete",
+				"routeName": "/console/registry/db/custom",
+				"data": {
+					"env": code,
+					"name": dbName
+				}
+			}, function (error) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+				}
+				else {
+					$scope.$parent.displayAlert('success', 'DB deleted successfully');
+				}
+			});
+		}
+	};
+	$scope.editSessionDatabase = function (code, sessionSettings) {
 	
 	};
 	$scope.addDatabase = function (code, session) {

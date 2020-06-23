@@ -1,0 +1,85 @@
+<section ng-controller="resourceCtrl">
+	<br/>
+	<div ng-if="access.resource.list">
+		<button class="btn btn-primary f-left" ng-if="access.resource.add" ng-click="add()">
+			Add New Resource configuration
+		</button>
+		<button class="btn btn-primary f-right" ng-if="access.resource.list" ng-click="get()">
+			<span class="icon icon-loop2"></span>Refresh
+		</button>
+		<br/><br/>
+		<div ng-if="listItems && listItems.length > 0">
+			<br/><br/>
+			<div ng-repeat="item in listItems" class="customRegistry-box" ng-class-odd="'oddRow'" ng-class-even="'evenRow'">
+				<div>
+					<div class="leftActions">
+						<a tooltip="Shared" ng-if="item.shared">
+							<span class="icon icon-share2"></span>
+						</a>
+						
+						<a ng-if="!item.shared" disabled>
+							<span class="icon icon-share2 grey"></span>
+						</a>
+					</div>
+					<label>{{item.name}}</label>&nbsp;<label ng-if="listItems.author" class="ownerLabel">(
+					<span class="icon icon-user"></span>{{item.author}} )</label>
+					<div class="rightActions" style="display:inline;">
+						<a href="" ng-if="access.resource.update" class="btn btn-sm btn-default" ng-click="edit(item)">
+							<span class="icon icon-cog"></span>Configure
+						</a>
+						<a href="" ng-if="access.resource.update && !item.plugged" class="btn btn-sm btn-default" ng-click="plug(item, true)">
+							<span class="icon icon-power-cord"></span>Plug
+						</a>
+						<a href="" ng-if="access.resource.update && item.plugged" class="btn btn-sm btn-success" ng-click="plug(item, false)">
+							<span class="icon icon-power-cord"></span>Unplug
+						</a>
+						<a href="" class="btn btn-sm btn-danger" ng-if="access.resource.delete" ng-click="delete(item)" ng-confirm-click="Are you sure you want to delete?">
+							<span class="icon icon-cross" tooltip="Delete Resource configuration"></span>Remove
+						</a>
+						<a href="" class="btn btn-sm btn-danger" ng-if="!access.resource.delete" disabled>
+							<span class="icon icon-cross" tooltip="Delete Resource configuration"></span>Remove
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-if="!listItems || listItems.length === 0">
+			<br/><br/>
+			<alert type="warning">
+				No Resource configuration found for this environment!
+			</alert>
+		</div>
+	</div>
+</section>
+
+<script type="text/ng-template" id="add.tmpl">
+	<div class="modal-header custom-modal-header">
+		<h3 class="modal-title">Add Resource Configuration
+		</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form" ng-include="'modules/dashboard/environments/resource/directives/add.tmpl'"></div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" ng-click="submit()">
+			Save
+		</button>
+		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="edit.tmpl">
+	<div class="modal-header custom-modal-header">
+		<h3 class="modal-title">Edit Resource Configuration
+		</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form" ng-include="'modules/dashboard/environments/resource/directives/edit.tmpl'"></div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" ng-click="submit()">
+			Save
+		</button>
+		<button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+	</div>
+</script>

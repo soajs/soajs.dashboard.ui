@@ -8,102 +8,116 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 		
 		function openModal(options) {
 			let currentScope = $scope;
-			$modal.open({
-				templateUrl: options.templateUrl,
-				size: 'lg',
-				backdrop: true,
-				keyboard: true,
-				controller: function ($scope, $modalInstance) {
-					$scope.formData = {};
-					$scope.access = currentScope.access;
-					$scope.message = {};
-					
-					// For edit
-					if (options.item) {
-						$scope.formData = options.item;
-					}
-					
-					fixBackDrop();
-					overlayLoading.show();
-					$scope.displayAlert = function (type, message) {
-						$scope.message[type] = message;
-						setTimeout(function () {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/console/registry/resource",
+				"params": {
+					"env": $scope.envCode,
+					"type": "cluster"
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+				} else {
+					$modal.open({
+						templateUrl: options.templateUrl,
+						size: 'lg',
+						backdrop: true,
+						keyboard: true,
+						controller: function ($scope, $modalInstance) {
+							$scope.formData = {};
+							$scope.access = currentScope.access;
+							$scope.clusters = response || null;
 							$scope.message = {};
-						}, 5000);
-					};
-					$scope.cancel = function () {
-						if ($modalInstance) {
-							$modalInstance.close();
-						}
-					};
-					$scope.submit = function () {
-						if (options.submit) {
-							options.submit($scope, $modalInstance);
-						}
-					};
-					let aceCustomRegistry = {
-						"name": 'customRegistry',
-						"height": '16px',
-						"firstTime": true
-					};
-					$scope.options = {
-						aceEditorConfig: {
-							maxLines: Infinity,
-							minLines: 1,
-							useWrapMode: true,
-							showGutter: true,
-							mode: 'json',
-							firstLineNumber: 1,
-							onLoad: function (_editor) {
-								_editor.$blockScrolling = Infinity;
-								_editor.scrollToLine(0, true, true);
-								_editor.scrollPageUp();
-								_editor.clearSelection();
-								_editor.setShowPrintMargin(false);
-								_editor.setHighlightActiveLine(false);
-								$scope.editor = _editor;
-								const heightUpdateFunction = function () {
-									let newHeight =
-										_editor.getSession().getScreenLength()
-										* _editor.renderer.lineHeight
-										+ _editor.renderer.scrollBar.getWidth();
-									
-									if (aceCustomRegistry.fixedHeight) {
-										newHeight = parseInt(aceCustomRegistry.height);
-									}
-									else if (parseInt(aceCustomRegistry.height) && parseInt(aceCustomRegistry.height) > newHeight) {
-										newHeight = parseInt(aceCustomRegistry.height);
-									}
-									if ($scope.formData && aceCustomRegistry.firstTime) {
-										aceCustomRegistry.firstTime = false;
-										let screenLength = 1;
-										if (screenLength > newHeight) {
-											newHeight = screenLength;
-										}
-									} else {
-										aceCustomRegistry.firstTime = false;
-									}
-									_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
-									_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
-									$timeout(function () {
-										jQuery('#' + aceCustomRegistry.name).height(newHeight.toString());
-										_editor.resize(true);
-									}, 5);
-								};
-								heightUpdateFunction();
-								$timeout(function () {
-									_editor.heightUpdate = heightUpdateFunction();
-									// Set initial size to match initial content
-									heightUpdateFunction();
-									
-									// Whenever a change happens inside the ACE editor, update
-									// the size again
-									_editor.getSession().on('change', heightUpdateFunction);
-								}, 2000);
+							
+							// For edit
+							if (options.item) {
+								$scope.formData = options.item;
 							}
+							
+							fixBackDrop();
+							overlayLoading.show();
+							$scope.displayAlert = function (type, message) {
+								$scope.message[type] = message;
+								setTimeout(function () {
+									$scope.message = {};
+								}, 5000);
+							};
+							$scope.cancel = function () {
+								if ($modalInstance) {
+									$modalInstance.close();
+								}
+							};
+							$scope.submit = function () {
+								if (options.submit) {
+									options.submit($scope, $modalInstance);
+								}
+							};
+							let aceCustomRegistry = {
+								"name": 'customRegistry',
+								"height": '16px',
+								"firstTime": true
+							};
+							$scope.options = {
+								aceEditorConfig: {
+									maxLines: Infinity,
+									minLines: 1,
+									useWrapMode: true,
+									showGutter: true,
+									mode: 'json',
+									firstLineNumber: 1,
+									onLoad: function (_editor) {
+										_editor.$blockScrolling = Infinity;
+										_editor.scrollToLine(0, true, true);
+										_editor.scrollPageUp();
+										_editor.clearSelection();
+										_editor.setShowPrintMargin(false);
+										_editor.setHighlightActiveLine(false);
+										$scope.editor = _editor;
+										const heightUpdateFunction = function () {
+											let newHeight =
+												_editor.getSession().getScreenLength()
+												* _editor.renderer.lineHeight
+												+ _editor.renderer.scrollBar.getWidth();
+											
+											if (aceCustomRegistry.fixedHeight) {
+												newHeight = parseInt(aceCustomRegistry.height);
+											}
+											else if (parseInt(aceCustomRegistry.height) && parseInt(aceCustomRegistry.height) > newHeight) {
+												newHeight = parseInt(aceCustomRegistry.height);
+											}
+											if ($scope.formData && aceCustomRegistry.firstTime) {
+												aceCustomRegistry.firstTime = false;
+												let screenLength = 1;
+												if (screenLength > newHeight) {
+													newHeight = screenLength;
+												}
+											} else {
+												aceCustomRegistry.firstTime = false;
+											}
+											_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
+											_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
+											$timeout(function () {
+												jQuery('#' + aceCustomRegistry.name).height(newHeight.toString());
+												_editor.resize(true);
+											}, 5);
+										};
+										heightUpdateFunction();
+										$timeout(function () {
+											_editor.heightUpdate = heightUpdateFunction();
+											// Set initial size to match initial content
+											heightUpdateFunction();
+											
+											// Whenever a change happens inside the ACE editor, update
+											// the size again
+											_editor.getSession().on('change', heightUpdateFunction);
+										}, 2000);
+									}
+								}
+							};
+							overlayLoading.hide();
 						}
-					};
-					overlayLoading.hide();
+					});
 				}
 			});
 		}
@@ -173,7 +187,6 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 			}
 		};
 		$scope.editSessionDatabase = function () {
-			console.log($scope.registry.dbs)
 			let options = {
 				"templateUrl": "session.tmpl",
 				"item": $scope.registry.dbs.session || {},

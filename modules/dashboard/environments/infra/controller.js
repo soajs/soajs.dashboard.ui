@@ -14,7 +14,9 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 			"code": record.code,
 			"description": record.description
 		};
-		
+		if (record.type) {
+			data.type = record.type;
+		}
 		$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		$scope.$parent.switchEnvironment(data);
 		$timeout(() => {
@@ -56,13 +58,13 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 					putMyEnv(response[0]);
 				}
 				if ($scope.envCode) {
-					$scope.getEnvPlatform();
+					$scope.getEnvPlatform(response[0]);
 				}
 			}
 		});
 	};
 	
-	$scope.getEnvPlatform = function () {
+	$scope.getEnvPlatform = function (envRecord) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/console/registry/deployer",
@@ -82,6 +84,10 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 				} else {
 					$scope.envType = 'container';
 					platformCntnr.checkContainerTechnology($scope);
+				}
+				if (envRecord) {
+					envRecord.type = $scope.envType;
+					putMyEnv(envRecord);
 				}
 			}
 		});

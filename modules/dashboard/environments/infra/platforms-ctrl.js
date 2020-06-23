@@ -12,7 +12,6 @@ environmentsApp.controller('platformsCtrl', ['$scope', '$cookies', 'envPlatforms
 	$scope.kubernetesImagePath = "./themes/" + themeToUse + "/img/kubernetes_logo.png";
 	$scope.includeVMErrors = true;
 	$scope.errorVMLayers = null;
-	console.log($scope)
 	$scope.getEnvPlatform = function(overlay){
 		if(overlay){
 			overlayLoading.show();

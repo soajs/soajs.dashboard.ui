@@ -94,24 +94,39 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 					} else {
 						if (response.records) {
 							$scope.showCatalog = response.records.length > 0;
-							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
+							$scope.soajsTabs = getCatalogs(response.records, favoriteResponse);
 							$scope.getEnvironments();
 						}
 					}
 				});
-				
 			}
 		});
 	};
 	
 	function getCatalogs(records, favoriteRecords) {
 		let tabs = {};
-		
+		let type;
 		records.forEach((record) => {
+			if (record.type === "service") {
+				type = "API";
+				if (!tabs[type]) {
+					tabs[type] = {};
+				}
+			} else if (record.type === "static") {
+				type = "Static";
+				if (!tabs[type]) {
+					tabs[type] = {};
+				}
+			} else if (record.type === "resource") {
+				type = "Resource";
+				if (!tabs[type]) {
+					tabs[type] = {};
+				}
+			}
 			let main = record.ui && record.ui.main ? record.ui.main : "Console";
 			let sub = record.ui && record.ui.sub ? record.ui.sub : null;
-			if (!tabs[main]) {
-				tabs[main] = {
+			if (!tabs[type][main]) {
+				tabs[type][main] = {
 					"All": {},
 					"Favorites": {}
 				};
@@ -122,29 +137,29 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				});
 			}
 			let group = record.configuration && record.configuration.group ? record.configuration.group : defaultGroup;
-			if (!tabs[main]["All"][group]) {
-				tabs[main]["All"][group] = [];
+			if (!tabs[type][main]["All"][group]) {
+				tabs[type][main]["All"][group] = [];
 			}
-			tabs[main]["All"][group].push(record);
+			tabs[type][main]["All"][group].push(record);
 			if (favoriteRecords && favoriteRecords.favorites && favoriteRecords.favorites.length > 0) {
 				let found = favoriteRecords.favorites.find(element => element === record.name);
 				if (found) {
-					if (!tabs[main]["Favorites"][group]) {
-						tabs[main]["Favorites"][group] = [];
+					if (!tabs[type][main]["Favorites"][group]) {
+						tabs[type][main]["Favorites"][group] = [];
 					}
 					record.favorite = true;
-					tabs[main]["Favorites"][group].push(record);
+					tabs[type][main]["Favorites"][group].push(record);
 				}
 			}
 			
 			if (sub) {
-				if (!tabs[main][sub]) {
-					tabs[main][sub] = {};
+				if (!tabs[type][main][sub]) {
+					tabs[type][main][sub] = {};
 				}
-				if (!tabs[main][sub][group]) {
-					tabs[main][sub][group] = [];
+				if (!tabs[type][main][sub][group]) {
+					tabs[type][main][sub][group] = [];
 				}
-				tabs[main][sub][group].push(record);
+				tabs[type][main][sub][group].push(record);
 			}
 		});
 		return tabs;
@@ -165,14 +180,24 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				service.favorite = true;
 				let main = service.ui && service.ui.main ? service.ui.main : "Console";
 				let group = service.configuration && service.configuration.group ? service.configuration.group : defaultGroup;
-				if (!$scope.mainTabs[main]["Favorites"]) {
-					$scope.mainTabs[main]["Favorites"] = {};
+				let type;
+				if (service.type === "service"){
+					type = "API";
 				}
-				if (!$scope.mainTabs[main]["Favorites"][group]) {
-					$scope.mainTabs[main]["Favorites"][group] = [];
+				else if (service.type === "static"){
+					type = "Static";
 				}
-				if ($scope.mainTabs && $scope.mainTabs[main] && $scope.mainTabs[main]["Favorites"] && $scope.mainTabs[main]["Favorites"][group]) {
-					$scope.mainTabs[main]["Favorites"][group].push(service);
+				else if (service.type === "resource"){
+					type = "Resource";
+				}
+				if (!$scope.soajsTabs[type][main]["Favorites"]) {
+					$scope.soajsTabs[type][main]["Favorites"] = {};
+				}
+				if (!$scope.soajsTabs[type][main]["Favorites"][group]) {
+					$scope.soajsTabs[type][main]["Favorites"][group] = [];
+				}
+				if ($scope.soajsTabs[type] && $scope.soajsTabs[type][main] && $scope.soajsTabs[type][main]["Favorites"] && $scope.soajsTabs[type][main]["Favorites"][group]) {
+					$scope.soajsTabs[type][main]["Favorites"][group].push(service);
 				}
 				
 			}
@@ -192,12 +217,22 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				service.favorite = false;
+				let type;
+				if (service.type === "service"){
+					type = "API";
+				}
+				else if (service.type === "static"){
+					type = "Static";
+				}
+				else if (service.type === "resource"){
+					type = "Resource";
+				}
 				let main = service.ui && service.ui.main ? service.ui.main : "Console";
 				let group = service.configuration && service.configuration.group ? service.configuration.group : defaultGroup;
-				if ($scope.mainTabs && $scope.mainTabs[main] && $scope.mainTabs[main]["Favorites"] && $scope.mainTabs[main]["Favorites"][group]) {
-					for (let i = 0; i < $scope.mainTabs[main]["Favorites"][group].length; i++) {
-						if ($scope.mainTabs[main]["Favorites"][group][i].name === service.name) {
-							$scope.mainTabs[main]["Favorites"][group].splice(i, 1);
+				if ($scope.soajsTabs[type] && $scope.soajsTabs[type][main] && $scope.soajsTabs[type][main]["Favorites"] && $scope.soajsTabs[type][main]["Favorites"][group]) {
+					for (let i = 0; i < $scope.soajsTabs[type][main]["Favorites"][group].length; i++) {
+						if ($scope.soajsTabs[type][main]["Favorites"][group][i].name === service.name) {
+							$scope.soajsTabs[type][main]["Favorites"][group].splice(i, 1);
 						}
 					}
 				}
@@ -208,7 +243,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 	$scope.getEnvironments = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/environment/list"
+			"routeName": "/console/environment"
 		}, function (error, response) {
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -1877,7 +1912,7 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 	$scope.getEnvironments = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/environment/list"
+			"routeName": "/console/environment"
 		}, function (error, response) {
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -2026,7 +2061,7 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 		
 		};
 		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
-			opts.routeName = '/marketplace/soajs/item/environments';
+			opts.routeName = '/marketplace/soajs/item/recipes';
 		}
 		$scope.recipes.selectedRecipes.forEach((oneRecipe)=>{
 			opts.data.recipes.push( oneRecipe._id);

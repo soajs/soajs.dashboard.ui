@@ -1,0 +1,32 @@
+<div>
+	<button ng-show="!deployed" class="btn btn-primary configure-button" type="button" aria-haspopup="true"
+	        aria-expanded="true"
+	        ng-click="configure(service, version)">
+		Configure
+	</button>
+	
+	<button ng-show="deployed" class="btn btn-primary configure-button" type="button" aria-haspopup="true"
+	        aria-expanded="true"
+	        ng-click="configure(service, version)">
+		Reconfigure
+	</button>
+	<button ng-show="deployed" class="btn btn-primary rebuild-button" type="button" aria-haspopup="true"
+	        aria-expanded="true"
+	        ng-click="redeploy(service, version)">
+		Redeploy</span>
+	</button>
+	<button ng-show="deployed" class="btn btn-primary exec-button" type="button" aria-haspopup="true"
+	        aria-expanded="true"
+	        ng-click="execCommandPods(service, version)">
+		Exec Command </span>
+	</button>
+</div>
+<br>
+<br>
+<tabset>
+	<tab ng-repeat="(tab, itemList) in itemLists track by $index" heading="{{tab | capitalizeFirst}}"
+	     ng-if="itemList && itemList.items && itemList.items.length > 0">
+		<br/>
+		<div ng-include="'modules/dashboard/deployMarketplace/directives/global/kubernetes/' + tab + '.tmpl'"></div>
+	</tab>
+</tabset>

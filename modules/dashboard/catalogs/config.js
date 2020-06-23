@@ -1,6 +1,6 @@
 'use strict';
 
-var catalogAppConfig = {
+let catalogAppConfig = {
 	form: {
 		add: {
 			entries: [
@@ -123,6 +123,14 @@ var catalogAppConfig = {
 						'label': 'Image',
 						'entries': [
 							{
+								'name': 'binary',
+								'label': 'Binary',
+								'type': 'buttonSlider',
+								"value": false,
+								'tooltip': "Enable/Disable deploying image with source code",
+								'fieldMsg': "Enable/Disable deploying image with source code",
+							},
+							{
 								'type': 'text',
 								'value': '',
 								'label': 'Image Prefix',
@@ -208,7 +216,7 @@ var catalogAppConfig = {
                         'entries': [],
 					},
 					{
-						'label': 'Readiness Probe',
+						'label': 'Readiness',
 						'entries': [
 							{
 								'name': 'readinessProbe',
@@ -223,7 +231,7 @@ var catalogAppConfig = {
 						]
 					},
 					{
-						'label': 'Liveness Probe',
+						'label': 'Liveness',
 						'entries': [
 							{
 								'name': 'livenessProbe',
@@ -235,20 +243,6 @@ var catalogAppConfig = {
 								'fieldMsg': 'Configure Liveness Probe, Kubernetes Only.',
 								'height': 200
 							}
-						]
-					},
-					{
-						'label': 'Certificates',
-						'entries': [
-                            {
-                                'name': 'certificates',
-                                'label': 'Allow File Attachments',
-                                'type': 'select',
-                                'tooltip': "",
-                                'fieldMsg': "Specify if this recipe requires a file attachments when deploying",
-                                'value': [{"l":"No" , "v": "none"}, {"l":"Yes" , "v": "required"},{"l":"Maybe" , "v": "optional"}],
-                                'required': false
-                            },
 						]
 					},
 					{
@@ -307,7 +301,7 @@ var catalogAppConfig = {
 						]
 					},
 					{
-						'label': 'Exposed Ports',
+						'label': 'Ports',
                         'description': {
                             'type': "info",
                             'content': 	"<p>Expose ports to access deployments created from this recipe directly using either <b>Load Balancer</b> or <b>Specific Port</b> strategies.<br />" +
@@ -336,12 +330,22 @@ var catalogAppConfig = {
 						]
 					},
 					{
-						'label': 'Optional Labels',
+						'label': 'Labels',
 						'entries': [
 							{
 								'type': 'html',
-								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add New Labels'/>",
+								'value': "<input type='button' class='btn btn-sm btn-success f-right exposeNewPort' value='Add New Labels'/>",
 								'name': 'addLabel'
+							}
+						]
+					},
+					{
+						'label': 'Exec',
+						'entries': [
+							{
+								'type': 'html',
+								'value': "<input type='button' class='btn btn-sm btn-success f-right exposeNewPort' value='Add Exec Commands'/>",
+								'name': 'addExecCommands'
 							}
 						]
 					}
@@ -638,6 +642,38 @@ var catalogAppConfig = {
 				{
 					'type': 'html',
 					'name': 'rLabel',
+					'value': '<span class="icon icon-cross"></span>'
+				}
+			]
+		},
+		execCommand: {
+			'name': 'ExecCommandGroup',
+			'type': 'group',
+			'label': 'New Exec Command',
+			'entries': [
+				{
+					'name': 'ExeclabelName',
+					'label': 'Exec Command Label',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the label of the Exec Command',
+					'fieldMsg': 'Enter the name of the Exec Command ',
+					'placeholder': "My Label"
+				},
+				{
+					'name': 'ExeclabelValue',
+					'label': 'Exec Command Value',
+					'type': 'text',
+					'value': '',
+					'required': true,
+					'tooltip': 'Enter the value of the Exec Command',
+					'fieldMsg': 'Enter the value of the Exec Command',
+					'placeholder': "My command"
+				},
+				{
+					'type': 'html',
+					'name': 'execLabel',
 					'value': '<span class="icon icon-cross"></span>'
 				}
 			]

@@ -78,46 +78,30 @@ fieldset pre{
 }
 .catalogRecipeForm .tr-Label-wrapper{
   float:left;
-  width:25%;
+  width:20%;
 }
-.catalogRecipeForm .tr-repo-wrapper{
+.catalogRecipeForm .tr-catalog-wrapper{
    float:left;
-   width:25%;
+   width:20%;
  }
 .catalogRecipeForm .tr-branch-wrapper{
   float:left;
-  width:25%;
+  width:20%;
+}
+.catalogRecipeForm .tr-version-wrapper{
+    float:left;
+    width:20%;
+}
+.catalogRecipeForm .tr-tag-wrapper{
+    float:left;
+    width:20%;
 }
 .catalogRecipeForm .tr-required-wrapper{
-  float:left;
-  width:25%;
-}
-
-.catalogRecipeForm .tr-customLabel-wrapper{
-  float:left;
-  width:20%;
-}
-
-.catalogRecipeForm .tr-customRepo-wrapper{
-  float:left;
-  width:20%;
-}
-
-.catalogRecipeForm .tr-customType-wrapper{
-  float:left;
-  width:20%;
-}
-
-.catalogRecipeForm .tr-customBranch-wrapper{
-  float:left;
-  width:20%;
-}
-
-.catalogRecipeForm .tr-customRequired-wrapper{
   float:left;
   width:20%;
 }
 .catalogRecipeForm tr[class^="form-group tr-labelGroup"],
+.catalogRecipeForm tr[class^="form-group tr-ExecCommandGroup"],
 .catalogRecipeForm tr[class^="form-group tr-volumeGroup"]{
     position:relative;
 }
@@ -126,6 +110,15 @@ fieldset pre{
     color:#a94442;
     float:right;
     position: absolute;
+    right: 30px;
+    top: 30px;
+    cursor:pointer;
+}
+
+.catalogRecipeForm tr[class^="form-group tr-execLabel"]{
+    color:#a94442;
+    float:right;
+
     right: 30px;
     top: 30px;
     cursor:pointer;
@@ -170,6 +163,8 @@ fieldset pre{
 .catalogRecipeForm tr[class^="form-group tr-envVarName"],
 .catalogRecipeForm tr[class^="form-group tr-envVarType"],
 .catalogRecipeForm tr[class^="form-group tr-volumeGroup"],
+.catalogRecipeForm tr[class^="form-group tr-ExeclabelName"],
+.catalogRecipeForm tr[class^="form-group tr-ExeclabelValue"],
 .catalogRecipeForm .tr-workingDir-wrapper,
 .catalogRecipeForm .tr-network-wrapper,
 .catalogRecipeForm .tr-maxAttempts-wrapper,
@@ -203,4 +198,5 @@ fieldset pre{
 }
 .exposeNewPort {
     margin-top: 18px;
+    margin-bottom: 10px;
 }

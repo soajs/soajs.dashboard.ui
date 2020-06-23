@@ -56,6 +56,7 @@ var modules = {
 	"develop": {
 		"dashboard": {
 			marketplace: 'modules/dashboard/marketplace/install.js',
+			deployMarketplace: 'modules/dashboard/deployMarketplace/install.js',
 			//services: 'modules/dashboard/services/install.js',
 			//endpoints: 'modules/dashboard/endpoints/install.js',
 			//githubApp: 'modules/dashboard/gitAccounts/install.js',

@@ -17,6 +17,12 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 		if (record.type) {
 			data.type = record.type;
 		}
+		if (record.technology) {
+			data.technology = record.technology;
+		}
+		if (record.deployer) {
+			data.deployer = record.deployer;
+		}
 		$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		$scope.$parent.switchEnvironment(data);
 		$timeout(() => {
@@ -87,6 +93,10 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 				}
 				if (envRecord) {
 					envRecord.type = $scope.envType;
+					envRecord.deployer = $scope.deployer;
+					if ($scope.envType === "container") {
+						envRecord.technology = "kubernetes";
+					}
 					putMyEnv(envRecord);
 				}
 			}

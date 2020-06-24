@@ -1,0 +1,41 @@
+<alert type="danger" ng-if="message.danger">{{message.danger}}</alert>
+<br/>
+<form name="add">
+	<div class="form-group" ng-init="$root.valid = edit.$valid" ng-keyup="$root.valid = edit.$valid" ng-mousemove="$root.valid = edit.$valid">
+		<div>
+			<label>Custom Prefix</label>
+			<input type="text" class="form-control" ng-model="formData.prefix"/>
+			<label class="fieldMsg">Enter a custom prefix for this Database or leave empty to use the global prefix
+				value.</label>
+			<br/>
+		</div>
+		<div>
+			<label>Name</label>
+			<input type="text" class="form-control" ng-model="formData.name" ng-required="true"/>
+			<br/>
+		</div>
+		<div>
+			<label>Cluster</label>
+			<select name="type" id="type" ng-model="formData.cluster" class="form-control" ng-required="true">
+				<option ng-repeat="option in clusters" value="{{option.name}}">{{option.name}}</option>
+			</select>
+			<br/>
+		</div>
+		<div>
+			<label>Multitenant</label>
+			
+			<ul>
+				<li>
+					<input type="radio" name="tenantSpecific" id="tenantSpecific_0" ng-model="formData.tenantSpecific" value="false" ng-checked="!formData.tenantSpecific">
+					<span class="ng-binding">False</span>
+				</li>
+				<li>
+					<input type="radio" name="tenantSpecific" id="tenantSpecific_1" ng-model="formData.tenantSpecific" value="true" ng-checked="formData.tenantSpecific">
+					<span class="ng-binding">True</span>
+				</li>
+			</ul>
+			
+			<br/>
+		</div>
+	</div>
+</form>

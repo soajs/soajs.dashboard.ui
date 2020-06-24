@@ -148,7 +148,7 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 		
 		$scope.edit = function (item) {
 			let options = {
-				"templateUrl": "edit.tmpl",
+				"templateUrl": "editRegistry.tmpl",
 				"item": angular.copy(item),
 				"submit": function (modalScope, modalInstance) {
 					if (!modalScope.formData.name || !modalScope.formData.value) {
@@ -216,7 +216,7 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 		};
 		$scope.add = function () {
 			let options = {
-				"templateUrl": "add.tmpl",
+				"templateUrl": "addRegistry.tmpl",
 				"submit": function (modalScope, modalInstance) {
 					if (!modalScope.formData.name || !modalScope.formData.value) {
 						modalScope.displayAlert('danger', "Please fill in all required fields!");

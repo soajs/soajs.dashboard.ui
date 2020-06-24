@@ -1518,7 +1518,7 @@ var environmentsNav = [
 		},
 		'label': "Clouds & Deployments",
 		'url': '#/environments-clouds-deployments',
-		'tplPath': 'modules/dashboard/environments/directives/list-cloud-kube.tmpl',
+		'tplPath': 'modules/dashboard/environments/cloudsDeployments/directives/list-cloud-kube.tmpl',
 		'icon': 'sphere',
 		'pillar': {
 			'name': 'deployment',
@@ -1529,24 +1529,12 @@ var environmentsNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'scripts': [
-			'modules/dashboard/environments/config.js',
-			'modules/dashboard/environments/clouds.js',
-			'modules/dashboard/environments/services/secretsService.js',
-			'modules/dashboard/environments/services/podService.js',
-			'modules/dashboard/environments/services/pvcService.js',
-			'modules/dashboard/environments/services/cloudServices.js',
-			
-			
-			//'modules/dashboard/environments/clouds.js',
-			// 'modules/dashboard/environments/hosts-ctrl.js',
-			// 'modules/dashboard/environments/services/hosts.js',
-			// 'modules/dashboard/environments/services/deploy.js',
-			// 'modules/dashboard/environments/hacloud-ctrl.js',
-			// 'modules/dashboard/environments/services/nodes.js',
-			// 'modules/dashboard/environments/services/redeploy.js',
-			//'modules/dashboard/environments/services/hacloud.js',
-			// 'modules/dashboard/environments/services/metrics.js',
-			// 'modules/dashboard/environments/services/vms.js'
+			'modules/dashboard/environments/cloudsDeployments/config.js',
+			'modules/dashboard/environments/cloudsDeployments/clouds.js',
+			'modules/dashboard/environments/cloudsDeployments/services/secretsService.js',
+			'modules/dashboard/environments/cloudsDeployments/services/podService.js',
+			'modules/dashboard/environments/cloudsDeployments/services/pvcService.js',
+			'modules/dashboard/environments/cloudsDeployments/services/cloudServices.js',
 		],
 		'ancestor': [translation.home[LANG]]
 	}

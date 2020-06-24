@@ -469,60 +469,6 @@ soajsApp.service("injectFiles", function () {
 
 soajsApp.service("aclDrawHelpers", function () {
 	
-	function groupApisForDisplay(apisArray, apiGroupName) {
-		var result = {};
-		var defaultGroupName = 'General';
-		var len = (apisArray) ? apisArray.length : 0;
-		if (len === 0) {
-			return result;
-		}
-		for (var i = 0; i < len; i++) {
-			if (apisArray[i][apiGroupName]) {
-				defaultGroupName = apisArray[i][apiGroupName];
-			}
-			
-			if (!result[defaultGroupName]) {
-				result[defaultGroupName] = {};
-				result[defaultGroupName].apis = [];
-				if (apisArray[i].m) {
-					result[defaultGroupName].apisRest = {};
-				}
-			}
-			if (apisArray[i].m) {
-				if (!result[defaultGroupName].apisRest[apisArray[i].m]) {
-					result[defaultGroupName].apisRest[apisArray[i].m] = [];
-				}
-				result[defaultGroupName].apisRest[apisArray[i].m].push(apisArray[i]);
-			}
-			result[defaultGroupName].apis.push(apisArray[i]);
-		}
-		return result;
-	}
-	
-	function groupApisForPackageDisplay(apisArray, apiGroupName) {
-		var result = {};
-		var defaultGroupName = 'General';
-		var len = (apisArray) ? apisArray.length : 0;
-		if (len === 0) {
-			return result;
-		}
-		for (var i = 0; i < len; i++) {
-			if (apisArray[i][apiGroupName]) {
-				defaultGroupName = apisArray[i][apiGroupName];
-			}
-			
-			if (!result[defaultGroupName]) {
-				result[defaultGroupName] = [];
-			}
-			
-			if (apisArray[i].m && result[defaultGroupName].indexOf(apisArray[i].m) === -1) {
-				result[defaultGroupName].push(apisArray[i].m);
-			}
-		}
-		
-		return result;
-	}
-	
 	function applyApiRestriction(aclFill) {
 		for (let method in aclFill) {
 			if (method && aclFill[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
@@ -579,84 +525,6 @@ soajsApp.service("aclDrawHelpers", function () {
 		// 	}
 		// 	service.fixList[v][grp].defaultIncluded = found;
 		// }
-	}
-	
-	function fillServiceAccess(service, currentService) {
-		if (currentService.versions) {
-			service.collapse = false;
-			service.include = true;
-			for (var version in currentService.versions) {
-				if (currentService.versions.hasOwnProperty(version)) {
-					if (!service[version]) {
-						service[version] = {
-							include: false
-						};
-					} else {
-						service[version].include = true;
-						if (service[version].access) {
-							if (service[version].access === true) {
-								service[version].accessType = 'private';
-							} else if (service[version].access === false) {
-								service[version].accessType = 'public';
-							} else if (Array.isArray(service[version].access)) {
-								service[version].accessType = 'groups';
-								service[version].grpCodes = {};
-								service[version].access.forEach(function (c) {
-									service[version].grpCodes[c] = true;
-								});
-							}
-						} else {
-							service[version].accessType = 'public';
-						}
-						if (service[version].apisPermission === 'restricted') {
-							service[version].apisRestrictPermission = true;
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	function fillApiAccess(method) {
-		for (var group in method) {
-			if (method.hasOwnProperty(group) && method[group]) {
-				for (var apiName in method[group].apis) {
-					if (method[group].apis.hasOwnProperty(apiName) && method[group].apis[apiName]) {
-						method[group].apis[apiName].include = true;
-						method[group].apis[apiName].accessType = 'clear';
-						if (method[group].apis[apiName].access === true) {
-							method[group].apis[apiName].accessType = 'private';
-						} else if (method[group].apis[apiName].access === false) {
-							method[group].apis[apiName].accessType = 'public';
-						} else {
-							if (Array.isArray(method[group].apis[apiName].access)) {
-								method[group].apis[apiName].accessType = 'groups';
-								method[group].apis[apiName].grpCodes = {};
-								method[group].apis[apiName].access.forEach(function (c) {
-									method[group].apis[apiName].grpCodes[c] = true;
-								});
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	function fillServiceApiAccess(service, currentService) {
-		if (currentService.versions) {
-			for (var version in currentService.versions) {
-				if (currentService.versions.hasOwnProperty(version)) {
-					if (service[version].get || service[version].post || service[version].put || service[version].delete) {
-						for (var method in service[version]) {
-							if (service[version][method] && ['access', 'apiPermission'].indexOf(method) === -1 && Object.keys(service[version][method]).length > 0) {
-								fillApiAccess(service[version][method]);
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 	
 	function prepareSaveObject(aclEnvFill, aclEnvObj) {
@@ -865,7 +733,7 @@ soajsApp.service("aclDrawHelpers", function () {
 						if (aclEnvFill[serviceName].hasOwnProperty(version) && version !== "collapse" && version !== "include" && aclEnvFill[serviceName][version].include) {
 							let temp = {};
 							temp.version = version + "";
-							temp.version = temp.version.replace(".", "x");
+							// temp.version = temp.version.replace(".", "x");
 							for (var group in aclEnvFill[serviceName][version]) {
 								if (aclEnvFill[serviceName][version].hasOwnProperty(group)) {
 									for (var method in aclEnvFill[serviceName][version][group]) {
@@ -891,16 +759,11 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	return {
-		'fillServiceAccess': fillServiceAccess,
-		'fillServiceApiAccess': fillServiceApiAccess,
-		'fillApiAccess': fillApiAccess,
-		'groupApisForDisplay': groupApisForDisplay,
 		'checkForGroupDefault': checkForGroupDefault,
 		'applyApiRestriction': applyApiRestriction,
 		'prepareSaveObject': prepareSaveObject,
 		'prepareSaveObjectPack': prepareSaveObjectPack,
 		'prepareSaveObjectPackGranular': prepareSaveObjectPackGranular,
-		'groupApisForPackageDisplay': groupApisForPackageDisplay
 	}
 });
 

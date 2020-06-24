@@ -10,10 +10,9 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	
 	$scope.selectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 	$scope.envDeployer = angular.copy($scope.selectedEnvironment).deployer;
-	if ($scope.envDeployer.type === "manual") {
-		$scope.envDeployeType = "manual";
-	} else if ($scope.envDeployer.type === "container") {
-		$scope.envDeployeType = $scope.envDeployer.selected.split('.')[1];
+	$scope.envDeployeType = $scope.selectedEnvironment.technology;
+	if ($scope.selectedEnvironment.type) {
+		$scope.envDeployeType = $scope.selectedEnvironment.type;
 	}
 	
 	
@@ -28,7 +27,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			jQuery('#s_' + service._id + " .header").removeClass("closed");
 			service.icon = 'minus';
 			service.hide = false;
-			$scope.getDeployment(service);
 			if ($scope.envDeployeType === 'kubernetes' && $scope.access.infra.kubernetes.item.get) {
 				$scope.getDeployment(service);
 			}
@@ -36,6 +34,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	};
 	
 	$scope.listSoajsCatalog = function () {
+		
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
 			"routeName": "/marketplace/soajs/items"
@@ -60,6 +59,21 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						if (response.records) {
 							$scope.showCatalog = response.records.length > 0;
 							$scope.soajsTabs = getCatalogs(response.records, favoriteResponse);
+						}
+						if ($scope.envDeployeType === 'manual') {
+							getSendDataFromServer($scope, ngDataApi, {
+								"method": "get",
+								"routeName": "/infra/manual/awareness",
+								"params": {
+									"env": $scope.selectedEnvironment.code.toLowerCase()
+								}
+							}, function (error, awareness) {
+								if (error) {
+									$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+								} else {
+									$scope.awareness = awareness;
+								}
+							});
 						}
 					}
 				});
@@ -230,6 +244,83 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		});
 	};
 	
+	$scope.executeOperation = function (service, v, operation) {
+		let options = {};
+		
+		if ($scope.envDeployeType === 'manual') {
+			options.method = "get";
+			options.routeName = "/infra/manual/maintenance";
+			options.params = {
+				"env": $scope.selectedEnvironment.code.toLowerCase(),
+				"type": service.type,
+				"version": v.version,
+				"operation": operation
+			};
+			if (v.maintenance.port) {
+				if (v.maintenance.port.type) {
+					options.params.portType = v.maintenance.port.type;
+				}
+				if (v.maintenance.port.type === "custom" && v.maintenance.port.value) {
+					options.params.portValue = v.maintenance.port.value;
+				}
+			}
+			
+		} else {
+			options.method = "put";
+			options.routeName = "/infra/kubernetes/item/maintenance";
+			options.params = {
+				"env": $scope.selectedEnvironment.code.toLowerCase(),
+				"name": service.name,
+				"maintenancePort": v.version,
+				"operation": {
+					"route" : operation
+				}
+			};
+			// if (v.maintenance.port) {
+			// 	if (v.maintenance.port.type) {
+			// 		options.params.portType = v.maintenance.port.type;
+			// 	}
+			// 	if (v.maintenance.port.type === "custom" && v.maintenance.port.value) {
+			// 		options.params.portValue = v.maintenance.port.value;
+			// 	}
+			// }
+		}
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+			} else {
+				let formConfig = angular.copy(soajsDeployCatalogConfig.form.multiServiceInfo);
+				formConfig.entries = [
+					{
+						'name': service.name,
+						'type': 'jsoneditor',
+						'height': '200px',
+						"value": response.data || response
+					}
+				];
+				
+				let options = {
+					timeout: $timeout,
+					form: formConfig,
+					name: "heartbeat",
+					label: service.name + ": " + "heartbeat",
+					actions: [
+						{
+							'type': 'reset',
+							'label': translation.ok[LANG],
+							'btn': 'primary',
+							'action': function (formData) {
+								$scope.modalInstance.dismiss('cancel');
+								$scope.form.formData = {};
+							}
+						}
+					]
+				};
+				buildFormWithModal($scope, $modal, options);
+			}
+		});
+	};
+	
 	$scope.getMetrics = function (pod) {
 		let currentScope = $scope;
 		$modal.open({
@@ -250,7 +341,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	};
 	
 	$scope.getDeployment = function (service) {
-		console.log(service)
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -289,14 +379,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							oneItem.spec.template.spec.containers[0] &&
 							oneItem.spec.template.spec.containers[0].image) {
 							$scope.deployedImage = {
-								prefix : ""
+								prefix: ""
 							};
 							if (oneItem.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
 								$scope.deployedImage.prefix = oneItem.spec.template.spec.containers[0].image.split('/')[0];
 								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
 								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
-							}
-							else {
+							} else {
 								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split(':')[0];
 								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split(':')[1];
 							}
@@ -310,14 +399,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							oneItem.spec.template.spec.containers[0] &&
 							oneItem.spec.template.spec.containers[0].image) {
 							$scope.deployedImage = {
-								prefix : ""
+								prefix: ""
 							};
 							if (oneItem.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
 								$scope.deployedImage.prefix = oneItem.spec.template.spec.containers[0].image.split('/')[0];
 								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
 								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
-							}
-							else {
+							} else {
 								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split(':')[0];
 								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split(':')[1];
 							}
@@ -333,14 +421,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0] &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0].image) {
 							oneItem.spec.deployedImage = {
-								prefix : ""
+								prefix: ""
 							};
 							if (oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
 								$scope.deployedImage.prefix = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[0];
 								$scope.deployedImage.name = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
 								$scope.deployedImage.tag = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
-							}
-							else {
+							} else {
 								$scope.deployedImage.name = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split(':')[0];
 								$scope.deployedImage.tag = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split(':')[1];
 							}
@@ -419,6 +506,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			}
 		});
 	};
+	
 	
 	if ($scope.access.items.list) {
 		injectFiles.injectCss("modules/dashboard/deployMarketplace/deployMarketplace.css");

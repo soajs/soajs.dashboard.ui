@@ -45,6 +45,16 @@ var soajsDeployCatalogConfig = {
 				}
 			]
 		},
+		multiServiceInfo: {
+			'entries': [
+				{
+					'name': 'infoTabs',
+					'label': '',
+					'type': 'tabset',
+					'tabs': []
+				}
+			]
+		},
 		addExecCommand: [{
 			'name': 'execCommands',
 			'label': 'Commands',

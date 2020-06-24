@@ -1,0 +1,373 @@
+<div class="modal-body">
+	<div class="form">
+		<div ng-show="alerts.length >0">
+			<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)"
+			       dismiss-on-timeout="5000">
+				{{alert.msg}}
+			</alert>
+			<br>
+		</div>
+		<form name="configureRepo" id="configureRepo">
+			<div class="form-group">
+				<div class="configCd entryBoxes entryBoxesGrid">
+					<div class="modal-header cdFormHeader">
+						<h3 class="modal-title capitalize">Configure {{service.name}} Deployment</h3>
+					</div>
+					<div class="body">
+						<div class="form-g">
+							<fieldset>
+								<legend>Deployment Options</legend>
+								<div>
+									<label>Catalog Recipe</label><img class="loadingImage" ng-src={{imagePath}}
+									                                  ng-if="loadingRecipes">
+									<select class="form-control" ng-if="!loadingRecipes" ng-required="true"
+									        ng-options="recipe as recipe.name group by recipe.type for recipe in catalogRecipe"
+									        ng-model="configuration.recipe.value"
+									        ng-change="injectCatalogEntries(configuration.recipe.value)"></select>
+									<label class="fieldMsg">Choose a catalog recipe and define the deployment strategy
+										in this
+										environment.</label>
+									<br>
+								</div>
+								<div ng-if="configuration.recipe.id">
+									<label>Memory Limit Per Instance (in MBytes)</label>
+									<input type="string" class="form-control"
+									       ng-model="configuration.settings.memory"
+									       ng-required="true"/>
+									<label class="fieldMsg">
+										Specify the Maximum memory limit that should be provided for this
+										deployment.<br/>
+										Note: This is the maximum allowed memory only, a default 128Mi minimum memory
+										will be added.<br/>
+										Example: You can set it to 1024Mi or 1Gi.
+										Click <a
+											href=https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory"
+											target="_blank">here </a>for
+										more information. You can use 0 if you want the memory limits (minimum and
+										maximum) to be elastic.
+									</label>
+									<br/>
+								</div>
+								<div ng-if="configuration.recipe.id">
+									<label>CPU Limit Per Instance</label>
+									<input type="text" class="form-control" placeholder="100m or 0.1"
+									       ng-model="configuration.settings.cpu"
+									       ng-required="autoScale"/>
+									<label class="fieldMsg">Specify the Maximum cpu limit (in millicpu or decimal point)
+										that should be provided
+										when running your service/daemon. Click
+										<a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu"
+										   target="_blank">here </a>for
+										more information.</label>
+									<br/>
+								</div>
+								<div ng-show="showImages">
+									<label>Image Prefix</label>
+									<input type="text" class="form-control"
+									       ng-model="configuration.recipe.image.prefix"/>
+									<div class="fieldMsg hint">Override the image prefix if you want</div>
+									<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"
+									     class="warningFieldMsg hint">Mismatch detected between Configuration and
+										Deployment. Deployed Image Prefix: <b>{{deployedImage.prefix}}</b>
+									</div>
+									<br/>
+								</div>
+								<div ng-show="showImages">
+									<label>Image Name</label>
+									<input type="text" class="form-control" ng-model="configuration.recipe.image.name"/>
+									<div class="fieldMsg hint">Override the image name if you want</div>
+									<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"
+									     class="warningFieldMsg hint">Mismatch detected between Configuration and
+										Deployment. Deployed Image Name: <b>{{deployedImage.name}}</b>
+									</div>
+									<br/>
+								</div>
+								<div ng-show="showImages">
+									<label>Image Tag</label>
+									<input type="text" class="form-control" ng-model="configuration.recipe.image.tag"/>
+									<div class="fieldMsg hint">Override the image tag if you want</div>
+									<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"
+									     class="warningFieldMsg hint">Mismatch detected between Configuration and
+										Deployment. Deployed Image Tag: <b>{{deployedImage.tag}}</b>
+									</div>
+									<br/>
+								</div>
+								<div ng-show="privateImage">
+									<div>
+										<div>
+											<label>Image Registry Secret</label>
+											<select class="form-control"
+											        ng-model="configuration.recipe.image.registrySecret"
+											        ng-options="secret as secret for secret in secrets.registry">
+											</select>
+											<label class="fieldMsg">Choose a Registry Secret to use when deploying this
+												resource. Registry Secrets are of type
+												<b>kubernetes.io/dockercfg</b></label>
+										</div>
+										<alert type="warning"
+										       ng-show="!secrets.registry && registrySecrets.length === 0"
+										       class="c-both">
+											<p>
+												No Registry Secrets found that can be used to deploy this resource , <a
+													href="" ng-click="gotoSecrets();">Click Here</a> to create a new
+												Registry Secret.
+											</p>
+										</alert>
+										<br/>
+										<div/>
+									</div>
+								</div>
+								<div ng-if="userInputVariable && userInputVariable.length > 0">
+									<div ng-repeat="userInput in userInputVariable">
+										<label>{{userInput.label || userInput.name}}</label>
+										<input type="text" class="form-control"
+										       ng-model="configuration.recipe.env[userInput.name]"
+										       value="{{userInput.value}}"
+										       ng-required="input.required"/>
+										<div class="fieldMsg hint">{{userInput.fieldMsg}}</div>
+										<br/>
+									</div>
+								</div>
+								<div ng-if="secretVariable && secretVariable.length > 0">
+									<div ng-repeat="userInput in secretVariable">
+										<fieldset>
+											<legend>{{userInput.name}}</legend>
+											<label>{{userInput.fields[0].label || userInput.fields[0].name}}</label>
+											<select class="form-control"
+											        ng-model="configuration.recipe.env[userInput.name].name"
+											        ng-options="secret as secret for secret in userInput.fields[0].value"
+											        ng-required="userInput.fields[0].required">
+											</select>
+											<div class="fieldMsg hint">{{userInput.fields[0].fieldMsg}}</div>
+											<label>{{userInput.fields[1].label || userInput.fields[1].name}}</label>
+											<input type="text" class="form-control"
+											       ng-model="configuration.recipe.env[userInput.name].key"
+											       ng-value="userInput.fields[1].value"
+											       ng-required="userInput.fields[1].required"/>
+											<div class="fieldMsg hint">{{userInput.fields[1].fieldMsg}}</div>
+											<br/>
+										</fieldset>
+									</div>
+								</div>
+								<fieldset class="custom-fieldset" ng-if="showSourceConfig">
+									<legend>{{configuration.recipe.sourceCode.label}}</legend>
+									<div>
+										<label>Catalog</label>
+										<select class="form-control" ng-required="requiredSourceConfig"
+										        ng-options="catalog.name as catalog.name for catalog in configurationCatalogs"
+										        ng-model="configuration.recipe.sourceCode.catalog"
+										        ng-change="fetchConfigVersion(configuration.recipe.sourceCode.catalog)"
+										        ng-disabled="!editSourceConfig"></select>
+										<label class="fieldMsg">Choose your Config Catalog</label>
+										<br>
+									</div>
+									
+									<div ng-if="configuration.recipe.sourceCode.catalog">
+										<label>Version</label>
+										<select class="form-control" ng-required="requiredSourceConfig"
+										        ng-options="v.version as v.version for v in configurationCatalogsVersions"
+										        ng-change="fetchConfigBranchesTags(configuration.recipe.sourceCode.version)"
+										        ng-model="configuration.recipe.sourceCode.version"
+										        ng-disabled="!editSourceConfig"></select>
+										<label class="fieldMsg">Choose your version</label>
+										<br>
+									</div>
+									
+									<div ng-if="configuration.recipe.sourceCode.version">
+										<div ng-if="configurationCatalogsTags">
+											
+											<label>Tags</label>
+											<select class="form-control" ng-required="requiredSourceConfig"
+											        ng-options="tag as tag for tag in configurationCatalogsTags"
+											        ng-model="configuration.recipe.sourceCode.tag"
+											        ng-disabled="!editSourceConfig"></select>
+											<label class="fieldMsg">Choose your Tag</label>
+											<br>
+										</div>
+										<div ng-if="configurationCatalogsBranches">
+											<label>Branch</label>
+											<select class="form-control" ng-required="requiredSourceConfig"
+											        ng-options="branch as branch for branch in configurationCatalogsBranches"
+											        ng-model="configuration.recipe.sourceCode.branch"
+											        ng-disabled="!editSourceConfig"></select>
+											<label class="fieldMsg">Choose your Branch}}</label>
+											<br>
+										</div>
+									</div>
+									<div ng-if="configuration.recipe.sourceCode.catalog">
+										<label>Path</label>
+										<input type="text" class="form-control"
+										       ng-model="configuration.recipe.sourceCode.path" ng-required="false"/>
+										<label class="fieldMsg">Unless specified, the root will be used</label>
+									</div>
+								</fieldset>
+								<fieldset ng-if="showPorts">
+									<legend>Published Ports</legend>
+									<div>
+										<label class="f-left">Load Balancer</label>
+										<label class="toggleSwitch f-left"><input type="checkbox"
+										                                          ng-model="loadBalancer"
+										                                          ng-value="loadBalancer"
+										                                          ng-disabled=true><span
+												class="buttonSlider round"></span></label>
+										<label class="fieldMsg">This recipe allows LoadBalancer port configuration
+											only.</label>
+										<br/><br/>
+									</div>
+									<div ng-if="!loadBalancer"
+									     ng-repeat="exposedPorts in ports track by exposedPorts.target">
+										<fieldset ng-if="exposedPorts.isPublished || exposedPorts.published">
+											<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}
+											</legend>
+											<div>
+												<label>Published Port</label>
+												<input type="number" class="form-control"
+												       ng-model="exposedPorts.published" ng-disabled="false"
+												       ng-change="addToCustomPorts(exposedPorts)" min="1" max="2767"
+												       ng-required="true"/>
+												<label class="fieldMsg">Detected Published Port
+													<b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
+													Enter a value if you want to expose this resource to a specific
+													port; Port values are limited to a range between 0 and 2767.
+												</label>
+											</div>
+										</fieldset>
+										<br>
+									</div>
+								</fieldset>
+								<fieldset ng-if="allowExposeServicePort">
+									<legend>Port(s)
+									</legend>
+									<div style="width: 30%!important;float: left;">
+										<label class="switch"><input type="checkbox" ng-model="exposeServicePort"><span
+												class="buttonSlider round f-left"></span></label>
+									</div>
+									<div style="width: 60%!important;float: left;margin-top: 8px;">
+										<label class="f-left fieldMsg">This recipe allows port(s) to be exposed
+											externally.
+										</label>
+									</div>
+									<div ng-if="exposeServicePort">
+										<label>Value</label>
+										<input type="number" class="form-control"
+										       ng-model="configuration.recipe.exposeServicePort.value"
+										       ng-disabled="false" min="1" max="2767" ng-required="true"/>
+										<label class="fieldMsg">Enter a value if you want to expose this resource to a
+											specific port;
+											Port values are limited to a range between 0 and 2767 (please note that
+											kubernetes add 30,000 to the port).
+										</label>
+									</div>
+									<br/>
+								</fieldset>
+								<div ng-show="configuration.recipe.value">
+									<fieldset>
+										<legend>Environment Scaling</legend>
+										<div>
+											<label>Deployment Mode</label>
+											<select class="form-control" ng-disabled="isDeployed" ng-required="true"
+											        ng-options="mode for mode in deploymentModes"
+											        ng-model="configuration.settings.mode"></select>
+											<label class="fieldMsg">Daemonset mode deploys one replica of the service on
+												each node.</label>
+											<label class="fieldMsg">Deployment mode deploys the specified number of replicas
+												based on the
+												availability of resources.</label>
+											<br>
+										</div>
+										
+										<alert type="info"
+										       ng-if="configuration.settings.mode === 'Daemonset' || configuration.settings.mode === 'CronJob'">
+											Daemonsets/CronJob do not support autoscaling.
+										</alert>
+										<fieldset ng-if="configuration.settings.mode === 'Deployment'">
+											<legend>Auto Scale<label class="switch"><input type="checkbox"
+											                                               ng-model="autoScale"
+											                                               ng-click="activateAutoScale()"><span
+													class="buttonSlider round"></span></label>
+											</legend>
+											<fieldset ng-if="!autoScale && configuration.settings.mode == 'Deployment'">
+												<legend>Replication</legend>
+												<label>Replica Count</label>
+												<input type="number" ng-disabled="isDeployed" class="form-control"
+												       ng-model="configuration.settings.replicas" ng-required="true"
+												       style="margin-right:0"/>
+												<label class="fieldMsg">Enter a Replica Count that is greater or equal to
+													1</label>
+												<br>
+											</fieldset>
+											<fieldset ng-if="autoScale">
+												<legend>Metrics</legend>
+												<div>
+													<label>CPU</label>
+													<input type="number" class="form-control"
+													       ng-model="configuration.settings.autoScale.metrics.cpu.percent"
+													       ng-required="true"/>
+													<label class="fieldMsg">Enter CPU percentage</label>
+													<br>
+												</div>
+											</fieldset>
+											<fieldset ng-if="autoScale">
+												<legend>Replicas</legend>
+												<div>
+													<label>min</label>
+													<input type="number" class="form-control"
+													       ng-model="configuration.settings.autoScale.replicas.min"
+													       ng-required="true"/>
+													<label class="fieldMsg">Enter minimum Replica Count that is greater or
+														equal to 1</label>
+													<br>
+												</div>
+												<div>
+													<label>max</label>
+													<input type="number" class="form-control"
+													       ng-model="configuration.settings.autoScale.replicas.max"
+													       ng-required="true"/>
+													<label class="fieldMsg">Enter maximum Replica Count that is greater or
+														equal to 1</label>
+													<br>
+												</div>
+											</fieldset>
+										</fieldset>
+									</fieldset>
+									<fieldset>
+										<legend>Continuous Delivery</legend>
+										<div ng-if="showBranches" class="halfPage branchLabel">
+											<label>Branch:</label>&nbsp;{{configuration.src.branch}}
+										</div>
+										<div ng-if="showTags" class="halfPage branchLabel">
+											<label>Branch:</label>&nbsp;{{configuration.src.tag}}
+										</div>
+										<div class="halfPage branchLabel">
+											<label>Strategy:</label>
+											<select class="form-control" ng-required="true"
+											        data-ng-model="configuration.cd.strategy">
+												<option value="notify">notify</option>
+												<option value="update">update</option>
+											</select>
+										</div>
+									</fieldset>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button ng-show="access.marketplace.configure" ng-disabled="configureRepo.$invalid" class="btn btn-success"
+		        ng-click="configure(service, version)">
+			Save
+		</button>
+		<button ng-show="!isDeployed && access.marketplace.build" ng-disabled="configureRepo.$invalid" class="btn btn-primary"
+		        ng-click="build(service, version)">
+			First Time Deploy
+		</button>
+		<button ng-show="isDeployed && access.marketplace.build" ng-disabled="configureRepo.$invalid" class="btn btn-info"
+		        ng-click="build(service, version)">
+			Rebuild Service
+		</button>
+		<button class="btn btn-danger" ng-click="cancel()">Close</button>
+	</div>
+</div>

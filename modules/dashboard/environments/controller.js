@@ -16,7 +16,6 @@ environmentsApp.controller('environmentCtrl', ['$scope', '$timeout', '$modal', '
 			"code": record.code,
 			"description": record.description
 		};
-	
 		$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		$scope.$parent.switchEnvironment(data);
 		$timeout(() => {

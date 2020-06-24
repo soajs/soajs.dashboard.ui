@@ -43,10 +43,22 @@
 	<div ng-if="envDeployeType === 'kubernetes' && service.type === 'service'">
 		<div ng-include="'modules/dashboard/deployMarketplace/directives/soajs/configure-service.tmpl'"></div>
 	</div>
+	<div ng-if="envDeployeType === 'kubernetes' && service.type === 'static'">
+		<div ng-include="'modules/dashboard/deployMarketplace/directives/soajs/configure-static.tmpl'"></div>
+	</div>
+	<div ng-if="envDeployeType === 'kubernetes' && service.type === 'resource'">
+		<div ng-include="'modules/dashboard/deployMarketplace/directives/soajs/configure-resource.tmpl'"></div>
+	</div>
 </script>
 
 <script type="text/ng-template" id="reconfigure.tmpl">
 	<div ng-if="envDeployeType === 'kubernetes' && service.type === 'service'">
 		<div ng-include="'modules/dashboard/deployMarketplace/directives/soajs/reconfigure-service.tmpl'"></div>
+	</div>
+	<div ng-if="envDeployeType === 'kubernetes' && service.type === 'static'">
+		<div ng-include="'modules/dashboard/deployMarketplace/directives/soajs/reconfigure-static.tmpl'"></div>
+	</div>
+	<div ng-if="envDeployeType === 'kubernetes' && service.type === 'resource'">
+		<div ng-include="'modules/dashboard/deployMarketplace/directives/soajs/reconfigure-resource.tmpl'"></div>
 	</div>
 </script>

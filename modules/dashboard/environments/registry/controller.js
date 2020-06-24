@@ -165,6 +165,7 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 						$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
 					}
 					else {
+						delete $scope.registry.dbs.session;
 						$scope.$parent.displayAlert('success', 'DB deleted successfully');
 					}
 				});
@@ -181,6 +182,7 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 						$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
 					}
 					else {
+						delete $scope.registry.dbs.databases[dbName];
 						$scope.$parent.displayAlert('success', 'DB deleted successfully');
 					}
 				});
@@ -191,6 +193,10 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 				"templateUrl": "session.tmpl",
 				"item": $scope.registry.dbs.session || {},
 				"submit": function (modalScope, modalInstance) {
+					console.log(modalScope.formData);
+					if (modalInstance) {
+						modalInstance.close();
+					}
 				}
 			};
 			openModal(options);
@@ -199,6 +205,37 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 			let options = {
 				"templateUrl": "db.tmpl",
 				"submit": function (modalScope, modalInstance) {
+					if (!modalScope.formData.name || !modalScope.formData.cluster) {
+						modalScope.displayAlert('danger', "Please fill in all required fields!");
+					} else {
+						getSendDataFromServer(modalScope, ngDataApi, {
+							"method": "post",
+							"routeName": "/console/registry/db/custom",
+							"data": {
+								"env": $scope.envCode,
+								"prefix": modalScope.formData.prefix || null,
+								"name": modalScope.formData.name,
+								"cluster": modalScope.formData.cluster,
+								"tenantSpecific": !!modalScope.formData.tenantSpecific
+							}
+						}, function (error) {
+							if (error) {
+								modalScope.displayAlert('danger', error.message);
+							}
+							else {
+								$scope.registry.dbs.databases[modalScope.formData.name] = {
+									"prefix": modalScope.formData.prefix || null,
+									"cluster": modalScope.formData.cluster,
+									"tenantSpecific": !!modalScope.formData.tenantSpecific
+								};
+								modalScope.displayAlert('success', "Database has been added.");
+								$scope.$parent.displayAlert('success', "Database has been added.");
+								if (modalInstance) {
+									modalInstance.close();
+								}
+							}
+						});
+					}
 				}
 			};
 			openModal(options);

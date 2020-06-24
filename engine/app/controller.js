@@ -316,8 +316,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		$scope.switchEnvironment = function (envRecord, forceEnvRecord) {
 			if (envRecord) {
 				if ($routeParams && $routeParams.envCode && $routeParams.envCode !== envRecord.code) {
-					//get the code from local storage
-					// console.log($routeParams, envRecord, forceEnvRecord);
 					
 					if (forceEnvRecord) {
 						$routeParams.envCode = envRecord.code;
@@ -336,50 +334,19 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					!$cookies.getObject('myEnv', {'domain': interfaceDomain}) ||
 					$cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase() !== envRecord.code.toLowerCase()
 				) {
+					if (envRecord.deployer && envRecord.deployer.selected === 'container') {
+						envRecord.type = 'container';
+						envRecord.technology = "kubernetes";
+					} else {
+						envRecord.type = 'manual';
+					}
 					putMyEnv(envRecord);
-					// if ($scope.pillar && $scope.pillar.toLowerCase() === 'operate') {
-					// 	getSendDataFromServer($scope, ngDataApi, {
-					// 		"method": "get",
-					// 		"routeName": "/soajs/acl"
-					// 	}, function (error, response) {
-					// 		if (error) {
-					// 			$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-					// 		} else {
-					// 			if (response.acl) {
-					// 				$localStorage.acl_access[envRecord.code.toLowerCase()] = response.acl;
-					// 			}
-					// 			if (response.finalACL) {
-					// 				let acl = {
-					// 					"dashboard": {}
-					// 				};
-					// 				for (var service in response.finalACL) {
-					// 					if (service && response.finalACL[service]) {
-					// 						let version = response.finalACL[service].version;
-					// 						delete response.finalACL[service].version;
-					// 						acl.dashboard[service] = {
-					// 							[version]: response.finalACL[service]
-					// 						};
-					// 					}
-					// 				}
-					// 				$localStorage.acl_access = acl;
-					// 			}
-					// 			doEnvPerNav();
-					// 			if ($routeParams && $routeParams.envCode) {
-					// 				//better than $route.reload;
-					// 				$route.updateParams($routeParams);
-					// 			} else {
-					// 				$route.reload();
-					// 			}
-					// 		}
-					// 	});
-					// } else {
-						if ($routeParams && $routeParams.envCode) {
-							//better than $route.reload;
-							$route.updateParams($routeParams);
-						} else {
-							$route.reload();
-						}
-					//}
+					if ($routeParams && $routeParams.envCode) {
+						//better than $route.reload;
+						$route.updateParams($routeParams);
+					} else {
+						$route.reload();
+					}
 				}
 			}
 		};

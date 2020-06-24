@@ -9,12 +9,16 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 	
 	//global
 	$scope.directiveToLoad = '';
-	$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain}).deployer;
-	if ($scope.envDeployer.type === 'container') {
+	//$scope.envDeployer = $cookies.getObject('myEnv', {'domain': interfaceDomain});
+	// if ($scope.envDeployer.type === 'container') {
+	// 	$scope.directiveToLoad = "list-cloud-kube.tmpl";
+	// 	//$scope.directiveToLoad = "list-cloud.tmpl";
+	// }
+	$scope.selectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain});
+	if ($scope.selectedEnvironment.type === 'container') {
 		$scope.directiveToLoad = "list-cloud-kube.tmpl";
 		//$scope.directiveToLoad = "list-cloud.tmpl";
 	}
-	$scope.selectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 	$scope.inspectItem = function (service) {
 		hacloudSrv.inspectItem($scope, service);
 	};
@@ -1214,7 +1218,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 			}
 		});
 	};
-	if ($scope.access.kubernetes.deployment && $scope.envDeployer.type === 'container') {
+	if ($scope.access.kubernetes.deployment && $scope.selectedEnvironment.type === 'container') {
 		$scope.listDeployments();
 	}
 	

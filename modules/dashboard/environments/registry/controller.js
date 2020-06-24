@@ -193,7 +193,6 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 				"templateUrl": "session.tmpl",
 				"item": $scope.registry.dbs.session || {},
 				"submit": function (modalScope, modalInstance) {
-					console.log(modalScope.formData);
 					if (modalInstance) {
 						modalInstance.close();
 					}
@@ -300,7 +299,11 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 				"protocol": postData.protocol,
 				"description": postData.description,
 				"services": {
-					"controller": postData.services.controller,
+					"controller": {
+						"authorization": postData.services.controller.authorization,
+						"requestTimeout": postData.services.controller.requestTimeout,
+						"requestTimeoutRenewal": postData.services.controller.requestTimeoutRenewal
+					},
 					"config": {
 						"awareness": {
 							"cacheTTL": postData.services.config.awareness.cacheTTL,
@@ -325,7 +328,6 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 					}
 				}
 			};
-			console.log(data);
 			getSendDataFromServer($scope, ngDataApi, {
 				"method": "put",
 				"routeName": "/console/registry",

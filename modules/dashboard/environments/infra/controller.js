@@ -32,42 +32,52 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 	}
 	
 	$scope.listEnvironments = function (afterDelete) {
-		let options = {
-			"method": "get",
-			"routeName": "/console/environment",
-			"params": {}
-		};
-		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		
+		let continue_fn = (environments) => {
+			if (afterDelete && (environments.length === 0)) {
+				$scope.$parent.rebuildMenus(function () {
+				});
 			}
-			else {
-				$localStorage.environments = angular.copy(response);
-				if (afterDelete && (response.length === 0)) {
-					$scope.$parent.rebuildMenus(function () {
-					});
-				}
-				
-				let myEnvCookie = $cookies.getObject('myEnv', {'domain': interfaceDomain});
-				let found = false;
-				if (myEnvCookie) {
-					for (let i = response.length - 1; i >= 0; i--) {
-						if (response[i].code === myEnvCookie.code) {
-							$scope.envCode = response[i].code;
-							putMyEnv(response[i]);
-							found = true;
-						}
+			
+			let myEnvCookie = $cookies.getObject('myEnv', {'domain': interfaceDomain});
+			let found = false;
+			let environment = null;
+			if (myEnvCookie) {
+				for (let i = environments.length - 1; i >= 0; i--) {
+					if (environments[i].code === myEnvCookie.code) {
+						$scope.envCode = environments[i].code;
+						environment = environments[i];
+						found = true;
 					}
 				}
-				if (!found && response && response[0]) {
-					$scope.envCode = response[0].code;
-					putMyEnv(response[0]);
-				}
-				if ($scope.envCode) {
-					$scope.getEnvPlatform(response[0]);
-				}
 			}
-		});
+			if (!found && environments && environments[0]) {
+				$scope.envCode = environments[0].code;
+				environment = environments[0];
+			}
+			if ($scope.envCode) {
+				$scope.getEnvPlatform(environment);
+			}
+		};
+		
+		if ($localStorage.environments) {
+			continue_fn($localStorage.environments);
+		} else {
+			let options = {
+				"method": "get",
+				"routeName": "/console/environment",
+				"params": {}
+			};
+			getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				}
+				else {
+					$localStorage.environments = angular.copy(response);
+					continue_fn($localStorage.environments);
+				}
+			});
+		}
 	};
 	
 	$scope.getEnvPlatform = function (envRecord) {

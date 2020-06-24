@@ -23,9 +23,9 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 					if (options.item) {
 						$scope.formData = options.item;
 					}
-					if ($scope.formData.sharedEnv) {
+					if ($scope.formData.sharedEnvs) {
 						for (let i = 0; i < $scope.environments.length; i++) {
-							if ($scope.formData.sharedEnv [$scope.environments[i].code]) {
+							if ($scope.formData.sharedEnvs [$scope.environments[i].code]) {
 								$scope.environments[i].selected = true;
 							}
 						}
@@ -165,14 +165,11 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 						}
 						modalScope.formData.shared = !!modalScope.formData.shared;
 						modalScope.formData.plugged = !!modalScope.formData.plugged;
-						modalScope.formData.sharedEnv = null;
+						modalScope.formData.sharedEnvs = {};
 						if (modalScope.formData.shared) {
 							for (let i = 0; i < modalScope.environments.length; i++) {
 								if (modalScope.environments[i].selected) {
-									if (!modalScope.formData.sharedEnv) {
-										modalScope.formData.sharedEnv = {};
-									}
-									modalScope.formData.sharedEnv[modalScope.environments[i].code] = true;
+									modalScope.formData.sharedEnvs[modalScope.environments[i].code] = true;
 								}
 							}
 						}
@@ -185,7 +182,7 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 									"name": modalScope.formData.name,
 									"plugged": modalScope.formData.plugged,
 									"shared": modalScope.formData.shared,
-									"sharedEnv": modalScope.formData.sharedEnv,
+									"sharedEnvs": modalScope.formData.sharedEnvs,
 									"value": itemValue
 								}
 							}
@@ -197,7 +194,9 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 								item.name = modalScope.formData.name;
 								item.plugged = modalScope.formData.plugged;
 								item.shared = modalScope.formData.shared;
-								item.sharedEnv = modalScope.formData.sharedEnv;
+								if (modalScope.formData.sharedEnvs) {
+									item.sharedEnvs = modalScope.formData.sharedEnvs;
+								}
 								item.value = modalScope.formData.value;
 								modalScope.displayAlert('success', "Custom registry has been updated.");
 								$scope.$parent.displayAlert('success', "Custom registry has been updated.");
@@ -235,10 +234,10 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 						if (modalScope.formData.shared) {
 							for (let i = 0; i < modalScope.environments.length; i++) {
 								if (modalScope.environments[i].selected) {
-									if (!modalScope.formData.sharedEnv) {
-										modalScope.formData.sharedEnv = {};
+									if (!modalScope.formData.sharedEnvs) {
+										modalScope.formData.sharedEnvs = {};
 									}
-									modalScope.formData.sharedEnv[modalScope.environments[i].code] = true;
+									modalScope.formData.sharedEnvs[modalScope.environments[i].code] = true;
 								}
 							}
 						}
@@ -251,7 +250,7 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 									"name": modalScope.formData.name,
 									"plugged": modalScope.formData.plugged,
 									"shared": modalScope.formData.shared,
-									"sharedEnv": modalScope.formData.sharedEnv,
+									"sharedEnvs": modalScope.formData.sharedEnvs,
 									"value": itemValue
 								}
 							}

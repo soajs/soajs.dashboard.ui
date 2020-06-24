@@ -305,9 +305,9 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 					if (options.item) {
 						$scope.formData = options.item;
 					}
-					if ($scope.formData.sharedEnv) {
+					if ($scope.formData.sharedEnvs) {
 						for (let i = 0; i < $scope.environments.length; i++) {
-							if ($scope.formData.sharedEnv [$scope.environments[i].code]) {
+							if ($scope.formData.sharedEnvs [$scope.environments[i].code]) {
 								$scope.environments[i].selected = true;
 							}
 						}
@@ -436,14 +436,11 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 						}
 						modalScope.formData.shared = !!modalScope.formData.shared;
 						modalScope.formData.plugged = !!modalScope.formData.plugged;
-						modalScope.formData.sharedEnv = null;
+						modalScope.formData.sharedEnvs = {};
 						if (modalScope.formData.shared) {
 							for (let i = 0; i < modalScope.environments.length; i++) {
 								if (modalScope.environments[i].selected) {
-									if (!modalScope.formData.sharedEnv) {
-										modalScope.formData.sharedEnv = {};
-									}
-									modalScope.formData.sharedEnv[modalScope.environments[i].code] = true;
+									modalScope.formData.sharedEnvs[modalScope.environments[i].code] = true;
 								}
 							}
 						}
@@ -456,7 +453,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 									"name": modalScope.formData.name,
 									"plugged": modalScope.formData.plugged,
 									"shared": modalScope.formData.shared,
-									"sharedEnv": modalScope.formData.sharedEnv,
+									"sharedEnvs": modalScope.formData.sharedEnvs,
 									"config": itemConfig
 								}
 							}
@@ -468,7 +465,9 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 								item.name = modalScope.formData.name;
 								item.plugged = modalScope.formData.plugged;
 								item.shared = modalScope.formData.shared;
-								item.sharedEnv = modalScope.formData.sharedEnv;
+								if (modalScope.formData.sharedEnvs) {
+									item.sharedEnvs = modalScope.formData.sharedEnvs;
+								}
 								item.config = modalScope.formData.config;
 								modalScope.displayAlert('success', "Resource Configuration has been updated.");
 								$scope.$parent.displayAlert('success', "Resource Configuration has been updated.");
@@ -529,10 +528,10 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 						if (modalScope.formData.shared) {
 							for (let i = 0; i < modalScope.environments.length; i++) {
 								if (modalScope.environments[i].selected) {
-									if (!modalScope.formData.sharedEnv) {
-										modalScope.formData.sharedEnv = {};
+									if (!modalScope.formData.sharedEnvs) {
+										modalScope.formData.sharedEnvs = {};
 									}
-									modalScope.formData.sharedEnv[modalScope.environments[i].code] = true;
+									modalScope.formData.sharedEnvs[modalScope.environments[i].code] = true;
 								}
 							}
 						}
@@ -545,7 +544,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 									"name": modalScope.formData.name,
 									"plugged": modalScope.formData.plugged,
 									"shared": modalScope.formData.shared,
-									"sharedEnv": modalScope.formData.sharedEnv,
+									"sharedEnvs": modalScope.formData.sharedEnvs,
 									"config": itemConfig
 								}
 							}

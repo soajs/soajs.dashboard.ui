@@ -525,29 +525,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	
 }]);
 
-soajsDeployCatalogApp.filter('timeInMillisConverter', function () {
-	return function (time) {
-		var convert = {
-			"msecToSec": {"unit": "sec", "divideBy": 1000},
-			"secToMin": {"unit": "min", "divideBy": 60},
-			"minToH": {"unit": "h", "divideBy": 60},
-			"hToDays": {"unit": "days", "divideBy": 24},
-			"daysToWeeks": {"unit": "weeks", "divideBy": 7},
-			"weeksToMonths": {"unit": "months", "divideBy": 4.34825},
-			"monthsToYears": {"unit": "years", "divideBy": 12}
-		};
-		var unit = "msec";
-		for (var i in convert) {
-			if (Math.floor(time / convert[i].divideBy) > 1) {
-				time = time / convert[i].divideBy;
-				unit = convert[i].unit;
-			} else {
-				return time.toFixed(2) + " " + unit;
-			}
-		}
-		return time.toFixed(2) + " " + unit;
-	};
-});
 
 soajsDeployCatalogApp.filter('recipesSearchFilter', function () {
 	return function (input, searchKeyword) {

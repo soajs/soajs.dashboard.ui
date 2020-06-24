@@ -273,7 +273,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				"name": service.name,
 				"maintenancePort": v.version,
 				"operation": {
-					"route" : operation
+					"route": operation
 				}
 			};
 			// if (v.maintenance.port) {
@@ -340,19 +340,25 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		});
 	};
 	
-	$scope.getDeployment = function (service) {
+	$scope.getDeployment = function (service, v) {
+		if ($scope.envDeployeType === 'manual') {
+			return;
+		}
+		if (service.versions.length === 0) {
+			return;
+		}
 		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
+		let options = {
 			"method": "get",
 			"routeName": "/infra/kubernetes/item/inspect",
 			"params": {
 				"item": {
-					"env": "new",
-					"name": "schedulercellsite2",
-					"version": "3.0",
+					"env": $scope.selectedEnvironment.code,
+					"name": service.name,
+					"version": service.versions[0].version,
 				},
 				"configuration": {
-					"env": "new"
+					"env": $scope.selectedEnvironment.code
 				}
 				// "item" : {
 				// 	"env": "new",
@@ -363,7 +369,11 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				// 	"env": "new"
 				// }
 			}
-		}, function (error, response) {
+		};
+		if (v) {
+			options.params.item.version = v.version;
+		}
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);

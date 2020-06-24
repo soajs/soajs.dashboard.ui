@@ -33,7 +33,7 @@
 		<br>
 	</div>
 	<tabset>
-		<tab ng-repeat="version in service.versions" heading="Version {{version.version}}">
+		<tab ng-repeat="version in service.versions" heading="Version {{version.version}}" ng-click="getDeployment(service, version)">
 			<br>
 			<div ng-if="envDeployeType === 'kubernetes'">
 				<div ng-include="'modules/dashboard/deployMarketplace/directives/global/kubernetes.tmpl'"></div>

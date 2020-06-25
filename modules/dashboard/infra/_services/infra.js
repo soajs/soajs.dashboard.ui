@@ -120,7 +120,7 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		let awsExcluded = ['infra-groups'];
 		let azureExcluded = ['infra-deployments', 'infra-keyPairs', 'infra-certificates'];
 		let googleExcluded = ['infra-groups', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
-		let localExcluded = ['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates'];
+		let localExcluded = ['infra-deployments', 'infra-templates', 'infra-groups', 'infra-networks', 'infra-firewall', 'infra-lb', 'infra-ip', 'infra-keyPairs', 'infra-certificates, infra-namespaces'];
 		
 		//fix the menu; local driver has not templates
 		if (currentScope.getFromParentScope('appNavigation')) {
@@ -135,7 +135,6 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 							currentScope.go(oneNavigationEntry.fallbackLocation);
 						}
 					}
-					
 					// if(myInfra.name === 'local'){
 					// 	if(localExcluded.indexOf(oneNavigationEntry.id) !== -1){
 					// 		oneNavigationEntry.hideMe = true;

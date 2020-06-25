@@ -20,7 +20,7 @@ var loginConfig = {
 				'name': 'password',
 				'label': translation.password[LANG],
 				'type': 'password',
-				'placeholder': translation.enterPassword[LANG],
+				'placeholder': 'Enter Password',
 				'value': '',
 				'fieldMsg': ' <a href="#/forgotPw">' + translation.forgotYourPassword[LANG] + '</a>',
 				'tooltip': translation.passwordsToolTip[LANG],

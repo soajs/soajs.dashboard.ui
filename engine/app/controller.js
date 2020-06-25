@@ -262,11 +262,11 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 			
 			let currentSelectedEnvironment;
-			let currentSelectedEnvironmentRecord;
+			let currentDeployerType;
 			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 				currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
+				currentDeployerType = $cookies.getObject('myEnv', {'domain': interfaceDomain}).type;
 			}
-			let currentDeployerType = $cookies.getObject('myEnv', {'domain': interfaceDomain}).type;
 			let hide;
 			if (currentDeployerType === 'manual') {
 				if (currentSelectedEnvironment === 'dashboard') {

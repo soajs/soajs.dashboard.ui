@@ -265,7 +265,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			let currentSelectedEnvironmentRecord;
 			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 				currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
-				currentSelectedEnvironmentRecord = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 			}
 			let currentDeployerType = $cookies.getObject('myEnv', {'domain': interfaceDomain}).type;
 			let hide;

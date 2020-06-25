@@ -904,6 +904,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		}
 		return newMethod
 	};
+	
 	$scope.minimize = function (envCode, service) {
 		if (!$scope.aclFill[envCode][service.name]) {
 			$scope.aclFill[envCode][service.name] = {};
@@ -941,13 +942,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.environments_codes = angular.copy($localStorage.environments);
-				$scope.environments_codes = angular.copy($localStorage.environments);
-				for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
-					if ($scope.environments_codes && $scope.environments_codes[x] && $scope.environments_codes[x].code && $scope.environments_codes[x].code.toUpperCase() === "DASHBOARD") {
-						$scope.environments_codes.splice(x, 1);
-						break;
-					}
-				}
 				$scope.paginations = response.paginations;
 				$scope.serviceGroup = response.serviceGroup;
 				$scope.allServiceApis = response.allServiceApis;
@@ -1431,7 +1425,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 	// default operation
 	overlayLoading.show(function () {
 		$scope.getPackageAcl();
-		//$scope.getAllServicesList();
 	});
 }]);
 
@@ -1568,11 +1561,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		$scope.environments_codes = angular.copy($localStorage.environments);
 		let envs = [];
 		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
-			if ($scope.environments_codes && $scope.environments_codes[x] && $scope.environments_codes[x].code && $scope.environments_codes[x].code.toUpperCase() === "DASHBOARD") {
-				$scope.environments_codes.splice(x, 1);
-			} else {
-				envs.push($scope.environments_codes[x].code);
-			}
+			envs.push($scope.environments_codes[x].code);
 		}
 		let options = {
 			"method": "get",
@@ -1580,6 +1569,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			"params": {
 				"id": $routeParams.pid,
 				"package": $routeParams.code,
+				"soajs": true,
 				"config": {
 					envs: envs
 				}
@@ -1837,7 +1827,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
 	overlayLoading.show(function () {
-		$scope.getAllServicesList();
+		$scope.getPackageAcl();
 	});
 }]);
 

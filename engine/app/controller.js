@@ -267,11 +267,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				currentSelectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase();
 				currentSelectedEnvironmentRecord = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 			}
-			
-			let hide = false;
-			if ($scope.currentDeployer.type !== 'manual' && currentSelectedEnvironmentRecord && (currentSelectedEnvironmentRecord.pending || currentSelectedEnvironmentRecord.error)) {
-				hide = (['secrets', 'resources', 'environments-clouds-deployments', 'environments-dbs', 'environments-platforms', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints'].indexOf(link.id) !== -1);
-			} else if ($scope.currentDeployer.type === 'manual') {
+			let currentDeployerType = $cookies.getObject('myEnv', {'domain': interfaceDomain}).type;
+			let hide;
+			if (currentDeployerType === 'manual') {
 				if (currentSelectedEnvironment === 'dashboard') {
 					hide = (['secrets', 'volumes', 'repositories', 'updates-upgrades', 'continuous-delivery', 'endpoints', 'environments-clouds-deployments'].indexOf(link.id) !== -1);
 				} else {
@@ -280,7 +278,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			} else {
 				hide = (link.excludedEnvs && currentSelectedEnvironment && link.excludedEnvs.indexOf(currentSelectedEnvironment) !== -1)
 			}
-			
 			return hide;
 		};
 		

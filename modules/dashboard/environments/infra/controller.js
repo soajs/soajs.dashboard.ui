@@ -81,36 +81,43 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 	};
 	
 	$scope.getEnvPlatform = function (envRecord) {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/console/registry/deployer",
-			"params": {
-				"env": $scope.envCode
+		let continue_fn = (response) => {
+			$scope.containers = {};
+			if (response.selected === 'manual') {
+				$scope.envType = 'manual';
+			} else {
+				$scope.envType = 'container';
+				platformCntnr.checkContainerTechnology($scope);
 			}
-		}, function (error, response) {
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
-			}
-			else {
-				$scope.deployer = response;
-				
-				$scope.containers = {};
-				if (response.selected === 'manual') {
-					$scope.envType = 'manual';
-				} else {
-					$scope.envType = 'container';
-					platformCntnr.checkContainerTechnology($scope);
+			if (envRecord) {
+				envRecord.type = $scope.envType;
+				envRecord.deployer = $scope.deployer;
+				if ($scope.envType === "container") {
+					envRecord.technology = "kubernetes";
 				}
-				if (envRecord) {
-					envRecord.type = $scope.envType;
-					envRecord.deployer = $scope.deployer;
-					if ($scope.envType === "container") {
-						envRecord.technology = "kubernetes";
-					}
-					putMyEnv(envRecord);
-				}
+				putMyEnv(envRecord);
 			}
-		});
+		};
+		if (envRecord.deployer) {
+			$scope.deployer = envRecord.deployer;
+			continue_fn(envRecord.deployer);
+		} else {
+			getSendDataFromServer($scope, ngDataApi, {
+				"method": "get",
+				"routeName": "/console/registry/deployer",
+				"params": {
+					"env": $scope.envCode
+				}
+			}, function (error, response) {
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+				}
+				else {
+					$scope.deployer = response;
+					continue_fn(response);
+				}
+			});
+		}
 	};
 	
 	$scope.updateNamespace = function (driver) {

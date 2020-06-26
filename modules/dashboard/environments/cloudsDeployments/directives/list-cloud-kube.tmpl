@@ -6,27 +6,27 @@
 				<tab heading="Deployments" ng-click="listDeployments()" ng-if="access.kubernetes.deployment.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-deployment.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-deployment.tmpl'"></div>
 				</tab>
 				<tab heading="DaemonSets" ng-click="listDaemonSets()" ng-if="access.kubernetes.daemonSet.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-daemonSet.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-daemonSet.tmpl'"></div>
 				</tab>
 				<tab heading="CronJobs" ng-click="listCronJobs()" ng-if="access.kubernetes.cronJob.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-cronJob.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-cronJob.tmpl'"></div>
 				</tab>
 				<tab heading="HPA" ng-click="listHPA()" ng-if="access.kubernetes.hpa.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-hpa.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-hpa.tmpl'"></div>
 				</tab>
 				<tab heading="Pods" ng-click="listPods()" ng-if="access.kubernetes.pod.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-pod.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-pod.tmpl'"></div>
 				</tab>
 			</tabset>
 		</tab>
@@ -36,7 +36,7 @@
 				<tab heading="Nodes" ng-click="listNodes()" ng-if="access.kubernetes.node.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-node.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-node.tmpl'"></div>
 				</tab>
 			</tabset>
 		</tab>
@@ -46,7 +46,7 @@
 				<tab heading="Services" ng-click="listServices()" ng-if="access.kubernetes.service.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-service.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-service.tmpl'"></div>
 				</tab>
 			</tabset>
 		</tab>
@@ -56,18 +56,18 @@
 				<tab heading="PVC" ng-click="listPVC()" ng-if="access.kubernetes.pvc.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-pvc.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-pvc.tmpl'"></div>
 				</tab>
 				<tab heading="PV" ng-click="listPV()" ng-if="access.kubernetes.pv.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-pv.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-pv.tmpl'"></div>
 				</tab>
 				
 				<tab heading="StorageClass" ng-click="listStorageClass()" ng-if="access.kubernetes.storageClass.list">
 					<br/>
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-storageClass.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-storageClass.tmpl'"></div>
 				</tab>
 			</tabset>
 		</tab>
@@ -76,7 +76,7 @@
 			<tabset>
 				<tab heading="Secrets" ng-click="listSecrets()" ng-if="access.kubernetes.secret.list">
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-secrets.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-secrets.tmpl'"></div>
 				</tab>
 			</tabset>
 		</tab>
@@ -85,23 +85,23 @@
 			<tabset>
 				<tab heading="ClusterRole" ng-click="listClusterRoles()" ng-if="access.kubernetes.clusterRole.list">
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-clusterRole.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-clusterRole.tmpl'"></div>
 				</tab>
 				<tab heading="ClusterRoleBinding" ng-click="listClusterRoleBindings()" ng-if="access.kubernetes.clusterRoleBinding.list">
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-clusterRoleBinding.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-clusterRoleBinding.tmpl'"></div>
 				</tab>
 				<tab heading="RoleBinding" ng-click="listRoleBindings()" ng-if="access.kubernetes.roleBinding.list">
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-roleBinding.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-roleBinding.tmpl'"></div>
 				</tab>
 				<tab heading="APIService" ng-click="listApiServices()" ng-if="access.kubernetes.apiService.list">
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-apiService.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-apiService.tmpl'"></div>
 				</tab>
 				<tab heading="ServiceAccount" ng-click="listServiceAccounts()" ng-if="access.kubernetes.serviceAccount.list">
 					<br/>
-					<div ng-include="'modules/dashboard/environments/directives/kubernetes/list-serviceAccount.tmpl'"></div>
+					<div ng-include="'modules/dashboard/environments/cloudsDeployments//directives/kubernetes/list-serviceAccount.tmpl'"></div>
 				</tab>
 			</tabset>
 		</tab>

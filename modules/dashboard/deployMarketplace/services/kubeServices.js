@@ -664,6 +664,8 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.selectedEnvironment = currentScope.selectedEnvironment;
 		$scope.envDeployer = currentScope.envDeployer;
 		$scope.envDeployeType = currentScope.envDeployeType;
+		$scope.envDeployeTechnology = currentScope.envDeployeTechnology;
+		$scope.version = v.version;
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
 		$scope.deployedImage = currentScope.deployedImage;
@@ -985,6 +987,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.envDeployeTechnology = currentScope.envDeployeTechnology;
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
+		$scope.version = v.version;
 		$scope.deployedImage = currentScope.deployedImage;
 		$scope.allowedBranches = v.branches;
 		$scope.allowedTags = v.tags;
@@ -1080,22 +1083,38 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 	function buildConfiguration(service, version, $scope, currentScope) {
 		overlayLoading.show();
 		let opts = {
-			"method": 'get',
-			"routeName": '/marketplace/marketplace/item/deploy/build',
+			"method": 'put',
+			"routeName": '/marketplace/item/deploy/build',
 			"params": {
 				"name": service.name,
 				"type": service.type,
-				"version": service.version,
-				"config": $scope.configuration
-			}
+				"version": version
+			},
+		};
+		let config = angular.copy($scope.configuration);
+		if (config.recipe && config.recipe.value) {
+			config.recipe.id = config.recipe.value._id.toString();
+			delete config.recipe.value;
+		}
+		config.env = $scope.selectedEnvironment.code.toLowerCase();
+		config.version = $scope.version;
+		if (config.src) {
+			let src = {
+				id: config.src.id
+			};
+			delete config.src.id;
+			src.from = angular.copy(config.src);
+			config.src = src;
+		}
+		opts.data = {
+			config
 		};
 		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.displayAlert('danger', error.message);
+				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
-			
-			
+				console.log(response)
 			}
 		});
 	}

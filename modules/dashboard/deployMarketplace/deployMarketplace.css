@@ -204,6 +204,7 @@ input:checked + .buttonSlider:before {
     float: right !important;
     height: 28px !important;
     margin-bottom: 10px;
+    margin-top: 5px;
 }
 
 .serviceOpsDropdown .btn {

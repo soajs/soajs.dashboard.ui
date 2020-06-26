@@ -45,7 +45,7 @@ var modules = {
 			catalogs: 'modules/dashboard/catalogs/install.js',
 			//ci: 'modules/dashboard/ci/install.js',
 			cd: 'modules/dashboard/cd/install.js',
-			templates: 'modules/dashboard/templates/install.js',
+			//templates: 'modules/dashboard/templates/install.js',
 			// importExport: 'modules/dashboard/importExport/install.js',
 			infra: 'modules/dashboard/infra/install.js',
 			myAccount: 'modules/dashboard/myAccount/install.js'

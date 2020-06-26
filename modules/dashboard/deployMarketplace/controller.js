@@ -342,21 +342,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			"routeName": "/infra/kubernetes/item/inspect",
 			"params": {
 				"item": {
-					"env": $scope.selectedEnvironment.code,
+					"env": $scope.selectedEnvironment.code.toLowerCase(),
 					"name": service.name,
 					"version": service.versions[0].version,
 				},
 				"configuration": {
-					"env": $scope.selectedEnvironment.code
+					"env": $scope.selectedEnvironment.code.toLowerCase()
 				}
-				// "item" : {
-				// 	"env": "new",
-				// 	"name": "schedulercellsite2",
-				// 	"version": "3.0",
-				// },
-				// "configuration": {
-				// 	"env": "new"
-				// }
 			}
 		};
 		if (v) {

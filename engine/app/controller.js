@@ -302,7 +302,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					if (pillarName === "deployment") {
 						$scope.leftMenu.environments = angular.copy($localStorage.environments);
 						
-						if ($scope.leftMenu.environments.length === 0) {
+						if (!$scope.leftMenu.environments || $scope.leftMenu.environments.length === 0) {
 							$scope.leftMenu.links = [];
 						}
 						

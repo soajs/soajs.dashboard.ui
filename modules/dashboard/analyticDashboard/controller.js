@@ -1,7 +1,8 @@
 'use strict';
 var catalogApp = soajsApp.components;
 
-catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', '$filter', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage, $filter) {
+catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', '$filter',
+	function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage, $filter) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.$parent.hideMainMenu(false);
 	$scope.access = {};
@@ -633,8 +634,8 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 
 // Start here
 	if ($scope.access.getAnalyticsForServices && $scope.access.getAnalyticsForApiRoutes) {
-		$scope.getAnalyticsForServices();
-		$scope.getAnalyticsForApiRoutes();
+		//$scope.getAnalyticsForServices();
+		//$scope.getAnalyticsForApiRoutes();
 	}
 	injectFiles.injectCss("modules/dashboard/analyticDashboard/analyticDashboard.css");
 }]);

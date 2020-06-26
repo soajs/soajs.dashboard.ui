@@ -10,12 +10,10 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	
 	$scope.selectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain});
 	$scope.envDeployer = angular.copy($scope.selectedEnvironment).deployer;
-	$scope.envDeployeType = $scope.selectedEnvironment.technology;
+	$scope.envDeployeTechnology = $scope.selectedEnvironment.technology;
 	if ($scope.selectedEnvironment.type) {
 		$scope.envDeployeType = $scope.selectedEnvironment.type;
 	}
-	
-	
 	$scope.showHide = function (service) {
 		if (!service.hide) {
 			jQuery('#s_' + service._id + " .body").slideUp();
@@ -27,7 +25,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			jQuery('#s_' + service._id + " .header").removeClass("closed");
 			service.icon = 'minus';
 			service.hide = false;
-			if ($scope.envDeployeType === 'kubernetes' && $scope.access.infra.kubernetes.item.get) {
+			if ($scope.envDeployeTechnology === 'kubernetes' && $scope.access.infra.kubernetes.item.get) {
 				$scope.getDeployment(service);
 			}
 		}
@@ -61,23 +59,28 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							$scope.soajsTabs = getCatalogs(response.records, favoriteResponse);
 						}
 						if ($scope.envDeployeType === 'manual') {
-							getSendDataFromServer($scope, ngDataApi, {
-								"method": "get",
-								"routeName": "/infra/manual/awareness",
-								"params": {
-									"env": $scope.selectedEnvironment.code.toLowerCase()
-								}
-							}, function (error, awareness) {
-								if (error) {
-									$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
-								} else {
-									$scope.awareness = awareness;
-								}
-							});
+							$scope.awarenessStat();
 						}
 					}
 				});
 				
+			}
+		});
+	};
+	$scope.awarenessStat = function () {
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/infra/manual/awareness",
+			"params": {
+				"env": $scope.selectedEnvironment.code.toLowerCase()
+			}
+		}, function (error, awareness) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+			} else {
+				$scope.awareness = awareness;
 			}
 		});
 	};
@@ -244,66 +247,52 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		});
 	};
 	
-	$scope.executeOperation = function (service, v, operation) {
+	$scope.executeOperation = function (service, v, operation, label) {
 		let options = {};
-		
-		if ($scope.envDeployeType === 'manual') {
-			options.method = "get";
-			options.routeName = "/infra/manual/maintenance";
-			options.params = {
-				"env": $scope.selectedEnvironment.code.toLowerCase(),
-				"type": service.type,
-				"version": v.version,
-				"operation": operation
-			};
-			if (v.maintenance.port) {
-				if (v.maintenance.port.type) {
-					options.params.portType = v.maintenance.port.type;
-				}
-				if (v.maintenance.port.type === "custom" && v.maintenance.port.value) {
-					options.params.portValue = v.maintenance.port.value;
-				}
+		options.method = "put";
+		options.routeName = "/marketplace/item/maintenance";
+		options.params = {
+			"env": $scope.selectedEnvironment.code.toLowerCase(),
+			"type": service.type,
+			"version": v.version,
+			"operation": operation,
+			"name": service.name
+		};
+		options.data = {
+			port: {}
+		};
+		if (v.maintenance.port) {
+			if (v.maintenance.port.type) {
+				options.data.port.portType = v.maintenance.port.type;
 			}
-			
-		} else {
-			options.method = "put";
-			options.routeName = "/infra/kubernetes/item/maintenance";
-			options.params = {
-				"env": $scope.selectedEnvironment.code.toLowerCase(),
-				"name": service.name,
-				"maintenancePort": v.version,
-				"operation": {
-					"route": operation
-				}
-			};
-			// if (v.maintenance.port) {
-			// 	if (v.maintenance.port.type) {
-			// 		options.params.portType = v.maintenance.port.type;
-			// 	}
-			// 	if (v.maintenance.port.type === "custom" && v.maintenance.port.value) {
-			// 		options.params.portValue = v.maintenance.port.value;
-			// 	}
-			// }
+			if (v.maintenance.port.type === "custom" && v.maintenance.port.value) {
+				options.data.port.portValue = v.maintenance.port.value;
+			}
 		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
 			} else {
 				let formConfig = angular.copy(soajsDeployCatalogConfig.form.multiServiceInfo);
-				formConfig.entries = [
-					{
-						'name': service.name,
-						'type': 'jsoneditor',
-						'height': '200px',
-						"value": response.data || response
-					}
-				];
+				response.forEach(function (host) {
+					formConfig.entries[0].tabs.push({
+						'label': host.ip,
+						'entries': [
+							{
+								'name': service.name,
+								'type': 'jsoneditor',
+								'height': '500px',
+								"value": host.data
+							}
+						]
+					});
+				});
 				
 				let options = {
 					timeout: $timeout,
 					form: formConfig,
-					name: "heartbeat",
-					label: service.name + ": " + "heartbeat",
+					name: label,
+					label: label + " " + service.name,
 					actions: [
 						{
 							'type': 'reset',

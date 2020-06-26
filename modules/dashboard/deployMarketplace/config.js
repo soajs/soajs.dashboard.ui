@@ -9,7 +9,7 @@ var soajsDeployCatalogConfig = {
 		'infra': {
 			"kubernetes": {
 				"item": {
-					'get': ['infra', '/kubernetes/item/inspect', 'get']
+					'get': ['infra', '/kubernetes/item/inspect', 'get'],
 				},
 				"secret": {
 					"list": ['infra', "/kubernetes/configurations/Secret", "get"],
@@ -21,12 +21,16 @@ var soajsDeployCatalogConfig = {
 					"metrics": ['infra', "/kubernetes/pods/metrics", "get"],
 				}
 			},
+			"manual" :{
+				"maintenance": ['marketplace', "/manual/awareness", "get"]
+			}
 		},
 		"marketplace": {
 			"configure": ['marketplace', "/item/deploy/configure", "put"],
 			"build": ['marketplace', "/item/deploy/build", "put"],
 			"redeploy": ['marketplace', "/item/deploy/redeploy", "put"],
-			"deploy": ['marketplace', "/item/deploy", "put"]
+			"deploy": ['marketplace', "/item/deploy", "put"],
+			"maintenance": ['marketplace', "/item/maintenance", "put"],
 		}
 	},
 	form: {

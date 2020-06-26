@@ -10,7 +10,8 @@
 				<span>[ {{service.configuration['port']}} ]</span>
 			</td>
 			
-			<td class="t-right" ng-if="envDeployeType === 'manual' && awareness[service.name] && awareness[service.name].healthy">
+			<td class="t-right"
+			    ng-if="envDeployeType === 'manual' && awareness[service.name] && awareness[service.name].healthy">
 				Deployed v({{awareness[service.name].version}})<span class="icon icon-checkmark green"></span>
 			</td>
 			<td class="t-right" ng-if="!service.favorite">
@@ -33,29 +34,30 @@
 		<br>
 	</div>
 	<tabset>
-		<tab ng-repeat="version in service.versions" heading="Version {{version.version}}" ng-click="getDeployment(service, version)">
+		<tab ng-repeat="version in service.versions" heading="Version {{version.version}}"
+		     ng-click="getDeployment(service, version)">
 			<br>
-			<div ng-if="envDeployeType === 'kubernetes'">
+			<div ng-if="envDeployeTechnology === 'kubernetes'">
 				<div ng-include="'modules/dashboard/deployMarketplace/directives/global/kubernetes.tmpl'"></div>
 			</div>
-			<div class="dropdown serviceOpsDropdown">
+			<div ng-if="access.marketplace.maintenance" class="dropdown serviceOpsDropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id=""
 				        data-toggle="dropdown" aria-haspopup="true"
 				        aria-expanded="true">
 					Service Operations
 					<span class="caret"></span>
 				</button>
-				<ul ng-show="version.maintenance && version.maintenance.commands" class="dropdown-menu" aria-labelledby="serviceOpsDropdown">
+				<ul ng-show="version.maintenance && version.maintenance.commands" class="dropdown-menu"
+				    aria-labelledby="serviceOpsDropdown">
 					<li><a href=""
-					       ng-if=""
-					       ng-show="(version.maintenance && version.maintenance.readiness)"
-					       ng-click="executeOperation(service, version, version.maintenance.readiness)"><span
-							class="icon icon-heart"></span> Heart Beat</a></li>
+					       ng-show="version.maintenance.readiness"
+					       ng-click="executeOperation(service, version, version.maintenance.readiness, 'Heartbeat')"><span
+							class="fas fa-heart"></span> Heart Beat</a></li>
 					
 					<li ng-repeat="operation in version.maintenance.commands"><a href=""
 					                                                             ng-if="operation.path !=='/heartbeat'"
-					                                                             ng-click="executeOperation(service, version, operation)"><i
-							class="{{operation.icon}} font-awesome-margin-10"></i>&nbsp;{{operation.label}}</a>
+					                                                             ng-click="executeOperation(service, version, operation.path, operation.label)"><i
+							class="{{operation.icon}}"></i>&nbsp;{{operation.label}}</a>
 					</li>
 					<li><a href=""
 					       ng-if=""

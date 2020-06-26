@@ -982,7 +982,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.isDeployed = currentScope.deployed;
 		$scope.selectedEnvironment = currentScope.selectedEnvironment;
 		$scope.envDeployer = currentScope.envDeployer;
-		$scope.envDeployeType = currentScope.envDeployeType;
+		$scope.envDeployeTechnology = currentScope.envDeployeTechnology;
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
 		$scope.deployedImage = currentScope.deployedImage;

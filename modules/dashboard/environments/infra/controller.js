@@ -135,6 +135,7 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 			}
 			else {
 				$scope.$parent.displayAlert('success', "Environment has been deleted.");
+				$localStorage.environments = null;
 				$scope.listEnvironments(true);
 			}
 		});

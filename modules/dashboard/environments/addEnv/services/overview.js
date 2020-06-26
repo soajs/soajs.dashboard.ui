@@ -55,7 +55,7 @@ overviewServices.service('overviewServices', ['ngDataApi', function (ngDataApi) 
 						}
 						if (response) {
 							currentScope.$parent.displayAlert('success', "Environment has been created.");
-							currentScope.exitWizard();
+							currentScope.exitWizard(currentScope.wizard.form.data.code);
 						}
 					});
 				}

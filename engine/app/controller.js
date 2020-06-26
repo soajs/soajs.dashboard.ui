@@ -117,6 +117,15 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				"code": record.code,
 				"description": record.description
 			};
+			if (record.type) {
+				data.type = record.type;
+			}
+			if (record.technology) {
+				data.technology = record.technology;
+			}
+			if (record.deployer) {
+				data.deployer = record.deployer;
+			}
 			$cookies.putObject('myEnv', data, {'domain': interfaceDomain});
 		}
 		
@@ -330,11 +339,11 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					!$cookies.getObject('myEnv', {'domain': interfaceDomain}) ||
 					$cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase() !== envRecord.code.toLowerCase()
 				) {
-					if (envRecord.deployer && envRecord.deployer.selected === 'container') {
+					if (envRecord.deployer && envRecord.deployer.selected === 'manual') {
+						envRecord.type = 'manual';
+					} else {
 						envRecord.type = 'container';
 						envRecord.technology = "kubernetes";
-					} else {
-						envRecord.type = 'manual';
 					}
 					putMyEnv(envRecord);
 					if ($routeParams && $routeParams.envCode) {

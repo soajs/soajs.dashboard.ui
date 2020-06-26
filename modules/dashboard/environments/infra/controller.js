@@ -98,26 +98,22 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 				putMyEnv(envRecord);
 			}
 		};
-		if (envRecord.deployer) {
-			$scope.deployer = envRecord.deployer;
-			continue_fn(envRecord.deployer);
-		} else {
-			getSendDataFromServer($scope, ngDataApi, {
-				"method": "get",
-				"routeName": "/console/registry/deployer",
-				"params": {
-					"env": $scope.envCode
-				}
-			}, function (error, response) {
-				if (error) {
-					$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
-				}
-				else {
-					$scope.deployer = response;
-					continue_fn(response);
-				}
-			});
-		}
+		
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/console/registry/deployer",
+			"params": {
+				"env": $scope.envCode
+			}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'console', error.message);
+			}
+			else {
+				$scope.deployer = response;
+				continue_fn(response);
+			}
+		});
 	};
 	
 	$scope.updateNamespace = function (driver) {

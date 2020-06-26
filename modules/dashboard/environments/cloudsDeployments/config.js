@@ -72,7 +72,7 @@ var cloudsDeploymentConfig = {
 								"label": "File Upload",
 								"fieldMsg": "Select a file to create the secret content from it",
 								'name': 'secretFile',
-								"directive": "modules/dashboard/secrets/directives/file.tmpl",
+								"directive": "modules/dashboard/environments/cloudsDeployments/directives/kubernetes/secrets-file.tmpl",
 								"required": false
 							}
 						],

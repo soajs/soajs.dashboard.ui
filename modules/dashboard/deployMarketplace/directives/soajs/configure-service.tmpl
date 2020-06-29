@@ -288,7 +288,7 @@
 										<legend>Environment Scaling</legend>
 										<div>
 											<label>Deployment Mode</label>
-											<select class="form-control" ng-disabled="isDeployed" ng-required="true"
+											<select class="form-control" ng-disabled="configuration.settings.mode && isDeployed" ng-required="true"
 											        ng-options="mode for mode in deploymentModes"
 											        ng-model="configuration.settings.mode"></select>
 											<label class="fieldMsg">Daemonset mode deploys one replica of the service on
@@ -312,7 +312,7 @@
 											<fieldset ng-if="!autoScale && configuration.settings.mode == 'Deployment'">
 												<legend>Replication</legend>
 												<label>Replica Count</label>
-												<input type="number" ng-disabled="isDeployed" class="form-control"
+												<input type="number" class="form-control"
 												       ng-model="configuration.settings.replicas" ng-required="true"
 												       style="margin-right:0"/>
 												<label class="fieldMsg">Enter a Replica Count that is greater or equal to

@@ -390,17 +390,16 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				}
 			}
 		];
-		
-		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
-			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
-				if (item.version === v.version) {
+		if (service.deploy && service.deploy[currentScope.selectedEnvironment.code.toLowerCase()] && service.deploy[currentScope.selectedEnvironment.code.toLowerCase()].length > 0) {
+			service.deploy[currentScope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
+				if (item.version === version.version) {
 					$scope.configuration = item;
 				}
 			});
 		}
-		if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.id){
+		if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.id) {
 			let opts = {
-				method: "post",
+				method: "get",
 				routeName: '/dashboard/catalog/recipes/get',
 				params: {
 					id: $scope.configuration.recipe.id
@@ -412,29 +411,27 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				if (error) {
 					currentScope.displayAlert($scope, 'danger', error.message);
 				} else {
-					let execCommands = [
+					let execCommands =
 						{
 							'name': 'catalogCommands',
 							'label': 'Catalog Commands',
 							'type': 'select',
-							'value': [
-							],
+							'value': [],
 							"onAction": function (id, data, form) {
 								form.formData.execCommands = data;
 							}
-						}
-					];
-					if (response && response.recipe && response.recipe.deployOptions && response.recipe.deployOptions.execCommands && Object.keys(response.recipe.deployOptions.execCommands).length > 0){
-						for (let exec in response.recipe.deployOptions.execCommands){
-							if (exec && response.recipe.deployOptions.execCommands.hasOwnProperty(exec) &&  response.recipe.deployOptions.execCommands[exec]){
-								execCommands[0].value.push({
-									"l" : exec,
-									"v" : response.recipe.deployOptions.execCommands
+						};
+					if (response && response.recipe && response.recipe.deployOptions && response.recipe.deployOptions.execCommands && Object.keys(response.recipe.deployOptions.execCommands).length > 0) {
+						for (let exec in response.recipe.deployOptions.execCommands) {
+							if (exec && response.recipe.deployOptions.execCommands.hasOwnProperty(exec) && response.recipe.deployOptions.execCommands[exec]) {
+								execCommands.value.push({
+									"l": exec,
+									"v": response.recipe.deployOptions.execCommands[exec]
 								});
 							}
 						}
 					}
-					if (execCommands[0].value.length > 0){
+					if (execCommands.value.length > 0) {
 						formConfig.unshift(execCommands)
 					}
 				}
@@ -449,14 +446,13 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 					env: currentScope.selectedEnvironment.code.toLowerCase(),
 				},
 				filter: {
-					labelSelector: 'soajs.env.code=' +  currentScope.selectedEnvironment.code.toLowerCase() +
-						', soajs.service.name=' + service.name + ', soajs.service.version=' +  version.version
+					labelSelector: 'soajs.env.code=' + currentScope.selectedEnvironment.code.toLowerCase() +
+						', soajs.service.name=' + service.name + ', soajs.service.version=' + version.version
 				},
 				commands: [formData.execCommands]
 			};
 			let routeName = '/infra/kubernetes/pods/exec';
 			if ($scope.$valid && $modalInstance) {
-				
 				getSendDataFromServer(currentScope, ngDataApi, {
 					method: 'put',
 					routeName: routeName,
@@ -465,7 +461,20 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 					if (error) {
 						currentScope.displayAlert('danger', error.message);
 					} else {
-						$scope.form.formData['response'] = JSON.stringify(res, null, 2);
+						res.forEach(function (host) {
+							formConfig[2].tabs.push({
+								'label': host.id,
+								'entries': [
+									{
+										'name': host.id,
+										'type': 'textarea',
+										"value": host.response,
+										"disabled": true
+									}
+								]
+							});
+							$scope.form.formData[host.id] = host.response
+						});
 					}
 				});
 			}

@@ -78,10 +78,10 @@ var soajsDeployCatalogConfig = {
 			'required': true
 		},
 			{
-				'name': 'response',
+				'name': 'infoTabs',
 				'label': 'Response',
-				'type': 'textarea',
-				'required': false
+				'type': 'tabset',
+				'tabs': []
 			}]
 	},
 };

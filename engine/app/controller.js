@@ -309,7 +309,9 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 						if ($cookies.getObject('myEnv')) {
 							$scope.switchEnvironment($cookies.getObject('myEnv', {'domain': interfaceDomain}));
 						} else {
-							$scope.switchEnvironment($scope.leftMenu.environments[0]);
+							if ($scope.leftMenu.environments) {
+								$scope.switchEnvironment($scope.leftMenu.environments[0]);
+							}
 						}
 					}
 					break;

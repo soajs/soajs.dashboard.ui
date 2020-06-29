@@ -283,7 +283,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 								oneProgram.groups.forEach((oneGroup) => {
 									let noGD = 0;
 									
-									let index = data.bar.serviceGroups.labels.indexOf(oneGroup.name)
+									let index = data.bar.serviceGroups.labels.indexOf(oneGroup.name);
 									if (index === -1) {
 										data.bar.serviceGroups.labels.push(oneGroup.name);
 									}

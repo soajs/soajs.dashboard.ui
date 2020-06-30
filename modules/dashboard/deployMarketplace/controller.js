@@ -276,13 +276,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				let formConfig = angular.copy(soajsDeployCatalogConfig.form.multiServiceInfo);
 				response.forEach(function (host) {
 					formConfig.entries[0].tabs.push({
-						'label': host.ip,
+						'label': host.id,
 						'entries': [
 							{
 								'name': service.name,
 								'type': 'jsoneditor',
 								'height': '500px',
-								"value": host.data
+								"value": host.response
 							}
 						]
 					});
@@ -306,6 +306,26 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					]
 				};
 				buildFormWithModal($scope, $modal, options);
+			}
+		});
+	};
+	
+	$scope.deleteService = function (service, version) {
+		let options = {};
+		options.method = "delete";
+		options.routeName = "/infra/kubernetes/item";
+		options.data = {
+			configuration: {
+				env: $scope.selectedEnvironment.code.toLowerCase(),
+			},
+			mode: version.deployedItem.type,
+			name: version.deployedItem.name
+		};
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+			} else {
+				$scope.$parent.displayAlert('success', "Item deleted!");
 			}
 		});
 	};
@@ -354,6 +374,9 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		if (v) {
 			options.params.item.version = v.version;
 		}
+		else {
+			v= service.versions[0];
+		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -365,6 +388,10 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				if ($scope.itemLists.daemonsets.items.length > 0) {
 					$scope.deployed = true;
 					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
+						v.deployedItem = {
+							type : 'DaemonSet',
+							name : oneItem.metadata.name
+						};
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&
@@ -385,6 +412,10 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				} else if ($scope.itemLists.deployments.items.length > 0) {
 					$scope.deployed = true;
 					$scope.itemLists.deployments.items.forEach((oneItem) => {
+						v.deployedItem = {
+							type : 'Deployment',
+							name : oneItem.metadata.name
+						};
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&
@@ -405,6 +436,10 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				} else if ($scope.itemLists.cronjobs.items.length > 0) {
 					$scope.deployed = true;
 					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
+						v.deployedItem = {
+							type : 'CronJob',
+							name : oneItem.metadata.name
+						};
 						if (oneItem.spec && oneItem.spec.jobTemplate && oneItem.spec.jobTemplate.spec &&
 							oneItem.spec.jobTemplate.spec.template &&
 							oneItem.spec.jobTemplate.spec.template.spec &&
@@ -461,11 +496,11 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				};
 				
 				$scope.configure = function (service, version) {
-					kubeServicesSrv.saveConfiguration(service, version, $scope, currentScope);
+					kubeServicesSrv.saveConfiguration(service, version, $scope, currentScope, $modalInstance);
 				};
 				
 				$scope.build = function (service, version) {
-					kubeServicesSrv.buildConfiguration(service, version, $scope, currentScope);
+					kubeServicesSrv.buildConfiguration(service, version, $scope, currentScope, $modalInstance);
 				};
 			}
 		});
@@ -491,8 +526,8 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					deployService.close();
 				};
 				
-				$scope.build = function (service, version) {
-					kubeServicesSrv.redeploy(service, version, $scope, currentScope);
+				$scope.redeploy = function (service, version) {
+					kubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
 				};
 			}
 		});

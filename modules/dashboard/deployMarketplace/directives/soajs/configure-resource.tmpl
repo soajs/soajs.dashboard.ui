@@ -179,6 +179,7 @@
 											<label>Tags</label>
 											<select class="form-control" ng-required="requiredSourceConfig"
 											        ng-options="tag as tag for tag in configurationCatalogsTags"
+											        ng-change="updateGitBranch(configuration.src.branch, 'config')"
 											        ng-model="configuration.recipe.sourceCode.tag"
 											        ng-disabled="!editSourceConfig"></select>
 											<label class="fieldMsg">Choose your Tag</label>
@@ -223,12 +224,12 @@
 												<label>Published Port</label>
 												<input type="number" class="form-control"
 												       ng-model="exposedPorts.published" ng-disabled="false"
-												       ng-change="addToCustomPorts(exposedPorts)" min="1" max="2767"
+												       ng-change="addToCustomPorts(exposedPorts)" min="30000" max="32767"
 												       ng-required="true"/>
 												<label class="fieldMsg">Detected Published Port
 													<b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
 													Enter a value if you want to expose this resource to a specific
-													port; Port values are limited to a range between 0 and 2767.
+													port; Port values are limited to a range between 30000-32767.
 												</label>
 											</div>
 										</fieldset>
@@ -265,7 +266,7 @@
 										<legend>Environment Scaling</legend>
 										<div>
 											<label>Deployment Mode</label>
-											<select class="form-control" ng-disabled="isDeployed" ng-required="true"
+											<select class="form-control" ng-disabled="configuration.settings.mode && isDeployed" ng-required="true"
 											        ng-options="mode for mode in deploymentModes"
 											        ng-model="configuration.settings.mode"></select>
 											<label class="fieldMsg">Daemonset mode deploys one replica of the service on
@@ -289,7 +290,7 @@
 											<fieldset ng-if="!autoScale && configuration.settings.mode == 'Deployment'">
 												<legend>Replication</legend>
 												<label>Replica Count</label>
-												<input type="number" ng-disabled="isDeployed" class="form-control"
+												<input type="number" class="form-control"
 												       ng-model="configuration.settings.replicas" ng-required="true"
 												       style="margin-right:0"/>
 												<label class="fieldMsg">Enter a Replica Count that is greater or equal to

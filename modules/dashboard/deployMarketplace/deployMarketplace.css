@@ -50,7 +50,7 @@ hr {
 }
 
 .exec-button {
-    float: right !important;
+    float: left !important;
     margin-left: 5px;
 }
 
@@ -205,6 +205,10 @@ input:checked + .buttonSlider:before {
     height: 28px !important;
     margin-bottom: 10px;
     margin-top: 5px;
+}
+
+.serviceOpsDropdownKube {
+    float: right !important;
 }
 
 .serviceOpsDropdown .btn {

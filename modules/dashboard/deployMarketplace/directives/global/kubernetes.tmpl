@@ -21,6 +21,31 @@
 		Exec Command </span>
 	</button>
 </div>
+<div ng-if="access.marketplace.maintenance" class="dropdown serviceOpsDropdownKube">
+	<button class="btn btn-default dropdown-toggle" type="button" id=""
+	        data-toggle="dropdown" aria-haspopup="true"
+	        aria-expanded="true">
+		Maintenance Operations
+		<span class="caret"></span>
+	</button>
+	<ul ng-show="version.maintenance && version.maintenance.commands" class="dropdown-menu"
+	    aria-labelledby="serviceOpsDropdown">
+		<li><a href=""
+		       ng-show="version.maintenance.readiness"
+		       ng-click="executeOperation(service, version, version.maintenance.readiness, 'Heartbeat')"><span
+				class="fas fa-heart"></span> Heart Beat</a></li>
+		
+		<li ng-repeat="operation in version.maintenance.commands"><a href=""
+		                                                             ng-if="operation.path !=='/heartbeat'"
+		                                                             ng-click="executeOperation(service, version, operation.path, operation.label)"><i
+				class="{{operation.icon}}"></i>&nbsp;{{operation.label}}</a>
+		</li>
+		<li><a href=""
+		       ng-click="deleteService(service,  version)"
+		       ng-confirm-click="Are you sure you want to delete this service?"><span
+				class="icon icon-cross"></span>&nbsp;Delete Service</a></li>
+	</ul>
+</div>
 <br>
 <br>
 <tabset>

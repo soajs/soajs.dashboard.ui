@@ -462,6 +462,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 						currentScope.displayAlert('danger', error.message);
 					} else {
 						res.forEach(function (host) {
+							formConfig[2].tabs = [];
 							formConfig[2].tabs.push({
 								'label': host.id,
 								'entries': [
@@ -729,54 +730,11 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 					$scope.allowedBranches = v.branches;
 					$scope.allowedTags = v.tags;
 					
-					//image
-					if (catalog.recipe && catalog.recipe.deployOptions) {
-						if (catalog.recipe.deployOptions.image) {
-							$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
-							$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
-							$scope.showImages = catalog.recipe.deployOptions.image.override;
-							$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
-						}
-						if (catalog.recipe.deployOptions.sourceCode) {
-							if (catalog.recipe.deployOptions.sourceCode.configuration) {
-								$scope.showSourceConfig = true;
-								$scope.requiredSourceConfig = !!$scope.configuration.recipe.required;
-								$scope.editSourceConfig = true;
-								$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog);
-								$scope.fetchConfigBranchesTags(catalog.recipe.deployOptions.sourceCode.configuration.version);
-								if (catalog.recipe.deployOptions.sourceCode.configuration.catalog !== '') {
-									$scope.editSourceConfig = false;
-									$scope.configuration.recipe.sourceCode = {
-										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
-										catalog: catalog.recipe.deployOptions.sourceCode.configuration.catalog,
-										version: catalog.recipe.deployOptions.sourceCode.configuration.version,
-										tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
-										branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
-										id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
-									}
-								}
-							}
-						}
-						if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
-							$scope.showPorts = true;
-							$scope.loadBalancer = !catalog.recipe.deployOptions.ports[0].published;
-							$scope.ports = catalog.recipe.deployOptions.ports;
-							if ($scope.configuration.recipe.ports) {
-								$scope.configuration.recipe.ports.forEach((custom) => {
-									$scope.ports.forEach((port) => {
-										if (custom.target === port.target) {
-											port.published = custom.published;
-										}
-									});
-								});
-							}
-						}
-						$scope.allowExposeServicePort = catalog.recipe.deployOptions.allowExposeServicePort;
-					}
 					if (catalog.recipe && catalog.recipe.buildOptions) {
 						if (catalog.recipe.buildOptions.env) {
 							$scope.userInputVariable = [];
 							$scope.secretVariable = [];
+							$scope.configuration.recipe.env = {};
 							for (let envVariable in catalog.recipe.buildOptions.env) {
 								if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
 									if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
@@ -826,6 +784,65 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 									}
 								}
 							}
+							if (Object.keys($scope.configuration.recipe.env).length === 0) {
+								delete $scope.configuration.recipe.env;
+							}
+						}
+					}
+					
+					//image
+					if (catalog.recipe && catalog.recipe.deployOptions) {
+						if (catalog.recipe.deployOptions.image) {
+							$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
+							$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
+							$scope.showImages = catalog.recipe.deployOptions.image.override;
+							$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
+						}
+						if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
+							$scope.showPorts = true;
+							$scope.loadBalancer = !catalog.recipe.deployOptions.ports[0].published;
+							$scope.ports = catalog.recipe.deployOptions.ports;
+							if ($scope.configuration.recipe.ports) {
+								$scope.configuration.recipe.ports.forEach((custom) => {
+									$scope.ports.forEach((port) => {
+										if (custom.target === port.target) {
+											port.published = custom.published;
+										}
+									});
+								});
+							}
+						}
+						$scope.allowExposeServicePort = catalog.recipe.deployOptions.allowExposeServicePort;
+						
+						if (catalog.recipe.deployOptions.sourceCode) {
+							if (catalog.recipe.deployOptions.sourceCode.configuration) {
+								$scope.showSourceConfig = true;
+								$scope.requiredSourceConfig = !!$scope.configuration.recipe.required;
+								$scope.editSourceConfig = true;
+								$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog
+									|| $scope.configuration.recipe.sourceCode.catalog);
+								$scope.fetchConfigBranchesTags(catalog.recipe.deployOptions.sourceCode.configuration.version
+									|| $scope.configuration.recipe.sourceCode.version);
+								
+								if (catalog.recipe.deployOptions.sourceCode.configuration.catalog !== '') {
+									$scope.editSourceConfig = false;
+									$scope.configuration.recipe.sourceCode = {
+										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
+										catalog: catalog.recipe.deployOptions.sourceCode.configuration.catalog,
+										version: catalog.recipe.deployOptions.sourceCode.configuration.version,
+										tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
+										branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
+										id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
+									}
+								} else if (!catalog.recipe.deployOptions.sourceCode) {
+									$scope.configuration.recipe.sourceCode = {
+										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
+									}
+								}
+								if (catalog.recipe.deployOptions.sourceCode.configuration.branch){
+									$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
+								}
+							}
 						}
 					}
 				});
@@ -840,8 +857,8 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 					routeName: '/repositories/git/branch/',
 					params: {
 						"repo": service.src.repo,
-						"owner": [service.src.owner],
-						"provider": [service.src.provider],
+						"owner": service.src.owner,
+						"provider": service.src.provider,
 						"branch": branch
 					}
 				}, function (error, branch) {
@@ -851,13 +868,65 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 						currentScope.displayAlert($scope, 'danger', error.message);
 					} else {
 						if ($scope.configuration && $scope.configuration.src) {
-							$scope.configuration.src.commit = branch.commit
+							$scope.configuration.src.commit = branch.commit;
+							$scope.configuration.src.id = branch.repo.id;
 						}
 					}
 				});
 			}
 		};
-		
+		$scope.updateGitConfigBranch = function (branch) {
+			if ($scope.selectedConfigurationCatalogs) {
+				overlayLoading.show();
+				let opts = {
+					"branch": branch
+				};
+				opts.repo = $scope.selectedConfigurationCatalogs.src.repo;
+				opts.owner = $scope.selectedConfigurationCatalogs.src.owner;
+				opts.provider = $scope.selectedConfigurationCatalogs.src.provider;
+				getSendDataFromServer($scope, ngDataApi, {
+					method: 'get',
+					routeName: '/repositories/git/branch/',
+					params: opts
+				}, function (error, branch) {
+					overlayLoading.hide();
+					$scope.loadingRecipes = false;
+					if (error) {
+						currentScope.displayAlert($scope, 'danger', error.message);
+					} else {
+						if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.sourceCode) {
+							$scope.configuration.recipe.sourceCode.commit = branch.commit;
+							$scope.configuration.recipe.sourceCode.id = branch.repo.id;
+						}
+					}
+				});
+			}
+		};
+		$scope.getRepo = function () {
+			overlayLoading.show();
+			getSendDataFromServer($scope, ngDataApi, {
+				method: 'get',
+				routeName: '/repositories/git/repos/',
+				params: {
+					"repo": service.src.repo,
+					"owner": [service.src.owner],
+					"provider": [service.src.provider],
+					"active": true
+				}
+			}, function (error, res) {
+				overlayLoading.hide();
+				$scope.loadingRecipes = false;
+				if (error) {
+					currentScope.displayAlert($scope, 'danger', error.message);
+				} else {
+					if (res && res.items && res.items.length > 0) {
+						if ($scope.configuration && $scope.configuration.src) {
+							$scope.configuration.src.id = res.items[0]._id.toString();
+						}
+					}
+				}
+			});
+		};
 		$scope.getSecrets = function (cb) {
 			if ($scope.defaultWizardSecretValues) {
 				$scope.secrets = $scope.defaultWizardSecretValues;
@@ -944,6 +1013,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				$scope.configurationCatalogsVersions = [];
 				$scope.configurationCatalogs.forEach((one) => {
 					if (one.name === catalog) {
+						$scope.selectedConfigurationCatalogs = one;
 						$scope.configurationCatalogsVersions = one.versions;
 					}
 				});
@@ -953,7 +1023,6 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.fetchConfigId = function (catalog) {
 			let id = '';
 			if ($scope.configurationCatalogs) {
-				$scope.configurationCatalogsVersions = [];
 				$scope.configurationCatalogs.forEach((one) => {
 					if (one.name === catalog) {
 						id = one._id.toString();
@@ -987,7 +1056,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		};
 	}
 	
-	function reConfigureDeployment($scope, currentScope, service, v, $modalInstance) {
+	function reConfigureDeployment($scope, currentScope, service, v) {
 		$scope.alerts = [];
 		$scope.access = currentScope.access;
 		$scope.isDeployed = currentScope.deployed;
@@ -1045,13 +1114,13 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				if (error) {
 					currentScope.displayAlert($scope, 'danger', error.message);
 				} else {
-					$scope.src.commit = branch.commit
+					$scope.src.commit = branch.commit;
 				}
 			});
 		};
 	}
 	
-	function saveConfiguration(service, version, $scope, currentScope) {
+	function saveConfiguration(service, version, $scope, currentScope, $modalInstance) {
 		overlayLoading.show();
 		let opts = {
 			"method": 'put',
@@ -1066,6 +1135,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			config.recipe.id = config.recipe.value._id.toString();
 			delete config.recipe.value;
 		}
+		config.version = $scope.version;
 		config.env = $scope.selectedEnvironment.code.toLowerCase();
 		if (config.src) {
 			let src = {
@@ -1084,12 +1154,13 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			if (error) {
 				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
+				$modalInstance.close();
 				console.log(response)
 			}
 		});
 	}
 	
-	function buildConfiguration(service, version, $scope, currentScope) {
+	function buildConfiguration(service, version, $scope, currentScope, $modalInstance) {
 		overlayLoading.show();
 		let opts = {
 			"method": 'put',
@@ -1123,44 +1194,47 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			if (error) {
 				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
-				console.log(response)
+				$modalInstance.close();
 			}
 		});
 	}
 	
-	function redeploy(service, version, $scope, currentScope) {
+	function redeploy(service, version, $scope, currentScope, $modalInstance) {
 		overlayLoading.show();
 		let opts = {
-			"method": 'get',
-			"routeName": '/marketplace/marketplace/item/deploy/redeploy',
+			"method": 'put',
+			"routeName": '/marketplace/item/deploy/redeploy',
 			"params": {
 				"name": service.name,
 				"type": service.type,
-				"version": service.version,
+				"version": 1,
 				"env": $scope.selectedEnvironment.code.toLowerCase(),
+				
+			},
+			"data": {
 				"image": {
 					"tag": $scope.image.tag
 				}
 			}
 		};
 		if ($scope.src) {
-			opts.params.src = {
+			opts.data.src = {
 				from: {}
 			};
 			if ($scope.src.branch) {
-				opts.params.src.from.branch = $scope.src.branch;
-				opts.params.src.from.commit = $scope.src.commit;
+				opts.data.src.from.branch = $scope.src.branch;
+				opts.data.src.from.commit = $scope.src.commit;
 			}
 			if ($scope.src.tag) {
-				opts.params.src.from.tag = $scope.src.branch;
+				opts.data.src.from.tag = $scope.src.branch;
 			}
 		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.displayAlert('danger', error.message);
+				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
-				console.log(response);
+				$modalInstance.close();
 			}
 		});
 	}

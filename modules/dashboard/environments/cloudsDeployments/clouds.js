@@ -86,7 +86,7 @@ environmentsApp.controller('cloudsCtrl', ['$scope', '$cookies', '$localStorage',
 	$scope.deleteSecret = function (secret) {
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/infra/kubernetes/configurations/secret',
+			routeName: '/infra/kubernetes/configuration/Secret',
 			params: {
 				configuration: {
 					env: $scope.selectedEnvironment.code,

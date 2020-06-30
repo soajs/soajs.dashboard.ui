@@ -867,23 +867,24 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					'name': 'restrictions',
 					'label': 'Attach Restrictions',
 					'type': 'buttonSlider',
+					'disabled': true,
 					onAction(id, data, form) {
-						if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
-							listInfraProviders(currentScope, () => {
-								form.entries.push({
-									'name': 'deploymentType',
-									'label': 'Deployment Type',
-									'type': 'uiselect',
-									"multiple": false,
-									'value': currentScope.infraProviders.deploymentTypes,
-									"required": true,
-									'fieldMsg': "Choose the type of deployment",
-									onAction(id, data, form) {
-										restrictionBehavior(id, data, form, currentScope);
-									}
-								});
-							});
-						} else {
+						// if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
+							// listInfraProviders(currentScope, () => {
+							// 	form.entries.push({
+							// 		'name': 'deploymentType',
+							// 		'label': 'Deployment Type',
+							// 		'type': 'uiselect',
+							// 		"multiple": false,
+							// 		'value': currentScope.infraProviders.deploymentTypes,
+							// 		"required": true,
+							// 		'fieldMsg': "Choose the type of deployment",
+							// 		onAction(id, data, form) {
+							// 			restrictionBehavior(id, data, form, currentScope);
+							// 		}
+							// 	});
+							// });
+						// } else {
 							form.formData.deploymentType = [];
 							form.formData.infra = [];
 							form.formData.drivers = [];
@@ -896,7 +897,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							if (form.entries.length === 11) {
 								form.entries.pop()
 							}
-						}
+						// }
 					}
 				});
 		}
@@ -914,7 +915,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				};
 				let formConfig = angular.copy(mainFormConfig);
 				
-				restrictionOnLoad($scope, currentScope, data);
+				// restrictionOnLoad($scope, currentScope, data);
 				
 				$scope.addNewEnvVar = function () {
 					let envVars = angular.copy(catalogAppConfig.form.envVars);
@@ -1841,204 +1842,204 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		proceedWithForm($scope, catalogAppConfig.form.entries, recipe, null);
 	};
 	
-	function listInfraProviders(currentScope, cb) {
-		//get the available providers
-		overlayLoading.show();
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/infra"
-		}, function (error, providers) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert('danger', error.message);
-			} else {
-				let types = [];
-				let infratype = [];
-				let vmnfra = [];
-				let containerInfra = [];
-				let drivers = [];
-				currentScope.infraProviders = {};
-				currentScope.infraProviders.deploymentTypes = [];
-				currentScope.infraProviders.containerInfra = [];
-				currentScope.infraProviders.vmInfra = [];
-				currentScope.infraProviders.drivers = [];
-				
-				providers.forEach((oneProvider) => {
-					if (oneProvider.technologies) {
-						//adding deployments type
-						if (types.indexOf('container') === -1) {
-							if (oneProvider.technologies.indexOf('container') !== -1 || oneProvider.technologies.indexOf('docker') !== -1 || oneProvider.technologies.indexOf('kubernetes') !== -1) {
-								types.push("container");
-								currentScope.infraProviders.deploymentTypes.push({v: "container", l: "container"});
-							}
-						}
-						if (infratype.indexOf("vm") === -1) {
-							if (oneProvider.technologies.indexOf('vm') !== 1) {
-								infratype.push("vm");
-								currentScope.infraProviders.deploymentTypes.push({v: "vm", l: "vm"});
-							}
-						}
-					}
-					
-					// adding all the infra for container
-					if (oneProvider.technologies.indexOf('container') !== -1 || oneProvider.technologies.indexOf('docker') !== -1 || oneProvider.technologies.indexOf('kubernetes') !== -1) {
-						if (containerInfra.indexOf(oneProvider.name) === -1) {
-							containerInfra.push(oneProvider.name);
-							currentScope.infraProviders.containerInfra.push({
-								v: oneProvider.name,
-								l: oneProvider.name,
-								group: "Container"
-							});
-						}
-						//adding drivers for container type
-						oneProvider.technologies.forEach((oneTech) => {
-							if (drivers.indexOf(oneTech) === -1) {
-								drivers.push(oneTech);
-								currentScope.infraProviders.drivers.push({v: "container." + oneTech, l: oneTech})
-							}
-						});
-					}
-					// adding the infra for vm
-					if (oneProvider.technologies.indexOf('vm') !== -1) {
-						if (vmnfra.indexOf(oneProvider.name) === -1) {
-							vmnfra.push(oneProvider.name);
-							currentScope.infraProviders.vmInfra.push({
-								v: oneProvider.name,
-								l: oneProvider.name,
-								group: "Vm"
-							});
-						}
-					}
-				});
-				return cb();
-			}
-		});
-	}
+	// function listInfraProviders(currentScope, cb) {
+	// 	//get the available providers
+	// 	overlayLoading.show();
+	// 	getSendDataFromServer(currentScope, ngDataApi, {
+	// 		"method": "get",
+	// 		"routeName": "/dashboard/infra"
+	// 	}, function (error, providers) {
+	// 		overlayLoading.hide();
+	// 		if (error) {
+	// 			currentScope.displayAlert('danger', error.message);
+	// 		} else {
+	// 			let types = [];
+	// 			let infratype = [];
+	// 			let vmnfra = [];
+	// 			let containerInfra = [];
+	// 			let drivers = [];
+	// 			currentScope.infraProviders = {};
+	// 			currentScope.infraProviders.deploymentTypes = [];
+	// 			currentScope.infraProviders.containerInfra = [];
+	// 			currentScope.infraProviders.vmInfra = [];
+	// 			currentScope.infraProviders.drivers = [];
+	//
+	// 			providers.forEach((oneProvider) => {
+	// 				if (oneProvider.technologies) {
+	// 					//adding deployments type
+	// 					if (types.indexOf('container') === -1) {
+	// 						if (oneProvider.technologies.indexOf('container') !== -1 || oneProvider.technologies.indexOf('docker') !== -1 || oneProvider.technologies.indexOf('kubernetes') !== -1) {
+	// 							types.push("container");
+	// 							currentScope.infraProviders.deploymentTypes.push({v: "container", l: "container"});
+	// 						}
+	// 					}
+	// 					if (infratype.indexOf("vm") === -1) {
+	// 						if (oneProvider.technologies.indexOf('vm') !== 1) {
+	// 							infratype.push("vm");
+	// 							currentScope.infraProviders.deploymentTypes.push({v: "vm", l: "vm"});
+	// 						}
+	// 					}
+	// 				}
+	//
+	// 				// adding all the infra for container
+	// 				if (oneProvider.technologies.indexOf('container') !== -1 || oneProvider.technologies.indexOf('docker') !== -1 || oneProvider.technologies.indexOf('kubernetes') !== -1) {
+	// 					if (containerInfra.indexOf(oneProvider.name) === -1) {
+	// 						containerInfra.push(oneProvider.name);
+	// 						currentScope.infraProviders.containerInfra.push({
+	// 							v: oneProvider.name,
+	// 							l: oneProvider.name,
+	// 							group: "Container"
+	// 						});
+	// 					}
+	// 					//adding drivers for container type
+	// 					oneProvider.technologies.forEach((oneTech) => {
+	// 						if (drivers.indexOf(oneTech) === -1) {
+	// 							drivers.push(oneTech);
+	// 							currentScope.infraProviders.drivers.push({v: "container." + oneTech, l: oneTech})
+	// 						}
+	// 					});
+	// 				}
+	// 				// adding the infra for vm
+	// 				if (oneProvider.technologies.indexOf('vm') !== -1) {
+	// 					if (vmnfra.indexOf(oneProvider.name) === -1) {
+	// 						vmnfra.push(oneProvider.name);
+	// 						currentScope.infraProviders.vmInfra.push({
+	// 							v: oneProvider.name,
+	// 							l: oneProvider.name,
+	// 							group: "Vm"
+	// 						});
+	// 					}
+	// 				}
+	// 			});
+	// 			return cb();
+	// 		}
+	// 	});
+	// }
 	
-	function restrictionBehavior(id, data, form, currentScope) {
-		let type = [form.formData.deploymentType];
-		
-		if (type && type.length === 1 && type[0].v === 'vm') {
-			form.formData.infra = [];
-			
-			if (form.formData.drivers) {
-				form.formData.drivers = [];
-			}
-			if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
-				form.entries.pop();
-				form.entries.pop();
-			}
-			if (form.entries[form.entries.length - 1].name === 'deploymentType') {
-				form.entries.push({
-					'name': 'infra',
-					'label': 'Infra',
-					'type': 'uiselect',
-					"multiple": true,
-					"value": currentScope.infraProviders.vmInfra,
-					'fieldMsg': "Please provide the infra(s)",
-				});
-			}
-		} else {
-			if (type && type.length === 1 && type[0].v === 'container') {
-				form.formData.infra = [];
-				form.formData.drivers = [];
-				if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
-					form.entries.pop();
-					form.entries.pop();
-				}
-				if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name !== 'drivers') {
-					form.entries.pop();
-				}
-				if (form.entries[form.entries.length - 1].name === 'deploymentType') {
-					form.entries.push({
-						'name': 'drivers',
-						'label': 'Drivers',
-						'type': 'uiselect',
-						"multiple": true,
-						"value": currentScope.infraProviders.drivers,
-						'fieldMsg': "Please provide the driver(s)",
-					});
-					form.entries.push({
-						'name': 'infra',
-						'label': 'Infra',
-						'type': 'uiselect',
-						"multiple": true,
-						"value": currentScope.infraProviders.containerInfra,
-						'fieldMsg': "Please provide the infra(s)",
-					});
-				}
-			}
-		}
-	}
+	// function restrictionBehavior(id, data, form, currentScope) {
+	// 	let type = [form.formData.deploymentType];
+	//
+	// 	if (type && type.length === 1 && type[0].v === 'vm') {
+	// 		form.formData.infra = [];
+	//
+	// 		if (form.formData.drivers) {
+	// 			form.formData.drivers = [];
+	// 		}
+	// 		if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
+	// 			form.entries.pop();
+	// 			form.entries.pop();
+	// 		}
+	// 		if (form.entries[form.entries.length - 1].name === 'deploymentType') {
+	// 			form.entries.push({
+	// 				'name': 'infra',
+	// 				'label': 'Infra',
+	// 				'type': 'uiselect',
+	// 				"multiple": true,
+	// 				"value": currentScope.infraProviders.vmInfra,
+	// 				'fieldMsg': "Please provide the infra(s)",
+	// 			});
+	// 		}
+	// 	} else {
+	// 		if (type && type.length === 1 && type[0].v === 'container') {
+	// 			form.formData.infra = [];
+	// 			form.formData.drivers = [];
+	// 			if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name === 'drivers') {
+	// 				form.entries.pop();
+	// 				form.entries.pop();
+	// 			}
+	// 			if (form.entries[form.entries.length - 1].name === 'infra' && form.entries[form.entries.length - 2].name !== 'drivers') {
+	// 				form.entries.pop();
+	// 			}
+	// 			if (form.entries[form.entries.length - 1].name === 'deploymentType') {
+	// 				form.entries.push({
+	// 					'name': 'drivers',
+	// 					'label': 'Drivers',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					"value": currentScope.infraProviders.drivers,
+	// 					'fieldMsg': "Please provide the driver(s)",
+	// 				});
+	// 				form.entries.push({
+	// 					'name': 'infra',
+	// 					'label': 'Infra',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					"value": currentScope.infraProviders.containerInfra,
+	// 					'fieldMsg': "Please provide the infra(s)",
+	// 				});
+	// 			}
+	// 		}
+	// 	}
+	// }
 	
-	function restrictionOnLoad($scope, currentScope, data) {
-		if (data.restriction && Object.keys(data.restriction).length > 0) {
-			listInfraProviders(currentScope, () => {
-				//if ($scope.form && $scope.form.entries) {
-				//
-				$scope.form.entries.push({
-					'name': 'deploymentType',
-					'label': 'Deployment Type',
-					'type': 'uiselect',
-					"multiple": false,
-					'value': currentScope.infraProviders.deploymentTypes,
-					"required": true,
-					'fieldMsg': "Please provide the type(s) of deployment",
-					onAction(id, data, form) {
-						restrictionBehavior(id, data, form, currentScope);
-					}
-				});
-				
-				if (data.restriction.deployment && data.restriction.deployment.indexOf('vm') !== -1 && data.restriction.deployment && data.restriction.deployment.indexOf('container') === -1) {
-					$scope.form.entries.push({
-						'name': 'infra',
-						'label': 'Infra',
-						'type': 'uiselect',
-						"multiple": true,
-						'value': currentScope.infraProviders.vmInfra,
-						'fieldMsg': "Please provide the infra(s)",
-					});
-				}
-				if (data.restriction.deployment && data.restriction.deployment.indexOf('container') !== -1 && data.restriction.deployment.indexOf('vm') === -1) {
-					$scope.form.entries.push({
-						'name': 'drivers',
-						'label': 'Drivers',
-						'type': 'uiselect',
-						"multiple": true,
-						'value': currentScope.infraProviders.drivers,
-						'fieldMsg': "Please provide the driver(s)",
-					});
-					$scope.form.entries.push({
-						'name': 'infra',
-						'label': 'Infra',
-						'type': 'uiselect',
-						"multiple": true,
-						'value': currentScope.infraProviders.containerInfra,
-						'fieldMsg': "Please provide the infra(s)",
-					});
-				}
-				if (data.restriction.deployment && data.restriction.deployment.indexOf('container') !== -1 && data.restriction.deployment.indexOf('vm') !== -1) {
-					$scope.form.entries.push({
-						'name': 'drivers',
-						'label': 'Drivers',
-						'type': 'uiselect',
-						"multiple": true,
-						'value': currentScope.infraProviders.drivers,
-						'fieldMsg': "Please provide the driver(s)",
-					});
-					$scope.form.entries.push({
-						'name': 'infra',
-						'label': 'Infra',
-						'type': 'uiselect',
-						"multiple": true,
-						'value': currentScope.infraProviders.containerInfra.concat(currentScope.infraProviders.vmInfra),
-						'fieldMsg': "Please provide the infra(s)",
-					});
-				}
-				//	}
-			});
-		}
-	}
+	// function restrictionOnLoad($scope, currentScope, data) {
+	// 	if (data.restriction && Object.keys(data.restriction).length > 0) {
+	// 		listInfraProviders(currentScope, () => {
+	// 			//if ($scope.form && $scope.form.entries) {
+	// 			//
+	// 			$scope.form.entries.push({
+	// 				'name': 'deploymentType',
+	// 				'label': 'Deployment Type',
+	// 				'type': 'uiselect',
+	// 				"multiple": false,
+	// 				'value': currentScope.infraProviders.deploymentTypes,
+	// 				"required": true,
+	// 				'fieldMsg': "Please provide the type(s) of deployment",
+	// 				onAction(id, data, form) {
+	// 					restrictionBehavior(id, data, form, currentScope);
+	// 				}
+	// 			});
+	//
+	// 			if (data.restriction.deployment && data.restriction.deployment.indexOf('vm') !== -1 && data.restriction.deployment && data.restriction.deployment.indexOf('container') === -1) {
+	// 				$scope.form.entries.push({
+	// 					'name': 'infra',
+	// 					'label': 'Infra',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					'value': currentScope.infraProviders.vmInfra,
+	// 					'fieldMsg': "Please provide the infra(s)",
+	// 				});
+	// 			}
+	// 			if (data.restriction.deployment && data.restriction.deployment.indexOf('container') !== -1 && data.restriction.deployment.indexOf('vm') === -1) {
+	// 				$scope.form.entries.push({
+	// 					'name': 'drivers',
+	// 					'label': 'Drivers',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					'value': currentScope.infraProviders.drivers,
+	// 					'fieldMsg': "Please provide the driver(s)",
+	// 				});
+	// 				$scope.form.entries.push({
+	// 					'name': 'infra',
+	// 					'label': 'Infra',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					'value': currentScope.infraProviders.containerInfra,
+	// 					'fieldMsg': "Please provide the infra(s)",
+	// 				});
+	// 			}
+	// 			if (data.restriction.deployment && data.restriction.deployment.indexOf('container') !== -1 && data.restriction.deployment.indexOf('vm') !== -1) {
+	// 				$scope.form.entries.push({
+	// 					'name': 'drivers',
+	// 					'label': 'Drivers',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					'value': currentScope.infraProviders.drivers,
+	// 					'fieldMsg': "Please provide the driver(s)",
+	// 				});
+	// 				$scope.form.entries.push({
+	// 					'name': 'infra',
+	// 					'label': 'Infra',
+	// 					'type': 'uiselect',
+	// 					"multiple": true,
+	// 					'value': currentScope.infraProviders.containerInfra.concat(currentScope.infraProviders.vmInfra),
+	// 					'fieldMsg': "Please provide the infra(s)",
+	// 				});
+	// 			}
+	// 			//	}
+	// 		});
+	// 	}
+	// }
 	
 	$scope.deleteRecipe = function (recipe, versioning) {
 		let params = {

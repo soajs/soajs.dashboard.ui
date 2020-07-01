@@ -179,7 +179,6 @@
 											<label>Tags</label>
 											<select class="form-control" ng-required="requiredSourceConfig"
 											        ng-options="tag as tag for tag in configurationCatalogsTags"
-											        ng-change="updateGitBranch(configuration.src.branch, 'config')"
 											        ng-model="configuration.recipe.sourceCode.tag"
 											        ng-disabled="!editSourceConfig"></select>
 											<label class="fieldMsg">Choose your Tag</label>
@@ -189,17 +188,12 @@
 											<label>Branch</label>
 											<select class="form-control" ng-required="requiredSourceConfig"
 											        ng-options="branch as branch for branch in configurationCatalogsBranches"
+											        ng-change="updateGitConfigBranch(configuration.src.branch)"
 											        ng-model="configuration.recipe.sourceCode.branch"
 											        ng-disabled="!editSourceConfig"></select>
-											<label class="fieldMsg">Choose your Branch}}</label>
+											<label class="fieldMsg">Choose your Branch</label>
 											<br>
 										</div>
-									</div>
-									<div ng-if="configuration.recipe.sourceCode.catalog">
-										<label>Path</label>
-										<input type="text" class="form-control"
-										       ng-model="configuration.recipe.sourceCode.path" ng-required="false"/>
-										<label class="fieldMsg">Unless specified, the root will be used</label>
 									</div>
 								</fieldset>
 								<fieldset ng-if="showPorts">

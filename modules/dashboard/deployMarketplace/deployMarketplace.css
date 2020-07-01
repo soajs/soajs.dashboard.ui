@@ -44,18 +44,9 @@ hr {
     width: 50px !important;
 }
 
-.rebuild-button {
+.autoScale-button {
     float: left !important;
-    margin-left: 5px;
-}
-
-.exec-button {
-    float: left !important;
-    margin-left: 5px;
-}
-
-.configure-button {
-    float: left !important;
+    margin-left: 10px;
 }
 
 .configCd .form-control {
@@ -201,16 +192,38 @@ input:checked + .buttonSlider:before {
 }
 
 .serviceOpsDropdown {
+    float: left !important;
+    height: 28px !important;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+.serviceOpsDropdown .btn {
+    font-size: 11px !important;
+}
+
+.maintOpsDropdown {
     float: right !important;
     height: 28px !important;
     margin-bottom: 10px;
     margin-top: 5px;
 }
 
+.maintOpsDropdown .btn {
+    font-size: 11px !important;
+}
+
+
 .serviceOpsDropdownKube {
+    float: left !important;
+}
+
+.maintenanceOpsDropdownKube {
     float: right !important;
 }
 
-.serviceOpsDropdown .btn {
-    font-size: 11px !important;
+.centeredInput {
+    margin-left: 30%;
+    width: 40%;
+    text-align: center;
 }

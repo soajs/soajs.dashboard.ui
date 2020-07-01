@@ -85,9 +85,9 @@
 										more information.</label>
 									<br/>
 								</div>
-								<div ng-show="showImages">
+								<div ng-show="configuration.recipe.image">
 									<label>Image Prefix</label>
-									<input type="text" class="form-control"
+									<input type="text" ngng-disabled="!showImages" class="form-control"
 									       ng-model="configuration.recipe.image.prefix"/>
 									<div class="fieldMsg hint">Override the image prefix if you want</div>
 									<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"
@@ -96,9 +96,9 @@
 									</div>
 									<br/>
 								</div>
-								<div ng-show="showImages">
+								<div ng-show="configuration.recipe.image">
 									<label>Image Name</label>
-									<input type="text" class="form-control" ng-model="configuration.recipe.image.name"/>
+									<input type="text" class="form-control" ng-disabled="!showImages" ng-model="configuration.recipe.image.name"/>
 									<div class="fieldMsg hint">Override the image name if you want</div>
 									<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"
 									     class="warningFieldMsg hint">Mismatch detected between Configuration and
@@ -106,9 +106,9 @@
 									</div>
 									<br/>
 								</div>
-								<div ng-show="showImages">
+								<div ng-show="configuration.recipe.image">
 									<label>Image Tag</label>
-									<input type="text" class="form-control" ng-model="configuration.recipe.image.tag"/>
+									<input type="text" class="form-control" ng-disabled="!showImages" ng-model="configuration.recipe.image.tag"/>
 									<div class="fieldMsg hint">Override the image tag if you want</div>
 									<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"
 									     class="warningFieldMsg hint">Mismatch detected between Configuration and
@@ -215,15 +215,9 @@
 											        ng-change="updateGitConfigBranch(configuration.src.branch)"
 											        ng-model="configuration.recipe.sourceCode.branch"
 											        ng-disabled="!editSourceConfig"></select>
-											<label class="fieldMsg">Choose your Branch}}</label>
+											<label class="fieldMsg">Choose your Branch</label>
 											<br>
 										</div>
-									</div>
-									<div ng-if="configuration.recipe.sourceCode.catalog">
-										<label>Path</label>
-										<input type="text" class="form-control"
-										       ng-model="configuration.recipe.sourceCode.path" ng-required="false"/>
-										<label class="fieldMsg">Unless specified, the root will be used</label>
 									</div>
 								</fieldset>
 								<fieldset ng-if="showPorts">
@@ -260,31 +254,6 @@
 										<br>
 									</div>
 								</fieldset>
-								<fieldset ng-if="allowExposeServicePort">
-									<legend>Port(s)
-									</legend>
-									<div style="width: 30%!important;float: left;">
-										<label class="switch"><input type="checkbox" ng-model="exposeServicePort"><span
-												class="buttonSlider round f-left"></span></label>
-									</div>
-									<div style="width: 60%!important;float: left;margin-top: 8px;">
-										<label class="f-left fieldMsg">This recipe allows port(s) to be exposed
-											externally.
-										</label>
-									</div>
-									<div ng-if="exposeServicePort">
-										<label>Value</label>
-										<input type="number" class="form-control"
-										       ng-model="configuration.recipe.exposeServicePort.value"
-										       ng-disabled="false" min="1" max="2767" ng-required="true"/>
-										<label class="fieldMsg">Enter a value if you want to expose this resource to a
-											specific port;
-											Port values are limited to a range between 0 and 2767 (please note that
-											kubernetes add 30,000 to the port).
-										</label>
-									</div>
-									<br/>
-								</fieldset>
 								<div ng-show="configuration.recipe.value">
 									<fieldset>
 										<legend>Environment Scaling</legend>
@@ -305,12 +274,7 @@
 										       ng-if="configuration.settings.mode === 'Daemonset' || configuration.settings.mode === 'CronJob'">
 											Daemonsets/CronJob do not support autoscaling.
 										</alert>
-										<fieldset ng-if="configuration.settings.mode === 'Deployment'">
-											<legend>Auto Scale<label class="switch"><input type="checkbox"
-											                                               ng-model="autoScale"
-											                                               ng-click="activateAutoScale()"><span
-													class="buttonSlider round"></span></label>
-											</legend>
+										<fieldset ng-if="configuration.settings.mode === 'Deployment' && !isDeployed">
 											<fieldset ng-if="!autoScale && configuration.settings.mode == 'Deployment'">
 												<legend>Replication</legend>
 												<label>Replica Count</label>
@@ -320,38 +284,6 @@
 												<label class="fieldMsg">Enter a Replica Count that is greater or equal to
 													1</label>
 												<br>
-											</fieldset>
-											<fieldset ng-if="autoScale">
-												<legend>Metrics</legend>
-												<div>
-													<label>CPU</label>
-													<input type="number" class="form-control"
-													       ng-model="configuration.settings.autoScale.metrics.cpu.percent"
-													       ng-required="true"/>
-													<label class="fieldMsg">Enter CPU percentage</label>
-													<br>
-												</div>
-											</fieldset>
-											<fieldset ng-if="autoScale">
-												<legend>Replicas</legend>
-												<div>
-													<label>min</label>
-													<input type="number" class="form-control"
-													       ng-model="configuration.settings.autoScale.replicas.min"
-													       ng-required="true"/>
-													<label class="fieldMsg">Enter minimum Replica Count that is greater or
-														equal to 1</label>
-													<br>
-												</div>
-												<div>
-													<label>max</label>
-													<input type="number" class="form-control"
-													       ng-model="configuration.settings.autoScale.replicas.max"
-													       ng-required="true"/>
-													<label class="fieldMsg">Enter maximum Replica Count that is greater or
-														equal to 1</label>
-													<br>
-												</div>
 											</fieldset>
 										</fieldset>
 									</fieldset>

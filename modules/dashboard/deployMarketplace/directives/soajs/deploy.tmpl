@@ -37,27 +37,10 @@
 		<tab ng-repeat="version in service.versions" heading="Version {{version.version}}"
 		     ng-click="getDeployment(service, version)">
 			<br>
-			<div ng-if="access.marketplace.maintenance && envDeployeType === 'manual'" class="dropdown serviceOpsDropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id=""
-				        data-toggle="dropdown" aria-haspopup="true"
-				        aria-expanded="true">
-					Maintenance Operations
-					<span class="caret"></span>
-				</button>
-				<ul ng-show="version.maintenance && version.maintenance.commands" class="dropdown-menu"
-				    aria-labelledby="serviceOpsDropdown">
-					<li><a href=""
-					       ng-show="version.maintenance.readiness"
-					       ng-click="executeOperation(service, version, version.maintenance.readiness, 'Heartbeat')"><span
-							class="fas fa-heart"></span> Heart Beat</a></li>
-					
-					<li ng-repeat="operation in version.maintenance.commands"><a href=""
-					                                                             ng-if="operation.path !=='/heartbeat'"
-					                                                             ng-click="executeOperation(service, version, operation.path, operation.label)"><i
-							class="{{operation.icon}}"></i>&nbsp;{{operation.label}}</a>
-					</li>
-				</ul>
+			<div ng-if="envDeployeType === 'manual'">
+				<div ng-include="'modules/dashboard/deployMarketplace/directives/global/manual.tmpl'"></div>
 			</div>
+		
 			<div ng-if="envDeployeTechnology === 'kubernetes'">
 				<div ng-include="'modules/dashboard/deployMarketplace/directives/global/kubernetes.tmpl'"></div>
 			</div>

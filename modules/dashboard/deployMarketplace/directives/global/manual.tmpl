@@ -1,0 +1,31 @@
+<div ng-if="access.marketplace.maintenance && envDeployeType === 'manual'" class="dropdown maintOpsDropdown">
+	<button class="btn btn-default dropdown-toggle" type="button" id=""
+	        data-toggle="dropdown" aria-haspopup="true"
+	        aria-expanded="true">
+		Maintenance Operations
+		<span class="caret"></span>
+	</button>
+	<ul ng-show="version.maintenance && version.maintenance.commands" class="dropdown-menu"
+	    aria-labelledby="serviceOpsDropdown">
+		<li><a href=""
+		       ng-show="version.maintenance.readiness"
+		       ng-click="executeOperation(service, version, version.maintenance.readiness, 'Heartbeat')"><span
+				class="fas fa-heart"></span> Heart Beat</a></li>
+		
+		<li ng-repeat="operation in version.maintenance.commands"><a href=""
+		                                                             ng-if="operation.path !=='/heartbeat'"
+		                                                             ng-click="executeOperation(service, version, operation.path, operation.label)"><i
+				class="{{operation.icon}}"></i>&nbsp;{{operation.label}}</a>
+		</li>
+	</ul>
+</div>
+<br>
+<br>
+<ul class="blueListing" ng-show="awareness[service.name]">
+	<li class="blueLi row-list active"
+	    ng-style="{'width': '100%'}">
+		<div style="width: 55%;display: inline-block">
+			<span class="">{{awareness[service.name].host}}</span>
+		</div>
+	</li>
+</ul>

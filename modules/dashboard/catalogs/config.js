@@ -310,8 +310,7 @@ let catalogAppConfig = {
                             "</p><br />" +
 							"<label>If you wish to use a <b>Specific Port</b>, make sure that the published port is within these ranges:</label><br />" +
 							"<ul>" +
-							"<li>For <b>virtual machine</b> compatible recipes: <b>0 - 65535</b></li>" +
-							"<li>For <b>container</b> compatible recipes: <b>0 - 2767</b> (the selected port number will be automatically incremented by 30000)</li>" +
+							"<li>If you wish to use specific port, kubernetes only allows port to be published between 30000 & 32767 </li>" +
 							"</ul>"
                         },
 						'entries': [
@@ -319,13 +318,6 @@ let catalogAppConfig = {
 								'type': 'html',
 								'value': "<input type='button' class='btn btn-sm btn-success f-right exposeNewPort' value='Expose New Port'/>",
 								'name': 'addPort'
-							},
-							{
-								'name': 'allowExposeServicePort',
-								'label': 'Allow Exposing Service Port',
-								'type': 'buttonSlider',
-								"value": false,
-								'tooltip': "Enable/Disable exposing service port to the outside"
 							}
 						]
 					},

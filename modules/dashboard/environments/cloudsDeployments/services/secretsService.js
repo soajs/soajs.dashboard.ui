@@ -89,7 +89,7 @@ secretsApp.service('secretsService', ['ngDataApi', '$timeout', '$window', functi
 					return false;
 				}
 				input.content = [{
-					name : formData.secretLabel,
+					name : input.datatype === 'file' ? formData.secretLabelFile : formData.secretLabelText,
 					content: typeof input.data === "string" ? input.data :  input.data.toString()
 				}];
 				delete input.data;

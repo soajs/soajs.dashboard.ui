@@ -812,7 +812,6 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 								});
 							}
 						}
-						$scope.allowExposeServicePort = catalog.recipe.deployOptions.allowExposeServicePort;
 						
 						if (catalog.recipe.deployOptions.sourceCode) {
 							if (catalog.recipe.deployOptions.sourceCode.configuration) {
@@ -1155,7 +1154,6 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
 				$modalInstance.close();
-				console.log(response)
 			}
 		});
 	}

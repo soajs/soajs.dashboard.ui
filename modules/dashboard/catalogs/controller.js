@@ -717,7 +717,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						'l': v.version
 					});
 				});
-				if (mainFormConfig[5].tabs[1].entries[1].entries.length === 2) {
+				
+				if (mainFormConfig[5].tabs[1].entries[1].entries && mainFormConfig[5].tabs[1].entries[1].entries.length === 2) {
 					mainFormConfig[5].tabs[1].entries[1].entries.push({
 							'name': 'version',
 							'label': 'Version',
@@ -857,18 +858,18 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		}
 		
 		// add restrictions
-		if (mainFormConfig.length === 8) {
-			mainFormConfig.push(
-				{
-					"type": "html",
-					"value": "<hr><h2>Restrictions</h2>"
-				},
-				{
-					'name': 'restrictions',
-					'label': 'Attach Restrictions',
-					'type': 'buttonSlider',
-					'disabled': true,
-					onAction(id, data, form) {
+		// if (mainFormConfig.length === 8) {
+		// 	mainFormConfig.push(
+		// 		{
+		// 			"type": "html",
+		// 			"value": "<hr><h2>Restrictions</h2>"
+		// 		},
+		// 		{
+		// 			'name': 'restrictions',
+		// 			'label': 'Attach Restrictions',
+		// 			'type': 'buttonSlider',
+		// 			'disabled': true,
+		// 			onAction(id, data, form) {
 						// if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
 							// listInfraProviders(currentScope, () => {
 							// 	form.entries.push({
@@ -885,22 +886,22 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							// 	});
 							// });
 						// } else {
-							form.formData.deploymentType = [];
-							form.formData.infra = [];
-							form.formData.drivers = [];
-							if (form.entries.length === 13) {
-								form.entries.pop()
-							}
-							if (form.entries.length === 12) {
-								form.entries.pop()
-							}
-							if (form.entries.length === 11) {
-								form.entries.pop()
-							}
+						// 	form.formData.deploymentType = [];
+						// 	form.formData.infra = [];
+						// 	form.formData.drivers = [];
+						// 	if (form.entries.length === 13) {
+						// 		form.entries.pop()
+						// 	}
+						// 	if (form.entries.length === 12) {
+						// 		form.entries.pop()
+						// 	}
+						// 	if (form.entries.length === 11) {
+						// 		form.entries.pop()
+						// 	}
 						// }
-					}
-				});
-		}
+				//	}
+			//	});
+	//	}
 		
 		$modal.open({
 			templateUrl: "editRecipe.tmpl",
@@ -1260,7 +1261,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				maxAttempts: (data.recipe.deployOptions.restartPolicy) ? data.recipe.deployOptions.restartPolicy.maxAttempts : '',
 				network: data.recipe.deployOptions.container.network,
 				workingDir: data.recipe.deployOptions.container.workingDir,
-				allowExposeServicePort: data.recipe.deployOptions.allowExposeServicePort || false,
 			};
 			
 			if (data.recipe.buildOptions.cmd
@@ -1524,8 +1524,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					"container": {
 						"network": formData.network,
 						"workingDir": formData.workingDir
-					},
-					"allowExposeServicePort": formData.allowExposeServicePort
+					}
 				},
 				buildOptions: {
 					"env": {}

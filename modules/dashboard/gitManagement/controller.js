@@ -47,169 +47,22 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 	
 	
 	$scope.delete = function (account) {
-		if (account.access === 'public' || account.provider !== 'github') {
-			overlayLoading.show();
-			getSendDataFromServer($scope, ngDataApi, {
-				'method': 'delete',
-				'routeName': '/repositories/git/account',
-				'params': {
-					id: account._id.toString()
-				}
-			}, function (error) {
-				overlayLoading.hide();
-				if (error) {
-					$scope.displayAlert('danger', error.message);
-				} else {
-					$scope.displayAlert('success', translation.logoutSuccessful[LANG]);
-					$scope.listAccounts();
-				}
-			});
-		} else if (account.access === 'private') {
-			
-			var formConfig = angular.copy(gitAccManagementConfig.form.logout);
-			var options = {
-				timeout: $timeout,
-				form: formConfig,
-				name: 'removeGithubAccount',
-				label: 'Remove GitHub Account',
-				actions: [
-					{
-						'type': 'submit',
-						'label': 'Submit',
-						'btn': 'primary',
-						'action': function (formData) {
-							var params = {
-								id: account._id.toString(),
-								password: formData.password
-							};
-							overlayLoading.show();
-							getSendDataFromServer($scope, ngDataApi, {
-								'method': 'delete',
-								'routeName': '/repositories/git/account',
-								'params': params
-							}, function (error, response) {
-								overlayLoading.hide();
-								if (error) {
-									$scope.$parent.displayAlert('danger', error.message);
-									$scope.modalInstance.close();
-									if (error.message.indexOf(420) > -1){
-										formConfig.entries = formConfig.entries.concat(angular.copy(gitAccManagementConfig.form.twoFactorAuth.entries));
-										var options = {
-											timeout: $timeout,
-											form: formConfig,
-											name: 'removeGithubAccount',
-											label: 'Two Factor Authentication enabled',
-											actions: [
-												{
-													'type': 'submit',
-													'label': 'Submit',
-													'btn': 'primary',
-													'action': function (formData) {
-														params.on2fa = formData.on2fa;
-														overlayLoading.show();
-														getSendDataFromServer($scope, ngDataApi, {
-															'method': 'delete',
-															'routeName': '/repositories/git/account',
-															'params': params
-														}, function (error, response) {
-															overlayLoading.hide();
-															if (error) {
-																if (error.message.indexOf(420) > -1){
-																	var options = {
-																		timeout: $timeout,
-																		form: formConfig,
-																		name: 'removeGithubAccount',
-																		label: 'Two Factor Authentication enabled',
-																		actions: [
-																			{
-																				'type': 'submit',
-																				'label': 'Submit',
-																				'btn': 'primary',
-																				'action': function (formData) {
-																					params.on2fa = formData.on2fa;
-																					overlayLoading.show();
-																					getSendDataFromServer($scope, ngDataApi, {
-																						'method': 'delete',
-																						'routeName': '/repositories/git/account',
-																						'params': params
-																					}, function (error, response) {
-																						overlayLoading.hide();
-																						if (error) {
-																							$scope.$parent.displayAlert('danger', error.message);
-																							$scope.modalInstance.close();
-																						} else {
-																							$scope.$parent.displayAlert('success', response.data);
-																							$scope.modalInstance.close();
-																							$scope.form.formData = {};
-																							$scope.listAccounts();
-																						}
-																					});
-																				}
-																			},
-																			{
-																				'type': 'reset',
-																				'label': 'Cancel',
-																				'btn': 'danger',
-																				'action': function () {
-																					$scope.modalInstance.dismiss('cancel');
-																					$scope.form.formData = {};
-																				}
-																			}
-																		]
-																	};
-																	buildFormWithModal($scope, $modal, options);
-																}
-																else {
-																	$scope.$parent.displayAlert('danger', error.message);
-																	$scope.modalInstance.close();
-																}
-															} else {
-																$scope.$parent.displayAlert('success', response.data);
-																$scope.modalInstance.close();
-																$scope.form.formData = {};
-																$scope.listAccounts();
-															}
-														});
-													}
-												},
-												{
-													'type': 'reset',
-													'label': 'Cancel',
-													'btn': 'danger',
-													'action': function () {
-														overlayLoading.hide();
-														$scope.modalInstance.dismiss('cancel');
-														$scope.form.formData = {};
-													}
-												}
-											]
-										};
-										buildFormWithModal($scope, $modal, options);
-									}
-									
-								} else {
-									overlayLoading.hide();
-									$scope.$parent.displayAlert('success', response.message);
-									$scope.modalInstance.close();
-									$scope.form.formData = {};
-									$scope.listAccounts();
-								}
-							});
-						}
-					},
-					{
-						'type': 'reset',
-						'label': 'Cancel',
-						'btn': 'danger',
-						'action': function () {
-							$scope.modalInstance.dismiss('cancel');
-							$scope.form.formData = {};
-						}
-					}
-				]
-			};
-			buildFormWithModal($scope, $modal, options);
-		}
+		overlayLoading.show();
+		getSendDataFromServer($scope, ngDataApi, {
+			'method': 'delete',
+			'routeName': '/repositories/git/account',
+			'params': {
+				id: account._id.toString()
+			}
+		}, function (error) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.displayAlert('danger', error.message);
+			} else {
+				$scope.displayAlert('success', translation.logoutSuccessful[LANG]);
+				$scope.listAccounts();
+			}
+		});
 	};
 	
 	
@@ -238,6 +91,9 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 						if (formData.password) {
 							postData.password = formData.password;
 						}
+						if (formData.token) {
+							postData.token = formData.token;
+						}
 						
 						if (formData.oauthKey && formData.oauthSecret) {
 							postData.oauthKey = formData.oauthKey;
@@ -254,96 +110,6 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 							if (error) {
 								$scope.$parent.displayAlert('danger', error.message);
 								$scope.modalInstance.close();
-								if (error.message.indexOf(420) > -1){
-									var formConfig = angular.copy(gitAccManagementConfig.form.twoFactorAuth);
-									var options = {
-										timeout: $timeout,
-										form: formConfig,
-										name: 'removeGithubAccount',
-										label: 'Two Factor Authentication enabled',
-										actions: [
-											{
-												'type': 'submit',
-												'label': 'Submit',
-												'btn': 'primary',
-												'action': function (formData) {
-													postData.on2fa = formData.on2fa;
-													getSendDataFromServer($scope, ngDataApi, {
-														'method': 'post',
-														'routeName': '/repositories/git/account',
-														'data': postData
-													}, function (error, response) {
-														if (error) {
-															if (error.message.indexOf(420) > -1){
-																var formConfig = angular.copy(gitAccManagementConfig.form.twoFactorAuth);
-																var options = {
-																	timeout: $timeout,
-																	form: formConfig,
-																	name: 'removeGithubAccount',
-																	label: 'Two Factor Authentication enabled',
-																	actions: [
-																		{
-																			'type': 'submit',
-																			'label': 'Submit',
-																			'btn': 'primary',
-																			'action': function (formData) {
-																				postData.on2fa = formData.on2fa;
-																				getSendDataFromServer($scope, ngDataApi, {
-																					'method': 'post',
-																					'routeName': '/repositories/git/account',
-																					'data': postData
-																				}, function (error, response) {
-																					if (error) {
-																						$scope.$parent.displayAlert('danger', error.message);
-																						$scope.modalInstance.close();
-																					} else {
-																						$scope.$parent.displayAlert('success', response.message);
-																						$scope.modalInstance.close();
-																						$scope.form.formData = {};
-																						$scope.listAccounts();
-																					}
-																				});
-																			}
-																		},
-																		{
-																			'type': 'reset',
-																			'label': 'Cancel',
-																			'btn': 'danger',
-																			'action': function () {
-																				$scope.modalInstance.dismiss('cancel');
-																				$scope.form.formData = {};
-																			}
-																		}
-																	]
-																};
-																buildFormWithModal($scope, $modal, options);
-															}
-															else {
-																$scope.$parent.displayAlert('danger', error.message);
-																$scope.modalInstance.close();
-															}
-														} else {
-															$scope.$parent.displayAlert('success', response.message);
-															$scope.modalInstance.close();
-															$scope.form.formData = {};
-															$scope.listAccounts();
-														}
-													});
-												}
-											},
-											{
-												'type': 'reset',
-												'label': 'Cancel',
-												'btn': 'danger',
-												'action': function () {
-													$scope.modalInstance.dismiss('cancel');
-													$scope.form.formData = {};
-												}
-											}
-										]
-									};
-									buildFormWithModal($scope, $modal, options);
-								}
 							} else {
 								$scope.$parent.displayAlert('success', response.message);
 								$scope.modalInstance.close();
@@ -395,7 +161,7 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 							username: account.owner
 						};
 						if (account.provider === "github") {
-							body.password = formData.password;
+							body.token = formData.token;
 						} else if (account.provider === "bitbucket") {
 							body.password = formData.password;
 							body.oauthKey = formData.oauthKey;

@@ -6,6 +6,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, soajsDeployCatalogConfig.permissions);
 	$scope.mainTabs = {};
+	$scope.autoScale = "danger";
 	let defaultGroup = "SOAJS Core Services";
 	
 	$scope.selectedEnvironment = $cookies.getObject('myEnv', {'domain': interfaceDomain});
@@ -279,7 +280,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						'label': host.id,
 						'entries': [
 							{
-								'name': service.name,
+								'name': service.name + "-service",
 								'type': 'jsoneditor',
 								'height': '500px',
 								"value": host.response
@@ -287,7 +288,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						]
 					});
 				});
-				
 				let options = {
 					timeout: $timeout,
 					form: formConfig,
@@ -330,6 +330,26 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		});
 	};
 	
+	$scope.restartService = function (service, version) {
+		let options = {};
+		options.method = "put";
+		options.routeName = "/infra/kubernetes/resource/restart";
+		options.data = {
+			configuration: {
+				env: $scope.selectedEnvironment.code.toLowerCase(),
+			},
+			mode: version.deployedItem.type,
+			name: version.deployedItem.name
+		};
+		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+			} else {
+				$scope.$parent.displayAlert('success', "Item restarted!");
+			}
+		});
+	};
+	
 	$scope.getMetrics = function (pod) {
 		let currentScope = $scope;
 		$modal.open({
@@ -345,6 +365,50 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					selected: true
 				};
 				kubeServicesSrv.autoRefreshMetrics($scope, $modalInstance, currentScope, pod);
+			}
+		});
+	};
+	
+	$scope.scaleService = function (service, version) {
+		let currentScope = $scope;
+		$modal.open({
+			templateUrl: "scaleService.tmpl",
+			size: 'm',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+				
+				$scope.currentScale = version.deployedItem.scale;
+				$scope.title = service.name + ' | Scale Service';
+				
+				$scope.onSubmit = function () {
+					overlayLoading.show();
+					let options = {};
+					options.method = "put";
+					options.routeName = '/infra/kubernetes/deployment/scale';
+					options.data = {
+						configuration: {
+							env: currentScope.selectedEnvironment.code.toLowerCase(),
+						},
+						mode: version.deployedItem.type,
+						name: version.deployedItem.name,
+						scale: $scope.newScale
+					};
+					getSendDataFromServer($scope, ngDataApi, options, function (error, result) {
+						overlayLoading.hide();
+						$modalInstance.close();
+						if (error) {
+							currentScope.$parent.displayAlert('danger', error.message);
+						} else {
+							currentScope.$parent.displayAlert('success', 'Service scaled successfully! If scaling up, new instances will appear as soon as they are ready or on the next refresh');
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					$modalInstance.close();
+				};
 			}
 		});
 	};
@@ -373,9 +437,8 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		};
 		if (v) {
 			options.params.item.version = v.version;
-		}
-		else {
-			v= service.versions[0];
+		} else {
+			v = service.versions[0];
 		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
@@ -385,13 +448,24 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				delete response.soajsauth;
 				$scope.itemLists = response;
 				$scope.deployed = false;
+				if ($scope.itemLists.hpas.items.length > 0) {
+					$scope.deployed = true;
+					$scope.autoScale = "success";
+					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
+						v.hpas = oneItem;
+					});
+				}
 				if ($scope.itemLists.daemonsets.items.length > 0) {
 					$scope.deployed = true;
 					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
 						v.deployedItem = {
-							type : 'DaemonSet',
-							name : oneItem.metadata.name
+							type: 'DaemonSet',
+							name: oneItem.metadata.name,
+							scale: 0
 						};
+						if ($scope.itemLists.pods && $scope.itemLists.pods.items && $scope.itemLists.pods.items.length > 0) {
+							v.deployedItem.scale = $scope.itemLists.pods.items.length;
+						}
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&
@@ -413,9 +487,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					$scope.deployed = true;
 					$scope.itemLists.deployments.items.forEach((oneItem) => {
 						v.deployedItem = {
-							type : 'Deployment',
-							name : oneItem.metadata.name
+							type: 'Deployment',
+							name: oneItem.metadata.name,
+							scale: 0
 						};
+						if ($scope.itemLists.pods && $scope.itemLists.pods.items && $scope.itemLists.pods.items.length > 0) {
+							v.deployedItem.scale = $scope.itemLists.pods.items.length;
+						}
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&
@@ -437,8 +515,8 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					$scope.deployed = true;
 					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
 						v.deployedItem = {
-							type : 'CronJob',
-							name : oneItem.metadata.name
+							type: 'CronJob',
+							name: oneItem.metadata.name
 						};
 						if (oneItem.spec && oneItem.spec.jobTemplate && oneItem.spec.jobTemplate.spec &&
 							oneItem.spec.jobTemplate.spec.template &&
@@ -460,6 +538,87 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						}
 					});
 				}
+			}
+		});
+	};
+	
+	$scope.autoScaleService = function autoScale(service, version) {
+		let currentScope = $scope;
+		$modal.open({
+			templateUrl: "autoScale.tmpl",
+			size: 'm',
+			backdrop: true,
+			keyboard: true,
+			controller: function ($scope, $modalInstance) {
+				fixBackDrop();
+				$scope.currentScope = currentScope;
+				$scope.title = service.name;
+				$scope.title += ' | Auto Scale';
+				$scope.autoScaleObject =
+					{
+						"replica": {},
+						"metrics": {
+							"cpu": {}
+						}
+					};
+				
+				$scope.onSubmit = function (action) {
+					$scope.autoScaleStatus = currentScope.autoscale === "success";
+					overlayLoading.show();
+					let options = {};
+					if (action === "update"){
+						options = {
+							"method": "post",
+							"routeName": "/infra/kubernetes/item/hpa",
+							"data": {
+								"item": {
+									"env": currentScope.selectedEnvironment.code.toLowerCase(),
+									"name": service.name,
+									"version": service.versions[0].version,
+								},
+								"configuration": {
+									"env": currentScope.selectedEnvironment.code.toLowerCase()
+								},
+								"replica": $scope.autoScaleObject.replica,
+								"metrics": [{
+									type : "Resource",
+									name : "cpu",
+									target : "AverageValue",
+									percentage: $scope.autoScaleObject.metrics.cpu.percent
+								}]
+							}
+						};
+					}
+					else {
+						options = {
+							"method": "delete",
+							"routeName": "/infra/kubernetes/workload/HPA",
+							"params": {
+								"name": version.hpas.metadata.name,
+								"mode": "HPA"
+							}
+						};
+					}
+					
+					getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
+						overlayLoading.hide();
+						$modalInstance.close();
+						if (error) {
+							currentScope.$parent.displayAlert('danger', error.message);
+						}
+						else {
+							if (action === 'update') {
+								currentScope.$parent.displayAlert('success', 'Auto Scale is Enabled successfully');
+							} else {
+								currentScope.$parent.displayAlert('success', 'Auto Scale turned off successfully');
+							}
+						}
+					});
+				};
+				
+				$scope.closeModal = function () {
+					$modalInstance.close();
+				};
 			}
 		});
 	};

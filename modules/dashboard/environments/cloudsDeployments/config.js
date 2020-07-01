@@ -31,7 +31,7 @@ var cloudsDeploymentConfig = {
 						"description": "",
 						"entries": [
 							{
-								'name': 'secretLabel',
+								'name': 'secretLabelText',
 								'label': 'Label',
 								'type': 'text',
 								'required': true
@@ -63,7 +63,7 @@ var cloudsDeploymentConfig = {
 						"description": "",
 						"entries": [
 							{
-								'name': 'secretLabel',
+								'name': 'secretLabelFile',
 								'label': 'Label',
 								'type': 'text',
 								'required': true

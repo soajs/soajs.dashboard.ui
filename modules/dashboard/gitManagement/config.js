@@ -1,4 +1,4 @@
-var gitAccManagementConfig = {
+let gitAccManagementConfig = {
 	'form': {
 		'login': {
 			'entries': [
@@ -66,27 +66,27 @@ var gitAccManagementConfig = {
 					'required': true,
 					onAction: function (label, selected, formConfig) {
 						if (selected === 'private') {
-							if (!formConfig.entries[6] || (formConfig.entries[6] && formConfig.entries[6].name !== 'password')) {
-								var password = {
-									'name': 'password',
-									'label': 'Password',
-									'type': 'password',
+							if (!formConfig.entries[6] || (formConfig.entries[6] && formConfig.entries[6].name !== 'token')) {
+								let password = {
+									'name': 'token',
+									'label': 'Personal Token',
+									'type': 'text',
 									'value': '',
-									'tooltip': 'Account Password',
-									'placeholder': 'Your Password',
+									'tooltip': 'Account Personal Token',
+									'placeholder': 'Your Personal Token',
 									'required': true
 								};
 								formConfig.entries.splice(6, 0, password);
 							}
 							
-							var currentProvider;
-							for (var i =0; i < formConfig.entries[0].value.length; i++) {
+							let currentProvider;
+							for (let i =0; i < formConfig.entries[0].value.length; i++) {
 								if (formConfig.entries[0].value[i].selected) {
 									currentProvider = formConfig.entries[0].value[i];
 								}
 							}
 							if (currentProvider && currentProvider.v === 'bitbucket' && !formConfig.entries[8] && !formConfig.entries[9]) {
-								var oauth = [
+								let oauth = [
 									{
 										'name': 'oauthKey',
 										'label': 'OAuth 2.0 Consumer Key',
@@ -112,10 +112,10 @@ var gitAccManagementConfig = {
 								formConfig.entries.splice(7, 0, oauth[0], oauth[1], oauth[2]);
 							}
 							else if (currentProvider && currentProvider.v === 'github') {
-								var githubMessage = {
+								let githubMessage = {
 									"name": "tokenMessage",
 									"type": "html",
-									"value": "<br><p><b>" + translation.loginMessagePermissionsPartOne[LANG] + "</b><br><ul><li>" + translation.loginMessagePermissionsPartTwo[LANG] + "</li><li>" + translation.loginMessagePermissionsPartThree[LANG] + "</li></ul><br>" + translation.loginMessagePermissionsPartFour[LANG] + "</p>"
+									"value": "<br><p><b>In order to generate Personal Token, follow the following steps:</b><br><ul><li>Login to your Github account, go to Github Settings > Developer Options</li><li>Under Developer Options section, click on Personal access tokens >  Generate new token</li><li>Make sure you grant this token scope permission to: repo -  Full control of private repositories </li><li>Finally, grab the generated personal and use them to login to SOAJS Git app using your Github account</li></ul></p>"
 								};
 								formConfig.entries.splice(7, 1, githubMessage);
 							}
@@ -156,45 +156,22 @@ var gitAccManagementConfig = {
 				}
 			]
 		},
-		'logout': {
-			'entries': [
-				{
-					'name': 'password',
-					'label': translation.pleaseProvidePassword[LANG],
-					'type': 'password',
-					'value': '',
-					'placeholder': translation.gitPassword[LANG],
-					'required': true
-				}
-			]
-		},
-		'twoFactorAuth': {
-			'entries': [
-				{
-					'name': 'on2fa',
-					'label': translation.pleaseProvideOn2fa[LANG],
-					'type': 'text',
-					'value': '',
-					'placeholder': translation.on2fa[LANG],
-					'required': true
-				}
-			]
-		},
 		'upgrade': {
 			'github' : {
 				'entries': [
 					{
-						'name': 'password',
-						'label': translation.pleaseProvidePassword[LANG],
-						'type': 'password',
+						'name': 'token',
+						'label': 'Personal Token',
+						'type': 'text',
 						'value': '',
-						'placeholder': translation.gitPassword[LANG],
+						'tooltip': 'Account Personal Token',
+						'placeholder': 'Your Personal Token',
 						'required': true
 					},
 					{
 						"name": "tokenMessage",
 						"type": "html",
-						"value": "<br><p><b>" + translation.loginMessagePermissionsPartOne[LANG] + "</b><br><ul><li>" + translation.loginMessagePermissionsPartTwo[LANG] + "</li><li>" + translation.loginMessagePermissionsPartThree[LANG] + "</li></ul><br>" + translation.loginMessagePermissionsPartFour[LANG] + "</p>"
+						"value": "<br><p><b>In order to generate Personal Token, follow the following steps:</b><br><ul><li>Login to your Github account, go to Github Settings > Developer Options</li><li>Under Developer Options section, click on Personal access tokens >  Generate new token</li><li>Make sure you grant this token scope permission to: repo -  Full control of private repositories </li><li>Finally, grab the generated personal and use them to login to SOAJS Git app using your Github account</li></ul></p>"
 					}
 				]
 			},

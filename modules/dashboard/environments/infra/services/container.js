@@ -80,7 +80,8 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 						data: {
 							code: currentScope.envCode,
 							settings: {
-								namespace: $scope.namespaces.data.default
+								namespace: $scope.namespaces.data.default,
+								id: currentConfig.id
 							}
 						}
 					}, function (error) {
@@ -127,6 +128,7 @@ platformContainerServices.service('platformCntnr', ['ngDataApi', '$timeout', '$m
 			currentScope.containers.platform = "kubernetes";
 			currentScope.containers.config = regConf.configuration;
 			currentScope.containers.config.namespace = regConf.namespace;
+			currentScope.containers.config.id = regConf.id;
 			currentScope.containers.location = depSeleted;
 		}
 	}

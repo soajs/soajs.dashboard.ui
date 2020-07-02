@@ -1129,7 +1129,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		};
 	}
 	
-	function saveConfiguration(service, version, $scope, currentScope, $modalInstance) {
+	function saveConfiguration(service, version, $scope, currentScope, $modalInstance, cb) {
 		overlayLoading.show();
 		let opts = {
 			"method": 'put',
@@ -1165,11 +1165,12 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			} else {
 				currentScope.$parent.displayAlert('success', "Item Configuration Saved Successfully!");
 				$modalInstance.close();
+				return cb();
 			}
 		});
 	}
 	
-	function buildConfiguration(service, version, $scope, currentScope, $modalInstance) {
+	function buildConfiguration(service, version, $scope, currentScope, $modalInstance, cb) {
 		overlayLoading.show();
 		let opts = {
 			"method": 'put',
@@ -1205,6 +1206,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			} else {
 				currentScope.$parent.displayAlert('success', "Item Built Successfully!");
 				$modalInstance.close();
+				return cb();
 			}
 		});
 	}

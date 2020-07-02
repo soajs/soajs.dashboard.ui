@@ -291,6 +291,13 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 		};
 		$scope.save = function () {
 			let postData = angular.copy($scope.formEnvironment);
+			try {
+				postData.services.config.logger = JSON.parse($scope.jsonEditor.logger.data);
+			}
+			catch (e) {
+				$scope.displayAlert('danger', 'Logger Config: Invalid JSON Object');
+				return;
+			}
 			let data = {
 				"domain": postData.domain,
 				"sitePrefix": postData.sitePrefix,

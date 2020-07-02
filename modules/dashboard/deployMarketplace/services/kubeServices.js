@@ -797,6 +797,11 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 							$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
 							$scope.showImages = catalog.recipe.deployOptions.image.override;
 							$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
+							$scope.configuration.recipe.image = {
+								prefix: catalog.recipe.deployOptions.image.prefix,
+								name: catalog.recipe.deployOptions.image.name,
+								tag: catalog.recipe.deployOptions.image.tag
+							};
 						}
 						if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
 							$scope.showPorts = true;
@@ -811,12 +816,14 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 									});
 								});
 							}
+						} else {
+							$scope.showPorts = false;
 						}
 						
 						if (catalog.recipe.deployOptions.sourceCode) {
 							if (catalog.recipe.deployOptions.sourceCode.configuration) {
 								$scope.showSourceConfig = true;
-								$scope.requiredSourceConfig = !!$scope.configuration.recipe.required;
+								$scope.requiredSourceConfig = !!catalog.recipe.deployOptions.sourceCode.configuration;
 								$scope.editSourceConfig = true;
 								$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog
 									|| $scope.configuration.recipe.sourceCode.catalog);
@@ -832,13 +839,16 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 										tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
 										branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
 										id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
+									};
+									if (!$scope.configuration.recipe.sourceCode.id) {
+										$scope.showSourceConfig = false;
 									}
 								} else if (!catalog.recipe.deployOptions.sourceCode) {
 									$scope.configuration.recipe.sourceCode = {
 										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
 									}
 								}
-								if (catalog.recipe.deployOptions.sourceCode.configuration.branch){
+								if (catalog.recipe.deployOptions.sourceCode.configuration.branch) {
 									$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
 								}
 							}

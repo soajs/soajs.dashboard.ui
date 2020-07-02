@@ -87,7 +87,7 @@
 								</div>
 								<div ng-show="configuration.recipe.image">
 									<label>Image Prefix</label>
-									<input type="text" ngng-disabled="!showImages" class="form-control"
+									<input type="text" ng-disabled="!showImages" class="form-control"
 									       ng-model="configuration.recipe.image.prefix"/>
 									<div class="fieldMsg hint">Override the image prefix if you want</div>
 									<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"

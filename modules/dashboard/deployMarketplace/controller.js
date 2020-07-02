@@ -68,6 +68,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			}
 		});
 	};
+	
 	$scope.awarenessStat = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -443,17 +444,18 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				delete response.soajsauth;
 				$scope.itemLists = response;
 				$scope.deployed = false;
+				$scope.autoScale = "danger";
 				if ($scope.itemLists.hpas.items.length > 0) {
-					$scope.deployed = true;
 					$scope.autoScale = "success";
-					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
+					$scope.itemLists.hpas.items.forEach((oneItem) => {
 						v.hpas = oneItem;
 					});
+					delete $scope.itemLists.hpas;
 				}
 				if ($scope.itemLists.daemonsets.items.length > 0) {
 					$scope.deployed = true;
@@ -553,17 +555,27 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				fixBackDrop();
 				$scope.currentScope = currentScope;
 				$scope.title = service.name;
+				$scope.autoScaleObject = {
+					"replica": {},
+					"metrics": {
+						"cpu": {}
+					}
+				};
 				$scope.title += ' | Auto Scale';
-				$scope.autoScaleObject =
-					{
-						"replica": {},
-						"metrics": {
-							"cpu": {}
-						}
-					};
+				$scope.autoScaleStatus = currentScope.autoScale === "success";
 				
+				if ($scope.autoScaleStatus && version.hpas && version.hpas.spec){
+					$scope.autoScaleObject.replica.min = version.hpas.spec.minReplicas;
+					$scope.autoScaleObject.replica.max = version.hpas.spec.maxReplicas;
+					version.hpas.spec.metrics.forEach((metric)=>{
+						if (metric.type === "Resource" && metric.resource && metric.resource.name === "cpu" &&
+							metric.resource.target && metric.resource.target.type === "Utilization" &&
+							metric.resource.target.averageUtilization){
+							$scope.autoScaleObject.metrics.cpu.percent = metric.resource.target.averageUtilization;
+						}
+					});
+				}
 				$scope.onSubmit = function (action) {
-					$scope.autoScaleStatus = currentScope.autoscale === "success";
 					overlayLoading.show();
 					let options = {};
 					if (action === "update"){
@@ -594,6 +606,9 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							"method": "delete",
 							"routeName": "/infra/kubernetes/workload/HPA",
 							"params": {
+								"configuration": {
+									"env": currentScope.selectedEnvironment.code.toLowerCase()
+								},
 								"name": version.hpas.metadata.name,
 								"mode": "HPA"
 							}
@@ -602,7 +617,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					
 					getSendDataFromServer(currentScope, ngDataApi, options, function (error) {
 						overlayLoading.hide();
-						$modalInstance.close();
 						if (error) {
 							currentScope.$parent.displayAlert('danger', error.message);
 						}
@@ -612,6 +626,8 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							} else {
 								currentScope.$parent.displayAlert('success', 'Auto Scale turned off successfully');
 							}
+							$modalInstance.close();
+							$scope.getDeployment(service, version);
 						}
 					});
 				};
@@ -646,7 +662,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				
 				kubeServicesSrv.configureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 					if (err) {
-						$scope.displayAlert('danger', err.message);
+						$scope.$parent.displayAlert('danger', err.message);
 					}
 				});
 				
@@ -677,7 +693,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				
 				kubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 					if (err) {
-						$scope.displayAlert('danger', err.message);
+						$scope.$parent.displayAlert('danger', err.message);
 					}
 				});
 				
@@ -699,7 +715,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	}
 	
 }]);
-
 
 soajsDeployCatalogApp.filter('recipesSearchFilter', function () {
 	return function (input, searchKeyword) {

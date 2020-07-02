@@ -34,8 +34,10 @@
 		<br>
 	</div>
 	<tabset>
-		<tab ng-repeat="version in service.versions" heading="Version {{version.version}}"
-		     ng-click="getDeployment(service, version)">
+		<tab ng-repeat="version in service.versions">
+			<tab-heading ng-click="getDeployment(service, version)" style="cursor: pointer">
+				Version {{version.version}} <a><i class="icon icon-loop2"></i></a>
+			</tab-heading>
 			<br>
 			<div ng-if="envDeployeType === 'manual'">
 				<div ng-include="'modules/dashboard/deployMarketplace/directives/global/manual.tmpl'"></div>

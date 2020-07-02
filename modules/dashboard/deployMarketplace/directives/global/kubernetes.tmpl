@@ -65,7 +65,7 @@
 <br>
 <br>
 <tabset>
-	<tab ng-repeat="(tab, itemList) in itemLists track by $index" heading="{{tab | capitalizeFirst}}"
+	<tab ng-repeat="(tab, itemList) in itemLists track by $index" heading="{{tab | capitalizeFirst}} "
 	     ng-if="itemList && itemList.items && itemList.items.length > 0">
 		<br/>
 		<div ng-include="'modules/dashboard/deployMarketplace/directives/global/kubernetes/' + tab + '.tmpl'"></div>
@@ -135,8 +135,8 @@
 	</div>
 	<div class="modal-footer">
 		<span>
-			<button ng-show="!autoScaleStatus" class="btn btn-success" ng-disabled='autoScale.$invalid'
-			        ng-click="onSubmit('update')">Auto Scale</button>
+			<button class="btn btn-success" ng-disabled='autoScale.$invalid'
+			        ng-click="onSubmit('update')">Save Auto Scale</button>
 			<button ng-show="autoScaleStatus" class="btn btn-danger" ng-disabled='autoScale.$invalid'
 			        ng-click="onSubmit('turnOff')">Turn Off</button>
 		</span>

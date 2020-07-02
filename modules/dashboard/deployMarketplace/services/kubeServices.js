@@ -1153,6 +1153,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			if (error) {
 				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
+				currentScope.$parent.displayAlert('success', "Item Configuration Saved Successfully!");
 				$modalInstance.close();
 			}
 		});
@@ -1192,6 +1193,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			if (error) {
 				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
+				currentScope.$parent.displayAlert('success', "Item Built Successfully!");
 				$modalInstance.close();
 			}
 		});
@@ -1227,11 +1229,12 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				opts.data.src.from.tag = $scope.src.branch;
 			}
 		}
-		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			overlayLoading.hide();
 			if (error) {
 				currentScope.displayAlert($scope, 'danger', error.message);
 			} else {
+				currentScope.$parent.displayAlert('success', "Item Redeployed Successfully!");
 				$modalInstance.close();
 			}
 		});

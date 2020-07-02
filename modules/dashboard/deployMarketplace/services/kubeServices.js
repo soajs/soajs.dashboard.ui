@@ -304,7 +304,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		
 		$scope.textMode = false;
 		
-		let formConfig = angular.copy(soajsDeployCatalogConfig.form.addExecCommands);
+		let formConfig = angular.copy(soajsDeployCatalogConfig.form.addExecCommand);
 		
 		let actions = [
 			{
@@ -328,6 +328,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		
 		
 		$scope.save = function (formData) {
+			overlayLoading.show();
 			$scope.$valid = true;
 			let input = {
 				configuration: {
@@ -344,6 +345,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 					routeName: routeName,
 					data: input
 				}, function (error, res) {
+					overlayLoading.hide();
 					if (error) {
 						currentScope.displayAlert('danger', error.message);
 					} else {
@@ -440,6 +442,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		
 		
 		$scope.save = function (formData) {
+			overlayLoading.show();
 			$scope.$valid = true;
 			let input = {
 				configuration: {
@@ -458,6 +461,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 					routeName: routeName,
 					data: input
 				}, function (error, res) {
+					overlayLoading.hide();
 					if (error) {
 						currentScope.displayAlert('danger', error.message);
 					} else {

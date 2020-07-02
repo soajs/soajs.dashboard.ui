@@ -684,17 +684,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				
 				$scope.configure = function (service, version) {
 					kubeServicesSrv.saveConfiguration(service, version, $scope, currentScope, $modalInstance, function () {
-						currentScope.listSoajsCatalog(function () {
-							currentScope.getDeployment (service, version);
-						})
+						currentScope.listSoajsCatalog();
 					});
 				};
 				
 				$scope.build = function (service, version) {
 					kubeServicesSrv.buildConfiguration(service, version, $scope, currentScope, $modalInstance, function () {
-						currentScope.listSoajsCatalog(function () {
-							currentScope.getDeployment (service, version);
-						})
+						currentScope.listSoajsCatalog();
 					});
 				};
 			}

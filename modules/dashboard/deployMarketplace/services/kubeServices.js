@@ -670,7 +670,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 	function configureDeployment($scope, currentScope, service, v, $modalInstance) {
 		$scope.alerts = [];
 		$scope.access = currentScope.access;
-		$scope.isDeployed = currentScope.deployed;
+		$scope.isDeployed = currentScope.deployments[service.name][v.version].deployed;
 		$scope.selectedEnvironment = currentScope.selectedEnvironment;
 		$scope.envDeployer = currentScope.envDeployer;
 		$scope.envDeployeType = currentScope.envDeployeType;
@@ -678,7 +678,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.version = v.version;
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
-		$scope.deployedImage = currentScope.deployedImage;
+		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.deploymentModes = ['Deployment', 'Daemonset', 'DronJob'];
 		$scope.configuration = {};
 		let opts = {
@@ -1058,14 +1058,14 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 	function reConfigureDeployment($scope, currentScope, service, v) {
 		$scope.alerts = [];
 		$scope.access = currentScope.access;
-		$scope.isDeployed = currentScope.deployed;
+		$scope.isDeployed = currentScope.deployments[service.name][v.version].deployed;
 		$scope.selectedEnvironment = currentScope.selectedEnvironment;
 		$scope.envDeployer = currentScope.envDeployer;
 		$scope.envDeployeTechnology = currentScope.envDeployeTechnology;
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
 		$scope.version = v.version;
-		$scope.deployedImage = currentScope.deployedImage;
+		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.allowedBranches = v.branches;
 		$scope.allowedTags = v.tags;
 		let opts = {

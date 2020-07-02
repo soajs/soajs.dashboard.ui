@@ -7,29 +7,29 @@
 	</button>
 	<ul  class="dropdown-menu"
 	    aria-labelledby="serviceOpsDropdown">
-		<li  ng-show="!deployed" ><a href=""
+		<li  ng-show="!deployments[service.name][version.version].deployed" ><a href=""
 		       ng-click="configure(service, version)"><span
 				class="icon icon-download"></span> Configure </a></li>
-		<li  ng-show="deployed"><a href=""
+		<li  ng-show="deployments[service.name][version.version].deployed"><a href=""
 		       ng-click="configure(service, version)"><span
 				class="icon icon-download"></span> Reconfigure</a></li>
-		<li  ng-show="deployed" ><a href=""
+		<li  ng-show="deployments[service.name][version.version].deployed" ><a href=""
 		       ng-click="redeploy(service, version)"><span
 				class="icon icon-loop2"></span> Redeploy</a></li>
-		<li  ng-show="deployed" ><a href=""
+		<li  ng-show="deployments[service.name][version.version].deployed" ><a href=""
 		                            ng-click="restartService(service, version)"><span
 				class="icon icon-undo"></span> Restart</a></li>
-		<li  ng-show="deployed && (version.deployedItem.type=== 'Deployment')" ><a href=""
+		<li  ng-show="deployments[service.name][version.version].deployed && (version.deployedItem.type=== 'Deployment')" ><a href=""
 		                            ng-click="scaleService(service, version)"><span
 				class="icon icon-enlarge"></span> Scale Service</a></li>
-		<li  ng-show="deployed" ><a href=""
+		<li  ng-show="deployments[service.name][version.version].deployed" ><a href=""
 		                            ng-click="execCommandPods(service, version)"><span
 				class="icon icon-list2"></span> Exec Command</a></li>
 	</ul>
 </div>
 
 <div>
-	<button ng-show="deployed && version.deployedItem && version.deployedItem.type=== 'Deployment'" class="btn btn-{{autoScale}} autoScale-button" type="button" aria-haspopup="true"
+	<button ng-show="deployments[service.name][version.version].deployed && version.deployedItem && version.deployedItem.type=== 'Deployment'" class="btn btn-{{deployments[service.name][version.version].autoScale}} autoScale-button" type="button" aria-haspopup="true"
 	        aria-expanded="true"
 	        ng-click="autoScaleService(service, version)">
 		AutoScale
@@ -65,7 +65,7 @@
 <br>
 <br>
 <tabset>
-	<tab ng-repeat="(tab, itemList) in itemLists track by $index" heading="{{tab | capitalizeFirst}} "
+	<tab ng-repeat="(tab, itemList) in deployments[service.name][version.version].itemLists track by $index" heading="{{tab | capitalizeFirst}} "
 	     ng-if="itemList && itemList.items && itemList.items.length > 0">
 		<br/>
 		<div ng-include="'modules/dashboard/deployMarketplace/directives/global/kubernetes/' + tab + '.tmpl'"></div>

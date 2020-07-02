@@ -15,6 +15,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	if ($scope.selectedEnvironment.type) {
 		$scope.envDeployeType = $scope.selectedEnvironment.type;
 	}
+	$scope.deployments = {};
 	$scope.showHide = function (service) {
 		if (!service.hide) {
 			jQuery('#s_' + service._id + " .body").slideUp();
@@ -250,6 +251,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	};
 	
 	$scope.executeOperation = function (service, v, operation, label) {
+		overlayLoading.show();
 		let options = {};
 		options.method = "put";
 		options.routeName = "/marketplace/item/maintenance";
@@ -272,6 +274,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			}
 		}
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
 			} else {
@@ -312,6 +315,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	};
 	
 	$scope.deleteService = function (service, version) {
+		overlayLoading.show();
 		let options = {};
 		options.method = "delete";
 		options.routeName = "/infra/kubernetes/item";
@@ -323,6 +327,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			name: version.deployedItem.name
 		};
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
 			} else {
@@ -333,6 +338,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	
 	$scope.restartService = function (service, version) {
 		let options = {};
+		overlayLoading.show();
 		options.method = "put";
 		options.routeName = "/infra/kubernetes/resource/restart";
 		options.data = {
@@ -343,6 +349,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			name: version.deployedItem.name
 		};
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
 			} else {
@@ -446,76 +453,82 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
+				if (!$scope.deployments[service.name]){
+					$scope.deployments[service.name] = {};
+				}
+				if (!$scope.deployments[service.name][v.version]){
+					$scope.deployments[service.name][v.version] = {};
+				}
 				delete response.soajsauth;
-				$scope.itemLists = response;
-				$scope.deployed = false;
-				$scope.autoScale = "danger";
-				if ($scope.itemLists.hpas.items.length > 0) {
-					$scope.autoScale = "success";
-					$scope.itemLists.hpas.items.forEach((oneItem) => {
+				$scope.deployments[service.name][v.version].itemLists = response;
+				$scope.deployments[service.name][v.version].deployed = false;
+				$scope.deployments[service.name][v.version].autoScale = "danger";
+				if ($scope.deployments[service.name][v.version].itemLists.hpas.items.length > 0) {
+					$scope.deployments[service.name][v.version].autoScale = "success";
+					$scope.deployments[service.name][v.version].itemLists.hpas.items.forEach((oneItem) => {
 						v.hpas = oneItem;
 					});
-					delete $scope.itemLists.hpas;
+					delete $scope.deployments[service.name][v.version].itemLists.hpas;
 				}
-				if ($scope.itemLists.daemonsets.items.length > 0) {
-					$scope.deployed = true;
-					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
+				if ($scope.deployments[service.name][v.version].itemLists.daemonsets.items.length > 0) {
+					$scope.deployments[service.name][v.version].deployed = true;
+					$scope.deployments[service.name][v.version].itemLists.daemonsets.items.forEach((oneItem) => {
 						v.deployedItem = {
 							type: 'DaemonSet',
 							name: oneItem.metadata.name,
 							scale: 0
 						};
-						if ($scope.itemLists.pods && $scope.itemLists.pods.items && $scope.itemLists.pods.items.length > 0) {
+						if ($scope.deployments[service.name][v.version].itemLists.pods && $scope.deployments[service.name][v.version].itemLists.pods.items && $scope.deployments[service.name][v.version].itemLists.pods.items.length > 0) {
 							v.deployedItem.scale = $scope.itemLists.pods.items.length;
 						}
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&
 							oneItem.spec.template.spec.containers[0].image) {
-							$scope.deployedImage = {
+							$scope.deployments[service.name][v.version].deployedImage = {
 								prefix: ""
 							};
 							if (oneItem.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
-								$scope.deployedImage.prefix = oneItem.spec.template.spec.containers[0].image.split('/')[0];
-								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
-								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
+								$scope.deployments[service.name][v.version].deployedImage.prefix = oneItem.spec.template.spec.containers[0].image.split('/')[0];
+								$scope.deployments[service.name][v.version].deployedImage.name = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
+								$scope.deployments[service.name][v.version].deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
 							} else {
-								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split(':')[0];
-								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split(':')[1];
+								$scope.deployments[service.name][v.version].deployedImage.name = oneItem.spec.template.spec.containers[0].image.split(':')[0];
+								$scope.deployments[service.name][v.version].deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split(':')[1];
 							}
 						}
 					});
-				} else if ($scope.itemLists.deployments.items.length > 0) {
-					$scope.deployed = true;
-					$scope.itemLists.deployments.items.forEach((oneItem) => {
+				} else if ($scope.deployments[service.name][v.version].itemLists.deployments.items.length > 0) {
+					$scope.deployments[service.name][v.version].deployed = true;
+					$scope.deployments[service.name][v.version].itemLists.deployments.items.forEach((oneItem) => {
 						v.deployedItem = {
 							type: 'Deployment',
 							name: oneItem.metadata.name,
 							scale: 0
 						};
-						if ($scope.itemLists.pods && $scope.itemLists.pods.items && $scope.itemLists.pods.items.length > 0) {
-							v.deployedItem.scale = $scope.itemLists.pods.items.length;
+						if ($scope.deployments[service.name][v.version].itemLists.pods && $scope.deployments[service.name][v.version].itemLists.pods.items && $scope.deployments[service.name][v.version].itemLists.pods.items.length > 0) {
+							v.deployedItem.scale = $scope.deployments[service.name][v.version].itemLists.pods.items.length;
 						}
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&
 							oneItem.spec.template.spec.containers[0].image) {
-							$scope.deployedImage = {
+							$scope.deployments[service.name][v.version].deployedImage = {
 								prefix: ""
 							};
 							if (oneItem.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
-								$scope.deployedImage.prefix = oneItem.spec.template.spec.containers[0].image.split('/')[0];
-								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
-								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
+								$scope.deployments[service.name][v.version].deployedImage.prefix = oneItem.spec.template.spec.containers[0].image.split('/')[0];
+								$scope.deployments[service.name][v.version].deployedImage.name = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
+								$scope.deployments[service.name][v.version].deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
 							} else {
-								$scope.deployedImage.name = oneItem.spec.template.spec.containers[0].image.split(':')[0];
-								$scope.deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split(':')[1];
+								$scope.deployments[service.name][v.version].deployedImage.name = oneItem.spec.template.spec.containers[0].image.split(':')[0];
+								$scope.deployments[service.name][v.version].deployedImage.tag = oneItem.spec.template.spec.containers[0].image.split(':')[1];
 							}
 						}
 					});
-				} else if ($scope.itemLists.cronjobs.items.length > 0) {
-					$scope.deployed = true;
-					$scope.itemLists.daemonsets.items.forEach((oneItem) => {
+				} else if ($scope.deployments[service.name][v.version].itemLists.cronjobs.items.length > 0) {
+					$scope.deployments[service.name][v.version].deployed = true;
+					$scope.deployments[service.name][v.version].itemLists.daemonsets.items.forEach((oneItem) => {
 						v.deployedItem = {
 							type: 'CronJob',
 							name: oneItem.metadata.name
@@ -530,12 +543,12 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 								prefix: ""
 							};
 							if (oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
-								$scope.deployedImage.prefix = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[0];
-								$scope.deployedImage.name = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
-								$scope.deployedImage.tag = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
+								$scope.deployments[service.name][v.version].deployedImage.prefix = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[0];
+								$scope.deployments[service.name][v.version].deployedImage.name = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[1].split(':')[0];
+								$scope.deployments[service.name][v.version].deployedImage.tag = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split('/')[1].split(':')[1];
 							} else {
-								$scope.deployedImage.name = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split(':')[0];
-								$scope.deployedImage.tag = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split(':')[1];
+								$scope.deployments[service.name][v.version].deployedImage.name = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split(':')[0];
+								$scope.deployments[service.name][v.version].deployedImage.tag = oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.split(':')[1];
 							}
 						}
 					});
@@ -562,7 +575,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					}
 				};
 				$scope.title += ' | Auto Scale';
-				$scope.autoScaleStatus = currentScope.autoScale === "success";
+				$scope.autoScaleStatus = currentScope.deployments[service.name][version.version].autoScale === "success";
 				
 				if ($scope.autoScaleStatus && version.hpas && version.hpas.spec){
 					$scope.autoScaleObject.replica.min = version.hpas.spec.minReplicas;
@@ -627,7 +640,6 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 								currentScope.$parent.displayAlert('success', 'Auto Scale turned off successfully');
 							}
 							$modalInstance.close();
-							$scope.getDeployment(service, version);
 						}
 					});
 				};

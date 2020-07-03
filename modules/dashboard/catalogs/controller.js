@@ -141,36 +141,27 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			} else {
 				$scope.originalRecipes = $scope.recipes = response;
 				
-				$scope.oldStyle = false;
+				$scope.recipeTypes = {};
+				
 				$scope.originalRecipes.forEach(function (oneRecipe) {
-					if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming && oneRecipe.recipe.deployOptions.voluming.volumes) {
-						$scope.oldStyle = true;
+					if (!oneRecipe.v) {
+						oneRecipe.v = 1;
+					}
+					
+					if (!$scope.recipeTypes[oneRecipe.type]) {
+						$scope.recipeTypes[oneRecipe.type] = {};
+					}
+					
+					if (!$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype]) {
+						$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype] = [];
 					}
 				});
 				
-				if (!$scope.oldStyle) {
-					$scope.recipeTypes = {};
-					
-					$scope.originalRecipes.forEach(function (oneRecipe) {
-						if (!oneRecipe.v) {
-							oneRecipe.v = 1;
-						}
-						
-						if (!$scope.recipeTypes[oneRecipe.type]) {
-							$scope.recipeTypes[oneRecipe.type] = {};
-						}
-						
-						if (!$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype]) {
-							$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype] = [];
-						}
-					});
-					
-					$scope.recipes.forEach(function (oneRecipe) {
-						if ($scope.recipeTypes[oneRecipe.type] && $scope.recipeTypes[oneRecipe.type][oneRecipe.subtype]) {
-							$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype].push(oneRecipe);
-						}
-					});
-				}
+				$scope.recipes.forEach(function (oneRecipe) {
+					if ($scope.recipeTypes[oneRecipe.type] && $scope.recipeTypes[oneRecipe.type][oneRecipe.subtype]) {
+						$scope.recipeTypes[oneRecipe.type][oneRecipe.subtype].push(oneRecipe);
+					}
+				});
 				$scope.listArchives();
 			}
 		});
@@ -192,34 +183,24 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			} else {
 				$scope.originalArchives = $scope.archives = response;
 				
-				if ($scope.oldStyle === false) {
-					$scope.originalArchives.forEach(function (oneRecipe) {
-						if (oneRecipe.type === 'soajs' || oneRecipe.recipe.deployOptions.specifyGitConfiguration || oneRecipe.recipe.deployOptions.voluming.volumes) {
-							$scope.oldStyle = true;
-						}
-					});
-				}
+				$scope.recipeTypesArchives = {};
 				
-				if (!$scope.oldStyle) {
-					$scope.recipeTypesArchives = {};
+				$scope.originalArchives.forEach(function (oneRecipe) {
 					
-					$scope.originalArchives.forEach(function (oneRecipe) {
-						
-						if (!$scope.recipeTypesArchives[oneRecipe.type]) {
-							$scope.recipeTypesArchives[oneRecipe.type] = {};
-						}
-						
-						if (!$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype]) {
-							$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype] = [];
-						}
-					});
+					if (!$scope.recipeTypesArchives[oneRecipe.type]) {
+						$scope.recipeTypesArchives[oneRecipe.type] = {};
+					}
 					
-					$scope.archives.forEach(function (oneRecipe) {
-						if ($scope.recipeTypesArchives[oneRecipe.type] && $scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype]) {
-							$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype].push(oneRecipe);
-						}
-					});
-				}
+					if (!$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype]) {
+						$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype] = [];
+					}
+				});
+				
+				$scope.archives.forEach(function (oneRecipe) {
+					if ($scope.recipeTypesArchives[oneRecipe.type] && $scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype]) {
+						$scope.recipeTypesArchives[oneRecipe.type][oneRecipe.subtype].push(oneRecipe);
+					}
+				});
 			}
 		});
 	};
@@ -1417,7 +1398,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						reRenderEnvVar('envVarType' + (envCounter - 1), data.recipe.buildOptions.env[oneVar].type, modalScope.form);
 					}
 				} else if (!data.recipe.buildOptions.env || Object.keys(data.recipe.buildOptions.env).length === 0) {
-					modalScope.form.entries[8].tabs[1].entries.splice(modalScope.form.entries[8].tabs[1].entries.length - 1, 0, {
+					modalScope.form.entries[7].tabs[1].entries.splice(modalScope.form.entries[7].tabs[1].entries.length - 1, 0, {
 						'type': 'html',
 						'value': "<br /><div class='alert alert-warning'>No Environment Variables Configured for this Recipe.</div><br />"
 					});
@@ -1720,18 +1701,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					let formConfig = angular.copy(catalogAppConfig.form.add.new);
 					formConfig[0].onAction = function (id, data, form) {
 						let categories = angular.copy(catalogAppConfig.form.add.categories);
-						for (let i = categories.value.length - 1; i >= 0; i--) {
-							if (categories.value[i].group !== data) {
-								categories.value.splice(i, 1);
-							}
-						}
 						
 						if (form.entries.length > 1) {
 							form.entries.splice(form.entries.length - 1, 1);
 						}
-						if (categories.value.length > 0) {
-							form.entries.push(categories);
-						}
+						form.entries.push(categories);
 					};
 					
 					let options = {
@@ -1753,13 +1727,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 									$timeout(function () {
 										getConfigurations(function () {
 											let formEntries = angular.copy(catalogAppConfig.form.entries);
-											if (data.type === 'other') {
-												delete formEntries[2].disabled;
-												delete formEntries[3].disabled;
-											} else if (data.subtype === 'other') {
-												delete formEntries[3].disabled;
-											}
-											
 											proceedWithForm(currentScope, formEntries, data, submitAction);
 										});
 									}, 100);

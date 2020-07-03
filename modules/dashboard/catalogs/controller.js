@@ -1800,12 +1800,12 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		};
 		
 		getConfigurations(function (response, error) {
-			proceedWithForm($scope, catalogAppConfig.form.entries, recipe, submitAction);
+			proceedWithForm($scope, angular.copy(catalogAppConfig.form.entries), recipe, submitAction);
 		});
 	};
 	
 	$scope.viewRecipe = function (recipe) {
-		proceedWithForm($scope, catalogAppConfig.form.entries, recipe, null);
+		proceedWithForm($scope, angular.copy(catalogAppConfig.form.entries), recipe, null);
 	};
 	
 	// function listInfraProviders(currentScope, cb) {

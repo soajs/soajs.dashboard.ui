@@ -20,12 +20,12 @@ let catalogAppConfig = {
 					'tooltip': "Choose the Type of Recipe you want to create",
 					'fieldMsg': "Pick the type of recipes you want to create depending on what you are aiming to deploy.",
 					'value' :[
-						{'v': 'soajs', 'l': "Soajs"},
-						{'v': 'api', 'l': "API"},
-						{'v': 'daemon', 'l': "Daemon"},
-						{'v': 'resource', 'l': "Resource"},
-						{'v': 'static', 'l': "Frontend"},
-						{'v': 'other', 'l': "Other"}
+						{'v': 'soajs', 'l': "soajs"},
+						{'v': 'api', 'l': "api"},
+						{'v': 'daemon', 'l': "daemon"},
+						{'v': 'resource', 'l': "resource"},
+						{'v': 'static', 'l': "frontend"},
+						{'v': 'other', 'l': "other"}
 					],
 					'required': true
 				}

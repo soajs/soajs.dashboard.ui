@@ -557,7 +557,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		});
 	};
 	
-	$scope.autoScaleService = function autoScale(service, version) {
+	$scope.autoScaleService = function(service, version) {
 		let currentScope = $scope;
 		$modal.open({
 			templateUrl: "autoScale.tmpl",
@@ -592,27 +592,52 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					overlayLoading.show();
 					let options = {};
 					if (action === "update"){
-						options = {
-							"method": "post",
-							"routeName": "/infra/kubernetes/item/hpa",
-							"data": {
-								"item": {
-									"env": currentScope.selectedEnvironment.code.toLowerCase(),
-									"name": service.name,
-									"version": service.versions[0].version,
-								},
-								"configuration": {
-									"env": currentScope.selectedEnvironment.code.toLowerCase()
-								},
-								"replica": $scope.autoScaleObject.replica,
-								"metrics": [{
-									type : "Resource",
-									name : "cpu",
-									target : "AverageValue",
-									percentage: $scope.autoScaleObject.metrics.cpu.percent
-								}]
-							}
-						};
+						if ($scope.autoScaleStatus){
+							options = {
+								"method": "put",
+								"routeName": "/infra/kubernetes/item/hpa",
+								"data": {
+									"item": {
+										"env": currentScope.selectedEnvironment.code.toLowerCase(),
+										"name": service.name,
+										"version": service.versions[0].version,
+									},
+									"configuration": {
+										"env": currentScope.selectedEnvironment.code.toLowerCase()
+									},
+									"replica": $scope.autoScaleObject.replica,
+									"metrics": [{
+										type : "Resource",
+										name : "cpu",
+										target : "AverageValue",
+										percentage: $scope.autoScaleObject.metrics.cpu.percent
+									}]
+								}
+							};
+						}
+						else {
+							options = {
+								"method": "post",
+								"routeName": "/infra/kubernetes/item/hpa",
+								"data": {
+									"item": {
+										"env": currentScope.selectedEnvironment.code.toLowerCase(),
+										"name": service.name,
+										"version": service.versions[0].version,
+									},
+									"configuration": {
+										"env": currentScope.selectedEnvironment.code.toLowerCase()
+									},
+									"replica": $scope.autoScaleObject.replica,
+									"metrics": [{
+										type : "Resource",
+										name : "cpu",
+										target : "AverageValue",
+										percentage: $scope.autoScaleObject.metrics.cpu.percent
+									}]
+								}
+							};
+						}
 					}
 					else {
 						options = {

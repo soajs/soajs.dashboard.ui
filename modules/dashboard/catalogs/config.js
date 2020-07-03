@@ -20,12 +20,11 @@ let catalogAppConfig = {
 					'tooltip': "Choose the Type of Recipe you want to create",
 					'fieldMsg': "Pick the type of recipes you want to create depending on what you are aiming to deploy.",
 					'value' :[
-						{'v': 'service', 'l': "Service"},
+						{'v': 'soajs', 'l': "Soajs"},
+						{'v': 'api', 'l': "API"},
 						{'v': 'daemon', 'l': "Daemon"},
-						{'v': 'cluster', 'l': "Cluster"},
-						{'v': 'server', 'l': "Server"},
-						{'v': 'cdn', 'l': "CDN"},
-						{'v': 'system', 'l': "System"},
+						{'v': 'resource', 'l': "Resource"},
+						{'v': 'static', 'l': "Frontend"},
 						{'v': 'other', 'l': "Other"}
 					],
 					'required': true
@@ -34,42 +33,12 @@ let catalogAppConfig = {
 			categories: {
 				'name': 'subtype',
 				'label': "Category",
-				'type': 'select',
-				'value' : [
-					{'v': 'soajs', 'l': "SOAJS", "group": "service"},
-					{'v': 'golang', 'l': "GoLang", "group": "service"},
-					{'v': 'nodejs', 'l': "NodeJs", "group": "service"},
-					{'v': 'php', 'l': "PHP", "group": "service"},
-					{'v': 'java', 'l': "Java", "group": "service"},
-					{'v': 'asp', 'l': "ASP", "group": "service"},
-					{'v': 'other', 'l': "Other", "group": "service"},
-
-					{'v': 'soajs', 'l': "SOAJS", "group": "daemon"},
-					{'v': 'golang', 'l': "GoLang", "group": "daemon"},
-					{'v': 'nodejs', 'l': "NodeJs", "group": "daemon"},
-					{'v': 'php', 'l': "PHP", "group": "daemon"},
-					{'v': 'java', 'l': "Java", "group": "daemon"},
-					{'v': 'asp', 'l': "ASP", "group": "daemon"},
-					{'v': 'other', 'l': "Other", "group": "daemon"},
-
-					{'v': 'mongo', 'l': "Mongo", "group": "cluster"},
-					{'v': 'elasticsearch', 'l': "ElasticSearch", "cluster": "cluster"},
-					{'v': 'mysql', 'l': "MySQL", "group": "cluster"},
-					{'v': 'oracle', 'l': "Oracle", "group": "cluster"},
-					{'v': 'other', 'l': "Other", "group": "cluster"},
-
-					{'v': 'nginx', 'l': "Nginx", "group": "server"},
-					{'v': 'apache', 'l': "Apache", "group": "server"},
-					{'v': 'iis', 'l': "IIS", "group": "server"},
-					{'v': 'other', 'l': "Other", "group": "server"},
-
-					{'v': 'amazons3', 'l': "Amazon S3", "group": "cdn"},
-					{'v': 'rackspace', 'l': "Rackspace", "cluster": "cdn"},
-					{'v': 'other', 'l': "Other", "group": "cdn"},
-
-					{'v': 'other', 'l': "Other", "group": "system"}
-				],
-				'required': true
+				'type': 'text',
+				'value': '',
+				'required': true,
+				'tooltip': 'Enter a category for your recipe',
+				'fieldMsg': "Enter a category for your recipe. Ex: archive",
+				"placeholder": "category"
 			}
 		},
 
@@ -99,7 +68,6 @@ let catalogAppConfig = {
 				'label': 'Recipe Type',
 				'type': 'text',
 				'value': '',
-				'disabled': true,
 				'required': true,
 				'readonly': true
 			},
@@ -109,7 +77,6 @@ let catalogAppConfig = {
 				'type': 'text',
 				'value': '',
                 'fieldMsg' : 'To Learn more about Catalog Recipes, <a target="_blank" href = "https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/62493834/Catalog+Recipes">Click Here</a>',
-                'disabled': true,
 				'readonly': true
 			},
 			{
@@ -123,7 +90,7 @@ let catalogAppConfig = {
 						'label': 'Image',
 						'entries': [
 							{
-								'name': 'binary',
+								'name': 'imageBinary',
 								'label': 'Binary',
 								'type': 'buttonSlider',
 								"value": false,
@@ -685,7 +652,6 @@ let catalogAppConfig = {
 						"pullPolicy": "",
 						"override": false
 					},
-					"specifyGitConfiguration": false,
 					"readinessProbe": {
 						"httpGet": {
 							"path": "",
@@ -720,8 +686,6 @@ let catalogAppConfig = {
 					}
 				},
 				"buildOptions": {
-					"settings": {
-					},
 					"env": {},
 					"cmd": {
 						"deploy": {

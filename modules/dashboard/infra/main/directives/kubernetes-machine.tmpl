@@ -1,54 +1,109 @@
-<h4>Features</h4>
-<div>
-	<p>The Kubernetes driver connects to any existing Kubernetes cluster empowering you to manage and operate that
-		cluster in a single pane of glass.
-	</p>
-	<p>The driver also extends the default functionality that Kubernetes offers by adding many features such as:</p>
-</div>
-<div class="row">
-	<div class="col-lg-4">
-		<div class="entryBox">
-			<div class="header">
-				<h5>Deployment</h5>
-			</div>
-			<div class="body">
-				<ul>
-					<li>Deploy from source code (any framework)</li>
-					<li>Deployment catalog "recipes"</li>
-					<li>Deploy from multi GIT server</li>
-					<li>Resource management & deployment</li>
-					<li>Custom CI/CD pipelines</li>
-				</ul>
+<div ng-if="!currentSelectedInfra.deployments || currentSelectedInfra.deployments.length === 0">
+	<h4>Features</h4>
+	<div>
+		<p>The Kubernetes driver connects to any existing Kubernetes cluster empowering you to manage and operate that
+			cluster in a single pane of glass.
+		</p>
+		<p>The driver also extends the default functionality that Kubernetes offers by adding many features such as:</p>
+	</div>
+	<div class="row">
+		<div class="col-lg-4">
+			<div class="entryBox">
+				<div class="header">
+					<h5>Deployment</h5>
+				</div>
+				<div class="body">
+					<ul>
+						<li>Deploy from source code (any framework)</li>
+						<li>Deployment catalog "recipes"</li>
+						<li>Deploy from multi GIT server</li>
+						<li>Resource management & deployment</li>
+						<li>Custom CI/CD pipelines</li>
+					</ul>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="col-lg-4">
-		<div class="entryBox">
-			<div class="header">
-				<h5>Operation</h5>
-			</div>
-			<div class="body">
-				<ul>
-					<li>Container orchestration</li>
-					<li>Containers resources Awareness</li>
-					<li>Metrics & analytics</li>
-					<li>Reload configuration w/o downtime</li>
-				</ul>
-				<br />
+		<div class="col-lg-4">
+			<div class="entryBox">
+				<div class="header">
+					<h5>Operation</h5>
+				</div>
+				<div class="body">
+					<ul>
+						<li>Container orchestration</li>
+						<li>Containers resources Awareness</li>
+						<li>Metrics & analytics</li>
+						<li>Reload configuration w/o downtime</li>
+					</ul>
+					<br/>
+				</div>
 			</div>
 		</div>
+		<div class="col-lg-4">
+		
+		</div>
 	</div>
-	<div class="col-lg-4">
-	
+	<hr>
+	<h4>Environments:</h4>
+	<div>
+		<p>
+			<span class="glyphicon glyphicon-chevron-right"></span> Supports creating
+			<a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank"><b>Containerized
+				Environments</b></a>, SOAJS will use this <b>Kubernetes Cluster </b> as the infrastructure to deploy
+			from source code and deploy resources inside containers.
+		</p>
+		<p>
+			<span class="glyphicon glyphicon-chevron-right"></span> Supports sharing the same <b>Kubernetes Cluster</b>
+			as infrastructure with multiple containerized environments.
+		</p>
 	</div>
 </div>
-<hr>
-<h4>Environments:</h4>
-<div>
-	<p>
-		<span class="glyphicon glyphicon-chevron-right"></span> Supports creating <a href="https://soajsorg.atlassian.net/wiki/spaces/SOAJ/pages/831684810/Containerized+Environment" target="_blank"><b>Containerized Environments</b></a>, SOAJS will use this <b>Kubernetes Cluster </b> as the infrastructure to deploy from source code and deploy resources inside containers.
-	</p>
-	<p>
-		<span class="glyphicon glyphicon-chevron-right"></span> Supports sharing the same <b>Kubernetes Cluster</b> as infrastructure with multiple containerized environments.
-	</p>
+<div ng-if="currentSelectedInfra.deployments && currentSelectedInfra.deployments.length > 0" class="entryBoxes">
+	<table width="100%" cellspacing="10">
+		<tr class="odd first">
+			<td width="30%">
+				<b>Master Node IP</b>
+			</td>
+			<td>{{currentSelectedInfra.configuration.url}}</td>
+		</tr>
+		<tr class="even">
+			<td width="30%">
+				<b>Port</b>
+			</td>
+			<td>{{currentSelectedInfra.configuration.port}}</td>
+		</tr>
+		<tr class="even">
+			<td width="30%">
+				<b>ID</b>
+			</td>
+			<td>{{currentSelectedInfra._id}}</td>
+		</tr>
+		<tr class="even">
+			<td width="30%">
+				<b>Description</b>
+			</td>
+			<td>{{currentSelectedInfra.description}}</td>
+		</tr>
+	</table>
+	<br>
+	<br>
+	<div class="entryBox" ng-repeat="oneDeployment in currentSelectedInfra.deployments">
+		<div class="body grid" style="padding:20px;">
+			<div class="header">
+				Deployment:
+			</div>
+			<table width="100%">
+				<tbody>
+					<tr class="rows first odd">
+						<td width="40%"><label>Environment</label></td>
+						<td>{{oneDeployment.env}}</td>
+					</tr>
+					<tr class="rows even">
+						<td width="40%"><label>Namespace</label></td>
+						<td>{{oneDeployment.namespace}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>

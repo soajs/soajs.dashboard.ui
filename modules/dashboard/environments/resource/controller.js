@@ -305,14 +305,16 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 					if (options.item) {
 						$scope.formData = options.item;
 					}
-					if ($scope.formData.sharedEnvs) {
-						for (let i = 0; i < $scope.environments.length; i++) {
+					for (let i = 0; i < $scope.environments.length; i++) {
+						if ($scope.formData.sharedEnvs) {
 							if ($scope.formData.sharedEnvs [$scope.environments[i].code]) {
 								$scope.environments[i].selected = true;
 							}
 						}
+						if ($scope.environments[i].code === currentScope.envCode) {
+							$scope.environments[i].hidden = true;
+						}
 					}
-					
 					fixBackDrop();
 					overlayLoading.show();
 					$scope.displayAlert = function (type, message) {
@@ -449,6 +451,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 							"routeName": "/console/registry/resource",
 							"data": {
 								"id": modalScope.formData._id,
+								"env": item.created,
 								"data": {
 									"name": modalScope.formData.name,
 									"plugged": modalScope.formData.plugged,
@@ -592,7 +595,8 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 				"method": "delete",
 				"routeName": "/console/registry/resource",
 				"data": {
-					"id": item._id
+					"id": item._id,
+					"env": item.created
 				}
 			}, function (error) {
 				if (error) {

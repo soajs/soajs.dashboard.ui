@@ -40,7 +40,7 @@
 						<table width="100%" border="0" cellpadding="5" cellspacing="3">
 							<tbody>
 								<tr class="first odd" ng-class="{'first': $first, 'last': $last, 'odd': $odd, 'even': $even}" ng-repeat="env in environments">
-									<td width="5%" ><input type="checkbox" name="{{env.code}}" ng-model="env.selected" /></td>
+									<td width="5%" ><input type="checkbox" name="{{env.code}}" ng-model="env.selected" ng-hide="env.hidden"/></td>
 									<td width="20%" align="left">{{env.code}}</td>
 									<td width="75%">{{env.description}}</td>
 								</tr>

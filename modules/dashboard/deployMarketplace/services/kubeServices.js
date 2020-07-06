@@ -347,7 +347,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				}, function (error, res) {
 					overlayLoading.hide();
 					if (error) {
-						currentScope.displayAlert('danger', error.message);
+						currentScope.displayAlert($scope, 'danger', error.message);
 					} else {
 						$scope.form.formData['response'] = res.response;
 					}
@@ -463,7 +463,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				}, function (error, res) {
 					overlayLoading.hide();
 					if (error) {
-						currentScope.displayAlert('danger', error.message);
+						currentScope.displayAlert($scope, 'danger', error.message);
 					} else {
 						res.forEach(function (host) {
 							formConfig[2].tabs = [];
@@ -514,7 +514,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.displayAlert('danger', error.message);
+				$scope.displayAlert($scope, 'danger', error.message);
 			} else {
 				//var autoRefreshPromise;
 				
@@ -602,7 +602,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 								}
 							}, function (error, response) {
 								if (error) {
-									currentScope.displayAlert('danger', error.message);
+									currentScope.displayAlert($scope, 'danger', error.message);
 								} else {
 									$scope.data = remove_special(response.data).replace("undefined", "").toString();
 									if (!$scope.$$phase) {
@@ -985,7 +985,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			};
 			getSendDataFromServer($scope, ngDataApi, opts, function (error, secrets) {
 				if (error) {
-					currentScope.displayAlert('danger', error.message);
+					currentScope.displayAlert($scope, 'danger', error.message);
 				} else {
 					delete secrets.soajsauth;
 					$scope.secrets = {
@@ -1019,12 +1019,12 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 				},
 			}, function (error, response) {
 				if (error) {
-					$scope.displayAlert('danger', error.message);
+					$scope.displayAlert($scope, 'danger', error.message);
 				} else {
 					if (response && response.records) {
 						$scope.configurationCatalogs = response.records;
 					} else {
-						$scope.displayAlert('danger', 'No Config Catalogs found');
+						$scope.displayAlert($scope, 'danger', 'No Config Catalogs found');
 					}
 					return cb();
 				}

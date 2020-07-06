@@ -1,7 +1,7 @@
 'use strict';
-var catalogApp = soajsApp.components;
+var analyticCatalogApp = soajsApp.components;
 
-catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', '$filter',
+analyticCatalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$localStorage', '$filter',
 	function ($scope, $timeout, $modal, ngDataApi, injectFiles, $localStorage, $filter) {
 	$scope.$parent.isUserLoggedIn();
 	$scope.$parent.hideMainMenu(false);
@@ -640,7 +640,7 @@ catalogApp.controller('dashboardAppCtrl', ['$scope', '$timeout', '$modal', 'ngDa
 	injectFiles.injectCss("modules/dashboard/analyticDashboard/analyticDashboard.css");
 }]);
 
-catalogApp.filter('searchFilter', function () {
+analyticCatalogApp.filter('searchFilter', function () {
 	return function (input, searchKeyword) {
 		if (!searchKeyword) return input;
 		if (!input || !Array.isArray(input) || input.length === 0) return input;
@@ -659,7 +659,7 @@ catalogApp.filter('searchFilter', function () {
 	}
 });
 
-catalogApp.filter('routeSearchFilter', function () {
+analyticCatalogApp.filter('routeSearchFilter', function () {
 	return function (input, searchKeyword) {
 		if (!searchKeyword) return input;
 		if (!input || !Array.isArray(input) || input.length === 0) return input;

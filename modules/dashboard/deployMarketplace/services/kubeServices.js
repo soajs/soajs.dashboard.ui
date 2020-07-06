@@ -680,6 +680,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.envDeployeType = currentScope.envDeployeType;
 		$scope.envDeployeTechnology = currentScope.envDeployeTechnology;
 		$scope.version = v.version;
+		$scope.maintenance = v.maintenance;
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
@@ -807,18 +808,41 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 								tag: catalog.recipe.deployOptions.image.tag
 							};
 						}
+						
 						if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
-							$scope.showPorts = true;
-							$scope.loadBalancer = !catalog.recipe.deployOptions.ports[0].published;
-							$scope.ports = catalog.recipe.deployOptions.ports;
-							if ($scope.configuration.recipe.ports) {
-								$scope.configuration.recipe.ports.forEach((custom) => {
-									$scope.ports.forEach((port) => {
+							if (!$scope.configuration.recipe.ports) {
+								$scope.configuration.recipe.ports = {
+									type: "kubernetes"
+								};
+								
+							}
+							$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
+							$scope.ports.forEach((port) => {
+								if ($scope.configuration.recipe.ports && $scope.configuration.recipe.ports.values) {
+									$scope.configuration.recipe.ports.values.forEach((custom) => {
 										if (custom.target === port.target) {
-											port.published = custom.published;
+											custom.published = port.published;
 										}
 									});
-								});
+								}
+								if (port.isPublished) {
+									$scope.isPublished = true;
+									if (!$scope.configuration.recipe.ports.portType) {
+										if (port.published) {
+											$scope.configuration.recipe.ports.portType = "NodePort";
+										} else {
+											$scope.configuration.recipe.ports.portType = "LoadBalancer";
+										}
+									}
+									$scope.loadBalancer = $scope.configuration.recipe.ports.portType === "LoadBalancer";
+								}
+							});
+							if (!$scope.configuration.recipe.ports.values) {
+								$scope.configuration.recipe.ports.values = angular.copy($scope.ports);
+							}
+							$scope.showPorts = true;
+							if (!$scope.isPublished || $scope.service.type) {
+								$scope.configuration.recipe.ports.portType = "Internal";
 							}
 						} else {
 							$scope.showPorts = false;
@@ -855,7 +879,11 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 								if (catalog.recipe.deployOptions.sourceCode.configuration.branch) {
 									$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
 								}
+							} else {
+								delete $scope.configuration.recipe.sourceCode;
 							}
+						} else {
+							delete $scope.configuration.recipe.sourceCode;
 						}
 					}
 				});
@@ -1045,20 +1073,16 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 			return id;
 		};
 		
+		$scope.appendExposedPortType = function (loadBalanceer) {
+			$scope.configuration.recipe.ports.portType = loadBalanceer ? "LoadBalancer" : "NodePort";
+		};
+		
 		$scope.addToCustomPorts = function (exposedPorts) {
-			if (!$scope.configuration.recipe.ports) {
-				$scope.configuration.recipe.ports = []
-			}
-			let found = false;
-			$scope.configuration.recipe.ports.forEach((custom) => {
+			$scope.configuration.recipe.ports.values.forEach((custom) => {
 				if (exposedPorts.target === custom.target) {
 					custom.published = exposedPorts.published;
-					found = true;
 				}
 			});
-			if (!found) {
-				$scope.configuration.recipe.ports.push(exposedPorts);
-			}
 		};
 		
 		$scope.gotoSecrets = function () {

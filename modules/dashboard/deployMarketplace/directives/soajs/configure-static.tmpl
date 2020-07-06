@@ -98,7 +98,8 @@
 								</div>
 								<div ng-show="configuration.recipe.image">
 									<label>Image Name</label>
-									<input type="text" class="form-control" ng-disabled="!showImages" ng-model="configuration.recipe.image.name"/>
+									<input type="text" class="form-control" ng-disabled="!showImages"
+									       ng-model="configuration.recipe.image.name"/>
 									<div class="fieldMsg hint">Override the image name if you want</div>
 									<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"
 									     class="warningFieldMsg hint">Mismatch detected between Configuration and
@@ -108,7 +109,8 @@
 								</div>
 								<div ng-show="configuration.recipe.image">
 									<label>Image Tag</label>
-									<input type="text" class="form-control" ng-disabled="!showImages" ng-model="configuration.recipe.image.tag"/>
+									<input type="text" class="form-control" ng-disabled="!showImages"
+									       ng-model="configuration.recipe.image.tag"/>
 									<div class="fieldMsg hint">Override the image tag if you want</div>
 									<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"
 									     class="warningFieldMsg hint">Mismatch detected between Configuration and
@@ -221,50 +223,83 @@
 									</div>
 								</fieldset>
 								<fieldset ng-if="showPorts">
-									<legend>Published Ports</legend>
-									<div>
-										<label class="f-left">Load Balancer</label>
-										<label class="toggleSwitch f-left"><input type="checkbox"
-										                                          ng-model="loadBalancer"
-										                                          ng-value="loadBalancer"
-										                                          ng-disabled=true><span
-												class="buttonSlider round"></span></label>
-										<label class="fieldMsg">This recipe allows LoadBalancer port configuration
-											only.</label>
-										<br/><br/>
+									<legend> Ports</legend>
+									<br>
+									<div ng-if="ports"
+									     ng-repeat="port in ports track by port.target">
+										<div ng-if="!port.isPublished">
+											<label>{{port.name}}</label>
+											<input type="number"
+											       class="form-control"
+											       ng-value="port.target" ng-disabled="true"/>
+											
+											<br>
+										</div>
 									</div>
-									<div ng-if="!loadBalancer"
-									     ng-repeat="exposedPorts in ports track by exposedPorts.target">
-										<fieldset ng-if="exposedPorts.isPublished || exposedPorts.published">
-											<legend class="capitalize">{{exposedPorts.name}} : {{exposedPorts.target}}
-											</legend>
-											<div>
-												<label>Published Port</label>
-												<input type="number" class="form-control"
-												       ng-model="exposedPorts.published" ng-disabled="false"
-												       ng-change="addToCustomPorts(exposedPorts)" min="30000" max="32767"
-												       ng-required="true"/>
-												<label class="fieldMsg">Detected Published Port
-													<b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
-													Enter a value if you want to expose this resource to a specific
-													port; Port values are limited to a range between 30000-32767.
-												</label>
-											</div>
-										</fieldset>
+									<fieldset ng-if="isPublished">
+										<legend>Published Ports</legend>
+										<div>
+											<label class="f-left">Load Balancer</label>
+											<label class="toggleSwitch f-left"><input type="checkbox"
+											                                          ng-model="loadBalancer"
+											                                          ng-value="loadBalancer"
+											                                          ng-change=appendExposedPortType(loadBalancer)
+											                                          ng-disabled=false><span
+													class="buttonSlider round"></span></label>
+											<br/><br/>
+										</div>
 										<br>
-									</div>
+										<div ng-if="!loadBalancer"
+										     ng-repeat="exposedPorts in ports track by exposedPorts.target">
+											<fieldset ng-if="exposedPorts.isPublished">
+												<legend class="capitalize">{{exposedPorts.name}} :
+													{{exposedPorts.target}}
+												</legend>
+												<div>
+													<label>Published Port</label>
+													<input type="number" class="form-control"
+													       ng-model="exposedPorts.published" ng-disabled="false"
+													       ng-change="addToCustomPorts(exposedPorts)" min="30000"
+													       max="32767"
+													       ng-required="true"/>
+													<label class="fieldMsg">Detected Published Port
+														<b>{{exposedPorts.name}}</b> with internal value <b>{{exposedPorts.target}}</b>.
+														Enter a value if you want to expose this resource to a specific
+														port; Port values are limited to a range between 30000-32767.
+													</label>
+												</div>
+											</fieldset>
+											<br>
+										</div>
+										<div ng-if="loadBalancer"
+										     ng-repeat="exposedPorts in ports track by exposedPorts.target">
+											<div ng-if="exposedPorts.isPublished">
+												<label>{{exposedPorts.name}}</label>
+												<input type="number"
+												       class="form-control"
+												       style="width: 64%!important;"
+												       ng-value="exposedPorts.target" ng-disabled="true"/>
+												<br>
+											</div>
+											<br>
+										</div>
+									</fieldset>
 								</fieldset>
 								<div ng-show="configuration.recipe.value">
 									<fieldset>
 										<legend>Environment Scaling</legend>
 										<div>
 											<label>Deployment Mode</label>
-											<select class="form-control" ng-disabled="configuration.settings.mode && isDeployed" ng-required="true"
+											<select class="form-control"
+											        ng-disabled="configuration.settings.mode && isDeployed"
+											        ng-required="true"
 											        ng-options="mode for mode in deploymentModes"
 											        ng-model="configuration.settings.mode"></select>
-											<label class="fieldMsg">Daemonset mode deploys one replica of the service on
+											<label class="fieldMsg">Daemonset mode deploys one replica of the
+												service on
 												each node.</label>
-											<label class="fieldMsg">Deployment mode deploys the specified number of replicas
+											<label class="fieldMsg">Deployment mode deploys the specified number of
+												replicas
 												based on the
 												availability of resources.</label>
 											<br>
@@ -274,14 +309,17 @@
 										       ng-if="configuration.settings.mode === 'Daemonset' || configuration.settings.mode === 'CronJob'">
 											Daemonsets/CronJob do not support autoscaling.
 										</alert>
-										<fieldset ng-if="configuration.settings.mode === 'Deployment' && !isDeployed">
-											<fieldset ng-if="!autoScale && configuration.settings.mode == 'Deployment'">
+										<fieldset
+												ng-if="configuration.settings.mode === 'Deployment' && !isDeployed">
+											<fieldset
+													ng-if="!autoScale && configuration.settings.mode == 'Deployment'">
 												<legend>Replication</legend>
 												<label>Replica Count</label>
 												<input type="number" class="form-control"
 												       ng-model="configuration.settings.replicas" ng-required="true"
 												       style="margin-right:0"/>
-												<label class="fieldMsg">Enter a Replica Count that is greater or equal to
+												<label class="fieldMsg">Enter a Replica Count that is greater or
+													equal to
 													1</label>
 												<br>
 											</fieldset>
@@ -317,11 +355,13 @@
 		        ng-click="configure(service, version)">
 			Save
 		</button>
-		<button ng-show="!isDeployed && access.marketplace.build" ng-disabled="configureRepo.$invalid" class="btn btn-primary"
+		<button ng-show="!isDeployed && access.marketplace.build" ng-disabled="configureRepo.$invalid"
+		        class="btn btn-primary"
 		        ng-click="build(service, version)">
 			First Time Deploy
 		</button>
-		<button ng-show="isDeployed && access.marketplace.build" ng-disabled="configureRepo.$invalid" class="btn btn-info"
+		<button ng-show="isDeployed && access.marketplace.build" ng-disabled="configureRepo.$invalid"
+		        class="btn btn-info"
 		        ng-click="build(service, version)">
 			Rebuild Service
 		</button>

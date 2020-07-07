@@ -528,7 +528,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					});
 				} else if ($scope.deployments[service.name][v.version].itemLists.cronjobs.items.length > 0) {
 					$scope.deployments[service.name][v.version].deployed = true;
-					$scope.deployments[service.name][v.version].itemLists.daemonsets.items.forEach((oneItem) => {
+					$scope.deployments[service.name][v.version].itemLists.cronjobs.items.forEach((oneItem) => {
 						v.deployedItem = {
 							type: 'CronJob',
 							name: oneItem.metadata.name

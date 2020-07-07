@@ -502,6 +502,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 	function getLogs($scope, pod) {
 		overlayLoading.show();
 		$scope.pauseRefresh = true;
+		let currentScope = $scope;
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
 			routeName: '/infra/kubernetes/pod/log',
@@ -514,7 +515,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				$scope.displayAlert($scope, 'danger', error.message);
+				currentScope.$parent.displayAlert($scope, 'danger', error.message);
 			} else {
 				//var autoRefreshPromise;
 				

@@ -751,9 +751,13 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 											required: false
 										};
 										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
+										
 											if (typeof $scope.configuration.recipe.env[envVariable] !== 'string') {
 												$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 											}
+										}
+										else {
+											$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 										}
 										$scope.userInputVariable.push(temp);
 									}
@@ -784,6 +788,12 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
+										}
+										else {
+											$scope.configuration.recipe.env[envVariable] = {
+												secret: catalog.recipe.buildOptions.env[envVariable].secret || "",
+												key: catalog.recipe.buildOptions.env[envVariable].key || ""
+											};
 										}
 										$scope.secretVariable.push(temp);
 									}

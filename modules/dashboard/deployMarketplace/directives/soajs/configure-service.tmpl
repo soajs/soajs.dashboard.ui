@@ -312,6 +312,14 @@
 												        ng-model="configuration.settings.concurrencyPolicy"></select>
 												<label class="fieldMsg">A Concurrency Policy specifies how to treat concurrent executions of a job that is created by this cron job.</label>
 												<br>
+												<label>Restart Policy</label>
+												<select class="form-control"
+												        style="width: 64%!important;"
+												        ng-disabled="configuration.settings.restartPolicy && isDeployed"
+												        ng-required="true"
+												        ng-options="res for res in restartPolicy"
+												        ng-model="configuration.settings.restartPolicy"></select>
+												<br>
 											</fieldset>
 										</fieldset>
 									</fieldset>

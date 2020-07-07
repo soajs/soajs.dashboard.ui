@@ -686,6 +686,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.deploymentModes = ['Deployment', 'Daemonset', 'CronJob'];
 		$scope.concurrencyPolicy = ['Allow', 'Forbid', 'Replace'];
+		$scope.restartPolicy = ["OnFailure", "Never"];
 		$scope.configuration = {};
 		let opts = {
 			method: "get",

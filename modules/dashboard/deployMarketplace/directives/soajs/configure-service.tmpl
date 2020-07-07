@@ -290,6 +290,30 @@
 												<br>
 											</fieldset>
 										</fieldset>
+										<fieldset
+												ng-if="configuration.settings.mode === 'CronJob' && !isDeployed">
+											<fieldset
+													ng-if="!autoScale && configuration.settings.mode === 'CronJob'">
+												<legend>Cron Task Configuration</legend>
+												<label>Schedule</label>
+												<input type="string" class="form-control"
+												       ng-model="configuration.settings.schedule" ng-required="configuration.settings.mode == 'CronJob'"
+												       style="margin-right:0"/>
+												<label class="fieldMsg">A CronJob takes a <a
+														href="https://en.wikipedia.org/wiki/Cron"
+														target="_blank">Cron </a> format string, such as 0 * * * * or @hourly, as schedule time of its jobs to be created and executed.</label>
+												<br>
+												<label>Concurrency Policy</label>
+												<select class="form-control"
+												        style="width: 64%!important;"
+												        ng-disabled="configuration.settings.concurrencyPolicy && isDeployed"
+												        ng-required="true"
+												        ng-options="policy for policy in concurrencyPolicy"
+												        ng-model="configuration.settings.concurrencyPolicy"></select>
+												<label class="fieldMsg">A Concurrency Policy specifies how to treat concurrent executions of a job that is created by this cron job.</label>
+												<br>
+											</fieldset>
+										</fieldset>
 									</fieldset>
 									<fieldset>
 										<legend>Continuous Delivery</legend>

@@ -684,7 +684,8 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.imagePath = 'themes/' + themeToUse + '/img/loading.gif';
 		$scope.service = service;
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
-		$scope.deploymentModes = ['Deployment', 'Daemonset', 'DronJob'];
+		$scope.deploymentModes = ['Deployment', 'Daemonset', 'CronJob'];
+		$scope.concurrencyPolicy = ['Allow', 'Forbid', 'Replace'];
 		$scope.configuration = {};
 		let opts = {
 			method: "get",

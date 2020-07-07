@@ -225,6 +225,19 @@
 											<br/><br/>
 										</div>
 										<br>
+										<fieldset>
+											<legend>External Traffic Policy</legend>
+											<b style="">Local</b>
+											<label class="toggleSwitch"style ="margin-bottom: 3px;"><input type="checkbox"
+											                                          ng-model="externalTrafficPolicy"
+											                                          ng-value="externalTrafficPolicy"
+											                                          ng-change=appendExternalTrafficPolicy(externalTrafficPolicy)
+											                                          ng-disabled=false><span
+													class="buttonSlider round"></span></label>
+											<b style="margin-left: 10px;">Cluster</b>
+											<br/><br/>
+										</fieldset>
+										<br>
 										<div ng-if="!loadBalancer"
 										     ng-repeat="exposedPorts in ports track by exposedPorts.target">
 											<fieldset ng-if="exposedPorts.isPublished">

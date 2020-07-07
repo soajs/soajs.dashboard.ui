@@ -686,6 +686,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.deploymentModes = ['Deployment', 'DaemonSet', 'CronJob'];
 		$scope.concurrencyPolicy = ['Allow', 'Forbid', 'Replace'];
+		$scope.externalTrafficPolicy= ['Local', 'Cluster'];
 		$scope.restartPolicy = ["OnFailure", "Never"];
 		$scope.configuration = {};
 		let opts = {
@@ -829,14 +830,11 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 								
 							}
 							$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
+							if ($scope.configuration.recipe.ports.values){
+								$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
+							}
+							$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
 							$scope.ports.forEach((port) => {
-								if ($scope.configuration.recipe.ports && $scope.configuration.recipe.ports.values) {
-									$scope.configuration.recipe.ports.values.forEach((custom) => {
-										if (custom.target === port.target) {
-											custom.published = port.published;
-										}
-									});
-								}
 								if (port.isPublished) {
 									$scope.isPublished = true;
 									if (!$scope.configuration.recipe.ports.portType) {
@@ -853,13 +851,12 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 								$scope.configuration.recipe.ports.values = angular.copy($scope.ports);
 							}
 							$scope.showPorts = true;
-							if (!$scope.isPublished || $scope.service.type) {
+							if (!$scope.isPublished || $scope.service.type === "service") {
 								$scope.configuration.recipe.ports.portType = "Internal";
 							}
 						} else {
 							$scope.showPorts = false;
 						}
-						
 						if (catalog.recipe.deployOptions.sourceCode) {
 							if (catalog.recipe.deployOptions.sourceCode.configuration) {
 								$scope.showSourceConfig = true;
@@ -1087,6 +1084,9 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		
 		$scope.appendExposedPortType = function (loadBalanceer) {
 			$scope.configuration.recipe.ports.portType = loadBalanceer ? "LoadBalancer" : "NodePort";
+		};
+		$scope.appendExternalTrafficPolicy = function (ExternalTrafficPolicy) {
+			$scope.configuration.recipe.ports.externalTrafficPolicy = ExternalTrafficPolicy ? "Cluster" : "Local";
 		};
 		
 		$scope.addToCustomPorts = function (exposedPorts) {

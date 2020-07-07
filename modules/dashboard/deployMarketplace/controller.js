@@ -476,11 +476,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						v.deployedItem = {
 							type: 'DaemonSet',
 							name: oneItem.metadata.name,
-							scale: 0
 						};
-						if ($scope.deployments[service.name][v.version].itemLists.pods && $scope.deployments[service.name][v.version].itemLists.pods.items && $scope.deployments[service.name][v.version].itemLists.pods.items.length > 0) {
-							v.deployedItem.scale = $scope.itemLists.pods.items.length;
-						}
 						if (oneItem.spec && oneItem.spec.template && oneItem.spec.template.spec &&
 							oneItem.spec.template.spec && oneItem.spec.template.spec.containers &&
 							oneItem.spec.template.spec.containers[0] &&

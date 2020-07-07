@@ -535,7 +535,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							oneItem.spec.jobTemplate.spec.template.spec.containers &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0] &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0].image) {
-							oneItem.spec.deployedImage = {
+							$scope.deployments[service.name][v.version].deployedImage  = {
 								prefix: ""
 							};
 							if (oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.indexOf('/') !== -1) {

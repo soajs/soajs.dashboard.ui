@@ -508,7 +508,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 								if (form.entries[5].tabs[1].entries[1].entries.length === 3) {
 									form.entries[5].tabs[1].entries[1].entries.pop();
 								}
-								if (!$scope.selectedConfigRepo){
+								if (!$scope.selectedConfigRepo) {
 									$scope.configRepo.forEach((oneConfig) => {
 										if (oneConfig.catalog && oneConfig.catalog.name === value) {
 											$scope.selectedConfigRepo = oneConfig.catalog;
@@ -686,7 +686,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 							}
 						}
 					},
-					
+				
 				]
 			});
 			
@@ -851,38 +851,38 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		// 			'type': 'buttonSlider',
 		// 			'disabled': true,
 		// 			onAction(id, data, form) {
-						// if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
-							// listInfraProviders(currentScope, () => {
-							// 	form.entries.push({
-							// 		'name': 'deploymentType',
-							// 		'label': 'Deployment Type',
-							// 		'type': 'uiselect',
-							// 		"multiple": false,
-							// 		'value': currentScope.infraProviders.deploymentTypes,
-							// 		"required": true,
-							// 		'fieldMsg': "Choose the type of deployment",
-							// 		onAction(id, data, form) {
-							// 			restrictionBehavior(id, data, form, currentScope);
-							// 		}
-							// 	});
-							// });
-						// } else {
-						// 	form.formData.deploymentType = [];
-						// 	form.formData.infra = [];
-						// 	form.formData.drivers = [];
-						// 	if (form.entries.length === 13) {
-						// 		form.entries.pop()
-						// 	}
-						// 	if (form.entries.length === 12) {
-						// 		form.entries.pop()
-						// 	}
-						// 	if (form.entries.length === 11) {
-						// 		form.entries.pop()
-						// 	}
-						// }
-				//	}
-			//	});
-	//	}
+		// if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
+		// listInfraProviders(currentScope, () => {
+		// 	form.entries.push({
+		// 		'name': 'deploymentType',
+		// 		'label': 'Deployment Type',
+		// 		'type': 'uiselect',
+		// 		"multiple": false,
+		// 		'value': currentScope.infraProviders.deploymentTypes,
+		// 		"required": true,
+		// 		'fieldMsg': "Choose the type of deployment",
+		// 		onAction(id, data, form) {
+		// 			restrictionBehavior(id, data, form, currentScope);
+		// 		}
+		// 	});
+		// });
+		// } else {
+		// 	form.formData.deploymentType = [];
+		// 	form.formData.infra = [];
+		// 	form.formData.drivers = [];
+		// 	if (form.entries.length === 13) {
+		// 		form.entries.pop()
+		// 	}
+		// 	if (form.entries.length === 12) {
+		// 		form.entries.pop()
+		// 	}
+		// 	if (form.entries.length === 11) {
+		// 		form.entries.pop()
+		// 	}
+		// }
+		//	}
+		//	});
+		//	}
 		
 		$modal.open({
 			templateUrl: "editRecipe.tmpl",
@@ -1805,7 +1805,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 	};
 	
 	$scope.viewRecipe = function (recipe) {
-		proceedWithForm($scope, angular.copy(catalogAppConfig.form.entries), recipe, null);
+		getConfigurations(function (response, error) {
+			proceedWithForm($scope, angular.copy(catalogAppConfig.form.entries), recipe, null);
+		});
 	};
 	
 	// function listInfraProviders(currentScope, cb) {

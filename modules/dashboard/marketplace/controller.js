@@ -2037,7 +2037,7 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 				environments:  $scope.envs.selectedEnvs
 			}
 		};
-		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+		if ($scope.service.configuration && $scope.service.configuration.subType === "soajs"){
 			opts.routeName = '/marketplace/soajs/item/environments';
 		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
@@ -2060,7 +2060,7 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			},
 		
 		};
-		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+		if ($scope.service.configuration && $scope.service.configuration.subType === "soajs"){
 			opts.routeName = '/marketplace/soajs/item/recipes';
 		}
 		$scope.recipes.selectedRecipes.forEach((oneRecipe)=>{

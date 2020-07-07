@@ -515,7 +515,7 @@ kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
-				currentScope.$parent.displayAlert($scope, 'danger', error.message);
+				currentScope.$parent.displayAlert('danger', error.message);
 			} else {
 				//var autoRefreshPromise;
 				

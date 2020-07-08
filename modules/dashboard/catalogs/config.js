@@ -430,8 +430,7 @@ let catalogAppConfig = {
 				{'v': '$SOAJS_NX_DOMAIN', 'l': "$SOAJS_NX_DOMAIN", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_API_DOMAIN', 'l': "$SOAJS_NX_API_DOMAIN", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_SITE_DOMAIN', 'l': "$SOAJS_NX_SITE_DOMAIN", "group": "SOAJS Nginx"},
-				{'v': '$SOAJS_NX_CONTROLLER_NB', 'l': "$SOAJS_NX_CONTROLLER_NB", "group": "SOAJS Nginx"},
-				{'v': '$SOAJS_NX_CONTROLLER_IP_N', 'l': "$SOAJS_NX_CONTROLLER_IP_N", "group": "SOAJS Nginx"},
+				{'v': '$SOAJS_NX_CONTROLLER_IP', 'l': "$SOAJS_NX_CONTROLLER_IP", "group": "SOAJS Nginx"},
 				{'v': '$SOAJS_NX_CONTROLLER_PORT', 'l': "$SOAJS_NX_CONTROLLER_PORT", "group": "SOAJS Nginx"}
 			],
 			'required': true,

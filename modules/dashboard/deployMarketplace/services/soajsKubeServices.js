@@ -1,6 +1,6 @@
 "use strict";
-var kubeServicesSrv = soajsApp.components;
-kubeServicesSrv.service('kubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '$timeout', function (ngDataApi, $cookies, $modal, $timeout) {
+let soajskubeServicesSrv = soajsApp.components;
+soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '$modal', '$timeout', function (ngDataApi, $cookies, $modal, $timeout) {
 	
 	function inspectItem(currentScope, item) {
 		let formConfig = angular.copy(soajsDeployCatalogConfig.form.serviceInfo);

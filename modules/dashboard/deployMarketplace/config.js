@@ -1,7 +1,8 @@
 var soajsDeployCatalogConfig = {
 	permissions: {
 		'items': {
-			"list": ['marketplace', '/soajs/items', 'get']
+			"soajs": ['marketplace', '/soajs/items', 'get'],
+			"list": ['marketplace', '/items', 'get']
 		},
 		'environments': {
 			'list': ['console', '/environment', 'get']

@@ -27,7 +27,7 @@ overviewServices.service('overviewServices', ['ngDataApi', function (ngDataApi) 
 			'btn': 'primary',
 			'visible': true,
 			'trigger': () => {
-				if (!currentScope.wizard.form.data.namespace) {
+				if (currentScope.wizard.envType === "container" && !currentScope.wizard.form.data.namespace) {
 					currentScope.$parent.displayAlert('danger', null, true, 'console', "Please fill in all required fields!");
 				} else {
 					let options = {

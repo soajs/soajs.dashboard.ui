@@ -53,7 +53,7 @@ var soajsCatalog = [
 		},
 		'url': '#/soajsCatalog',
 		'tplPath': 'modules/dashboard/marketplace/directives/soajs/list.tmpl',
-		'icon': 'drive',
+		'icon': 'map2',
 		'pillar': {
 			'name': 'catalogs',
 			'label': translation.catalogs[LANG],

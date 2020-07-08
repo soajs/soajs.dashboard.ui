@@ -4,7 +4,7 @@
 		<br>
 		<alert type="warning">No Catalogs found</alert>
 	</div>
-	<div ng-if="access.infra.manual.maintenance && envDeployeType === 'manual'" class="f-right">
+	<div ng-if="showCatalog && access.infra.manual.maintenance && envDeployeType === 'manual'" class="f-right">
 		<a href="" ng-click="awarenessStat()" class="btn btn-primary f-right">
 			<span class="icon icon-undo" tooltip="Refresh List"></span>Refresh Awareness
 		</a>

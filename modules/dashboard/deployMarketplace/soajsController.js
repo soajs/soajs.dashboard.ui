@@ -1,6 +1,6 @@
 "use strict";
-var soajsDeployCatalogApp = soajsApp.components;
-soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'kubeServicesSrv', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, kubeServicesSrv) {
+let soajsDeployCatalogApp = soajsApp.components;
+soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'soajskubeServicesSrv', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, soajskubeServicesSrv) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -217,11 +217,11 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	};
 	
 	$scope.inspectItem = function (service) {
-		kubeServicesSrv.inspectItem($scope, service);
+		soajskubeServicesSrv.inspectItem($scope, service);
 	};
 	
 	$scope.getLogs = function (pod) {
-		kubeServicesSrv.getLogs($scope, pod);
+		soajskubeServicesSrv.getLogs($scope, pod);
 	};
 	
 	$scope.execCommand = function (pod) {
@@ -232,7 +232,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			backdrop: false,
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
-				kubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod);
+				soajskubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod);
 			}
 		});
 	};
@@ -245,7 +245,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			backdrop: false,
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
-				kubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
+				soajskubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
 			}
 		});
 	};
@@ -372,7 +372,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 					l: '5 Seconds',
 					selected: true
 				};
-				kubeServicesSrv.autoRefreshMetrics($scope, $modalInstance, currentScope, pod);
+				soajskubeServicesSrv.autoRefreshMetrics($scope, $modalInstance, currentScope, pod);
 			}
 		});
 	};
@@ -693,7 +693,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
 				
-				kubeServicesSrv.configureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+				soajskubeServicesSrv.configureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 					if (err) {
 						$scope.$parent.displayAlert('danger', err.message);
 					}
@@ -704,13 +704,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				};
 				
 				$scope.configure = function (service, version) {
-					kubeServicesSrv.saveConfiguration(service, version, $scope, currentScope, $modalInstance, function () {
+					soajskubeServicesSrv.saveConfiguration(service, version, $scope, currentScope, $modalInstance, function () {
 						currentScope.listSoajsCatalog();
 					});
 				};
 				
 				$scope.build = function (service, version) {
-					kubeServicesSrv.buildConfiguration(service, version, $scope, currentScope, $modalInstance, function () {
+					soajskubeServicesSrv.buildConfiguration(service, version, $scope, currentScope, $modalInstance, function () {
 						currentScope.listSoajsCatalog();
 					});
 				};
@@ -728,7 +728,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
 				
-				kubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+				soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 					if (err) {
 						$scope.$parent.displayAlert('danger', err.message);
 					}
@@ -739,37 +739,19 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				};
 				
 				$scope.redeploy = function (service, version) {
-					kubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+					soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
 				};
 			}
 		});
 	};
 	
 	
-	if ($scope.access.items.list) {
+	if ($scope.access.items.soajs) {
 		injectFiles.injectCss("modules/dashboard/deployMarketplace/deployMarketplace.css");
 		$scope.listSoajsCatalog();
 	}
 	
 }]);
-
-soajsDeployCatalogApp.filter('recipesSearchFilter', function () {
-	return function (input, searchKeyword) {
-		if (!searchKeyword) return input;
-		if (!input || !Array.isArray(input) || input.length === 0) return input;
-		
-		var output = [];
-		input.forEach(function (oneInput) {
-			if (oneInput) {
-				//using full_name since it's composed of owner + name
-				if (oneInput.name && oneInput.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1) {
-					output.push(oneInput);
-				}
-			}
-		});
-		return output;
-	}
-});
 
 soajsDeployCatalogApp.filter('capitalizeFirst', function () {
 	return function (input) {

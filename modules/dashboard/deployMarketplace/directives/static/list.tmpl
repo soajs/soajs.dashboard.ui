@@ -1,0 +1,46 @@
+<section ng-controller="staticDeployCatalogCtrl">
+	<div ng-show="!showCatalog">
+		<br>
+		<br>
+		<alert type="warning">No Catalogs found</alert>
+	</div>
+	<div ng-if="showCatalog && access.infra.manual.maintenance && envDeployeType === 'manual'" class="f-right">
+		<a href="" ng-click="awarenessStat()" class="btn btn-primary f-right">
+			<span class="icon icon-undo" tooltip="Refresh List"></span>Refresh Awareness
+		</a>
+		<br/><br/>
+	</div>
+	<tabset ng-show="showCatalog">
+		<tabset ng-show="showCatalog">
+			<tab ng-repeat="(main, subTabs) in mainTabs track by $index" heading="{{main}}">
+				<br>
+				<tabset>
+					<tab ng-repeat="(sub, groups) in subTabs track by $index" heading="{{sub}}">
+						<br>
+						<div  ng-repeat="(group, records) in groups track by $index">
+							<fieldset class="custom-fieldset" ng-show="group">
+								<legend>{{group}}</legend>
+								<div class="entryBoxes">
+									<div  id="s_{{service._id}}" ng-repeat="service in records" class="entryBox" ng-init="service.hide = true;">
+										<div ng-include="'modules/dashboard/deployMarketplace/directives/static/deploy.tmpl'"></div>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+					
+					</tab>
+				</tabset>
+			
+			</tab>
+		</tabset>
+	</tabset>
+</section>
+
+<script type="text/ng-template" id="configure.tmpl">
+	<div ng-include="'modules/dashboard/deployMarketplace/directives/static/configure-static.tmpl'"></div>
+</script>
+
+<script type="text/ng-template" id="reconfigure.tmpl">
+	
+	<div ng-include="'modules/dashboard/deployMarketplace/directives/static/reconfigure-static.tmpl'"></div>
+</script>

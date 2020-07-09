@@ -1,16 +1,12 @@
 <div ng-if="selectedEnv.deployer.type === 'manual'">
 	<fieldset>
 		<div class="grid">
-			<h4>Manual deployment environment detect:</h4>
+			<h4>Manual deployment detect:</h4>
 			<br>
-			<table width="100%">
-				<tr class="first odd">
-					<td>
-						SOAJS Gateway creates the same awareness and mesh interconnect among your micoservices, you just
-						need to set teh following environment variable before you start any microservice.
-					</td>
-				</tr>
-			</table>
+			<p>
+				SOAJS Gateway creates the same awareness and mesh interconnect among your micoservices, you just
+				need to set teh following environment variable before you start any microservice.
+			</p>
 			<br>
 			<table width="100%">
 				<tr class="first even">
@@ -23,7 +19,9 @@
 				</tr>
 				<tr class="even">
 					<td width="40%" valign="top"><b>SOAJS_REGISTRY_API</b></td>
-					<td valign="top">{{selectedEnv.deployer.manual.nodes}}:{{registry.services.config.ports.controller + registry.services.config.ports.maintenanceInc}}</td>
+					<td valign="top">{{selectedEnv.deployer.manual.nodes}}:{{registry.services.config.ports.controller +
+						registry.services.config.ports.maintenanceInc}}
+					</td>
 				</tr>
 			</table>
 			<br>
@@ -33,16 +31,12 @@
 <div ng-if="selectedEnv.deployer.type === 'container'">
 	<fieldset>
 		<div class="grid">
-			<h4>Container deployment environment detect:</h4>
+			<h4>Container deployment detect:</h4>
 			<br>
-			<table width="100%">
-				<tr class="first odd">
-					<td>
-						SOAJS Gateway creates automatically awareness and mesh interconnect among your micoservices, you
-						do not need to do anything.
-					</td>
-				</tr>
-			</table>
+			<p>
+				SOAJS Gateway creates automatically awareness and mesh interconnect among your micoservices, you
+				do not need to do anything.
+			</p>
 			<br>
 		</div>
 	</fieldset>

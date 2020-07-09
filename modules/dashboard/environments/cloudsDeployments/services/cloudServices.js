@@ -168,6 +168,7 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 	
 	function editItem(currentScope, item, type) {
 		let formConfig = angular.copy(cloudsDeploymentConfig.form.serviceInfo);
+		let itemName = angular.copy(item.metadata.name);
 		formConfig.entries[0].value = item;
 		let options = {
 			timeout: $timeout,
@@ -186,7 +187,8 @@ hacloudServices.service('hacloudSrv', ['ngDataApi', '$cookies', '$modal', '$time
 								configuration: {
 									env: currentScope.selectedEnvironment.code,
 								},
-								body: formData.jsonData
+								body: formData.jsonData,
+								name: itemName
 							},
 						};
 						switch(type) {

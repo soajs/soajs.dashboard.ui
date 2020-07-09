@@ -254,6 +254,13 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 				}
 				else {
 					$scope.registry = response || null;
+					if (response) {
+						$scope.registry._url = response.protocol + "://";
+						if (response.apiPrefix) {
+							$scope.registry._url += response.apiPrefix + ".";
+						}
+						$scope.registry._url += response.domain + ":" + response.port;
+					}
 					throttlingSrv.get($scope, $scope.envCode, (error, response) => {
 						$scope.throttling = response.throttling;
 						$scope.throttlingStrategies = response.throttlingStrategies;
@@ -379,7 +386,8 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 			$scope.editRegistry($routeParams.code);
 		} else {
 			if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
-				$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
+				$scope.selectedEnv = $cookies.getObject('myEnv', {'domain': interfaceDomain});
+				$scope.envCode = $scope.selectedEnv.code;
 				if ($scope.envCode) {
 					$scope.getRegistry();
 				}

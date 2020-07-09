@@ -33,7 +33,7 @@ var settingsNav = [
 			'method': 'get'
 		},
 		'url': '#/deploy-token',
-		'tplPath': 'modules/dashboard/settings/directives/list-deploy-token.tmpl',
+		'tplPath': 'modules/dashboard/settings/deployAuth/directives/list-deploy-token.tmpl',
 		'icon': 'file-text2',
 		'pillar': {
 			'name': 'settings',
@@ -43,7 +43,7 @@ var settingsNav = [
 		'mainMenu': true,
 		'tracker': true,
 		'order': 2,
-		'scripts': ['modules/dashboard/settings/config.js', 'modules/dashboard/settings/controller.js'],
+		'scripts': ['modules/dashboard/settings/config.js', 'modules/dashboard/settings/deployAuth/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
 	{

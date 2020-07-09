@@ -1,69 +1,6 @@
 'use strict';
 var settingApp = soajsApp.components;
 
-settingApp.controller('releaseAppCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$cookies', '$location', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $cookies, $location) {
-	$scope.$parent.isUserLoggedIn();
-	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
-	
-	$scope.access = {};
-	constructModulePermissions($scope, $scope.access, settingAppConfig.permissions);
-	
-	$scope.getConsoleVersion = function () {
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'get',
-			routeName: '/dashboard/version',
-			'params': {
-				'soajs': true
-			}
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				getSendDataFromServer($scope, ngDataApi, {
-					method: 'get',
-					routeName: '/dashboard/version/check',
-					'params': {
-						'soajs': true
-					}
-				}, function (error, update) {
-					overlayLoading.hide();
-					if (error) {
-						$scope.displayAlert('danger', error.message);
-					} else {
-						$scope.update = update;
-						$scope.ready = true;
-						for (let i = response.releases.length - 1; i >= 0; i--) {
-							if (response.releases[i].name === response.latest) {
-								$scope.currentRelease = angular.copy(response.releases[i]);
-								response.releases.splice(i, 1);
-								$scope.releases = response.releases;
-								break;
-							}
-						}
-					}
-				});
-			}
-		});
-	};
-	
-	$scope.go = function (path, method) {
-		if (path) {
-			$cookies.put("method", method, {'domain': interfaceDomain});
-			$location.path(path);
-		}
-	};
-	
-	injectFiles.injectCss("modules/dashboard/settings/settings.css");
-	
-	// Start here
-	if ($scope.access.list) {
-		$scope.getConsoleVersion();
-	}
-	
-}]);
-
 settingApp.controller('soajsDeployAuthTokenCtrl', ['$scope', '$timeout', '$modal', 'ngDataApi', 'injectFiles', '$cookies', '$location', function ($scope, $timeout, $modal, ngDataApi, injectFiles, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
 	

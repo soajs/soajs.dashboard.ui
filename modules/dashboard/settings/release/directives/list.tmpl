@@ -3,28 +3,34 @@
 	<div ng-if="access.getCurrentRelease">
 		<div class="entryBoxes">
 			<br/>
-			<fieldset>
-				<legend>Current Release: {{currentRelease.releaseInfo.label}}</legend>
+			<fieldset ng-show="currentRelease.releaseInfo">
+				<legend>Current Release: {{currentRelease.releaseInfo.label}} - {{currentRelease.releaseInfo.patch}}</legend>
 				<span style="font-style: italic;">{{currentRelease.releaseInfo.description}}</span>
 				<br>
 				<br>
-				<accordion close="true">
-					<accordion-group class="greenAccordion">
-						<accordion-heading>Repositories</accordion-heading>
-						<table id="settingsRepo">
-							<tr>
-								<th>Name</th>
-								<th>Repository</th>
-								<th>Version</th>
-							</tr>
-							<tr ng-repeat="repository in currentRelease.releaseInfo.services">
-								<td>{{repository.label}}</td>
-								<td>{{repository.repo}}</td>
-								<td>{{repository.semVer}}</td>
-							</tr>
-						</table>
-					</accordion-group>
-				</accordion>
+				<!--<accordion close="true">-->
+					<!--<accordion-group class="greenAccordion">-->
+						<!--<accordion-heading>Repositories</accordion-heading>-->
+						<!--<table id="settingsRepo">-->
+							<!--<tr>-->
+								<!--<th>Name</th>-->
+								<!--<th>Repository</th>-->
+								<!--<th>Version</th>-->
+							<!--</tr>-->
+							<!--<tr ng-repeat="repository in currentRelease.releaseInfo.services">-->
+								<!--<td>{{repository.label}}</td>-->
+								<!--<td>{{repository.repo}}</td>-->
+								<!--<td>{{repository.semVer}}</td>-->
+							<!--</tr>-->
+						<!--</table>-->
+					<!--</accordion-group>-->
+				<!--</accordion>-->
+			</fieldset>
+			<fieldset ng-show="!currentRelease.releaseInfo">
+				<legend>Current Release: </legend>
+				<span style="font-style: italic;">You do not have any release information, this might be the case in local deployment.</span>
+				<br>
+				<br>
 			</fieldset>
 		</div>
 	</div>

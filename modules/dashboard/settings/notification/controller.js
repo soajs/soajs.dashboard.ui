@@ -59,7 +59,7 @@ CDApp.controller('notificationCtrl', ['$scope', 'ngDataApi', 'injectFiles', '$lo
 			opts.limit = $scope.searchOptions.limit.l;
 		}
 		if (page > 1) {
-			opts.skip = $scope.searchOptions.limit.l * (page - 1) - 1;
+			opts.start = $scope.searchOptions.limit.l * (page - 1) - 1;
 		}
 		getSendDataFromServer($scope, ngDataApi, {
 			'method': 'get',

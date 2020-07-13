@@ -1,0 +1,8 @@
+{
+  "name": "ui",
+  "type": "static",
+  "group": "Console",
+  "subType": "soajs",
+  "version": "1",
+  "description": "This is the SOAJS console UI"
+}

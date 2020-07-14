@@ -8,23 +8,23 @@
 				<span style="font-style: italic;">{{currentRelease.releaseInfo.description}}</span>
 				<br>
 				<br>
-				<!--<accordion close="true">-->
-					<!--<accordion-group class="greenAccordion">-->
-						<!--<accordion-heading>Repositories</accordion-heading>-->
-						<!--<table id="settingsRepo">-->
-							<!--<tr>-->
-								<!--<th>Name</th>-->
-								<!--<th>Repository</th>-->
-								<!--<th>Version</th>-->
-							<!--</tr>-->
-							<!--<tr ng-repeat="repository in currentRelease.releaseInfo.services">-->
-								<!--<td>{{repository.label}}</td>-->
-								<!--<td>{{repository.repo}}</td>-->
-								<!--<td>{{repository.semVer}}</td>-->
-							<!--</tr>-->
-						<!--</table>-->
-					<!--</accordion-group>-->
-				<!--</accordion>-->
+				<accordion close="true">
+					<accordion-group class="greenAccordion">
+						<accordion-heading>Repositories</accordion-heading>
+						<table id="settingsRepo">
+							<tr>
+								<th>Name</th>
+								<th>Repository</th>
+								<th>Version</th>
+							</tr>
+							<tr ng-repeat="repository in currentRelease.releaseInfo.services">
+								<td>{{repository.label}}</td>
+								<td>{{repository.repo}}</td>
+								<td>{{repository.semVer}}</td>
+							</tr>
+						</table>
+					</accordion-group>
+				</accordion>
 			</fieldset>
 			<fieldset ng-show="!currentRelease.releaseInfo">
 				<legend>Current Release: </legend>

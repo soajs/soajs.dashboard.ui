@@ -2082,32 +2082,38 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.close = function (service) {
-		switch (service.type) {
-			case "service":
-				if (service.configuration && service.configuration.subType === "soajs") {
-					$scope.$parent.go("#/soajsCatalog", "_blank");
-				} else {
-					$scope.$parent.go("#/apiCatalog", "_blank");
-				}
-				break;
-			case "config":
-				$scope.$parent.go("#/configCatalog", "_blank");
-				break;
-			case "static":
-				$scope.$parent.go("#/staticCatalog", "_blank");
-				break;
-			case "daemon":
-				$scope.$parent.go("#/daemonCatalog", "_blank");
-				break;
-			case "custom":
-				$scope.$parent.go("#/customCatalog", "_blank");
-				break;
-			case "resource":
-				$scope.$parent.go("#/resourceCatalog", "_blank");
-				break;
-			default:
-				$scope.$parent.go("#/soajsCatalog", "_blank");
+		if (service.configuration && service.configuration.subType === "soajs"){
+			$scope.$parent.go("#/soajsCatalog", "_blank");
 		}
+		else {
+			switch (service.type) {
+				case "service":
+					if (service.configuration && service.configuration.subType === "soajs") {
+						$scope.$parent.go("#/soajsCatalog", "_blank");
+					} else {
+						$scope.$parent.go("#/apiCatalog", "_blank");
+					}
+					break;
+				case "config":
+					$scope.$parent.go("#/configCatalog", "_blank");
+					break;
+				case "static":
+					$scope.$parent.go("#/staticCatalog", "_blank");
+					break;
+				case "daemon":
+					$scope.$parent.go("#/daemonCatalog", "_blank");
+					break;
+				case "custom":
+					$scope.$parent.go("#/customCatalog", "_blank");
+					break;
+				case "resource":
+					$scope.$parent.go("#/resourceCatalog", "_blank");
+					break;
+				default:
+					$scope.$parent.go("#/soajsCatalog", "_blank");
+			}
+		}
+		
 	};
 	
 	if ($scope.access.listServices) {

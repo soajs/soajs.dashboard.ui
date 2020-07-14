@@ -810,7 +810,6 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 							}
 						}
 					}
-					console.log($scope)
 					//image
 					if (catalog.recipe && catalog.recipe.deployOptions) {
 						if (catalog.recipe.deployOptions.image) {

@@ -689,29 +689,33 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 	
 	$scope.redeploy = function (service, version) {
 		let currentScope = $scope;
-		let deployService = $modal.open({
-			templateUrl: 'reconfigure.tmpl',
-			size: 'lg',
-			backdrop: true,
-			keyboard: true,
-			controller: function ($scope, $modalInstance) {
-				fixBackDrop();
-				
-				apiKubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
-					if (err) {
-						$scope.$parent.displayAlert('danger', err.message);
-					}
-				});
-				
-				$scope.cancel = function () {
-					deployService.close();
-				};
-				
-				$scope.redeploy = function (service, version) {
-					apiKubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
-				};
-			}
-		});
+		if (!$scope.configuration) {
+			$scope.$parent.displayAlert('danger', "No configuration found for this deployment.");
+		} else {
+			let deployService = $modal.open({
+				templateUrl: 'reconfigure.tmpl',
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope, $modalInstance) {
+					fixBackDrop();
+					
+					soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+						if (err) {
+							$scope.$parent.displayAlert('danger', err.message);
+						}
+					});
+					
+					$scope.cancel = function () {
+						deployService.close();
+					};
+					
+					$scope.redeploy = function (service, version) {
+						soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+					};
+				}
+			});
+		}
 	};
 	
 	

@@ -453,10 +453,10 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				if (!$scope.deployments[service.name]){
+				if (!$scope.deployments[service.name]) {
 					$scope.deployments[service.name] = {};
 				}
-				if (!$scope.deployments[service.name][v.version]){
+				if (!$scope.deployments[service.name][v.version]) {
 					$scope.deployments[service.name][v.version] = {};
 				}
 				delete response.soajsauth;
@@ -535,7 +535,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 							oneItem.spec.jobTemplate.spec.template.spec.containers &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0] &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0].image) {
-							$scope.deployments[service.name][v.version].deployedImage  = {
+							$scope.deployments[service.name][v.version].deployedImage = {
 								prefix: ""
 							};
 							if (oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
@@ -553,7 +553,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 		});
 	};
 	
-	$scope.autoScaleService = function(service, version) {
+	$scope.autoScaleService = function (service, version) {
 		let currentScope = $scope;
 		$modal.open({
 			templateUrl: "autoScale.tmpl",
@@ -573,13 +573,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				$scope.title += ' | Auto Scale';
 				$scope.autoScaleStatus = currentScope.deployments[service.name][version.version].autoScale === "success";
 				
-				if ($scope.autoScaleStatus && version.hpas && version.hpas.spec){
+				if ($scope.autoScaleStatus && version.hpas && version.hpas.spec) {
 					$scope.autoScaleObject.replica.min = version.hpas.spec.minReplicas;
 					$scope.autoScaleObject.replica.max = version.hpas.spec.maxReplicas;
-					version.hpas.spec.metrics.forEach((metric)=>{
+					version.hpas.spec.metrics.forEach((metric) => {
 						if (metric.type === "Resource" && metric.resource && metric.resource.name === "cpu" &&
 							metric.resource.target && metric.resource.target.type === "Utilization" &&
-							metric.resource.target.averageUtilization){
+							metric.resource.target.averageUtilization) {
 							$scope.autoScaleObject.metrics.cpu.percent = metric.resource.target.averageUtilization;
 						}
 					});
@@ -587,8 +587,8 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 				$scope.onSubmit = function (action) {
 					overlayLoading.show();
 					let options = {};
-					if (action === "update"){
-						if ($scope.autoScaleStatus){
+					if (action === "update") {
+						if ($scope.autoScaleStatus) {
 							options = {
 								"method": "put",
 								"routeName": "/infra/kubernetes/item/hpa",
@@ -603,15 +603,14 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 									},
 									"replica": $scope.autoScaleObject.replica,
 									"metrics": [{
-										type : "Resource",
-										name : "cpu",
-										target : "AverageValue",
+										type: "Resource",
+										name: "cpu",
+										target: "AverageValue",
 										percentage: $scope.autoScaleObject.metrics.cpu.percent
 									}]
 								}
 							};
-						}
-						else {
+						} else {
 							options = {
 								"method": "post",
 								"routeName": "/infra/kubernetes/item/hpa",
@@ -626,16 +625,15 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 									},
 									"replica": $scope.autoScaleObject.replica,
 									"metrics": [{
-										type : "Resource",
-										name : "cpu",
-										target : "AverageValue",
+										type: "Resource",
+										name: "cpu",
+										target: "AverageValue",
 										percentage: $scope.autoScaleObject.metrics.cpu.percent
 									}]
 								}
 							};
 						}
-					}
-					else {
+					} else {
 						options = {
 							"method": "delete",
 							"routeName": "/infra/kubernetes/workload/HPA",
@@ -653,8 +651,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						overlayLoading.hide();
 						if (error) {
 							currentScope.$parent.displayAlert('danger', error.message);
-						}
-						else {
+						} else {
 							if (action === 'update') {
 								currentScope.$parent.displayAlert('success', 'Auto Scale is Enabled successfully');
 							} else {
@@ -720,29 +717,33 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 	
 	$scope.redeploy = function (service, version) {
 		let currentScope = $scope;
-		let deployService = $modal.open({
-			templateUrl: 'reconfigure.tmpl',
-			size: 'lg',
-			backdrop: true,
-			keyboard: true,
-			controller: function ($scope, $modalInstance) {
-				fixBackDrop();
-				
-				soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
-					if (err) {
-						$scope.$parent.displayAlert('danger', err.message);
-					}
-				});
-				
-				$scope.cancel = function () {
-					deployService.close();
-				};
-				
-				$scope.redeploy = function (service, version) {
-					soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
-				};
-			}
-		});
+		if (!$scope.configuration) {
+			$scope.$parent.displayAlert('danger', "No configuration found for this deployment.");
+		} else {
+			let deployService = $modal.open({
+				templateUrl: 'reconfigure.tmpl',
+				size: 'lg',
+				backdrop: true,
+				keyboard: true,
+				controller: function ($scope, $modalInstance) {
+					fixBackDrop();
+					
+					soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+						if (err) {
+							$scope.$parent.displayAlert('danger', err.message);
+						}
+					});
+					
+					$scope.cancel = function () {
+						deployService.close();
+					};
+					
+					$scope.redeploy = function (service, version) {
+						soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+					};
+				}
+			});
+		}
 	};
 	
 	

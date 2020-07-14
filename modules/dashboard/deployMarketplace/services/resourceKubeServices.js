@@ -1142,7 +1142,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 			});
 		}
 		if (!$scope.configuration) {
-			currentScope.displayAlert($scope, 'danger', error.message);
+			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");
 		} else {
 			$scope.image = $scope.configuration.recipe.image;
 			if ($scope.configuration.src) {

@@ -26,7 +26,7 @@
 		<label class="f-left labelVersion">
 			Select Version to preview for this Item
 		</label>
-		<select  ng-model="overviewSelectedVersion" ng-init="overviewSelectedVersion" ng-options="v.version for v in service.versions" ng-change="selectOverViewVersion(overviewSelectedVersion)" class="form-control f-left c45 selectVersion">
+		<select  ng-model="overviewSelectedVersion" ng-init="overviewSelectedVersion" ng-options="v for v in versions"  class="form-control f-left c45 selectVersion">
 		</select>
 	</div>
 	<br>

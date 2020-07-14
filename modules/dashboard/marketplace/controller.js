@@ -1801,12 +1801,21 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 					if ($scope.service.configuration && $scope.service.configuration.prerequisites) {
 						$scope.service.configuration.prerequisites = $scope.changetoJSON($scope.service.configuration.prerequisites);
 					}
+					let defaultVersion;
+					$scope.versions = [];
 					if ($scope.service.versions) {
-						$scope.service.versions.forEach((oneVersion) => {
+						$scope.service.versions.forEach((oneVersion, x) => {
+							if (x === 0) {
+								defaultVersion = oneVersion.version;
+							}
+							$scope.versions.push(oneVersion.version);
 							oneVersion.swagger = $scope.parseObject(oneVersion.swagger);
 							oneVersion.maintenance = $scope.changetoJSON(oneVersion.maintenance);
 							oneVersion.profile = $scope.changetoJSON(oneVersion.profile);
 						});
+					}
+					if ($localStorage.serviceCatalog || $localStorage.serviceCatalog) {
+						$scope.overviewSelectedVersion = defaultVersion;
 					}
 				}
 			}
@@ -2082,10 +2091,9 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.close = function (service) {
-		if (service.configuration && service.configuration.subType === "soajs"){
+		if (service.configuration && service.configuration.subType === "soajs") {
 			$scope.$parent.go("#/soajsCatalog", "_blank");
-		}
-		else {
+		} else {
 			switch (service.type) {
 				case "service":
 					if (service.configuration && service.configuration.subType === "soajs") {

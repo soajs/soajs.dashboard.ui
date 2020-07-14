@@ -181,13 +181,11 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				let main = service.ui && service.ui.main ? service.ui.main : "Console";
 				let group = service.configuration && service.configuration.group ? service.configuration.group : defaultGroup;
 				let type;
-				if (service.type === "service"){
+				if (service.type === "service") {
 					type = "API";
-				}
-				else if (service.type === "static"){
+				} else if (service.type === "static") {
 					type = "Static";
-				}
-				else if (service.type === "resource"){
+				} else if (service.type === "resource") {
 					type = "Resource";
 				}
 				if (!$scope.soajsTabs[type][main]["Favorites"]) {
@@ -218,13 +216,11 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 			} else {
 				service.favorite = false;
 				let type;
-				if (service.type === "service"){
+				if (service.type === "service") {
 					type = "API";
-				}
-				else if (service.type === "static"){
+				} else if (service.type === "static") {
 					type = "Static";
-				}
-				else if (service.type === "resource"){
+				} else if (service.type === "resource") {
 					type = "Resource";
 				}
 				let main = service.ui && service.ui.main ? service.ui.main : "Console";
@@ -250,7 +246,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 			} else {
 				$scope.envs = [];
 				$scope.envList = response;
-				$scope.envList.forEach((env)=>{
+				$scope.envList.forEach((env) => {
 					$scope.envs.push(env.code.toLowerCase());
 				});
 			}
@@ -266,7 +262,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 			keyboard: true,
 			controller: function ($scope, $modalInstance) {
 				fixBackDrop();
-
+				
 				$scope.title = 'Update ' + serviceRecord.name + ' service settings in ' + env + ' Environment';
 				let versionedRecord = serviceRecord.versions.find(element => element.version === version);
 				$scope.settings = {
@@ -282,11 +278,11 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 					$scope.settings.extKeyRequired = versionEnvRecord.extKeyRequired || false;
 					$scope.settings.oauth = versionEnvRecord.oauth || false;
 				}
-
+				
 				$scope.onOff = function (oneSetting) {
 					$scope.settings[oneSetting] = !$scope.settings[oneSetting];
 				};
-
+				
 				$scope.onSubmit = function () {
 					overlayLoading.show();
 					getSendDataFromServer($scope, ngDataApi, {
@@ -313,7 +309,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 						}
 					});
 				};
-
+				
 				$scope.closeModal = function () {
 					$modalInstance.close();
 				};
@@ -1709,7 +1705,7 @@ soajsCatalogApp.controller('editResourceCatalogCtrl', ['$scope', '$timeout', '$m
 	}
 }]);
 
-soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams) {
+soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', '$localStorage', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -1772,6 +1768,15 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 			}
 		}
 	};
+	if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.query) {
+		$scope.showBackButton = true;
+	}
+	if ($localStorage.serviceCatalog && $localStorage.serviceCatalog.query) {
+		$scope.showBackButton = true;
+	}
+	$scope.returnToDashboard = function () {
+		$scope.$parent.go("#/analytics", "_blank");
+	};
 	
 	$scope.getCatalog = function (name, type) {
 		overlayLoading.show();
@@ -1796,8 +1801,8 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 					if ($scope.service.configuration && $scope.service.configuration.prerequisites) {
 						$scope.service.configuration.prerequisites = $scope.changetoJSON($scope.service.configuration.prerequisites);
 					}
-					if($scope.service.versions){
-						$scope.service.versions.forEach((oneVersion)=>{
+					if ($scope.service.versions) {
+						$scope.service.versions.forEach((oneVersion) => {
 							oneVersion.swagger = $scope.parseObject(oneVersion.swagger);
 							oneVersion.maintenance = $scope.changetoJSON(oneVersion.maintenance);
 							oneVersion.profile = $scope.changetoJSON(oneVersion.profile);
@@ -1848,31 +1853,31 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
 			} else {
 				$scope.service = response;
-				if ($scope.service.settings){
-					if ($scope.service.settings.acl){
-						if ($scope.service.settings.acl.groups){
+				if ($scope.service.settings) {
+					if ($scope.service.settings.acl) {
+						if ($scope.service.settings.acl.groups) {
 							$scope.showGroupButtonSlider = true;
-							if ($scope.service.settings.acl.groups.value){
+							if ($scope.service.settings.acl.groups.value) {
 								$scope.groups.selectedGroups = $scope.service.settings.acl.groups.value;
 							}
 							$scope.groups.groupType = $scope.service.settings.acl.groups.type === "blacklist";
 						}
 					}
-					if ($scope.service.settings.environments){
+					if ($scope.service.settings.environments) {
 						$scope.showEnvButtonSlider = true;
-						if ($scope.service.settings.environments.value){
+						if ($scope.service.settings.environments.value) {
 							$scope.envs.selectedEnvs = $scope.service.settings.environments.value;
 						}
 						$scope.envs.envType = $scope.service.settings.environments.type === "blacklist";
 					}
-					if ($scope.service.settings.recipes){
+					if ($scope.service.settings.recipes) {
 						$scope.recipes.selectedRecipes = $scope.service.settings.recipes;
-						if ($scope.service.settings.recipes.length > 0){
+						if ($scope.service.settings.recipes.length > 0) {
 							let opts = {
 								"method": "post",
 								routeName: '/dashboard/catalog/recipes/list',
 								data: {
-									ids : $scope.service.settings.recipes
+									ids: $scope.service.settings.recipes
 								}
 							};
 							getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
@@ -1898,10 +1903,10 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			if (error) {
 				$scope.displayAlert('danger', error.code, true, 'urac', error.message);
 			} else {
-				$scope.groupsList =  angular.copy(response);
+				$scope.groupsList = angular.copy(response);
 				$scope.getEnvironments();
-				$scope.groupsList.forEach((oneGroup)=>{
-					if ($scope.groups.selectedGroups.indexOf(oneGroup.code) !== -1){
+				$scope.groupsList.forEach((oneGroup) => {
+					if ($scope.groups.selectedGroups.indexOf(oneGroup.code) !== -1) {
 						oneGroup.allowed = true;
 					}
 				});
@@ -1918,8 +1923,8 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.environmentsList = angular.copy(response);
-				$scope.environmentsList.forEach((oneEnv)=>{
-					if ($scope.envs.selectedEnvs.indexOf(oneEnv.code) !== -1){
+				$scope.environmentsList.forEach((oneEnv) => {
+					if ($scope.envs.selectedEnvs.indexOf(oneEnv.code) !== -1) {
 						oneEnv.allowed = true;
 					}
 				});
@@ -1929,14 +1934,14 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.getRecipes = function (loadMore) {
-		if (loadMore){
-			$scope.recipeSize =  $scope.recipeSize +  $scope.limit;
+		if (loadMore) {
+			$scope.recipeSize = $scope.recipeSize + $scope.limit;
 		}
 		let opts = {
 			"method": "get",
 			routeName: '/dashboard/catalog/recipes/list',
 			params: {
-				limit : $scope.recipeSize
+				limit: $scope.recipeSize
 			}
 		};
 		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
@@ -1944,59 +1949,59 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.recipeList = angular.copy(response);
-				if ($scope.recipeList.length <  $scope.recipeSize){
+				if ($scope.recipeList.length < $scope.recipeSize) {
 					$scope.hideLoadMore = true;
 				}
 			}
 		});
 	};
+	
 	function removeA(arr) {
 		var what, a = arguments, L = a.length, ax;
 		while (L > 1 && arr.length) {
 			what = a[--L];
-			while ((ax= arr.indexOf(what)) !== -1) {
+			while ((ax = arr.indexOf(what)) !== -1) {
 				arr.splice(ax, 1);
 			}
 		}
 		return arr;
 	}
-	$scope.selectEnv = function (env){
+	
+	$scope.selectEnv = function (env) {
 		$scope.showEnvButtonSlider = true;
-		if (env.allowed){
+		if (env.allowed) {
 			removeA($scope.envs.selectedEnvs, env.code);
 			env.allowed = false;
-		}
-		else {
+		} else {
 			$scope.envs.selectedEnvs.push(env.code);
 			env.allowed = true;
 		}
 	};
-	$scope.selectGroup = function (group){
+	$scope.selectGroup = function (group) {
 		$scope.showGroupButtonSlider = true;
-		if (group.allowed){
+		if (group.allowed) {
 			removeA($scope.groups.selectedGroups, group.code);
 			group.allowed = false;
-		}
-		else {
+		} else {
 			group.allowed = true;
 			$scope.groups.selectedGroups.push(group.code);
 		}
 	};
-	$scope.selectRecipes = function (recipe){
+	$scope.selectRecipes = function (recipe) {
 		let found = false;
-		for (let i = 0; i < $scope.recipes.selectedRecipes.length; i++){
+		for (let i = 0; i < $scope.recipes.selectedRecipes.length; i++) {
 			if ($scope.recipes.selectedRecipes[i]._id === recipe._id) {
 				found = true;
 				break;
 			}
 		}
-		if (!found){
+		if (!found) {
 			$scope.recipes.selectedRecipes.push(recipe);
 		}
-	
+		
 	};
-	$scope.removeRecipes = function (recipe){
-		for (let i = 0; i < $scope.recipes.selectedRecipes.length; i++){
+	$scope.removeRecipes = function (recipe) {
+		for (let i = 0; i < $scope.recipes.selectedRecipes.length; i++) {
 			if ($scope.recipes.selectedRecipes[i]._id === recipe._id) {
 				$scope.recipes.selectedRecipes.splice(i, 1);
 				break;
@@ -2011,10 +2016,10 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			"data": {
 				id: $scope.service._id.toString(),
 				type: $scope.groups.groupType ? 'blacklist' : "whitelist",
-				groups:  $scope.groups.selectedGroups
+				groups: $scope.groups.selectedGroups
 			}
 		};
-		if ($scope.service.type === "service" &&  $scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+		if ($scope.service.type === "service" && $scope.service.configuration && $scope.service.configuration.subType === "soajs") {
 			opts.routeName = '/marketplace/soajs/item/acl';
 		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
@@ -2034,10 +2039,10 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			"data": {
 				id: $scope.service._id.toString(),
 				type: $scope.envs.envType ? 'blacklist' : "whitelist",
-				environments:  $scope.envs.selectedEnvs
+				environments: $scope.envs.selectedEnvs
 			}
 		};
-		if ($scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+		if ($scope.service.configuration && $scope.service.configuration.subType === "soajs") {
 			opts.routeName = '/marketplace/soajs/item/environments';
 		}
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
@@ -2056,15 +2061,15 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 			"routeName": '/marketplace/item/recipes',
 			data: {
 				id: $scope.service._id.toString(),
-				recipes:  []
+				recipes: []
 			},
-		
+			
 		};
-		if ($scope.service.configuration && $scope.service.configuration.subType === "soajs"){
+		if ($scope.service.configuration && $scope.service.configuration.subType === "soajs") {
 			opts.routeName = '/marketplace/soajs/item/recipes';
 		}
-		$scope.recipes.selectedRecipes.forEach((oneRecipe)=>{
-			opts.data.recipes.push( oneRecipe._id);
+		$scope.recipes.selectedRecipes.forEach((oneRecipe) => {
+			opts.data.recipes.push(oneRecipe._id);
 		});
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
@@ -2077,12 +2082,11 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 	};
 	
 	$scope.close = function (service) {
-		switch(service.type) {
+		switch (service.type) {
 			case "service":
-				if (service.configuration && service.configuration.subType === "soajs"){
+				if (service.configuration && service.configuration.subType === "soajs") {
 					$scope.$parent.go("#/soajsCatalog", "_blank");
-				}
-				else {
+				} else {
 					$scope.$parent.go("#/apiCatalog", "_blank");
 				}
 				break;

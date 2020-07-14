@@ -254,8 +254,6 @@ var soajsCatalog = [
 			'route': '/item/type',
 			'method': 'get'
 		},
-		'tracker': true,
-		'order': 6,
 		'scripts': ['modules/dashboard/marketplace/config.js', 'modules/dashboard/marketplace/controller.js'],
 		'tplPath': 'modules/dashboard/marketplace/directives/global/serviceDetailView.tmpl'
 	},

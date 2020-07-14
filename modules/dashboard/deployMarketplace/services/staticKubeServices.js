@@ -743,7 +743,9 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 						if (catalog.recipe.buildOptions.env) {
 							$scope.userInputVariable = [];
 							$scope.secretVariable = [];
-							$scope.configuration.recipe.env = {};
+							if (!$scope.configuration.recipe.env){
+								$scope.configuration.recipe.env = {};
+							}
 							for (let envVariable in catalog.recipe.buildOptions.env) {
 								if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
 									if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {

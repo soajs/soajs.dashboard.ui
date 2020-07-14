@@ -790,14 +790,14 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
 											if (typeof $scope.configuration.recipe.env[envVariable] !== 'object') {
 												$scope.configuration.recipe.env[envVariable] = {
-													secret: catalog.recipe.buildOptions.env[envVariable].secret || "",
+													name: catalog.recipe.buildOptions.env[envVariable].secret || "",
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
 										}
 										else {
 											$scope.configuration.recipe.env[envVariable] = {
-												secret: catalog.recipe.buildOptions.env[envVariable].secret || "",
+												name: catalog.recipe.buildOptions.env[envVariable].secret || "",
 												key: catalog.recipe.buildOptions.env[envVariable].key || ""
 											};
 										}

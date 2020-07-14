@@ -1814,7 +1814,7 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 							oneVersion.profile = $scope.changetoJSON(oneVersion.profile);
 						});
 					}
-					if ($localStorage.serviceCatalog || $localStorage.serviceCatalog) {
+					if ($localStorage.serviceCatalog || $localStorage.ApiCatalog) {
 						$scope.overviewSelectedVersion = defaultVersion;
 					}
 				}

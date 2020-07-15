@@ -285,25 +285,29 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 	};
 	
 	$scope.deleteService = function (service, version) {
-		overlayLoading.show();
-		let options = {};
-		options.method = "delete";
-		options.routeName = "/infra/kubernetes/item";
-		options.data = {
-			configuration: {
-				env: $scope.selectedEnvironment.code.toLowerCase(),
-			},
-			mode: version.deployedItem.type,
-			name: version.deployedItem.name
-		};
-		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
-			} else {
-				$scope.$parent.displayAlert('success', "Item deleted!");
-			}
-		});
+		if (!version.deployedItem) {
+			$scope.$parent.displayAlert('danger', "No deployment found for this item.");
+		} else {
+			overlayLoading.show();
+			let options = {};
+			options.method = "delete";
+			options.routeName = "/infra/kubernetes/item";
+			options.data = {
+				configuration: {
+					env: $scope.selectedEnvironment.code.toLowerCase(),
+				},
+				mode: version.deployedItem.type,
+				name: version.deployedItem.name
+			};
+			getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					$scope.$parent.displayAlert('danger', error.code, true, 'marketplace', error.message);
+				} else {
+					$scope.$parent.displayAlert('success', "Item deleted!");
+				}
+			});
+		}
 	};
 	
 	$scope.restartService = function (service, version) {

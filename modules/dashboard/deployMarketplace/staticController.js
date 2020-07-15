@@ -697,6 +697,13 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 	
 	$scope.redeploy = function (service, version) {
 		let currentScope = $scope;
+		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
+			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
+				if (item.version === version.version) {
+					$scope.configuration = item;
+				}
+			});
+		}
 		if (!$scope.configuration) {
 			$scope.$parent.displayAlert('danger', "No configuration found for this deployment.");
 		} else {

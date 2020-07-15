@@ -1170,6 +1170,7 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 	function reConfigureDeployment($scope, currentScope, service, v) {
 		$scope.alerts = [];
 		$scope.access = currentScope.access;
+		$scope.configuration = currentScope.configuration;
 		$scope.isDeployed = currentScope.deployments[service.name][v.version].deployed;
 		$scope.selectedEnvironment = currentScope.selectedEnvironment;
 		$scope.envDeployer = currentScope.envDeployer;
@@ -1192,13 +1193,6 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 			opts.data = {
 				ids: service.settings.recipes
 			};
-		}
-		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
-			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
-				if (item.version === v.version) {
-					$scope.configuration = item;
-				}
-			});
 		}
 		if (!$scope.configuration) {
 			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");

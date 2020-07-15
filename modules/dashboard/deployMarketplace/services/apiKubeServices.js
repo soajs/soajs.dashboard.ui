@@ -1156,6 +1156,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 	
 	function reConfigureDeployment($scope, currentScope, service, v) {
 		$scope.alerts = [];
+		$scope.configuration = currentScope.configuration;
 		$scope.access = currentScope.access;
 		$scope.isDeployed = currentScope.deployments[service.name][v.version].deployed;
 		$scope.selectedEnvironment = currentScope.selectedEnvironment;
@@ -1179,13 +1180,6 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			opts.data = {
 				ids: service.settings.recipes
 			};
-		}
-		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
-			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
-				if (item.version === v.version) {
-					$scope.configuration = item;
-				}
-			});
 		}
 		if (!$scope.configuration) {
 			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");

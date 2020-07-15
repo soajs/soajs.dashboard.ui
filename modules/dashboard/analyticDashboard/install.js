@@ -5,8 +5,8 @@ var catalogNav = [
         'id': 'analyticDashboard',
         'label': "Dashboard Analytics",
         'checkPermission': {
-            'service': 'dashboard',
-            'route': '/dashboard',
+            'service': 'marketplace',
+            'route': '/items',
             'method': 'get'
         },
         'url': '#/analytics',
@@ -14,7 +14,7 @@ var catalogNav = [
         'icon': 'file-text2',
         'pillar': {
             'name': 'dashboard',
-            'label': translation.dashboard[LANG],
+            'label': 'Dashboard',
             'position': 5
         },
         'mainMenu': true,

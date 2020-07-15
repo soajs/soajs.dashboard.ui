@@ -521,25 +521,27 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 							});
 							$scope.responses[host.id] = host.response;
 						});
-						formConfig.push(
-							{
-								'name': 'podSelector',
-								'label': 'Select Pod',
-								'type': 'select',
-								'value': $scope.hosts,
-								onAction: function (id, value, form) {
-									form.formData['response'] = $scope.responses[value];
-								},
-							}
-						);
-						formConfig.push(
-							{
-								'name': 'response',
-								'label': 'Response',
-								'type': 'textarea',
-								'required': false,
-							}
-						);
+						if (formConfig.length === 2){
+							formConfig.push(
+								{
+									'name': 'podSelector',
+									'label': 'Select Pod',
+									'type': 'select',
+									'value': $scope.hosts,
+									onAction: function (id, value, form) {
+										form.formData['response'] = $scope.responses[value];
+									},
+								}
+							);
+							formConfig.push(
+								{
+									'name': 'response',
+									'label': 'Response',
+									'type': 'textarea',
+									'required': false,
+								}
+							);
+						}
 						$scope.form.formData['response'] = res[0].response;
 					}
 				});

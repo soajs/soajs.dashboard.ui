@@ -5,5 +5,4 @@ var dashboardAppConfig = {
 		getAnalyticsForServices: ['soaanalytics', '/dashboard/services', 'get'],
 		getAnalyticsForApiRoutes: ['soaanalytics', '/dashboard/apiRoutes', 'get']
 	}
-
 };

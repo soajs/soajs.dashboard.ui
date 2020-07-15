@@ -64,7 +64,8 @@ var soajsDeployCatalogConfig = {
 			'name': 'execCommands',
 			'label': 'Commands',
 			'type': 'textarea',
-			'required': true
+			'required': true,
+			"fieldMsg": "Those commands will be applied on your selected pod."
 		},
 			{
 				'name': 'response',
@@ -76,13 +77,8 @@ var soajsDeployCatalogConfig = {
 			'name': 'execCommands',
 			'label': 'Commands',
 			'type': 'textarea',
-			'required': true
-		},
-			{
-				'name': 'infoTabs',
-				'label': 'Response',
-				'type': 'tabset',
-				'tabs': []
-			}]
+			'required': true,
+			"fieldMsg": "Those commands will be applied on all of your Pods."
+		}]
 	},
 };

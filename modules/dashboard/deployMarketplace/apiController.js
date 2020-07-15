@@ -193,7 +193,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 		apiKubeServicesSrv.getLogs($scope, pod);
 	};
 	
-	$scope.execCommand = function (pod) {
+	$scope.execCommand = function (pod, service, version) {
 		let currentScope = $scope;
 		$modal.open({
 			templateUrl: "execCommandPod.tmpl",
@@ -201,7 +201,8 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 			backdrop: false,
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
-				apiKubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod);
+				$scope.execCommandTitle = "Exec Command | " + pod.metadata.name;
+				soajskubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
 			}
 		});
 	};
@@ -214,7 +215,8 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 			backdrop: false,
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
-				apiKubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
+				$scope.execCommandTitle = "Exec Command";
+				soajskubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
 			}
 		});
 	};

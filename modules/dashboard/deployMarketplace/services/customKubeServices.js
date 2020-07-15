@@ -300,7 +300,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		}
 	}
 	
-	function execCommand($scope, $modalInstance, currentScope, pod, cb) {
+	function execCommand($scope, $modalInstance, currentScope, pod, service, version, cb) {
 		
 		$scope.textMode = false;
 		
@@ -326,6 +326,53 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 			}
 		];
 		
+		if (service.deploy && service.deploy[currentScope.selectedEnvironment.code.toLowerCase()] && service.deploy[currentScope.selectedEnvironment.code.toLowerCase()].length > 0) {
+			service.deploy[currentScope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
+				if (item.version === version.version) {
+					$scope.configuration = item;
+				}
+			});
+		}
+		if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.id) {
+			let opts = {
+				method: "get",
+				routeName: '/dashboard/catalog/recipes/get',
+				params: {
+					id: $scope.configuration.recipe.id
+				}
+			};
+			overlayLoading.show();
+			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert($scope, 'danger', error.message);
+				} else {
+					let execCommands =
+						{
+							'name': 'catalogCommands',
+							'label': 'Catalog Commands',
+							'type': 'select',
+							'value': [],
+							"onAction": function (id, data, form) {
+								form.formData.execCommands = data;
+							}
+						};
+					if (response && response.recipe && response.recipe.deployOptions && response.recipe.deployOptions.execCommands && Object.keys(response.recipe.deployOptions.execCommands).length > 0) {
+						for (let exec in response.recipe.deployOptions.execCommands) {
+							if (exec && response.recipe.deployOptions.execCommands.hasOwnProperty(exec) && response.recipe.deployOptions.execCommands[exec]) {
+								execCommands.value.push({
+									"l": exec,
+									"v": response.recipe.deployOptions.execCommands[exec]
+								});
+							}
+						}
+					}
+					if (execCommands.value.length > 0) {
+						formConfig.unshift(execCommands)
+					}
+				}
+			});
+		}
 		
 		$scope.save = function (formData) {
 			overlayLoading.show();
@@ -440,7 +487,6 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 			});
 		}
 		
-		
 		$scope.save = function (formData) {
 			overlayLoading.show();
 			$scope.$valid = true;
@@ -465,21 +511,36 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 					if (error) {
 						currentScope.displayAlert($scope, 'danger', error.message);
 					} else {
-						res.forEach(function (host) {
-							formConfig[2].tabs = [];
-							formConfig[2].tabs.push({
-								'label': host.id,
-								'entries': [
-									{
-										'name': host.id,
-										'type': 'textarea',
-										"value": host.response,
-										"disabled": true
-									}
-								]
+						$scope.hosts = [];
+						$scope.responses = {};
+						res.forEach(function (host, index) {
+							$scope.hosts.push({
+								'l': host.id,
+								'v': host.id,
+								'selected': index === 0
 							});
-							$scope.form.formData[host.id] = host.response
+							$scope.responses[host.id] = host.response;
 						});
+						formConfig.push(
+							{
+								'name': 'podSelector',
+								'label': 'Select Pod',
+								'type': 'select',
+								'value': $scope.hosts,
+								onAction: function (id, value, form) {
+									form.formData['response'] = $scope.responses[value];
+								},
+							}
+						);
+						formConfig.push(
+							{
+								'name': 'response',
+								'label': 'Response',
+								'type': 'textarea',
+								'required': false,
+							}
+						);
+						$scope.form.formData['response'] = res[0].response;
 					}
 				});
 			}

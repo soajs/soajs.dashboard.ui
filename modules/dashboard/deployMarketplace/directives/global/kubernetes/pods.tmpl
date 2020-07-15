@@ -22,7 +22,7 @@
 							tooltip="get pod logs" class="icon icon icon-terminal"></span></a>
 				</div>
 				<div ng-if="access.infra.kubernetes.pod.singleExec" style="float: right">
-					<a ng-click="execCommand(item)"
+					<a ng-click="execCommand(item, service, version)"
 					   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
 							tooltip="exec command" class="icon icon icon-list2"></span></a>
 				</div>
@@ -84,7 +84,7 @@
 <script type="text/ng-template" id="execCommandPod.tmpl">
 	<div class="form">
 		<div class="modal-header">
-			<h3 class="modal-title">Exec Commands</h3>
+			<h3 class="modal-title">{{execCommandTitle}}</h3>
 		</div>
 		<div class="">
 			<ngform></ngform>

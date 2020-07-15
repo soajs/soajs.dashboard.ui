@@ -300,7 +300,7 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 		}
 	}
 	
-	function execCommand($scope, $modalInstance, currentScope, pod, cb) {
+	function execCommand($scope, $modalInstance, currentScope, pod, service, version, cb) {
 		
 		$scope.textMode = false;
 		
@@ -326,6 +326,53 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 			}
 		];
 		
+		if (service.deploy && service.deploy[currentScope.selectedEnvironment.code.toLowerCase()] && service.deploy[currentScope.selectedEnvironment.code.toLowerCase()].length > 0) {
+			service.deploy[currentScope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
+				if (item.version === version.version) {
+					$scope.configuration = item;
+				}
+			});
+		}
+		if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.id) {
+			let opts = {
+				method: "get",
+				routeName: '/dashboard/catalog/recipes/get',
+				params: {
+					id: $scope.configuration.recipe.id
+				}
+			};
+			overlayLoading.show();
+			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert($scope, 'danger', error.message);
+				} else {
+					let execCommands =
+						{
+							'name': 'catalogCommands',
+							'label': 'Catalog Commands',
+							'type': 'select',
+							'value': [],
+							"onAction": function (id, data, form) {
+								form.formData.execCommands = data;
+							}
+						};
+					if (response && response.recipe && response.recipe.deployOptions && response.recipe.deployOptions.execCommands && Object.keys(response.recipe.deployOptions.execCommands).length > 0) {
+						for (let exec in response.recipe.deployOptions.execCommands) {
+							if (exec && response.recipe.deployOptions.execCommands.hasOwnProperty(exec) && response.recipe.deployOptions.execCommands[exec]) {
+								execCommands.value.push({
+									"l": exec,
+									"v": response.recipe.deployOptions.execCommands[exec]
+								});
+							}
+						}
+					}
+					if (execCommands.value.length > 0) {
+						formConfig.unshift(execCommands)
+					}
+				}
+			});
+		}
 		
 		$scope.save = function (formData) {
 			overlayLoading.show();
@@ -440,7 +487,6 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 			});
 		}
 		
-		
 		$scope.save = function (formData) {
 			overlayLoading.show();
 			$scope.$valid = true;
@@ -465,21 +511,36 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 					if (error) {
 						currentScope.displayAlert($scope, 'danger', error.message);
 					} else {
-						res.forEach(function (host) {
-							formConfig[2].tabs = [];
-							formConfig[2].tabs.push({
-								'label': host.id,
-								'entries': [
-									{
-										'name': host.id,
-										'type': 'textarea',
-										"value": host.response,
-										"disabled": true
-									}
-								]
+						$scope.hosts = [];
+						$scope.responses = {};
+						res.forEach(function (host, index) {
+							$scope.hosts.push({
+								'l': host.id,
+								'v': host.id,
+								'selected': index === 0
 							});
-							$scope.form.formData[host.id] = host.response
+							$scope.responses[host.id] = host.response;
 						});
+						formConfig.push(
+							{
+								'name': 'podSelector',
+								'label': 'Select Pod',
+								'type': 'select',
+								'value': $scope.hosts,
+								onAction: function (id, value, form) {
+									form.formData['response'] = $scope.responses[value];
+								},
+							}
+						);
+						formConfig.push(
+							{
+								'name': 'response',
+								'label': 'Response',
+								'type': 'textarea',
+								'required': false,
+							}
+						);
+						$scope.form.formData['response'] = res[0].response;
 					}
 				});
 			}
@@ -687,7 +748,7 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.deploymentModes = ['Deployment', 'DaemonSet', 'CronJob'];
 		$scope.concurrencyPolicy = ['Allow', 'Forbid', 'Replace'];
-		$scope.externalTrafficPolicy= ['Local', 'Cluster'];
+		$scope.externalTrafficPolicy = ['Local', 'Cluster'];
 		$scope.restartPolicy = ["OnFailure", "Never"];
 		$scope.configuration = {};
 		let opts = {
@@ -743,7 +804,7 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 						if (catalog.recipe.buildOptions.env) {
 							$scope.userInputVariable = [];
 							$scope.secretVariable = [];
-							if (!$scope.configuration.recipe.env){
+							if (!$scope.configuration.recipe.env) {
 								$scope.configuration.recipe.env = {};
 							}
 							for (let envVariable in catalog.recipe.buildOptions.env) {
@@ -757,12 +818,11 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 											required: false
 										};
 										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
-										
+											
 											if (typeof $scope.configuration.recipe.env[envVariable] !== 'string') {
 												$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 											}
-										}
-										else {
+										} else {
 											$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 										}
 										$scope.userInputVariable.push(temp);
@@ -794,8 +854,7 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
-										}
-										else {
+										} else {
 											$scope.configuration.recipe.env[envVariable] = {
 												name: catalog.recipe.buildOptions.env[envVariable].secret || "",
 												key: catalog.recipe.buildOptions.env[envVariable].key || ""
@@ -833,7 +892,7 @@ statickubeServicesSrv.service('statickubeServicesSrv', ['ngDataApi', '$cookies',
 								
 							}
 							$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
-							if ($scope.configuration.recipe.ports.values){
+							if ($scope.configuration.recipe.ports.values) {
 								$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
 							}
 							$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";

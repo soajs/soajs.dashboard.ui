@@ -203,7 +203,7 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command | " + pod.metadata.name;
-				soajskubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
+				statickubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
 			}
 		});
 	};
@@ -218,7 +218,7 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command";
-				soajskubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
+				statickubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
 			}
 		});
 	};
@@ -715,7 +715,7 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 				controller: function ($scope, $modalInstance) {
 					fixBackDrop();
 					
-					soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+					statickubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 						if (err) {
 							$scope.$parent.displayAlert('danger', err.message);
 						}
@@ -726,7 +726,7 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 					};
 					
 					$scope.redeploy = function (service, version) {
-						soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+						statickubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
 					};
 				}
 			});

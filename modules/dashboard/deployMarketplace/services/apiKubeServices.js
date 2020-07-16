@@ -521,7 +521,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 							});
 							$scope.responses[host.id] = host.response;
 						});
-						if (formConfig.length === 2){
+						if (formConfig.length === 2) {
 							formConfig.push(
 								{
 									'name': 'podSelector',
@@ -750,7 +750,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.deploymentModes = ['Deployment', 'DaemonSet', 'CronJob'];
 		$scope.concurrencyPolicy = ['Allow', 'Forbid', 'Replace'];
-		$scope.externalTrafficPolicy= ['Local', 'Cluster'];
+		$scope.externalTrafficPolicy = ['Local', 'Cluster'];
 		$scope.restartPolicy = ["OnFailure", "Never"];
 		$scope.configuration = {};
 		let opts = {
@@ -794,165 +794,188 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 				}
 			}
 		});
-		
 		$scope.injectCatalogEntries = function (catalog) {
-			$scope.getSecrets(function () {
-				$scope.getConfigurationCatalogs(catalog, function () {
-					$scope.configuration.recipe.id = catalog._id.toString();
-					$scope.allowedBranches = v.branches;
-					$scope.allowedTags = v.tags;
-					
-					if (catalog.recipe && catalog.recipe.buildOptions) {
-						if (catalog.recipe.buildOptions.env) {
-							$scope.userInputVariable = [];
-							$scope.secretVariable = [];
-							if (!$scope.configuration.recipe.env){
-								$scope.configuration.recipe.env = {};
-							}
-							for (let envVariable in catalog.recipe.buildOptions.env) {
-								if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
-									if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
-										let temp = {
-											label: catalog.recipe.buildOptions.env[envVariable].label || envVariable,
-											name: envVariable,
-											value: catalog.recipe.buildOptions.env[envVariable].default || "",
-											fieldMsg: catalog.recipe.buildOptions.env[envVariable].fieldMsg,
-											required: false
-										};
-										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
-										
-											if (typeof $scope.configuration.recipe.env[envVariable] !== 'string') {
+			$scope.checkGitBranch(catalog, function () {
+				$scope.getSecrets(function () {
+					$scope.getConfigurationCatalogs(catalog, function () {
+						$scope.configuration.recipe.id = catalog._id.toString();
+						$scope.allowedBranches = v.branches;
+						$scope.allowedTags = v.tags;
+						
+						if (catalog.recipe && catalog.recipe.buildOptions) {
+							if (catalog.recipe.buildOptions.env) {
+								$scope.userInputVariable = [];
+								$scope.secretVariable = [];
+								if (!$scope.configuration.recipe.env) {
+									$scope.configuration.recipe.env = {};
+								}
+								for (let envVariable in catalog.recipe.buildOptions.env) {
+									if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
+										if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
+											let temp = {
+												label: catalog.recipe.buildOptions.env[envVariable].label || envVariable,
+												name: envVariable,
+												value: catalog.recipe.buildOptions.env[envVariable].default || "",
+												fieldMsg: catalog.recipe.buildOptions.env[envVariable].fieldMsg,
+												required: false
+											};
+											if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
+												
+												if (typeof $scope.configuration.recipe.env[envVariable] !== 'string') {
+													$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
+												}
+											} else {
 												$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 											}
+											$scope.userInputVariable.push(temp);
 										}
-										else {
-											$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
-										}
-										$scope.userInputVariable.push(temp);
-									}
-									if (catalog.recipe.buildOptions.env[envVariable].type === 'secret') {
-										let temp = {
-											name: envVariable,
-											fields: [
-												{
-													label: "Secret",
-													name: "secretName",
-													value: $scope.secrets.secret,
-													fieldMsg: "Enter the value of the secret",
-													required: true,
-												},
-												{
-													label: "Secret Key",
-													name: "secretKey",
-													value: catalog.recipe.buildOptions.env[envVariable].key || "",
-													fieldMsg: "Enter the value of the secret key",
-													required: false,
+										if (catalog.recipe.buildOptions.env[envVariable].type === 'secret') {
+											let temp = {
+												name: envVariable,
+												fields: [
+													{
+														label: "Secret",
+														name: "secretName",
+														value: $scope.secrets.secret,
+														fieldMsg: "Enter the value of the secret",
+														required: true,
+													},
+													{
+														label: "Secret Key",
+														name: "secretKey",
+														value: catalog.recipe.buildOptions.env[envVariable].key || "",
+														fieldMsg: "Enter the value of the secret key",
+														required: false,
+													}
+												]
+											};
+											if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
+												if (typeof $scope.configuration.recipe.env[envVariable] !== 'object') {
+													$scope.configuration.recipe.env[envVariable] = {
+														name: catalog.recipe.buildOptions.env[envVariable].secret || "",
+														key: catalog.recipe.buildOptions.env[envVariable].key || ""
+													};
 												}
-											]
-										};
-										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
-											if (typeof $scope.configuration.recipe.env[envVariable] !== 'object') {
+											} else {
 												$scope.configuration.recipe.env[envVariable] = {
 													name: catalog.recipe.buildOptions.env[envVariable].secret || "",
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
+											$scope.secretVariable.push(temp);
 										}
-										else {
-											$scope.configuration.recipe.env[envVariable] = {
-												name: catalog.recipe.buildOptions.env[envVariable].secret || "",
-												key: catalog.recipe.buildOptions.env[envVariable].key || ""
-											};
-										}
-										$scope.secretVariable.push(temp);
 									}
 								}
-							}
-							if (Object.keys($scope.configuration.recipe.env).length === 0) {
-								delete $scope.configuration.recipe.env;
+								if (Object.keys($scope.configuration.recipe.env).length === 0) {
+									delete $scope.configuration.recipe.env;
+								}
 							}
 						}
-					}
-					
-					//image
-					if (catalog.recipe && catalog.recipe.deployOptions) {
-						if (catalog.recipe.deployOptions.image) {
-							$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
-							$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
-							$scope.showImages = catalog.recipe.deployOptions.image.override;
-							$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
-							$scope.configuration.recipe.image = {
-								prefix: catalog.recipe.deployOptions.image.prefix,
-								name: catalog.recipe.deployOptions.image.name,
-								tag: catalog.recipe.deployOptions.image.tag
-							};
-						}
-						
-						if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
-							if (!$scope.configuration.recipe.ports) {
-								$scope.configuration.recipe.ports = {
-									type: "kubernetes"
+						//image
+						if (catalog.recipe && catalog.recipe.deployOptions) {
+							if (catalog.recipe.deployOptions.image) {
+								$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
+								$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
+								$scope.showImages = catalog.recipe.deployOptions.image.override;
+								$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
+								$scope.configuration.recipe.image = {
+									prefix: catalog.recipe.deployOptions.image.prefix,
+									name: catalog.recipe.deployOptions.image.name,
+									tag: catalog.recipe.deployOptions.image.tag
 								};
-								
 							}
-							$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
-							if ($scope.configuration.recipe.ports.values){
-								$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
-							}
-							$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
-							if (!$scope.configuration.recipe.ports.values) {
-								$scope.configuration.recipe.ports.values = angular.copy($scope.ports);
-							}
-							$scope.showPorts = true;
-							$scope.configuration.recipe.ports.portType = "Internal";
-						} else {
-							$scope.showPorts = false;
-						}
-						if (catalog.recipe.deployOptions.sourceCode) {
-							if (catalog.recipe.deployOptions.sourceCode.configuration) {
-								$scope.showSourceConfig = true;
-								$scope.requiredSourceConfig = !!catalog.recipe.deployOptions.sourceCode.configuration;
-								$scope.editSourceConfig = true;
-								$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog
-									|| $scope.configuration.recipe.sourceCode.catalog);
-								$scope.fetchConfigBranchesTags(catalog.recipe.deployOptions.sourceCode.configuration.version
-									|| $scope.configuration.recipe.sourceCode.version);
-								
-								if (catalog.recipe.deployOptions.sourceCode.configuration.catalog !== '') {
-									$scope.editSourceConfig = false;
-									$scope.configuration.recipe.sourceCode = {
-										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
-										catalog: catalog.recipe.deployOptions.sourceCode.configuration.catalog,
-										version: catalog.recipe.deployOptions.sourceCode.configuration.version,
-										tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
-										branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
-										id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
+							
+							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
+								if (!$scope.configuration.recipe.ports) {
+									$scope.configuration.recipe.ports = {
+										type: "kubernetes"
 									};
-									if (!$scope.configuration.recipe.sourceCode.id) {
-										$scope.showSourceConfig = false;
-									}
-								} else if (!catalog.recipe.deployOptions.sourceCode) {
-									$scope.configuration.recipe.sourceCode = {
-										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
-									}
+									
 								}
-								if (catalog.recipe.deployOptions.sourceCode.configuration.branch) {
-									$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
+								$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
+								if ($scope.configuration.recipe.ports.values) {
+									$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
+								}
+								$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
+								$scope.ports.forEach((port) => {
+									if (port.isPublished) {
+										$scope.isPublished = true;
+										if (!$scope.configuration.recipe.ports.portType) {
+											if (port.published) {
+												$scope.configuration.recipe.ports.portType = "NodePort";
+											} else {
+												$scope.configuration.recipe.ports.portType = "LoadBalancer";
+											}
+										}
+										$scope.loadBalancer = $scope.configuration.recipe.ports.portType === "LoadBalancer";
+									}
+								});
+								if (!$scope.configuration.recipe.ports.values) {
+									$scope.configuration.recipe.ports.values = angular.copy($scope.ports);
+								}
+								$scope.showPorts = true;
+								if (!$scope.isPublished || $scope.service.type === "service") {
+									$scope.configuration.recipe.ports.portType = "Internal";
+								}
+							} else {
+								$scope.showPorts = false;
+							}
+							if (catalog.recipe.deployOptions.sourceCode) {
+								if (catalog.recipe.deployOptions.sourceCode.configuration) {
+									$scope.showSourceConfig = true;
+									$scope.requiredSourceConfig = !!catalog.recipe.deployOptions.sourceCode.configuration;
+									$scope.editSourceConfig = true;
+									$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog
+										|| $scope.configuration.recipe.sourceCode.catalog);
+									$scope.fetchConfigBranchesTags(catalog.recipe.deployOptions.sourceCode.configuration.version
+										|| $scope.configuration.recipe.sourceCode.version);
+									
+									if (catalog.recipe.deployOptions.sourceCode.configuration.catalog !== '') {
+										$scope.editSourceConfig = false;
+										$scope.configuration.recipe.sourceCode = {
+											label: catalog.recipe.deployOptions.sourceCode.configuration.label,
+											catalog: catalog.recipe.deployOptions.sourceCode.configuration.catalog,
+											version: catalog.recipe.deployOptions.sourceCode.configuration.version,
+											tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
+											branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
+											id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
+										};
+										if (!$scope.configuration.recipe.sourceCode.id) {
+											$scope.showSourceConfig = false;
+										}
+									} else if (!catalog.recipe.deployOptions.sourceCode) {
+										$scope.configuration.recipe.sourceCode = {
+											label: catalog.recipe.deployOptions.sourceCode.configuration.label,
+										}
+									}
+									if (catalog.recipe.deployOptions.sourceCode.configuration.branch) {
+										$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
+									}
+								} else {
+									delete $scope.configuration.recipe.sourceCode;
 								}
 							} else {
 								delete $scope.configuration.recipe.sourceCode;
 							}
-						} else {
-							delete $scope.configuration.recipe.sourceCode;
 						}
-					}
+					});
 				});
 			});
 		};
-		
-		$scope.updateGitBranch = function (branch) {
+		$scope.checkGitBranch = function (catalog, cb) {
+			if (catalog && catalog.recipe && catalog.recipe.deployOptions && catalog.recipe.deployOptions.image) {
+				$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
+			}
+			if ($scope.configuration && $scope.configuration.src && $scope.configuration.src.branch) {
+				$scope.updateGitBranch($scope.configuration.src.branch, cb);
+			} else {
+				return cb();
+			}
+		};
+		$scope.updateGitBranch = function (branch, cb) {
 			if ($scope.showBranches && service.src && service.src.provider && service.src.provider !== 'manual') {
 				overlayLoading.show();
+				$scope.loadingRecipes = true;
 				getSendDataFromServer($scope, ngDataApi, {
 					method: 'get',
 					routeName: '/repositories/git/branch/',
@@ -973,7 +996,12 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 							$scope.configuration.src.id = branch.repo.id;
 						}
 					}
+					if (cb) {
+						return cb();
+					}
 				});
+			} else if (cb) {
+				return cb();
 			}
 		};
 		$scope.updateGitConfigBranch = function (branch) {

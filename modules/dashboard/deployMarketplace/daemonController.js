@@ -204,7 +204,7 @@ daemoonDeployCatalogApp.controller('daemonDeployCatalogCtrl', ['$scope', '$timeo
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command | " + pod.metadata.name;
-				soajskubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
+				daemonkubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
 			}
 		});
 	};
@@ -219,7 +219,7 @@ daemoonDeployCatalogApp.controller('daemonDeployCatalogCtrl', ['$scope', '$timeo
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command";
-				soajskubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
+				daemonkubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
 			}
 		});
 	};
@@ -716,7 +716,7 @@ daemoonDeployCatalogApp.controller('daemonDeployCatalogCtrl', ['$scope', '$timeo
 				controller: function ($scope, $modalInstance) {
 					fixBackDrop();
 					
-					soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+					daemonkubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 						if (err) {
 							$scope.$parent.displayAlert('danger', err.message);
 						}
@@ -727,7 +727,7 @@ daemoonDeployCatalogApp.controller('daemonDeployCatalogCtrl', ['$scope', '$timeo
 					};
 					
 					$scope.redeploy = function (service, version) {
-						soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+						daemonkubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
 					};
 				}
 			});

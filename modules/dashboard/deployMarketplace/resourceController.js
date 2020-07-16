@@ -203,7 +203,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command | " + pod.metadata.name;
-				soajskubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
+				resourcekubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
 			}
 		});
 	};
@@ -218,7 +218,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command";
-				soajskubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
+				resourcekubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
 			}
 		});
 	};
@@ -715,7 +715,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 				controller: function ($scope, $modalInstance) {
 					fixBackDrop();
 					
-					soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+					resourcekubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 						if (err) {
 							$scope.$parent.displayAlert('danger', err.message);
 						}
@@ -726,7 +726,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 					};
 					
 					$scope.redeploy = function (service, version) {
-						soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+						resourcekubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
 					};
 				}
 			});

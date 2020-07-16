@@ -202,7 +202,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command | " + pod.metadata.name;
-				soajskubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
+				apiKubeServicesSrv.execCommand($scope, $modalInstance, currentScope, pod, service, version);
 			}
 		});
 	};
@@ -216,7 +216,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 			keyboard: false,
 			controller: function ($scope, $modalInstance) {
 				$scope.execCommandTitle = "Exec Command";
-				soajskubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
+				apiKubeServicesSrv.execCommands($scope, $modalInstance, currentScope, service, version);
 			}
 		});
 	};
@@ -713,7 +713,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 				controller: function ($scope, $modalInstance) {
 					fixBackDrop();
 					
-					soajskubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
+					apiKubeServicesSrv.reConfigureDeployment($scope, currentScope, service, version, $modalInstance, function (err) {
 						if (err) {
 							$scope.$parent.displayAlert('danger', err.message);
 						}
@@ -724,7 +724,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 					};
 					
 					$scope.redeploy = function (service, version) {
-						soajskubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
+						apiKubeServicesSrv.redeploy(service, version, $scope, currentScope, $modalInstance);
 					};
 				}
 			});

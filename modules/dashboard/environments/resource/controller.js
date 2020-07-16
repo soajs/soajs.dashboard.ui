@@ -457,6 +457,8 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 									"plugged": modalScope.formData.plugged,
 									"shared": modalScope.formData.shared,
 									"sharedEnvs": modalScope.formData.sharedEnvs,
+									"type": modalScope.formData.type,
+									"category": modalScope.formData.category,
 									"config": itemConfig
 								}
 							}
@@ -548,6 +550,8 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 									"plugged": modalScope.formData.plugged,
 									"shared": modalScope.formData.shared,
 									"sharedEnvs": modalScope.formData.sharedEnvs,
+									"type": modalScope.formData.type,
+									"category": modalScope.formData.category,
 									"config": itemConfig
 								}
 							}

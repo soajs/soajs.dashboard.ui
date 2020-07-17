@@ -1815,7 +1815,13 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 						});
 					}
 					if ($localStorage.serviceCatalog || $localStorage.ApiCatalog) {
-						$scope.overviewSelectedVersion = defaultVersion;
+						if ($localStorage.serviceCatalog && $localStorage.serviceCatalog.version) {
+							$scope.overviewSelectedVersion = $localStorage.serviceCatalog.version;
+						} else if ($localStorage.ApiCatalog && $localStorage.ApiCatalog.version) {
+							$scope.overviewSelectedVersion = $localStorage.ApiCatalog.version;
+						} else {
+							$scope.overviewSelectedVersion = defaultVersion;
+						}
 					}
 				}
 			}

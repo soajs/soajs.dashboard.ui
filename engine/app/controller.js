@@ -54,7 +54,7 @@ function configureRouteNavigation(navigation, scope) {
 
 /* App Module */
 var soajsApp = angular.module('soajsApp', soajsAppModules);
-
+soajsApp.constant("moment", moment);
 soajsApp.config([
 	'$routeProvider',
 	'$controllerProvider',

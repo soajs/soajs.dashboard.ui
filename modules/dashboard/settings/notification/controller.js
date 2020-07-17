@@ -47,7 +47,6 @@ CDApp.controller('notificationCtrl', ['$scope', 'ngDataApi', 'injectFiles', '$lo
 	$scope.pagination = {
 		totalItems: 0,
 		currentPage: 1,
-		maxSize: 5,
 		itemsPerPage: $scope.searchOptions.limit ? $scope.searchOptions.limit.l : 100
 	};
 	$scope.search = function (page) {
@@ -59,7 +58,10 @@ CDApp.controller('notificationCtrl', ['$scope', 'ngDataApi', 'injectFiles', '$lo
 			opts.limit = $scope.searchOptions.limit.l;
 		}
 		if (page > 1) {
-			opts.start = $scope.searchOptions.limit.l * (page - 1) - 1;
+			opts.start = $scope.searchOptions.limit.l * (page - 1);
+		}
+		else {
+			delete opts.start;
 		}
 		getSendDataFromServer($scope, ngDataApi, {
 			'method': 'get',
@@ -115,7 +117,7 @@ CDApp.controller('notificationCtrl', ['$scope', 'ngDataApi', 'injectFiles', '$lo
 		let options = {
 			timeout: $timeout,
 			form: formConfig,
-			name: 'serviceInfo',
+			name: 'ledgerInfo',
 			label: type + ' | Info',
 			actions: [
 				{

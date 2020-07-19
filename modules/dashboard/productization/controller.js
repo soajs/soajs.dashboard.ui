@@ -774,7 +774,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 				$scope.paginations = response.paginations;
 				$scope.serviceGroup = response.serviceGroup;
 				$scope.allServiceApis = response.allServiceApis;
-				$scope.aclFill = response.aclFill;
+				$scope.aclFill = response.aclFill || {};
 				
 			}
 		});

@@ -64,11 +64,11 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 							$scope.editor.session.setMode("ace/mode/json");
 						}
 					};
-					let aceCustomRegistry = {
-						"name": 'customRegistry',
-						"height": '16px',
-						"firstTime": true
-					};
+					// let aceCustomRegistry = {
+					// 	"name": 'customRegistry',
+					// 	"height": '16px',
+					// 	"firstTime": true
+					// };
 					$scope.options = {
 						aceEditorConfig: {
 							maxLines: Infinity,

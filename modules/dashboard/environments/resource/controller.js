@@ -338,11 +338,11 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 							options.changed($scope, $modalInstance, type, value)
 						}
 					};
-					let aceCustomRegistry = {
-						"name": 'customRegistry',
-						"height": '16px',
-						"firstTime": true
-					};
+					// let aceCustomRegistry = {
+					// 	"name": 'customRegistry',
+					// 	"height": '16px',
+					// 	"firstTime": true
+					// };
 					$scope.options = {
 						aceEditorConfig: {
 							maxLines: Infinity,

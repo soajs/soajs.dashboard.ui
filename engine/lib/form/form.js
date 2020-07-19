@@ -303,23 +303,23 @@ function buildForm(context, modal, configuration, cb) {
 				// }, 1000);
 			};
 
-			oneEntry.onUpdate = function (_editore) {
-				let newHeight = 50;
-				if (_editore[0].data && _editore[0].data.lines) {
-					newHeight += _editore[0].data.lines.length * 16.5;
-					newHeight = Math.ceil(newHeight);
-
-					if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
-						newHeight = parseInt(oneEntry.height);
-					}
-
-					context.form.timeout(function () {
-						if(_editore[1].heightUpdate && typeof(_editore[1].heightUpdate) === 'function'){
-							_editore[1].heightUpdate(newHeight);
-						}
-					}, 1500);
-				}
-			}
+			// oneEntry.onUpdate = function (_editore) {
+			// 	let newHeight = 50;
+			// 	if (_editore[0].data && _editore[0].data.lines) {
+			// 		newHeight += _editore[0].data.lines.length * 16.5;
+			// 		newHeight = Math.ceil(newHeight);
+			//
+			// 		if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
+			// 			newHeight = parseInt(oneEntry.height);
+			// 		}
+			//
+			// 		context.form.timeout(function () {
+			// 			if(_editore[1].heightUpdate && typeof(_editore[1].heightUpdate) === 'function'){
+			// 				_editore[1].heightUpdate(newHeight);
+			// 			}
+			// 		}, 1500);
+			// 	}
+			// }
 		}
 	}
 

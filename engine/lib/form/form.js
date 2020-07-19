@@ -266,36 +266,36 @@ function buildForm(context, modal, configuration, cb) {
 				_editor.clearSelection();
 				_editor.setShowPrintMargin(false);
 
-				// function heightUpdateFunction(computedHeightValue) {
-				// 	var newHeight =
-				// 		_editor.getSession().getScreenLength()
-				// 		* _editor.renderer.lineHeight
-				// 		+ _editor.renderer.scrollBar.getWidth() + 10;
-				//
-				// 	if (computedHeightValue) {
-				// 		newHeight = parseInt(computedHeightValue);
-				// 	}
-				// 	else if (oneEntry.fixedHeight) {
-				// 		newHeight = parseInt(oneEntry.height);
-				// 	}
-				// 	else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
-				// 		newHeight = parseInt(oneEntry.height);
-				// 	}
-				//
-				// 	_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
-				// 	_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
-				// 	configuration.timeout(function () {
-				// 		jQuery('#' + oneEntry.name).height(newHeight.toString() + "px");
-				// 		// _editor.resize(true);
-				// 	}, 5);
-				// }
+				function heightUpdateFunction(computedHeightValue) {
+					var newHeight =
+						_editor.getSession().getScreenLength()
+						* _editor.renderer.lineHeight
+						+ _editor.renderer.scrollBar.getWidth() + 10;
+
+					if (computedHeightValue) {
+						newHeight = parseInt(computedHeightValue);
+					}
+					else if (oneEntry.fixedHeight) {
+						newHeight = parseInt(oneEntry.height);
+					}
+					else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
+						newHeight = parseInt(oneEntry.height);
+					}
+
+					_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
+					_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
+					configuration.timeout(function () {
+						jQuery('#' + oneEntry.name).height(newHeight.toString() + "px");
+						// _editor.resize(true);
+					}, 5);
+				}
 				//
 				// context.form.timeout(function () {
 				// 	if(oneEntry.editor){
 				// 		oneEntry.editor.heightUpdate = heightUpdateFunction;
 				// 	}
-				// 	// Set initial size to match initial content
-				// 	heightUpdateFunction();
+					// Set initial size to match initial content
+					heightUpdateFunction();
 				//
 				// 	// Whenever a change happens inside the ACE editor, update
 				// 	// the size again
@@ -303,23 +303,23 @@ function buildForm(context, modal, configuration, cb) {
 				// }, 1000);
 			};
 
-			// oneEntry.onUpdate = function (_editore) {
-			// 	let newHeight = 50;
-			// 	if (_editore[0].data && _editore[0].data.lines) {
-			// 		newHeight += _editore[0].data.lines.length * 16.5;
-			// 		newHeight = Math.ceil(newHeight);
-			//
-			// 		if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
-			// 			newHeight = parseInt(oneEntry.height);
-			// 		}
-			//
-			// 		context.form.timeout(function () {
-			// 			if(_editore[1].heightUpdate && typeof(_editore[1].heightUpdate) === 'function'){
-			// 				_editore[1].heightUpdate(newHeight);
-			// 			}
-			// 		}, 1500);
-			// 	}
-			// }
+			oneEntry.onUpdate = function (_editore) {
+				let newHeight = 50;
+				if (_editore[0].data && _editore[0].data.lines) {
+					newHeight += _editore[0].data.lines.length * 16.5;
+					newHeight = Math.ceil(newHeight);
+
+					if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
+						newHeight = parseInt(oneEntry.height);
+					}
+
+					context.form.timeout(function () {
+						if(_editore[1].heightUpdate && typeof(_editore[1].heightUpdate) === 'function'){
+							_editore[1].heightUpdate(newHeight);
+						}
+					}, 1500);
+				}
+			}
 		}
 	}
 
@@ -398,13 +398,13 @@ function buildForm(context, modal, configuration, cb) {
 		var fileTypes = ['document', 'image', 'audio', 'video'];
 		var customData = [];
 
-		findEditorSchema(context.form.entries);
-
-		for (var j = 0; j < formDataKeys.length; j++) {
-			findFileInputSchema(context.form.entries, formDataKeys[j], fileTypes);
-		}
-
 		if (functionObj.type === 'submit') {
+			findEditorSchema(context.form.entries);
+			
+			for (var j = 0; j < formDataKeys.length; j++) {
+				findFileInputSchema(context.form.entries, formDataKeys[j], fileTypes);
+			}
+			
 			var data = angular.copy(context.form.formData);
 			if (context.form.itemsAreValid(data)) {
 				for (var i = 0; i < customData.length; i++) {

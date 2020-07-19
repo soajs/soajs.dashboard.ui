@@ -1,6 +1,6 @@
 "use strict";
 var soajsCatalogApp = soajsApp.components;
-soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams) {
+soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', '$localStorage', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -237,20 +237,25 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 	};
 	
 	$scope.getEnvironments = function () {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/console/environment"
-		}, function (error, response) {
-			if (error) {
-				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			} else {
-				$scope.envs = [];
-				$scope.envList = response;
-				$scope.envList.forEach((env) => {
-					$scope.envs.push(env.code.toLowerCase());
-				});
-			}
+		$scope.envs = [];
+		$scope.envList = angular.copy($localStorage.environments);
+		$scope.envList.forEach((env) => {
+			$scope.envs.push(env.code.toLowerCase());
 		});
+		// getSendDataFromServer($scope, ngDataApi, {
+		// 	"method": "get",
+		// 	"routeName": "/console/environment"
+		// }, function (error, response) {
+		// 	if (error) {
+		// 		$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		// 	} else {
+		// 		$scope.envs = [];
+		// 		$scope.envList = response;
+		// 		$scope.envList.forEach((env) => {
+		// 			$scope.envs.push(env.code.toLowerCase());
+		// 		});
+		// 	}
+		// });
 	};
 	
 	$scope.updateServiceSettings = function (env, version, serviceRecord) {
@@ -1195,7 +1200,7 @@ soajsCatalogApp.controller('resourceCatalogCtrl', ['$scope', '$timeout', '$modal
 	
 }]);
 
-soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', 'Upload', '$routeParams', 'detectBrowser', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, Upload, $routeParams, detectBrowser) {
+soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$compile', 'ngDataApi', 'injectFiles', '$cookies', '$localStorage', function ($scope, $timeout, $modal, $compile, ngDataApi, injectFiles, $cookies, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -1292,6 +1297,7 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 						if (response.records) {
 							$scope.showCatalog = response.records.length > 0;
 							$scope.mainTabs = getCatalogs(response.records, favoriteResponse);
+							$scope.getEnvironments();
 						}
 					}
 				});
@@ -1399,6 +1405,28 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 				}
 			}
 		});
+	};
+	
+	$scope.getEnvironments = function () {
+		$scope.envs = [];
+		$scope.envList = angular.copy($localStorage.environments);
+		$scope.envList.forEach((env) => {
+			$scope.envs.push(env.code.toLowerCase());
+		});
+		// getSendDataFromServer($scope, ngDataApi, {
+		// 	"method": "get",
+		// 	"routeName": "/console/environment"
+		// }, function (error, response) {
+		// 	if (error) {
+		// 		$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+		// 	} else {
+		// 		$scope.envs = [];
+		// 		$scope.envList = response;
+		// 		$scope.envList.forEach((env) => {
+		// 			$scope.envs.push(env.code.toLowerCase());
+		// 		});
+		// 	}
+		// });
 	};
 	
 	$scope.removeResource = function (service) {

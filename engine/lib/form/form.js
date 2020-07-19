@@ -266,41 +266,41 @@ function buildForm(context, modal, configuration, cb) {
 				_editor.clearSelection();
 				_editor.setShowPrintMargin(false);
 
-				function heightUpdateFunction(computedHeightValue) {
-					var newHeight =
-						_editor.getSession().getScreenLength()
-						* _editor.renderer.lineHeight
-						+ _editor.renderer.scrollBar.getWidth() + 10;
-
-					if (computedHeightValue) {
-						newHeight = parseInt(computedHeightValue);
-					}
-					else if (oneEntry.fixedHeight) {
-						newHeight = parseInt(oneEntry.height);
-					}
-					else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
-						newHeight = parseInt(oneEntry.height);
-					}
-
-					_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
-					_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
-					configuration.timeout(function () {
-						jQuery('#' + oneEntry.name).height(newHeight.toString() + "px");
-						// _editor.resize(true);
-					}, 5);
-				}
-
-				context.form.timeout(function () {
-					if(oneEntry.editor){
-						oneEntry.editor.heightUpdate = heightUpdateFunction;
-					}
-					// Set initial size to match initial content
-					heightUpdateFunction();
-
-					// Whenever a change happens inside the ACE editor, update
-					// the size again
-					_editor.getSession().on('change', heightUpdateFunction);
-				}, 1000);
+				// function heightUpdateFunction(computedHeightValue) {
+				// 	var newHeight =
+				// 		_editor.getSession().getScreenLength()
+				// 		* _editor.renderer.lineHeight
+				// 		+ _editor.renderer.scrollBar.getWidth() + 10;
+				//
+				// 	if (computedHeightValue) {
+				// 		newHeight = parseInt(computedHeightValue);
+				// 	}
+				// 	else if (oneEntry.fixedHeight) {
+				// 		newHeight = parseInt(oneEntry.height);
+				// 	}
+				// 	else if (parseInt(oneEntry.height) && parseInt(oneEntry.height) > newHeight) {
+				// 		newHeight = parseInt(oneEntry.height);
+				// 	}
+				//
+				// 	_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
+				// 	_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
+				// 	configuration.timeout(function () {
+				// 		jQuery('#' + oneEntry.name).height(newHeight.toString() + "px");
+				// 		// _editor.resize(true);
+				// 	}, 5);
+				// }
+				//
+				// context.form.timeout(function () {
+				// 	if(oneEntry.editor){
+				// 		oneEntry.editor.heightUpdate = heightUpdateFunction;
+				// 	}
+				// 	// Set initial size to match initial content
+				// 	heightUpdateFunction();
+				//
+				// 	// Whenever a change happens inside the ACE editor, update
+				// 	// the size again
+				// 	_editor.getSession().on('change', heightUpdateFunction);
+				// }, 1000);
 			};
 
 			oneEntry.onUpdate = function (_editore) {

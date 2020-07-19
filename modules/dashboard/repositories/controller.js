@@ -83,6 +83,9 @@ repositoriesApp.controller('repositoriesAppCtrl', ['$scope', '$timeout', '$modal
 					if (oneAccount.metadata && oneAccount.metadata.organizations) {
 						orgs = orgs.concat(oneAccount.metadata.organizations);
 					}
+					if (oneAccount.accountType === "organization"){
+						orgs = orgs.concat(oneAccount.owner);
+					}
 				});
 				orgs = arrayUnique(orgs);
 				$scope.repoSearch.organizations = [];

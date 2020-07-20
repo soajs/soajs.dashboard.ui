@@ -884,7 +884,98 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 									tag: catalog.recipe.deployOptions.image.tag
 								};
 							}
-							
+							if (!$scope.configuration.recipe.readinessProbe) {
+								if (catalog.recipe.deployOptions.readinessProbe) {
+									$scope.configuration.recipe.readinessProbe = catalog.recipe.deployOptions.readinessProbe;
+								} else {
+									//$scope.maintenance
+									if ($scope.maintenance.port && $scope.maintenance.readiness) {
+										if ($scope.maintenance.port.type === "maintenance" || $scope.maintenance.port.type === "custom") {
+											$scope.configuration.recipe.readinessProbe = {
+												httpGet: {
+													path: $scope.maintenance.readiness,
+													port: "maintenance"
+												},
+												"initialDelaySeconds": 5,
+												"timeoutSeconds": 2,
+												"periodSeconds": 5,
+												"successThreshold": 1,
+												"failureThreshold": 3
+											};
+										} else if ($scope.maintenance.port.type === "service") {
+											$scope.configuration.recipe.readinessProbe = {
+												httpGet: {
+													path: $scope.maintenance.readiness,
+													port: "service"
+												},
+												"initialDelaySeconds": 5,
+												"timeoutSeconds": 2,
+												"periodSeconds": 5,
+												"successThreshold": 1,
+												"failureThreshold": 3
+											};
+										}
+									} else {
+										$scope.configuration.recipe.readinessProbe = {
+											httpGet: {
+												path: "/heartbeat",
+												port: "maintenance"
+											},
+											"initialDelaySeconds": 5,
+											"timeoutSeconds": 2,
+											"periodSeconds": 5,
+											"successThreshold": 1,
+											"failureThreshold": 3
+										};
+									}
+								}
+							}
+							$scope.configuration.recipe.readinessProbe = JSON.stringify($scope.configuration.recipe.readinessProbe, null, 2);
+							if (!$scope.configuration.recipe.livenessProbe) {
+								if (catalog.recipe.deployOptions.livenessProbe) {
+									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
+								}
+							}
+							$scope.configuration.recipe.livenessProbe = JSON.stringify($scope.configuration.recipe.livenessProbe, null, 2);
+							$scope.aceEditorConfig = {
+								readiness: {
+									maxLines: Infinity,
+									minLines: 1,
+									useWrapMode: true,
+									showGutter: true,
+									mode: 'json',
+									firstLineNumber: 1,
+									onLoad: function (_editor) {
+										_editor.$blockScrolling = Infinity;
+										_editor.scrollToLine(0, true, true);
+										_editor.scrollPageUp();
+										_editor.clearSelection();
+										_editor.setShowPrintMargin(false);
+										_editor.setHighlightActiveLine(false);
+										_editor.renderer.scrollBar.setHeight("200px");
+										_editor.renderer.scrollBar.setInnerHeight("200px");
+									}
+								},
+								liveness: {
+									maxLines: Infinity,
+									minLines: 1,
+									useWrapMode: true,
+									showGutter: true,
+									mode: 'json',
+									firstLineNumber: 1,
+									onLoad: function (_editor) {
+										_editor.$blockScrolling = Infinity;
+										_editor.scrollToLine(0, true, true);
+										_editor.scrollPageUp();
+										_editor.clearSelection();
+										_editor.setShowPrintMargin(false);
+										_editor.setHighlightActiveLine(false);
+										_editor.renderer.scrollBar.setHeight("200px");
+										_editor.renderer.scrollBar.setInnerHeight("200px");
+									}
+								}
+								
+							};
 							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
 								if (!$scope.configuration.recipe.ports) {
 									$scope.configuration.recipe.ports = {
@@ -1267,20 +1358,38 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			src.from = angular.copy(config.src);
 			config.src = src;
 		}
+		let err = null;
+		if (config.recipe && config.recipe.readinessProbe) {
+			try {
+				config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
+			} catch (e) {
+				err = e
+			}
+		}
+		if (config.recipe && config.recipe.livenessProbe) {
+			try {
+				config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
+			} catch (e) {
+				err = e
+			}
+		}
 		opts.data = {
 			config
 		};
-		
-		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert($scope, 'danger', error.message);
-			} else {
-				currentScope.$parent.displayAlert('success', "Item Configuration Saved Successfully!");
-				$modalInstance.close();
-				return cb();
-			}
-		});
+		if (err) {
+			currentScope.displayAlert($scope, 'danger', err.message);
+		} else {
+			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert($scope, 'danger', error.message);
+				} else {
+					currentScope.$parent.displayAlert('success', "Item Configuration Saved Successfully!");
+					$modalInstance.close();
+					return cb();
+				}
+			});
+		}
 	}
 	
 	function buildConfiguration(service, version, $scope, currentScope, $modalInstance, cb) {
@@ -1309,19 +1418,39 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			src.from = angular.copy(config.src);
 			config.src = src;
 		}
+		let err = null;
+		if (config.recipe && config.recipe.readinessProbe) {
+			try {
+				config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
+			} catch (e) {
+				err = e
+			}
+		}
+		if (config.recipe && config.recipe.livenessProbe) {
+			try {
+				config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
+			} catch (e) {
+				err = e
+			}
+		}
 		opts.data = {
 			config
 		};
-		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				currentScope.displayAlert($scope, 'danger', error.message);
-			} else {
-				currentScope.$parent.displayAlert('success', "Item Built Successfully!");
-				$modalInstance.close();
-				return cb();
-			}
-		});
+		if (err) {
+			currentScope.displayAlert($scope, 'danger', err.message);
+		} else {
+			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+				overlayLoading.hide();
+				if (error) {
+					currentScope.displayAlert($scope, 'danger', error.message);
+				} else {
+					currentScope.$parent.displayAlert('success', "Item Built Successfully!");
+					$modalInstance.close();
+					return cb();
+				}
+			});
+		}
+		
 	}
 	
 	function redeploy(service, version, $scope, currentScope, $modalInstance) {

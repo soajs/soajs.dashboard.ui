@@ -285,6 +285,18 @@
 										</div>
 									</fieldset>
 								</fieldset>
+								<fieldset ng-if="configuration.recipe.value">
+									<legend>Readiness Probe</legend>
+									<br>
+									<div ui-ace="aceEditorConfig.readiness" style="height: 200px" ng-model="configuration.recipe.readinessProbe" ng-required="true"></div>
+									<div class="fieldMsg hint" ng-bind-html="'Configure Readiness Probe'"></div>
+								</fieldset>
+								<fieldset ng-if="configuration.recipe.value">
+									<legend>Liveness Probe</legend>
+									<br>
+									<div ui-ace="aceEditorConfig.liveness" style="height: 200px" ng-model="configuration.recipe.livenessProbe" ng-required="false"></div>
+									<div class="fieldMsg hint" ng-bind-html="'Configure Readiness Probe'"></div>
+								</fieldset>
 								<div ng-show="configuration.recipe.value">
 									<fieldset>
 										<legend>Environment Scaling</legend>

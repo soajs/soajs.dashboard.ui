@@ -53,6 +53,7 @@ function buildFormWithModal($scope, $modal, opts, cb) {
 		$scope.form.openForm();
 
 		$scope.form.closeModal = function () {
+			$scope.modalInstance.dismiss('cancel');
 			$scope.modalInstance.close();
 		};
 

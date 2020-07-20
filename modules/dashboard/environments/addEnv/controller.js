@@ -56,6 +56,7 @@ addEnv.controller('addEnvCtrl', ['$scope', 'ngDataApi', 'injectFiles', 'typeServ
 			delete $scope.wizard;
 			if (newEnvCode) {
 				$localStorage.environments = null;
+				$localStorage.newEnv_justAdded = newEnvCode.toUpperCase();
 				$scope.$parent.go("/environments-platforms");
 			} else {
 				$scope.$parent.go("/environments-platforms");

@@ -889,13 +889,11 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 									$scope.configuration.recipe.readinessProbe = catalog.recipe.deployOptions.readinessProbe;
 								}
 							}
-							$scope.configuration.recipe.readinessProbe = JSON.stringify($scope.configuration.recipe.readinessProbe, null, 2);
 							if (!$scope.configuration.recipe.livenessProbe) {
 								if (catalog.recipe.deployOptions.livenessProbe) {
 									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
 								}
 							}
-							$scope.configuration.recipe.livenessProbe = JSON.stringify($scope.configuration.recipe.livenessProbe, null, 2);
 							$scope.aceEditorConfig = {
 								readiness: {
 									maxLines: Infinity,
@@ -913,6 +911,11 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 										_editor.setHighlightActiveLine(false);
 										_editor.renderer.scrollBar.setHeight("200px");
 										_editor.renderer.scrollBar.setInnerHeight("200px");
+										_editor.setValue(JSON.stringify($scope.configuration.recipe.readinessProbe, null, 2));
+										$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
+									},
+									onChange: function (_editor) {
+										$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
 									}
 								},
 								liveness: {
@@ -931,9 +934,16 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 										_editor.setHighlightActiveLine(false);
 										_editor.renderer.scrollBar.setHeight("200px");
 										_editor.renderer.scrollBar.setInnerHeight("200px");
+										_editor.setValue(JSON.stringify($scope.configuration.recipe.livenessProbe, null, 2));
+									},
+									onChange: function (_editor) {
+										$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
 									}
+								},
+								sessions : {
+									readiness : {},
+									liveness : {}
 								}
-								
 							};
 							
 							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {

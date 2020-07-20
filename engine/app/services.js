@@ -473,7 +473,7 @@ soajsApp.service("aclDrawHelpers", function () {
 		for (let method in aclFill) {
 			if (method && aclFill[method] && ['accessType', 'include', 'apisRestrictPermission', "apisPermission", "access"].indexOf(method) === -1) {
 				for (let group in aclFill[method]) {
-					if (group && aclFill[method][group] && aclFill[method][group]){
+					if (group && aclFill[method][group] && aclFill[method][group]) {
 						for (let api in aclFill[method][group].apis) {
 							if (aclFill[method][group].apis[api]["accessType"] === "public" || aclFill[method][group].apis[api]["accessType"] === "private") {
 								aclFill[method][group].apis[api].include = true;
@@ -596,7 +596,7 @@ soajsApp.service("aclDrawHelpers", function () {
 																		return {'valid': false};
 																	}
 																}
-																if (aclEnvObj[serviceName][version][method]){
+																if (aclEnvObj[serviceName][version][method]) {
 																	if (aclEnvObj[serviceName][version][method].length === 0) {
 																		aclEnvObj[serviceName][version][method].push(groupApi);
 																	} else {
@@ -818,12 +818,12 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 				let acl = {
 					"dashboard": {}
 				};
-				for (var service in response.finalACL){
-					if (service && response.finalACL[service]){
+				for (var service in response.finalACL) {
+					if (service && response.finalACL[service]) {
 						let version = response.finalACL[service].version;
 						delete response.finalACL[service].version;
 						acl.dashboard[service] = {
-							[version] :  response.finalACL[service]
+							[version]: response.finalACL[service]
 						};
 					}
 				}
@@ -852,6 +852,9 @@ soajsApp.service('myAccountAccess', ['$cookies', '$localStorage', 'ngDataApi', '
 					$cookies.put("soajs_dashboard_login", true, {'domain': interfaceDomain});
 					//envs = [];
 					$localStorage.environments = angular.copy(envs);
+					if (envs && Array.isArray(envs) && envs.length > 0) {
+						currentScope.setMyEnvCookie($localStorage.environments[0])
+					}
 					$timeout(function () {
 						overlayLoading.hide();
 						return cb(true);

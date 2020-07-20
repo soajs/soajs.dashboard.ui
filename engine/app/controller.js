@@ -117,10 +117,12 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				"code": record.code,
 				"description": record.description
 			};
-			if (record.type) {
+			if (record.deployer && record.deployer.selected === 'manual') {
+				record.type = 'manual';
 				data.type = record.type;
-			}
-			if (record.technology) {
+			} else {
+				record.type = 'container';
+				record.technology = "kubernetes";
 				data.technology = record.technology;
 			}
 			if (record.deployer) {
@@ -319,6 +321,11 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			}
 		};
 		
+		//AH: needed
+		$scope.setMyEnvCookie = function (envRecord) {
+			putMyEnv(envRecord);
+		};
+		
 		// AH: needed
 		$scope.switchEnvironment = function (envRecord, forceEnvRecord) {
 			if (envRecord) {
@@ -341,12 +348,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					!$cookies.getObject('myEnv', {'domain': interfaceDomain}) ||
 					$cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase() !== envRecord.code.toLowerCase()
 				) {
-					if (envRecord.deployer && envRecord.deployer.selected === 'manual') {
-						envRecord.type = 'manual';
-					} else {
-						envRecord.type = 'container';
-						envRecord.technology = "kubernetes";
-					}
 					putMyEnv(envRecord);
 					if ($routeParams && $routeParams.envCode) {
 						//better than $route.reload;

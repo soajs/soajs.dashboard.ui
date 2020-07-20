@@ -74,44 +74,44 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 										_editor.setShowPrintMargin(false);
 										_editor.setHighlightActiveLine(false);
 										$scope.editor = _editor;
-										const heightUpdateFunction = function () {
-											let newHeight =
-												_editor.getSession().getScreenLength()
-												* _editor.renderer.lineHeight
-												+ _editor.renderer.scrollBar.getWidth();
-											
-											if (aceCustomRegistry.fixedHeight) {
-												newHeight = parseInt(aceCustomRegistry.height);
-											}
-											else if (parseInt(aceCustomRegistry.height) && parseInt(aceCustomRegistry.height) > newHeight) {
-												newHeight = parseInt(aceCustomRegistry.height);
-											}
-											if ($scope.formData && aceCustomRegistry.firstTime) {
-												aceCustomRegistry.firstTime = false;
-												let screenLength = 1;
-												if (screenLength > newHeight) {
-													newHeight = screenLength;
-												}
-											} else {
-												aceCustomRegistry.firstTime = false;
-											}
-											_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
-											_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
-											$timeout(function () {
-												jQuery('#' + aceCustomRegistry.name).height(newHeight.toString());
-												_editor.resize(true);
-											}, 5);
-										};
-										heightUpdateFunction();
-										$timeout(function () {
-											_editor.heightUpdate = heightUpdateFunction();
-											// Set initial size to match initial content
-											heightUpdateFunction();
-											
-											// Whenever a change happens inside the ACE editor, update
-											// the size again
-											_editor.getSession().on('change', heightUpdateFunction);
-										}, 2000);
+										// const heightUpdateFunction = function () {
+										// 	let newHeight =
+										// 		_editor.getSession().getScreenLength()
+										// 		* _editor.renderer.lineHeight
+										// 		+ _editor.renderer.scrollBar.getWidth();
+										//
+										// 	if (aceCustomRegistry.fixedHeight) {
+										// 		newHeight = parseInt(aceCustomRegistry.height);
+										// 	}
+										// 	else if (parseInt(aceCustomRegistry.height) && parseInt(aceCustomRegistry.height) > newHeight) {
+										// 		newHeight = parseInt(aceCustomRegistry.height);
+										// 	}
+										// 	if ($scope.formData && aceCustomRegistry.firstTime) {
+										// 		aceCustomRegistry.firstTime = false;
+										// 		let screenLength = 1;
+										// 		if (screenLength > newHeight) {
+										// 			newHeight = screenLength;
+										// 		}
+										// 	} else {
+										// 		aceCustomRegistry.firstTime = false;
+										// 	}
+										// 	_editor.renderer.scrollBar.setHeight(newHeight.toString() + "px");
+										// 	_editor.renderer.scrollBar.setInnerHeight(newHeight.toString() + "px");
+										// 	$timeout(function () {
+										// 		jQuery('#' + aceCustomRegistry.name).height(newHeight.toString());
+										// 		_editor.resize(true);
+										// 	}, 5);
+										// };
+										// heightUpdateFunction();
+										// $timeout(function () {
+										// 	_editor.heightUpdate = heightUpdateFunction();
+										// 	// Set initial size to match initial content
+										// 	heightUpdateFunction();
+										//
+										// 	// Whenever a change happens inside the ACE editor, update
+										// 	// the size again
+										// 	_editor.getSession().on('change', heightUpdateFunction);
+										// }, 2000);
 									}
 								}
 							};

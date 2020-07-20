@@ -433,8 +433,13 @@ function buildForm(context, modal, configuration, cb) {
 				}
 				else {
 					if (entries[i].type === 'jsoneditor') {
-						if(entries[i].ngModel){
-							context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
+						if(entries[i].hasOwnProperty('ngModel')){
+							if (entries[i].ngModel){
+								context.form.formData[entries[i].name] = JSON.parse(entries[i].ngModel);
+							}
+							else {
+								context.form.formData[entries[i].name] = null;
+							}
 						}
 					}
 				}

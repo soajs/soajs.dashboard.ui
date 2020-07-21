@@ -393,9 +393,5 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 				}
 			}
 		}
-		
-		$scope.openSettings = function (code) {
-			$scope.$parent.go("#/registry/configDetailView/" + code, "_blank");
-		};
 		injectFiles.injectCss("modules/dashboard/environments/environments.css");
 	}]);

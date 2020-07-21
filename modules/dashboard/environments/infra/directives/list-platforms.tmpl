@@ -60,7 +60,10 @@
 							<!--<a ng-if="access.editEnvironment" href="" ng-click="editEnvironment(envCode);">-->
 								<!--<span class="icon icon-pencil2" tooltip="{{translation.editEnvironment[LANG]}}"></span>-->
 							<!--</a>-->
-							
+							<a href="" ng-click="openSettings(envCode)" class="icon icon-cog" tooltip="Edit Environment ACL" >
+								<span>
+								</span>
+							</a>
 							<a ng-if="access.deleteEnvironment && envCode !== 'DASHBOARD'" href="" ng-confirm-click="Are you sure you want to remove this environment ?" ng-click="deleteEnvironment(envCode);">
 								<span class="icon icon-cross" tooltip="{{translation.deleteEnvironment[LANG]}}"></span>
 							</a>

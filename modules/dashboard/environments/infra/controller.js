@@ -150,6 +150,9 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 				}
 			});
 		};
+		$scope.openSettings = function (code) {
+			$scope.$parent.go("#/registry/configDetailView/" + code, "_blank");
+		};
 		//if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 		//$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 		//$scope.envDescription = $cookies.getObject('myEnv', {'domain': interfaceDomain}).description;

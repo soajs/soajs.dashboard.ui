@@ -91,9 +91,26 @@ registryConfig.controller('registryConfigViewCtrl', ['$scope', '$timeout', '$mod
 		};
 		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			if (error) {
-				$scope.displayAlert('danger', error.code, true, 'dashboard', error.message);
+				$scope.displayAlert('danger', error.code, true, 'console', error.message);
 			} else {
 				$scope.$parent.displayAlert('success', "Acl updated Successfully for this env");
+			}
+		});
+	};
+	
+	$scope.deleteAcl = function () {
+		let opts = {
+			"method": "delete",
+			"routeName": '/console/environment/acl',
+			"params": {
+				code: $scope.env.code
+			}
+		};
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
+			if (error) {
+				$scope.displayAlert('danger', error.code, true, 'console', error.message);
+			} else {
+				$scope.$parent.displayAlert('success', "Acl deleted Successfully for this env");
 			}
 		});
 	};

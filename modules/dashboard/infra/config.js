@@ -14,7 +14,8 @@ let infraConfig = {
 		list: ['infra', '/account/kubernetes', 'get'],
 		activate: ['infra', '/account/kubernetes', 'post'],
 		edit: ['infra', '/account/kubernetes/configuration', 'put'],
-		deactivate: ['infra', '/account/kubernetes', 'delete']
+		deactivate: ['infra', '/account/kubernetes', 'delete'],
+		editACL: ['infra', '/account/kubernetes/acl', 'put'],
 	},
 	
 	logos: {

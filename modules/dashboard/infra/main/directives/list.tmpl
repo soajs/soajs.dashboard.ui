@@ -5,6 +5,9 @@
 				<img ng-src="{{currentSelectedInfra.icon}}" alt="" height="48"/>
 			</div>
 			<div class="col-lg-10 t-right">
+				<a href="" ng-click="openSettings(currentSelectedInfra)" class="btn btn-sm btn-primary" ng-if="access.editACL">
+					<span class="icon icon-cog"></span> Edit Acl
+				</a>&nbsp;
 				<a href="" ng-click="editProvider(currentSelectedInfra)" class="btn btn-sm btn-success" ng-if="access.edit">
 					<span class="icon icon-pencil"></span> Reconfigure
 				</a>&nbsp;

@@ -147,7 +147,9 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			}
 		});
 	};
-	
+	$scope.openSettings = function (infra) {
+		$scope.$parent.go("#/infra/configDetailView/" + infra._id, "_blank");
+	};
 	if ($scope.access.list) {
 		$scope.getProviders();
 	}

@@ -46,6 +46,27 @@ let infraNav = [
 		'scripts': ['modules/dashboard/infra/config.js', 'modules/dashboard/infra/namespace/controller.js'],
 		'ancestor': [translation.home[LANG]]
 	},
+	{
+		'id': 'infra-acl-settings',
+		'checkPermission': {
+			'service': 'infra',
+			'route': '/account/kubernetes/acl',
+			'method': 'put'
+		},
+		'label': "Infra Acl",
+		'url': '#/infra/configDetailView/:id',
+		'tplPath': 'modules/dashboard/infra/infraDetailView/directives/configDetailView.tmpl',
+		'icon': 'sphere',
+		'pillar': {
+			'name': 'infra',
+			'label': "Infrastructure",
+			'position': 0
+		},
+		'scripts': [
+			'modules/dashboard/infra/infraDetailView/controller.js',
+		],
+		'ancestor': [translation.home[LANG]]
+	}
 	// {
 	// 	'id': 'infra-templates',
 	// 	'label': 'Infra As Code Templates',

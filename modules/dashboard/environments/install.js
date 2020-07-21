@@ -1537,6 +1537,27 @@ var environmentsNav = [
 			'modules/dashboard/environments/cloudsDeployments/services/cloudServices.js',
 		],
 		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'environments-acl-settings',
+		'checkPermission': {
+			'service': 'console',
+			'route': '/environment',
+			'method': 'put'
+		},
+		'label': "Environment Acl",
+		'url': '#/registry/configDetailView/:code',
+		'tplPath': 'modules/dashboard/environments/registryDetailView/directives/configDetailView.tmpl',
+		'icon': 'sphere',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': [
+			'modules/dashboard/environments/registryDetailView/controller.js',
+		],
+		'ancestor': [translation.home[LANG]]
 	}
 ];
 

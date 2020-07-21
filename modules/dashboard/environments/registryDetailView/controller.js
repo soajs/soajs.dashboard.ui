@@ -31,9 +31,9 @@ registryConfig.controller('registryConfigViewCtrl', ['$scope', '$timeout', '$mod
 	$scope.getEnvironments = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/console/registry",
+			"routeName": "/console/environment/settings",
 			"params": {
-				env : $routeParams.code
+				code: $routeParams.code
 			}
 		}, function (error, response) {
 			if (error) {
@@ -111,12 +111,16 @@ registryConfig.controller('registryConfigViewCtrl', ['$scope', '$timeout', '$mod
 				$scope.displayAlert('danger', error.code, true, 'console', error.message);
 			} else {
 				$scope.$parent.displayAlert('success', "Acl deleted Successfully for this env");
+				$scope.showGroupButtonSlider = false;
+				$scope.groupsList.forEach((oneGroup) => {
+					oneGroup.allowed = false;
+				});
 			}
 		});
 	};
 	
 	$scope.close = function () {
-		$scope.$parent.go("#/registry", "_blank");
+		$scope.$parent.go("#/environments-platforms", "_blank");
 	};
 	injectFiles.injectCss("modules/dashboard/environments/registryDetailView/registryAcl.css");
 	$scope.getEnvironments();

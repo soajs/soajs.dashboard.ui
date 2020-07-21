@@ -1546,7 +1546,7 @@ var environmentsNav = [
 			'method': 'put'
 		},
 		'label': "Environment Acl",
-		'url': '#/registry/configDetailView/:code',
+		'url': '#/environments-platforms/configDetailView/:code',
 		'tplPath': 'modules/dashboard/environments/registryDetailView/directives/configDetailView.tmpl',
 		'icon': 'sphere',
 		'pillar': {

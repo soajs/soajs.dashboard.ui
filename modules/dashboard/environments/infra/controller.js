@@ -151,7 +151,7 @@ platformsApp.controller('platformsCtrl', ['$scope', '$timeout', '$cookies', 'ngD
 			});
 		};
 		$scope.openSettings = function (code) {
-			$scope.$parent.go("#/registry/configDetailView/" + code, "_blank");
+			$scope.$parent.go("#/environments-platforms/configDetailView/" + code, "_blank");
 		};
 		//if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 		//$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;

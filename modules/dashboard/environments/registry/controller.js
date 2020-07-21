@@ -53,11 +53,11 @@ registryApp.controller('registryCtrl', ['$scope', '$cookies', 'ngDataApi', 'inje
 									options.submit($scope, $modalInstance);
 								}
 							};
-							let aceCustomRegistry = {
-								"name": 'customRegistry',
-								"height": '16px',
-								"firstTime": true
-							};
+							// let aceCustomRegistry = {
+							// 	"name": 'customRegistry',
+							// 	"height": '16px',
+							// 	"firstTime": true
+							// };
 							$scope.options = {
 								aceEditorConfig: {
 									maxLines: Infinity,

@@ -329,15 +329,15 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 		// AH: needed
 		$scope.switchEnvironment = function (envRecord, forceEnvRecord) {
 			if (envRecord) {
-				if ($routeParams && $routeParams.envCode && $routeParams.envCode !== envRecord.code) {
+				if ($routeParams && $routeParams.code && $routeParams.code !== envRecord.code) {
 					
 					if (forceEnvRecord) {
-						$routeParams.envCode = envRecord.code;
+						$routeParams.code = envRecord.code;
 					} else {
 						$localStorage.environments.forEach((oneEnv) => {
-							if (oneEnv.code.toUpperCase() === $routeParams.envCode.toUpperCase()) {
+							if (oneEnv.code.toUpperCase() === $routeParams.code.toUpperCase()) {
 								envRecord = oneEnv;
-								$routeParams.envCode = oneEnv.code;
+								$routeParams.code = oneEnv.code;
 							}
 						});
 					}
@@ -349,8 +349,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 					$cookies.getObject('myEnv', {'domain': interfaceDomain}).code.toLowerCase() !== envRecord.code.toLowerCase()
 				) {
 					putMyEnv(envRecord);
-					if ($routeParams && $routeParams.envCode) {
-						//better than $route.reload;
+					if ($routeParams &&  $routeParams.code) {
 						$route.updateParams($routeParams);
 					} else {
 						$route.reload();

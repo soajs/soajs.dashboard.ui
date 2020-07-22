@@ -873,13 +873,15 @@ var environmentsConfig = {
 			"list": ["console", "/registry/custom", "get"],
 			"add": ["console", "/registry/custom", "post"],
 			"update": ["console", "/registry/custom", "put"],
-			"delete": ["console", "/registry/custom", "delete"]
+			"delete": ["console", "/registry/custom", "delete"],
+			"editAcl": ["console", "/registry/custom/acl", "put"],
 		},
 		"resource": {
 			"list": ["console", "/registry/resource", "get"],
 			"add": ["console", "/registry/resource", "post"],
 			"update": ["console", "/registry/resource", "put"],
-			"delete": ["console", "/registry/resource", "delete"]
+			"delete": ["console", "/registry/resource", "delete"],
+			"editAcl": ["console", "/registry/resource/acl", "put"],
 		}
 	},
 	

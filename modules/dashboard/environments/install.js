@@ -1542,7 +1542,7 @@ var environmentsNav = [
 		'id': 'environments-acl-settings',
 		'checkPermission': {
 			'service': 'console',
-			'route': '/environment',
+			'route': '/environment/acl',
 			'method': 'put'
 		},
 		'label': "Environment Acl",
@@ -1556,6 +1556,48 @@ var environmentsNav = [
 		},
 		'scripts': [
 			'modules/dashboard/environments/registryDetailView/controller.js',
+		],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'customRegistry-acl-settings',
+		'checkPermission': {
+			'service': 'console',
+			'route': '/registry/custom/acl',
+			'method': 'put'
+		},
+		'label': "Custom Registry Acl",
+		'url': '#/customRegistry/configDetailView/:id',
+		'tplPath': 'modules/dashboard/environments/customRegistryDetailView/directives/configDetailView.tmpl',
+		'icon': 'sphere',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': [
+			'modules/dashboard/environments/customRegistryDetailView/controller.js',
+		],
+		'ancestor': [translation.home[LANG]]
+	},
+	{
+		'id': 'resource-acl-settings',
+		'checkPermission': {
+			'service': 'console',
+			'route': '/registry/resource/acl',
+			'method': 'put'
+		},
+		'label': "Resource Acl",
+		'url': '#/resource/configDetailView/:id',
+		'tplPath': 'modules/dashboard/environments/resourceDetailView/directives/configDetailView.tmpl',
+		'icon': 'sphere',
+		'pillar': {
+			'name': 'deployment',
+			'label': translation.deploy[LANG],
+			'position': 3
+		},
+		'scripts': [
+			'modules/dashboard/environments/resourceDetailView/controller.js',
 		],
 		'ancestor': [translation.home[LANG]]
 	}

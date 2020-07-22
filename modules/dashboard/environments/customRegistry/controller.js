@@ -331,6 +331,10 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 			});
 		};
 		
+		$scope.openSettings = function (item) {
+			$scope.$parent.go("#/customRegistry/configDetailView/" + item._id.toString(), "_blank");
+		};
+		
 		if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 			$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 			if ($scope.envCode) {

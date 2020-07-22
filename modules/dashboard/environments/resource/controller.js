@@ -628,7 +628,9 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 				}
 			});
 		};
-		
+		$scope.openSettings = function (item) {
+			$scope.$parent.go("#/resource/configDetailView/" + item._id.toString(), "_blank");
+		};
 		if ($cookies.getObject('myEnv', {'domain': interfaceDomain})) {
 			$scope.envCode = $cookies.getObject('myEnv', {'domain': interfaceDomain}).code;
 			if ($scope.envCode) {

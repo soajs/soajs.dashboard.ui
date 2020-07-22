@@ -1,0 +1,104 @@
+.envHeaderAcl {
+    background-color: lightgray;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 50px !important;
+    height: 20px !important;
+    top: 10px;
+    left: 6px;
+}
+
+/* The switch - the box around the slider */
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 50px !important;
+    height: 20px !important;
+    top: 10px;
+    left: 6px;
+}
+.buttonSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.buttonSlider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+
+    top: 1px;
+}
+
+.toggleSwitch input {display:none;}
+
+input:checked + .buttonSlider {
+    background-color: #5cb85c;
+}
+
+input:focus + .buttonSlider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .buttonSlider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.buttonSlider.round {
+    border-radius: 34px;
+}
+
+.buttonSlider.round:before {
+    border-radius: 50%;
+}
+
+.envCompareListing {
+    display: grid;
+    grid-template-columns: 150px 150px 150px 150px;
+    grid-gap: 15px;
+    background-color: #fff;
+    color: #444;
+    margin: 15px 10px;
+}
+
+.envCompareListing .envBoxesAllowed {
+    background-color: lightblue;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 150%;
+    text-align: center;
+    cursor:pointer
+}
+
+.envCompareListing .envBoxes {
+    background-color: lightgray;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 150%;
+    text-align: center;
+    cursor:pointer
+}

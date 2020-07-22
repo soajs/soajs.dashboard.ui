@@ -24,6 +24,9 @@
 					<label>{{item.name}}</label>&nbsp;<label ng-if="listItems.author" class="ownerLabel">(
 					<span class="icon icon-user"></span>{{item.author}} )</label>
 					<div class="rightActions" style="display:inline;">
+						<a href="" ng-if="access.resource.editAcl" class="btn btn-sm btn-default" ng-click="openSettings(item)">
+							<span class="icon icon-cog"></span>Edit Acl
+						</a>
 						<a href="" ng-if="access.resource.update" class="btn btn-sm btn-default" ng-click="edit(item)">
 							<span class="icon icon-cog"></span>Configure
 						</a>

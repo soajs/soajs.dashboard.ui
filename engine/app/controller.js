@@ -122,6 +122,7 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				data.type = record.type;
 			} else {
 				record.type = 'container';
+				data.type = record.type;
 				record.technology = "kubernetes";
 				data.technology = record.technology;
 			}

@@ -170,6 +170,9 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 						var myUsers = $scope.tenantMembers.users[$scope.tenantMembers.tId].list;
 						membersHelper.printMembers($scope.tenantMembers, membersConfig, myUsers, true);
 					}
+					else {
+						membersHelper.printMembers($scope.tenantMembers, membersConfig, [], true);
+					}
 				}
 				
 				$scope.tenantMembers.listMembers = function () {
@@ -247,7 +250,8 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/users',
-					"extKey": extKey
+					"extKey": extKey,
+					"scope": "myTenancy"
 				},
 				"headers": {
 					"__env": env.toLowerCase()
@@ -261,6 +265,109 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 			} else {
 				users = arrGroupByTenant(response);
 				return cb();
+			}
+		});
+	};
+}]);
+
+membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
+	
+	let users = [];
+	$scope.getTenantUsers = function (tenantRecord, env, ext) {
+		if ($scope.access.adminUser) {
+			$scope.showGet = true;
+			$scope.getAllUsers(env, ext, tenantRecord, (users) => {
+				if (tenantRecord) {
+					$scope.tenantMembers = angular.extend($scope);
+					$scope.tenantMembers.tenant = tenantRecord;
+					$scope.tenantMembers.tId = tenantRecord['_id'];
+					membersHelper.printMembers($scope.tenantMembers, membersConfig, users, true, true);
+				}
+				
+				$scope.tenantMembers.listMembers = function () {
+					membersHelper.listInvitedMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
+						membersHelper.printMembers($scope.tenantMembers, membersConfig, response, true);
+					});
+				};
+				
+				$scope.tenantMembers.listSubMembers = function () {
+					membersHelper.listSubMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
+						membersHelper.printMembers($scope.tenantMembers, membersConfig, response, true, true);
+					});
+				};
+				
+				$scope.tenantMembers.addMember = function () {
+					membersHelper.addMember($scope.tenantMembers, membersConfig, false, env, ext);
+				};
+				
+				$scope.tenantMembers.inviteUser = function () {
+					membersHelper.inviteMainUser($scope.tenantMembers, membersConfig, false, env, ext);
+				};
+				
+				$scope.tenantMembers.unInviteUser = function () {
+					membersHelper.unInviteUser($scope.tenantMembers, membersConfig, false, env, ext);
+				};
+				
+				$scope.tenantMembers.editMember = function (data) {
+					membersHelper.editMember($scope.tenantMembers, membersConfig, data, false, env, ext);
+				};
+				
+				$scope.tenantMembers.editSubMember = function (data) {
+					membersHelper.editSubMember($scope.tenantMembers, membersConfig, data, false, env, ext);
+				};
+				
+				$scope.tenantMembers.editMemberPin = function (data) {
+					membersHelper.editMemberPin($scope.tenantMembers, membersConfig, data, false, env, ext);
+				};
+				
+				$scope.tenantMembers.activateMembers = function () {
+					membersHelper.activateMembers($scope.tenantMembers, env, ext);
+				};
+				
+				$scope.tenantMembers.deactivateMembers = function () {
+					membersHelper.deactivateMembers($scope.tenantMembers, env, ext);
+				};
+				
+				$scope.$parent.$on('reloadTenantMembers', function (event, args) {
+					$scope.listInvitedMembers();
+				});
+			});
+		}
+	};
+	
+	$scope.getAllUsers = function (env, extKey, tenantRecord, cb) {
+		let opts = {};
+		if (env && extKey) {
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users',
+					"extKey": extKey,
+					"scope": "otherTenancy"
+				},
+				"headers": {
+					"__env": env.toLowerCase()
+				}
+			};
+		}
+		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+			} else {
+				if (response && response.length > 0){
+					response.forEach ((oneUser)=>{
+						let index = -1;
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length> 0){
+							 index =  oneUser.config.allowedTenants.map(x => {
+								return x.tenant? x.tenant.id : null
+							}).indexOf(tenantRecord['_id'].toString());
+						}
+						oneUser.invited = (index !== -1);
+					});
+				}
+				return cb(response);
 			}
 		});
 	};

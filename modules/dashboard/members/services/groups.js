@@ -287,6 +287,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								let index = allowedPackages[prod].indexOf(pack.value);
 								if (index > -1) {
 									jQuery('#product_package_' + pack.value).removeClass('onClickPack');
+									jQuery('#product_package_group_icon_' + pack.value).addClass('showGroupIcon');
 									allowedPackages[prod].splice(index, 1);
 									if (allowedPackages[prod].length  === 0){
 										delete allowedPackages[prod];
@@ -294,6 +295,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 								else {
 									jQuery('#product_package_' + pack.value).addClass('onClickPack');
+									jQuery('#product_package_group_icon_' + pack.value).removeClass('showGroupIcon');
 									allowedPackages[prod].push(pack.value)
 								}
 							};
@@ -575,6 +577,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								let index = allowedPackages[prod].indexOf(pack.value);
 								if (index > -1) {
 									jQuery('#product_package_' + pack.value).removeClass('onClickPack');
+									jQuery('#product_package_group_icon_' + pack.value).addClass('showGroupIcon');
 									allowedPackages[prod].splice(index, 1);
 									if (allowedPackages[prod].length  === 0){
 										delete allowedPackages[prod];
@@ -582,6 +585,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 								}
 								else {
 									jQuery('#product_package_' + pack.value).addClass('onClickPack');
+									jQuery('#product_package_group_icon_' + pack.value).removeClass('showGroupIcon');
 									allowedPackages[prod].push(pack.value)
 								}
 							};

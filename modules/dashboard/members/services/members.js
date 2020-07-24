@@ -7,15 +7,16 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			"method": "get",
 			"routeName": "/urac/admin/users"
 		};
-		let proxy= false;
-		if (env && ext){
-			proxy =true;
+		let proxy = false;
+		if (env && ext) {
+			proxy = true;
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/users',
-					"extKey": ext
+					"extKey": ext,
+					"scope": "myTenancy"
 				},
 				"headers": {
 					"__env": env
@@ -23,7 +24,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -31,28 +32,77 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
 			if (error) {
 				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
-			}
-			else {
-				if (callback && typeof(callback) === 'function') {
+			} else {
+				if (callback && typeof (callback) === 'function') {
 					return callback(response);
-				}
-				else {
+				} else {
 					printMembers(currentScope, moduleConfig, response, proxy);
 				}
 			}
 		});
 	}
 	
+	function listInvitedMembers(currentScope, moduleConfig, env, ext, callback) {
+		var opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users"
+		};
+		let proxy = false;
+		if (env && ext) {
+			proxy = true;
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users',
+					"extKey": ext,
+					"scope": "otherTenancy"
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
+				if (response && response.length > 0) {
+					response.forEach((oneUser) => {
+						let index = -1;
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
+							index = oneUser.config.allowedTenants.map(x => {
+								return x.tenant ? x.tenant.id : null
+							}).indexOf(currentScope['_id'].toString());
+						}
+						oneUser.invited = (index !== -1);
+					});
+				}
+				if (callback && typeof (callback) === 'function') {
+					return callback(response);
+				} else {
+					printMembers(currentScope, moduleConfig, response, proxy, true);
+				}
+			}
+		});
+	}
+	
 	function listSubMembers(currentScope, moduleConfig, env, ext, callback) {
-		let proxy= false;
+		let proxy = false;
 		let tenantId = currentScope.tenant._id;
 		var opts = {
 			"method": "get",
 			"routeName": "/urac/admin/users",
 			"params": {"config": true}
 		};
-		if (env && ext){
-			proxy =true;
+		if (env && ext) {
+			proxy = true;
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -67,7 +117,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -75,43 +125,43 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
 			if (error) {
 				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
-			}
-			else {
+			} else {
 				let users = [];
-				if (response && response.length > 0){
-					response.forEach ((oneUser)=>{
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length> 0){
-							let index =  oneUser.config.allowedTenants.map(x => {
+				if (response && response.length > 0) {
+					response.forEach((oneUser) => {
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
+							let index = oneUser.config.allowedTenants.map(x => {
 								return x.tenant ? x.tenant.id : null;
 							}).indexOf(tenantId);
-							if (index !== -1){
+							if (index !== -1) {
 								users.push(oneUser);
 							}
 						}
 					});
 				}
-				if (callback && typeof(callback) === 'function') {
+				if (callback && typeof (callback) === 'function') {
 					return callback(users);
-				}
-				else {
+				} else {
 					printMembers(currentScope, moduleConfig, users, proxy);
 				}
 			}
 		});
 	}
-
-	function printMembers(currentScope, moduleConfig, response, proxy) {
+	
+	function printMembers(currentScope, moduleConfig, response, proxy, showInvited) {
 		for (var x = 0; x < response.length; x++) {
 			if (response[x].groups) {
 				response[x].grpsArr = response[x].groups.join(', ');
-			}
-			else {
+			} else {
 				response[x].grpsArr = '';
 			}
 		}
-
+		let grid = angular.copy(moduleConfig.grid);
+		if (showInvited) {
+			grid.columns.push({'label': "Invited", 'field': 'invited'})
+		}
 		var options = {
-			grid: moduleConfig.grid,
+			grid: grid,
 			data: response,
 			defaultSortField: 'username',
 			left: [],
@@ -156,7 +206,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'msg': translation.areYouSureWantDeletePin[LANG],
 			});
 		}
-	
+		
 		if (currentScope.access.adminUser.changeStatusAccess && currentScope.tenant
 			&& currentScope.tenant.type === 'product') {
 			options.top = [
@@ -172,7 +222,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				}
 			];
 		}
-		if (currentScope.access.adminUser.unInviteUser 	&& currentScope.tenant.type === 'client') {
+		if (currentScope.access.adminUser.unInviteUser && currentScope.tenant.type === 'client') {
 			options.top = [{
 				'label': translation.uninvite[LANG],
 				'msg': translation.areYouSureWantUnInvite[LANG],
@@ -185,11 +235,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	function addMember(currentScope, moduleConfig, useCookie, env, ext) {
 		var config = angular.copy(moduleConfig.form);
 		overlayLoading.show();
-		var opts ={
+		var opts = {
 			"method": "get",
 			"routeName": "/urac/admin/groups",
 		};
-		if (env && ext){
+		if (env && ext) {
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -203,7 +253,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -212,13 +262,12 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			overlayLoading.hide();
 			if (error) {
 				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-			}
-			else {
+			} else {
 				var grps = [];
 				for (var x = 0; x < response.length; x++) {
 					grps.push({'v': response[x].code, 'l': response[x].name, 'selected': false});
 				}
-				if (env && ext){
+				if (env && ext) {
 					config.entries.push({
 						'name': 'pinConfiguration',
 						'type': 'group',
@@ -251,7 +300,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					'value': grps,
 					'tooltip': translation.assignGroups[LANG]
 				};
-				if (grps.length === 0){
+				if (grps.length === 0) {
 					grps.push({
 						l: "N/A",
 						v: "N/A"
@@ -276,7 +325,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'email': formData.email,
 									'groups': formData.groups ? [formData.groups] : [],
 								};
-								if (formData.pin){
+								if (formData.pin) {
 									postData.pin = {
 										code: formData.pin,
 										allowed: !!formData.allowedLogin
@@ -288,7 +337,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"routeName": "/urac/admin/user",
 									"data": postData
 								};
-								if (env && ext){
+								if (env && ext) {
 									opts = {
 										"method": "post",
 										"routeName": "/soajs/proxy",
@@ -303,7 +352,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									};
 								}
 								if (currentScope.key) {
-									if (!opts.headers){
+									if (!opts.headers) {
 										opts.headers = {};
 									}
 									opts.headers.key = currentScope.key;
@@ -312,8 +361,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									overlayLoading.hide();
 									if (error) {
 										currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-									}
-									else {
+									} else {
 										currentScope.$parent.displayAlert('success', translation.memberAddedSuccessfully[LANG]);
 										currentScope.modalInstance.close();
 										currentScope.form.formData = {};
@@ -336,23 +384,23 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				buildFormWithModal(currentScope, $modal, options);
 			}
 		});
-
+		
 	}
 	
-	function inviteUser(currentScope, moduleConfig, useCookie, env, ext, subExt) {
+	function inviteMainUser(currentScope, moduleConfig, useCookie, env, ext) {
 		overlayLoading.show();
-		let opts ={
+		let opts = {
 			"method": "get",
 			"routeName": "/urac/admin/groups"
 		};
 		//this should use the subtenanant ext key
-		if (env && ext){
+		if (env && ext) {
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': '/urac/admin/groups',
-					"extKey": subExt
+					"extKey": ext
 				},
 				"headers": {
 					"__env": env
@@ -360,7 +408,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -369,15 +417,14 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			overlayLoading.hide();
 			if (error) {
 				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-			}
-			else {
+			} else {
 				let groups = [];
-				if (response.length > 0){
-					response.forEach((oneGroup) =>{
-						if(oneGroup){
+				if (response.length > 0) {
+					response.forEach((oneGroup) => {
+						if (oneGroup) {
 							groups.push({
-								l : oneGroup.code,
-								v : oneGroup.code
+								l: oneGroup.code,
+								v: oneGroup.code
 							});
 						}
 					});
@@ -400,15 +447,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 							}, 5000);
 						};
 						$scope.groups = groups;
-						$scope.checkUsername = function (username){
-							let opts ={
+						$scope.checkUsername = function (username) {
+							let opts = {
 								"method": "get",
 								"routeName": "/urac/user",
 								"params": {
 									"username": username
 								}
 							};
-							if (env && ext){
+							if (env && ext) {
 								opts = {
 									"method": "get",
 									"routeName": "/soajs/proxy",
@@ -423,7 +470,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								};
 							}
 							if (currentScope.key) {
-								if (!opts.headers){
+								if (!opts.headers) {
 									opts.headers = {};
 								}
 								opts.headers.key = currentScope.key;
@@ -439,15 +486,186 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								}
 							});
 						};
-						$scope.onSubmit= function () {
-							let opts ={
+						$scope.onSubmit = function () {
+							let opts = {
 								"method": "put",
 								"routeName": "/urac/admin/users/invite",
 								"data": {
 									"users": []
 								}
 							};
-							if (env && ext){
+							if (env && ext) {
+								opts = {
+									"method": "put",
+									"routeName": "/soajs/proxy",
+									"params": {
+										'proxyRoute': "/urac/admin/users/invite",
+										"extKey": ext
+									},
+									"headers": {
+										"__env": env
+									},
+									"data": {
+										"users": []
+									}
+								};
+							}
+							let userRecord = {
+								user: {
+									username: $scope.formData.username,
+								}
+							};
+							if ($scope.formData.group) {
+								userRecord.groups = [$scope.formData.group]
+							}
+							if ($scope.formData.pinCode) {
+								userRecord.pin = {
+									code: $scope.formData.pinCode,
+									allowed: !!$scope.formData.allowLogin
+								}
+							}
+							opts.data.users.push(userRecord);
+							if (currentScope.key) {
+								if (!opts.headers) {
+									opts.headers = {};
+								}
+								opts.headers.key = currentScope.key;
+							}
+							overlayLoading.show();
+							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+								overlayLoading.hide();
+								if (error) {
+									$scope.displayAlert('danger', error.message);
+								} else if (response) {
+									if (response && response.succeeded && response.succeeded.length > 0) {
+										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
+										overlayLoading.hide();
+										currentScope.listSubMembers();
+										modal.close();
+									} else {
+										$scope.displayAlert('danger', "Failed to invite user: " + response.failed[0].username);
+									}
+								}
+							});
+						};
+						
+						$scope.closeModal = function () {
+							modal.close();
+						};
+					}
+				});
+			}
+		});
+	}
+	
+	function inviteUser(currentScope, moduleConfig, useCookie, env, ext, subExt) {
+		overlayLoading.show();
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/groups"
+		};
+		//this should use the subtenanant ext key
+		if (env && ext) {
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/groups',
+					"extKey": subExt
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+			} else {
+				let groups = [];
+				if (response.length > 0) {
+					response.forEach((oneGroup) => {
+						if (oneGroup) {
+							groups.push({
+								l: oneGroup.code,
+								v: oneGroup.code
+							});
+						}
+					});
+				}
+				let modal = $modal.open({
+					templateUrl: "modules/dashboard/members/directives/inviteUsers.tmpl",
+					size: 'lg',
+					backdrop: true,
+					keyboard: true,
+					controller: function ($scope) {
+						fixBackDrop();
+						$scope.title = 'Invite User';
+						$scope.checkUsernameButton = "danger";
+						$scope.usernameFound = false;
+						$scope.message = {};
+						$scope.displayAlert = function (type, message) {
+							$scope.message[type] = message;
+							$timeout(() => {
+								$scope.message = {};
+							}, 5000);
+						};
+						$scope.groups = groups;
+						$scope.checkUsername = function (username) {
+							let opts = {
+								"method": "get",
+								"routeName": "/urac/user",
+								"params": {
+									"username": username
+								}
+							};
+							if (env && ext) {
+								opts = {
+									"method": "get",
+									"routeName": "/soajs/proxy",
+									"params": {
+										"username": username,
+										'proxyRoute': '/urac/user',
+										"extKey": ext
+									},
+									"headers": {
+										"__env": env
+									}
+								};
+							}
+							if (currentScope.key) {
+								if (!opts.headers) {
+									opts.headers = {};
+								}
+								opts.headers.key = currentScope.key;
+							}
+							overlayLoading.show();
+							getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+								overlayLoading.hide();
+								if (error) {
+									$scope.displayAlert('danger', error.message);
+								} else if (response) {
+									$scope.checkUsernameButton = "success";
+									$scope.usernameFound = true;
+								}
+							});
+						};
+						$scope.onSubmit = function () {
+							let opts = {
+								"method": "put",
+								"routeName": "/urac/admin/users/invite",
+								"data": {
+									"users": []
+								}
+							};
+							if (env && ext) {
 								opts = {
 									"method": "put",
 									"routeName": "/soajs/proxy",
@@ -464,22 +682,22 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								};
 							}
 							let userRecord = {
-								user : {
-								username : $scope.formData.username,
+								user: {
+									username: $scope.formData.username,
 								}
 							};
-							if ($scope.formData.group){
+							if ($scope.formData.group) {
 								userRecord.groups = [$scope.formData.group]
 							}
-							if ($scope.formData.pinCode){
+							if ($scope.formData.pinCode) {
 								userRecord.pin = {
 									code: $scope.formData.pinCode,
-									allowed : !!$scope.formData.allowLogin
+									allowed: !!$scope.formData.allowLogin
 								}
 							}
 							opts.data.users.push(userRecord);
 							if (currentScope.key) {
-								if (!opts.headers){
+								if (!opts.headers) {
 									opts.headers = {};
 								}
 								opts.headers.key = currentScope.key;
@@ -515,14 +733,14 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			}
 		}
 		overlayLoading.show();
-		let opts ={
+		let opts = {
 			"method": "put",
 			"routeName": "/urac/admin/users/uninvite",
 			"data": {
 				"username": usernames
 			}
 		};
-		if (env && ext){
+		if (env && ext) {
 			opts = {
 				"method": "put",
 				"routeName": "/soajs/proxy",
@@ -535,7 +753,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				},
 				"data": {
 					"users": [{
-						"user" :{
+						"user": {
 							"username": usernames
 						}
 					}]
@@ -543,7 +761,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -567,7 +785,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			"method": "get",
 			"routeName": "/urac/admin/groups",
 		};
-		if (env && ext){
+		if (env && ext) {
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -581,7 +799,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -589,8 +807,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
 			if (error) {
 				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-			}
-			else {
+			} else {
 				var grps = [];
 				var datagroups = [];
 				if (data.groups) {
@@ -608,7 +825,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					'value': grps,
 					'tooltip': translation.assignGroups[LANG]
 				};
-				if (grps.length === 0){
+				if (grps.length === 0) {
 					grps.push({
 						l: "N/A",
 						v: "N/A"
@@ -643,7 +860,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									'id': data['_id'],
 									'status': (Array.isArray(formData.status)) ? formData.status.join(",") : formData.status
 								};
-								if (formData.groups){
+								if (formData.groups) {
 									postData.groups = [formData.groups];
 								}
 								var opts = {
@@ -651,7 +868,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									"routeName": "/urac/admin/user",
 									"data": postData
 								};
-								if (env && ext){
+								if (env && ext) {
 									opts = {
 										"method": "put",
 										"routeName": "/soajs/proxy",
@@ -666,7 +883,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 									};
 								}
 								if (currentScope.key) {
-									if (!opts.headers){
+									if (!opts.headers) {
 										opts.headers = {};
 									}
 									opts.headers.key = currentScope.key;
@@ -674,8 +891,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
 									if (error) {
 										currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-									}
-									else {
+									} else {
 										currentScope.$parent.displayAlert('success', translation.memberUpdatedSuccessfully[LANG]);
 										currentScope.modalInstance.close();
 										currentScope.form.formData = {};
@@ -702,11 +918,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	
 	function editSubMember(currentScope, moduleConfig, data, useCookie, env, subExt) {
 		overlayLoading.show();
-		let opts ={
+		let opts = {
 			"method": "get",
 			"routeName": "/urac/admin/groups",
 		};
-		if (env && subExt){
+		if (env && subExt) {
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -720,7 +936,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -729,29 +945,28 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			overlayLoading.hide();
 			if (error) {
 				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
-			}
-			else {
+			} else {
 				let groups = [];
 				
 				let index;
-				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
+				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0) {
 					index = data.config.allowedTenants.map(x => {
-						return  x.tenant ? x.tenant.id: null;
+						return x.tenant ? x.tenant.id : null;
 					}).indexOf(currentScope.tenant['_id']);
 				}
 				
-				if (response.length > 0){
-					response.forEach((oneGroup) =>{
-						if(oneGroup){
+				if (response.length > 0) {
+					response.forEach((oneGroup) => {
+						if (oneGroup) {
 							let temp = {
-								l : oneGroup.code,
-								v : oneGroup.code
+								l: oneGroup.code,
+								v: oneGroup.code
 							};
 							
 							if (index !== -1 && data.config.allowedTenants[index]
-								&&  data.config.allowedTenants[index].groups
-								&&  data.config.allowedTenants[index].groups[0]
-								&& data.config.allowedTenants[index].groups[0] === oneGroup.code){
+								&& data.config.allowedTenants[index].groups
+								&& data.config.allowedTenants[index].groups[0]
+								&& data.config.allowedTenants[index].groups[0] === oneGroup.code) {
 								temp.selected = true;
 							}
 							groups.push(temp);
@@ -777,15 +992,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 						$scope.username = data.username;
 						$scope.email = data.email;
 						$scope.formData = {};
-						$scope.onSubmit= function () {
-							let opts ={
+						$scope.onSubmit = function () {
+							let opts = {
 								"method": "put",
 								"routeName": "/urac/admin/user/groups",
 								"data": {
-									"user": {username : $scope.username}
+									"user": {username: $scope.username}
 								}
 							};
-							if (env && subExt){
+							if (env && subExt) {
 								opts = {
 									"method": "put",
 									"routeName": "/soajs/proxy",
@@ -797,7 +1012,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 										"__env": env
 									},
 									"data": {
-										"user": {username : $scope.username}
+										"user": {username: $scope.username}
 									}
 								};
 							}
@@ -808,7 +1023,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								}
 								opts.headers.key = currentScope.key;
 							}
-							if ($scope.formData.group){
+							if ($scope.formData.group) {
 								opts.data.groups = [$scope.formData.group];
 								overlayLoading.show();
 								getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
@@ -822,8 +1037,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 										modal.close();
 									}
 								});
-							}
-							else {
+							} else {
 								modal.close();
 							}
 						};
@@ -839,7 +1053,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	
 	function editSubMemberPin(currentScope, moduleConfig, data, useCookie, env, subExt) {
 		let index;
-		if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
+		if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0) {
 			index = data.config.allowedTenants.map(x => {
 				return x.tenant.id;
 			}).indexOf(currentScope.tenant['_id']);
@@ -861,9 +1075,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				};
 				$scope.username = data.username;
 				$scope.email = data.email;
-				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0){
-					if (index !== -1){
-						if (data.config.allowedTenants[index].tenant){
+				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0) {
+					if (index !== -1) {
+						if (data.config.allowedTenants[index].tenant) {
 							if (data.config.allowedTenants[index].tenant.pin) {
 								if (data.config.allowedTenants[index].tenant.pin.hasOwnProperty("allowed")) {
 									$scope.allowedLogin = data.config.allowedTenants[index].tenant.pin.allowed;
@@ -873,15 +1087,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					}
 				}
 				$scope.formData = {};
-				$scope.onSubmit= function () {
-					let opts ={
+				$scope.onSubmit = function () {
+					let opts = {
 						"method": "put",
 						"routeName": "/urac/admin/user/pin",
 						"data": {
-							"user": {username : $scope.username}
+							"user": {username: $scope.username}
 						}
 					};
-					if (env && subExt){
+					if (env && subExt) {
 						opts = {
 							"method": "put",
 							"routeName": "/soajs/proxy",
@@ -893,7 +1107,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								"__env": env
 							},
 							"data": {
-								"user": {username : $scope.username}
+								"user": {username: $scope.username}
 							}
 						};
 					}
@@ -947,21 +1161,21 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				};
 				$scope.username = data.username;
 				$scope.email = data.email;
-				if (data.tenant && data.tenant.pin){
-					if ( data.tenant.pin.hasOwnProperty("allowed")) {
-						$scope.allowedLogin =  data.tenant.pin.allowed;
+				if (data.tenant && data.tenant.pin) {
+					if (data.tenant.pin.hasOwnProperty("allowed")) {
+						$scope.allowedLogin = data.tenant.pin.allowed;
 					}
 				}
 				$scope.formData = {};
-				$scope.onSubmit= function () {
-					let opts ={
+				$scope.onSubmit = function () {
+					let opts = {
 						"method": "put",
 						"routeName": "/urac/admin/user/pin",
 						"data": {
-							"user": {username : $scope.username}
+							"user": {username: $scope.username}
 						}
 					};
-					if (env && ext){
+					if (env && ext) {
 						opts = {
 							"method": "put",
 							"routeName": "/soajs/proxy",
@@ -973,7 +1187,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 								"__env": env
 							},
 							"data": {
-								"user": {username : $scope.username}
+								"user": {username: $scope.username}
 							}
 						};
 					}
@@ -1012,11 +1226,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	function removePin(currentScope, moduleConfig, data, env, ext) {
 		overlayLoading.show();
 		var config = {
-			"headers": {
-			},
+			"headers": {},
 			'method': 'delete',
 		};
-		if (env && ext){
+		if (env && ext) {
 			config = {
 				"method": "put",
 				"routeName": "/soajs/proxy",
@@ -1034,7 +1247,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			};
 		}
 		if (currentScope.key) {
-			if (!opts.headers){
+			if (!opts.headers) {
 				opts.headers = {};
 			}
 			opts.headers.key = currentScope.key;
@@ -1064,7 +1277,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'success': translation.successMessageActivateMembers[LANG]
 			}
 		};
-		if (env && ext){
+		if (env && ext) {
 			config = {
 				"method": "put",
 				"routeName": "/soajs/proxy",
@@ -1103,7 +1316,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'success': translation.successMessageDeactivateMembers[LANG]
 			}
 		};
-		if (env && ext){
+		if (env && ext) {
 			config = {
 				"method": "put",
 				"routeName": "/soajs/proxy",
@@ -1130,8 +1343,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	
 	return {
 		'listMembers': listMembers,
+		'listInvitedMembers': listInvitedMembers,
 		'listSubMembers': listSubMembers,
 		'inviteUser': inviteUser,
+		'inviteMainUser': inviteMainUser,
 		'unInviteUser': unInviteUser,
 		'printMembers': printMembers,
 		'addMember': addMember,

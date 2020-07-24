@@ -32,7 +32,7 @@
                                 <li class="blueLi row-list packageListingSize" id="product_package_{{package.value}}"
 																ng-repeat="package in product.packages"
 																ng-click="toggleSelection(package, product.value)">
-                                    <a href="" class="">{{package.label}}</a>
+	                                <a href=""><span id="product_package_group_icon_{{package.value}}" class="icon icon-checkmark green showGroupIcon"></span>{{package.label}}</a>
                                 </li>
                             </ul>
                         </fieldset>

@@ -33,8 +33,8 @@
 																ng-class="{onClickPack: package.selected}"
 																ng-repeat="package in product.packages"
 																ng-click="toggleSelection(package, product.value)">
-                                    <a href="">{{package.label}}</a>
-                                </li>
+	                                <a href=""><span id="product_package_group_icon_{{package.value}}" ng-class="{showGroupIcon: !package.selected}"  class="icon icon-checkmark green"></span>{{package.label}}</a>
+	                            </li>
                             </ul>
                         </fieldset>
 					</div>

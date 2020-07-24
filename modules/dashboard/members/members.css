@@ -49,3 +49,7 @@ div#allowedEnvironments-wrapper li {
     background-color: #9EBC5D !important;
     color: #fff;
 }
+
+.showGroupIcon {
+    display: none;
+}

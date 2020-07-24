@@ -34,12 +34,23 @@
 						<br>
 						<div class="body">
 							<tabset ng-show="env && ext" id="mainTenantsMembers">
-								<tab heading="Members">
+								<tab heading="Users">
 									<br/>
 									<div ng-controller="tenantsMembersCtrl">
 										<div ng-show="access.adminUser.addUser">
 											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, env, ext.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
-											<a href="" ng-show = "showGet" ng-click="tenantMembers.addMember(env, ext.v)" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
+											<a href="" ng-show = "showGet" ng-click="tenantMembers.addMember(env, ext.v)" class="btn btn-primary noFloat">Add New User</a>
+											<br/><br/>
+											<nglist></nglist>
+										</div>
+									</div>
+								</tab>
+								<tab heading="Invited Users">
+									<br/>
+									<div ng-controller="tenantsInvitedMembersCtrl">
+										<div ng-show="access.adminUser.addUser">
+											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, env, ext.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+											<a href="" ng-show = "showGet" ng-click="tenantMembers.inviteUser(env, ext.v)" class="btn btn-primary noFloat">Invite User</a>
 											<br/><br/>
 											<nglist></nglist>
 										</div>
@@ -78,12 +89,12 @@
 					</div>
 					<div class="body">
 						<tabset ng-show="env && subExt && ext" id="mainSubTenantsMembers">
-							<tab heading="Members">
+							<tab heading="Users">
 								<br/>
 								<div ng-controller="subTenantsMembersCtrl">
 									<div ng-show="access.adminUser.addUser">
 										<span class="getUsersButton"><a href="" ng-click="getSubTenantUsers(subTenant.v, tenant, env, ext.v, subExt.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
-										<a href="" ng-show = "showGet" ng-click="subTenantMembers.inviteUser(env, ext.v)" class="btn btn-primary noFloat">{{translation.addNewMember[LANG]}}</a>
+										<a href="" ng-show = "showGet" ng-click="subTenantMembers.inviteUser(env, ext.v)" class="btn btn-primary noFloat">Invite New User</a>
 										<br/><br/>
 										<nglist></nglist>
 									</div>

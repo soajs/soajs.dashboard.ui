@@ -94,10 +94,7 @@ var groupsConfig = {
 		'columns': [
 			{ 'label': translation.code[LANG], 'field': 'code' },
 			{ 'label': translation.name[LANG], 'field': 'name' },
-			{
-				'label': translation.description[LANG]
-				, 'field': 'description'
-			}
+			{ 'label': translation.description[LANG], 'field': 'description'}
 		],
 		'leftActions': [],
 		'topActions': [],

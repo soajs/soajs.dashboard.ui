@@ -543,7 +543,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 										currentScope.listSubMembers();
 										modal.close();
 									} else {
-										$scope.displayAlert('danger', "Failed to invite user: " + response.failed[0].username);
+										$scope.displayAlert('danger', response.failed[0].reason);
 									}
 								}
 							});

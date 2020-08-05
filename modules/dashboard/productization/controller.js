@@ -775,7 +775,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 				$scope.serviceGroup = response.serviceGroup;
 				$scope.allServiceApis = response.allServiceApis;
 				$scope.aclFill = response.aclFill || {};
-				
+				$scope.product = response.product;
 			}
 		});
 	};
@@ -1294,6 +1294,8 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
+				$scope.product = response.product;
+				$scope.package = response.package;
 				if (customEnv) {
 					if (response.aclFill) {
 						$scope.aclFill[customEnv.toUpperCase()] = response.aclFill[customEnv.toUpperCase()];
@@ -1417,7 +1419,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			}
 		});
 	};
-	
 	$scope.preview = function (env, packCode, product) {
 		$scope.$parent.go("/product/" + product.code + "/package/" + packCode.code + "/env/" + env.toLowerCase());
 	};

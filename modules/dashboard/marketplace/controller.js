@@ -1746,12 +1746,12 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 			id: "profile"
 		},
 		"readme": {
-			icon: "plus",
+			icon: "minus",
 			active: true,
 			id: "readme"
 		},
 		"release": {
-			icon: "minus",
+			icon: "plus",
 			active: false,
 			id: "release"
 		}

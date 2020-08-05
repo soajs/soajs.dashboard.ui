@@ -1295,7 +1295,7 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.product = response.product;
-				$scope.package = response.package;
+				$scope.currentPackage = response.package;
 				if (customEnv) {
 					if (response.aclFill) {
 						$scope.aclFill[customEnv.toUpperCase()] = response.aclFill[customEnv.toUpperCase()];

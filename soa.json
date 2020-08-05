@@ -4,5 +4,25 @@
   "group": "Console",
   "subType": "soajs",
   "version": "1",
-  "description": "This is the SOAJS console UI"
+  "description": "This is the SOAJS console UI",
+  "tags": [
+    "UI",
+    "console",
+    "dashboard"
+  ],
+  "attributes": {
+    "SPOG": [
+      "reporting",
+      "analytics",
+      "monitoring",
+      "federation"
+    ]
+  },
+  "program": [
+    "soajs"
+  ],
+  "documentation": {
+    "readme": "/README.md",
+    "release": "/RELEASE.md"
+  }
 }

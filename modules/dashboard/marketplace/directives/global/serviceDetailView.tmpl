@@ -16,7 +16,7 @@
 	<div ng-if="showBackButton" class="f-right" style = "margin-bottom: 10px; margin-right: 15px">
 		<br>
 		<br>
-		<a href="" class="btn btn-primary" tooltip="Back to dahsboard" ng-click="returnToDashboard()">
+		<a href="" class="btn btn-primary" tooltip="Back to dashboard" ng-click="returnToDashboard()">
 			<span class="icon icon-undo"></span>Back
 		</a>
 	</div>
@@ -26,7 +26,7 @@
 		<label class="f-left labelVersion">
 			Select Version to preview for this Item
 		</label>
-		<select  ng-model="overviewSelectedVersion" ng-init="overviewSelectedVersion" ng-options="v for v in versions"  class="form-control f-left c45 selectVersion">
+		<select  ng-model="overviewSelectedVersion" ng-init="overviewSelectedVersion" ng-options="v for v in versions"  class="form-control f-left c45 selectVersion" ng-change="selectOverViewVersion(overviewSelectedVersion)">
 		</select>
 	</div>
 	<br>
@@ -77,25 +77,25 @@
 			<div style="width: 100%;float: left; padding-left: 2%;" ng-show="overviewSelectedVersion && service.type === 'service'">
 				<h4 >Version driven Configuration</h4>
 				<div >
-					<span ><b>Ext Key Required:</b> {{!!overviewSelectedVersion.extKeyRequired}}</span>
+					<span ><b>Ext Key Required:</b> {{!!overviewSelectedVersionInfo.extKeyRequired}}</span>
 					<br>
-					<span><b>Oauth:</b> {{!!overviewSelectedVersion.oauth}}</span>
+					<span><b>Oauth:</b> {{!!overviewSelectedVersionInfo.oauth}}</span>
 					<br>
-					<span><b>Urac:</b> {{!!overviewSelectedVersion.urac}}</span>
+					<span><b>Urac:</b> {{!!overviewSelectedVersionInfo.urac}}</span>
 					<br>
-					<span><b>Urac_Profile:</b> {{!!overviewSelectedVersion.urac_Profile}}</span>
+					<span><b>Urac_Profile:</b> {{!!overviewSelectedVersionInfo.urac_Profile}}</span>
 					<br>
-					<span><b>Tenant_profile:</b> {{!!overviewSelectedVersion.tenant_Profile}}</span>
+					<span><b>Tenant_profile:</b> {{!!overviewSelectedVersionInfo.tenant_Profile}}</span>
 					<br>
-					<span><b>Provision_ACL:</b> {{!!overviewSelectedVersion.provision_ACL}}</span>
+					<span><b>Provision_ACL:</b> {{!!overviewSelectedVersionInfo.provision_ACL}}</span>
 					<br>
-					<span ng-show="overviewSelectedVersion.maintenance" style="float:left"><b>Maintenance:</b></span>
-					<textarea  ng-show="overviewSelectedVersion.maintenance" disabled ng-model="overviewSelectedVersion.maintenance" style="width: 20%; height:100px; float:left;margin-left: 5%; margin-top: 5px;"></textarea>
+					<span ng-show="overviewSelectedVersionInfo.maintenance" style="float:left"><b>Maintenance:</b></span>
+					<textarea  ng-show="overviewSelectedVersionInfo.maintenance" disabled ng-model="overviewSelectedVersionInfo.maintenance" style="width: 20%; height:100px; float:left;margin-left: 5%; margin-top: 5px;"></textarea>
 				</div>
 				<br>
 			</div>
 			<hr style="width: 100%;float: left;margin-top: 20px" ng-show="overviewSelectedVersion && service.type === 'service'">
-			<div style="width: 100%;float: left; padding-left: 2%" ng-show="overviewSelectedVersion && overviewSelectedVersion.profile">
+			<div style="width: 100%;float: left; padding-left: 2%" ng-show="overviewSelectedVersion && overviewSelectedVersionInfo.profile">
 				<fieldset>
 					<legend>
 						<a href="" ng-click="showHide(addItem.profile)"><span class="icon icon-{{addItem.profile.icon}}"></span></a>
@@ -115,12 +115,12 @@
 				<br>
 				<alert type="warning">Select Version to preview documentation information.</alert>
 			</div>
-			<div ng-show="overviewSelectedVersion && !overviewSelectedVersion.documentation">
+			<div ng-show="overviewSelectedVersion && !overviewSelectedVersionInfo.documentation">
 				<br>
 				<br>
 				<alert type="warning">No Documentation information available for this item ...</alert>
 			</div>
-			<div ng-show="overviewSelectedVersion.documentation">
+			<div ng-show="overviewSelectedVersion && overviewSelectedVersionInfo.documentation">
 				<br>
 				<fieldset>
 					<legend>
@@ -129,7 +129,7 @@
 					</legend>
 					<div id="readme" style="width: 50%; margin-left: 1%;">
 						<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'markdown', theme:'javascript', firstLineNumber: 1, onLoad: aceLoaded}"
-						     ng-model="overviewSelectedVersion.documentation.readme"></div>
+						     ng-model="overviewSelectedVersionInfo.documentation.readme"></div>
 					</div>
 				</fieldset>
 				
@@ -141,7 +141,7 @@
 					</legend>
 					<div id="release" class ="closeGroup" style="width: 50%; margin-left: 1%;">
 						<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'markdown', theme:'javascript', firstLineNumber: 1, onLoad: aceLoaded}"
-						     ng-model="overviewSelectedVersion.documentation.release"></div>
+						     ng-model="overviewSelectedVersionInfo.documentation.release"></div>
 					</div>
 				</fieldset>
 			</div>
@@ -154,15 +154,15 @@
 				<br>
 				<alert type="warning">Select Version to preview documentation information.</alert>
 			</div>
-			<div ng-show="overviewSelectedVersion && !overviewSelectedVersion.swagger">
+			<div ng-show="overviewSelectedVersion && !overviewSelectedVersionInfo.swagger">
 				<br>
 				<br>
 				<alert type="warning">No Swagger information available for this item ...</alert>
 			</div>
-			<div ng-if="overviewSelectedVersion.swagger">
+			<div ng-if="overviewSelectedVersion &&  overviewSelectedVersionInfo.swagger">
 				<br>
 				<div class="w-100">
-					<div swagger-ui parser="json" input-type="json" trusted-sources="true" input="parseObject(overviewSelectedVersion.swagger)" api-explorer="false"></div>
+					<div swagger-ui parser="json" input-type="json" trusted-sources="true" input="overviewSelectedVersionInfo.swagger" api-explorer="false"></div>
 				</div>
 			</div>
 		</tab>

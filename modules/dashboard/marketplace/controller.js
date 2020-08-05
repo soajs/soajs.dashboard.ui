@@ -1791,7 +1791,6 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 			try {
 				return JSON.parse(object, null, 2);
 			} catch (e) {
-				console.log(e);
 				return object;
 			}
 		}
@@ -1806,6 +1805,15 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 		$scope.$parent.go("#/analytics", "_blank");
 	};
 	
+	$scope.selectOverViewVersion = function (version) {
+		if ($scope.versions) {
+			$scope.service.versions.forEach((oneVersion) => {
+				if (oneVersion.version === version) {
+					$scope.overviewSelectedVersionInfo = oneVersion;
+				}
+			});
+		}
+	};
 	$scope.getCatalog = function (name, type) {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
@@ -1851,6 +1859,10 @@ soajsCatalogApp.controller('detailViewCtrl', ['$scope', '$timeout', '$modal', '$
 							$scope.overviewSelectedVersion = defaultVersion;
 						}
 					}
+					else {
+						$scope.overviewSelectedVersion = defaultVersion;
+					}
+					$scope.selectOverViewVersion($scope.overviewSelectedVersion);
 				}
 			}
 		});

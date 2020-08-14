@@ -1312,14 +1312,6 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 				ids: service.settings.recipes
 			};
 		}
-		if (!$scope.configuration) {
-			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");
-		} else {
-			$scope.image = $scope.configuration.recipe.image;
-			if ($scope.configuration.src) {
-				$scope.src = $scope.configuration.src;
-			}
-		}
 		$scope.updateGitBranch = function (branch) {
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
@@ -1341,6 +1333,17 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 				}
 			});
 		};
+		if (!$scope.configuration) {
+			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");
+		} else {
+			$scope.image = $scope.configuration.recipe.image;
+			if ($scope.configuration.src) {
+				$scope.src = $scope.configuration.src;
+				if ($scope.configuration.src.branch){
+					$scope.updateGitBranch($scope.configuration.src.branch)
+				}
+			}
+		}
 	}
 	
 	function saveConfiguration(service, version, $scope, currentScope, $modalInstance, cb) {
@@ -1410,7 +1413,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			"params": {
 				"name": service.name,
 				"type": service.type,
-				"version": version
+				//"version": version
 			},
 		};
 		let config = angular.copy($scope.configuration);
@@ -1471,7 +1474,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			"params": {
 				"name": service.name,
 				"type": service.type,
-				"version": 1,
+				"version": $scope.version,
 				"env": $scope.selectedEnvironment.code.toLowerCase(),
 				
 			},

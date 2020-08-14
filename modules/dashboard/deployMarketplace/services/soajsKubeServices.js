@@ -769,7 +769,7 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
 			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
 				if (item.version === v.version) {
-					$scope.configuration = item;
+					$scope.configuration = angular.copy(item);
 				}
 			});
 		}
@@ -936,7 +936,6 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
 								}
 							}
-							
 							$scope.aceEditorConfig = {
 								readiness: {
 									maxLines: Infinity,
@@ -1314,14 +1313,6 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 				ids: service.settings.recipes
 			};
 		}
-		if (!$scope.configuration) {
-			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");
-		} else {
-			$scope.image = $scope.configuration.recipe.image;
-			if ($scope.configuration.src) {
-				$scope.src = $scope.configuration.src;
-			}
-		}
 		$scope.updateGitBranch = function (branch) {
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
@@ -1343,6 +1334,17 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 				}
 			});
 		};
+		if (!$scope.configuration) {
+			currentScope.displayAlert($scope, 'danger', "No configuration found for this deployment.");
+		} else {
+			$scope.image = $scope.configuration.recipe.image;
+			if ($scope.configuration.src) {
+				$scope.src = $scope.configuration.src;
+				if ($scope.configuration.src.branch){
+					$scope.updateGitBranch($scope.configuration.src.branch)
+				}
+			}
+		}
 	}
 	
 	function saveConfiguration(service, version, $scope, currentScope, $modalInstance, cb) {
@@ -1413,7 +1415,7 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 			"params": {
 				"name": service.name,
 				"type": service.type,
-				"version": version
+				//"version": version
 			},
 		};
 		let config = angular.copy($scope.configuration);

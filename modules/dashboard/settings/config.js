@@ -9,6 +9,20 @@ var settingAppConfig = {
 		changeTokenStatus: ['infra', '/cd/token/status', 'put'],
 		addToken: ['infra', '/cd/token', 'post'],
 		deleteToken: ['infra', '/cd/token', 'delete']
+	},
+	form: {
+		token: {
+			add: {
+				entries: [
+					{
+						'name': 'label',
+						'label': 'Label',
+						'type': 'text',
+						'value': "",
+						'required': true
+					}
+				],
+			}
+		}
 	}
-	
 };

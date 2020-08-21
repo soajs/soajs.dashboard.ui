@@ -20,7 +20,7 @@
 					</alert>
 				</div>
 				<tabset ng-if="oldACL!==true">
-					<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}"><br>
+					<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}" active=oneEnv.active ng-click="setActive(oneEnv.code)"><br>
 						<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'apiGroup'">
 						<div class="aclToggleDiv">
 							<label>Select the ACL Mode for Environment {{oneEnv.code}}: </label>

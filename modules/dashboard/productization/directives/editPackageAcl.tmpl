@@ -22,7 +22,7 @@
 				</div>
 				<div ng-if="oldACL!==true">
 					<tabset>
-						<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}">
+						<tab ng-repeat="oneEnv in environments_codes" heading="{{oneEnv.code}}" active=oneEnv.active ng-click="setActive(oneEnv.code)">
 							<br>
 							<div ng-if="aclMode[oneEnv.code.toLowerCase()].v === 'apiGroup'">
 								<div class="aclToggleDiv">

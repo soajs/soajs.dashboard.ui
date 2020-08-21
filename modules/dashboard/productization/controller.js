@@ -1258,11 +1258,20 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		}
 		return empty;
 	};
-	
+	$scope.setActive = function (env) {
+		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
+			if ($scope.environments_codes && $scope.environments_codes[x] && $scope.environments_codes[x].code && $scope.environments_codes[x].code.toUpperCase() === env.toUpperCase()) {
+				$scope.environments_codes[x].active = true;
+			} else {
+				$scope.environments_codes[x].active = false;
+			}
+		}
+	};
 	$scope.getPackageAcl = function (customEnv) {
 		$scope.environments_codes = angular.copy($localStorage.environments);
 		let envs = [];
 		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
+			$scope.environments_codes[x].active = customEnv && $scope.environments_codes[x].code.toUpperCase() === customEnv.toUpperCase();
 			if ($scope.environments_codes && $scope.environments_codes[x] && $scope.environments_codes[x].code && $scope.environments_codes[x].code.toUpperCase() === "DASHBOARD") {
 				$scope.environments_codes.splice(x, 1);
 			} else {
@@ -1287,6 +1296,8 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			} else {
 				options.params.config.type = "apiGroup";
 			}
+		} else {
+			$scope.environments_codes[0].active = true;
 		}
 		
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {
@@ -1558,10 +1569,21 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		return empty;
 	};
 	
+	$scope.setActive = function (env) {
+		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
+			if ($scope.environments_codes && $scope.environments_codes[x] && $scope.environments_codes[x].code && $scope.environments_codes[x].code.toUpperCase() === env.toUpperCase()) {
+				$scope.environments_codes[x].active = true;
+			} else {
+				$scope.environments_codes[x].active = false;
+			}
+		}
+	};
+	
 	$scope.getPackageAcl = function (customEnv) {
 		$scope.environments_codes = angular.copy($localStorage.environments);
 		let envs = [];
 		for (let x = $scope.environments_codes.length - 1; x >= 0; x--) {
+			$scope.environments_codes[x].active = customEnv && $scope.environments_codes[x].code.toUpperCase() === customEnv.toUpperCase();
 			envs.push($scope.environments_codes[x].code);
 		}
 		let options = {
@@ -1583,6 +1605,8 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			} else {
 				options.params.config.type = "apiGroup";
 			}
+		} else {
+			$scope.environments_codes[0].active = true;
 		}
 		
 		getSendDataFromServer($scope, ngDataApi, options, function (error, response) {

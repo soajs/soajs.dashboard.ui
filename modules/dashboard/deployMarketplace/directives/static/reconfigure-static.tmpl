@@ -29,6 +29,15 @@
 										</select>
 										<br/><br/>
 									</div>
+									<div ng-if="src.branch">
+										<label style="width: 27%">Commit:</label>
+										<a style="cursor: pointer;" ng-click="updateGitBranch(configuration.src.branch)"><i class="icon icon-loop2"></i></a>
+										<input type="text" class="form-control"
+										       ng-model="src.commit"
+										       ng-required="true" style="margin-left: 5px"/>
+										<label class="fieldMsg">Specify the commit. Click refresh icon to get the latest commit.</label>
+										<br/><br/>
+									</div>
 									<div ng-if="src.tag">
 										<label>Tag:</label>
 										<select class="form-control"

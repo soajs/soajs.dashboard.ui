@@ -17,6 +17,40 @@
 						<div class="form-g">
 							<fieldset>
 								<legend>Deployment Options</legend>
+								<div  ng-if="src">
+									<div ng-if="src.branch">
+										<label>Branch:</label>
+										<select class="form-control"
+										        data-ng-model="src.branch"
+										        ng-change="updateGitBranch(src.branch)"
+										        ng-required="true">
+											<option ng-repeat="myBranch in allowedBranches" value="{{myBranch}}">
+												{{myBranch}}
+											</option>
+										</select>
+										<br/><br/>
+									</div>
+									<div ng-if="src.branch">
+										<label style="width: 27%">Commit:</label>
+										<a style="cursor: pointer;" ng-click="updateGitBranch(configuration.src.branch)"><i class="icon icon-loop2"></i></a>
+										<input type="text" class="form-control"
+										       ng-model="src.commit"
+										       ng-required="true" style="margin-left: 5px"/>
+										<label class="fieldMsg">Specify the commit. Click refresh icon to get the latest commit.</label>
+										<br/><br/>
+									</div>
+									<div ng-if="src.tag">
+										<label>Tag:</label>
+										<select class="form-control"
+										        data-ng-model="src.tag"
+										        ng-required="true">
+											<option ng-repeat="myTag in allowedTags" value="{{myTag}}">
+												{{myTag}}
+											</option>
+										</select>
+										<br/><br/>
+									</div>
+								</div>
 								<label>Image Tag</label>
 								<input type="text" class="form-control" ng-model="image.tag"/>
 								<div class="fieldMsg hint">Override the image tag if you want</div>

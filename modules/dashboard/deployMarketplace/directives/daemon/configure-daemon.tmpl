@@ -29,6 +29,40 @@
 										environment.</label>
 									<br>
 								</div>
+								<div ng-if="configuration.recipe.id && showBranches">
+									<label>Branch:</label>
+									<select class="form-control"
+									        data-ng-model="configuration.src.branch"
+									        ng-change="updateGitBranch(configuration.src.branch)"
+									        ng-required="showBranches">
+										<option ng-repeat="myBranch in allowedBranches" value="{{myBranch}}">
+											{{myBranch}}
+										</option>
+									</select>
+									<br/><br/>
+								</div>
+								<div ng-if="configuration.recipe.id && showBranches">
+									<label style="width: 27%">Commit:</label>
+									<a style="cursor: pointer;" ng-click="updateGitBranch(configuration.src.branch)"><i class="icon icon-loop2"></i></a>
+									<input type="text" class="form-control" style="margin-left: 5px;"
+									       ng-model="configuration.src.commit"
+									       ng-required="showBranches"/>
+									<label class="fieldMsg">Specify the commit. Click refresh icon to get the latest commit.</label>
+									<br>
+									<br/>
+								</div>
+								<div ng-if="configuration.recipe.id && showTags">
+									<label>Tag:</label>
+									<select class="form-control"
+									        data-ng-model="configuration.src.tag"
+									        ng-change="getRepo(configuration.src)"
+									        ng-required="showTags">
+										<option ng-repeat="myTag in allowedTags" value="{{myTag}}">
+											{{myTag}}
+										</option>
+									</select>
+									<br/><br/>
+								</div>
 								<div ng-if="configuration.recipe.id">
 									<label>Memory Limit Per Instance (in MBytes)</label>
 									<input type="string" class="form-control"

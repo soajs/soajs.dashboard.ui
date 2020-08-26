@@ -435,7 +435,7 @@ hr{
 
 .lastSyncBranches {
     display: inline-block;
-    width:800px;
+    width: 60%;
     white-space: nowrap;
     overflow: hidden !important;
     text-overflow: ellipsis;

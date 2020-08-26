@@ -23,7 +23,7 @@
 					</div>
 					<label>{{item.name}}</label>&nbsp;<label ng-if="listItems.author" class="ownerLabel">(
 					<span class="icon icon-user"></span>{{item.author}} )</label>
-					<div class="rightActions" style="display:inline;">
+					<div class="rightActions" style="display:inline;"  ng-if="item.created === envCode">
 						<a href="" ng-if="access.resource.editAcl" class="btn btn-sm btn-default" ng-click="openSettings(item)">
 							<span class="icon icon-cog"></span>Edit Acl
 						</a>
@@ -42,6 +42,9 @@
 						<a href="" class="btn btn-sm btn-danger" ng-if="!access.resource.delete" disabled>
 							<span class="icon icon-cross" tooltip="Delete Resource configuration"></span>Remove
 						</a>
+					</div>
+					<div class="rightActions" style="display:inline;" ng-if="item.created !== envCode">
+						<label class="ownerLabel"><span>from: ({{item.created}})</span></label>
 					</div>
 				</div>
 			</div>

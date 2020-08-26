@@ -143,21 +143,21 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 						}
 					});
 					config.entries[3].value = selectablePackages;
-					let envs = [];
-					if ($localStorage.environments){
-						$localStorage.environments.forEach((env)=>{
-							envs.push({l: env.code, v:env.code});
-						});
-					}
-					config.entries.push({
-						'name': 'allowedEnvironments',
-						'label': translation.environments[LANG],
-						'type': 'checkbox',
-						'value': envs,
-						'required': false,
-						'tooltip': 'Specify which environment this group have access to use',
-						'labelMsg': 'Specify which environment this group have access to use'
-					});
+					// let envs = [];
+					// if ($localStorage.environments){
+					// 	$localStorage.environments.forEach((env)=>{
+					// 		envs.push({l: env.code, v:env.code});
+					// 	});
+					// }
+					// config.entries.push({
+					// 	'name': 'allowedEnvironments',
+					// 	'label': translation.environments[LANG],
+					// 	'type': 'checkbox',
+					// 	'value': envs,
+					// 	'required': false,
+					// 	'tooltip': 'Specify which environment this group have access to use',
+					// 	'labelMsg': 'Specify which environment this group have access to use'
+					// });
 					var options = {
 						timeout: $timeout,
 						form: config,
@@ -185,7 +185,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										'code': formData.code,
 										'description': formData.description,
 										"packages": allowedPackages,
-										"environments": formData.allowedEnvironments
+										// "environments": formData.allowedEnvironments
 									};
 									
 									var opts = {
@@ -400,27 +400,27 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 					});
 					config.entries[3].value = selectablePackages;
 					
-					let envs = [];
-					if ($localStorage.environments){
-						$localStorage.environments.forEach((env)=>{
-							let temp = {l: env.code, v:env.code};
-							if (data.config && data.config.allowedEnvironments &&  data.config.allowedEnvironments[env.code]){
-								temp.selected = true;
-							}
-							envs.push(temp);
-						});
-						delete data.config.allowedEnvironments;
-					}
-					
-					config.entries.push({
-						'name': 'allowedEnvironments',
-						'label': translation.environments[LANG],
-						'type': 'checkbox',
-						'value': envs,
-						'required': false,
-						'tooltip': 'Specify which environment this group have access to use',
-						'labelMsg': 'Specify which environment this group have access to use'
-					});
+					// let envs = [];
+					// if ($localStorage.environments){
+					// 	$localStorage.environments.forEach((env)=>{
+					// 		let temp = {l: env.code, v:env.code};
+					// 		if (data.config && data.config.allowedEnvironments &&  data.config.allowedEnvironments[env.code]){
+					// 			temp.selected = true;
+					// 		}
+					// 		envs.push(temp);
+					// 	});
+					// 	delete data.config.allowedEnvironments;
+					// }
+					//
+					// config.entries.push({
+					// 	'name': 'allowedEnvironments',
+					// 	'label': translation.environments[LANG],
+					// 	'type': 'checkbox',
+					// 	'value': envs,
+					// 	'required': false,
+					// 	'tooltip': 'Specify which environment this group have access to use',
+					// 	'labelMsg': 'Specify which environment this group have access to use'
+					// });
 					
 					var options = {
 						timeout: $timeout,
@@ -449,7 +449,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', '$loca
 										'name': formData.name,
 										'description': formData.description,
 										"packages" : packages,
-										"environments": formData.allowedEnvironments,
+										// "environments": formData.allowedEnvironments,
 										"id": data['_id'],
 									};
 									var opts = {

@@ -1,7 +1,7 @@
 "use strict";
 
 var multiTenantApp = soajsApp.components;
-multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$modal', '$routeParams', 'ngDataApi', '$cookies', 'injectFiles', 'mtsc', function ($scope, $compile, $timeout, $modal, $routeParams, ngDataApi, $cookies, injectFiles, mtsc) {
+multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$modal', '$routeParams', 'ngDataApi', '$cookies', 'injectFiles', 'mtsc', '$localStorage', function ($scope, $compile, $timeout, $modal, $routeParams, ngDataApi, $cookies, injectFiles, mtsc, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -135,7 +135,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 						'l': p.code,
 					});
 					$scope.productsScopes.push(p);
-					if(p && p.packages){
+					if (p && p.packages) {
 						var ll = p.packages.length;
 						for (i = 0; i < ll; i++) {
 							prods.push({
@@ -291,7 +291,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			var keys = tenant.applications[i].keys;
 			for (var j = 0; !found && keys && j < keys.length; j++) {
 				atLeastOneKey = true;
-				if (keys[j] && keys[j].config){
+				if (keys[j] && keys[j].config) {
 					var envs = Object.keys(keys[j].config);
 					for (var k = 0; !found && envs && k < envs.length; k++) {
 						var oauth = keys[j].config[envs[k]].oauth;
@@ -306,11 +306,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 		}
 		
-		var output = {
+		return {
 			atLeastOneKey,
 			loginMode
 		};
-		return output;
 	};
 	
 	$scope.splitTenantsByType = function (tenants, callback) {
@@ -504,15 +503,23 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	};
 	
 	$scope.update_oAuth = function (data) {
+		// Check if pinLogin is turned ON, by default is OFF
+		let pinLogin = false;
+		if ($localStorage.ui_setting) {
+			if ($localStorage.ui_setting.pinLogin) {
+				pinLogin = $localStorage.ui_setting.pinLogin;
+			}
+		}
+		
 		let products = [];
-		if (data.applications && data.applications.length > 0){
-			data.applications.forEach((oneApp)=>{
-				if (oneApp.product){
-					products.push({l:oneApp.product, v: oneApp.product });
+		if (data.applications && data.applications.length > 0) {
+			data.applications.forEach((oneApp) => {
+				if (oneApp.product) {
+					products.push({l: oneApp.product, v: oneApp.product});
 				}
 			});
 		}
-		if (data.type  === 'client'){
+		if (data.type === 'client') {
 			products = $scope.availableProducts;
 		}
 		var formConfig = angular.copy(tenantConfig.form.updateOauth);
@@ -528,7 +535,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}
 		
 		function loginMode(id, selected, form) {
-			if (selected === "urac" && !form.entries[4]) {
+			if (pinLogin && selected === "urac" && !form.entries[4]) {
 				form.entries.splice(4, 0, {
 					'name': 'pin',
 					'label': translation.pin[LANG],
@@ -597,8 +604,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				}
 			});
 		}
-		
-		if (formConfig.entries[2] && formConfig.entries[2].value[0].selected) {
+		if (pinLogin && formConfig.entries[2] && formConfig.entries[2].value[0].selected) {
 			formConfig.entries.splice(4, 0, {
 				'name': 'pin',
 				'label': translation.pin[LANG],
@@ -1245,7 +1251,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 							'description': formData.description,
 							'_TTL': Array.isArray(formData._TTL) ? formData._TTL.join("") : formData._TTL.toString()
 						};
-						if (formData.package && (typeof (formData.package) == 'string')) {
+						if (formData.package && (typeof (formData.package) === 'string')) {
 							overlayLoading.show();
 							var productCode = formData.package.split("_")[0];
 							var packageCode = formData.package.split("_")[1];
@@ -1551,7 +1557,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 		}
 		for (let i = 0; i < formConfig.entries.length; i++) {
-			 if (formConfig.entries[i].name === 'dashboardAccess') {
+			if (formConfig.entries[i].name === 'dashboardAccess') {
 				formConfig.entries.splice(i, 1);
 			}
 		}
@@ -1923,43 +1929,6 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.splitTenantsByType(tenantFromAPI, function () {
-					// if ($scope.tenantsList && $scope.tenantsList.rows) {
-					// 	$scope.tenantsList.rows.forEach((tenantInUI) => {
-					// 		if (tenantInUI.code === tenantFromAPI.code) {
-					// 			tenantFromAPI.showKeys = tenantInUI.showKeys;
-					// 			tenantInUI.applications.forEach((oneAppInUI) => {
-					// 				tenantFromAPI.applications.forEach((oneAppFromAPI) => {
-					// 					if (oneAppInUI.appId === oneAppFromAPI.appId) {
-					// 						oneAppFromAPI.showKeys = oneAppInUI.showKeys;
-					// 					}
-					// 				});
-					// 			});
-					// 		}
-					// 	});
-					// }
-					// $scope.tenantsList = {
-					// 	rows: angular.copy(tenantFromAPI)
-					// };
-					// $scope.tenantsList.actions = {
-					// 	'viewTenant': {
-					// 		'label': translation.viewTenant[LANG],
-					// 		'command': function (row) {
-					// 			$scope.view_Tenant(row);
-					// 		}
-					// 	},
-					// 	'updateOAuth': {
-					// 		'label': translation.updateOAuth[LANG],
-					// 		'command': function (row) {
-					// 			$scope.update_oAuth(row);
-					// 		}
-					// 	},
-					// 	'turnOffOAuth': {
-					// 		'label': translation.turnOffOAuth[LANG],
-					// 		'command': function (row) {
-					// 			$scope.turnOffOAuth(row);
-					// 		}
-					// 	}
-					// };
 					
 					if (cb && typeof cb === 'function') {
 						return cb();
@@ -2002,7 +1971,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	
 	$scope.splitTenantsByType = function (tenants, callback) {
 		tenants.forEach(function (oneTenant) {
-			let  tenantInfo = $scope.getTenantLoginMode(oneTenant);
+			let tenantInfo = $scope.getTenantLoginMode(oneTenant);
 			oneTenant.loginMode = tenantInfo.loginMode;
 			oneTenant.atLeastOneKey = tenantInfo.atLeastOneKey;
 			//re-render allowed environments
@@ -2248,9 +2217,9 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	
 	$scope.addNewExtKey = function (tId, appId, key) {
 		let formConfig = tenantConfig.form.extKey;
-		if ( $scope.consoleProductScope
+		if ($scope.consoleProductScope
 			&& $scope.consoleProductScope.acl
-			&& typeof ($scope.consoleProductScope.acl) === 'object'){
+			&& typeof ($scope.consoleProductScope.acl) === 'object') {
 			//new acl
 			formConfig.entries.forEach(function (oneFormField) {
 				if (oneFormField.name === 'environment') {
@@ -2489,7 +2458,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 				if (JSON.stringify(response) !== '{}') {
 					delete response['soajsauth'];
 				}
-				if (typeof response === "object" &&  $scope.consoleTenants &&  $scope.consoleTenants) {
+				if (typeof response === "object" && $scope.consoleTenants && $scope.consoleTenants) {
 					for (var i = 0; i < $scope.consoleTenants.length; i++) {
 						if ($scope.consoleTenants[i]['_id'] === tId) {
 							var apps = $scope.consoleTenants[i].applications;

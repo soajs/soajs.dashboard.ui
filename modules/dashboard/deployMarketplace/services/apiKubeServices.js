@@ -791,6 +791,58 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 				}
 			}
 		});
+		$scope.aceEditorConfig = {
+			readiness: {
+				maxLines: Infinity,
+				minLines: 1,
+				useWrapMode: true,
+				showGutter: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				onLoad: function (_editor) {
+					_editor.$blockScrolling = Infinity;
+					_editor.scrollToLine(0, true, true);
+					_editor.scrollPageUp();
+					_editor.clearSelection();
+					_editor.setShowPrintMargin(false);
+					_editor.setHighlightActiveLine(false);
+					_editor.renderer.scrollBar.setHeight("200px");
+					_editor.renderer.scrollBar.setInnerHeight("200px");
+					$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
+					$scope.aceEditorConfig.sessions.readiness._editor = _editor;
+				},
+				onChange: function (_editor) {
+					$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
+				}
+			},
+			liveness: {
+				maxLines: Infinity,
+				minLines: 1,
+				useWrapMode: true,
+				showGutter: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				onLoad: function (_editor) {
+					_editor.$blockScrolling = Infinity;
+					_editor.scrollToLine(0, true, true);
+					_editor.scrollPageUp();
+					_editor.clearSelection();
+					_editor.setShowPrintMargin(false);
+					_editor.setHighlightActiveLine(false);
+					_editor.renderer.scrollBar.setHeight("200px");
+					_editor.renderer.scrollBar.setInnerHeight("200px");
+					$scope.aceEditorConfig.sessions.liveness.aceSession = _editor.getSession();
+					$scope.aceEditorConfig.sessions.liveness._editor = _editor;
+				},
+				onChange: function (_editor) {
+					$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
+				}
+			},
+			sessions : {
+				readiness : {},
+				liveness : {}
+			}
+		};
 		$scope.injectCatalogEntries = function (catalog) {
 			$scope.checkGitBranch(catalog, function () {
 				$scope.getSecrets(function () {
@@ -881,8 +933,8 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 									tag: catalog.recipe.deployOptions.image.tag
 								};
 							}
-							if (!$scope.configuration.recipe.readinessProbe) {
-								if (catalog.recipe.deployOptions.readinessProbe) {
+							if (!$scope.isDeployed || !$scope.configuration.recipe.readinessProbe) {
+								if (catalog.recipe.deployOptions.readinessProbe ) {
 									$scope.configuration.recipe.readinessProbe = catalog.recipe.deployOptions.readinessProbe;
 								} else {
 									//$scope.maintenance
@@ -927,62 +979,23 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 									}
 								}
 							}
-							if (!$scope.configuration.recipe.livenessProbe) {
+							if (!$scope.isDeployed || !$scope.configuration.recipe.livenessProbe) {
 								if (catalog.recipe.deployOptions.livenessProbe) {
 									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
 								}
 							}
-							$scope.aceEditorConfig = {
-								readiness: {
-									maxLines: Infinity,
-									minLines: 1,
-									useWrapMode: true,
-									showGutter: true,
-									mode: 'json',
-									firstLineNumber: 1,
-									onLoad: function (_editor) {
-										_editor.$blockScrolling = Infinity;
-										_editor.scrollToLine(0, true, true);
-										_editor.scrollPageUp();
-										_editor.clearSelection();
-										_editor.setShowPrintMargin(false);
-										_editor.setHighlightActiveLine(false);
-										_editor.renderer.scrollBar.setHeight("200px");
-										_editor.renderer.scrollBar.setInnerHeight("200px");
-										_editor.setValue(JSON.stringify($scope.configuration.recipe.readinessProbe, null, 2));
-										$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
-									},
-									onChange: function (_editor) {
-										$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
-									}
-								},
-								liveness: {
-									maxLines: Infinity,
-									minLines: 1,
-									useWrapMode: true,
-									showGutter: true,
-									mode: 'json',
-									firstLineNumber: 1,
-									onLoad: function (_editor) {
-										_editor.$blockScrolling = Infinity;
-										_editor.scrollToLine(0, true, true);
-										_editor.scrollPageUp();
-										_editor.clearSelection();
-										_editor.setShowPrintMargin(false);
-										_editor.setHighlightActiveLine(false);
-										_editor.renderer.scrollBar.setHeight("200px");
-										_editor.renderer.scrollBar.setInnerHeight("200px");
-										_editor.setValue(JSON.stringify($scope.configuration.recipe.livenessProbe, null, 2));
-									},
-									onChange: function (_editor) {
-										$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
-									}
-								},
-								sessions : {
-									readiness : {},
-									liveness : {}
-								}
-							};
+							if (typeof $scope.configuration.recipe.readinessProbe !== "string"){
+								$scope.aceEditorConfig.sessions.readiness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.readinessProbe), null, 2));
+							}
+							else {
+								$scope.aceEditorConfig.sessions.readiness._editor.setValue(angular.copy($scope.configuration.recipe.readinessProbe));
+							}
+							if (typeof $scope.configuration.recipe.livenessProbe !== "string"){
+								$scope.aceEditorConfig.sessions.liveness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.livenessProbe), null, 2));
+							}
+							else {
+								$scope.aceEditorConfig.sessions.liveness._editor.setValue(angular.copy($scope.configuration.recipe.livenessProbe));
+							}
 							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
 								if (!$scope.configuration.recipe.ports) {
 									$scope.configuration.recipe.ports = {

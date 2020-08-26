@@ -134,7 +134,7 @@
 											<label>Image Registry Secret</label>
 											<select class="form-control"
 											        ng-model="configuration.recipe.image.registrySecret"
-											        ng-options="secret as secret for secret in secrets.registry">
+											        ng-options="oneSecret as secret for secret in secrets.registry">
 											</select>
 											<label class="fieldMsg">Choose a Registry Secret to use when deploying this
 												resource. Registry Secrets are of type

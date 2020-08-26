@@ -48,7 +48,7 @@ hacloudServicesRedeploy.service('hacloudSrvRedeploy', [ 'ngDataApi', '$timeout',
 
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/catalog/recipes/get',
+			routeName: '/marketplace/recipe',
 			params: {
 				'id': service.labels['soajs.catalog.id']
 			}

@@ -110,30 +110,11 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		});
 	}
 	
-	$scope.upgradeAll = function () {
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, {
-			method: 'get',
-			routeName: '/dashboard/catalog/recipes/upgrade'
-		}, function (error, response) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.displayAlert('danger', error.message);
-			} else {
-				$scope.displayAlert('success', "Catalog Recipes have been upgraded to the latest version.");
-				$scope.listRecipes();
-			}
-		});
-	};
-	
 	$scope.listRecipes = function () {
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/catalog/recipes/list',
-			'params': {
-				'soajs': false
-			}
+			routeName: '/marketplace/recipes',
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -171,10 +152,9 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/catalog/recipes/list',
+			routeName: '/marketplace/recipes',
 			'params': {
-				'version': true,
-				'soajs': false
+				'version': true
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -1686,7 +1666,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		
 		let submitAction = {
 			method: 'post',
-			routeName: '/dashboard/catalog/recipes/add',
+			routeName: '/marketplace/recipe',
 			params: {}
 		};
 		let currentScope = $scope;
@@ -1795,7 +1775,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		$scope.add = false;
 		let submitAction = {
 			method: 'put',
-			routeName: '/dashboard/catalog/recipes/update',
+			routeName: '/marketplace/recipe',
 			params: {id: recipe._id}
 		};
 		
@@ -2021,7 +2001,7 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			method: 'delete',
-			routeName: '/dashboard/catalog/recipes/delete',
+			routeName: '/marketplace/recipe',
 			params: params
 		}, function (error, response) {
 			overlayLoading.hide();

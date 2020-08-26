@@ -747,7 +747,7 @@ importService.service('importSrv', ['Upload', 'ngDataApi', '$timeout', '$cookies
 	function listRecipes(currentScope, cb) {
 		getSendDataFromServer(currentScope, ngDataApi, {
 			method: 'get',
-			routeName: '/dashboard/catalog/recipes/list'
+			routeName: '/marketplace/recipes'
 		}, function (error, response) {
 			if (error) {
 				currentScope.displayAlert('danger', error.message);

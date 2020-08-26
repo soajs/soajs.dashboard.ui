@@ -336,7 +336,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.id) {
 			let opts = {
 				method: "get",
-				routeName: '/dashboard/catalog/recipes/get',
+				routeName: '/marketplace/recipe',
 				params: {
 					id: $scope.configuration.recipe.id
 				}
@@ -449,7 +449,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		if ($scope.configuration && $scope.configuration.recipe && $scope.configuration.recipe.id) {
 			let opts = {
 				method: "get",
-				routeName: '/dashboard/catalog/recipes/get',
+				routeName: '/marketplace/recipe',
 				params: {
 					id: $scope.configuration.recipe.id
 				}
@@ -755,10 +755,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		$scope.configuration = {};
 		let opts = {
 			method: "get",
-			routeName: '/dashboard/catalog/recipes/list',
-			params: {
-				soajs: false
-			}
+			routeName: '/marketplace/recipes',
 		};
 		if (service.settings && service.settings && service.settings.recipes && service.settings.recipes.length > 0) {
 			opts.method = "post";
@@ -1262,10 +1259,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		$scope.allowedTags = v.tags;
 		let opts = {
 			method: "get",
-			routeName: '/dashboard/catalog/recipes/list',
-			params: {
-				soajs: false
-			}
+			routeName: '/marketplace/recipes',
 		};
 		if (service.settings && service.settings && service.settings.recipes && service.settings.recipes.length > 0) {
 			opts.method = "post";

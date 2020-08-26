@@ -697,11 +697,10 @@ let catalogAppConfig = {
 		}
 	},
 	permissions: {
-		list: ['dashboard', '/catalog/recipes/list', 'get'],
-		add: ['dashboard', '/catalog/recipes/add', 'post'],
-		update: ['dashboard', '/catalog/recipes/update', 'put'],
-		delete: ['dashboard', '/catalog/recipes/delete', 'delete'],
-		upgrade: ['dashboard', '/catalog/recipes/upgrade', 'get'],
+		list: ['marketplace', '/recipes', 'get'],
+		add: ['marketplace', '/recipe', 'post'],
+		update: ['marketplace', '/recipe', 'put'],
+		delete: ['marketplace', '/recipe', 'delete'],
 		import: ['dashboard', '/templates/import', 'post'],
 		export: ['dashboard', '/templates/export', 'post']
 	}

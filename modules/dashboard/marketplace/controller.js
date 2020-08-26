@@ -1930,7 +1930,7 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 						if ($scope.service.settings.recipes.length > 0) {
 							let opts = {
 								"method": "post",
-								routeName: '/dashboard/catalog/recipes/list',
+								routeName: '/marketplace/recipe/ids',
 								data: {
 									ids: $scope.service.settings.recipes
 								}
@@ -1994,7 +1994,7 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 		}
 		let opts = {
 			"method": "get",
-			routeName: '/dashboard/catalog/recipes/list',
+			routeName: '/marketplace/recipes',
 			params: {
 				limit: $scope.recipeSize
 			}

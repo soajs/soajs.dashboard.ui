@@ -6,7 +6,7 @@ var catalogNav = [
         'label': "Recipes Catalog",
         'checkPermission': {
             'service': 'dashboard',
-            'route': '/catalog/recipes/list',
+            'route': '/recipe',
             'method': 'get'
         },
         'url': '#/catalog-recipes',

@@ -1,7 +1,6 @@
 "use strict";
 var membersService = soajsApp.components;
-membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', function (ngDataApi, $timeout, $modal) {
-	
+membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$localStorage', function (ngDataApi, $timeout, $modal, $localStorage) {
 	function listMembers(currentScope, moduleConfig, env, ext, callback) {
 		var opts = {
 			"method": "get",
@@ -149,6 +148,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function printMembers(currentScope, moduleConfig, response, proxy, showInvited) {
+		// Check if pinLogin is turned ON, by default is OFF
+		let pinLogin = false;
+		if ($localStorage.ui_setting) {
+			if ($localStorage.ui_setting.pinLogin) {
+				pinLogin = $localStorage.ui_setting.pinLogin;
+			}
+		}
 		for (var x = 0; x < response.length; x++) {
 			if (response[x].groups) {
 				response[x].grpsArr = response[x].groups.join(', ');
@@ -183,22 +189,21 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 				'handler': 'editSubMember'
 			});
 		}
-		if (proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type === 'client') {
+		if (pinLogin && proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type === 'client') {
 			options.left.push({
 				'label': translation.edit[LANG],
 				'icon': 'calculator',
 				'handler': 'editSubMemberPin'
 			});
 		}
-		if (proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type !== 'client') {
+		if (pinLogin && proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type !== 'client') {
 			options.left.push({
 				'label': translation.edit[LANG],
 				'icon': 'calculator',
 				'handler': 'editMemberPin'
 			});
 		}
-		if (currentScope.access.adminUser.editPinCode && currentScope.tenant
-			&& currentScope.tenant.type === 'client') {
+		if (pinLogin && currentScope.access.adminUser.editPinCode && currentScope.tenant) {
 			options.left.push({
 				'label': translation.removePin[LANG],
 				'icon': 'cross',
@@ -233,6 +238,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 	}
 	
 	function addMember(currentScope, moduleConfig, useCookie, env, ext) {
+		// Check if pinLogin is turned ON, by default is OFF
+		let pinLogin = false;
+		if ($localStorage.ui_setting) {
+			if ($localStorage.ui_setting.pinLogin) {
+				pinLogin = $localStorage.ui_setting.pinLogin;
+			}
+		}
 		var config = angular.copy(moduleConfig.form);
 		overlayLoading.show();
 		var opts = {
@@ -263,11 +275,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 			if (error) {
 				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 			} else {
-				var grps = [];
-				for (var x = 0; x < response.length; x++) {
+				let grps = [];
+				for (let x = 0; x < response.length; x++) {
 					grps.push({'v': response[x].code, 'l': response[x].name, 'selected': false});
 				}
-				if (env && ext) {
+				if (pinLogin && env && ext) {
 					config.entries.push({
 						'name': 'pinConfiguration',
 						'type': 'group',
@@ -293,20 +305,23 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					});
 				}
 				
-				let groupEntry = {
-					'name': 'groups',
-					'label': translation.groups[LANG],
-					'type': 'radio',
-					'value': grps,
-					'tooltip': translation.assignGroups[LANG]
-				};
-				if (grps.length === 0) {
-					grps.push({
-						l: "N/A",
-						v: "N/A"
-					})
+				
+				// if (grps.length === 0) {
+				// 	grps.push({
+				// 		l: "N/A",
+				// 		v: "N/A"
+				// 	})
+				// }
+				if (grps.length > 0) {
+					let groupEntry = {
+						'name': 'groups',
+						'label': translation.groups[LANG],
+						'type': 'radio',
+						'value': grps,
+						'tooltip': translation.assignGroups[LANG]
+					};
+					config.entries.push(groupEntry);
 				}
-				config.entries.push(groupEntry);
 				var options = {
 					timeout: $timeout,
 					form: config,
@@ -818,21 +833,23 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', func
 					sel = datagroups.indexOf(response[x].code) > -1;
 					grps.push({'v': response[x].code, 'l': response[x].name, 'selected': sel});
 				}
-				let groupEntry = {
-					'name': 'groups',
-					'label': translation.groups[LANG],
-					'type': 'radio',
-					'value': grps,
-					'tooltip': translation.assignGroups[LANG]
-				};
-				if (grps.length === 0) {
-					grps.push({
-						l: "N/A",
-						v: "N/A"
-					})
-				}
 				
-				config.entries.push(groupEntry);
+				// if (grps.length === 0) {
+				// 	grps.push({
+				// 		l: "N/A",
+				// 		v: "N/A"
+				// 	})
+				// }
+				if (grps.length > 0) {
+					let groupEntry = {
+						'name': 'groups',
+						'label': translation.groups[LANG],
+						'type': 'radio',
+						'value': grps,
+						'tooltip': translation.assignGroups[LANG]
+					};
+					config.entries.push(groupEntry);
+				}
 				config.entries.push({
 					'name': 'status',
 					'label': translation.status[LANG],

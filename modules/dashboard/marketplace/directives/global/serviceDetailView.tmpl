@@ -127,9 +127,9 @@
 						<a href="" ng-click="showHide(addItem.readme)"><span class="icon icon-{{addItem.readme.icon}}"></span></a>
 						Readme
 					</legend>
-					<div id="readme" style="width: 50%; margin-left: 1%;">
-						<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'markdown', theme:'javascript', firstLineNumber: 1, onLoad: aceLoaded}"
-						     ng-model="overviewSelectedVersionInfo.documentation.readme"></div>
+					<div id="readme" style="width: 98%; margin-left: 1%; margin-right: 1%">
+						<div markdown-to-html="overviewSelectedVersionInfo.documentation.readme">
+						</div>
 					</div>
 				</fieldset>
 				
@@ -139,9 +139,9 @@
 						<a href=""  ng-click="showHide(addItem.release)"><span class="icon icon-{{addItem.release.icon}}"></span></a>
 						Release Notes
 					</legend>
-					<div id="release" class ="closeGroup" style="width: 50%; margin-left: 1%;">
-						<div ui-ace="{useWrapMode : true, showGutter: true, mode: 'markdown', theme:'javascript', firstLineNumber: 1, onLoad: aceLoaded}"
-						     ng-model="overviewSelectedVersionInfo.documentation.release"></div>
+					<div id="release" class ="closeGroup" style="width: 98%; margin-left: 1%;  margin-right: 1%">
+						<div markdown-to-html="overviewSelectedVersionInfo.documentation.release">
+						</div>
 					</div>
 				</fieldset>
 			</div>

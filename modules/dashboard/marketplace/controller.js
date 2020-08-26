@@ -1929,10 +1929,10 @@ soajsCatalogApp.controller('configViewCtrl', ['$scope', '$timeout', '$modal', '$
 						$scope.recipes.selectedRecipes = $scope.service.settings.recipes;
 						if ($scope.service.settings.recipes.length > 0) {
 							let opts = {
-								"method": "post",
-								routeName: '/marketplace/recipe/ids',
-								data: {
-									ids: $scope.service.settings.recipes
+								"method": "get",
+								"routeName": '/marketplace/recipes/ids',
+								"params": {
+									"ids": $scope.service.settings.recipes
 								}
 							};
 							getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {

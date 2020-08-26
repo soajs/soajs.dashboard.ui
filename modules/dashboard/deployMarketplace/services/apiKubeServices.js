@@ -758,8 +758,8 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			routeName: '/marketplace/recipes',
 		};
 		if (service.settings && service.settings && service.settings.recipes && service.settings.recipes.length > 0) {
-			opts.method = "post";
-			opts.data = {
+			opts.routeName = '/marketplace/recipes/ids';
+			opts.params = {
 				ids: service.settings.recipes
 			};
 		}
@@ -1301,8 +1301,8 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			routeName: '/marketplace/recipes',
 		};
 		if (service.settings && service.settings && service.settings.recipes && service.settings.recipes.length > 0) {
-			opts.method = "post";
-			opts.data = {
+			opts.routeName = '/marketplace/recipes/ids';
+			opts.params = {
 				ids: service.settings.recipes
 			};
 		}

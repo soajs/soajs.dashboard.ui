@@ -28,61 +28,86 @@ var cloudsDeploymentConfig = {
 				"tabs": [
 					{
 						"label": "Text Content",
-						"description": "",
 						"entries": [
 							{
-								'name': 'secretLabelText',
-								'label': 'Label',
-								'type': 'text',
-								'required': true
+								'name': 'secretTextGroup',
+								'type': 'group',
+								//'label': 'New Entry',
+								'collapsed': false,
+								'icon': 'plus',
+								"entries": [
+									{
+										'name': 'secretLabelText0',
+										'label': 'Label',
+										'type': 'text',
+										'required': true
+									},
+									{
+										'name': 'textMode0',
+										'label': 'I am adding a text value',
+										'fieldMsg': "Turn on this mode if the value you are about to enter is made up of text only (Default mode does not support text only)",
+										'type': 'buttonSlider',
+										'value': false,
+										'required': true
+									},
+									{
+										'name': 'secretData0',
+										'value': '',
+										'label': 'Secret Content Data',
+										'type': 'jsoneditor',
+										'required': true,
+										'fieldMsg': "Provide the content of the secret as text/json",
+										'height': 300
+									}
+								],
+								"onAction": function (id, data, form) {
+									form.formData.secretType = "Opaque";
+								}
 							},
 							{
-								'name': 'textMode',
-								'label': 'I am adding a text value',
-								'fieldMsg': "Turn on this mode if the value you are about to enter is made up of text only (Default mode does not support text only)",
-								'type': 'buttonSlider',
-								'value': false,
-								'required': true
+								'type': 'html',
+								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add New Entry'/>",
+								'name': 'addTextEntry'
 							},
-							{
-								'name': 'secretData',
-								'value': '',
-								'label': 'Secret Content Data',
-								'type': 'jsoneditor',
-								'required': true,
-								'fieldMsg': "Provide the content of the secret as text/json",
-								'height': 100
-							}
-						],
-						"onAction": function (id, data, form) {
-							form.formData.secretType = "Opaque";
-						}
+						]
 					},
 					{
 						"label": "File Content",
-						"description": "",
 						"entries": [
 							{
-								'name': 'secretLabelFile',
-								'label': 'Label',
-								'type': 'text',
-								'required': true
+								'name': 'secretFileGroup',
+								'type': 'group',
+								//'label': 'New Entry',
+								'collapsed': false,
+								'icon': 'plus',
+								"entries": [
+									{
+										'name': 'secretLabelFile0',
+										'label': 'Label',
+										'type': 'text',
+										'required': true
+									},
+									{
+										"label": "File Upload",
+										"fieldMsg": "Select a file to create the secret content from it",
+										'name': 'secretFile0',
+										"directive": "modules/dashboard/environments/cloudsDeployments/directives/kubernetes/secrets-file.tmpl",
+										"required": false
+									}
+								],
+								"onAction": function (id, data, form) {
+									form.formData.secretType = "Opaque";
+								}
 							},
 							{
-								"label": "File Upload",
-								"fieldMsg": "Select a file to create the secret content from it",
-								'name': 'secretFile',
-								"directive": "modules/dashboard/environments/cloudsDeployments/directives/kubernetes/secrets-file.tmpl",
-								"required": false
+								'type': 'html',
+								'value': "<input type='button' class='btn btn-sm btn-success f-right' value='Add New Entry'/>",
+								'name': 'addFileEntry'
 							}
-						],
-						"onAction": function (id, data, form) {
-							form.formData.secretType = "Opaque";
-						}
+						]
 					},
 					{
 						"label": "Registry Secret",
-						"description": "",
 						"entries": [
 							{
 								'type': 'text',
@@ -124,14 +149,82 @@ var cloudsDeploymentConfig = {
 								'fieldMsg': "Enter the  Registry Password",
 								'required': true
 							}
-						],
-						"onAction": function (id, data, form) {
-							form.formData.secretType = "kubernetes.io/dockercfg";
-						}
+						]
 					}
 				]
-			}
+			},
+			
 		],
+		addTextEntry: {
+			'name': 'secretTextGroup',
+			'type': 'group',
+			//'label': 'New Entry',
+			'collapsed': false,
+			'icon': 'plus',
+			"entries": [
+				{
+					'name': 'secretLabelText',
+					'label': 'Label',
+					'type': 'text',
+					'required': true
+				},
+				{
+					'name': 'textMode',
+					'label': 'I am adding a text value',
+					'fieldMsg': "Turn on this mode if the value you are about to enter is made up of text only (Default mode does not support text only)",
+					'type': 'buttonSlider',
+					'value': false,
+					'required': true
+				},
+				{
+					'name': 'secretData',
+					'value': '',
+					'label': 'Secret Content Data',
+					'type': 'jsoneditor',
+					'required': true,
+					'fieldMsg': "Provide the content of the secret as text/json",
+					'height': 100
+				},
+				{
+					'type': 'html',
+					'value': "<input type='button' class='btn btn-sm btn-danger f-right' value='Remove Entry'/>",
+					'name': 'removeEntry'
+				},
+			],
+			"onAction": function (id, data, form) {
+				form.formData.secretType = "Opaque";
+			}
+		},
+		addFileEntry: {
+			'name': 'secretFileGroup',
+			'type': 'group',
+			//'label': 'New Entry',
+			'collapsed': false,
+			'icon': 'plus',
+			"entries": [
+				{
+					'name': 'secretLabelFile',
+					'label': 'Label',
+					'type': 'text',
+					'required': true
+				},
+				{
+					"label": "File Upload",
+					"fieldMsg": "Select a file to create the secret content from it",
+					'name': 'secretFile',
+					"directive": "modules/dashboard/environments/cloudsDeployments/directives/kubernetes/secrets-file.tmpl",
+					"required": false
+				},
+				{
+					'type': 'html',
+					'value': "<input type='button' class='btn btn-sm btn-danger f-right' value='Remove Entry'/>",
+					'name': 'removeEntry'
+				},
+			],
+			"onAction": function (id, data, form) {
+				form.formData.secretType = "Opaque";
+			}
+		},
 		addVolume: [
 			{
 				'name': 'name',
@@ -183,7 +276,8 @@ var cloudsDeploymentConfig = {
 				'tooltip': 'Choose volume mode'
 			}
 		], //
-		addExecCommand :[{
+		addExecCommand :[
+			{
 			'name': 'execCommands',
 			'label': 'Commands',
 			'type': 'textarea',

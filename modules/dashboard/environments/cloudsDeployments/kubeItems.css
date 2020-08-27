@@ -185,6 +185,10 @@ fieldset pre {
     width: 50%;
 }
 
+.ace_editor{
+    height: 200px;
+}
+
 .form .modal-header {
     background-color: #5BC0DE;
     color: white;

@@ -349,6 +349,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 									'email': formData.email,
 									'groups': formData.groups ? [formData.groups] : [],
 								};
+								if (formData.profile){
+									postData.profile = formData.profile;
+								}
 								if (formData.pin) {
 									postData.pin = {
 										code: formData.pin,
@@ -888,6 +891,9 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 								};
 								if (formData.groups) {
 									postData.groups = [formData.groups];
+								}
+								if (formData.profile) {
+									postData.profile = formData.profile;
 								}
 								var opts = {
 									"method": "put",

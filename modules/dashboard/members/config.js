@@ -57,6 +57,15 @@ var membersConfig = {
 				'value': '',
 				'tooltip': translation.enterLastNameUser[LANG],
 				'required': true
+			},
+			{
+				'name': 'profile',
+				'label': 'Profile',
+				'type': 'jsoneditor',
+				'height': '200px',
+				'value': '',
+				'tooltip': "Profile Free Schema",
+				'required': false
 			}
 		]
 	},

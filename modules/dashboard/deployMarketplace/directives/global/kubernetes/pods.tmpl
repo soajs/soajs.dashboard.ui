@@ -4,13 +4,22 @@
 		<ul class="blueListing">
 			<li class="blueLi row-list active" ng-repeat="item in itemList.items"
 			    ng-style="{'width': '99%'}">
-				<div style="width: 55%;display: inline-block">
+				<div style="width: 40%;display: inline-block">
 					<span class="">{{item.metadata.name}}</span>
 				</div>
 				
-				<div style="width: 20%;display: inline-block">
+				<div style="width: 25%;display: inline-block">
 					<span>Created: </span> <span class="">{{item.metadata.creationTimestamp}}</span>
 				</div>
+				
+				<div style="width: 10%;display: inline-block">
+					<span ng-class="{'green': item.status.phase.toLowerCase() === 'running', 'red': item.status.phase.toLowerCase() !=='running'}"><b>{{item.status.phase}}</b></span>
+				</div>
+				
+				<div ng-show="item.status.containerStatuses && item.status.containerStatuses[0]" style="width: 10%;display: inline-block">
+					<span ng-class="{'green': item.status.containerStatuses[0].ready, 'red': !item.status.containerStatuses[0].ready}"><b>Ready</b></span>
+				</div>
+				
 				<div style="float: right">
 					<a ng-click="inspectItem(item)"
 					   ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span

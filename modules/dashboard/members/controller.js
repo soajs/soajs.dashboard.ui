@@ -219,6 +219,10 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 					membersHelper.deactivateMembers($scope.tenantMembers, env, ext);
 				};
 				
+				$scope.tenantMembers.deleteMember = function (data) {
+					membersHelper.deleteMember($scope.tenantMembers, data, env, ext);
+				};
+				
 				$scope.$parent.$on('reloadTenantMembers', function (event, args) {
 					$scope.listMembers();
 				});
@@ -326,6 +330,10 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 				
 				$scope.tenantMembers.deactivateMembers = function () {
 					membersHelper.deactivateMembers($scope.tenantMembers, env, ext);
+				};
+				
+				$scope.tenantMembers.deleteMember = function (data) {
+					membersHelper.deleteMember($scope.tenantMembers, data, env, ext);
 				};
 				
 				$scope.$parent.$on('reloadTenantMembers', function (event, args) {
@@ -502,6 +510,11 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.subTenantMembers.editSubMemberPin = function (data) {
 					membersHelper.editSubMemberPin($scope.subTenantMembers, membersConfig, data, false, env, subExt);
 				};
+				
+				$scope.subTenantMembers.deleteMember = function (data) {
+					membersHelper.deleteMember($scope.tenantMembers, data, env, ext);
+				};
+				
 				$scope.subTenantMembers.removePin = function (data) {
 					membersHelper.removePin($scope.subTenantMembers, membersConfig, data, env, subExt);
 				};
@@ -800,6 +813,10 @@ membersApp.controller('tenantConsoleMembersCtrl', ['$scope', 'membersHelper', '$
 		
 		$scope.tenantMembers.deactivateMembers = function () {
 			membersHelper.deactivateMembers($scope.tenantMembers, env, ext);
+		};
+		
+		$scope.tenantMembers.deleteMember = function (data) {
+			membersHelper.deleteMember($scope.tenantMembers, data, env, ext);
 		};
 		
 		$scope.tenantMembers.$parent.$on('reloadTenantMembers', function (event, args) {

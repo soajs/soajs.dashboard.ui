@@ -75,7 +75,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				if (response && response.length > 0) {
 					response.forEach((oneUser) => {
 						let index = -1;
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0 && currentScope['_id']) {
 							index = oneUser.config.allowedTenants.map(x => {
 								return x.tenant ? x.tenant.id : null
 							}).indexOf(currentScope['_id'].toString());
@@ -189,6 +189,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				'handler': 'editSubMember'
 			});
 		}
+		if (currentScope.access.adminUser.delete && currentScope.tenant
+			&& currentScope.tenant.type === 'product') {
+			options.left.push({
+				'label': translation.delete[LANG],
+				'msg': "Are you sure you want to delete this member?",
+				'icon': 'cross',
+				'handler': 'deleteMember'
+			});
+		}
 		if (pinLogin && proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type === 'client') {
 			options.left.push({
 				'label': translation.edit[LANG],
@@ -206,7 +215,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		if (pinLogin && currentScope.access.adminUser.editPinCode && currentScope.tenant) {
 			options.left.push({
 				'label': translation.removePin[LANG],
-				'icon': 'cross',
+				'icon': 'cancel-circle',
 				'handler': 'removePin',
 				'msg': translation.areYouSureWantDeletePin[LANG],
 			});
@@ -1358,6 +1367,45 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		});
 	}
 	
+	function deleteMember(currentScope, data, env, ext) {
+		var opts = {
+			"method": "delete",
+			"routeName": "/urac/admin/user",
+			"params": {
+				"id": data._id,
+			}
+		};
+		if (env && ext){
+			opts = {
+				"method": "delete",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'id': data._id,
+					'proxyRoute': '/urac/admin/user',
+					"extKey": ext
+				},
+				"headers": {
+					"__env": env,
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers){
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error) {
+			if (error) {
+				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
+			}
+			else {
+				currentScope.$parent.displayAlert('success', "Selected user has been removed");
+				currentScope.listMembers();
+			}
+		});
+	}
+	
 	return {
 		'listMembers': listMembers,
 		'listInvitedMembers': listInvitedMembers,
@@ -1373,6 +1421,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		'editMemberPin': editMemberPin,
 		'activateMembers': activateMembers,
 		'deactivateMembers': deactivateMembers,
-		'removePin': removePin
+		'removePin': removePin,
+		'deleteMember': deleteMember
 	};
 }]);

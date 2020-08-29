@@ -4,18 +4,12 @@
 		<a class="btn btn-sm btn-primary" ng-if="access.addTEmplate" ng-click="addTemplate(currentSelectedInfra)">
 			<span class="icon icon-plus"></span> Add New Template
 		</a>
-		<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
-			<span class="icon icon-download"></span> Download From Store
-		</a>
 		<button class="btn btn-sm btn-success" ng-click="go('/importExport', 'import')" ng-if="access.import">Import</button>
 		<button class="btn btn-sm btn-warning" ng-click="go('/importExport', 'export')" ng-if="access.export">Export</button>
 		<br /><br />
 		<alert type="warning" ng-if="!currentSelectedInfra.templates || currentSelectedInfra.templates.length === 0">
 			<p>
 				No Infra As Code Templates available.
-				<span ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
-					You can download for free Infra As Code Templates from the <a href="{{showSOAJSStoreLink}}" target="_blank"><b>SOAJS Store</b></a>.
-				</span>
 			</p>
 		</alert>
 		<div ng-if="currentSelectedInfra.templates" class="grid">

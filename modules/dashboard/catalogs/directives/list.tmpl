@@ -38,9 +38,6 @@
 					<li><a ng-if="access.list" href="" ng-click="addRecipe('template')"><span class="icon icon-copy"></span>&nbsp;Use Existing Template</a></li>
 					<li><a ng-if="access.list" href="" ng-click="addRecipe('blank')"><span class="icon icon-file-empty"></span>&nbsp;Start From Blank Template</a></li>
 				</ul>
-				<a href="{{showSOAJSStoreLink}}" target="_blank" class="btn btn-sm btn-info" ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
-					<span class="icon icon-download"></span> Download From Store
-				</a>
 				<button class="btn btn-success btn-sm" ng-if="access.import" ng-click="go('/importExport', 'import')">Import</button>
 				<button class="btn btn-warning btn-sm" ng-if="access.export" ng-click="go('/importExport', 'export')">Export</button>
 			</div>
@@ -49,9 +46,6 @@
 				<br />
 				<alert type="warning">
 					<p>No Catalog Recipes found.
-						<span ng-if="showSOAJSStoreLink && showSOAJSStoreLink!== ''">
-							You can download for free catalog recipes from the <a href="{{showSOAJSStoreLink}}" target="_blank"><b>SOAJS Store</b></a>.
-						</span>
 					</p>
 				</alert>
 			</div>

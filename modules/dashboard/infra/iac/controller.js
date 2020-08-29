@@ -3,7 +3,6 @@ var infraIACApp = soajsApp.components;
 infraIACApp.controller('infraIACCtrl', ['$scope', '$location', '$localStorage', '$window', '$modal', '$timeout', '$cookies', 'injectFiles', 'ngDataApi', 'infraCommonSrv', 'infraIACSrv', function ($scope, $location, $localStorage, $window, $modal, $timeout, $cookies, injectFiles, ngDataApi, infraCommonSrv, infraIACSrv) {
 	$scope.$parent.isUserNameLoggedIn();
 	$scope.showTemplateForm = false;
-	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
 	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, infraIACConfig.permissions);

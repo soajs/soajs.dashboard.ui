@@ -3,7 +3,6 @@ var templatesApp = soajsApp.components;
 
 templatesApp.controller('templatesAppCtrl', ['$scope', '$timeout', 'injectFiles', 'templateSrv', 'detectBrowser', '$modal', '$window', 'ngDataApi', '$cookies', '$location', function ($scope, $timeout, injectFiles, templateSrv, detectBrowser, $modal, $window, ngDataApi, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
-	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
 	
 	$scope.templatesDocumentationLink = templatesAppConfig.documentationLink;
 	

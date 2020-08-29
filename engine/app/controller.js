@@ -84,8 +84,8 @@ soajsApp.run(function ($rootScope) {
 	$rootScope.translation = translation;
 });
 
-soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers', 'myAccountAccess', 'SOAJSStore',
-	function ($window, $scope, $routeParams, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers, myAccountAccess, SOAJSStore) {
+soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', '$location', '$timeout', '$route', '$cookies', 'ngDataApi', 'checkApiHasAccess', '$localStorage', 'aclDrawHelpers', 'myAccountAccess',
+	function ($window, $scope, $routeParams, $location, $timeout, $route, $cookies, ngDataApi, checkApiHasAccess, $localStorage, aclDrawHelpers, myAccountAccess) {
 		document.title = titlePrefix;
 		$scope.appNavigation = navigation;
 		$scope.navigation = [];
@@ -571,7 +571,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 				// }
 			}
 			
-			checkSOAJSStore();
 			$scope.rebuildMenus(function () {
 				for (var i = 0; i < $scope.navigation.length; i++) {
 					if ($scope.navigation[i].url === '#' + $route.current.originalPath) {
@@ -637,13 +636,6 @@ soajsApp.controller('soajsAppController', ['$window', '$scope', '$routeParams', 
 			var defaultRoute = navigation[0].url.replace('#', '');
 			$scope.go(defaultRoute);
 		});
-		
-		function checkSOAJSStore() {
-			if (!$scope.showSOAJSStoreLink || $scope.showSOAJSStoreLink === '' && $scope.enableInterface && !$scope.checkingStore) {
-				$scope.checkingStore = true;
-				SOAJSStore.check($scope);
-			}
-		}
 		
 		$scope.buildPermittedEnvOperation = function (serviceName, routePath, method, env, cb) {
 			var user = $localStorage.soajs_user;

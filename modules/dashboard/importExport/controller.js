@@ -6,11 +6,8 @@ interfaceDomain = mydomain.split(":")[0];
 importApp.controller('importAppCtrl', ['$scope', '$timeout', 'injectFiles', 'importSrv', 'detectBrowser', '$modal', '$window', 'ngDataApi', '$cookies', '$location', function ($scope, $timeout, injectFiles, importSrv, detectBrowser, $modal, $window, ngDataApi, $cookies, $location) {
 	$scope.$parent.isUserLoggedIn();
 	
-	$scope.showSOAJSStoreLink = $scope.$parent.$parent.showSOAJSStoreLink;
 	$scope.templatesDocumentationLink = importAppConfig.documentationLink;
-
-	$scope.storeLink = importAppConfig.storeLink;
-
+	
 	$scope.access = {};
 	constructModulePermissions($scope, $scope.access, importAppConfig.permissions);
 

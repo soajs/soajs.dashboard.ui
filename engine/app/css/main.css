@@ -409,6 +409,9 @@ em {
     border: solid 1px #cccccc;
     margin-bottom: 10px;
     border-radius: 5px;
+    position: sticky;
+    top : 0;
+    z-index:100;
 }
 
 .alert {

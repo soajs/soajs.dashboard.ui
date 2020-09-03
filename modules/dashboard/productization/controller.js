@@ -823,10 +823,6 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		});
 	};
 	
-	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi) {
-		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi);
-	};
-	
 	$scope.applyRestriction = function (aclFill) {
 		aclHelpers.applyPermissionRestriction(aclFill);
 	};
@@ -993,9 +989,6 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG] + " for " + env);
 			}
 		});
-	};
-	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi, v) {
-		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi, v);
 	};
 	
 	$scope.applyRestriction = function (aclFill) {
@@ -1415,10 +1408,6 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		});
 	};
 	
-	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi) {
-		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi);
-	};
-	
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
 		$scope.allServiceApisGranular[group].forEach((service) => {
 			if (service.name === serviceName) {
@@ -1739,10 +1728,6 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 				$scope.$parent.go("/consolePackages");
 			}
 		});
-	};
-	
-	$scope.checkForGroupDefault = function (envCode, service, grp, val, myApi, v) {
-		aclHelpers.checkForGroupDefault($scope, envCode, service, grp, val, myApi, v);
 	};
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
 		$scope.allServiceApisGranular[group].forEach((service) => {

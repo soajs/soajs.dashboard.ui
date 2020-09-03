@@ -462,7 +462,7 @@ soajsApp.service("aclDrawHelpers", function () {
 		}
 	}
 	
-	function checkForGroupDefault(aclFill, service, grp, val, myApi, v) {
+	//function checkForGroupDefault(aclFill, service, grp, val, myApi, v) {
 		
 		// var defaultApi;
 		// if (service.fixList && service.fixList.length > 0) {
@@ -502,7 +502,7 @@ soajsApp.service("aclDrawHelpers", function () {
 		// 	}
 		// 	service.fixList[v][grp].defaultIncluded = found;
 		// }
-	}
+	//}
 	
 	function prepareSaveObject(aclEnvFill, aclEnvObj) {
 		var code, grpCodes;
@@ -736,7 +736,6 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	return {
-		'checkForGroupDefault': checkForGroupDefault,
 		'applyApiRestriction': applyApiRestriction,
 		'prepareSaveObject': prepareSaveObject,
 		'prepareSaveObjectPack': prepareSaveObjectPack,

@@ -629,7 +629,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 								}
 								highlightMyCode();
 							};
-							var handleEndCallback = function (response) {
+							var handleEndCallback = function () {
 								$scope.isTailing = false;
 								$scope.data += "\n";
 								$scope.data += "Error tailing log, please click refresh or tail again!";

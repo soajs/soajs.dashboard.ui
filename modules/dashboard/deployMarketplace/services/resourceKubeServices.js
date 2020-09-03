@@ -521,7 +521,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 							});
 							$scope.responses[host.id] = host.response;
 						});
-						if (formConfig.length === 2){
+						if (formConfig.length === 2) {
 							formConfig.push(
 								{
 									'name': 'podSelector',
@@ -750,7 +750,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 		$scope.deployedImage = currentScope.deployments[service.name][v.version].deployedImage;
 		$scope.deploymentModes = ['Deployment', 'DaemonSet', 'CronJob'];
 		$scope.concurrencyPolicy = ['Allow', 'Forbid', 'Replace'];
-		$scope.externalTrafficPolicy= ['Local', 'Cluster'];
+		$scope.externalTrafficPolicy = ['Local', 'Cluster'];
 		$scope.restartPolicy = ["OnFailure", "Never"];
 		$scope.configuration = {};
 		let opts = {
@@ -766,7 +766,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
 			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
 				if (item.version === v.version) {
-					$scope.configuration = item;
+					$scope.configuration = angular.copy(item);
 				}
 			});
 		}
@@ -791,235 +791,278 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 				}
 			}
 		});
-		
+		$scope.aceEditorConfig = {
+			readiness: {
+				maxLines: Infinity,
+				minLines: 1,
+				useWrapMode: true,
+				showGutter: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				onLoad: function (_editor) {
+					_editor.$blockScrolling = Infinity;
+					_editor.scrollToLine(0, true, true);
+					_editor.scrollPageUp();
+					_editor.clearSelection();
+					_editor.setShowPrintMargin(false);
+					_editor.setHighlightActiveLine(false);
+					_editor.renderer.scrollBar.setHeight("200px");
+					_editor.renderer.scrollBar.setInnerHeight("200px");
+					$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
+					$scope.aceEditorConfig.sessions.readiness._editor = _editor;
+				},
+				onChange: function (_editor) {
+					$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
+				}
+			},
+			liveness: {
+				maxLines: Infinity,
+				minLines: 1,
+				useWrapMode: true,
+				showGutter: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				onLoad: function (_editor) {
+					_editor.$blockScrolling = Infinity;
+					_editor.scrollToLine(0, true, true);
+					_editor.scrollPageUp();
+					_editor.clearSelection();
+					_editor.setShowPrintMargin(false);
+					_editor.setHighlightActiveLine(false);
+					_editor.renderer.scrollBar.setHeight("200px");
+					_editor.renderer.scrollBar.setInnerHeight("200px");
+					$scope.aceEditorConfig.sessions.liveness.aceSession = _editor.getSession();
+					$scope.aceEditorConfig.sessions.liveness._editor = _editor;
+				},
+				onChange: function (_editor) {
+					$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
+				}
+			},
+			sessions: {
+				readiness: {},
+				liveness: {}
+			}
+		};
 		$scope.injectCatalogEntries = function (catalog) {
 			$scope.getSecrets(function () {
 				$scope.getConfigurationCatalogs(catalog, function () {
-					$scope.configuration.recipe.id = catalog._id.toString();
-					$scope.allowedBranches = v.branches;
-					$scope.allowedTags = v.tags;
-					
-					if (catalog.recipe && catalog.recipe.buildOptions) {
-						if (catalog.recipe.buildOptions.env) {
-							$scope.userInputVariable = [];
-							$scope.secretVariable = [];
-							if (!$scope.configuration.recipe.env){
-								$scope.configuration.recipe.env = {};
-							}
-							for (let envVariable in catalog.recipe.buildOptions.env) {
-								if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
-									if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
-										let temp = {
-											label: catalog.recipe.buildOptions.env[envVariable].label || envVariable,
-											name: envVariable,
-											value: catalog.recipe.buildOptions.env[envVariable].default || "",
-											fieldMsg: catalog.recipe.buildOptions.env[envVariable].fieldMsg,
-											required: false
-										};
-										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
-										
-											if (typeof $scope.configuration.recipe.env[envVariable] !== 'string') {
+						$scope.configuration.recipe.id = catalog._id.toString();
+						$scope.allowedBranches = v.branches;
+						$scope.allowedTags = v.tags;
+						
+						if (catalog.recipe && catalog.recipe.buildOptions) {
+							if (catalog.recipe.buildOptions.env) {
+								$scope.userInputVariable = [];
+								$scope.secretVariable = [];
+								if (!$scope.configuration.recipe.env) {
+									$scope.configuration.recipe.env = {};
+								}
+								let env_variables = [];
+								for (let envVariable in catalog.recipe.buildOptions.env) {
+									if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
+										if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
+											let temp = {
+												label: catalog.recipe.buildOptions.env[envVariable].label || envVariable,
+												name: envVariable,
+												value: catalog.recipe.buildOptions.env[envVariable].default || "",
+												fieldMsg: catalog.recipe.buildOptions.env[envVariable].fieldMsg,
+												required: false
+											};
+											if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
+												
+												if (typeof $scope.configuration.recipe.env[envVariable] !== 'string') {
+													$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
+												}
+											} else {
 												$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 											}
+											env_variables.push(temp.name);
+											$scope.userInputVariable.push(temp);
 										}
-										else {
-											$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
-										}
-										$scope.userInputVariable.push(temp);
-									}
-									if (catalog.recipe.buildOptions.env[envVariable].type === 'secret') {
-										let temp = {
-											name: envVariable,
-											fields: [
-												{
-													label: "Secret",
-													name: "secretName",
-													value: $scope.secrets.secret,
-													fieldMsg: "Enter the value of the secret",
-													required: true,
-												},
-												{
-													label: "Secret Key",
-													name: "secretKey",
-													value: catalog.recipe.buildOptions.env[envVariable].key || "",
-													fieldMsg: "Enter the value of the secret key",
-													required: false,
+										if (catalog.recipe.buildOptions.env[envVariable].type === 'secret') {
+											let temp = {
+												name: envVariable,
+												fields: [
+													{
+														label: "Secret",
+														name: "secretName",
+														value: $scope.secrets.secret,
+														fieldMsg: "Enter the value of the secret",
+														required: true,
+													},
+													{
+														label: "Secret Key",
+														name: "secretKey",
+														value: catalog.recipe.buildOptions.env[envVariable].key || "",
+														fieldMsg: "Enter the value of the secret key",
+														required: false,
+													}
+												]
+											};
+											if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
+												if (typeof $scope.configuration.recipe.env[envVariable] !== 'object') {
+													$scope.configuration.recipe.env[envVariable] = {
+														name: catalog.recipe.buildOptions.env[envVariable].secret || "",
+														key: catalog.recipe.buildOptions.env[envVariable].key || ""
+													};
 												}
-											]
-										};
-										if ($scope.configuration.recipe && $scope.configuration.recipe.env && $scope.configuration.recipe.env[envVariable]) {
-											if (typeof $scope.configuration.recipe.env[envVariable] !== 'object') {
+											} else {
 												$scope.configuration.recipe.env[envVariable] = {
 													name: catalog.recipe.buildOptions.env[envVariable].secret || "",
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
+											env_variables.push(temp.name);
+											$scope.secretVariable.push(temp);
 										}
-										else {
-											$scope.configuration.recipe.env[envVariable] = {
-												name: catalog.recipe.buildOptions.env[envVariable].secret || "",
-												key: catalog.recipe.buildOptions.env[envVariable].key || ""
-											};
+									}
+								}
+								if (Object.keys($scope.configuration.recipe.env).length === 0) {
+									delete $scope.configuration.recipe.env;
+								}
+								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)){
+									for (let i = 0; i < Object.keys($scope.configuration.recipe.env).length; i++) {
+										if (!env_variables.includes(Object.keys($scope.configuration.recipe.env)[i])) {
+											//detected mismatch
+											delete $scope.configuration.recipe.env[Object.keys($scope.configuration.recipe.env)[i]];
 										}
-										$scope.secretVariable.push(temp);
+									}
+									if (Object.keys($scope.configuration.recipe.env).length === 0) {
+										delete $scope.configuration.recipe.env;
 									}
 								}
 							}
-							if (Object.keys($scope.configuration.recipe.env).length === 0) {
-								delete $scope.configuration.recipe.env;
-							}
 						}
-					}
-					
-					//image
-					if (catalog.recipe && catalog.recipe.deployOptions) {
-						if (catalog.recipe.deployOptions.image) {
-							$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
-							$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
-							$scope.showImages = catalog.recipe.deployOptions.image.override;
-							$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
-							$scope.configuration.recipe.image = {
-								prefix: catalog.recipe.deployOptions.image.prefix,
-								name: catalog.recipe.deployOptions.image.name,
-								tag: catalog.recipe.deployOptions.image.tag
-							};
-						}
-						if (!$scope.configuration.recipe.readinessProbe) {
-							if (catalog.recipe.deployOptions.readinessProbe) {
-								$scope.configuration.recipe.readinessProbe = catalog.recipe.deployOptions.readinessProbe;
-							}
-						}
-						if (!$scope.configuration.recipe.livenessProbe) {
-							if (catalog.recipe.deployOptions.livenessProbe) {
-								$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
-							}
-						}
-						$scope.aceEditorConfig = {
-							readiness: {
-								maxLines: Infinity,
-								minLines: 1,
-								useWrapMode: true,
-								showGutter: true,
-								mode: 'json',
-								firstLineNumber: 1,
-								onLoad: function (_editor) {
-									_editor.$blockScrolling = Infinity;
-									_editor.scrollToLine(0, true, true);
-									_editor.scrollPageUp();
-									_editor.clearSelection();
-									_editor.setShowPrintMargin(false);
-									_editor.setHighlightActiveLine(false);
-									_editor.renderer.scrollBar.setHeight("200px");
-									_editor.renderer.scrollBar.setInnerHeight("200px");
-									_editor.setValue(JSON.stringify($scope.configuration.recipe.readinessProbe, null, 2));
-									$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
-								},
-								onChange: function (_editor) {
-									$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
-								}
-							},
-							liveness: {
-								maxLines: Infinity,
-								minLines: 1,
-								useWrapMode: true,
-								showGutter: true,
-								mode: 'json',
-								firstLineNumber: 1,
-								onLoad: function (_editor) {
-									_editor.$blockScrolling = Infinity;
-									_editor.scrollToLine(0, true, true);
-									_editor.scrollPageUp();
-									_editor.clearSelection();
-									_editor.setShowPrintMargin(false);
-									_editor.setHighlightActiveLine(false);
-									_editor.renderer.scrollBar.setHeight("200px");
-									_editor.renderer.scrollBar.setInnerHeight("200px");
-									_editor.setValue(JSON.stringify($scope.configuration.recipe.livenessProbe, null, 2));
-								},
-								onChange: function (_editor) {
-									$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
-								}
-							},
-							sessions : {
-								readiness : {},
-								liveness : {}
-							}
-						};
 						
-						if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
-							if (!$scope.configuration.recipe.ports) {
-								$scope.configuration.recipe.ports = {
-									type: "kubernetes"
+						//image
+						if (catalog.recipe && catalog.recipe.deployOptions) {
+							if (catalog.recipe.deployOptions.image) {
+								$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
+								$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
+								$scope.showImages = catalog.recipe.deployOptions.image.override;
+								$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
+								$scope.configuration.recipe.image = {
+									prefix: catalog.recipe.deployOptions.image.prefix,
+									name: catalog.recipe.deployOptions.image.name,
+									tag: catalog.recipe.deployOptions.image.tag
 								};
+							}
+							if (!$scope.configuration.recipe.readinessProbe) {
+								if (catalog.recipe.deployOptions.readinessProbe) {
+									$scope.configuration.recipe.readinessProbe = catalog.recipe.deployOptions.readinessProbe;
+								}
+							}
+							if (!$scope.configuration.recipe.livenessProbe) {
+								if (catalog.recipe.deployOptions.livenessProbe) {
+									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
+								}
+							}
+							if (typeof $scope.configuration.recipe.readinessProbe !== "string") {
+								$scope.aceEditorConfig.sessions.readiness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.readinessProbe), null, 2));
+							} else {
+								$scope.aceEditorConfig.sessions.readiness._editor.setValue(angular.copy($scope.configuration.recipe.readinessProbe));
+							}
+							if (typeof $scope.configuration.recipe.livenessProbe !== "string") {
+								$scope.aceEditorConfig.sessions.liveness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.livenessProbe), null, 2));
+							} else {
+								$scope.aceEditorConfig.sessions.liveness._editor.setValue(angular.copy($scope.configuration.recipe.livenessProbe));
+							}
+							
+							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
+								if (!$scope.configuration.recipe.ports) {
+									$scope.configuration.recipe.ports = {
+										type: "kubernetes"
+									};
+									
+								}
+								$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
 								
-							}
-							$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
-							if ($scope.configuration.recipe.ports.values){
-								$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
-							}
-							$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
-							$scope.ports.forEach((port) => {
-								if (port.isPublished) {
-									$scope.isPublished = true;
-									if (!$scope.configuration.recipe.ports.portType) {
+								if ($scope.configuration.recipe.ports.values) {
+									let temp = angular.copy($scope.configuration.recipe.ports.values);
+									for (let i = 0; i < $scope.ports.length; i++) {
+										for (let x = 0; x < temp.length; x++) {
+											if ($scope.ports[i].target === temp[x].target) {
+												$scope.ports[i] = temp[x];
+											}
+										}
+									}
+									//used for mismatch
+									// $scope.portMismatch = false;
+									// for (let i = 0; i < temp.length; i++) {
+									// 	let found = false;
+									// 	for (let x = 0; x < $scope.ports.length; x++) {
+									// 		if ($scope.ports[i].target === temp[x].target) {
+									// 			found = true;
+									// 		}
+									// 	}
+									// 	if (!found){
+									// 		$scope.portMismatch = true;
+									// 		break;
+									// 	}
+									// }
+								}
+								$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
+								$scope.ports.forEach((port) => {
+									if (port.isPublished) {
+										$scope.isPublished = true;
 										if (port.published) {
 											$scope.configuration.recipe.ports.portType = "NodePort";
 										} else {
 											$scope.configuration.recipe.ports.portType = "LoadBalancer";
 										}
+										$scope.loadBalancer = $scope.configuration.recipe.ports.portType === "LoadBalancer";
 									}
-									$scope.loadBalancer = $scope.configuration.recipe.ports.portType === "LoadBalancer";
+								});
+								if (!$scope.configuration.recipe.ports.values) {
+									$scope.configuration.recipe.ports.values = angular.copy($scope.ports);
 								}
-							});
-							if (!$scope.configuration.recipe.ports.values) {
-								$scope.configuration.recipe.ports.values = angular.copy($scope.ports);
-							}
-							$scope.showPorts = true;
-							if (!$scope.isPublished || $scope.service.type === "service") {
-								$scope.configuration.recipe.ports.portType = "Internal";
-							}
-						} else {
-							$scope.showPorts = false;
-						}
-						if (catalog.recipe.deployOptions.sourceCode) {
-							if (catalog.recipe.deployOptions.sourceCode.configuration) {
-								$scope.showSourceConfig = true;
-								$scope.requiredSourceConfig = !!catalog.recipe.deployOptions.sourceCode.configuration;
-								$scope.editSourceConfig = true;
-								$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog
-									|| $scope.configuration.recipe.sourceCode.catalog);
-								$scope.fetchConfigBranchesTags(catalog.recipe.deployOptions.sourceCode.configuration.version
-									|| $scope.configuration.recipe.sourceCode.version);
-								
-								if (catalog.recipe.deployOptions.sourceCode.configuration.catalog !== '') {
-									$scope.editSourceConfig = false;
-									$scope.configuration.recipe.sourceCode = {
-										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
-										catalog: catalog.recipe.deployOptions.sourceCode.configuration.catalog,
-										version: catalog.recipe.deployOptions.sourceCode.configuration.version,
-										tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
-										branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
-										id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
-									};
-									if (!$scope.configuration.recipe.sourceCode.id) {
-										$scope.showSourceConfig = false;
-									}
-								} else if (!catalog.recipe.deployOptions.sourceCode) {
-									$scope.configuration.recipe.sourceCode = {
-										label: catalog.recipe.deployOptions.sourceCode.configuration.label,
-									}
+								$scope.showPorts = true;
+								if (!$scope.isPublished || $scope.service.type === "service") {
+									$scope.configuration.recipe.ports.portType = "Internal";
 								}
-								if (catalog.recipe.deployOptions.sourceCode.configuration.branch) {
-									$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
+							} else {
+								$scope.showPorts = false;
+							}
+							if (catalog.recipe.deployOptions.sourceCode) {
+								if (catalog.recipe.deployOptions.sourceCode.configuration) {
+									$scope.showSourceConfig = true;
+									$scope.requiredSourceConfig = !!catalog.recipe.deployOptions.sourceCode.configuration;
+									$scope.editSourceConfig = true;
+									$scope.fetchConfigVersion(catalog.recipe.deployOptions.sourceCode.configuration.catalog
+										|| $scope.configuration.recipe.sourceCode.catalog);
+									$scope.fetchConfigBranchesTags(catalog.recipe.deployOptions.sourceCode.configuration.version
+										|| $scope.configuration.recipe.sourceCode.version);
+									
+									if (catalog.recipe.deployOptions.sourceCode.configuration.catalog !== '') {
+										$scope.editSourceConfig = false;
+										$scope.configuration.recipe.sourceCode = {
+											label: catalog.recipe.deployOptions.sourceCode.configuration.label,
+											catalog: catalog.recipe.deployOptions.sourceCode.configuration.catalog,
+											version: catalog.recipe.deployOptions.sourceCode.configuration.version,
+											tag: catalog.recipe.deployOptions.sourceCode.configuration.tag,
+											branch: catalog.recipe.deployOptions.sourceCode.configuration.branch,
+											id: $scope.fetchConfigId(catalog.recipe.deployOptions.sourceCode.configuration.catalog)
+										};
+										if (!$scope.configuration.recipe.sourceCode.id) {
+											$scope.showSourceConfig = false;
+										}
+									} else if (!catalog.recipe.deployOptions.sourceCode) {
+										$scope.configuration.recipe.sourceCode = {
+											label: catalog.recipe.deployOptions.sourceCode.configuration.label,
+										}
+									}
+									if (catalog.recipe.deployOptions.sourceCode.configuration.branch) {
+										$scope.updateGitConfigBranch(catalog.recipe.deployOptions.sourceCode.configuration.branch)
+									}
+								} else {
+									delete $scope.configuration.recipe.sourceCode;
 								}
 							} else {
 								delete $scope.configuration.recipe.sourceCode;
 							}
-						} else {
-							delete $scope.configuration.recipe.sourceCode;
 						}
 					}
-				});
+				);
 			});
 		};
 		
@@ -1281,7 +1324,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 			$scope.image = $scope.configuration.recipe.image;
 			if ($scope.configuration.src) {
 				$scope.src = $scope.configuration.src;
-				if ($scope.configuration.src.branch){
+				if ($scope.configuration.src.branch) {
 					$scope.updateGitBranch($scope.configuration.src.branch)
 				}
 			}
@@ -1334,7 +1377,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 		if (err) {
 			currentScope.displayAlert($scope, 'danger', err.message);
 		} else {
-			getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+			getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 				overlayLoading.hide();
 				if (error) {
 					currentScope.displayAlert($scope, 'danger', error.message);

@@ -521,7 +521,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 							});
 							$scope.responses[host.id] = host.response;
 						});
-						if (formConfig.length === 2){
+						if (formConfig.length === 2) {
 							formConfig.push(
 								{
 									'name': 'podSelector',
@@ -766,7 +766,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
 			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
 				if (item.version === v.version) {
-					$scope.configuration = item;
+					$scope.configuration = angular.copy(item);
 				}
 			});
 		}
@@ -791,6 +791,58 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 				}
 			}
 		});
+		$scope.aceEditorConfig = {
+			readiness: {
+				maxLines: Infinity,
+				minLines: 1,
+				useWrapMode: true,
+				showGutter: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				onLoad: function (_editor) {
+					_editor.$blockScrolling = Infinity;
+					_editor.scrollToLine(0, true, true);
+					_editor.scrollPageUp();
+					_editor.clearSelection();
+					_editor.setShowPrintMargin(false);
+					_editor.setHighlightActiveLine(false);
+					_editor.renderer.scrollBar.setHeight("200px");
+					_editor.renderer.scrollBar.setInnerHeight("200px");
+					$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
+					$scope.aceEditorConfig.sessions.readiness._editor = _editor;
+				},
+				onChange: function (_editor) {
+					$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
+				}
+			},
+			liveness: {
+				maxLines: Infinity,
+				minLines: 1,
+				useWrapMode: true,
+				showGutter: true,
+				mode: 'json',
+				firstLineNumber: 1,
+				onLoad: function (_editor) {
+					_editor.$blockScrolling = Infinity;
+					_editor.scrollToLine(0, true, true);
+					_editor.scrollPageUp();
+					_editor.clearSelection();
+					_editor.setShowPrintMargin(false);
+					_editor.setHighlightActiveLine(false);
+					_editor.renderer.scrollBar.setHeight("200px");
+					_editor.renderer.scrollBar.setInnerHeight("200px");
+					$scope.aceEditorConfig.sessions.liveness.aceSession = _editor.getSession();
+					$scope.aceEditorConfig.sessions.liveness._editor = _editor;
+				},
+				onChange: function (_editor) {
+					$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
+				}
+			},
+			sessions: {
+				readiness: {},
+				liveness: {}
+			}
+		};
 		$scope.injectCatalogEntries = function (catalog) {
 			$scope.checkGitBranch(catalog, function () {
 				$scope.getSecrets(function () {
@@ -806,6 +858,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 								if (!$scope.configuration.recipe.env) {
 									$scope.configuration.recipe.env = {};
 								}
+								let env_variables = [];
 								for (let envVariable in catalog.recipe.buildOptions.env) {
 									if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
 										if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
@@ -824,6 +877,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 											} else {
 												$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 											}
+											env_variables.push(temp.name);
 											$scope.userInputVariable.push(temp);
 										}
 										if (catalog.recipe.buildOptions.env[envVariable].type === 'secret') {
@@ -859,12 +913,24 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
+											env_variables.push(temp.name);
 											$scope.secretVariable.push(temp);
 										}
 									}
 								}
 								if (Object.keys($scope.configuration.recipe.env).length === 0) {
 									delete $scope.configuration.recipe.env;
+								}
+								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)){
+									for (let i = 0; i < Object.keys($scope.configuration.recipe.env).length; i++) {
+										if (!env_variables.includes(Object.keys($scope.configuration.recipe.env)[i])) {
+											//detected mismatch
+											delete $scope.configuration.recipe.env[Object.keys($scope.configuration.recipe.env)[i]];
+										}
+									}
+									if (Object.keys($scope.configuration.recipe.env).length === 0) {
+										delete $scope.configuration.recipe.env;
+									}
 								}
 							}
 						}
@@ -892,57 +958,17 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
 								}
 							}
-							$scope.aceEditorConfig = {
-								readiness: {
-									maxLines: Infinity,
-									minLines: 1,
-									useWrapMode: true,
-									showGutter: true,
-									mode: 'json',
-									firstLineNumber: 1,
-									onLoad: function (_editor) {
-										_editor.$blockScrolling = Infinity;
-										_editor.scrollToLine(0, true, true);
-										_editor.scrollPageUp();
-										_editor.clearSelection();
-										_editor.setShowPrintMargin(false);
-										_editor.setHighlightActiveLine(false);
-										_editor.renderer.scrollBar.setHeight("200px");
-										_editor.renderer.scrollBar.setInnerHeight("200px");
-										_editor.setValue(JSON.stringify($scope.configuration.recipe.readinessProbe, null, 2));
-										$scope.aceEditorConfig.sessions.readiness.aceSession = _editor.getSession();
-									},
-									onChange: function (_editor) {
-										$scope.configuration.recipe.readinessProbe = $scope.aceEditorConfig.sessions.readiness.aceSession.getDocument().getValue();
-									}
-								},
-								liveness: {
-									maxLines: Infinity,
-									minLines: 1,
-									useWrapMode: true,
-									showGutter: true,
-									mode: 'json',
-									firstLineNumber: 1,
-									onLoad: function (_editor) {
-										_editor.$blockScrolling = Infinity;
-										_editor.scrollToLine(0, true, true);
-										_editor.scrollPageUp();
-										_editor.clearSelection();
-										_editor.setShowPrintMargin(false);
-										_editor.setHighlightActiveLine(false);
-										_editor.renderer.scrollBar.setHeight("200px");
-										_editor.renderer.scrollBar.setInnerHeight("200px");
-										_editor.setValue(JSON.stringify($scope.configuration.recipe.livenessProbe, null, 2));
-									},
-									onChange: function (_editor) {
-										$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
-									}
-								},
-								sessions : {
-									readiness : {},
-									liveness : {}
-								}
-							};
+							
+							if (typeof $scope.configuration.recipe.readinessProbe !== "string") {
+								$scope.aceEditorConfig.sessions.readiness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.readinessProbe), null, 2));
+							} else {
+								$scope.aceEditorConfig.sessions.readiness._editor.setValue(angular.copy($scope.configuration.recipe.readinessProbe));
+							}
+							if (typeof $scope.configuration.recipe.livenessProbe !== "string") {
+								$scope.aceEditorConfig.sessions.liveness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.livenessProbe), null, 2));
+							} else {
+								$scope.aceEditorConfig.sessions.liveness._editor.setValue(angular.copy($scope.configuration.recipe.livenessProbe));
+							}
 							
 							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
 								if (!$scope.configuration.recipe.ports) {
@@ -953,18 +979,37 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 								}
 								$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
 								if ($scope.configuration.recipe.ports.values) {
-									$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
+									let temp = angular.copy($scope.configuration.recipe.ports.values);
+									for (let i = 0; i < $scope.ports.length; i++) {
+										for (let x = 0; x < temp.length; x++) {
+											if ($scope.ports[i].target === temp[x].target) {
+												$scope.ports[i] = temp[x];
+											}
+										}
+									}
+									//used for mismatch
+									// $scope.portMismatch = false;
+									// for (let i = 0; i < temp.length; i++) {
+									// 	let found = false;
+									// 	for (let x = 0; x < $scope.ports.length; x++) {
+									// 		if ($scope.ports[i].target === temp[x].target) {
+									// 			found = true;
+									// 		}
+									// 	}
+									// 	if (!found){
+									// 		$scope.portMismatch = true;
+									// 		break;
+									// 	}
+									// }
 								}
 								$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
 								$scope.ports.forEach((port) => {
 									if (port.isPublished) {
 										$scope.isPublished = true;
-										if (!$scope.configuration.recipe.ports.portType) {
-											if (port.published) {
-												$scope.configuration.recipe.ports.portType = "NodePort";
-											} else {
-												$scope.configuration.recipe.ports.portType = "LoadBalancer";
-											}
+										if (port.published) {
+											$scope.configuration.recipe.ports.portType = "NodePort";
+										} else {
+											$scope.configuration.recipe.ports.portType = "LoadBalancer";
 										}
 										$scope.loadBalancer = $scope.configuration.recipe.ports.portType === "LoadBalancer";
 									}
@@ -1294,7 +1339,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 			$scope.image = $scope.configuration.recipe.image;
 			if ($scope.configuration.src) {
 				$scope.src = $scope.configuration.src;
-				if ($scope.configuration.src.branch){
+				if ($scope.configuration.src.branch) {
 					$scope.updateGitBranch($scope.configuration.src.branch)
 				}
 			}

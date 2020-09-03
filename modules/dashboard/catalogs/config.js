@@ -273,7 +273,7 @@ let catalogAppConfig = {
                             'type': "info",
                             'content': 	"<p>Expose ports to access deployments created from this recipe directly using either <b>Load Balancer</b> or <b>Specific Port</b> strategies.<br />" +
                             "<b>Load Balancer</b> &raquo; { name: 'http', target: 80, isPublished: true, preserveClientIP: true }<br />" +
-                            "<b>Specific Port</b> &raquo; { name: 'http', target: 80, isPublished: true, published: 2080, preserveClientIP: true }" +
+                            "<b>Specific Port</b> &raquo; { name: 'http', target: 80, isPublished: true, published: 30080, preserveClientIP: true }" +
                             "</p><br />" +
 							"<label>If you wish to use a <b>Specific Port</b>, make sure that the published port is within these ranges:</label><br />" +
 							"<ul>" +

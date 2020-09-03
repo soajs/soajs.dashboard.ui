@@ -766,7 +766,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 		if (service.deploy && service.deploy[$scope.selectedEnvironment.code.toLowerCase()] && service.deploy[$scope.selectedEnvironment.code.toLowerCase()].length > 0) {
 			service.deploy[$scope.selectedEnvironment.code.toLowerCase()].forEach((item) => {
 				if (item.version === v.version) {
-					$scope.configuration = item;
+					$scope.configuration = angular.copy(item);
 				}
 			});
 		}
@@ -838,9 +838,9 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 					$scope.configuration.recipe.livenessProbe = $scope.aceEditorConfig.sessions.liveness.aceSession.getDocument().getValue();
 				}
 			},
-			sessions : {
-				readiness : {},
-				liveness : {}
+			sessions: {
+				readiness: {},
+				liveness: {}
 			}
 		};
 		$scope.injectCatalogEntries = function (catalog) {
@@ -858,6 +858,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 								if (!$scope.configuration.recipe.env) {
 									$scope.configuration.recipe.env = {};
 								}
+								let env_variables = [];
 								for (let envVariable in catalog.recipe.buildOptions.env) {
 									if (envVariable && catalog.recipe.buildOptions.env.hasOwnProperty(envVariable) && catalog.recipe.buildOptions.env[envVariable]) {
 										if (catalog.recipe.buildOptions.env[envVariable].type === 'userInput') {
@@ -876,6 +877,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 											} else {
 												$scope.configuration.recipe.env[envVariable] = catalog.recipe.buildOptions.env[envVariable].default || "";
 											}
+											env_variables.push(temp.name);
 											$scope.userInputVariable.push(temp);
 										}
 										if (catalog.recipe.buildOptions.env[envVariable].type === 'secret') {
@@ -911,12 +913,24 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 													key: catalog.recipe.buildOptions.env[envVariable].key || ""
 												};
 											}
+											env_variables.push(temp.name);
 											$scope.secretVariable.push(temp);
 										}
 									}
 								}
 								if (Object.keys($scope.configuration.recipe.env).length === 0) {
 									delete $scope.configuration.recipe.env;
+								}
+								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)){
+									for (let i = 0; i < Object.keys($scope.configuration.recipe.env).length; i++) {
+										if (!env_variables.includes(Object.keys($scope.configuration.recipe.env)[i])) {
+											//detected mismatch
+											delete $scope.configuration.recipe.env[Object.keys($scope.configuration.recipe.env)[i]];
+										}
+									}
+									if (Object.keys($scope.configuration.recipe.env).length === 0) {
+										delete $scope.configuration.recipe.env;
+									}
 								}
 							}
 						}
@@ -934,7 +948,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 								};
 							}
 							if (!$scope.isDeployed || !$scope.configuration.recipe.readinessProbe) {
-								if (catalog.recipe.deployOptions.readinessProbe ) {
+								if (catalog.recipe.deployOptions.readinessProbe) {
 									$scope.configuration.recipe.readinessProbe = catalog.recipe.deployOptions.readinessProbe;
 								} else {
 									//$scope.maintenance
@@ -984,16 +998,14 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 									$scope.configuration.recipe.livenessProbe = catalog.recipe.deployOptions.livenessProbe;
 								}
 							}
-							if (typeof $scope.configuration.recipe.readinessProbe !== "string"){
+							if (typeof $scope.configuration.recipe.readinessProbe !== "string") {
 								$scope.aceEditorConfig.sessions.readiness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.readinessProbe), null, 2));
-							}
-							else {
+							} else {
 								$scope.aceEditorConfig.sessions.readiness._editor.setValue(angular.copy($scope.configuration.recipe.readinessProbe));
 							}
-							if (typeof $scope.configuration.recipe.livenessProbe !== "string"){
+							if (typeof $scope.configuration.recipe.livenessProbe !== "string") {
 								$scope.aceEditorConfig.sessions.liveness._editor.setValue(JSON.stringify(angular.copy($scope.configuration.recipe.livenessProbe), null, 2));
-							}
-							else {
+							} else {
 								$scope.aceEditorConfig.sessions.liveness._editor.setValue(angular.copy($scope.configuration.recipe.livenessProbe));
 							}
 							if (catalog.recipe.deployOptions.ports && catalog.recipe.deployOptions.ports.length > 0) {
@@ -1005,18 +1017,37 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 								}
 								$scope.ports = angular.copy(catalog.recipe.deployOptions.ports);
 								if ($scope.configuration.recipe.ports.values) {
-									$scope.ports = angular.copy($scope.configuration.recipe.ports.values);
+									let temp = angular.copy($scope.configuration.recipe.ports.values);
+									for (let i = 0; i < $scope.ports.length; i++) {
+										for (let x = 0; x < temp.length; x++) {
+											if ($scope.ports[i].target === temp[x].target) {
+												$scope.ports[i] = temp[x];
+											}
+										}
+									}
+									//used for mismatch
+									// $scope.portMismatch = false;
+									// for (let i = 0; i < temp.length; i++) {
+									// 	let found = false;
+									// 	for (let x = 0; x < $scope.ports.length; x++) {
+									// 		if ($scope.ports[i].target === temp[x].target) {
+									// 			found = true;
+									// 		}
+									// 	}
+									// 	if (!found){
+									// 		$scope.portMismatch = true;
+									// 		break;
+									// 	}
+									// }
 								}
 								$scope.externalTrafficPolicy = $scope.configuration.recipe.ports.externalTrafficPolicy === "Cluster";
 								$scope.ports.forEach((port) => {
 									if (port.isPublished) {
 										$scope.isPublished = true;
-										if (!$scope.configuration.recipe.ports.portType) {
-											if (port.published) {
-												$scope.configuration.recipe.ports.portType = "NodePort";
-											} else {
-												$scope.configuration.recipe.ports.portType = "LoadBalancer";
-											}
+										if (port.published) {
+											$scope.configuration.recipe.ports.portType = "NodePort";
+										} else {
+											$scope.configuration.recipe.ports.portType = "LoadBalancer";
 										}
 										$scope.loadBalancer = $scope.configuration.recipe.ports.portType === "LoadBalancer";
 									}
@@ -1346,7 +1377,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 			$scope.image = $scope.configuration.recipe.image;
 			if ($scope.configuration.src) {
 				$scope.src = $scope.configuration.src;
-				if ($scope.configuration.src.branch){
+				if ($scope.configuration.src.branch) {
 					$scope.updateGitBranch($scope.configuration.src.branch)
 				}
 			}

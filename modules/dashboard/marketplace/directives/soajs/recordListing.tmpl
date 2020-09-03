@@ -63,124 +63,126 @@
 				</div>
 			</div>
 			<br />
-			<accordion close-others="true">
-				<accordion-group is-open="true" class="blueAccordion">
-					<accordion-heading><span class="icon icon-cog"></span>Configuration</accordion-heading>
-					<fieldset>
-						<legend>Environment(s)</legend>
-						<div class="entryBoxes entryBoxesGrid">
-							<div ng-repeat="env in envs">
-								<div class="entryBox greyBox" ng-style="{'width': '200px'}" ng-class="{ blueBox: oneList.settings[env] }">
-									<b>{{env}} {{translation.environment[LANG]}}</b>&nbsp;&nbsp;
-									<a href="" ng-style="{'float': 'right'}" ng-click="updateServiceSettings(env, oneList.version, service)">
-										<span class="icon icon-pencil" tooltip="{{translation.editServiceConfiguration[LANG]}}"></span>
-									</a>
+			<div ng-show="oneList.type==='service'">
+				<accordion close-others="true">
+					<accordion-group is-open="true" class="blueAccordion">
+						<accordion-heading><span class="icon icon-cog"></span>Configuration</accordion-heading>
+						<fieldset>
+							<legend>Environment(s)</legend>
+							<div class="entryBoxes entryBoxesGrid">
+								<div ng-repeat="env in envs">
+									<div class="entryBox greyBox" ng-style="{'width': '200px'}" ng-class="{ blueBox: oneList.settings[env] }">
+										<b>{{env}} {{translation.environment[LANG]}}</b>&nbsp;&nbsp;
+										<a href="" ng-style="{'float': 'right'}" ng-click="updateServiceSettings(env, oneList.version, service)">
+											<span class="icon icon-pencil" tooltip="{{translation.editServiceConfiguration[LANG]}}"></span>
+										</a>
+									</div>
 								</div>
 							</div>
-						</div>
-					</fieldset>
-				</accordion-group>
-				<accordion-group class="greenAccordion">
-					<accordion-heading><span class="icon icon-cloud"></span>API</accordion-heading>
-					<alert ng-if="!oneList.fixList.groups" type="warning">No APIs found, please update your service or endpoint schema to proceed.</alert>
-					<fieldset ng-repeat="(grp, val) in oneList.fixList.groups" class="" >
-						<legend>{{grp}}</legend>
-						<span ng-if="val.defaultApi"><label>{{translation.defaultRoute[LANG]}}:</label> {{val.defaultApi}}<br></span>
-						
-						<div ng-if="val.Read">
-							<fieldset>
-								<legend> Read</legend>
-								<div  ng-repeat="myApi in val.Read.apis">
-									<div class ="readApi">
-										<span class="readMethodApi">{{myApi.m}}</span>
-										<span class="readRouteApi">{{myApi.v}}</span>
-										<span class="readDescriptionApi">{{myApi.l}}</span>
+						</fieldset>
+					</accordion-group>
+					<accordion-group class="greenAccordion">
+						<accordion-heading><span class="icon icon-cloud"></span>API</accordion-heading>
+						<alert ng-if="!oneList.fixList.groups" type="warning">No APIs found, please update your service or endpoint schema to proceed.</alert>
+						<fieldset ng-repeat="(grp, val) in oneList.fixList.groups" class="" >
+							<legend>{{grp}}</legend>
+							<span ng-if="val.defaultApi"><label>{{translation.defaultRoute[LANG]}}:</label> {{val.defaultApi}}<br></span>
+							
+							<div ng-if="val.Read">
+								<fieldset>
+									<legend> Read</legend>
+									<div  ng-repeat="myApi in val.Read.apis">
+										<div class ="readApi">
+											<span class="readMethodApi">{{myApi.m}}</span>
+											<span class="readRouteApi">{{myApi.v}}</span>
+											<span class="readDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
-						
-						<div ng-if="val.Add">
-							<fieldset>
-								<legend>Add</legend>
-								<div  ng-repeat="myApi in val.Add.apis">
-									<div class ="addApi">
-										<span class="addMethodApi">{{myApi.m}}</span>
-										<span class="addRouteApi">{{myApi.v}}</span>
-										<span class="addDescriptionApi">{{myApi.l}}</span>
+								</fieldset>
+							</div>
+							
+							<div ng-if="val.Add">
+								<fieldset>
+									<legend>Add</legend>
+									<div  ng-repeat="myApi in val.Add.apis">
+										<div class ="addApi">
+											<span class="addMethodApi">{{myApi.m}}</span>
+											<span class="addRouteApi">{{myApi.v}}</span>
+											<span class="addDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
-						
-						<div  ng-if="val.Update">
-							<fieldset>
-								<legend>Update</legend>
-								<div  ng-repeat="myApi in val.Update.apis">
-									<div class ="updateApi">
-										<span class="updateMethodApi">{{myApi.m}}</span>
-										<span class="updateRouteApi">{{myApi.v}}</span>
-										<span class="updateDescriptionApi">{{myApi.l}}</span>
+								</fieldset>
+							</div>
+							
+							<div  ng-if="val.Update">
+								<fieldset>
+									<legend>Update</legend>
+									<div  ng-repeat="myApi in val.Update.apis">
+										<div class ="updateApi">
+											<span class="updateMethodApi">{{myApi.m}}</span>
+											<span class="updateRouteApi">{{myApi.v}}</span>
+											<span class="updateDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
-						
-						<div ng-if="val.Delete">
-							<fieldset>
-								<legend>Delete</legend>
-								<div  ng-repeat="myApi in val.Delete.apis">
-									<div class ="deleteApi">
-										<span class="deleteMethodApi">{{myApi.m}}</span>
-										<span class="deleteRouteApi">{{myApi.v}}</span>
-										<span class="deleteDescriptionApi">{{myApi.l}}</span>
+								</fieldset>
+							</div>
+							
+							<div ng-if="val.Delete">
+								<fieldset>
+									<legend>Delete</legend>
+									<div  ng-repeat="myApi in val.Delete.apis">
+										<div class ="deleteApi">
+											<span class="deleteMethodApi">{{myApi.m}}</span>
+											<span class="deleteRouteApi">{{myApi.v}}</span>
+											<span class="deleteDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
-						
-						<div ng-if="val.Patch">
-							<fieldset>
-								<legend>Patch</legend>
-								<div  ng-repeat="myApi in val.Patch.apis">
-									<div class ="patchApi">
-										<span class="patchMethodApi">{{myApi.m}}</span>
-										<span class="patchRouteApi">{{myApi.v}}</span>
-										<span class="patchDescriptionApi">{{myApi.l}}</span>
+								</fieldset>
+							</div>
+							
+							<div ng-if="val.Patch">
+								<fieldset>
+									<legend>Patch</legend>
+									<div  ng-repeat="myApi in val.Patch.apis">
+										<div class ="patchApi">
+											<span class="patchMethodApi">{{myApi.m}}</span>
+											<span class="patchRouteApi">{{myApi.v}}</span>
+											<span class="patchDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
-						
-						<div ng-if="val.Head">
-							<fieldset>
-								<legend>Head</legend>
-								<div  ng-repeat="myApi in val.Head.apis">
-									<div class ="headApi">
-										<span class="headMethodApi">{{myApi.m}}</span>
-										<span class="headRouteApi">{{myApi.v}}</span>
-										<span class="headDescriptionApi">{{myApi.l}}</span>
+								</fieldset>
+							</div>
+							
+							<div ng-if="val.Head">
+								<fieldset>
+									<legend>Head</legend>
+									<div  ng-repeat="myApi in val.Head.apis">
+										<div class ="headApi">
+											<span class="headMethodApi">{{myApi.m}}</span>
+											<span class="headRouteApi">{{myApi.v}}</span>
+											<span class="headDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
-						
-						<div ng-if="val.Other">
-							<fieldset>
-								<legend>Other</legend>
-								<div  ng-repeat="myApi in val.Other.apis">
-									<div class ="otherApi">
-										<span class="otherMethodApi">{{myApi.m}}</span>
-										<span class="otherRouteApi">{{myApi.v}}</span>
-										<span class="otherDescriptionApi">{{myApi.l}}</span>
+								</fieldset>
+							</div>
+							
+							<div ng-if="val.Other">
+								<fieldset>
+									<legend>Other</legend>
+									<div  ng-repeat="myApi in val.Other.apis">
+										<div class ="otherApi">
+											<span class="otherMethodApi">{{myApi.m}}</span>
+											<span class="otherRouteApi">{{myApi.v}}</span>
+											<span class="otherDescriptionApi">{{myApi.l}}</span>
+										</div>
 									</div>
-								</div>
-							</fieldset>
-						</div>
+								</fieldset>
+							</div>
 						
-					</fieldset>
-				</accordion-group>
-			</accordion>
+						</fieldset>
+					</accordion-group>
+				</accordion>
+			</div>
 		</tab>
 	</tabset>
 </div>

@@ -18,7 +18,27 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 				category: {
 					"cluster": [
 						{
-							'v': 'mongo', 'l': "Local/External Mongo",
+							'v': 'mongodb srv', 'l': "Local/External MongoDB+srv",
+							"schema": {
+								"servers": [
+									{
+										"host": ""
+									},
+								],
+								"credentials": {
+									"username": "",
+									"password": ""
+								},
+								"protocol": "mongodb+srv://",
+								"URLParam": {
+									"retryWrites": true,
+									"w": "majority",
+									"useUnifiedTopology": true
+								}
+							}
+						},
+						{
+							'v': 'mongodb', 'l': "Local/External MongoDB",
 							"schema": {
 								"servers": [
 									{

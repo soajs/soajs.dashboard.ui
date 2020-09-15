@@ -16,7 +16,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.listProducts = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/product/list"
+			"routeName": "/multitenant/products"
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -54,7 +54,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.removeProduct = function (row) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/product/delete",
+			"routeName": "/multitenant/product",
 			"params": {"id": row._id}
 		}, function (error) {
 			if (error) {
@@ -86,7 +86,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 						};
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
-							"routeName": "/dashboard/product/add",
+							"routeName": "/multitenant/product",
 							"data": postData
 						}, function (error) {
 							if (error) {
@@ -147,7 +147,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 					};
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "put",
-						"routeName": "/dashboard/product/update",
+						"routeName": "/multitenant/product",
 						"data": postData,
 						"params": {"id": row['_id']}
 					}, function (error) {
@@ -178,7 +178,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.reloadPackages = function (productId) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/product/packages/list",
+			"routeName": "/multitenant/product/packages",
 			"params": {"id": productId}
 		}, function (error, response) {
 			if (error) {
@@ -223,7 +223,7 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 						postData.acl = {};
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
-							"routeName": "/dashboard/product/packages/add",
+							"routeName": "/multitenant/product/package",
 							"data": postData,
 							"params": {"id": productId}
 						}, function (error) {
@@ -286,15 +286,16 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 					'action': function (formData) {
 						var postData = {
 							'name': formData.name,
+							"code": data.code,
 							'description': formData.description,
 							'_TTL': Array.isArray(formData._TTL) ? formData._TTL.join("") : formData._TTL.toString()
 						};
 						postData.acl = data.acl;
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
-							"routeName": "/dashboard/product/packages/update",
+							"routeName": "/multitenant/product/package",
 							"data": postData,
-							"params": {"id": productId, "code": data.code.split("_")[1]}
+							"params": {"id": productId}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -323,10 +324,9 @@ productizationApp.controller('productCtrl', ['$scope', '$timeout', '$modal', '$r
 	};
 	
 	$scope.removeProductPackage = function (productId, packageCode) {
-		packageCode = packageCode.split("_")[1];
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/product/packages/delete",
+			"routeName": "/multitenant/product/package",
 			"params": {"id": productId, "code": packageCode}
 		}, function (error) {
 			if (error) {
@@ -362,13 +362,13 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.listConsoleProducts = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/console/product/list"
+			"routeName": "/multitenant/products/console"
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
 				$scope.grid = {
-					row: response
+					rows: response
 				};
 				
 				$scope.grid.actions = {
@@ -393,7 +393,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.removeProduct = function (row) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/product/delete",
+			"routeName": "/multitenant/product/console",
 			"params": {"id": row._id}
 		}, function (error) {
 			if (error) {
@@ -403,54 +403,6 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 				$scope.listConsoleProducts();
 			}
 		});
-	};
-	
-	$scope.addProduct = function () {
-		var options = {
-			timeout: $timeout,
-			form: productizationConfig.form.product,
-			type: 'product',
-			name: 'addProduct',
-			label: translation.addNewProduct[LANG],
-			actions: [
-				{
-					'type': 'submit',
-					'label': translation.addProduct[LANG],
-					'btn': 'primary',
-					'action': function (formData) {
-						var postData = {
-							'code': formData.code,
-							'name': formData.name,
-							'description': formData.description
-						};
-						getSendDataFromServer($scope, ngDataApi, {
-							"method": "post",
-							"routeName": "/dashboard/product/add",
-							"data": postData
-						}, function (error) {
-							if (error) {
-								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
-							} else {
-								$scope.$parent.displayAlert('success', translation.productAddedSuccessfully[LANG]);
-								$scope.modalInstance.close();
-								$scope.form.formData = {};
-								$scope.listConsoleProducts();
-							}
-						});
-					}
-				},
-				{
-					'type': 'reset',
-					'label': translation.cancel[LANG],
-					'btn': 'danger',
-					'action': function () {
-						$scope.modalInstance.dismiss('cancel');
-						$scope.form.formData = {};
-					}
-				}]
-		};
-		
-		buildFormWithModal($scope, $modal, options);
 	};
 	
 	$scope.editProduct = function (row) {
@@ -489,7 +441,7 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 					};
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "put",
-						"routeName": "/dashboard/product/update",
+						"routeName": "/multitenant/product/console",
 						"data": postData,
 						"params": {"id": row['_id']}
 					}, function (error) {
@@ -520,14 +472,15 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 	$scope.reloadPackages = function (productId) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/console/product/list",
-			"params": {"id": productId}
+			"routeName": "/multitenant/product/console/packages"
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				if ($scope.grid.row['_id'] === productId) {
-					$scope.grid.row = response;
+				for (var i = 0; i < $scope.grid.rows.length; i++) {
+					if ($scope.grid.rows[i]['_id'] === productId) {
+						$scope.grid.rows[i].packages = response;
+					}
 				}
 			}
 		});
@@ -563,9 +516,9 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 						postData.acl = {};
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "post",
-							"routeName": "/dashboard/product/packages/add",
+							"routeName": "/multitenant/product/console/package",
 							"data": postData,
-							"params": {"id": productId}
+							"params": {"id": productId, "soajs": true}
 						}, function (error) {
 							if (error) {
 								$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -633,14 +586,15 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 					var postData = {
 						'name': formData.name,
 						'description': formData.description,
+						"code": data.code,
 						'_TTL': Array.isArray(formData._TTL) ? formData._TTL.join("") : formData._TTL.toString()
 					};
 					postData.acl = data.acl;
 					getSendDataFromServer($scope, ngDataApi, {
 						"method": "put",
-						"routeName": "/dashboard/product/packages/update",
+						"routeName": "/multitenant/product/console/package",
 						"data": postData,
-						"params": {"id": productId, "code": data.code.split("_")[1]}
+						"params": {"id": productId, "soajs": true}
 					}, function (error) {
 						if (error) {
 							$scope.form.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -667,11 +621,10 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 	};
 	
 	$scope.removeProductPackage = function (productId, packageCode) {
-		packageCode = packageCode.split("_")[1];
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/product/packages/delete",
-			"params": {"id": productId, "code": packageCode}
+			"routeName": "/multitenant/product/console/package",
+			"params": {"id": productId, "code": packageCode, "soajs": true}
 		}, function (error) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -681,6 +634,24 @@ productizationApp.controller('consoleCtrl', ['$scope', '$timeout', '$modal', '$r
 			}
 		});
 	};
+	$scope.reloadPackages = function (productId) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/multitenant/product/console/packages",
+			"params": {"id": productId}
+		}, function (error, response) {
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				for (var i = 0; i < $scope.grid.rows.length; i++) {
+					if ($scope.grid.rows[i]['_id'] === productId) {
+						$scope.grid.rows[i].packages = response;
+					}
+				}
+			}
+		});
+	};
+	
 	
 	//default operation
 	if ($scope.access.listProduct) {
@@ -804,7 +775,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/scope/env",
+			"routeName": "/multitenant/product/scope/env",
 			"data": postData,
 			"params": {
 				"id": productId,
@@ -832,28 +803,7 @@ productizationApp.controller('aclCtrl', ['$scope', '$routeParams', 'ngDataApi', 
 			$scope.aclFill[envCode][service.name][version].accessType = "public";
 		}
 	};
-	$scope.purgeACL = function () {
-		var productId = $routeParams.pid;
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/product/purge",
-			"params": {
-				"id": productId
-			}
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				overlayLoading.hide();
-			} else {
-				$scope.msg.type = '';
-				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
-				$scope.getAllServicesList();
-			}
-		});
-	};
+	
 	$scope.preview = function (env, product) {
 		$scope.$parent.go("/product/" + product.code + "/env/" + env.toLowerCase());
 	};
@@ -927,10 +877,9 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 	$scope.getAllServicesList = function () {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/multitenant/product/acl/ui",
+			"routeName": "/multitenant/product/console/acl/ui",
 			"params": {
-				"id": $routeParams.pid,
-				"soajs": true
+				"id": $routeParams.pid
 			}
 		}, function (error, response) {
 			overlayLoading.hide();
@@ -972,7 +921,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/scope/env",
+			"routeName": "/multitenant/product/console/scope/env",
 			"data": postData,
 			"params": {
 				"id": productId,
@@ -1000,28 +949,7 @@ productizationApp.controller('aclConsoleCtrl', ['$scope', '$routeParams', 'ngDat
 			$scope.aclFill[envCode][service.name][version].accessType = "public";
 		}
 	};
-	$scope.purgeACL = function () {
-		var productId = $routeParams.pid;
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/product/purge",
-			"params": {
-				"id": productId
-			}
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				overlayLoading.hide();
-			} else {
-				$scope.msg.type = '';
-				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
-				$scope.getAllServicesList();
-			}
-		});
-	};
+	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 	// default operation
 	overlayLoading.show(function () {
@@ -1360,13 +1288,13 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/packages/acl/env",
+			"routeName": "/multitenant/product/package/acl/env",
 			"data": {
 				acl: result.data[env.toLowerCase()],
 			},
 			"params": {
 				"id": productId,
-				"code": $routeParams.code.split("_")[1],
+				"code": $routeParams.code,
 				"env": env.toLowerCase(),
 			}
 		};
@@ -1380,33 +1308,11 @@ productizationApp.controller('aclPackageCtrl', ['$scope', '$routeParams', '$moda
 			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG] + "for ", env.toUpperCase());
+				$scope.$parent.displayAlert('success', " ACL Updated Successfully for " + env.toUpperCase());
 			}
 		});
 	};
 	
-	$scope.purgeACL = function () {
-		var productId = $routeParams.pid;
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/product/purge",
-			"params": {
-				"id": productId
-			}
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			} else {
-				$scope.msg.type = '';
-				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
-				$scope.$parent.go("/productization");
-			}
-		});
-	};
 	
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
 		$scope.allServiceApisGranular[group].forEach((service) => {
@@ -1577,7 +1483,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		}
 		let options = {
 			"method": "get",
-			"routeName": "/multitenant/product/package/acl/ui",
+			"routeName": "/multitenant/product/console/package/acl/ui",
 			"params": {
 				"id": $routeParams.pid,
 				"package": $routeParams.code,
@@ -1665,13 +1571,13 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 		overlayLoading.show();
 		let options = {
 			"method": "put",
-			"routeName": "/dashboard/product/packages/acl/env",
+			"routeName": "/multitenant/product/console/package/acl/env",
 			"data": {
 				acl: result.data[env.toLowerCase()],
 			},
 			"params": {
 				"id": productId,
-				"code": $routeParams.code.split("_")[1],
+				"code": $routeParams.code,
 				"env": env.toLowerCase(),
 			}
 		};
@@ -1685,50 +1591,11 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 			} else {
 				$scope.msg.type = '';
 				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG] + "for ", env.toUpperCase());
+				$scope.$parent.displayAlert('success', " ACL Updated Successfully for " + env.toUpperCase());
 			}
 		});
 	};
 	
-	$scope.getEnvironments = function () {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/environment/list",
-			"params": {"short": true}
-		}, function (error, response) {
-			if (error) {
-				overlayLoading.hide();
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			} else {
-				$scope.environments_codes = response;
-				$scope.getPackageAcl();
-			}
-		});
-	};
-	
-	$scope.purgeACL = function () {
-		var productId = $routeParams.pid;
-		let options = {
-			"method": "get",
-			"routeName": "/dashboard/product/purge",
-			"params": {
-				"id": productId
-			}
-		};
-		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, options, function (error) {
-			overlayLoading.hide();
-			if (error) {
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-				
-			} else {
-				$scope.msg.type = '';
-				$scope.msg.msg = '';
-				$scope.$parent.displayAlert('success', translation.ACLUpdatedSuccessfully[LANG]);
-				$scope.$parent.go("/consolePackages");
-			}
-		});
-	};
 	$scope.showHideServiceApi = function (envCode, group, serviceName, v) {
 		$scope.allServiceApisGranular[group].forEach((service) => {
 			if (service.name === serviceName) {
@@ -1843,7 +1710,7 @@ productizationApp.controller('aclConsolePackageCtrl', ['$scope', '$routeParams',
 	});
 }]);
 
-productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal', '$routeParams', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, $routeParams, ngDataApi, injectFiles) {
+productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal', '$routeParams', 'ngDataApi', 'injectFiles', '$localStorage', function ($scope, $timeout, $modal, $routeParams, ngDataApi, injectFiles, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -1851,31 +1718,11 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 	$scope.currentPackage = $routeParams.code;
 	constructModulePermissions($scope, $scope.access, productizationConfig.permissions);
 	
-	$scope.getEnvironments = function () {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/environment/list",
-			"params": {"short": true}
-		}, function (error, response) {
-			if (error) {
-				overlayLoading.hide();
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			} else {
-				for (let x = response.length - 1; x >= 0; x--) {
-					if (response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD") {
-						response.splice(x, 1);
-						break;
-					}
-				}
-				$scope.environments_codes = response;
-				$scope.getPreviewService();
-			}
-		});
-	};
 	$scope.getPreviewService = function (env) {
+		$scope.environments_codes = angular.copy($localStorage.environments);
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/packages/aclPreview/service",
+			"routeName": "/multitenant/product/package/acl/service",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -1899,7 +1746,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 	$scope.getPreviewApi = function (env) {
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/packages/aclPreview/api",
+			"routeName": "/multitenant/product/package/acl/api",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -1924,7 +1771,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 		$scope.page++;
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/packages/aclPreview/api",
+			"routeName": "/multitenant/product/package/acl/api",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -1955,7 +1802,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 		$scope.page++;
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/packages/aclPreview/service",
+			"routeName": "/multitenant/product/package/acl/service",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2012,7 +1859,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 		$scope.showLoadMore = true;
 		let opts = {
 			"method": "put",
-			"routeName": "/dashboard/product/packages/aclPreview/api",
+			"routeName": "/multitenant/product/package/acl/api",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2038,7 +1885,7 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 		$scope.showLoadMore = true;
 		let opts = {
 			"method": "put",
-			"routeName": "/dashboard/product/packages/aclPreview/service",
+			"routeName": "/multitenant/product/package/acl/service",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2172,13 +2019,13 @@ productizationApp.controller('compactViewCtrl', ['$scope', '$timeout', '$modal',
 	};
 	//default operation
 	if ($scope.access.previewPackService) {
-		$scope.getEnvironments();
+		$scope.getPreviewService();
 	}
 	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");
 }]);
 
-productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$modal', '$routeParams', 'ngDataApi', 'injectFiles', function ($scope, $timeout, $modal, $routeParams, ngDataApi, injectFiles) {
+productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$modal', '$routeParams', 'ngDataApi', 'injectFiles', '$localStorage', function ($scope, $timeout, $modal, $routeParams, ngDataApi, injectFiles, $localStorage) {
 	$scope.$parent.isUserLoggedIn();
 	
 	$scope.access = {};
@@ -2186,31 +2033,11 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 	$scope.currentPackage = $routeParams.product;
 	constructModulePermissions($scope, $scope.access, productizationConfig.permissions);
 	
-	$scope.getEnvironments = function () {
-		getSendDataFromServer($scope, ngDataApi, {
-			"method": "get",
-			"routeName": "/dashboard/environment/list",
-			"params": {"short": true}
-		}, function (error, response) {
-			if (error) {
-				overlayLoading.hide();
-				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
-			} else {
-				for (let x = response.length - 1; x >= 0; x--) {
-					if (response && response[x] && response[x].code && response[x].code.toUpperCase() === "DASHBOARD") {
-						response.splice(x, 1);
-						break;
-					}
-				}
-				$scope.environments_codes = response;
-				$scope.getPreviewService();
-			}
-		});
-	};
 	$scope.getPreviewService = function (env) {
+		$scope.environments_codes = angular.copy($localStorage.environments);
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/scope/aclPreview/service",
+			"routeName": "/multitenant/product/acl/scope/service",
 			"params": {
 				"productCode": $routeParams.pid,
 				"mainEnv": $routeParams.env,
@@ -2233,7 +2060,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 	$scope.getPreviewApi = function (env) {
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/scope/aclPreview/api",
+			"routeName": "/multitenant/product/acl/scope/api",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2258,7 +2085,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 		$scope.page++;
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/scope/aclPreview/api",
+			"routeName": "/multitenant/product/acl/scope/api",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2289,7 +2116,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 		$scope.page++;
 		let opts = {
 			"method": "get",
-			"routeName": "/dashboard/product/scope/aclPreview/service",
+			"routeName": "/multitenant/product/acl/scope/service",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2346,7 +2173,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 		$scope.showLoadMore = true;
 		let opts = {
 			"method": "put",
-			"routeName": "/dashboard/product/scope/aclPreview/api",
+			"routeName": "/multitenant/product/acl/scope/api",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2372,7 +2199,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 		$scope.showLoadMore = true;
 		let opts = {
 			"method": "put",
-			"routeName": "/dashboard/product/scope/aclPreview/service",
+			"routeName": "/multitenant/product/acl/scope/service",
 			"params": {
 				"packageCode": $routeParams.code,
 				"productCode": $routeParams.pid,
@@ -2384,7 +2211,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 			
 		};
 		overlayLoading.show();
-		getSendDataFromServer($scope, ngDataApi, opts, function (error, response) {
+		getSendDataFromServer($scope, ngDataApi, opts, function (error) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
@@ -2451,7 +2278,7 @@ productizationApp.controller('compactViewProductCtrl', ['$scope', '$timeout', '$
 	};
 	//default operation
 	if ($scope.access.previewPackService) {
-		$scope.getEnvironments();
+		$scope.getPreviewService();
 	}
 	
 	injectFiles.injectCss("modules/dashboard/productization/productization.css");

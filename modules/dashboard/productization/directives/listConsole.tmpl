@@ -1,19 +1,29 @@
-<section ng-controller="consoleCtrl" ng-show="grid.row">
+<section ng-controller="consoleCtrl" ng-show="grid.rows">
+	<div ng-repeat="row in grid.rows" >
 	<accordion>
 		<accordion-group is-open="true">
 			<accordion-heading>
-				<span>{{grid.row["name"]}}</span>
-				<a ng-if="access.updateProdScope" href="" ng-click="editProdAcl(grid.row['_id'])">
-					<span style="float:right" class="icon icon-unlocked" tooltip="{{translation.modifyProductPackage[LANG]}}"></span>
-				</a>
+				<span>{{row["name"]}}</span>
+				<div style="float: right; text-align: center">
+					<a ng-if="access.updateProdScope" href="" ng-click="editProdAcl(row['_id'])">
+						<span  class="icon icon-unlocked" tooltip="{{translation.modifyProductPackage[LANG]}}"></span>
+					</a>
+					<a href="" ng-if="access.deleteProduct && !row.locked" ng-confirm-click="Are you Sure you want to delete this product?" ng-click="removeProduct(row);">
+						<span class="icon icon-cross" tooltip="{{translation.removeProduct[LANG]}}"></span>
+					</a>
+					<a href="" ng-if="access.deleteProduct && row.locked" style="cursor: not-allowed; color: #929fa7">
+						<span class="icon icon-cross" tooltip="{{translation.removeProduct[LANG]}}"></span>
+					</a>
+				</div>
+				
 			</accordion-heading>
-			<div class="description">{{grid.row['description']}}</div>
+			<div class="description">{{row['description']}}</div>
 				<br/>
 				<div class="body clearfix">
-					<a ng-if="access.addPck" style="top:0 " class="btn btn-sm btn-primary" href="" ng-click="addPackage(grid.row['_id'])">{{translation.addNewPackage[LANG]}}</a>
+					<a ng-if="access.addPck" style="top:0 " class="btn btn-sm btn-primary" href="" ng-click="addPackage(row['_id'])">{{translation.addNewPackage[LANG]}}</a>
 					<div ng-if="access.listPck">
 						<ul class="blueListing">
-							<li class="blueLi" ng-repeat="package in grid.row.packages">
+							<li class="blueLi" ng-repeat="package in row.packages">
 								<a ng-click="viewPackage(package)" href="" ng-hide="package.showDetails">
 									<span class="icon icon-plus" tooltip="{{translation.expandPackages[LANG]}}"></span>
 								</a>
@@ -22,19 +32,19 @@
 								</a>
 								<b>{{package['name']}}</b>&nbsp;[ {{package['code']}} ]  ( {{package['_TTL'] | TTL}} {{translation.hours[LANG]}} )
 								<span class="rightActions">
-								<a ng-if="access.deletePck && !package.locked" href="" ng-confirm-click="{{translation.areYouSureWantRemoveSelectedPackage[LANG]}} ?" ng-click="removeProductPackage(grid.row['_id'], package['code']);">
+								<a ng-if="access.deletePck && !package.locked" href="" ng-confirm-click="{{translation.areYouSureWantRemoveSelectedPackage[LANG]}} ?" ng-click="removeProductPackage(row['_id'], package['code']);">
 									<span class="icon icon-cross" tooltip="{{translation.removePackage[LANG]}}"></span>
 								</a>
 								<a ng-if="access.deletePck && package.locked" href="" style="cursor: not-allowed; color: #929fa7">
 									<span class="icon icon-cross" tooltip="{{translation.removePackage[LANG]}}"></span>
 								</a>
-								<a ng-if="access.updatePck" href="" ng-click="editPackAcl(grid.row['_id'], package['code']);">
+								<a ng-if="access.updatePck" href="" ng-click="editPackAcl(row['_id'], package['code']);">
 									<span class="icon icon-unlocked" tooltip="{{translation.editPackageACL[LANG]}}"></span>
 								</a>&nbsp;
-								<a ng-if="access.updatePck && !package.locked" href="" ng-click="editPackage(grid.row['_id'], package)">
+								<a ng-if="access.updatePck && !package.locked" href="" ng-click="editPackage(row['_id'], package)">
 									<span class="icon icon-pencil2" tooltip="{{translation.editPackage[LANG]}}"></span>
 								</a>
-								<a ng-if="access.updatePck && package.locked" href="" ng-click="editPackage(grid.row['_id'], package)">
+								<a ng-if="access.updatePck && package.locked" href="" ng-click="editPackage(row['_id'], package)">
 									<span class="icon icon-search" tooltip="{{translation.viewPackage[LANG]}}"></span>
 								</a>
                         	</span>
@@ -45,4 +55,5 @@
 				</div>
 		</accordion-group>
 	</accordion>
+	</div>
 </section>

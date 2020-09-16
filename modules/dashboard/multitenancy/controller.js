@@ -1625,7 +1625,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	$scope.removeExtKey = function (tId, appId, data, key) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/multitenant/admin/tenant/application/key/ext",
+			"routeName": "/multitenant/tenant/application/key/ext",
 			"params": {
 				'extKey': data.extKey,
 				'extKeyEnv': data.env,

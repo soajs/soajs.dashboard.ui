@@ -170,13 +170,15 @@ function getCodeMessage(code, service, orgMesg) {
 	return msg;
 }
 
-//check this later
 function returnLatestVersion(service) {
 	function compareNumbers(a, b) {
-		return b - a;
+		return parseFloat(b) - parseFloat(a);
 	}
+	let keys = [];
+	service.forEach((oneService)=>{
+		keys.push(oneService.version);
+	});
 	
-	var keys = Object.keys(service);
 	var keysInt = [];
 	keys.forEach(function (key) {
 		keysInt.push(key);

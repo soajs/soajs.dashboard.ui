@@ -1790,7 +1790,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	};
 	
 	//default operation
-	if ($scope.access.tenant.list && $scope.access.product.list && $scope.access.environment.list) {
+	if ($scope.access.tenant.list && $scope.access.product.list ) {
 		$scope.getProds(() => {
 			$scope.getEnvironments(() => {
 				$scope.listTenants();
@@ -2663,7 +2663,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 	};
 	
 	//default operation
-	if ($scope.access.tenant.list && $scope.access.product.listConsoleProducts && $scope.access.environment.list) {
+	if ($scope.access.tenant.list && $scope.access.product.listConsoleProducts) {
 		$scope.getConsoleProds(() => {
 			$scope.getEnvironments(() => {
 				$scope.listConsoleTenants();

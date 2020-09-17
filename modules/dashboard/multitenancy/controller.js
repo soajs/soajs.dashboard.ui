@@ -1907,7 +1907,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/console/tenant/list"
+			"routeName": "/multitenant/tenant/console"
 		}, function (error, tenantFromAPI) {
 			overlayLoading.hide();
 			if (error) {
@@ -2111,7 +2111,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 						postData.acl = recordData.acl;
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
-							"routeName": "/dashboard/tenant/application/update",
+							"routeName": "/multitenant/admin/tenant/application",
 							"data": postData,
 							"params": {"id": tId, "appId": data.appId}
 						}, function (error) {

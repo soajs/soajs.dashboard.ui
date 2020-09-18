@@ -333,7 +333,7 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 							
 							getSendDataFromServer(currentScope, ngDataApi, {
 								"method": "put",
-								"routeName": "/dashboard/tenant/application/key/config/update",
+								"routeName": "/multitenant/admin/tenant/application/key/config",
 								"data": postData,
 								"params": {"id": tId, "appId": appId, "key": key}
 							}, function (error) {
@@ -462,26 +462,45 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 	}
 	
 	function getServicesFromDB(currentScope, acl, env, serviceNames, cb) {
-		getSendDataFromServer(currentScope, ngDataApi, {
-			"method": "send",
-			"routeName": "/dashboard/services/list",
-			"data": {"serviceNames": serviceNames}
-		}, function (error, response) {
+		
+		let opts = {
+			"method": "get",
+			"routeName": "/marketplace/items/type/all",
+			"params": {
+				"type": 'service'
+			}
+		};
+		if (serviceNames && serviceNames.length > 0){
+			opts.routeName = "/marketplace/items/type/names";
+			opts.params = {
+				"names": serviceNames,
+				"types": ["service"]
+			};
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
 			if (error) {
 				overlayLoading.hide();
 				currentScope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			}
 			else {
 				for (var x = 0; x < response.records.length; x++) {
-					if (response.records[x].apis) {
-						response.records[x].apisList = response.records[x].apis;
-					}
-					else {
-						if (response.records[x].versions) {
-							var v = returnLatestVersion(response.records[x].versions);
-							if (response.records[x].versions[v]) {
-								response.records[x].apisList = response.records[x].versions[v].apis;
+				
+					if (response.records[x].versions) {
+						var v = returnLatestVersion(response.records[x].versions);
+						let latest;
+						response.records[x].versions.forEach((oneVersion)=>{
+							if (!latest){
+								latest = oneVersion;
 							}
+							console.log(oneVersion)
+							console.log(latest)
+							if (oneVersion.version && latest.version &&
+								parseFloat(oneVersion.version) > parseFloat(latest.version)){
+								latest = oneVersion;
+							}
+						});
+						if (response.records[x].versions[v]) {
+							response.records[x].apisList = latest.apis;
 						}
 					}
 					

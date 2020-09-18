@@ -33,8 +33,8 @@ CDApp.controller('notificationCtrl', ['$scope', 'ngDataApi', 'injectFiles', '$lo
 		}
 	];
 	$scope.searchOptions = {
-		types: ["Registry", "Deployment", "Notification"],
-		sections: ["Default", "Custom", "Throttling", "DB", "Resource configuration", "Catalog", "Continuous delivery", "Kubernetes", "Environment"],
+		types: ["Registry", "Deployment", "Notification", "Multitenant"],
+		sections: ["Default", "Custom", "Throttling", "DB", "Resource configuration", "Catalog", "Continuous delivery", "Kubernetes", "Environment", "ACL"],
 		envs: [],
 		limit: $scope.limits[1]
 	};

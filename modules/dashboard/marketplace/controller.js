@@ -83,7 +83,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'soajs'
@@ -168,7 +168,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'soajs'
@@ -205,7 +205,7 @@ soajsCatalogApp.controller('soajsCatalogCtrl', ['$scope', '$timeout', '$modal', 
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'soajs'
@@ -374,7 +374,7 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'static'
@@ -438,7 +438,7 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'static'
@@ -467,7 +467,7 @@ soajsCatalogApp.controller('staticCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'static'
@@ -541,7 +541,7 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'config'
@@ -605,7 +605,7 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'config'
@@ -634,7 +634,7 @@ soajsCatalogApp.controller('configCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'config'
@@ -709,7 +709,7 @@ soajsCatalogApp.controller('daemonCatalogCtrl', ['$scope', '$timeout', '$modal',
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'daemon'
@@ -773,7 +773,7 @@ soajsCatalogApp.controller('daemonCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'daemon'
@@ -802,7 +802,7 @@ soajsCatalogApp.controller('daemonCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'daemon'
@@ -877,7 +877,7 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'custom'
@@ -941,7 +941,7 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'custom'
@@ -970,7 +970,7 @@ soajsCatalogApp.controller('customCatalogCtrl', ['$scope', '$timeout', '$modal',
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'custom'
@@ -1045,7 +1045,7 @@ soajsCatalogApp.controller('resourceCatalogCtrl', ['$scope', '$timeout', '$modal
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'resource'
@@ -1109,7 +1109,7 @@ soajsCatalogApp.controller('resourceCatalogCtrl', ['$scope', '$timeout', '$modal
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'resource'
@@ -1138,7 +1138,7 @@ soajsCatalogApp.controller('resourceCatalogCtrl', ['$scope', '$timeout', '$modal
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'resource'
@@ -1285,7 +1285,7 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'service'
@@ -1355,7 +1355,7 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'service'
@@ -1384,7 +1384,7 @@ soajsCatalogApp.controller('apiCatalogCtrl', ['$scope', '$timeout', '$modal', '$
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'service'

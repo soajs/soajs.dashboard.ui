@@ -49,7 +49,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'service'
@@ -134,7 +134,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'service'
@@ -162,7 +162,7 @@ apiDeployCatalogApp.controller('apiDeployCatalogCtrl', ['$scope', '$timeout', '$
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'service'

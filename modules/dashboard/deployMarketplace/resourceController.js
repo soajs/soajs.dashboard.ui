@@ -49,7 +49,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 				let user = $cookies.get('soajs_username', {'domain': interfaceDomain});
 				getSendDataFromServer($scope, ngDataApi, {
 					"method": "get",
-					"routeName": "/dashboard/favorite",
+					"routeName": "/marketplace/favorite",
 					"params": {
 						"username": user,
 						"type": 'resource'
@@ -134,7 +134,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 	$scope.setFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "post",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'resource'
@@ -163,7 +163,7 @@ resourceDeployCatalogApp.controller('resourceDeployCatalogCtrl', ['$scope', '$ti
 	$scope.removeFavorite = function (service) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "delete",
-			"routeName": "/dashboard/favorite",
+			"routeName": "/marketplace/favorite",
 			"params": {
 				"service": service.name,
 				"type": 'resource'

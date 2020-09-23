@@ -660,7 +660,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 								routeName: '/infra/kubernetes/pod/log',
 								params: {
 									configuration: {
-										env: $scope.selectedEnvironment.code,
+										env: currentScope.selectedEnvironment.code,
 									},
 									name: pod.metadata.name
 								}

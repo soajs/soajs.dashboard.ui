@@ -1907,7 +1907,7 @@ multiTenantApp.controller('tenantConsoleCtrl', ['$scope', '$compile', '$timeout'
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/multitenant/tenant/console"
+			"routeName": "/multitenant/tenants/console"
 		}, function (error, tenantFromAPI) {
 			overlayLoading.hide();
 			if (error) {

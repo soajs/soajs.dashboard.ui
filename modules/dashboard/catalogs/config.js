@@ -307,7 +307,32 @@ let catalogAppConfig = {
 								'name': 'addExecCommands'
 							}
 						]
-					}
+					},
+					{
+						'label': 'Security-Context',
+						'entries': [
+							{
+								'name': 'container',
+								'label': 'Container',
+								'type': 'jsoneditor',
+								'value': '',
+								'required': false,
+								'tooltip': 'Configure container security context, Kubernetes Only.',
+								'fieldMsg': 'Configure container security context, Kubernetes Only.',
+								'height': 200
+							},
+							{
+								'name': 'pod',
+								'label': 'Pod',
+								'type': 'jsoneditor',
+								'value': '',
+								'required': false,
+								'tooltip': 'Configure pod security context, Kubernetes Only.',
+								'fieldMsg': 'Configure pod security context, Kubernetes Only.',
+								'height': 200
+							}
+						]
+					},
 				],
 			},
 			{

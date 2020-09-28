@@ -817,52 +817,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 			}
 		}
 		
-		// add restrictions
-		// if (mainFormConfig.length === 8) {
-		// 	mainFormConfig.push(
-		// 		{
-		// 			"type": "html",
-		// 			"value": "<hr><h2>Restrictions</h2>"
-		// 		},
-		// 		{
-		// 			'name': 'restrictions',
-		// 			'label': 'Attach Restrictions',
-		// 			'type': 'buttonSlider',
-		// 			'disabled': true,
-		// 			onAction(id, data, form) {
-		// if (form.formData && form.formData.restrictions && form.formData.restrictions === true && form.entries.length === 10) {
-		// listInfraProviders(currentScope, () => {
-		// 	form.entries.push({
-		// 		'name': 'deploymentType',
-		// 		'label': 'Deployment Type',
-		// 		'type': 'uiselect',
-		// 		"multiple": false,
-		// 		'value': currentScope.infraProviders.deploymentTypes,
-		// 		"required": true,
-		// 		'fieldMsg': "Choose the type of deployment",
-		// 		onAction(id, data, form) {
-		// 			restrictionBehavior(id, data, form, currentScope);
-		// 		}
-		// 	});
-		// });
-		// } else {
-		// 	form.formData.deploymentType = [];
-		// 	form.formData.infra = [];
-		// 	form.formData.drivers = [];
-		// 	if (form.entries.length === 13) {
-		// 		form.entries.pop()
-		// 	}
-		// 	if (form.entries.length === 12) {
-		// 		form.entries.pop()
-		// 	}
-		// 	if (form.entries.length === 11) {
-		// 		form.entries.pop()
-		// 	}
-		// }
-		//	}
-		//	});
-		//	}
-		
 		$modal.open({
 			templateUrl: "editRecipe.tmpl",
 			size: 'lg',
@@ -1278,6 +1232,15 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				output['configButton'] = true
 			}
 			
+			if (data.recipe.deployOptions.securityContext) {
+				if (data.recipe.deployOptions.securityContext.container) {
+					output['container'] = data.recipe.deployOptions.securityContext.container;
+				}
+				if (data.recipe.deployOptions.securityContext.pod) {
+					output['pod'] = data.recipe.deployOptions.securityContext.pod;
+				}
+			}
+			
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.catalog) {
 				output['catalog'] = data.recipe.deployOptions.sourceCode.configuration.catalog
 			}
@@ -1411,7 +1374,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					});
 				}
 			}
-			
 			return output;
 		}
 	}
@@ -1484,6 +1446,10 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 					"container": {
 						"network": formData.network,
 						"workingDir": formData.workingDir
+					},
+					"securityContext": {
+						"container": formData.container,
+						"pod": formData.pod
 					}
 				},
 				buildOptions: {
@@ -1491,7 +1457,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				}
 			}
 		};
-		
 		
 		if (formData.deploymentType) {
 			formData.deploymentType = [formData.deploymentType];

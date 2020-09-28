@@ -1270,6 +1270,17 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				output["livenessProbe"] = data.recipe.deployOptions.livenessProbe;
 				setEditorContent("livenessProbe", output['livenessProbe'], mainFormConfig[5].tabs[3].entries[0].height, modalScope);
 				
+				
+				if (data.recipe.deployOptions.securityContext) {
+					if (data.recipe.deployOptions.securityContext.container) {
+						output['container'] = data.recipe.deployOptions.securityContext.container;
+						setEditorContent("container", output['container'], mainFormConfig[5].tabs[9].entries[0].height, modalScope);
+					}
+					if (data.recipe.deployOptions.securityContext.pod) {
+						output['pod'] = data.recipe.deployOptions.securityContext.pod;
+						setEditorContent("pod", output['pod'], mainFormConfig[5].tabs[9].entries[1].height, modalScope);
+					}
+				}
 				//volumes
 				if (data.recipe.deployOptions.voluming && (data.recipe.deployOptions.voluming && data.recipe.deployOptions.voluming.length > 0)) {
 					data.recipe.deployOptions.voluming.forEach(function (oneVolume) {

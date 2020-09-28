@@ -1232,15 +1232,6 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 				output['configButton'] = true
 			}
 			
-			if (data.recipe.deployOptions.securityContext) {
-				if (data.recipe.deployOptions.securityContext.container) {
-					output['container'] = data.recipe.deployOptions.securityContext.container;
-				}
-				if (data.recipe.deployOptions.securityContext.pod) {
-					output['pod'] = data.recipe.deployOptions.securityContext.pod;
-				}
-			}
-			
 			if (data.recipe.deployOptions.sourceCode && data.recipe.deployOptions.sourceCode.configuration && data.recipe.deployOptions.sourceCode.configuration.catalog) {
 				output['catalog'] = data.recipe.deployOptions.sourceCode.configuration.catalog
 			}

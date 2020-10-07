@@ -17,7 +17,7 @@
 			<br>
 			<div ng-show="env">
 			<label>Select Tenant: </label>
-			<select id="subEnv" style="margin-left: 10px" ng-options="tenant.code for tenant in mainTenants" tooltip="Select Environment" ng-model="tenant" ng-change="getTenantExtKeys(env, tenant)">
+			<select id="subEnv" style="margin-left: 10px" ng-options="tenant.code for tenant in mainTenants" tooltip="Select Tenant" ng-model="tenant" ng-change="getTenantExtKeys(env, tenant)">
 			</select>
 			<br>
 			<br>

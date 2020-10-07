@@ -521,7 +521,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 							});
 							$scope.responses[host.id] = host.response;
 						});
-						if (formConfig.length === 2) {
+						//if (formConfig.length === 2) {
 							formConfig.push(
 								{
 									'name': 'podSelector',
@@ -541,7 +541,7 @@ resourcekubeServicesSrv.service('resourcekubeServicesSrv', ['ngDataApi', '$cooki
 									'required': false,
 								}
 							);
-						}
+						//}
 						$scope.form.formData['response'] = res[0].response;
 					}
 				});

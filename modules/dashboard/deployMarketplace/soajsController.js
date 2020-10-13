@@ -287,7 +287,7 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 						'label': host.id,
 						'entries': [
 							{
-								'name': service.name + "-service",
+								'name': host.id, //service.name + "-service",
 								'type': 'jsoneditor',
 								'height': '500px',
 								"value": host.response

@@ -283,11 +283,13 @@ soajsDeployCatalogApp.controller('soajsDeployCatalogCtrl', ['$scope', '$timeout'
 			} else {
 				let formConfig = angular.copy(soajsDeployCatalogConfig.form.multiServiceInfo);
 				response.forEach(function (host) {
+					let label = host.id;
+					label = label.replaceAll(".", "__dot__");
 					formConfig.entries[0].tabs.push({
 						'label': host.id,
 						'entries': [
 							{
-								'name': host.id, //service.name + "-service",
+								'name': label, //service.name + "-service",
 								'type': 'jsoneditor',
 								'height': '500px',
 								"value": host.response

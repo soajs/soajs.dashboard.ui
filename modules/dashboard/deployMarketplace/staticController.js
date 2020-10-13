@@ -253,11 +253,13 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 			} else {
 				let formConfig = angular.copy(soajsDeployCatalogConfig.form.multiServiceInfo);
 				response.forEach(function (host) {
+					let label = host.id;
+					label = label.replaceAll(".", "__dot__");
 					formConfig.entries[0].tabs.push({
 						'label': host.id,
 						'entries': [
 							{
-								'name': host.id, //service.name + "-service",
+								'name': label, //service.name + "-service",
 								'type': 'jsoneditor',
 								'height': '500px',
 								"value": host.response
@@ -430,10 +432,10 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				if (!$scope.deployments[service.name]){
+				if (!$scope.deployments[service.name]) {
 					$scope.deployments[service.name] = {};
 				}
-				if (!$scope.deployments[service.name][v.version]){
+				if (!$scope.deployments[service.name][v.version]) {
 					$scope.deployments[service.name][v.version] = {};
 				}
 				delete response.soajsauth;
@@ -512,7 +514,7 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 							oneItem.spec.jobTemplate.spec.template.spec.containers &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0] &&
 							oneItem.spec.jobTemplate.spec.template.spec.containers[0].image) {
-							$scope.deployments[service.name][v.version].deployedImage  = {
+							$scope.deployments[service.name][v.version].deployedImage = {
 								prefix: ""
 							};
 							if (oneItem.spec.jobTemplate.spec.template.spec.containers[0].image.indexOf('/') !== -1) {
@@ -530,7 +532,7 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 		});
 	};
 	
-	$scope.autoScaleService = function(service, version) {
+	$scope.autoScaleService = function (service, version) {
 		let currentScope = $scope;
 		$modal.open({
 			templateUrl: "autoScale.tmpl",
@@ -550,13 +552,13 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 				$scope.title += ' | Auto Scale';
 				$scope.autoScaleStatus = currentScope.deployments[service.name][version.version].autoScale === "success";
 				
-				if ($scope.autoScaleStatus && version.hpas && version.hpas.spec){
+				if ($scope.autoScaleStatus && version.hpas && version.hpas.spec) {
 					$scope.autoScaleObject.replica.min = version.hpas.spec.minReplicas;
 					$scope.autoScaleObject.replica.max = version.hpas.spec.maxReplicas;
-					version.hpas.spec.metrics.forEach((metric)=>{
+					version.hpas.spec.metrics.forEach((metric) => {
 						if (metric.type === "Resource" && metric.resource && metric.resource.name === "cpu" &&
 							metric.resource.target && metric.resource.target.type === "Utilization" &&
-							metric.resource.target.averageUtilization){
+							metric.resource.target.averageUtilization) {
 							$scope.autoScaleObject.metrics.cpu.percent = metric.resource.target.averageUtilization;
 						}
 					});
@@ -564,8 +566,8 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 				$scope.onSubmit = function (action) {
 					overlayLoading.show();
 					let options = {};
-					if (action === "update"){
-						if ($scope.autoScaleStatus){
+					if (action === "update") {
+						if ($scope.autoScaleStatus) {
 							options = {
 								"method": "put",
 								"routeName": "/infra/kubernetes/item/hpa",
@@ -580,9 +582,9 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 									},
 									"replica": $scope.autoScaleObject.replica,
 									"metrics": [{
-										type : "Resource",
-										name : "cpu",
-										target : "AverageValue",
+										type: "Resource",
+										name: "cpu",
+										target: "AverageValue",
 										percentage: $scope.autoScaleObject.metrics.cpu.percent
 									}]
 								}
@@ -603,9 +605,9 @@ staticDeployCatalogApp.controller('staticDeployCatalogCtrl', ['$scope', '$timeou
 									},
 									"replica": $scope.autoScaleObject.replica,
 									"metrics": [{
-										type : "Resource",
-										name : "cpu",
-										target : "AverageValue",
+										type: "Resource",
+										name: "cpu",
+										target: "AverageValue",
 										percentage: $scope.autoScaleObject.metrics.cpu.percent
 									}]
 								}

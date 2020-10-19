@@ -1450,8 +1450,8 @@ catalogApp.controller('catalogAppCtrl', ['$scope', '$timeout', '$modal', 'ngData
 						"workingDir": formData.workingDir
 					},
 					"securityContext": {
-						"container": formData.container,
-						"pod": formData.pod
+						"container": formData.container || {},
+						"pod": formData.pod || {}
 					}
 				},
 				buildOptions: {

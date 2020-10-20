@@ -63,12 +63,13 @@
 								</div>
 								<div ng-show="configuration.recipe.image">
 									<label>Image Prefix</label>
-									<input type="text" ngng-disabled="!showImages" class="form-control"
+									<input type="text" ng-disabled="!showImages" class="form-control"
 									       ng-model="configuration.recipe.image.prefix"/>
 									<div class="fieldMsg hint">Override the image prefix if you want</div>
-									<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"
-									     class="warningFieldMsg hint">Mismatch detected between Configuration and
-										Deployment. Deployed Image Prefix: <b>{{deployedImage.prefix}}</b>
+									<!--<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"-->
+									<div ng-if="configuration.recipe.value.recipe.deployOptions.image && configuration.recipe.value.recipe.deployOptions.image.prefix && configuration.recipe.image && configuration.recipe.value.recipe.deployOptions.image.prefix !== configuration.recipe.image.prefix"
+									     class="warningFieldMsg hint">Mismatch detected between Recipe and
+										Deployment. Recipe Image Prefix: <b>{{configuration.recipe.value.recipe.deployOptions.image.prefix}}</b>
 									</div>
 									<br/>
 								</div>
@@ -77,9 +78,10 @@
 									<input type="text" class="form-control" ng-disabled="!showImages"
 									       ng-model="configuration.recipe.image.name"/>
 									<div class="fieldMsg hint">Override the image name if you want</div>
-									<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"
-									     class="warningFieldMsg hint">Mismatch detected between Configuration and
-										Deployment. Deployed Image Name: <b>{{deployedImage.name}}</b>
+									<!--<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"-->
+									<div ng-if="configuration.recipe.value.recipe.deployOptions.image && configuration.recipe.value.recipe.deployOptions.image.name && configuration.recipe.image && configuration.recipe.value.recipe.deployOptions.image.name !== configuration.recipe.image.name"
+									     class="warningFieldMsg hint">Mismatch detected between Recipe and Deployment.
+										Recipe Image Name: <b>{{configuration.recipe.value.recipe.deployOptions.image.name}}</b>
 									</div>
 									<br/>
 								</div>
@@ -88,9 +90,10 @@
 									<input type="text" class="form-control" ng-disabled="!showImages"
 									       ng-model="configuration.recipe.image.tag"/>
 									<div class="fieldMsg hint">Override the image tag if you want</div>
-									<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"
-									     class="warningFieldMsg hint">Mismatch detected between Configuration and
-										Deployment. Deployed Image Tag: <b>{{deployedImage.tag}}</b>
+									<!--<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"-->
+									<div ng-if="configuration.recipe.value.recipe.deployOptions.image && configuration.recipe.value.recipe.deployOptions.image.tag && configuration.recipe.image && configuration.recipe.value.recipe.deployOptions.image.tag !== configuration.recipe.image.tag"
+									     class="warningFieldMsg hint">Mismatch detected between Recipe and Deployment.
+										Recipe Image Tag: <b>{{configuration.recipe.value.recipe.deployOptions.image.tag}}</b>
 									</div>
 									<br/>
 								</div>

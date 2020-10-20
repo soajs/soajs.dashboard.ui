@@ -946,6 +946,17 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 									name: catalog.recipe.deployOptions.image.name,
 									tag: catalog.recipe.deployOptions.image.tag
 								};
+								if ($scope.deployedImage) {
+									if ($scope.deployedImage.prefix) {
+										$scope.configuration.recipe.image.prefix = $scope.deployedImage.prefix;
+									}
+									if ($scope.deployedImage.name) {
+										$scope.configuration.recipe.image.name = $scope.deployedImage.name;
+									}
+									if ($scope.deployedImage.tag) {
+										$scope.configuration.recipe.image.tag = $scope.deployedImage.tag;
+									}
+								}
 							}
 							if (!$scope.configuration.recipe.readinessProbe) {
 								if (catalog.recipe.deployOptions.readinessProbe) {

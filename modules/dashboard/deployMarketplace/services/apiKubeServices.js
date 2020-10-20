@@ -522,25 +522,25 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 							$scope.responses[host.id] = host.response;
 						});
 						//if (formConfig.length === 2) {
-							formConfig.push(
-								{
-									'name': 'podSelector',
-									'label': 'Select Pod',
-									'type': 'select',
-									'value': $scope.hosts,
-									onAction: function (id, value, form) {
-										form.formData['response'] = $scope.responses[value];
-									},
-								}
-							);
-							formConfig.push(
-								{
-									'name': 'response',
-									'label': 'Response',
-									'type': 'textarea',
-									'required': false,
-								}
-							);
+						formConfig.push(
+							{
+								'name': 'podSelector',
+								'label': 'Select Pod',
+								'type': 'select',
+								'value': $scope.hosts,
+								onAction: function (id, value, form) {
+									form.formData['response'] = $scope.responses[value];
+								},
+							}
+						);
+						formConfig.push(
+							{
+								'name': 'response',
+								'label': 'Response',
+								'type': 'textarea',
+								'required': false,
+							}
+						);
 						//}
 						$scope.form.formData['response'] = res[0].response;
 					}
@@ -921,7 +921,7 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 								if (Object.keys($scope.configuration.recipe.env).length === 0) {
 									delete $scope.configuration.recipe.env;
 								}
-								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)){
+								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)) {
 									for (let i = 0; i < Object.keys($scope.configuration.recipe.env).length; i++) {
 										if (!env_variables.includes(Object.keys($scope.configuration.recipe.env)[i])) {
 											//detected mismatch
@@ -946,6 +946,17 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 									name: catalog.recipe.deployOptions.image.name,
 									tag: catalog.recipe.deployOptions.image.tag
 								};
+								if ($scope.deployedImage) {
+									if ($scope.deployedImage.prefix) {
+										$scope.configuration.recipe.image.prefix = $scope.deployedImage.prefix;
+									}
+									if ($scope.deployedImage.name) {
+										$scope.configuration.recipe.image.name = $scope.deployedImage.name;
+									}
+									if ($scope.deployedImage.tag) {
+										$scope.configuration.recipe.image.tag = $scope.deployedImage.tag;
+									}
+								}
 							}
 							if (!$scope.isDeployed || !$scope.configuration.recipe.readinessProbe) {
 								if (catalog.recipe.deployOptions.readinessProbe) {

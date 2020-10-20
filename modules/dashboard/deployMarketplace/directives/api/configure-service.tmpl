@@ -47,7 +47,8 @@
 									<input type="text" class="form-control" style="margin-left: 5px;"
 									       ng-model="configuration.src.commit"
 									       ng-required="showBranches"/>
-									<label class="fieldMsg">Specify the commit. Click refresh icon to get the latest commit.</label>
+									<label class="fieldMsg">Specify the commit. Click refresh icon to get the latest
+										commit.</label>
 									<br>
 									<br/>
 								</div>
@@ -100,9 +101,10 @@
 									<input type="text" ng-disabled="!showImages" class="form-control"
 									       ng-model="configuration.recipe.image.prefix"/>
 									<div class="fieldMsg hint">Override the image prefix if you want</div>
-									<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"
-									     class="warningFieldMsg hint">Mismatch detected between Configuration and
-										Deployment. Deployed Image Prefix: <b>{{deployedImage.prefix}}</b>
+									<!--<div ng-if="configuration.recipe.image.prefix && deployedImage && configuration.recipe.image.prefix !== deployedImage.prefix"-->
+									<div ng-if="configuration.recipe.value.recipe.deployOptions.image && configuration.recipe.value.recipe.deployOptions.image.prefix && configuration.recipe.image && configuration.recipe.value.recipe.deployOptions.image.prefix !== configuration.recipe.image.prefix"
+									     class="warningFieldMsg hint">Mismatch detected between Recipe and
+										Deployment. Recipe Image Prefix: <b>{{configuration.recipe.value.recipe.deployOptions.image.prefix}}</b>
 									</div>
 									<br/>
 								</div>
@@ -111,9 +113,10 @@
 									<input type="text" class="form-control" ng-disabled="!showImages"
 									       ng-model="configuration.recipe.image.name"/>
 									<div class="fieldMsg hint">Override the image name if you want</div>
-									<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"
-									     class="warningFieldMsg hint">Mismatch detected between Configuration and
-										Deployment. Deployed Image Name: <b>{{deployedImage.name}}</b>
+									<!--<div ng-if="configuration.recipe.image.name && deployedImage && configuration.recipe.image.name !== deployedImage.name"-->
+									<div ng-if="configuration.recipe.value.recipe.deployOptions.image && configuration.recipe.value.recipe.deployOptions.image.name && configuration.recipe.image && configuration.recipe.value.recipe.deployOptions.image.name !== configuration.recipe.image.name"
+									     class="warningFieldMsg hint">Mismatch detected between Recipe and Deployment.
+										Recipe Image Name: <b>{{configuration.recipe.value.recipe.deployOptions.image.name}}</b>
 									</div>
 									<br/>
 								</div>
@@ -122,9 +125,10 @@
 									<input type="text" class="form-control" ng-disabled="!showImages"
 									       ng-model="configuration.recipe.image.tag"/>
 									<div class="fieldMsg hint">Override the image tag if you want</div>
-									<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"
-									     class="warningFieldMsg hint">Mismatch detected between Configuration and
-										Deployment. Deployed Image Tag: <b>{{deployedImage.tag}}</b>
+									<!--<div ng-if="configuration.recipe.image.tag && deployedImage && configuration.recipe.image.tag !== deployedImage.tag"-->
+									<div ng-if="configuration.recipe.value.recipe.deployOptions.image && configuration.recipe.value.recipe.deployOptions.image.tag && configuration.recipe.image && configuration.recipe.value.recipe.deployOptions.image.tag !== configuration.recipe.image.tag"
+									     class="warningFieldMsg hint">Mismatch detected between Recipe and Deployment.
+										Recipe Image Tag: <b>{{configuration.recipe.value.recipe.deployOptions.image.tag}}</b>
 									</div>
 									<br/>
 								</div>
@@ -261,7 +265,9 @@
 										       ng-value="port.target" ng-disabled="true"/>
 										<br>
 										<div ng-if="isPublished"
-										     class="warningFieldMsg hint">Exposing ports is not allowed in catalogs of type service</div>
+										     class="warningFieldMsg hint">Exposing ports is not allowed in catalogs of
+											type service
+										</div>
 									</div>
 								</fieldset>
 								<fieldset ng-if="configuration.recipe.value">
@@ -323,7 +329,9 @@
 												       style="margin-right:0"/>
 												<label class="fieldMsg">A CronJob takes a <a
 														href="https://en.wikipedia.org/wiki/Cron"
-														target="_blank">Cron </a> format string, such as 0 * * * * or @hourly, as schedule time of its jobs to be created and executed.</label>
+														target="_blank">Cron </a> format string, such as 0 * * * * or
+													@hourly, as schedule time of its jobs to be created and
+													executed.</label>
 												<br>
 												<label>Concurrency Policy</label>
 												<select class="form-control"
@@ -332,7 +340,9 @@
 												        ng-required="true"
 												        ng-options="policy for policy in concurrencyPolicy"
 												        ng-model="configuration.settings.concurrencyPolicy"></select>
-												<label class="fieldMsg">A Concurrency Policy specifies how to treat concurrent executions of a job that is created by this cron job.</label>
+												<label class="fieldMsg">A Concurrency Policy specifies how to treat
+													concurrent executions of a job that is created by this cron
+													job.</label>
 												<br>
 												<label>Restart Policy</label>
 												<select class="form-control"

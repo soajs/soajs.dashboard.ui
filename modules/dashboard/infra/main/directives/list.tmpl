@@ -19,28 +19,9 @@
 		<div class="w-100 c-both entryBoxes" id="driver-specs">
 			<div>
 				<hr>
-				<!--<div ng-if="currentSelectedInfra.name === 'local'">-->
-					<!--<div ng-if="currentSelectedInfra.technologies[0] === 'docker'">-->
-						<!--<div ng-include="'modules/dashboard/infra/main/directives/docker-machine.tmpl'"></div>-->
-					<!--</div>-->
-					<!--<div ng-if="currentSelectedInfra.technologies[0] === 'kubernetes'">-->
-						<!--<div ng-include="'modules/dashboard/infra/main/directives/kubernetes-machine.tmpl'"></div>-->
-					<!--</div>-->
-				<!--</div>-->
 				<div ng-if="currentSelectedInfra.type === 'kubernetes'">
 					<div ng-include="'modules/dashboard/infra/main/directives/kubernetes-machine.tmpl'"></div>
 				</div>
-				<!--<div ng-if="currentSelectedInfra.name === 'google'">-->
-					<!--<div ng-include="'modules/dashboard/infra/main/directives/google.tmpl'"></div>-->
-				<!--</div>-->
-				<!---->
-				<!--<div ng-if="currentSelectedInfra.name === 'aws'">-->
-					<!--<div ng-include="'modules/dashboard/infra/main/directives/aws.tmpl'"></div>-->
-				<!--</div>-->
-				<!---->
-				<!--<div ng-if="currentSelectedInfra.name === 'azure'">-->
-					<!--<div ng-include="'modules/dashboard/infra/main/directives/azure.tmpl'"></div>-->
-				<!--</div>-->
 			</div>
 		</div>
 	</div>

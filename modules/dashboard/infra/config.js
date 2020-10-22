@@ -45,13 +45,6 @@ let infraConfig = {
 			}
 		],
 		technologies: [
-			/*
-			{
-				'name': 'docker',
-				'type': 'html',
-				'value': "<img height='32' src=\"modules/dashboard/infra/main/images/docker.png\">&nbsp; Docker Swarm Cluster"
-			},
-			*/
 			{
 				'name': 'kubernetes',
 				'type': 'html',

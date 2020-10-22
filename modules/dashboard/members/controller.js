@@ -126,7 +126,7 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/tenant/list"
+			"routeName": "/multitenant/tenants"
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
@@ -722,7 +722,7 @@ membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams
 		overlayLoading.show();
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/dashboard/console/tenant/list"
+			"routeName": "/multitenant/tenants/console"
 		}, function (error, response) {
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);

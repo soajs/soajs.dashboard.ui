@@ -1383,18 +1383,24 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 			config.src = src;
 		}
 		let err = null;
-		if (config.recipe && config.recipe.readinessProbe) {
-			try {
-				config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
-			} catch (e) {
-				err = e
+		if (config.recipe) {
+			if (config.recipe.readinessProbe) {
+				try {
+					config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.readinessProbe;
 			}
-		}
-		if (config.recipe && config.recipe.livenessProbe) {
-			try {
-				config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
-			} catch (e) {
-				err = e
+			if (config.recipe.livenessProbe) {
+				try {
+					config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.livenessProbe;
 			}
 		}
 		opts.data = {
@@ -1443,18 +1449,24 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 			config.src = src;
 		}
 		let err = null;
-		if (config.recipe && config.recipe.readinessProbe) {
-			try {
-				config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
-			} catch (e) {
-				err = e
+		if (config.recipe) {
+			if (config.recipe.readinessProbe) {
+				try {
+					config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.readinessProbe;
 			}
-		}
-		if (config.recipe && config.recipe.livenessProbe) {
-			try {
-				config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
-			} catch (e) {
-				err = e
+			if (config.recipe.livenessProbe) {
+				try {
+					config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.livenessProbe;
 			}
 		}
 		opts.data = {

@@ -522,25 +522,25 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 							$scope.responses[host.id] = host.response;
 						});
 						//if (formConfig.length === 2) {
-							formConfig.push(
-								{
-									'name': 'podSelector',
-									'label': 'Select Pod',
-									'type': 'select',
-									'value': $scope.hosts,
-									onAction: function (id, value, form) {
-										form.formData['response'] = $scope.responses[value];
-									},
-								}
-							);
-							formConfig.push(
-								{
-									'name': 'response',
-									'label': 'Response',
-									'type': 'textarea',
-									'required': false,
-								}
-							);
+						formConfig.push(
+							{
+								'name': 'podSelector',
+								'label': 'Select Pod',
+								'type': 'select',
+								'value': $scope.hosts,
+								onAction: function (id, value, form) {
+									form.formData['response'] = $scope.responses[value];
+								},
+							}
+						);
+						formConfig.push(
+							{
+								'name': 'response',
+								'label': 'Response',
+								'type': 'textarea',
+								'required': false,
+							}
+						);
 						//}
 						$scope.form.formData['response'] = res[0].response;
 					}
@@ -921,7 +921,7 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 								if (Object.keys($scope.configuration.recipe.env).length === 0) {
 									delete $scope.configuration.recipe.env;
 								}
-								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)){
+								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)) {
 									for (let i = 0; i < Object.keys($scope.configuration.recipe.env).length; i++) {
 										if (!env_variables.includes(Object.keys($scope.configuration.recipe.env)[i])) {
 											//detected mismatch
@@ -1423,18 +1423,24 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 			config.src = src;
 		}
 		let err = null;
-		if (config.recipe && config.recipe.readinessProbe) {
-			try {
-				config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
-			} catch (e) {
-				err = e
+		if (config.recipe) {
+			if (config.recipe.readinessProbe) {
+				try {
+					config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.readinessProbe;
 			}
-		}
-		if (config.recipe && config.recipe.livenessProbe) {
-			try {
-				config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
-			} catch (e) {
-				err = e
+			if (config.recipe.livenessProbe) {
+				try {
+					config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.livenessProbe;
 			}
 		}
 		opts.data = {
@@ -1484,18 +1490,24 @@ soajskubeServicesSrv.service('soajskubeServicesSrv', ['ngDataApi', '$cookies', '
 			config.src = src;
 		}
 		let err = null;
-		if (config.recipe && config.recipe.readinessProbe) {
-			try {
-				config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
-			} catch (e) {
-				err = e
+		if (config.recipe) {
+			if (config.recipe.readinessProbe) {
+				try {
+					config.recipe.readinessProbe = JSON.parse(config.recipe.readinessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.readinessProbe;
 			}
-		}
-		if (config.recipe && config.recipe.livenessProbe) {
-			try {
-				config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
-			} catch (e) {
-				err = e
+			if (config.recipe.livenessProbe) {
+				try {
+					config.recipe.livenessProbe = JSON.parse(config.recipe.livenessProbe);
+				} catch (e) {
+					err = e
+				}
+			} else {
+				delete config.recipe.livenessProbe;
 			}
 		}
 		opts.data = {

@@ -126,9 +126,6 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 		} else if (response && !Object.hasOwnProperty.call(response, "result")) {
 			return cb(null, response);
 		} else if (response && response.result === true) {
-			// if (response.soajsauth && $cookies.get('soajs_auth', {'domain': interfaceDomain})) {
-			// 	$cookies.put("soajs_auth", response.soajsauth, {'domain': interfaceDomain});
-			// }
 			var resp = {};
 			for (var i in response) {
 				resp[i] = response[i];

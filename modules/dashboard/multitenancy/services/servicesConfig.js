@@ -12,7 +12,6 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 			data.envCode = env;
 		}
 		
-		// console.log(currentScope);
 		getServices(currentScope, appPackage, env, (services) => {
 			let formEntries = angular.copy(tenantConfig.form.keyConfig);
 			
@@ -492,8 +491,6 @@ multiTenantServiceConfig.service('mtsc', ['$timeout', '$modal', 'ngDataApi', 'ch
 							if (!latest){
 								latest = oneVersion;
 							}
-							console.log(oneVersion)
-							console.log(latest)
 							if (oneVersion.version && latest.version &&
 								parseFloat(oneVersion.version) > parseFloat(latest.version)){
 								latest = oneVersion;

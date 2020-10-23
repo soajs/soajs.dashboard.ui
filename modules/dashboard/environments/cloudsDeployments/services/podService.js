@@ -74,7 +74,6 @@ secretsApp.service('podService', ['ngDataApi', '$timeout', '$window', '$cookies'
 			$scope.showMetrics = true;
 			if (error || !oldMetrics) {
 				overlayLoading.hide();
-				console.log(translation.unableRetrieveServicesMetrics[LANG]);
 				return cb(true);
 			} else {
 				let usage = {

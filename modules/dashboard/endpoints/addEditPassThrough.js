@@ -1276,7 +1276,6 @@ servicesApp.controller('addEditPassThrough', ['$scope', '$timeout', '$modal', '$
 					'btn': 'primary',
 					'action': function (formData) {
 						let swagger = angular.copy($scope.schemaCodeF) && angular.copy($scope.schemaCodeF) !== '' ? angular.copy($scope.schemaCodeF) : null;
-						console.log(swagger)
 						if (swagger && $localStorage.addPassThrough
 							&& $localStorage.addPassThrough.step1
 							&& $localStorage.addPassThrough.step1.versions

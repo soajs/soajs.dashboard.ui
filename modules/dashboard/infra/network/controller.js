@@ -86,7 +86,6 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 		if($localStorage.infraProviders){
 			$scope.updateParentScope('infraProviders', angular.copy($localStorage.infraProviders));
 			if(!$scope.getFromParentScope('currentSelectedInfra')){
-				console.log("ragheb")
 				if($routeParams.infraId){
 					$scope.getFromParentScope('infraProviders').forEach((oneProvider) => {
 						if(oneProvider._id === $routeParams.infraId){
@@ -102,7 +101,6 @@ infraNetworkApp.controller('infraNetworkCtrl', ['$scope', '$routeParams', '$loca
 				}
 			}
 			else{
-				console.log("123")
 				delete $scope.getFromParentScope('currentSelectedInfra').templates;
 				$scope.$parent.$parent.switchInfra($scope.getFromParentScope('currentSelectedInfra'));
 			}

@@ -1,105 +1,96 @@
 <section ng-controller="tenantCtrl">
-    <div ng-if="access.tenant.list">
+	<div ng-if="access.tenant.list">
 		<tabset class="tenantTab">
-            <tab  heading="{{tenantTabs[0].label}}">
-	            <div>
-		            <span class="addTenantButton" ng-if="access.tenant.add"><a href="" ng-click="addTenant()" class="btn btn-primary">{{translation.addNewTenant[LANG]}}</a></span>
-		            
-		            <input type="text" name="tag" ng-model="query" ng-keyup="filterData(query, 0)" class="form-control text-field-align-right mb5" placeholder="Search"/>
-	            </div>
-                <br>
-	            <div class= "f-left width100percent" ng-if="tenantTabs[0].tenants.length === 0 && !query">
-                    <alert type="warning">{{translation.noTenantsOfType[LANG]}} {{tenantTabs[0].label}} {{translation.haveBeenAddedYet[LANG]}}.</alert>
-                </div>
-	            <br>
-                <div class= "f-left width100percent" ng-if="tenantTabs[0].tenants.length === 0 && query">
-                    <alert type="warning">{{translation.noSearchResultsFound[LANG]}} {{query}}.</alert>
-                </div>
-                <div class="entryBoxes">
-                    <div ng-repeat="row in tenantTabs[0].tenants" class="entryBox" ng-if="row.locked!==true">
-                        <div class="header closed">
-                            <a ng-click="openKeys(row['_id'], row)" href="" ng-hide="row.showKeys">
-                                <span class="icon icon-plus" tooltip="{{translation.expandApplications[LANG]}}"></span>
-                            </a>
-                            <a ng-click="closeKeys(row['_id'], row)" href="" ng-show="row.showKeys">
-                                <span class="icon icon-minus" tooltip="{{translation.collapseApplications[LANG]}}"></span>
-                            </a>
-                            <span class="icon icon-star-full no-margin" ng-if="row['dashboardAccess']"></span>{{row['name']}}<span>[ {{row['code']}}  - {{row['_id']}} ]</span>
-                            <span ng-if="row['tag']" ng-style="{'color':'#337ab7'}"><span class="icon icon-price-tag no-margin"></span>{{row['tag']}}</span>
-                        </div>
-                        <div class="body" ng-show="row.showKeys">
-                            <div class="description">{{row['description']}}</div>
-                            <div ng-if="access.tenant.application.list || access.tenant.oauth.users.list">
-                                <br/>
-                                <div class="keyAlerts" ng-show="mt[row['_id']].alerts.length >0" id="{{row['_id']}}">
-                                    <alert ng-repeat="alert in mt[row['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert(0, row['_id'])">{{alert.msg}}</alert>
-                                    <br/>
-                                </div>
-                                <tabset>
-                                    <tab heading="{{translation.manageProducts[LANG]}}" ng-if="access.tenant.application.list">
-                                        <div ng-include="'modules/dashboard/multitenancy/directives/list-applications.tmpl'"></div>
-                                    </tab>
-                                    <tab heading="{{translation.oAuthUsers[LANG]}}" ng-click="listOauthUsers(row)" ng-if="access.tenant.oauth.users.list"
-                                         ng-show="row.oauth.secret && row.oauth.secret!=='' && row.oauth.disabled === 0 && row.oauth.type===2 && row.oauth.loginMode==='oauth'" >
-                                        <div ng-include="'modules/dashboard/multitenancy/directives/list-oauth-users.tmpl'"></div>
-                                    </tab>
-                                </tabset>
-                            </div>
-	                        <div class="entryAction">
-                                <a ng-if="access.tenant.update" href="" ng-click="tenantsList.actions.editTenant.command(row);">
-                                    <span class="icon icon-pencil2" tooltip="{{translation.editTenant[LANG]}}"></span>
-                                </a>
-                                <a ng-if="access.tenant.delete" href="" ng-confirm-click="{{tenantsList.actions.delete.commandMsg}}" ng-click="tenantsList.actions.delete.command(row);">
-                                    <span class="icon icon-cross" tooltip="{{translation.removeTenant[LANG]}}"></span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tab>
-			
-			<tab  heading="{{tenantTabs[1].label}}">
+			<tab heading="{{tenantTabs[0].label}}">
 				<div>
-					<input type="text" name="tag" ng-model="query" ng-keyup="filterData(query, 0)" class="form-control text-field-align-right mb5" placeholder="Search"/>
+					<span class="addTenantButton" ng-if="access.tenant.add"><a href="" ng-click="addTenant()" class="btn btn-primary">{{translation.addNewTenant[LANG]}}</a></span>
+					
+					<!--<input type="text" name="tag" ng-model="query" ng-keyup="filterData(query, 0)" class="form-control text-field-align-right mb5" placeholder="Search"/>-->
+					<div style="float: right; margin-top: 10px; display: flex;">
+						<input style="margin-right: 5px;" type="text" name="tag" ng-model="tenantTabs[0].pagination.keywords" class="form-control" placeholder="Search"/>
+						<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="listTenants()"><span class="icon icon-undo"></span>search</a>
+					</div>
 				</div>
 				<br>
-				<div class= "f-left width100percent" ng-if="tenantTabs[0].tenants.length === 0 && !query">
-					<alert type="warning">{{translation.noTenantsOfType[LANG]}} {{tenantTabs[0].label}} {{translation.haveBeenAddedYet[LANG]}}.</alert>
+				<div class="f-left width100percent" ng-if="tenantTabs[0].tenants.length === 0 && !query">
+					<alert type="warning">{{translation.noTenantsOfType[LANG]}} {{tenantTabs[0].label}}
+						{{translation.haveBeenAddedYet[LANG]}}.
+					</alert>
 				</div>
 				<br>
-				<div class= "f-left width100percent" ng-if="tenantTabs[0].tenants.length === 0 && query">
+				<div class="f-left width100percent" ng-if="tenantTabs[0].tenants.length === 0 && query">
 					<alert type="warning">{{translation.noSearchResultsFound[LANG]}} {{query}}.</alert>
 				</div>
 				<div class="entryBoxes">
 					<div ng-repeat="row in tenantTabs[0].tenants" class="entryBox" ng-if="row.locked!==true">
 						<div class="header closed">
-							<a ng-click="openSubKeys(row['_id'], row)" href="" ng-hide="row.showSubKeys">
+							<a ng-click="openKeys(row['_id'], row)" href="" ng-hide="row.showKeys">
 								<span class="icon icon-plus" tooltip="{{translation.expandApplications[LANG]}}"></span>
 							</a>
-							<a ng-click="closeSubKeys(row['_id'], row)" href="" ng-show="row.showSubKeys">
+							<a ng-click="closeKeys(row['_id'], row)" href="" ng-show="row.showKeys">
 								<span class="icon icon-minus" tooltip="{{translation.collapseApplications[LANG]}}"></span>
 							</a>
 							<span class="icon icon-star-full no-margin" ng-if="row['dashboardAccess']"></span>{{row['name']}}<span>[ {{row['code']}}  - {{row['_id']}} ]</span>
 							<span ng-if="row['tag']" ng-style="{'color':'#337ab7'}"><span class="icon icon-price-tag no-margin"></span>{{row['tag']}}</span>
 						</div>
-						<div class="body" ng-show="row.showSubKeys">
+						<div class="body" ng-show="row.showKeys">
+							<div ng-if="access.tenant.add">
+								<a href="" ng-click="addSubTenant(row)" class="btn btn-primary">{{translation.addNewSubTenant[LANG]}}</a>
+							</div>
 							<div class="description">{{row['description']}}</div>
 							<div ng-if="access.tenant.application.list || access.tenant.oauth.users.list">
 								<br/>
-								<div class="keyAlerts" ng-show="mt[row['_id']].alerts.length >0" id="{{row['_id']}}_id">
-									<alert ng-repeat="alert in mt[row['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert(0, row['_id'])">{{alert.msg}}</alert>
+								<div class="keyAlerts" ng-show="mt[row['_id']].alerts.length >0" id="{{row['_id']}}">
+									<alert ng-repeat="alert in mt[row['_id']].alerts" type="{{alert.type}}" class="" close="mt.closeAlert(0, row['_id'])">
+										{{alert.msg}}
+									</alert>
 									<br/>
 								</div>
 								<tabset>
-									<tab heading="{{translation.manageSubTenants[LANG]}}" ng-if="access.tenant.application.list">
-										<div ng-include="'modules/dashboard/multitenancy/directives/list-subTenants.tmpl'"></div>
+									<tab heading="{{translation.manageProducts[LANG]}}" ng-if="access.tenant.application.list">
+										<div ng-include="'modules/dashboard/multitenancy/directives/list-applications.tmpl'"></div>
+									</tab>
+									<tab heading="{{translation.oAuthUsers[LANG]}}" ng-click="listOauthUsers(row)" ng-if="access.tenant.oauth.users.list"
+									     ng-show="row.oauth.secret && row.oauth.secret!=='' && row.oauth.disabled === 0 && row.oauth.type===2 && row.oauth.loginMode==='oauth'">
+										<div ng-include="'modules/dashboard/multitenancy/directives/list-oauth-users.tmpl'"></div>
 									</tab>
 								</tabset>
+							</div>
+							<div class="entryAction">
+								<a ng-if="access.tenant.update" href="" ng-click="tenantsList.actions.editTenant.command(row);">
+									<span class="icon icon-pencil2" tooltip="{{translation.editTenant[LANG]}}"></span>
+								</a>
+								<a ng-if="access.tenant.delete" href="" ng-confirm-click="{{tenantsList.actions.delete.commandMsg}}" ng-click="tenantsList.actions.delete.command(row);">
+									<span class="icon icon-cross" tooltip="{{translation.removeTenant[LANG]}}"></span>
+								</a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</tab>
+			
+			<tab heading="{{tenantTabs[1].label}}">
+				<div>
+					<!--<input type="text" name="tag" ng-model="query" ng-keyup="filterData(query, 0)" class="form-control text-field-align-right mb5" placeholder="Search"/>-->
+					<div style="float: right; margin-top: 10px; margin-bottom: 10px; display: flex;">
+						<input style="margin-right: 5px;" type="text" name="tag" ng-model="tenantTabs[1].pagination.keywords" class="form-control" placeholder="Search"/>
+						<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="listTenants()"><span class="icon icon-undo"></span>search</a>
+					</div>
+				</div>
+				<br>
+				<div class="f-left width100percent" ng-if="tenantTabs[1].tenants.length === 0 && !query">
+					<alert type="warning">{{translation.noTenantsOfType[LANG]}} {{tenantTabs[1].label}}
+						{{translation.haveBeenAddedYet[LANG]}}.
+					</alert>
+				</div>
+				<br>
+				<div class="f-left width100percent" ng-if="tenantTabs[1].tenants.length === 0 && query">
+					<alert type="warning">{{translation.noSearchResultsFound[LANG]}} {{query}}.</alert>
+				</div>
+				<div class="entryBoxes">
+					<div ng-include="'modules/dashboard/multitenancy/directives/list-subTenants.tmpl'"></div>
+				</div>
+			</tab>
 		</tabset>
-    </div>
+	</div>
 </section>

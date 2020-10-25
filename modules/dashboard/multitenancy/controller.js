@@ -8,22 +8,22 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	constructModulePermissions($scope, $scope.access, tenantConfig.permissions);
 	
 	$scope.tenantTabs = [
-		/*{
-		 'label': 'Administration',
-		 'type': 'admin',
-		 'tenants': []
-		 },*/
-		// {
-		// 	'label': translation.client[LANG],
-		// 	'type': 'client',
-		// 	'tenants': []
-		// },
 		{
+			'pagination': {
+				"start": 0,
+				"limit": 500,
+				"keywords": null
+			},
 			'label': translation.mainTenant[LANG],
 			'type': 'product',
 			'tenants': []
 		},
 		{
+			'pagination': {
+				"start": 0,
+				"limit": 500,
+				"keywords": null
+			},
 			'label': translation.subTenant[LANG],
 			'type': 'client',
 			'tenants': []
@@ -172,81 +172,131 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		}
 	};
 	
-	$scope.listTenants = function (cb) {
-		overlayLoading.show();
+	$scope.listMainTenants = function (cb) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/multitenant/tenants"
+			"routeName": "/multitenant/tenants",
+			"params": {
+				"type": $scope.tenantTabs[0].type,
+				"start": $scope.tenantTabs[0].pagination.start,
+				"limit": $scope.tenantTabs[0].pagination.limit,
+				"keywords": $scope.tenantTabs[0].pagination.keywords || null
+			}
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'multitenant', error.message);
+				return cb(null);
 			} else {
-				$scope.splitTenantsByType(response, function () {
-					
-					if ($scope.tenantsList && $scope.tenantsList.rows) {
-						response.forEach((tenantFromAPI) => {
-							$scope.tenantsList.rows.forEach((tenantInUI) => {
-								if (tenantInUI.code === tenantFromAPI.code) {
-									tenantFromAPI.showKeys = tenantInUI.showKeys;
-									tenantFromAPI.showSubKeys = tenantInUI.showSubKeys;
-									
-									tenantInUI.applications.forEach((oneAppInUI) => {
-										tenantFromAPI.applications.forEach((oneAppFromAPI) => {
-											if (oneAppInUI.appId === oneAppFromAPI.appId) {
-												oneAppFromAPI.showKeys = oneAppInUI.showKeys;
-											}
-										});
-									});
-								}
-							});
-						});
-					}
-					
-					
-					$scope.tenantsList = {
-						rows: response
-					};
-					
-					$scope.tenantsList.actions = {
-						'editTenant': {
-							'label': translation.editTenant[LANG],
-							'command': function (row) {
-								$scope.edit_Tenant(row);
-							}
-						},
-						'updateOAuth': {
-							'label': translation.updateOAuth[LANG],
-							'command': function (row) {
-								$scope.update_oAuth(row);
-							}
-						},
-						'turnOffOAuth': {
-							'label': translation.turnOffOAuth[LANG],
-							'command': function (row) {
-								$scope.turnOffOAuth(row);
-							}
-						},
-						'turnOnOAuth': {
-							'label': translation.turnOnOAuth[LANG],
-							'command': function (row) {
-								$scope.turnOnOAuth(row);
-							}
-						},
-						'delete': {
-							'label': 'Remove',
-							'commandMsg': translation.areYouSureWantRemoveTenant[LANG],
-							'command': function (row) {
-								$scope.removeTenant(row);
-							}
-						}
-					};
-					
-					if (cb && typeof cb === 'function') {
-						return cb();
-					}
-				});
+				$scope.tenantTabs[0].pagination.count = response.count;
+				return cb(response);
 			}
+		});
+	};
+	$scope.listSubTenants = function (cb) {
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/multitenant/tenants",
+			"params": {
+				"type": $scope.tenantTabs[1].type,
+				"start": $scope.tenantTabs[1].pagination.start,
+				"limit": $scope.tenantTabs[1].pagination.limit,
+				"keywords": $scope.tenantTabs[1].pagination.keywords || null
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'multitenant', error.message);
+				return cb(null);
+			} else {
+				$scope.tenantTabs[1].pagination.count = response.count;
+				return cb(response);
+			}
+		});
+	};
+	
+	$scope.listTenants = function (cb) {
+		overlayLoading.show();
+		$scope.listMainTenants((maintenant_response) => {
+			$scope.listSubTenants((subtenant_response) => {
+				if (maintenant_response || subtenant_response) {
+					if (maintenant_response.items && maintenant_response.items.length > 0) {
+						maintenant_response = maintenant_response.items;
+					} else {
+						maintenant_response = [];
+					}
+					if (subtenant_response.items && subtenant_response.items.length > 0) {
+						subtenant_response = subtenant_response.items;
+					} else {
+						subtenant_response = [];
+					}
+					let tenantsArray = maintenant_response.concat(subtenant_response);
+					$scope.splitTenantsByType(tenantsArray, function () {
+						
+						if ($scope.tenantsList && $scope.tenantsList.rows) {
+							tenantsArray.forEach((tenantFromAPI) => {
+								$scope.tenantsList.rows.forEach((tenantInUI) => {
+									if (tenantInUI.code === tenantFromAPI.code) {
+										tenantFromAPI.showKeys = tenantInUI.showKeys;
+										tenantFromAPI.showSubKeys = tenantInUI.showSubKeys;
+										
+										tenantInUI.applications.forEach((oneAppInUI) => {
+											tenantFromAPI.applications.forEach((oneAppFromAPI) => {
+												if (oneAppInUI.appId === oneAppFromAPI.appId) {
+													oneAppFromAPI.showKeys = oneAppInUI.showKeys;
+												}
+											});
+										});
+									}
+								});
+							});
+						}
+						
+						
+						$scope.tenantsList = {
+							rows: tenantsArray
+						};
+						
+						$scope.tenantsList.actions = {
+							'editTenant': {
+								'label': translation.editTenant[LANG],
+								'command': function (row) {
+									$scope.edit_Tenant(row);
+								}
+							},
+							'updateOAuth': {
+								'label': translation.updateOAuth[LANG],
+								'command': function (row) {
+									$scope.update_oAuth(row);
+								}
+							},
+							'turnOffOAuth': {
+								'label': translation.turnOffOAuth[LANG],
+								'command': function (row) {
+									$scope.turnOffOAuth(row);
+								}
+							},
+							'turnOnOAuth': {
+								'label': translation.turnOnOAuth[LANG],
+								'command': function (row) {
+									$scope.turnOnOAuth(row);
+								}
+							},
+							'delete': {
+								'label': 'Remove',
+								'commandMsg': translation.areYouSureWantRemoveTenant[LANG],
+								'command': function (row) {
+									$scope.removeTenant(row);
+								}
+							}
+						};
+						
+						if (cb && typeof cb === 'function') {
+							return cb();
+						}
+					});
+				}
+			});
 		});
 	};
 	
@@ -306,7 +356,6 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				oneApplication.availableEnvs = $scope.availableEnv;
 			});
 		});
-		
 		$scope.originalTenants = angular.copy($scope.tenantTabs);
 		callback();
 	};
@@ -734,11 +783,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'label': translation.addTenant[LANG],
 					'btn': 'primary',
 					'action': function (formData) {
-						let tCode = $scope.generateTenantCode(formData.name);
+						//let tCode = $scope.generateTenantCode(formData.name);
 						
 						let postData = {
 							'type': 'product',
-							'code': tCode,
+							//'code': tCode,
 							'name': formData.name,
 							'description': formData.description,
 							'tag': formData.tag,
@@ -895,11 +944,11 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 					'label': translation.addTenant[LANG],
 					'btn': 'primary',
 					'action': function (formData) {
-						let tCode = $scope.generateTenantCode(formData.name);
+						//let tCode = $scope.generateTenantCode(formData.name);
 						
 						let postData = {
 							'type': 'client',
-							'code': tCode,
+							//'code': tCode,
 							'name': formData.name,
 							'description': formData.description,
 							'tag': formData.tag,
@@ -1790,7 +1839,7 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 	};
 	
 	//default operation
-	if ($scope.access.tenant.list && $scope.access.product.list ) {
+	if ($scope.access.tenant.list && $scope.access.product.list) {
 		$scope.getProds(() => {
 			$scope.getEnvironments(() => {
 				$scope.listTenants();

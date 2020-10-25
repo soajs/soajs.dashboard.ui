@@ -53,3 +53,19 @@ div#allowedEnvironments-wrapper li {
 .showGroupIcon {
     display: none;
 }
+
+
+.searchBarFieldSet {
+    background-color: #F8F8F8;
+}
+
+.tabFieldSetHeight {
+    height: 290px;
+}
+
+.tabFieldSetHeightSmall {
+    height: 140px;
+}
+.tabFieldSetHeightXSmall {
+    height: 40px;
+}

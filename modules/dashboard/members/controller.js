@@ -16,23 +16,39 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 	}
 	$scope.$parent.isUserLoggedIn();
 	
+	$scope.filters = {
+		"tenant": null,
+		"env": null,
+		"ext": null,
+		"subExt": null,
+		"subTenant": null,
+		"mlist": {
+			"user": false,
+			"invite": false,
+			"group": false
+		},
+		"slist": {
+			"user": false,
+			"group": false
+		}
+	};
 	$scope.tenantTabs = [
-		/*{
-		 'label': 'Administration',
-		 'type': 'admin',
-		 'tenants': []
-		 },*/
-		// {
-		// 	'label': translation.client[LANG],
-		// 	'type': 'client',
-		// 	'tenants': []
-		// },
 		{
+			'pagination': {
+				"start": 0,
+				"limit": 50,
+				"keywords": null
+			},
 			'label': translation.mainTenants[LANG],
 			'type': 'product',
 			'tenants': []
 		},
 		{
+			'pagination': {
+				"start": 0,
+				"limit": 50,
+				"keywords": null
+			},
 			'label': translation.subTenants[LANG],
 			'type': 'client',
 			'tenants': []
@@ -43,22 +59,31 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 	
 	constructModulePermissions($scope, $scope.access, membersConfig.permissions);
 	
-	$scope.tenantsList = [];
-	
-	$scope.changeEnv = function () {
-		let tenantsList = angular.copy($scope.tenantsList);
-		$scope.subTenants = [];
-		$scope.mainTenants = [];
-		tenantsList.forEach((oneTenant) => {
-			if (oneTenant.type === "product") {
-				$scope.mainTenants.push(oneTenant);
-			} else if (oneTenant.type === "client") {
-				$scope.subTenants.push(oneTenant);
-			}
+	$scope.changeEnv = function (env) {
+		$scope.filters = {
+			"tenant": null,
+			"env": env,
+			"ext": null,
+			"subExt": null,
+			"subTenant": null
+		};
+		jQuery('#mainTenant').find('> option').each(function () {
+			$(this).removeAttr('selected');
+		});
+		jQuery('#extKey').find('> option').each(function () {
+			$(this).removeAttr('selected');
+		});
+		jQuery('#subTenant').find('> option').each(function () {
+			$(this).removeAttr('selected');
+		});
+		jQuery('#extKeySub').find('> option').each(function () {
+			$(this).removeAttr('selected');
 		});
 	};
 	
-	$scope.getTenantExtKeys = function (env, tenant) {
+	$scope.getTenantExtKeys = function (env, tenantindex) {
+		let tenant = $scope.mainTenants[tenantindex];
+		$scope.selectedTenant = tenant;
 		$scope.tenantExtKeys = [];
 		if (env && tenant && tenant.applications && tenant.applications.length > 0) {
 			tenant.applications.forEach((oneApp) => {
@@ -78,17 +103,17 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 				}
 			});
 		}
-		
-		$scope.selectedTenant = $scope.mainTenants.find(function (element) {
-			return element && tenant ? element.code === tenant.code : false;
-		});
-		$scope.getSubTenants(tenant);
+		if (tenant && tenant.code) {
+			$scope.getSubTenants(tenantindex);
+		}
 	};
 	
-	$scope.getSubTenantExtKeys = function (env, tenant) {
+	$scope.getSubTenantExtKeys = function (env, tenantindex) {
+		let tenant = $scope.subTenants[tenantindex];
+		$scope.selectedSubTenant = tenant;
 		$scope.subtenantExtKeys = [];
-		if (tenant && tenant.v && tenant.v.applications && tenant.v.applications.length > 0) {
-			tenant.v.applications.forEach((oneApp) => {
+		if (tenant && tenant.applications && tenant.applications.length > 0) {
+			tenant.applications.forEach((oneApp) => {
 				if (oneApp && oneApp.keys && oneApp.keys.length > 0) {
 					oneApp.keys.forEach((oneKey) => {
 						if (oneKey && oneKey.extKeys && oneKey.extKeys.length > 0) {
@@ -104,44 +129,87 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 					});
 				}
 			});
-			$scope.selectedSubTenant = $scope.subTenants.find(function (element) {
-				return element.code === tenant.v.code;
-			});
 		}
 	};
 	
-	$scope.getSubTenants = function (tenant) {
-		$scope.subTenantsForTenant = [];
-		$scope.subTenants.forEach((oneTenant) => {
-			if (oneTenant.tenant && oneTenant.tenant.code && oneTenant.tenant.code === tenant.code) {
-				$scope.subTenantsForTenant.push({
-					l: oneTenant.code,
-					v: oneTenant
-				});
+	$scope.turnOffmList = function () {
+		$scope.filters.mlist = {
+			"user": false,
+			"invite": false,
+			"group": false
+		};
+	};
+	$scope.turnOffsList = function () {
+		$scope.filters.slist = {
+			"user": false,
+			"group": false
+		};
+	};
+	
+	$scope.getSubTenants = function (tenantindex) {
+		let tenant = $scope.mainTenants[tenantindex];
+		overlayLoading.show();
+		$scope.subTenants = [];
+		$scope.filters = {
+			"env": $scope.filters.env,
+			"tenant": $scope.filters.tenant,
+			"ext": $scope.filters.ext,
+			"subExt": null,
+			"subTenant": null
+		};
+		$scope.subtenantExtKeys = [];
+		getSendDataFromServer($scope, ngDataApi, {
+			"method": "get",
+			"routeName": "/multitenant/tenant/tenants",
+			"params": {
+				"code": tenant.code,
+				"start": $scope.tenantTabs[1].pagination.start,
+				"limit": $scope.tenantTabs[1].pagination.limit,
+				"keywords": $scope.tenantTabs[1].pagination.keywords || null
+			}
+		}, function (error, response) {
+			overlayLoading.hide();
+			if (error) {
+				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
+			} else {
+				if (response && response.items) {
+					$scope.subTenants = response.items;
+				}
 			}
 		});
 	};
 	
 	$scope.listTenants = function () {
 		overlayLoading.show();
+		$scope.mainTenants = [];
+		$scope.filters = {
+			"env": $scope.filters.env,
+			"tenant": null,
+			"ext": null,
+			"subExt": null,
+			"subTenant": null
+		};
+		$scope.tenantExtKeys = [];
+		$scope.subtenantExtKeys = [];
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
-			"routeName": "/multitenant/tenants"
+			"routeName": "/multitenant/tenants",
+			"params": {
+				"type": $scope.tenantTabs[0].type,
+				"start": $scope.tenantTabs[0].pagination.start,
+				"limit": $scope.tenantTabs[0].pagination.limit,
+				"keywords": $scope.tenantTabs[0].pagination.keywords || null
+			}
 		}, function (error, response) {
 			overlayLoading.hide();
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'dashboard', error.message);
 			} else {
-				$scope.tenantsList = response;
-				$scope.subTenants = [];
-				$scope.mainTenants = [];
-				response.forEach((oneTenant) => {
-					if (oneTenant.type === "product") {
-						$scope.mainTenants.push(oneTenant);
-					} else if (oneTenant.type === "client") {
-						$scope.subTenants.push(oneTenant);
-					}
-				});
+				//NOTE: added this since the API did not support pagination before
+				$scope.mainTenants = response;
+				if (response && response.items) {
+					$scope.mainTenants = response.items
+				}
 			}
 		});
 	};
@@ -162,6 +230,7 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 			$scope.showGet = true;
 			$scope.getAllUsers(env, ext, () => {
 				if (tenantRecord) {
+					$scope.filters.mlist.user = true;
 					$scope.tenantMembers = angular.extend($scope);
 					$scope.tenantMembers.tenant = tenantRecord;
 					$scope.tenantMembers.tId = tenantRecord['_id'];
@@ -282,6 +351,7 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 			$scope.showGet = true;
 			$scope.getAllUsers(env, ext, tenantRecord, (users) => {
 				if (tenantRecord) {
+					$scope.filters.mlist.invite = true;
 					$scope.tenantMembers = angular.extend($scope);
 					$scope.tenantMembers.tenant = tenantRecord;
 					$scope.tenantMembers.tId = tenantRecord['_id'];
@@ -364,12 +434,12 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 			if (error) {
 				$scope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 			} else {
-				if (response && response.length > 0){
-					response.forEach ((oneUser)=>{
+				if (response && response.length > 0) {
+					response.forEach((oneUser) => {
 						let index = -1;
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length> 0){
-							 index =  oneUser.config.allowedTenants.map(x => {
-								return x.tenant? x.tenant.id : null
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
+							index = oneUser.config.allowedTenants.map(x => {
+								return x.tenant ? x.tenant.id : null
 							}).indexOf(tenantRecord['_id'].toString());
 						}
 						oneUser.invited = (index !== -1);
@@ -393,6 +463,7 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 					$scope.groupsMembers.tId = tenantRecord['_id'];
 					$scope.groupsMembers.groups = groups;
 					if ($scope.groupsMembers.groups && $scope.groupsMembers.groups[$scope.groupsMembers.tId]) {
+						$scope.filters.mlist.group = true;
 						let myGroups = $scope.groupsMembers.groups[$scope.tId].list;
 						groupsHelper.printGroups($scope.groupsMembers, groupsConfig, myGroups);
 					}
@@ -475,9 +546,10 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 	let users = [];
 	$scope.getSubTenantUsers = function (tenantRecord, mainTenantRecord, env, mainExt, subExt) {
 		if ($scope.access.adminUser) {
-			$scope.showGet= true;
+			$scope.showGet = true;
 			$scope.getAllSubUsers(tenantRecord, mainTenantRecord, env, mainExt, () => {
 				if (tenantRecord) {
+					$scope.filters.slist.user= true;
 					$scope.subTenantMembers = angular.extend($scope);
 					$scope.subTenantMembers.tenant = tenantRecord;
 					$scope.subTenantMembers.tId = tenantRecord['_id'];
@@ -581,6 +653,7 @@ membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routePara
 					$scope.subGroupsSubMembers.tId = tenantRecord['_id'];
 					$scope.subGroupsSubMembers.groups = groups;
 					if ($scope.subGroupsSubMembers.groups && $scope.subGroupsSubMembers.groups[$scope.subGroupsSubMembers.tId]) {
+						$scope.filters.slist.group= true;
 						let myGroups = $scope.subGroupsSubMembers.groups[$scope.tId].list;
 						groupsHelper.printGroups($scope.subGroupsSubMembers, groupsConfig, myGroups);
 					}

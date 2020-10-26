@@ -68,8 +68,8 @@
 									<br/>
 									<div ng-controller="tenantsMembersCtrl">
 										<div ng-show="access.adminUser.addUser">
-											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, filters.env, filters.ext.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
-											<a href="" ng-show="showGet" ng-click="tenantMembers.addMember(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Add
+											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, filters.env, filters.ext.v, filters)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+											<a href="" ng-show="filters.mlist.showget.user" ng-click="tenantMembers.addMember(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Add
 												New User</a>
 											<br/><br/>
 											<nglist ng-show="filters.mlist.user"></nglist>
@@ -80,8 +80,8 @@
 									<br/>
 									<div ng-controller="tenantsInvitedMembersCtrl">
 										<div ng-show="access.adminUser.addUser">
-											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, filters.env, filters.ext.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
-											<a href="" ng-show="showGet" ng-click="tenantMembers.inviteUser(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Invite
+											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, filters.env, filters.ext.v, filters)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+											<a href="" ng-show="filters.mlist.showget.invite" ng-click="tenantMembers.inviteUser(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Invite
 												User</a>
 											<br/><br/>
 											<nglist ng-show="filters.mlist.invite"></nglist>
@@ -92,8 +92,8 @@
 									<br/>
 									<div ng-controller="tenantsGroupsCtrl">
 										<div ng-show="access.adminGroup.add">
-											<span class="getGroupsButton"><a href="" ng-click="getTenantGroups(selectedTenant, filters.env, filters.ext.v)" class="btn btn-primary">{{translation.getGroups[LANG]}}</a></span>
-											<a href="" ng-show="showGet" ng-click="groupsMembers.addGroup(filters.env, filters.ext.v)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
+											<span class="getGroupsButton"><a href="" ng-click="getTenantGroups(selectedTenant, filters.env, filters.ext.v, filters)" class="btn btn-primary">{{translation.getGroups[LANG]}}</a></span>
+											<a href="" ng-show="filters.mlist.showget.group" ng-click="groupsMembers.addGroup(filters.env, filters.ext.v)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
 											<br/><br/>
 											<nglist ng-show="filters.mlist.group"></nglist>
 										</div>
@@ -149,8 +149,8 @@
 								<br/>
 								<div ng-controller="subTenantsMembersCtrl">
 									<div ng-show="access.adminUser.addUser">
-										<span class="getUsersButton"><a href="" ng-click="getSubTenantUsers(selectedSubTenant, selectedTenant, filters.env, filters.ext.v, filters.subExt.v)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
-										<a href="" ng-show="showGet" ng-click="subTenantMembers.inviteUser(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Invite
+										<span class="getUsersButton"><a href="" ng-click="getSubTenantUsers(selectedSubTenant, selectedTenant, filters.env, filters.ext.v, filters.subExt.v, filters)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
+										<a href="" ng-show="filters.slist.showget.user" ng-click="subTenantMembers.inviteUser(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Invite
 											New User</a>
 										<br/><br/>
 										<nglist ng-show="filters.slist.user"></nglist>
@@ -161,8 +161,8 @@
 								<br/>
 								<div ng-controller="subTenantsGroupsCtrl">
 									<div ng-show="access.adminGroup.add">
-										<span class="getGroupsButton"><a href="" ng-click="getSubTenantGroups(selectedSubTenant, filters.env, filters.subExt.v)" class="btn btn-primary">{{translation.getGroups[LANG]}}</a></span>
-										<a href="" ng-show="showGet" ng-click="subGroupsSubMembers.addGroup(filters.env, filters.ext.v)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
+										<span class="getGroupsButton"><a href="" ng-click="getSubTenantGroups(selectedSubTenant, filters.env, filters.subExt.v, filters)" class="btn btn-primary">{{translation.getGroups[LANG]}}</a></span>
+										<a href="" ng-show="filters.slist.showget.group" ng-click="subGroupsSubMembers.addGroup(filters.env, filters.ext.v)" class="btn btn-primary noFloat">{{translation.addNewGroup[LANG]}}</a><br/><br/>
 										<br/><br/>
 										<nglist ng-show="filters.slist.group"></nglist>
 									</div>

@@ -1,5 +1,5 @@
 "use strict";
-var membersApp = soajsApp.components;
+let membersApp = soajsApp.components;
 membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage', 'injectFiles', '$timeout', '$routeParams', 'ngDataApi', function ($scope, $cookies, $localStorage, injectFiles, $timeout, $routeParams, ngDataApi) {
 	$scope.$parent.isUserLoggedIn();
 	
@@ -25,11 +25,20 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 		"mlist": {
 			"user": false,
 			"invite": false,
-			"group": false
+			"group": false,
+			"showget": {
+				"user": false,
+				"invite": false,
+				"group": false
+			}
 		},
 		"slist": {
 			"user": false,
-			"group": false
+			"group": false,
+			"showget": {
+				"user": false,
+				"group": false
+			}
 		}
 	};
 	$scope.tenantTabs = [
@@ -136,13 +145,22 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 		$scope.filters.mlist = {
 			"user": false,
 			"invite": false,
-			"group": false
+			"group": false,
+			"showget": {
+				"user": false,
+				"invite": false,
+				"group": false
+			}
 		};
 	};
 	$scope.turnOffsList = function () {
 		$scope.filters.slist = {
 			"user": false,
-			"group": false
+			"group": false,
+			"showget": {
+				"user": false,
+				"group": false
+			}
 		};
 	};
 	
@@ -225,10 +243,10 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
 	let users = [];
-	$scope.getTenantUsers = function (tenantRecord, env, ext) {
+	$scope.getTenantUsers = function (tenantRecord, env, ext, filters) {
 		if ($scope.access.adminUser) {
-			$scope.showGet = true;
 			$scope.getAllUsers(env, ext, () => {
+				filters.mlist.showget.user = true;
 				if (tenantRecord) {
 					$scope.filters.mlist.user = true;
 					$scope.tenantMembers = angular.extend($scope);
@@ -236,7 +254,7 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 					$scope.tenantMembers.tId = tenantRecord['_id'];
 					$scope.tenantMembers.users = users;
 					if ($scope.tenantMembers.users && $scope.tenantMembers.users[$scope.tId]) {
-						var myUsers = $scope.tenantMembers.users[$scope.tenantMembers.tId].list;
+						let myUsers = $scope.tenantMembers.users[$scope.tenantMembers.tId].list;
 						membersHelper.printMembers($scope.tenantMembers, membersConfig, myUsers, true);
 					}
 					else {
@@ -346,10 +364,10 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
 	let users = [];
-	$scope.getTenantUsers = function (tenantRecord, env, ext) {
+	$scope.getTenantUsers = function (tenantRecord, env, ext, filters) {
 		if ($scope.access.adminUser) {
-			$scope.showGet = true;
 			$scope.getAllUsers(env, ext, tenantRecord, (users) => {
+				filters.mlist.showget.invite = true;
 				if (tenantRecord) {
 					$scope.filters.mlist.invite = true;
 					$scope.tenantMembers = angular.extend($scope);
@@ -453,10 +471,10 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 
 membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams', 'ngDataApi', 'injectFiles', 'groupsHelper', function ($scope, $timeout, $routeParams, ngDataApi, injectFiles, groupsHelper) {
 	let groups = {};
-	$scope.getTenantGroups = function (tenantRecord, env, ext) {
+	$scope.getTenantGroups = function (tenantRecord, env, ext, filters) {
 		if ($scope.access.adminGroup) {
-			$scope.showGet = true;
 			$scope.getAllGroups(env, ext, () => {
+				filters.mlist.showget.group = true;
 				if (tenantRecord) {
 					$scope.groupsMembers = angular.extend($scope);
 					$scope.groupsMembers.tenant = tenantRecord;
@@ -544,12 +562,12 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
 	let users = [];
-	$scope.getSubTenantUsers = function (tenantRecord, mainTenantRecord, env, mainExt, subExt) {
+	$scope.getSubTenantUsers = function (tenantRecord, mainTenantRecord, env, mainExt, subExt, filters) {
 		if ($scope.access.adminUser) {
-			$scope.showGet = true;
 			$scope.getAllSubUsers(tenantRecord, mainTenantRecord, env, mainExt, () => {
+				filters.slist.showget.user = true;
 				if (tenantRecord) {
-					$scope.filters.slist.user= true;
+					$scope.filters.slist.user = true;
 					$scope.subTenantMembers = angular.extend($scope);
 					$scope.subTenantMembers.tenant = tenantRecord;
 					$scope.subTenantMembers.tId = tenantRecord['_id'];
@@ -643,17 +661,17 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 
 membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams', 'ngDataApi', 'injectFiles', 'groupsHelper', function ($scope, $timeout, $routeParams, ngDataApi, injectFiles, groupsHelper) {
 	let groups = [];
-	$scope.getSubTenantGroups = function (tenantRecord, env, ext) {
+	$scope.getSubTenantGroups = function (tenantRecord, env, ext, filters) {
 		if ($scope.access.adminGroup) {
-			$scope.showGet = true;
 			$scope.getAllSubGroups(env, ext, () => {
+				filters.slist.showget.group = true;
 				if (tenantRecord) {
 					$scope.subGroupsSubMembers = angular.extend($scope);
 					$scope.subGroupsSubMembers.tenant = tenantRecord;
 					$scope.subGroupsSubMembers.tId = tenantRecord['_id'];
 					$scope.subGroupsSubMembers.groups = groups;
 					if ($scope.subGroupsSubMembers.groups && $scope.subGroupsSubMembers.groups[$scope.subGroupsSubMembers.tId]) {
-						$scope.filters.slist.group= true;
+						$scope.filters.slist.group = true;
 						let myGroups = $scope.subGroupsSubMembers.groups[$scope.tId].list;
 						groupsHelper.printGroups($scope.subGroupsSubMembers, groupsConfig, myGroups);
 					}
@@ -760,9 +778,9 @@ membersApp.controller('tenantsConsoleCtrl', ['$scope', '$timeout', '$routeParams
 	
 	$scope.getAllUsersGroups = function () {
 		function arrGroupByTenant(arr) {
-			var result = {};
-			for (var i = 0; i < arr.length; i++) {
-				var group;
+			let result = {};
+			for (let i = 0; i < arr.length; i++) {
+				let group;
 				if (arr[i].tenant.id) {
 					group = arr[i].tenant.id;
 				}
@@ -837,7 +855,7 @@ membersApp.controller('tenantConsoleMembersCtrl', ['$scope', 'membersHelper', '$
 			}
 			$timeout(function () {
 				if ($scope.tenantMembers.users && $scope.tenantMembers.users[$scope.tenantMembers.tId]) {
-					var myUsers = $scope.tenantMembers.users[$scope.tenantMembers.tId].list;
+					let myUsers = $scope.tenantMembers.users[$scope.tenantMembers.tId].list;
 					membersHelper.printMembers($scope.tenantMembers, membersConfig, myUsers);
 				}
 			}, 1000);
@@ -916,7 +934,7 @@ membersApp.controller('tenantConsoleGroupsCtrl', ['$scope', 'groupsHelper', '$ti
 			}
 			$timeout(function () {
 				if ($scope.tenantGroups.groups && $scope.tenantGroups.groups[$scope.tenantGroups.tId]) {
-					var myGroups = $scope.tenantGroups.groups[$scope.tenantGroups.tId].list;
+					let myGroups = $scope.tenantGroups.groups[$scope.tenantGroups.tId].list;
 					groupsHelper.printGroups($scope.tenantGroups, groupsConfig, myGroups);
 				}
 			}, 1000);

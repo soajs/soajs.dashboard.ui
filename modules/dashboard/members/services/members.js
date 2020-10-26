@@ -318,7 +318,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 					let groupEntry = {
 						'name': 'groups',
 						'label': translation.groups[LANG],
-						'type': 'radio',
+						'type': 'checkbox',
 						'value': grps,
 						'tooltip': translation.assignGroups[LANG]
 					};
@@ -865,7 +865,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 					let groupEntry = {
 						'name': 'groups',
 						'label': translation.groups[LANG],
-						'type': 'radio',
+						'type': 'checkbox',
 						'value': grps,
 						'tooltip': translation.assignGroups[LANG]
 					};

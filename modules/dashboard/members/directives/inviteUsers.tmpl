@@ -36,7 +36,7 @@
 						<label>Groups</label>
 						<ul>
 							<li ng-repeat="dv in groups" class="splitGroups">
-								<input type="radio" id="{{'group_'+$index}}" ng-model="formData.group" value="{{dv.v}}" ng-checked="dv.selected"/>
+								<input type="checkbox" id="{{'group_'+$index}}" ng-model="formData.group" value="{{dv.v}}" ng-checked="dv.selected"/>
 								<span>{{dv.l || dv.v}}</span>
 							</li>
 						</ul>

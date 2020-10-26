@@ -174,11 +174,19 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			top: []
 		};
 		if (currentScope.access.adminUser.editUser && currentScope.tenant
-			&& currentScope.tenant.type === 'product') {
+			&& currentScope.tenant.type === 'product' && !showInvited) {
 			options.left.push({
 				'label': translation.edit[LANG],
 				'icon': 'pencil2',
 				'handler': 'editMember'
+			});
+		}
+		if (currentScope.access.adminUser.editUser && currentScope.tenant
+			&& currentScope.tenant.type === 'product' && showInvited) {
+			options.left.push({
+				'label': translation.edit[LANG],
+				'icon': 'pencil2',
+				'handler': 'editSubMember'
 			});
 		}
 		if (currentScope.access.adminUser.editUserGroup && currentScope.tenant
@@ -190,7 +198,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			});
 		}
 		if (currentScope.access.adminUser.delete && currentScope.tenant
-			&& currentScope.tenant.type === 'product') {
+			&& currentScope.tenant.type === 'product' && !showInvited) {
 			options.left.push({
 				'label': translation.delete[LANG],
 				'msg': "Are you sure you want to delete this member?",
@@ -222,7 +230,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		
 		if (currentScope.access.adminUser.changeStatusAccess && currentScope.tenant
-			&& currentScope.tenant.type === 'product') {
+			&& currentScope.tenant.type === 'product' && !showInvited) {
 			options.top = [
 				{
 					'label': translation.activate[LANG],
@@ -235,6 +243,14 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 					'handler': 'deactivateMembers'
 				}
 			];
+		}
+		if (currentScope.access.adminUser.unInviteUser && currentScope.tenant
+			&& currentScope.tenant.type === 'product' && showInvited) {
+			options.top = [{
+				'label': translation.uninvite[LANG],
+				'msg': translation.areYouSureWantUnInvite[LANG],
+				'handler': 'unInviteUser'
+			}];
 		}
 		if (currentScope.access.adminUser.unInviteUser && currentScope.tenant.type === 'client') {
 			options.top = [{
@@ -475,6 +491,18 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 							}, 5000);
 						};
 						$scope.groups = groups;
+						$scope.formData = {
+							"group": []
+						};
+						$scope.toggleSelection = function toggleSelection(group) {
+							let idx = $scope.formData.group.indexOf(group);
+							if (idx > -1) {
+								$scope.formData.group.splice(idx, 1);
+							}
+							else {
+								$scope.formData.group.push(group);
+							}
+						};
 						$scope.checkUsername = function (username) {
 							let opts = {
 								"method": "get",
@@ -650,6 +678,18 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 							}, 5000);
 						};
 						$scope.groups = groups;
+						$scope.formData = {
+							"group": []
+						};
+						$scope.toggleSelection = function toggleSelection(group) {
+							let idx = $scope.formData.group.indexOf(group);
+							if (idx > -1) {
+								$scope.formData.group.splice(idx, 1);
+							}
+							else {
+								$scope.formData.group.push(group);
+							}
+						};
 						$scope.checkUsername = function (username) {
 							let opts = {
 								"method": "get",
@@ -762,10 +802,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	function unInviteUser(currentScope, moduleConfig, useCookie, env, ext) {
-		let usernames = [];
+		let users = [];
 		for (let i = currentScope.grid.rows.length - 1; i >= 0; i--) {
 			if (currentScope.grid.rows[i].selected) {
-				usernames.push(currentScope.grid.rows[i].username);
+				users.push({"user": {"username": currentScope.grid.rows[i].username}});
 			}
 		}
 		overlayLoading.show();
@@ -773,7 +813,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			"method": "put",
 			"routeName": "/urac/admin/users/uninvite",
 			"data": {
-				"username": usernames
+				"users": users
 			}
 		};
 		if (env && ext) {
@@ -788,11 +828,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 					"__env": env
 				},
 				"data": {
-					"users": [{
-						"user": {
-							"username": usernames
-						}
-					}]
+					"users": users
 				}
 			};
 		}
@@ -992,7 +1028,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				currentScope.$parent.displayAlert('danger', error.code, true, 'urac', error.message);
 			} else {
 				let groups = [];
-				
+				let fomrDataGroup = [];
 				let index;
 				if (data.config && data.config.allowedTenants && data.config.allowedTenants.length > 0) {
 					index = data.config.allowedTenants.map(x => {
@@ -1007,12 +1043,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 								l: oneGroup.code,
 								v: oneGroup.code
 							};
-							
 							if (index !== -1 && data.config.allowedTenants[index]
 								&& data.config.allowedTenants[index].groups
-								&& data.config.allowedTenants[index].groups[0]
-								&& data.config.allowedTenants[index].groups[0] === oneGroup.code) {
+								&& data.config.allowedTenants[index].groups.includes(oneGroup.code)) {
 								temp.selected = true;
+								fomrDataGroup.push(oneGroup.code);
 							}
 							groups.push(temp);
 						}
@@ -1036,7 +1071,18 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 						$scope.groups = groups;
 						$scope.username = data.username;
 						$scope.email = data.email;
-						$scope.formData = {};
+						$scope.formData = {
+							"group": fomrDataGroup
+						};
+						$scope.toggleSelection = function toggleSelection(group) {
+							let idx = $scope.formData.group.indexOf(group);
+							if (idx > -1) {
+								$scope.formData.group.splice(idx, 1);
+							}
+							else {
+								$scope.formData.group.push(group);
+							}
+						};
 						$scope.onSubmit = function () {
 							let opts = {
 								"method": "put",

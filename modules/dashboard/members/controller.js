@@ -342,7 +342,8 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 				"params": {
 					'proxyRoute': '/urac/admin/users',
 					"extKey": extKey,
-					"scope": "myTenancy"
+					"scope": "myTenancy",
+					"config": true
 				},
 				"headers": {
 					"__env": env.toLowerCase()
@@ -440,7 +441,8 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 				"params": {
 					'proxyRoute': '/urac/admin/users',
 					"extKey": extKey,
-					"scope": "otherTenancy"
+					"scope": "otherTenancy",
+					"config": true
 				},
 				"headers": {
 					"__env": env.toLowerCase()
@@ -484,6 +486,8 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 						$scope.filters.mlist.group = true;
 						let myGroups = $scope.groupsMembers.groups[$scope.tId].list;
 						groupsHelper.printGroups($scope.groupsMembers, groupsConfig, myGroups);
+					} else {
+						groupsHelper.printGroups($scope.groupsMembers, groupsConfig, []);
 					}
 				}
 				
@@ -576,6 +580,8 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 					if ($scope.subTenantMembers.users && $scope.subTenantMembers.users[$scope.tId]) {
 						let myUsers = $scope.subTenantMembers.users[$scope.subTenantMembers.tId].list;
 						membersHelper.printMembers($scope.subTenantMembers, membersConfig, myUsers, true);
+					} else {
+						membersHelper.printMembers($scope.subTenantMembers, membersConfig, [], true);
 					}
 				}
 				
@@ -674,6 +680,8 @@ membersApp.controller('subTenantsGroupsCtrl', ['$scope', '$timeout', '$routePara
 						$scope.filters.slist.group = true;
 						let myGroups = $scope.subGroupsSubMembers.groups[$scope.tId].list;
 						groupsHelper.printGroups($scope.subGroupsSubMembers, groupsConfig, myGroups);
+					} else {
+						groupsHelper.printGroups($scope.subGroupsSubMembers, groupsConfig, []);
 					}
 				}
 				

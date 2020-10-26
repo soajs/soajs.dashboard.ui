@@ -25,18 +25,25 @@
 			<div class="col-md-8">
 				<fieldset class="searchBarFieldSet tabFieldSetHeightSmall">
 					<div style="float: left;">
-						<label>Select Tenant: </label>
-					</div>
-					<div style="float: left;">
-						<select id="mainTenant" size="7" style="margin-left: 10px" tooltip="Select Tenant" ng-model="filters.tenant" ng-change="getTenantExtKeys(filters.env, filters.tenant)">
-							<option value="">----- Choose an option -----</option>
-							<option ng-repeat="tenant in mainTenants" value={{$index}}>{{tenant.code}} - {{tenant.name}}
-							</option>
-						</select>
+						<div>
+							<div style="float: left;">
+								<label>Select Tenant: </label>
+							</div>
+							<div style="float: left;">
+								<select id="mainTenant" style="margin-left: 10px" tooltip="Select Tenant" ng-model="filters.tenant" ng-change="getTenantExtKeys(filters.env, filters.tenant)">
+									<option value="">----- Choose an option -----</option>
+									<option ng-repeat="tenant in mainTenants" value={{$index}}>{{tenant.code}} -
+										{{tenant.name}}
+									</option>
+								</select>
+							</div>
+						</div>
+						<div style="clear:both;">
+							<span class="fieldMsg">Only 50 tenant appears in this list, you can filter by name and code</span>
+						</div>
 					</div>
 					<div style="float: left; margin-left: 20px;">
-						Only 50 tenant appears in this list, you can filter by name and code
-						<div style="display: flex; margin-top: 5px;">
+						<div style="display: flex; ">
 							<input style="margin-right: 5px;" type="text" name="tag" ng-model="tenantTabs[0].pagination.keywords" class="form-control" placeholder="Filter"/>
 							<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="listTenants()"><span class="icon icon-undo"></span>Filter</a>
 						</div>
@@ -109,19 +116,25 @@
 							<div class="col-md-8" ng-show="filters.tenant">
 								<fieldset class="searchBarFieldSet tabFieldSetHeightSmall">
 									<div style="float: left;">
-										<label>Select Sub Tenant: </label>
-									</div>
-									<div style="float: left;">
-										<select id="subTenant" size="7" style="margin-left: 10px" tooltip="Select Sub Tenant" ng-model="filters.subTenant" ng-change="getSubTenantExtKeys(filters.env, filters.subTenant)">
-											<option value="">----- Choose an option -----</option>
-											<option ng-repeat="subTenant in subTenants" value={{$index}}>
-												{{subTenant.code}} - {{subTenant.name}}
-											</option>
-										</select>
+										<div>
+											<div style="float: left;">
+												<label>Select Sub Tenant: </label>
+											</div>
+											<div style="float: left;">
+												<select id="subTenant" style="margin-left: 10px" tooltip="Select Sub Tenant" ng-model="filters.subTenant" ng-change="getSubTenantExtKeys(filters.env, filters.subTenant)">
+													<option value="">----- Choose an option -----</option>
+													<option ng-repeat="subTenant in subTenants" value={{$index}}>
+														{{subTenant.code}} - {{subTenant.name}}
+													</option>
+												</select>
+											</div>
+										</div>
+										<div style="clear:both;">
+											<span class="fieldMsg">Only 50 subtenant appears in this list, you can filter by name and code</span>
+										</div>
 									</div>
 									<div style="float: left; margin-left: 20px;">
-										Only 50 sub tenant appears in this list, you can filter by name and code
-										<div style="display: flex; margin-top: 5px;">
+										<div style="display: flex;">
 											<input style="margin-right: 5px;" type="text" name="tag" ng-model="tenantTabs[1].pagination.keywords" class="form-control" placeholder="Filter"/>
 											<a href="" class="btn btn-primary" tooltip="Apply Filter" ng-click="getSubTenants(filters.tenant)"><span class="icon icon-undo"></span>Filter</a>
 										</div>
@@ -134,7 +147,7 @@
 										<label>Select External Key: </label>
 									</div>
 									<div style="float: left;">
-										<select id="extKeySub" size="7" style="margin-left: 10px" ng-options="subExt.l for subExt in subtenantExtKeys" tooltip="Select External Key" ng-model="filters.subExt" ng-change="turnOffsList()">
+										<select id="extKeySub" style="margin-left: 10px" ng-options="subExt.l for subExt in subtenantExtKeys" tooltip="Select External Key" ng-model="filters.subExt" ng-change="turnOffsList()">
 											<option value="">----- Choose an option -----</option>
 										</select>
 									</div>

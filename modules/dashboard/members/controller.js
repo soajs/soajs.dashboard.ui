@@ -406,7 +406,11 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 				};
 				
 				$scope.tenantMembers.editSubMember = function (data) {
-					membersHelper.editSubMember($scope.tenantMembers, membersConfig, data, false, env, ext);
+					if (!data.invited) {
+						$scope.$parent.displayAlert('danger', "Make sure the user is invited first!");
+					} else {
+						membersHelper.editSubMember($scope.tenantMembers, membersConfig, data, false, env, ext);
+					}
 				};
 				
 				$scope.tenantMembers.editMemberPin = function (data) {

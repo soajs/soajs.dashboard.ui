@@ -15,12 +15,15 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			grid.columns.push({'label': "Invited", 'field': 'invited'})
 		}
 		let options = {
-			grid: grid,
-			data: response,
-			defaultSortField: 'username',
-			left: [],
-			top: []
+			"grid": grid,
+			"data": response,
+			"defaultSortField": 'username',
+			"left": [],
+			"top": []
 		};
+		if (moduleConfig.apiNavigation) {
+			options.apiNavigation = moduleConfig.apiNavigation;
+		}
 		if (currentScope.access.adminUser.editUser && currentScope.tenant
 			&& currentScope.tenant.type === 'product' && !showInvited) {
 			options.left.push({
@@ -68,7 +71,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				'handler': 'editMemberPin'
 			});
 		}
-		if (pinLogin && currentScope.access.adminUser.editPinCode && currentScope.tenant) {
+		if (pinLogin && proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant) {
 			options.left.push({
 				'label': translation.removePin[LANG],
 				'icon': 'cancel-circle',
@@ -117,9 +120,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			"method": "get",
 			"routeName": "/urac/admin/users"
 		};
-		let proxy = false;
 		if (env && ext) {
-			proxy = true;
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -144,11 +145,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			if (error) {
 				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
 			} else {
-				if (callback && typeof (callback) === 'function') {
-					return callback(response);
-				} else {
-					printMembers(currentScope, moduleConfig, response, proxy);
-				}
+				return callback(response);
 			}
 		});
 	}
@@ -158,9 +155,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			"method": "get",
 			"routeName": "/urac/admin/users"
 		};
-		let proxy = false;
 		if (env && ext) {
-			proxy = true;
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -203,24 +198,18 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 						}
 					});
 				}
-				if (callback && typeof (callback) === 'function') {
-					return callback(response);
-				} else {
-					printMembers(currentScope, moduleConfig, response, proxy, true);
-				}
+				return callback(response);
 			}
 		});
 	}
 	
 	function listSubMembers(currentScope, moduleConfig, env, ext, callback) {
-		let proxy = false;
 		let opts = {
 			"method": "get",
 			"routeName": "/urac/admin/users",
 			"params": {"config": true}
 		};
 		if (env && ext) {
-			proxy = true;
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -260,11 +249,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 						}
 					});
 				}
-				if (callback && typeof (callback) === 'function') {
-					return callback(response);
-				} else {
-					printMembers(currentScope, moduleConfig, response, proxy);
-				}
+				return callback(response);
 			}
 		});
 	}

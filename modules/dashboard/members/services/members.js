@@ -15,7 +15,8 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				"params": {
 					'proxyRoute': '/urac/admin/users',
 					"extKey": ext,
-					"scope": "myTenancy"
+					"scope": "myTenancy",
+					"config": true
 				},
 				"headers": {
 					"__env": env
@@ -55,7 +56,8 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				"params": {
 					'proxyRoute': '/urac/admin/users',
 					"extKey": ext,
-					"scope": "otherTenancy"
+					"scope": "otherTenancy",
+					"config": true
 				},
 				"headers": {
 					"__env": env
@@ -75,10 +77,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				if (response && response.length > 0) {
 					response.forEach((oneUser) => {
 						let index = -1;
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0 && currentScope['_id']) {
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
 							index = oneUser.config.allowedTenants.map(x => {
 								return x.tenant ? x.tenant.id : null
-							}).indexOf(currentScope['_id'].toString());
+							}).indexOf((currentScope.tenant['_id'].toString()));
 						}
 						oneUser.invited = (index !== -1);
 					});
@@ -94,7 +96,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 	
 	function listSubMembers(currentScope, moduleConfig, env, ext, callback) {
 		let proxy = false;
-		let tenantId = currentScope.tenant._id;
 		let opts = {
 			"method": "get",
 			"routeName": "/urac/admin/users",
@@ -125,23 +126,10 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			if (error) {
 				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
 			} else {
-				let users = [];
-				if (response && response.length > 0) {
-					response.forEach((oneUser) => {
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
-							let index = oneUser.config.allowedTenants.map(x => {
-								return x.tenant ? x.tenant.id : null;
-							}).indexOf(tenantId);
-							if (index !== -1) {
-								users.push(oneUser);
-							}
-						}
-					});
-				}
 				if (callback && typeof (callback) === 'function') {
-					return callback(users);
+					return callback(response);
 				} else {
-					printMembers(currentScope, moduleConfig, users, proxy);
+					printMembers(currentScope, moduleConfig, response, proxy);
 				}
 			}
 		});
@@ -153,13 +141,6 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		if ($localStorage.ui_setting) {
 			if ($localStorage.ui_setting.pinLogin) {
 				pinLogin = $localStorage.ui_setting.pinLogin;
-			}
-		}
-		for (let x = 0; x < response.length; x++) {
-			if (response[x].groups) {
-				response[x].grpsArr = response[x].groups.join(', ');
-			} else {
-				response[x].grpsArr = '';
 			}
 		}
 		let grid = angular.copy(moduleConfig.grid);
@@ -208,14 +189,14 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		if (pinLogin && proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type === 'client') {
 			options.left.push({
-				'label': translation.edit[LANG],
+				'label': translation.editPin[LANG],
 				'icon': 'calculator',
 				'handler': 'editSubMemberPin'
 			});
 		}
 		if (pinLogin && proxy && currentScope.access.adminUser.editPinCode && currentScope.tenant.type !== 'client') {
 			options.left.push({
-				'label': translation.edit[LANG],
+				'label': translation.editPin[LANG],
 				'icon': 'calculator',
 				'handler': 'editMemberPin'
 			});
@@ -246,11 +227,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		}
 		if (currentScope.access.adminUser.unInviteUser && currentScope.tenant
 			&& currentScope.tenant.type === 'product' && showInvited) {
-			options.top = [{
-				'label': translation.uninvite[LANG],
-				'msg': translation.areYouSureWantUnInvite[LANG],
-				'handler': 'unInviteUser'
-			}];
+			options.top = [
+				{
+					'label': translation.uninvite[LANG],
+					'msg': translation.areYouSureWantUnInvite[LANG],
+					'handler': 'unInviteUser'
+				}
+			];
 		}
 		if (currentScope.access.adminUser.unInviteUser && currentScope.tenant.type === 'client') {
 			options.top = [{
@@ -600,7 +583,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 									if (response && response.succeeded && response.succeeded.length > 0) {
 										currentScope.$parent.displayAlert('success', translation.memberInvitedSuccessfully[LANG]);
 										overlayLoading.hide();
-										currentScope.listSubMembers();
+										currentScope.listMembers();
 										modal.close();
 									} else {
 										$scope.displayAlert('danger', response.failed[0].reason);
@@ -625,7 +608,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			"routeName": "/urac/admin/groups"
 		};
 		//this should use the subtenanant ext key
-		if (env && ext) {
+		if (env && subExt) {
 			opts = {
 				"method": "get",
 				"routeName": "/soajs/proxy",
@@ -737,7 +720,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 									"users": []
 								}
 							};
-							if (env && ext) {
+							if (env && subExt) {
 								opts = {
 									"method": "put",
 									"routeName": "/soajs/proxy",
@@ -801,7 +784,7 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		});
 	}
 	
-	function unInviteUser(currentScope, moduleConfig, useCookie, env, ext) {
+	function unInviteUser(currentScope, moduleConfig, useCookie, env, subExt) {
 		let users = [];
 		for (let i = currentScope.grid.rows.length - 1; i >= 0; i--) {
 			if (currentScope.grid.rows[i].selected) {
@@ -816,13 +799,13 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				"users": users
 			}
 		};
-		if (env && ext) {
+		if (env && subExt) {
 			opts = {
 				"method": "put",
 				"routeName": "/soajs/proxy",
 				"params": {
 					'proxyRoute': "/urac/admin/users/uninvite",
-					"extKey": ext
+					"extKey": subExt
 				},
 				"headers": {
 					"__env": env
@@ -1329,12 +1312,16 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 				"method": "put",
 				"routeName": "/soajs/proxy",
 				"params": {
-					'username': data.username,
 					'proxyRoute': '/urac/admin/user/pin',
 					"extKey": ext
 				},
 				"data": {
-					"delete": true
+					"pin": {
+						"delete": true
+					},
+					"user": {
+						"username": data.username
+					}
 				},
 				"headers": {
 					"__env": env,

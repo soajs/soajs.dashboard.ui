@@ -88,7 +88,7 @@
 									<div ng-controller="tenantsInvitedMembersCtrl">
 										<div ng-show="access.adminUser.addUser">
 											<span class="getUsersButton"><a href="" ng-click="getTenantUsers(selectedTenant, filters.env, filters.ext.v, filters)" class="btn btn-primary">{{translation.getUsers[LANG]}}</a></span>
-											<a href="" ng-show="filters.mlist.showget.invite" ng-click="tenantMembers.inviteUser(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Invite
+											<a href="" ng-show="filters.mlist.showget.invite" ng-click="tenantsInvitedMembers.inviteUser(filters.env, filters.ext.v)" class="btn btn-primary noFloat">Invite
 												User</a>
 											<br/><br/>
 											<nglist ng-show="filters.mlist.invite"></nglist>

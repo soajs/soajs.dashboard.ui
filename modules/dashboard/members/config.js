@@ -9,7 +9,7 @@ var membersConfig = {
 			{ 'label': translation.lastName[LANG], 'field': 'lastName' },
 			{ 'label': translation.email[LANG], 'field': 'email' },
 			{ 'label': translation.status[LANG], 'field': 'status' },
-			{ 'label': translation.groups[LANG], 'field': 'grpsArr' }
+			{ 'label': translation.groups[LANG], 'field': 'groups' }
 		],
 		'leftActions': [],
 		'topActions': [],

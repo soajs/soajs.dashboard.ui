@@ -804,6 +804,10 @@ var translation = {
 		"ENG": "Edit",
 		"FRA": "Modifié"
 	},
+	"editPin": {
+		"ENG": "Edit pin",
+		"FRA": "Modifié code"
+	},
 	"delete": {
 		"ENG": "Delete",
 		"FRA": "Effacer"

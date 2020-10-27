@@ -1,139 +1,6 @@
 "use strict";
 let membersService = soajsApp.components;
 membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$localStorage', function (ngDataApi, $timeout, $modal, $localStorage) {
-	function listMembers(currentScope, moduleConfig, env, ext, callback) {
-		let opts = {
-			"method": "get",
-			"routeName": "/urac/admin/users"
-		};
-		let proxy = false;
-		if (env && ext) {
-			proxy = true;
-			opts = {
-				"method": "get",
-				"routeName": "/soajs/proxy",
-				"params": {
-					'proxyRoute': '/urac/admin/users',
-					"extKey": ext,
-					"scope": "myTenancy",
-					"config": true
-				},
-				"headers": {
-					"__env": env
-				}
-			};
-		}
-		if (currentScope.key) {
-			if (!opts.headers) {
-				opts.headers = {};
-			}
-			opts.headers.key = currentScope.key;
-		}
-		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
-			} else {
-				if (callback && typeof (callback) === 'function') {
-					return callback(response);
-				} else {
-					printMembers(currentScope, moduleConfig, response, proxy);
-				}
-			}
-		});
-	}
-	
-	function listInvitedMembers(currentScope, moduleConfig, env, ext, callback) {
-		let opts = {
-			"method": "get",
-			"routeName": "/urac/admin/users"
-		};
-		let proxy = false;
-		if (env && ext) {
-			proxy = true;
-			opts = {
-				"method": "get",
-				"routeName": "/soajs/proxy",
-				"params": {
-					'proxyRoute': '/urac/admin/users',
-					"extKey": ext,
-					"scope": "otherTenancy",
-					"config": true
-				},
-				"headers": {
-					"__env": env
-				}
-			};
-		}
-		if (currentScope.key) {
-			if (!opts.headers) {
-				opts.headers = {};
-			}
-			opts.headers.key = currentScope.key;
-		}
-		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
-			} else {
-				if (response && response.length > 0) {
-					response.forEach((oneUser) => {
-						let index = -1;
-						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
-							index = oneUser.config.allowedTenants.map(x => {
-								return x.tenant ? x.tenant.id : null
-							}).indexOf((currentScope.tenant['_id'].toString()));
-						}
-						oneUser.invited = (index !== -1);
-					});
-				}
-				if (callback && typeof (callback) === 'function') {
-					return callback(response);
-				} else {
-					printMembers(currentScope, moduleConfig, response, proxy, true);
-				}
-			}
-		});
-	}
-	
-	function listSubMembers(currentScope, moduleConfig, env, ext, callback) {
-		let proxy = false;
-		let opts = {
-			"method": "get",
-			"routeName": "/urac/admin/users",
-			"params": {"config": true}
-		};
-		if (env && ext) {
-			proxy = true;
-			opts = {
-				"method": "get",
-				"routeName": "/soajs/proxy",
-				"params": {
-					'proxyRoute': '/urac/admin/users',
-					"config": true,
-					"extKey": ext
-				},
-				"headers": {
-					"__env": env
-				}
-			};
-		}
-		if (currentScope.key) {
-			if (!opts.headers) {
-				opts.headers = {};
-			}
-			opts.headers.key = currentScope.key;
-		}
-		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
-			if (error) {
-				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
-			} else {
-				if (callback && typeof (callback) === 'function') {
-					return callback(response);
-				} else {
-					printMembers(currentScope, moduleConfig, response, proxy);
-				}
-			}
-		});
-	}
 	
 	function printMembers(currentScope, moduleConfig, response, proxy, showInvited) {
 		// Check if pinLogin is turned ON, by default is OFF
@@ -243,6 +110,163 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 			}];
 		}
 		buildGrid(currentScope, options);
+	}
+	
+	function listMembers(currentScope, moduleConfig, env, ext, callback) {
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users"
+		};
+		let proxy = false;
+		if (env && ext) {
+			proxy = true;
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users',
+					"extKey": ext,
+					"scope": "myTenancy",
+					"config": true
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
+				if (callback && typeof (callback) === 'function') {
+					return callback(response);
+				} else {
+					printMembers(currentScope, moduleConfig, response, proxy);
+				}
+			}
+		});
+	}
+	
+	function listInvitedMembers(currentScope, moduleConfig, env, ext, callback) {
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users"
+		};
+		let proxy = false;
+		if (env && ext) {
+			proxy = true;
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users',
+					"extKey": ext,
+					"scope": "otherTenancy",
+					"config": true
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
+				if (response && response.length > 0) {
+					response.forEach((oneUser) => {
+						oneUser.invited = false;
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
+							for (let i = 0; i < oneUser.config.allowedTenants.length; i++) {
+								if (oneUser.config.allowedTenants[i].tenant && oneUser.config.allowedTenants[i].tenant.id === currentScope.tenant['_id']) {
+									oneUser.invited = true;
+									if (oneUser.config.allowedTenants[i].groups) {
+										oneUser.groups = oneUser.config.allowedTenants[i].groups
+									} else {
+										oneUser.groups = [];
+									}
+									break;
+								}
+							}
+						}
+					});
+				}
+				if (callback && typeof (callback) === 'function') {
+					return callback(response);
+				} else {
+					printMembers(currentScope, moduleConfig, response, proxy, true);
+				}
+			}
+		});
+	}
+	
+	function listSubMembers(currentScope, moduleConfig, env, ext, callback) {
+		let proxy = false;
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users",
+			"params": {"config": true}
+		};
+		if (env && ext) {
+			proxy = true;
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users',
+					"config": true,
+					"extKey": ext
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
+				if (response && response.length > 0) {
+					response.forEach((oneUser) => {
+						if (oneUser.config && oneUser.config.allowedTenants && oneUser.config.allowedTenants.length > 0) {
+							for (let i = 0; i < oneUser.config.allowedTenants.length; i++) {
+								if (oneUser.config.allowedTenants[i].tenant && oneUser.config.allowedTenants[i].tenant.id === currentScope.tenant['_id']) {
+									if (oneUser.config.allowedTenants[i].groups) {
+										oneUser.groups = oneUser.config.allowedTenants[i].groups
+									} else {
+										oneUser.groups = [];
+									}
+									break;
+								}
+							}
+						}
+					});
+				}
+				if (callback && typeof (callback) === 'function') {
+					return callback(response);
+				} else {
+					printMembers(currentScope, moduleConfig, response, proxy);
+				}
+			}
+		});
 	}
 	
 	function addMember(currentScope, moduleConfig, useCookie, env, ext) {

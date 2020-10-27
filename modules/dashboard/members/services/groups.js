@@ -2,6 +2,39 @@
 let groupsService = soajsApp.components;
 groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', function (ngDataApi, $timeout, $modal) {
 	
+	function printGroups(currentScope, groupsConfig, response) {
+		let options = {
+			grid: groupsConfig.grid,
+			data: response,
+			defaultSortField: 'code',
+			left: [],
+			top: []
+		};
+		
+		if (currentScope.access.adminGroup.edit) {
+			options.left.push({
+				'label': translation.edit[LANG],
+				'icon': 'pencil2',
+				'handler': 'editGroup'
+			});
+		}
+		if (currentScope.access.adminGroup.delete) {
+			options.top.push({
+				'label': translation.delete[LANG],
+				'msg': translation.areYouSureWantDeleteSelectedGroup[LANG],
+				'handler': 'deleteGroups'
+			});
+			
+			options.left.push({
+				'label': translation.delete[LANG],
+				'icon': 'cross',
+				'msg': translation.areYouSureWantDeleteGroup[LANG],
+				'handler': 'delete1Group'
+			});
+		}
+		buildGrid(currentScope, options);
+	}
+	
 	function listProducts(currentScope, env, ext, callback) {
 		let opts = {
 			"method": "get",
@@ -60,39 +93,6 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 				}
 			});
 		}
-	}
-	
-	function printGroups(currentScope, groupsConfig, response) {
-		let options = {
-			grid: groupsConfig.grid,
-			data: response,
-			defaultSortField: 'code',
-			left: [],
-			top: []
-		};
-		
-		if (currentScope.access.adminGroup.edit) {
-			options.left.push({
-				'label': translation.edit[LANG],
-				'icon': 'pencil2',
-				'handler': 'editGroup'
-			});
-		}
-		if (currentScope.access.adminGroup.delete) {
-			options.top.push({
-				'label': translation.delete[LANG],
-				'msg': translation.areYouSureWantDeleteSelectedGroup[LANG],
-				'handler': 'deleteGroups'
-			});
-			
-			options.left.push({
-				'label': translation.delete[LANG],
-				'icon': 'cross',
-				'msg': translation.areYouSureWantDeleteGroup[LANG],
-				'handler': 'delete1Group'
-			});
-		}
-		buildGrid(currentScope, options);
 	}
 	
 	function addGroup(currentScope, groupsConfig, useCookie, env, ext) {

@@ -1,17 +1,17 @@
 "use strict";
-var gridId = 1;
+//let gridId = 1;
 function getRandomString(len, charSet) {
 	charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	var randomString = '';
-	for (var i = 0; i < len; i++) {
-		var randomPoz = Math.floor(Math.random() * charSet.length);
+	let randomString = '';
+	for (let i = 0; i < len; i++) {
+		let randomPoz = Math.floor(Math.random() * charSet.length);
 		randomString += charSet.substring(randomPoz, randomPoz + 1);
 	}
 	return randomString;
 }
 
 function buildGrid($scope, opts) {
-	var gridConfig = opts.grid;
+	let gridConfig = opts.grid;
 	gridConfig.defaultSortField = opts.defaultSortField || opts.grid.defaultSortField;
 	gridConfig.defaultSortASC = opts.defaultSortASC || opts.grid.defaultSortASC;
 	gridConfig.rows = opts.data;
@@ -50,7 +50,7 @@ function buildGrid($scope, opts) {
 		}
 		else {
 			opts.grid.navigation.pageActive = (opts.grid.navigation.startLimit / opts.grid.navigation.endLimit) + 1;
-			var nextLimit = opts.grid.navigation.startLimit + opts.grid.navigation.endLimit;
+			let nextLimit = opts.grid.navigation.startLimit + opts.grid.navigation.endLimit;
 			if (opts.grid.navigation.totalCount <= nextLimit) {
 				opts.grid.navigation.showNext = false;
 			}
@@ -84,7 +84,7 @@ function buildGrid($scope, opts) {
 				'label': opts.apiNavigation.next.label,
 				'commandMsg': opts.apiNavigation.next.msg || null,
 				'command': function () {
-					var startLimit = opts.grid.navigation.startLimit + opts.grid.navigation.endLimit;
+					let startLimit = opts.grid.navigation.startLimit + opts.grid.navigation.endLimit;
 					if (startLimit < opts.grid.navigation.totalCount) {
 						opts.grid.navigation.startLimit = startLimit;
 						$scope[opts.apiNavigation.next.handler](startLimit);
@@ -101,7 +101,7 @@ function buildGrid($scope, opts) {
 				'label': opts.apiNavigation.last.label,
 				'commandMsg': opts.apiNavigation.last.msg || null,
 				'command': function () {
-					var startLimit = (opts.grid.navigation.totalPagesActive - 1) * opts.grid.navigation.endLimit;
+					let startLimit = (opts.grid.navigation.totalPagesActive - 1) * opts.grid.navigation.endLimit;
 					if (startLimit < opts.grid.navigation.totalCount) {
 						opts.grid.navigation.startLimit = startLimit;
 						$scope[opts.apiNavigation.last.handler](startLimit);
@@ -155,9 +155,9 @@ function buildGrid($scope, opts) {
 		
 		context.grid.filterData = function (query) {
 			if (query && query !== '' && query.length >= 3) {
-				var filtered = [];
-				for (var i = 0; i < context.grid.rows.length; i++) {
-					for (var j = 0; j < context.grid.columns.length; j++) {
+				let filtered = [];
+				for (let i = 0; i < context.grid.rows.length; i++) {
+					for (let j = 0; j < context.grid.columns.length; j++) {
 						if (context.grid.rows[i][context.grid.columns[j].field] && typeof(context.grid.rows[i][context.grid.columns[j].field]) == 'string') {
 							if (context.grid.rows[i][context.grid.columns[j].field].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
 								filtered.push(context.grid.rows[i]);

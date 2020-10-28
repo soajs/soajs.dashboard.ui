@@ -115,6 +115,40 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 		buildGrid(currentScope, options);
 	}
 	
+	function listMembers_count(currentScope, env, ext, callback) {
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users"
+		};
+		if (env && ext) {
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users/count',
+					"extKey": ext,
+					"scope": "myTenancy"
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
+				return callback(response);
+			}
+		});
+	}
+	
 	function listMembers(currentScope, moduleConfig, env, ext, callback) {
 		let opts = {
 			"method": "get",
@@ -129,6 +163,47 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 					"extKey": ext,
 					"scope": "myTenancy",
 					"config": true
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		if (moduleConfig && moduleConfig.grid && moduleConfig.grid.navigation) {
+			if (!opts.params) {
+				opts.params = {};
+			}
+			opts.params.limit = moduleConfig.grid.navigation.endLimit;
+			opts.params.start = moduleConfig.grid.navigation.startLimit;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
+				return callback(response);
+			}
+		});
+	}
+	
+	function listInvitedMembers_count(currentScope, env, ext, callback) {
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users"
+		};
+		if (env && ext) {
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users/count',
+					"extKey": ext,
+					"scope": "otherTenancy"
 				},
 				"headers": {
 					"__env": env
@@ -198,6 +273,39 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 						}
 					});
 				}
+				return callback(response);
+			}
+		});
+	}
+	
+	function listSubMembers_count(currentScope, env, ext, callback) {
+		let opts = {
+			"method": "get",
+			"routeName": "/urac/admin/users"
+		};
+		if (env && ext) {
+			opts = {
+				"method": "get",
+				"routeName": "/soajs/proxy",
+				"params": {
+					'proxyRoute': '/urac/admin/users/count',
+					"extKey": ext
+				},
+				"headers": {
+					"__env": env
+				}
+			};
+		}
+		if (currentScope.key) {
+			if (!opts.headers) {
+				opts.headers = {};
+			}
+			opts.headers.key = currentScope.key;
+		}
+		getSendDataFromServer(currentScope, ngDataApi, opts, function (error, response) {
+			if (error) {
+				currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
+			} else {
 				return callback(response);
 			}
 		});
@@ -1472,8 +1580,11 @@ membersService.service('membersHelper', ['ngDataApi', '$timeout', '$modal', '$lo
 	}
 	
 	return {
+		'listMembers_count': listMembers_count,
 		'listMembers': listMembers,
+		'listInvitedMembers_count': listInvitedMembers_count,
 		'listInvitedMembers': listInvitedMembers,
+		'listSubMembers_count': listSubMembers_count,
 		'listSubMembers': listSubMembers,
 		'inviteUser': inviteUser,
 		'inviteMainUser': inviteMainUser,

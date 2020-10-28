@@ -132,13 +132,13 @@ soajsApp.service('ngDataApi', ['$http', '$cookies', '$localStorage', 'Upload', f
 			}
 			if (resp.data) {
 				if (typeof (resp.data) !== 'object') {
-					if (typeof (resp.data) === 'string') {
-						resp.data = {
-							data: resp.data
-						};
-					} else {
-						resp.data = {};
-					}
+					//if (typeof (resp.data) === 'string') {
+					resp.data = {
+						data: resp.data
+					};
+					//} else {
+					//	resp.data = {};
+					//}
 				}
 			} else {
 				resp.data = {};
@@ -460,45 +460,45 @@ soajsApp.service("aclDrawHelpers", function () {
 	}
 	
 	//function checkForGroupDefault(aclFill, service, grp, val, myApi, v) {
-		
-		// var defaultApi;
-		// if (service.fixList && service.fixList.length > 0) {
-		// 	service.fixList.forEach((oneVersion) => {
-		// 		if (oneVersion['%v%'] === v) {
-		// 			defaultApi = oneVersion[grp]['defaultApi'];
-		// 		}
-		// 	});
-		// }
-		// var found = true;
-		// if (myApi.groupMain === true) {
-		//
-		// 	if (val.apisRest && myApi.m) {
-		// 		if (aclFill[service.name][v][myApi.m].apis) {
-		// 			if (aclFill[service.name][v][myApi.m].apis[defaultApi] && aclFill[service.name][v][myApi.m].apis[defaultApi].include !== true) {
-		// 				found = false;
-		// 				for (var m in val.apisRest) {
-		// 					if (aclFill[service.name][v][m]) {
-		// 						val.apisRest[m].forEach(function (one) {
-		// 							if (aclFill[service.name][v][m].apis[one.v]) {
-		// 								aclFill[service.name][v][m].apis[one.v].include = false;
-		// 							}
-		// 						});
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	} else if (aclFill[service.name][v].apis) {
-		// 		if ((aclFill[service.name][v].apis[defaultApi]) && aclFill[service.name][v].apis[defaultApi].include !== true) {
-		// 			found = false;
-		// 			val.apis.forEach(function (one) {
-		// 				if (aclFill[service.name][v].apis[one.v]) {
-		// 					aclFill[service.name][v].apis[one.v].include = false;
-		// 				}
-		// 			});
-		// 		}
-		// 	}
-		// 	service.fixList[v][grp].defaultIncluded = found;
-		// }
+	
+	// var defaultApi;
+	// if (service.fixList && service.fixList.length > 0) {
+	// 	service.fixList.forEach((oneVersion) => {
+	// 		if (oneVersion['%v%'] === v) {
+	// 			defaultApi = oneVersion[grp]['defaultApi'];
+	// 		}
+	// 	});
+	// }
+	// var found = true;
+	// if (myApi.groupMain === true) {
+	//
+	// 	if (val.apisRest && myApi.m) {
+	// 		if (aclFill[service.name][v][myApi.m].apis) {
+	// 			if (aclFill[service.name][v][myApi.m].apis[defaultApi] && aclFill[service.name][v][myApi.m].apis[defaultApi].include !== true) {
+	// 				found = false;
+	// 				for (var m in val.apisRest) {
+	// 					if (aclFill[service.name][v][m]) {
+	// 						val.apisRest[m].forEach(function (one) {
+	// 							if (aclFill[service.name][v][m].apis[one.v]) {
+	// 								aclFill[service.name][v][m].apis[one.v].include = false;
+	// 							}
+	// 						});
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	} else if (aclFill[service.name][v].apis) {
+	// 		if ((aclFill[service.name][v].apis[defaultApi]) && aclFill[service.name][v].apis[defaultApi].include !== true) {
+	// 			found = false;
+	// 			val.apis.forEach(function (one) {
+	// 				if (aclFill[service.name][v].apis[one.v]) {
+	// 					aclFill[service.name][v].apis[one.v].include = false;
+	// 				}
+	// 			});
+	// 		}
+	// 	}
+	// 	service.fixList[v][grp].defaultIncluded = found;
+	// }
 	//}
 	
 	function prepareSaveObject(aclEnvFill, aclEnvObj) {

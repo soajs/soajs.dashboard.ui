@@ -242,6 +242,14 @@ membersApp.controller('mainMembersCtrl', ['$scope', '$cookies', '$localStorage',
 
 membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
+	$scope.previousPage = function (start) {
+		$scope.pagination.start = start;
+		$scope.tenantMembers.listMembers();
+	};
+	$scope.nextPage = function (start) {
+		$scope.pagination.start = start;
+		$scope.tenantMembers.listMembers();
+	};
 	$scope.getTenantUsers = function (tenantRecord, env, ext, filters) {
 		if ($scope.access.adminUser) {
 			filters.mlist.showget.user = true;
@@ -249,14 +257,48 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 			$scope.tenantMembers = angular.extend($scope);
 			$scope.tenantMembers.tenant = tenantRecord;
 			$scope.tenantMembers.tId = tenantRecord['_id'];
+			$scope.pagination = {
+				"start": 0,
+				"limit": 1000,
+			};
 			
 			$scope.tenantMembers.listMembers = function () {
-				membersHelper.listMembers($scope.tenantMembers, membersConfig, env, ext, function (response) {
-					if (response && Array.isArray(response) && response.length > 0) {
-						membersHelper.printMembers($scope.tenantMembers, membersConfig, response, true);
-					} else {
-						membersHelper.printMembers($scope.tenantMembers, membersConfig, [], true);
+				membersHelper.listMembers_count($scope.tenantMembers, env, ext, function (response) {
+					let total = 0;
+					if (response && response.data) {
+						let temp_total = parseInt(response.data);
+						if (temp_total && temp_total > 0) {
+							total = temp_total;
+						}
 					}
+					let gridconfig = {
+						"grid": angular.copy(membersConfig.grid),
+						"apiNavigation": {
+							"previous": {
+								"label": "Previous",
+								"msg": "Go to previous page",
+								"handler": "previousPage"
+							},
+							"next": {
+								"label": "Next",
+								"msg": "Go to next page",
+								"handler": "nextPage"
+							}
+						}
+					};
+					gridconfig.grid.navigation = {
+						"totalCount": total,
+						"endLimit": $scope.pagination.limit,
+						"startLimit": $scope.pagination.start,
+						"totalPagesActive": Math.ceil(total / $scope.pagination.limit)
+					};
+					membersHelper.listMembers($scope.tenantMembers, gridconfig, env, ext, function (response) {
+						if (response && Array.isArray(response) && response.length > 0) {
+							membersHelper.printMembers($scope.tenantMembers, gridconfig, response, true);
+						} else {
+							membersHelper.printMembers($scope.tenantMembers, gridconfig, [], true);
+						}
+					});
 				});
 			};
 			
@@ -295,6 +337,15 @@ membersApp.controller('tenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataAp
 
 membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
+	$scope.previousPage = function (start) {
+		$scope.pagination.start = start;
+		$scope.tenantsInvitedMembers.listMembers();
+	};
+	$scope.nextPage = function (start) {
+		$scope.pagination.start = start;
+		$scope.tenantsInvitedMembers.listMembers();
+	};
+	
 	$scope.getTenantUsers = function (tenantRecord, env, ext, filters) {
 		if ($scope.access.adminUser) {
 			filters.mlist.showget.invite = true;
@@ -302,14 +353,48 @@ membersApp.controller('tenantsInvitedMembersCtrl', ['$scope', '$routeParams', 'n
 			$scope.tenantsInvitedMembers = angular.extend($scope);
 			$scope.tenantsInvitedMembers.tenant = tenantRecord;
 			$scope.tenantsInvitedMembers.tId = tenantRecord['_id'];
+			$scope.pagination = {
+				"start": 0,
+				"limit": 1000,
+			};
 			
 			$scope.tenantsInvitedMembers.listMembers = function () {
-				membersHelper.listInvitedMembers($scope.tenantsInvitedMembers, membersConfig, env, ext, function (response) {
-					if (response && Array.isArray(response) && response.length > 0) {
-						membersHelper.printMembers($scope.tenantsInvitedMembers, membersConfig, response, true, true);
-					} else {
-						membersHelper.printMembers($scope.tenantsInvitedMembers, membersConfig, [], true, true);
+				membersHelper.listInvitedMembers_count($scope.tenantsInvitedMembers, env, ext, function (response) {
+					let total = 0;
+					if (response && response.data) {
+						let temp_total = parseInt(response.data);
+						if (temp_total && temp_total > 0) {
+							total = temp_total;
+						}
 					}
+					let gridconfig = {
+						"grid": angular.copy(membersConfig.grid),
+						"apiNavigation": {
+							"previous": {
+								"label": "Previous",
+								"msg": "Go to previous page",
+								"handler": "previousPage"
+							},
+							"next": {
+								"label": "Next",
+								"msg": "Go to next page",
+								"handler": "nextPage"
+							}
+						}
+					};
+					gridconfig.grid.navigation = {
+						"totalCount": total,
+						"endLimit": $scope.pagination.limit,
+						"startLimit": $scope.pagination.start,
+						"totalPagesActive": Math.ceil(total / $scope.pagination.limit)
+					};
+					membersHelper.listInvitedMembers($scope.tenantsInvitedMembers, gridconfig, env, ext, function (response) {
+						if (response && Array.isArray(response) && response.length > 0) {
+							membersHelper.printMembers($scope.tenantsInvitedMembers, gridconfig, response, true, true);
+						} else {
+							membersHelper.printMembers($scope.tenantsInvitedMembers, gridconfig, [], true, true);
+						}
+					});
 				});
 			};
 			
@@ -399,6 +484,15 @@ membersApp.controller('tenantsGroupsCtrl', ['$scope', '$timeout', '$routeParams'
 
 membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDataApi', 'injectFiles', 'membersHelper', function ($scope, $routeParams, ngDataApi, injectFiles, membersHelper) {
 	
+	$scope.previousPage = function (start) {
+		$scope.pagination.start = start;
+		$scope.subTenantMembers.listSubMembers();
+	};
+	$scope.nextPage = function (start) {
+		$scope.pagination.start = start;
+		$scope.subTenantMembers.listSubMembers();
+	};
+	
 	$scope.getSubTenantUsers = function (tenantRecord, mainTenantRecord, env, mainExt, subExt, filters) {
 		if ($scope.access.adminUser) {
 			filters.slist.showget.user = true;
@@ -407,14 +501,48 @@ membersApp.controller('subTenantsMembersCtrl', ['$scope', '$routeParams', 'ngDat
 			$scope.subTenantMembers.tenant = tenantRecord;
 			$scope.subTenantMembers.tId = tenantRecord['_id'];
 			$scope.subTenantMembers.mainTenant = mainTenantRecord;
+			$scope.pagination = {
+				"start": 0,
+				"limit": 1000,
+			};
 			
 			$scope.subTenantMembers.listSubMembers = function () {
-				membersHelper.listSubMembers($scope.subTenantMembers, membersConfig, env, subExt, function (response) {
-					if (response && Array.isArray(response) && response.length > 0) {
-						membersHelper.printMembers($scope.subTenantMembers, membersConfig, response, true);
-					} else {
-						membersHelper.printMembers($scope.subTenantMembers, membersConfig, [], true);
+				membersHelper.listSubMembers_count($scope.subTenantMembers, env, subExt, function (response) {
+					let total = 0;
+					if (response && response.data) {
+						let temp_total = parseInt(response.data);
+						if (temp_total && temp_total > 0) {
+							total = temp_total;
+						}
 					}
+					let gridconfig = {
+						"grid": angular.copy(membersConfig.grid),
+						"apiNavigation": {
+							"previous": {
+								"label": "Previous",
+								"msg": "Go to previous page",
+								"handler": "previousPage"
+							},
+							"next": {
+								"label": "Next",
+								"msg": "Go to next page",
+								"handler": "nextPage"
+							}
+						}
+					};
+					gridconfig.grid.navigation = {
+						"totalCount": total,
+						"endLimit": $scope.pagination.limit,
+						"startLimit": $scope.pagination.start,
+						"totalPagesActive": Math.ceil(total / $scope.pagination.limit)
+					};
+					membersHelper.listSubMembers($scope.subTenantMembers, gridconfig, env, subExt, function (response) {
+						if (response && Array.isArray(response) && response.length > 0) {
+							membersHelper.printMembers($scope.subTenantMembers, gridconfig, response, true);
+						} else {
+							membersHelper.printMembers($scope.subTenantMembers, gridconfig, [], true);
+						}
+					});
 				});
 			};
 			

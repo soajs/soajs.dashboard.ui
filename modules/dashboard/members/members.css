@@ -2,6 +2,7 @@ div#allowedEnvironments-wrapper li {
     float: left;
     width: 33%;
 }
+
 .membersEntry {
     margin-top: 12px;
 }
@@ -27,7 +28,7 @@ div#allowedEnvironments-wrapper li {
     float: left;
 }
 
-.selectKey{
+.selectKey {
     margin: 10px 30px 10px 15px;
 }
 
@@ -54,7 +55,6 @@ div#allowedEnvironments-wrapper li {
     display: none;
 }
 
-
 .searchBarFieldSet {
     background-color: #F8F8F8;
 }
@@ -66,6 +66,12 @@ div#allowedEnvironments-wrapper li {
 .tabFieldSetHeightSmall {
     height: 70px;
 }
+
 .tabFieldSetHeightXSmall {
     height: 40px;
+}
+
+.apinavigation {
+    background-color: black;
+    color: white;
 }

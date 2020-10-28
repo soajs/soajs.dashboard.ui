@@ -84,12 +84,7 @@ groupsService.service('groupsHelper', ['ngDataApi', '$timeout', '$modal', functi
 					currentScope.$parent.displayAlert("danger", error.code, true, 'urac', error.message);
 				}
 				else {
-					if (callback && typeof(callback) === 'function') {
-						return callback(response);
-					}
-					else {
-						printGroups(currentScope, groupsConfig, response);
-					}
+					return callback(response);
 				}
 			});
 		}

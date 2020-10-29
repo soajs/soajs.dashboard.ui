@@ -11,8 +11,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		{
 			'pagination': {
 				"start": 0,
-				"limit": 500,
-				"keywords": null
+				"limit": 300,
+				"keywords": null,
+				"currentPage": 1,
+				"maxSize": 10
 			},
 			'label': translation.mainTenant[LANG],
 			'type': 'product',
@@ -21,8 +23,10 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 		{
 			'pagination': {
 				"start": 0,
-				"limit": 500,
-				"keywords": null
+				"limit": 300,
+				"keywords": null,
+				"currentPage": 1,
+				"maxSize": 10
 			},
 			'label': translation.subTenant[LANG],
 			'type': 'client',
@@ -193,6 +197,15 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 			}
 		});
 	};
+	
+	$scope.paginationActionTenants = function (page) {
+		if (page > 1) {
+			$scope.tenantTabs[0].pagination.start = $scope.tenantTabs[0].pagination.limit * (page - 1);
+		} else {
+			$scope.tenantTabs[0].pagination.start = 0;
+		}
+		$scope.listTenants();
+	};
 	$scope.listSubTenants = function (cb) {
 		getSendDataFromServer($scope, ngDataApi, {
 			"method": "get",
@@ -213,6 +226,14 @@ multiTenantApp.controller('tenantCtrl', ['$scope', '$compile', '$timeout', '$mod
 				return cb(response);
 			}
 		});
+	};
+	$scope.paginationActionSubTenants = function (page) {
+		if (page > 1) {
+			$scope.tenantTabs[1].pagination.start = $scope.tenantTabs[1].pagination.limit * (page - 1);
+		} else {
+			$scope.tenantTabs[1].pagination.start = 0;
+		}
+		$scope.listTenants();
 	};
 	
 	$scope.listTenants = function (cb) {

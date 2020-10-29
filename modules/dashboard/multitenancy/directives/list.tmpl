@@ -67,6 +67,16 @@
 						</div>
 					</div>
 				</div>
+				<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+					<tr>
+						<td align="right">
+							<pagination total-items="tenantTabs[0].pagination.count" ng-click="paginationActionTenants(tenantTabs[0].pagination.currentPage)"
+							            ng-model="tenantTabs[0].pagination.currentPage" max-size="tenantTabs[0].pagination.maxSize" class="pagination-sm"
+							            boundary-links="true" rotate="false" num-pages="tenantTabs[0].pagination.numPages"
+							            items-per-page="tenantTabs[0].pagination.limit"></pagination>
+						</td>
+					</tr>
+				</table>
 			</tab>
 			
 			<tab heading="{{tenantTabs[1].label}}">
@@ -90,6 +100,16 @@
 				<div class="entryBoxes">
 					<div ng-include="'modules/dashboard/multitenancy/directives/list-subTenants.tmpl'"></div>
 				</div>
+				<table border="0" cellspacing="0" cellpadding="0" width="100%" class="navigation">
+					<tr>
+						<td align="right">
+							<pagination total-items="tenantTabs[1].pagination.count" ng-click="paginationActionSubTenants(tenantTabs[1].pagination.currentPage)"
+							            ng-model="tenantTabs[1].pagination.currentPage" max-size="tenantTabs[1].pagination.maxSize" class="pagination-sm"
+							            boundary-links="true" rotate="false" num-pages="tenantTabs[1].pagination.numPages"
+							            items-per-page="tenantTabs[1].pagination.limit"></pagination>
+						</td>
+					</tr>
+				</table>
 			</tab>
 		</tabset>
 	</div>

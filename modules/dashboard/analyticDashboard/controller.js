@@ -1,5 +1,5 @@
 'use strict';
-var analyticCatalogApp = soajsApp.components;
+let analyticCatalogApp = soajsApp.components;
 
 analyticCatalogApp.controller('dashboardAppCtrl', ['$scope',
 	function ($scope) {

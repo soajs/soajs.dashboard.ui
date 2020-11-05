@@ -1,6 +1,6 @@
 'use strict';
 
-var settingsNav = [
+let settingsNav = [
 	
 	{
 		'id': 'release-update',

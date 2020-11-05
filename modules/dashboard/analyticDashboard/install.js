@@ -1,6 +1,6 @@
 'use strict';
 
-var catalogNav = [
+let catalogNav = [
     {
         'id': 'analyticDashboard',
         'label': "Dashboard Analytics",

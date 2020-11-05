@@ -533,6 +533,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 								if (modalInstance) {
 									modalInstance.close();
 								}
+								$scope.get();
 							}
 						});
 					}
@@ -576,6 +577,7 @@ resourceCtrl.controller('resourceCtrl', ['$scope', '$cookies', 'ngDataApi', 'inj
 				}
 				else {
 					$scope.$parent.displayAlert('success', "Resource has been deleted.");
+					$scope.get();
 				}
 			});
 		};

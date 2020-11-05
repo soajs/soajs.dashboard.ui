@@ -267,6 +267,7 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 								if (modalInstance) {
 									modalInstance.close();
 								}
+								$scope.get();
 							}
 						});
 					}
@@ -310,6 +311,7 @@ customRegistryCtrl.controller('customRegistryCtrl', ['$scope', '$cookies', 'ngDa
 				}
 				else {
 					$scope.$parent.displayAlert('success', "Custom registry has been deleted.");
+					$scope.get();
 				}
 			});
 		};

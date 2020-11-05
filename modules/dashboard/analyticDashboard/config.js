@@ -1,6 +1,6 @@
 'use strict';
 
-var dashboardAppConfig = {
+let dashboardAppConfig = {
 	permissions: {
 	
 	}

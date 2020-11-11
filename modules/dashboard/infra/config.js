@@ -25,9 +25,9 @@ let infraConfig = {
 		docker: 'themes/default/img/docker_logo.png',
 		kubernetes: 'themes/default/img/kubernetes_logo.png'
 	},
-
+	
 	form: {
-		providers :[
+		providers: [
 			{
 				'name': 'google',
 				'type': 'html',
@@ -121,11 +121,20 @@ let infraConfig = {
 				'label': 'Kubernetes Token',
 				'type': 'textarea',
 				'value': "",
-				'fieldMsg': 'Provide the Kubernetes token and allow SOAJS to communicate with your Kubernetes deployment',
+				'fieldMsg': 'The Kubernetes token. Must be provided to allow communication.',
 				'required': true
+			},
+			{
+				'name': 'ca',
+				'label': 'Certificate information',
+				'type': 'jsoneditor',
+				'value': "",
+				'required': false,
+				'fieldMsg': 'The the Kubernetes certificate json object. It is optional but must be provided to create secure communication.',
+				'height': 200
 			}
 		],
-
+		
 		aws: [
 			{
 				'name': 'label',

@@ -183,6 +183,18 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 		}
 	}
 	
+	function setEditorContent(id) {
+		try {
+			let editor = ace.edit(id);
+			editor.setValue('');
+		} catch (e) {
+			$timeout(function () {
+				let editor = ace.edit(id);
+				editor.setValue('');
+			}, 100);
+		}
+	}
+	
 	function activateProvider(currentScope, cloudProvider) {
 		
 		let providersList;
@@ -241,6 +253,9 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 							delete data.label;
 							delete data.description;
 							data.type = "secret";
+							if (!data.ca) {
+								delete data.ca;
+							}
 							overlayLoading.show();
 							getSendDataFromServer(currentScope, ngDataApi, {
 								"method": "post",
@@ -292,7 +307,9 @@ infraCommonCSrv.service('infraCommonSrv', ['ngDataApi', '$timeout', '$modal', '$
 				]
 			};
 			
-			buildFormWithModal(currentScope, $modal, options);
+			buildFormWithModal(currentScope, $modal, options, () => {
+				setEditorContent("ca");
+			});
 		}
 	}
 	

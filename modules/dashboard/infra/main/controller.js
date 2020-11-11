@@ -60,6 +60,18 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 		infraCommonSrv.activateProvider($scope, cloud);
 	};
 	
+	function setEditorContent(id) {
+		try {
+			let editor = ace.edit(id);
+			editor.setValue('');
+		} catch (e) {
+			$timeout(function () {
+				let editor = ace.edit(id);
+				editor.setValue('');
+			}, 100);
+		}
+	}
+	
 	$scope.editProvider = function (oneProvider) {
 		let providerName = oneProvider.type;
 		// let providerName = oneProvider.name;
@@ -86,9 +98,12 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 					'label': 'Save',
 					'action': function (formData) {
 						let data = angular.copy(formData);
-						overlayLoading.show();
 						data.type = "secret";
 						delete data.description;
+						if (!data.ca) {
+							delete data.ca;
+						}
+						overlayLoading.show();
 						getSendDataFromServer($scope, ngDataApi, {
 							"method": "put",
 							"routeName": "/infra/account/kubernetes/configuration",
@@ -123,7 +138,9 @@ infraApp.controller('infraCtrl', ['$scope', '$window', '$modal', '$timeout', '$l
 			]
 		};
 		
-		buildFormWithModal($scope, $modal, options);
+		buildFormWithModal($scope, $modal, options, () => {
+			setEditorContent("ca");
+		});
 	};
 	
 	$scope.deactivateProvider = function (oneProvider) {

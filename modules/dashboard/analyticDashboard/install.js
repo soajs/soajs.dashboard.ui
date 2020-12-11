@@ -1,6 +1,6 @@
 'use strict';
 
-let catalogNav = [
+let analyticDashboardNav = [
     {
         'id': 'analyticDashboard',
         'label': "Dashboard Analytics",
@@ -25,4 +25,4 @@ let catalogNav = [
     }
 ];
 
-navigation = navigation.concat(catalogNav);
+navigation = navigation.concat(analyticDashboardNav);

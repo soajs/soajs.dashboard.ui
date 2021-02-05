@@ -47,6 +47,7 @@ CDApp.controller('notificationCtrl', ['$scope', 'ngDataApi', 'injectFiles', '$lo
 	$scope.pagination = {
 		totalItems: 0,
 		currentPage: 1,
+		maxSize: 10,
 		itemsPerPage: $scope.searchOptions.limit ? $scope.searchOptions.limit.l : 100
 	};
 	$scope.search = function (page) {

@@ -178,11 +178,12 @@ let gitAccManagementConfig = {
 			'bitbucket' : {
 				'entries': [
 					{
-						'name': 'password',
-						'label': translation.pleaseProvidePassword[LANG],
-						'type': 'password',
+						'name': 'token',
+						'label': 'Personal Token',
+						'type': 'text',
 						'value': '',
-						'placeholder': translation.gitPassword[LANG],
+						'tooltip': 'Account Personal Token',
+						'placeholder': 'Your Personal Token',
 						'required': true
 					},
 					{
@@ -211,11 +212,12 @@ let gitAccManagementConfig = {
 			'bitbucket_enterprise' : {
 				'entries': [
 					{
-						'name': 'password',
-						'label': translation.pleaseProvidePassword[LANG],
-						'type': 'password',
+						'name': 'token',
+						'label': 'Personal Token',
+						'type': 'text',
 						'value': '',
-						'placeholder': translation.gitPassword[LANG],
+						'tooltip': 'Account Personal Token',
+						'placeholder': 'Your Personal Token',
 						'required': true
 					}
 				]

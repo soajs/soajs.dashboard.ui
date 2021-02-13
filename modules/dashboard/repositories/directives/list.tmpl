@@ -128,11 +128,11 @@
 										   ng-click="syncRepo(repo)" ng-style="{'margin-top': '-19px'}">
 											<span class="icon icon-loop2" tooltip="{{translation.sync[LANG]}}"></span>
 										</a>
-										<a href=""
-										   ng-if="access.getCIRepoSettings && access.getCIAccountInfo  && repo.status === 'active'"
-										   ng-click="configureRepo(repo)" ng-style="{'margin-top': '-19px'}">
-											<span tooltip="Configure" class="icon icon-cog"></span>
-										</a>
+<!--										<a href=""-->
+<!--										   ng-if="access.getCIRepoSettings && access.getCIAccountInfo  && repo.status === 'active'"-->
+<!--										   ng-click="configureRepo(repo)" ng-style="{'margin-top': '-19px'}">-->
+<!--											<span tooltip="Configure" class="icon icon-cog"></span>-->
+<!--										</a>-->
 									</a>
 									<a ng-if="repo.status === 'deleted'"  ng-click="deleteRepo(repo)" ng-style="{'margin-top': '-19px', 'margin-right': '5px'}"><span
 											tooltip="delete repository" class="icon icon-cross" ng-style="{'color': 'crimson'}"></span></a>

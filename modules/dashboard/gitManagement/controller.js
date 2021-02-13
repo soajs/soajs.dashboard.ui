@@ -163,11 +163,11 @@ gitAccManagement.controller('gitAccManagementCtrl', ['$scope', '$timeout', '$mod
 						if (account.provider === "github") {
 							body.token = formData.token;
 						} else if (account.provider === "bitbucket") {
-							body.password = formData.password;
+							body.token = formData.token;
 							body.oauthKey = formData.oauthKey;
 							body.oauthSecret = formData.oauthSecret;
 						} else {
-							body.password = formData.password;
+							body.token = formData.token;
 						}
 						overlayLoading.show();
 						getSendDataFromServer($scope, ngDataApi, {

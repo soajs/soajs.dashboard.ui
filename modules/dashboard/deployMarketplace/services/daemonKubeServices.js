@@ -942,10 +942,13 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 								if ($scope.showBranches && $scope.showTags) {
 									$scope.selectedSource = "branch";
 									if ($scope.selectedSource === "branch") {
+										delete $scope.configuration.src.tag;
 										$scope.showTags = false;
 										$scope.showBranches = true;
 									}
 									if ($scope.selectedSource === "tag") {
+										delete $scope.configuration.src.branch;
+										delete $scope.configuration.src.commit;
 										$scope.showTags = true;
 										$scope.showBranches = false;
 									}
@@ -1091,10 +1094,13 @@ daemonkubeServicesSrv.service('daemonkubeServicesSrv', ['ngDataApi', '$cookies',
 		$scope.branchOrTag = function (what) {
 			$scope.selectedSource = what;
 			if ($scope.selectedSource === "branch") {
+				delete $scope.configuration.src.tag;
 				$scope.showTags = false;
 				$scope.showBranches = true;
 			}
 			if ($scope.selectedSource === "tag") {
+				delete $scope.configuration.src.branch;
+				delete $scope.configuration.src.commit;
 				$scope.showTags = true;
 				$scope.showBranches = false;
 			}

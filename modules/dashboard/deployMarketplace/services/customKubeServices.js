@@ -522,25 +522,25 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 							$scope.responses[host.id] = host.response;
 						});
 						//if (formConfig.length === 2) {
-							formConfig.push(
-								{
-									'name': 'podSelector',
-									'label': 'Select Pod',
-									'type': 'select',
-									'value': $scope.hosts,
-									onAction: function (id, value, form) {
-										form.formData['response'] = $scope.responses[value];
-									},
-								}
-							);
-							formConfig.push(
-								{
-									'name': 'response',
-									'label': 'Response',
-									'type': 'textarea',
-									'required': false,
-								}
-							);
+						formConfig.push(
+							{
+								'name': 'podSelector',
+								'label': 'Select Pod',
+								'type': 'select',
+								'value': $scope.hosts,
+								onAction: function (id, value, form) {
+									form.formData['response'] = $scope.responses[value];
+								},
+							}
+						);
+						formConfig.push(
+							{
+								'name': 'response',
+								'label': 'Response',
+								'type': 'textarea',
+								'required': false,
+							}
+						);
 						//}
 						$scope.form.formData['response'] = res[0].response;
 					}
@@ -921,7 +921,7 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 								if (Object.keys($scope.configuration.recipe.env).length === 0) {
 									delete $scope.configuration.recipe.env;
 								}
-								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)){
+								if ($scope.configuration.recipe.env && Object.keys($scope.configuration.recipe.env)) {
 									for (let i = 0; i < Object.keys($scope.configuration.recipe.env).length; i++) {
 										if (!env_variables.includes(Object.keys($scope.configuration.recipe.env)[i])) {
 											//detected mismatch
@@ -939,6 +939,19 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 							if (catalog.recipe.deployOptions.image) {
 								$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
 								$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
+								if ($scope.showBranches && $scope.showTags) {
+									$scope.selectedSource = "branch";
+									if ($scope.selectedSource === "branch") {
+										$scope.showTags = false;
+										$scope.showBranches = true;
+									}
+									if ($scope.selectedSource === "tag") {
+										$scope.showTags = true;
+										$scope.showBranches = false;
+									}
+								} else {
+									$scope.selectedSource = null;
+								}
 								$scope.showImages = catalog.recipe.deployOptions.image.override;
 								$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
 								$scope.configuration.recipe.image = {
@@ -1077,6 +1090,17 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 				});
 			});
 		};
+		$scope.branchOrTag = function (what) {
+			$scope.selectedSource = what;
+			if ($scope.selectedSource === "branch") {
+				$scope.showTags = false;
+				$scope.showBranches = true;
+			}
+			if ($scope.selectedSource === "tag") {
+				$scope.showTags = true;
+				$scope.showBranches = false;
+			}
+		}
 		$scope.checkGitBranch = function (catalog, cb) {
 			if (catalog && catalog.recipe && catalog.recipe.deployOptions && catalog.recipe.deployOptions.image) {
 				$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
@@ -1149,10 +1173,10 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 		$scope.getRepo = function () {
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
-				method: 'get',
+				method: 'post',
 				routeName: '/repositories/git/repos/',
-				params: {
-					"repo": service.src.repo,
+				data: {
+					"name": service.src.repo,
 					"owner": [service.src.owner],
 					"provider": [service.src.provider],
 					"active": true
@@ -1163,9 +1187,9 @@ customkubeServicesSrv.service('customkubeServicesSrv', ['ngDataApi', '$cookies',
 				if (error) {
 					currentScope.displayAlert($scope, 'danger', error.message);
 				} else {
-					if (res && res.items && res.items.length > 0) {
+					if (res && res.repositories && res.repositories.length > 0) {
 						if ($scope.configuration && $scope.configuration.src) {
-							$scope.configuration.src.id = res.items[0]._id.toString();
+							$scope.configuration.src.id = res.repositories[0]._id.toString();
 						}
 					}
 				}

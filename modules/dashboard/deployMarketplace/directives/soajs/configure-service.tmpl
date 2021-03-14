@@ -29,7 +29,25 @@
 										environment.</label>
 									<br>
 								</div>
-								<div ng-if="configuration.recipe.id && showBranches">
+								
+								<div ng-if="configuration.recipe.id && selectedSource">
+									<label>Select a source:</label>
+									<select class="form-control"
+									        data-ng-model="selectedSource"
+									        ng-change="branchOrTag(selectedSource)"
+									        ng-required="true">
+										<option value="branch">
+											From a Branch
+										</option>
+										<option value="tag">
+											From a Tag
+										</option>
+									</select>
+									<label class="fieldMsg">Choose from where your source (branch or tag).</label>
+									<br>
+								</div>
+								
+								<div ng-if="configuration.recipe.id && showBranches && !showTags">
 									<label>Branch:</label>
 									<select class="form-control"
 									        data-ng-model="configuration.src.branch"
@@ -41,7 +59,7 @@
 									</select>
 									<br/><br/>
 								</div>
-								<div ng-if="configuration.recipe.id && showBranches">
+								<div ng-if="configuration.recipe.id && showBranches && !showTags">
 									<label style="width: 27%">Commit:</label>
 									<a style="cursor: pointer;" ng-click="updateGitBranch(configuration.src.branch)"><i class="icon icon-loop2"></i></a>
 									<input type="text" class="form-control" style="margin-left: 5px;"
@@ -51,7 +69,7 @@
 									<br>
 									<br/>
 								</div>
-								<div ng-if="configuration.recipe.id && showTags">
+								<div ng-if="configuration.recipe.id && showTags && !showBranches">
 									<label>Tag:</label>
 									<select class="form-control"
 									        data-ng-model="configuration.src.tag"
@@ -354,7 +372,7 @@
 											<label>Branch:</label>&nbsp;{{configuration.src.branch}}
 										</div>
 										<div ng-if="showTags" class="halfPage branchLabel">
-											<label>Branch:</label>&nbsp;{{configuration.src.tag}}
+											<label>Tag:</label>&nbsp;{{configuration.src.tag}}
 										</div>
 										<div class="halfPage branchLabel">
 											<label>Strategy:</label>

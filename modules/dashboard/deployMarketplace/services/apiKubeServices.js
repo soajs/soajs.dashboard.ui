@@ -939,6 +939,19 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 							if (catalog.recipe.deployOptions.image) {
 								$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
 								$scope.showTags = !catalog.recipe.deployOptions.image.binary && v.tags;
+								if ($scope.showBranches && $scope.showTags) {
+									$scope.selectedSource = "branch";
+									if ($scope.selectedSource === "branch") {
+										$scope.showTags = false;
+										$scope.showBranches = true;
+									}
+									if ($scope.selectedSource === "tag") {
+										$scope.showTags = true;
+										$scope.showBranches = false;
+									}
+								} else {
+									$scope.selectedSource = null;
+								}
 								$scope.showImages = catalog.recipe.deployOptions.image.override;
 								$scope.privateImage = catalog.recipe.deployOptions.image.repositoryType === "private";
 								$scope.configuration.recipe.image = {
@@ -1115,6 +1128,17 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 				});
 			});
 		};
+		$scope.branchOrTag = function (what) {
+			$scope.selectedSource = what;
+			if ($scope.selectedSource === "branch") {
+				$scope.showTags = false;
+				$scope.showBranches = true;
+			}
+			if ($scope.selectedSource === "tag") {
+				$scope.showTags = true;
+				$scope.showBranches = false;
+			}
+		}
 		$scope.checkGitBranch = function (catalog, cb) {
 			if (catalog && catalog.recipe && catalog.recipe.deployOptions && catalog.recipe.deployOptions.image) {
 				$scope.showBranches = !catalog.recipe.deployOptions.image.binary && v.branches;
@@ -1187,10 +1211,10 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 		$scope.getRepo = function () {
 			overlayLoading.show();
 			getSendDataFromServer($scope, ngDataApi, {
-				method: 'get',
+				method: 'post',
 				routeName: '/repositories/git/repos/',
-				params: {
-					"repo": service.src.repo,
+				data: {
+					"name": service.src.repo,
 					"owner": [service.src.owner],
 					"provider": [service.src.provider],
 					"active": true
@@ -1201,9 +1225,9 @@ apiKubeServicesSrv.service('apiKubeServicesSrv', ['ngDataApi', '$cookies', '$mod
 				if (error) {
 					currentScope.displayAlert($scope, 'danger', error.message);
 				} else {
-					if (res && res.items && res.items.length > 0) {
+					if (res && res.repositories && res.repositories.length > 0) {
 						if ($scope.configuration && $scope.configuration.src) {
-							$scope.configuration.src.id = res.items[0]._id.toString();
+							$scope.configuration.src.id = res.repositories[0]._id.toString();
 						}
 					}
 				}

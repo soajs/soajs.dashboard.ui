@@ -1,9 +1,0 @@
-<div ng-show="!entry.hidden">
-	<label>{{entry.label}}</label>
-	<label class="toggleSwitch">
-		<input id="{{entry.name}}" name="{{entry.name}}" type="checkbox" ng-model="form.formData[entry.name]" ng-checked="entry.value" ng-if="entry.disabled" disabled/>
-		<input id="{{entry.name}}" name="{{entry.name}}" type="checkbox" ng-model="form.formData[entry.name]" ng-click="form.call(entry.onAction, entry.name , form.formData[entry.name], form )" ng-checked="entry.value" ng-if="!entry.disabled" />
-		<span class="buttonSlider round"></span>
-	</label>
-	<div ng-show="entry.fieldMsg" class="fieldMsg hint" ng-bind-html="entry.fieldMsg|toTrustedHtml"></div>
-</div>

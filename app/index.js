@@ -28,7 +28,9 @@ checkUIConfig();
 function checkUIConfig() {
 	//bind the ui
 	app.use(express.static(path.join(__dirname, '../')));
-	
+	app.use((req, res, next) => {
+		res.sendFile(path.join(__dirname, "../", "index.html"));
+	});
 	//start the express app
 	app.listen(port, () => {
 		console.log(`SOAJS UI Console started on ${config.host} and listening on port ${port}!`);

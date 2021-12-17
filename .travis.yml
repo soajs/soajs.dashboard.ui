@@ -1,6 +1,6 @@
 language: node_js
 
-node_js: 12
+node_js: 16
 
 jobs:
   include:
@@ -40,6 +40,9 @@ jobs:
     - docker tag soajsorg/consoleui:latest soajsorg/consoleui:${MAJOR_VERSION}.x
 
     - docker push soajsorg/consoleui
+    - docker push soajsorg/consoleui:${PACKAGE_VERSION}
+    - docker push soajsorg/consoleui:${MAJOR_VERSION}.x
+
     deploy:
       on:
         all_branches: true

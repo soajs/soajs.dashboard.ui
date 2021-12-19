@@ -31,14 +31,10 @@ jobs:
     - git tag ${PACKAGE_VERSION}
 
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
     - docker build -t soajsorg/consoleui .
-
-    - docker images
-
     - docker tag soajsorg/consoleui:latest soajsorg/consoleui:${PACKAGE_VERSION}
     - docker tag soajsorg/consoleui:latest soajsorg/consoleui:${MAJOR_VERSION}.x
-
+    - docker images
     - docker push soajsorg/consoleui
     - docker push soajsorg/consoleui:${PACKAGE_VERSION}
     - docker push soajsorg/consoleui:${MAJOR_VERSION}.x

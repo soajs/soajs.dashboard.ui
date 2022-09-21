@@ -1,6 +1,6 @@
 language: node_js
 
-node_js: 12
+node_js: 16
 
 jobs:
   include:
@@ -30,16 +30,15 @@ jobs:
     - git config --local user.email ${GIT_EMAIL}
     - git tag ${PACKAGE_VERSION}
 
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - docker build -t soajsorg/consoleui .
-
-    - docker images
-
     - docker tag soajsorg/consoleui:latest soajsorg/consoleui:${PACKAGE_VERSION}
     - docker tag soajsorg/consoleui:latest soajsorg/consoleui:${MAJOR_VERSION}.x
-
+    - docker images
     - docker push soajsorg/consoleui
+    - docker push soajsorg/consoleui:${PACKAGE_VERSION}
+    - docker push soajsorg/consoleui:${MAJOR_VERSION}.x
+
     deploy:
       on:
         all_branches: true

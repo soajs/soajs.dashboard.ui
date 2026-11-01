@@ -41,4 +41,4 @@ if (customSettings.api && customSettings.api !== "") {
 window.apiSettings = {
 	"api": window.location.protocol + '//' + myDomainAPI + myDomain + ":" + myPort,
 	"key": customSettings.key
-};
+}; 
